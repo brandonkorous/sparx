@@ -8,14 +8,14 @@
 // tile. Every figure is read-only and computed live (or from a rollup) by the
 // analytics metric registry; nothing here is fabricated.
 //
-// The shapes mirror services/api-rest/src/lib/analytics/{dashboards,types}.ts.
+// The shapes mirror wizeworks/services/api-rest/src/lib/analytics/{dashboards,types}.ts.
 // The workbench is built self-contained, so these are
 // declared here rather than imported across the app boundary — the wire contract
 // is the seam.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useQuery } from '@sparx/query';
-import { ApiError } from '@sparx/api-client';
+import { useQuery } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
 
 /* ── Dashboard config (mirrors the server) ──────────────────────────────── */

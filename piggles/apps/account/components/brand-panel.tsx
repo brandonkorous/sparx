@@ -39,25 +39,25 @@ import { ProductGlimpse } from './product-glimpse';
 // be named, that line is the right place for them — and only then.
 
 const POINTS: { icon: PigglesIcon; title: string; body: string }[] = [
-    { icon: faCheckCircle, title: 'Everything included', body: 'All fifteen apps, one price.' },
-    { icon: faClock, title: 'Ready in minutes', body: 'Two questions and you are in.' },
-    { icon: faGrid, title: 'One place for all of it', body: 'Site, customers, stock, invoices.' },
+  { icon: faCheckCircle, title: 'Everything included', body: 'All fifteen apps, one price.' },
+  { icon: faClock, title: 'Ready in minutes', body: 'Two questions and you are in.' },
+  { icon: faGrid, title: 'One place for all of it', body: 'Site, customers, stock, invoices.' },
 ];
 
 export function BrandPanel({
-    lead,
-    emphasis,
+  lead,
+  emphasis,
 }: {
-    /** The first half of the promise, in body ink. */
-    lead: string;
-    /** The half that lands, in brand pink. Color is doing the work of a second
-     *  sentence here, which is the point — see root DESIGN.md on color replacing
-     *  words rather than decorating them. */
-    emphasis: string;
+  /** The first half of the promise, in body ink. */
+  lead: string;
+  /** The half that lands, in brand pink. Color is doing the work of a second
+   *  sentence here, which is the point — see root DESIGN.md on color replacing
+   *  words rather than decorating them. */
+  emphasis: string;
 }) {
-    return (
-        <div className="max-w-xl">
-            {/* A `<p>`, not an `<h1>`. The page's heading is the task named on the
+  return (
+    <div className="max-w-xl">
+      {/* A `<p>`, not an `<h1>`. The page's heading is the task named on the
           card — "Welcome back" — and this is a promise sitting beside it. Two
           h1s on one page is a document with two titles.
 
@@ -67,34 +67,34 @@ export function BrandPanel({
           until the `@theme` block was added there — see its comment — so this
           line rendered in the body face while every real heading beside it wore
           the display face. */}
-            <p className="font-heading text-4xl leading-tight font-black sm:text-5xl">
-                {lead}
-                <br />
-                <span className="text-primary">{emphasis}</span>
-            </p>
+      <p className="font-heading text-4xl leading-tight font-black sm:text-5xl">
+        {lead}
+        <br />
+        <span className="text-primary">{emphasis}</span>
+      </p>
 
-            <ul className="mt-8 flex flex-col gap-4">
-                {POINTS.map(({ icon, title, body }) => (
-                    <li key={title} className="flex items-start gap-3">
-                        {/* Brand pink, no container. These three are one category — what you
+      <ul className="mt-8 flex flex-col gap-4">
+        {POINTS.map(({ icon, title, body }) => (
+          <li key={title} className="flex items-start gap-3">
+            {/* Brand pink, no container. These three are one category — what you
                 get — so a different hue each would be color used as decoration
                 rather than as meaning (root RULE #4). The same treatment as the
                 assurance band at the foot of the page, so the two icon sets read
                 as one system rather than two. */}
-                        <Icon glyph={icon} className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
-                        <div>
-                            <h2 className="text-lg font-bold">{title}</h2>
-                            <p className="text-base">{body}</p>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+            <Icon glyph={icon} className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
+            <div>
+              <h2 className="text-lg font-bold">{title}</h2>
+              <p className="text-base">{body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
 
-            <ProductGlimpse />
+      <ProductGlimpse />
 
-            <p className="mt-8 text-base font-semibold">
-                For bakeries, barbers, florists, garages and workshops.
-            </p>
-        </div>
-    );
+      <p className="mt-8 text-base font-semibold">
+        For bakeries, barbers, florists, garages and workshops.
+      </p>
+    </div>
+  );
 }

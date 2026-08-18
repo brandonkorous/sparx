@@ -17,16 +17,8 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-  Timestamp,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput, Select, Timestamp } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -156,67 +148,89 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier order controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search supplier orders"
-            placeholder="Search order or tracking…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        {supplierList.length > 1 ? (
-          <div className="hidden w-44 shrink-0 @2xl:block">
-            <Select
+      <PaneToolbar
+        label="Supplier order controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
               size="sm"
-              aria-label="Which supplier"
-              value={supplierId}
-              items={{
-                all: 'All suppliers',
-                ...Object.fromEntries(supplierList.map((s) => [s.id, s.name])),
-              }}
-              onValueChange={(next) => {
-                setSupplierId(next as string);
-                resetWindow();
-              }}
+              aria-label="Search supplier orders"
+              placeholder="Search order or tracking…"
+              value={search}
+              onValueChange={setSearch}
             />
           </div>
-        ) : null}
-
-        <div className="hidden w-44 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Show which orders"
-            value={status}
-            items={{
-              all: 'All orders',
-              pending: 'Waiting to be sent',
-              submitted: 'Sent to supplier',
-              shipped: 'Shipped',
-              delivered: 'Delivered',
-              failed: 'Could not be sent',
-            }}
-            onValueChange={(next) => {
-              setStatus(next as string);
-              resetWindow();
+        }
+        controls={
+          <>
+            {supplierList.length > 1 ? (
+              <div className="w-44 shrink-0">
+                <Select
+                  size="sm"
+                  aria-label="Which supplier"
+                  value={supplierId}
+                  items={{
+                    all: 'All suppliers',
+                    ...Object.fromEntries(supplierList.map((s) => [s.id, s.name])),
+                  }}
+                  onValueChange={(next) => {
+                    setSupplierId(next as string);
+                    resetWindow();
+                  }}
+                />
+              </div>
+            ) : null}
+            <div className="w-44 shrink-0">
+              <Select
+                size="sm"
+                aria-label="Show which orders"
+                value={status}
+                items={{
+                  all: 'All orders',
+                  pending: 'Waiting to be sent',
+                  submitted: 'Sent to supplier',
+                  shipped: 'Shipped',
+                  delivered: 'Delivered',
+                  failed: 'Could not be sent',
+                }}
+                onValueChange={(next) => {
+                  setStatus(next as string);
+                  resetWindow();
+                }}
+              />
+            </div>
+          </>
+        }
+        views={{
+          target: '/dropship/orders',
+          params: {
+            q: search.trim(),
+            supplier: supplierId,
+            status,
+            sort: `${sort.key}:${sort.dir}`,
+          },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setSupplierId(next.supplier ?? 'all');
+            setStatus(next.status ?? 'all');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as OrderSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching || suppliers.isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+              void suppliers.refetch();
             }}
           />
-        </div>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching || suppliers.isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-            void suppliers.refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (

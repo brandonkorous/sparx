@@ -10,18 +10,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-  Text,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faReceipt, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -36,6 +26,10 @@ import {
   useInvoices,
   type InvoiceRow,
 } from './invoices-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'b2b';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined },
@@ -99,61 +93,69 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Wholesale invoice controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Wholesale invoice controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search invoices on screen"
+              placeholder="Invoice number or company…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
-            aria-label="Search invoices on screen"
-            placeholder="Invoice number or company…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
+            className="ml-auto"
+            title="Raise an invoice — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open(
+                'b2b.invoice.detail',
+                { id: 'new', ...(accountId ? { accountId } : {}) },
+                { target: targetFor(event) }
+              );
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Raise an invoice
+          </Button>
+        }
+        filters={[
+          {
+            label: 'Show',
+            key: 'status',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
+              resetWindow();
+            },
+            options: FILTERS,
+          },
+        ]}
+        // "Who owes me, and what's late" is the question this list exists for —
+        // keeping it is better than rebuilding it every morning.
+        views={{
+          target: '/b2b/invoices',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
             resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter invoices"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Raise an invoice — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open(
-              'b2b.invoice.detail',
-              { id: 'new', ...(accountId ? { accountId } : {}) },
-              { target: targetFor(event) }
-            );
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Raise an invoice
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {accountId && accountName ? (
         <div className="flex items-center gap-2">
@@ -185,6 +187,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading invoices…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,

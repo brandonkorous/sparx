@@ -9,7 +9,7 @@
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the original "backlog / nothing built yet"
 > framing below is obsolete. Shipped: the markup engine (`percentage` / `multiplier` / `flat` /
 > `margin_target` / `matrix` methods with rounding + floor/ceiling) in
-> [`packages/commerce/src/services/markup-service.ts`](../packages/commerce/src/services/markup-service.ts),
+> [`wizeworks/packages/commerce/src/services/markup-service.ts`](../packages/commerce/src/services/markup-service.ts),
 > the cost-band **`MarkupBand`** parts matrix, document-level **surcharges** (`set_surcharge` MCP
 > tool + config), quote/invoice-line markup with line-level snapshotting, and the cost-driven
 > **`markup-recompute-worker`** ([`services/markup-recompute-worker/`](../services/markup-recompute-worker)).

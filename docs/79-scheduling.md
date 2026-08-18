@@ -14,8 +14,8 @@
 > `scheduling-notifications`, `scheduling-waitlist`, `scheduling-series`,
 > `scheduling-calendar-sync`, `scheduling-classes`, …), the same pattern as the email
 > dispatch/provisioning loops. The dashboard scheduling surface moved off the deleted
-> `apps/dashboard` into `apps/workbench` (the `apps/dashboard/...` paths in §6.1/§13.3
-> now live under `apps/workbench`). Still open: intake / consultation forms (models
+> `apps/dashboard` into `sparx/apps/workbench` (the `apps/dashboard/...` paths in §6.1/§13.3
+> now live under `sparx/apps/workbench`). Still open: intake / consultation forms (models
 > only — no API/UI), the Builder `Booking` catalog component + off-site embed, the
 > walk-in queue board, the reservations floor-plan, and the remaining **reporting/waitlist
 > MCP tools** (16 shipped, incl. the full service + resource + hours setup path — §17.2).
@@ -32,18 +32,18 @@ drive the **same booking engine** — they differ only in which capabilities the
 on and how they're presented.
 
 It is a **first-class module**, not a B2B add-on. The existing B2B fleet-service tables
-([packages/db/prisma/schema/64-b2b-scheduling.prisma](../packages/db/prisma/schema/64-b2b-scheduling.prisma))
+([wizeworks/packages/db/prisma/schema/64-b2b-scheduling.prisma](../packages/db/prisma/schema/64-b2b-scheduling.prisma))
 are the narrow ancestor of this engine; this spec **generalizes them** and makes B2B/fleet
 one _context_ among many (§13.5, §15.7).
 
-|                       |                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Module**            | Scheduling · slug `scheduling` · +$29/mo (§18.1)                                                                                                                   |
-| **Requires**          | Nothing. Deposits require a connected payment gateway, not the Commerce module (§9.1).                                                                             |
-| **Bundled free with** | Nothing — **always standalone** (decided; §18.3).                                                                                                                  |
-| **Surfaces**          | Public booking widget (Builder + embeddable), customer self-service portal, dashboard (calendar / queue / roster / reports), MCP tools                             |
-| **New service**       | `services/scheduling-worker` — reminder cron, waitlist auto-fill, calendar-sync polling, recurrence materialization                                                |
-| **Reuses**            | `@sparx/payments`, `@sparx/email` + email-worker, CRM, automation engine, Builder catalog, inventory (parts/availability), push-worker, customer-auth, marketplace |
+|                       |                                                                                                                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Module**            | Scheduling · slug `scheduling` · +$29/mo (§18.1)                                                                                                                           |
+| **Requires**          | Nothing. Deposits require a connected payment gateway, not the Commerce module (§9.1).                                                                                     |
+| **Bundled free with** | Nothing — **always standalone** (decided; §18.3).                                                                                                                          |
+| **Surfaces**          | Public booking widget (Builder + embeddable), customer self-service portal, dashboard (calendar / queue / roster / reports), MCP tools                                     |
+| **New service**       | `services/scheduling-worker` — reminder cron, waitlist auto-fill, calendar-sync polling, recurrence materialization                                                        |
+| **Reuses**            | `@wizeworks/payments`, `@wizeworks/email` + email-worker, CRM, automation engine, Builder catalog, inventory (parts/availability), push-worker, customer-auth, marketplace |
 
 ---
 
@@ -52,7 +52,7 @@ one _context_ among many (§13.5, §15.7).
 **The all-in-one advantage.** Every scheduling SaaS is an island: the booking data lives
 in Calendly, the customer lives in a CRM, the deposit lives in Stripe, the reminder lives
 in a separate SMS tool, the no-show never updates the customer's lifetime value. sparx
-already owns the customer (CRM), the money (`@sparx/payments`), the email pipeline, the
+already owns the customer (CRM), the money (`@wizeworks/payments`), the email pipeline, the
 automation engine, the site (Builder), and — for service businesses — the parts
 (Inventory) and the invoice (Invoicing). **Scheduling is the connective tissue that turns
 all of those into one loop**: book → remind → take deposit → fulfill → invoice → record
@@ -135,7 +135,7 @@ Each principle below is a direct, enforceable response to §3.
 | **P2**  | **Unlimited staff, resources, locations, and bookings.** Flat module price; no per-seat, no per-cover, no per-booking fee.                                                                                                                                                                                                                                                                 | Hate #2, #6      |
 | **P3**  | **Double-booking is structurally impossible**, enforced at the database with a Postgres `EXCLUDE` constraint (§7.4), not just app logic. Calendar sync is **one-click** (verified platform OAuth app — feasible since Calendar needs no CASA) with BYO + iCal fallbacks, checks **all** connected calendars, and **alerts on token/feed failure** — near-real-time on two-way connections. | Hate #3, Win #3  |
 | **P4**  | **The booking surface is the tenant's own brand on their own domain** — real Builder components, no "Powered by sparx." Embeddable on external sites under the tenant's brand.                                                                                                                                                                                                             | Hate #5, Win #2  |
-| **P5**  | **Bring your own processor.** Deposits/fees run through `@sparx/payments` (Stripe Direct, sparx Pay, PayPal, Square) at the tenant's own rates. Never locked.                                                                                                                                                                                                                              | Hate #10, Win #4 |
+| **P5**  | **Bring your own processor.** Deposits/fees run through `@wizeworks/payments` (Stripe Direct, sparx Pay, PayPal, Square) at the tenant's own rates. Never locked.                                                                                                                                                                                                                          | Hate #10, Win #4 |
 | **P6**  | **No-show protection is first-class and dispute-ready** — Tock-style per-service choice of _prepay / card-hold / free_, plus automatic chargeback evidence (reminder logs, policy acceptance, timestamps).                                                                                                                                                                                 | Win #1, Hate #9  |
 | **P7**  | **Reminders are multi-channel (SMS + email + push) and event-driven** through the existing Pub/Sub + email-worker pipeline; SMS is a new channel, metered as a physical cost.                                                                                                                                                                                                              | Win #1           |
 | **P8**  | **The customer record is the center.** Every booking, no-show, preference, intake answer, and visit writes to the CRM customer / B2B account / asset — cross-visit intelligence by default.                                                                                                                                                                                                | Win #10          |
@@ -190,7 +190,7 @@ engine and the calendar-sync engine; it _reuses_ everything else.
 ```
                          ┌───────────────────────────────────────────┐
                          │            Scheduling module                │
-                         │  (new: @sparx/scheduling, scheduling-schemas)│
+                         │  (new: @wizeworks/scheduling, scheduling-schemas)│
                          │                                             │
    Public site  ───────► │  Availability engine   Calendar-sync engine │ ◄─── Google / Microsoft /
    (Builder widget)      │  Booking ledger        Policy + deposit eng. │      CalDAV / Apple (OAuth)
@@ -200,7 +200,7 @@ engine and the calendar-sync engine; it _reuses_ everything else.
                                          │ publishes domain events
                                          ▼
    ┌──────────────┬──────────────┬───────────────┬───────────────┬───────────────┐
-   │ @sparx/      │ @sparx/email │ CRM            │ automation    │ Inventory      │
+   │ @sparx/      │ @wizeworks/email │ CRM            │ automation    │ Inventory      │
    │ payments     │ + email-     │ (customers,    │ engine        │ (parts check / │
    │ (deposits,   │ worker       │ B2B accounts,  │ (follow-ups,  │  reserve)      │
    │ holds,       │ (confirm /   │ activity,      │ win-back,     │                │
@@ -213,10 +213,10 @@ engine and the calendar-sync engine; it _reuses_ everything else.
 
 ### 6.1 New code
 
-- **`packages/scheduling`** (`@sparx/scheduling`) — the engine: availability computation,
+- **`wizeworks/packages/scheduling`** (`@wizeworks/scheduling`) — the engine: availability computation,
   slot generation, booking lifecycle, policy/deposit orchestration, recurrence, waitlist,
-  calendar-sync logic, notification scheduling. Pure service layer over `@sparx/db`.
-- **`packages/scheduling-schemas`** (`@sparx/scheduling-schemas`) — Zod schemas + shared
+  calendar-sync logic, notification scheduling. Pure service layer over `@wizeworks/db`.
+- **`wizeworks/packages/scheduling-schemas`** (`@wizeworks/scheduling-schemas`) — Zod schemas + shared
   types (booking, service, resource, availability, policy), consumed by API, dashboard,
   widget, and MCP. Mirrors the `crm-schemas` / `builder-schemas` pattern.
 - **`services/scheduling-worker`** — the only new deployable. Consumes Pub/Sub + runs
@@ -225,28 +225,28 @@ engine and the calendar-sync engine; it _reuses_ everything else.
   card-hold expiry handling, no-show sweep. Mirrors `services/email-worker` /
   `services/automation-worker`.
 - **Builder catalog components** — `Booking` block family in
-  [packages/builder-schemas/src/catalog/](../packages/builder-schemas/src/catalog/) (data-as-code,
+  [wizeworks/packages/builder-schemas/src/catalog/](../packages/builder-schemas/src/catalog/) (data-as-code,
   stamped — never a new renderer branch), per the catalog contract.
-- **Dashboard area** — `apps/workbench/surfaces/scheduling/` (calendar, bookings,
+- **Dashboard area** — `sparx/apps/workbench/surfaces/scheduling/` (calendar, bookings,
   services, resources, availability, waitlist, queue, reports, settings).
-- **MCP tools** — `packages/scheduling/src/mcp/` registered into `services/api-mcp`,
+- **MCP tools** — `wizeworks/packages/scheduling/src/mcp/` registered into `wizeworks/services/api-mcp`,
   scoped `read:scheduling` / `write:scheduling`, gated on the `ai` module.
 
 ### 6.2 What it explicitly reuses (do not rebuild)
 
-| Need                                                             | Reused asset                                                                                                                                                                                  |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Deposits, holds, no-show fees, refunds                           | `@sparx/payments` `PaymentService` — `createPaymentIntent({captureMethod:'manual'})`, `capturePayment(amount)`, `cancelPayment`, `refund` ([gateway.ts](../packages/payments/src/gateway.ts)) |
-| Confirmations / reminders / follow-ups (email)                   | `email.send` → Pub/Sub → `email-worker` → `@sparx/email` React Email templates                                                                                                                |
-| Customer identity, history, segments, B2B accounts, fleet assets | CRM ([20-crm-customers](../packages/db/prisma/schema/20-crm-customers.prisma), [21-crm-b2b](../packages/db/prisma/schema/21-crm-b2b.prisma))                                                  |
-| "When booking.completed → ask for a review" style rules          | Automation engine ([81-automation-module.md](81-automation-module.md))                                                                                                                        |
-| Public booking pages on the tenant's brand/domain                | Builder catalog + per-tenant theme compile                                                                                                                                                    |
-| Customer self-service login                                      | customer-auth ([48-customer-auth](../packages/db/prisma/schema/48-customer-auth.prisma))                                                                                                      |
-| Parts availability at booking, reserve-on-confirm                | Inventory ([66-inventory](../packages/db/prisma/schema/66-inventory.prisma))                                                                                                                  |
-| Booking → work order → invoice                                   | Invoicing ([72-invoicing](../packages/db/prisma/schema/72-invoicing.prisma))                                                                                                                  |
-| Mobile push to staff                                             | push-worker ([70-push-subscriptions](../packages/db/prisma/schema/70-push-subscriptions.prisma))                                                                                              |
-| Memberships / prepaid packs                                      | commerce subscriptions ([41-commerce-subscriptions](../packages/db/prisma/schema/41-commerce-subscriptions.prisma)) + account credit                                                          |
-| Optional new-client discovery                                    | marketplace ([68-marketplace](../packages/db/prisma/schema/68-marketplace.prisma)), sparx.market                                                                                              |
+| Need                                                             | Reused asset                                                                                                                                                                                      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Deposits, holds, no-show fees, refunds                           | `@wizeworks/payments` `PaymentService` — `createPaymentIntent({captureMethod:'manual'})`, `capturePayment(amount)`, `cancelPayment`, `refund` ([gateway.ts](../packages/payments/src/gateway.ts)) |
+| Confirmations / reminders / follow-ups (email)                   | `email.send` → Pub/Sub → `email-worker` → `@wizeworks/email` React Email templates                                                                                                                |
+| Customer identity, history, segments, B2B accounts, fleet assets | CRM ([20-crm-customers](../packages/db/prisma/schema/20-crm-customers.prisma), [21-crm-b2b](../packages/db/prisma/schema/21-crm-b2b.prisma))                                                      |
+| "When booking.completed → ask for a review" style rules          | Automation engine ([81-automation-module.md](81-automation-module.md))                                                                                                                            |
+| Public booking pages on the tenant's brand/domain                | Builder catalog + per-tenant theme compile                                                                                                                                                        |
+| Customer self-service login                                      | customer-auth ([48-customer-auth](../packages/db/prisma/schema/48-customer-auth.prisma))                                                                                                          |
+| Parts availability at booking, reserve-on-confirm                | Inventory ([66-inventory](../packages/db/prisma/schema/66-inventory.prisma))                                                                                                                      |
+| Booking → work order → invoice                                   | Invoicing ([72-invoicing](../packages/db/prisma/schema/72-invoicing.prisma))                                                                                                                      |
+| Mobile push to staff                                             | push-worker ([70-push-subscriptions](../packages/db/prisma/schema/70-push-subscriptions.prisma))                                                                                                  |
+| Memberships / prepaid packs                                      | commerce subscriptions ([41-commerce-subscriptions](../packages/db/prisma/schema/41-commerce-subscriptions.prisma)) + account credit                                                              |
+| Optional new-client discovery                                    | marketplace ([68-marketplace](../packages/db/prisma/schema/68-marketplace.prisma)), sparx.market                                                                                                  |
 
 ### 6.3 The one genuinely new external integration: SMS
 
@@ -261,7 +261,7 @@ interface + register it_ — zero call-site changes and no risk to existing flow
 live in Secret Manager via the same `credentialRef` pattern as payments. SMS send volume is a
 **metered physical cost** billed like email volume, consistent with the pricing philosophy
 ([73-pricing-model.md](73-pricing-model.md) §1). The channel abstraction lives in a small new
-`packages/notifications` (or folds into `@sparx/email` as a second channel — decided in build).
+`packages/notifications` (or folds into `@wizeworks/email` as a second channel — decided in build).
 
 ---
 
@@ -460,7 +460,7 @@ selects which path a connection uses; all credentials are **encrypted at rest**
 - Tokens / app-passwords / feed URLs are **encrypted at rest** (AES-256-GCM, the platform's
   `SCHEDULING_CALENDAR_TOKEN_KEY`) in the connection row's `*_enc` columns — opaque ciphertext,
   never plaintext. This mirrors the Search Console OAuth-token box (77-search-console), **not**
-  the `@sparx/payments` Secret-Manager pattern: GSM there holds secrets _provisioned out-of-band,
+  the `@wizeworks/payments` Secret-Manager pattern: GSM there holds secrets _provisioned out-of-band,
   read-only_, which can't work for calendar OAuth tokens that are minted **and refreshed at
   runtime**. Encrypt-at-rest is the platform pattern for runtime-minted credentials; a DB leak
   alone yields no usable grant, and rotating the key invalidates every stored credential. Push
@@ -497,7 +497,7 @@ credentials.
 
 ### 9.1 Deposits without forcing Commerce
 
-`@sparx/payments` is a platform-level package, **not** gated behind the Commerce module — its
+`@wizeworks/payments` is a platform-level package, **not** gated behind the Commerce module — its
 `tenant_payment_configs` + `PaymentService` are shared by checkout, invoicing, and B2B
 alike. A salon/tattoo/clinic tenant activates **only** Scheduling, connects a gateway, and
 takes deposits. Deposits gate on _"a gateway is connected,"_ not on a paid module.
@@ -635,7 +635,7 @@ responsive by default, accessible. Also shipped as an **embeddable widget** (scr
 for tenants whose marketing site lives off-platform — still on their brand, **no "Powered
 by sparx."**
 
-**Shipped:** the `apps/site` booking widget renders a **"choose your {providerLabel}"** step
+**Shipped:** the `wizeworks/apps/site` booking widget renders a **"choose your {providerLabel}"** step
 for a `customer_choice` service — an "Any available" option plus one button per eligible
 resource (label from the service's requirement role, e.g. "stylist"). Picking a person
 re-fetches _that person's_ availability and books them; the choice is validated server-side.
@@ -647,7 +647,7 @@ My upcoming & past bookings; **reschedule / cancel** within policy; pay a balanc
 join / leave waitlists; manage class credits / membership; download `.ics`; intake form
 completion.
 
-### 13.3 Dashboard (`apps/workbench/surfaces/scheduling/`)
+### 13.3 Dashboard (`sparx/apps/workbench/surfaces/scheduling/`)
 
 - **Calendar** — day / week / month, multi-resource lanes (staff/room/table columns),
   drag-to-reschedule, drag-to-create, color by service/status. _(Shipped: the week grid
@@ -676,7 +676,7 @@ bookings.
 Prisma models (repo style: UUID PKs via `gen_random_uuid()`, `tenant_id` on every table,
 `timestamptz`, `created_at`/`updated_at`, `deleted_at` on high-value rows, all FKs indexed).
 **RLS is hand-edited** in the migration (ENABLE + FORCE + `tenant_isolation` using
-`current_tenant_id()`), per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md). The
+`current_tenant_id()`), per [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md). The
 `EXCLUDE` constraint (§7.4) is hand-edited SQL Prisma can't express.
 
 > Names below are the proposed canonical set. `services`/`bookings` **generalize** the
@@ -1027,18 +1027,18 @@ platform's deploy-early principle. Each phase ends shippable.
 
 > All schema changes go through the **migration pipeline**, not a laptop (Cloud SQL is
 > private-IP). RLS + the `EXCLUDE` constraint are hand-edited SQL. See
-> [packages/db/CLAUDE.md](../packages/db/CLAUDE.md) and the `db-migration` skill.
+> [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md) and the `db-migration` skill.
 
-- **Phase 1 — Engine & data foundation.** `@sparx/scheduling-schemas`; the migration
+- **Phase 1 — Engine & data foundation.** `@wizeworks/scheduling-schemas`; the migration
   (new tables + RLS + `btree_gist` `EXCLUDE` constraint + `payment_intents.booking_id`);
   resources, services, availability windows/exceptions; the availability/slot engine; the
   booking lifecycle with the no-overlap guarantee. Module slug `scheduling` added to
-  `packages/modules`, pricing line, nav gating.
+  `wizeworks/packages/modules`, pricing line, nav gating.
 - **Phase 2 — Dashboard core.** Calendar (multi-resource lanes, drag), booking CRUD +
   lifecycle, service/resource/availability setup. _First deployable, usable internally._
 - **Phase 3 — Public booking + customer portal.** Builder `Booking` catalog components +
   embeddable widget; customer-auth self-service reschedule/cancel; intake forms.
-- **Phase 4 — Payments & policies.** Deposits/holds/prepay via `@sparx/payments`,
+- **Phase 4 — Payments & policies.** Deposits/holds/prepay via `@wizeworks/payments`,
   cancellation/no-show fees, dispute evidence, refunds, tips.
 - **Phase 5 — Notifications.** Email confirmations/reminders/follow-ups via the existing
   pipeline; **SMS channel** (new provider); push; `scheduling-worker` reminder cron + log.
@@ -1063,7 +1063,7 @@ platform's deploy-early principle. Each phase ends shippable.
 
 Cross-doc updates that land with the build (kept in sync, not after): module map + headline
 in [89-feature-catalog.md](89-feature-catalog.md), the slug set in
-[packages/modules/src/index.ts](../packages/modules/src/index.ts), the
+[wizeworks/packages/modules/src/index.ts](../packages/modules/src/index.ts), the
 [73-pricing-model.md](73-pricing-model.md) table + toggle UI, and a pointer from
 [10-b2b-wholesale-prd.md](10-b2b-wholesale-prd.md) §10 to this module as the engine.
 
@@ -1078,7 +1078,7 @@ migration — retired outright rather than copied:
 2. **B2B semantics preserved** as the fleet _context_ on the general engine:
    `Booking.b2bAccountId`, `assetRef`, `partsLinked`, `workOrderId` — B2B's PRD §10
    surface (the B2B↔Scheduling bridge) is powered by this engine, never a parallel one.
-3. **Retired**: `packages/db/prisma/migrations/20261205000000_drop_b2b_legacy_scheduling`
+3. **Retired**: `wizeworks/packages/db/prisma/migrations/20261205000000_drop_b2b_legacy_scheduling`
    dropped both tables; the Prisma models, both `b2b/scheduling.ts` route files, the
    `/b2b/service-types`+`/b2b/appointments` dashboard pages, the read-only customer
    portal appointments page, and the `b2b.appointment.*` event types were all removed
@@ -1091,7 +1091,7 @@ One engine, never two (the lesson from the automation-module unification) — se
 
 ## 16. Events
 
-New `domain.action` event types (registered in [packages/events/src/types.ts](../packages/events/src/types.ts)
+New `domain.action` event types (registered in [wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts)
 
 - Terraform topics, per the event-bus convention):
 
@@ -1145,7 +1145,7 @@ Registered in [07-mcp-server-spec.md](07-mcp-server-spec.md) §3 style. Write to
 | `promote_waitlist`           | write | Offer a freed slot to the next waitlisted customer                              |
 | `create_service_appointment` | write | B2B/fleet: book linked to account + asset, with a parts check against Inventory |
 
-**Shipped set (2026-07-24) — `packages/scheduling/src/mcp/`.** Names differ from the sketch
+**Shipped set (2026-07-24) — `wizeworks/packages/scheduling/src/mcp/`.** Names differ from the sketch
 above; these are the source of truth.
 
 | Tool                                                                                                              | Scope | Note                                                         |
@@ -1200,18 +1200,18 @@ cross-doc updates in §15.
 ## 19. Security, Privacy, Compliance
 
 - **RLS everywhere:** every table `tenant_id` + ENABLE + FORCE + `tenant_isolation`
-  (`current_tenant_id()`), hand-edited per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
+  (`current_tenant_id()`), hand-edited per [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
   Public booking endpoints set tenant context from the host/property, never trust client input.
 - **Calendar credentials** (OAuth tokens, CalDAV app-passwords, iCal feed URLs) are encrypted
   at rest with AES-256-GCM (`SCHEDULING_CALENDAR_TOKEN_KEY`) in the connection row's `*_enc`
   columns — opaque ciphertext, never plaintext (§8.4). This follows the Search Console
   OAuth-token box (77-search-console), the platform pattern for runtime-minted/refreshed
-  credentials; `@sparx/payments`' read-only Secret-Manager refs suit out-of-band-provisioned
+  credentials; `@wizeworks/payments`' read-only Secret-Manager refs suit out-of-band-provisioned
   gateway keys, not tokens the app itself mints and rotates. The inbound feed fetch is
   SSRF-guarded (https-only; private/loopback/link-local/cloud-metadata rejected, with
   redirect re-validation).
 - **PCI:** card data never touches sparx; deposits/holds use gateway-hosted elements
-  (Stripe.js) via `@sparx/payments`. We store only intent ids.
+  (Stripe.js) via `@wizeworks/payments`. We store only intent ids.
 - **HIPAA:** scoped as a platform program (§11) — supported _workflow_, **not** a delivered
   compliance claim. No HIPAA marketing until the program ships.
 - **GDPR/CCPA:** bookings/intake answers are personal data — covered by the platform's

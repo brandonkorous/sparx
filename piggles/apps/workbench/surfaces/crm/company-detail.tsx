@@ -30,27 +30,27 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
-  Table,
   TagInput,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import { customerName, lifecycleStageMeta, useCustomers } from './customers-data';
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { ModuleScope } from '../../components/module-scope';
 import {
@@ -189,7 +189,7 @@ export function CompanyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function CompanyLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: account, isPending, isError, refetch } = useAccount(id);
+  const { data: account, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccount(id);
 
   if (isError) {
     return (
@@ -211,17 +211,34 @@ function CompanyLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <CompanyEditor ctx={ctx} id={id} account={account} />;
+  return (
+    <CompanyEditor
+      ctx={ctx}
+      id={id}
+      account={account}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function CompanyEditor({
   ctx,
   id,
   account,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   account?: Company;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -383,39 +400,50 @@ function CompanyEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Company actions">
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-        {tradeEnabled && account && Number(account.creditUsed) > 0 ? (
-          <Text as="span" className="hidden shrink-0 text-sm @md:inline">
-            {formatMoney(account.creditUsed)} of {formatMoney(account.creditLimit)} used
-          </Text>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Add company' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Company actions"
+        status={
+          <>
+            <Badge color={meta.tone} variant="soft" size="sm">
+              {meta.label}
+            </Badge>
+            {tradeEnabled && account && Number(account.creditUsed) > 0 ? (
+              <Text as="span" className="hidden shrink-0 text-sm @md:inline">
+                {formatMoney(account.creditUsed)} of {formatMoney(account.creditLimit)} used
+              </Text>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            loading={saving}
+            disabled={Boolean(blocked) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Add company' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={account ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a company
-              </Heading>
-              <Text>
-                Set up a business that buys from you at agreed prices. You can add its buyers as
-                customers afterwards.
-              </Text>
-            </div>
+            <Text>
+              Set up a business that buys from you at agreed prices. You can add its buyers as
+              customers afterwards.
+            </Text>
           ) : null}
 
           {failure ? (

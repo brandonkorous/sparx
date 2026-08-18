@@ -19,20 +19,20 @@ import {
   el,
   type Node,
   type Theme,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { renderSilicaBody } from '../../../packages/silica-catalog/src/render';
+import { renderSilicaBody } from '../../../wizeworks/packages/silica-catalog/src/render';
 import {
   createSilicaResolver,
   defaultSilicaFormat,
-} from '../../../packages/builder-schemas/src/silica-resolve';
-import { buildSilicaThemeCssFromTheme } from '../../../packages/site-themes/src/v2/silica-css';
+} from '../../../wizeworks/packages/builder-schemas/src/silica-resolve';
+import { buildSilicaThemeCssFromTheme } from '../../../wizeworks/packages/site-themes/src/v2/silica-css';
 // Typed attributes (docs/143): derive the SAME `attributeSections` the live PDP renders,
 // so the preview + screenshot show a product's real detail blocks — not the DB, but the
 // exact projection. Both imports are runtime-safe (their only internal imports are
 // type-only), so the no-node_modules preview harness resolves them from source.
-import { BUILT_IN_PRODUCT_TYPES } from '../../../packages/commerce-schemas/src/product-types/builtins/index';
-import { projectProductAttributes } from '../../../packages/commerce/src/services/attribute-projection';
+import { BUILT_IN_PRODUCT_TYPES } from '../../../wizeworks/packages/commerce-schemas/src/product-types/builtins/index';
+import { projectProductAttributes } from '../../../wizeworks/packages/commerce/src/services/attribute-projection';
 
 import { composeTemplateSite, faces, type TemplateSiteSpec } from './harness';
 
@@ -97,7 +97,7 @@ interface PvContentEntry {
 
 /**
  * Build the fixed sample-data host so the home page's bound product carousels + journal
- * strips resolve to the bundle's OWN example records (mirrors apps/web's component-preview
+ * strips resolve to the bundle's OWN example records (mirrors sparx/apps/web's component-preview
  * host). Everything is derived generically from the spec's commerce/content/assets:
  *  · `commerce.product`            — every product
  *  · `commerce.featured` / `.new`  — the products of the featured collection (or the first)
@@ -248,7 +248,7 @@ function runTailwind(
  *  can't collide.
  *
  *  The compile runs in `tailwind-compile.mjs` (a child process, so this stays synchronous)
- *  rather than `@tailwindcss/cli` — that package left the workspace with `packages/site-ui`
+ *  rather than `@tailwindcss/cli` — that package left the workspace with `wizeworks/packages/site-ui`
  *  and took every template's preview step with it. See that file's header. */
 function compilePreviewCss(slug: string, bodyHtml: string, scratchDir: string): string {
   const bodyPath = join(scratchDir, `preview-${slug}.body.html`);

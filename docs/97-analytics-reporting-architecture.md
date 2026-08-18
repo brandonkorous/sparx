@@ -69,7 +69,7 @@ is to never compute on the hot path:
 
 - **Compute** runs on the worker/cron fleet we already operate (`email-worker`,
   `markup-recompute-worker`, the Pub/Sub consumers, and the internal cron routes). We already
-  do exactly this: [services/api-rest/src/routes/internal/acquisition-report.ts](../services/api-rest/src/routes/internal/acquisition-report.ts)
+  do exactly this: [wizeworks/services/api-rest/src/routes/internal/acquisition-report.ts](../services/api-rest/src/routes/internal/acquisition-report.ts)
   - [crm-cron.ts](../services/api-rest/src/routes/internal/crm-cron.ts) is a cron-fed CRM
     rollup. **Extend that pattern; don't invent a new one.**
 - **Store** in the same Postgres as purpose-built rollup/summary tables (§5) and, for
@@ -117,7 +117,7 @@ optional dimension). Reads become indexed range scans.
 - **RLS is mandatory** like every tenant-scoped table: `tenant_id`, a `current_tenant_id()`
   policy, and `FORCE ROW LEVEL SECURITY`. The policy SQL is hand-authored, not
   Prisma-generated, and ships through the migration pipeline — see
-  [packages/db/CLAUDE.md](../packages/db/CLAUDE.md), including the FORCE-RLS backfill footgun.
+  [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md), including the FORCE-RLS backfill footgun.
 - **Keeping it fresh — two strategies, picked per workload:**
   1. **Reconcile + live-overlay (the workload-A default).** A nightly cron recomputes the
      trailing window from the source-of-truth tables and overwrites the rollup — closed-day

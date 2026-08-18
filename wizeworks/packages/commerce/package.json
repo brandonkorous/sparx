@@ -1,0 +1,62 @@
+{
+  "name": "@wizeworks/commerce",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx Commerce — service layer (single source of truth shared by REST, GraphQL, MCP, Server Actions, storefront, and B2B portal), event consumers, MCP tool registry. Mirrors @wizeworks/crm's locked decision #7 architecture: one service layer, many transports.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./services": {
+      "types": "./src/services/index.ts",
+      "default": "./src/services/index.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp/index.ts",
+      "default": "./src/mcp/index.ts"
+    },
+    "./consumers": {
+      "types": "./src/consumers/index.ts",
+      "default": "./src/consumers/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@wizeworks/auth": "workspace:*",
+    "@wizeworks/channels": "workspace:*",
+    "@wizeworks/commerce-schemas": "workspace:*",
+    "@wizeworks/crm": "workspace:*",
+    "@wizeworks/crm-schemas": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/field-schema": "workspace:*",
+    "@wizeworks/integration-framework": "workspace:*",
+    "@wizeworks/inventory": "workspace:*",
+    "@wizeworks/links": "workspace:*",
+    "@wizeworks/media": "workspace:*",
+    "@wizeworks/payments": "workspace:*",
+    "@wizeworks/search": "workspace:*",
+    "@wizeworks/ui": "workspace:*",
+    "lucide-react": "^0.577.0",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

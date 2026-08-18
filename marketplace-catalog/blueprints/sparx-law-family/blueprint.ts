@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-law-family',
-    version: '1.3.0',
-    name: 'sparx — Law (Family & Estate)',
-    summary:
-        'A warm, approachable family and estate law site — a cream ground, a deep-navy primary and a trustworthy serif — built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-law-family',
+  version: '1.3.0',
+  name: 'sparx — Law (Family & Estate)',
+  summary:
+    'A warm, approachable family and estate law site — a cream ground, a deep-navy primary and a trustworthy serif — built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Hearth & Stone Law',
+    tagline: 'The law, on your side, explained plainly.',
+    colors: {
+      primary: '#234877',
+      primaryForeground: '#f4f9ff',
+      accent: '#b79156',
+      secondary: '#3b434d',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'hearthstone',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Hearth & Stone Law',
-        tagline: 'The law, on your side, explained plainly.',
-        colors: {
-            primary: '#234877',
-            primaryForeground: '#f4f9ff',
-            accent: '#b79156',
-            secondary: '#3b434d',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Inter',
-        },
+      colorPrimary: '#234877',
+      colorAccent: '#b79156',
+      colorSecondary: '#3b434d',
+      fontHeading: 'Fraunces',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'hearthstone',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#234877',
-            colorAccent: '#b79156',
-            colorSecondary: '#3b434d',
-            fontHeading: 'Fraunces',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

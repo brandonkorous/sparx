@@ -630,117 +630,123 @@ function SourceEditor({
   return (
     <div className={PANE_SHELL}>
       {isNew ? (
-        <PaneToolbar label="Add a stock source actions">
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto"
-            loading={create.isPending}
-            disabled={!canSave}
-            onClick={save}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            Add this source
-          </Button>
-        </PaneToolbar>
-      ) : (
-        <PaneToolbar label="Stock source actions" wrap>
-          {state ? (
-            <Badge color={state.tone} variant="soft" size="sm">
-              {state.label}
-            </Badge>
-          ) : null}
-
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="ml-auto shrink-0"
-            loading={update.isPending}
-            onClick={togglePaused}
-          >
-            {source?.status === 'paused' ? (
-              <>
-                <Icon glyph={faPlay} className="size-4" aria-hidden />
-                <span className="hidden @lg:inline">Turn on</span>
-              </>
-            ) : (
-              <>
-                <Icon glyph={faPause} className="size-4" aria-hidden />
-                <span className="hidden @lg:inline">Pause</span>
-              </>
-            )}
-          </Button>
-
-          {type === 'agent' ? null : (
+        <PaneToolbar
+          label="Add a stock source actions"
+          primary={
             <Button
               size="sm"
-              variant="outline"
-              color="neutral"
-              className="shrink-0"
-              loading={sync.isPending}
-              disabled={source?.status === 'paused'}
-              onClick={runSync}
+              color="module"
+              className="ml-auto"
+              loading={create.isPending}
+              disabled={!canSave}
+              onClick={save}
             >
-              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-              <span className="hidden @lg:inline">Sync now</span>
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+              Add this source
             </Button>
-          )}
-
-          <Button
-            size="sm"
-            color="module"
-            className="shrink-0"
-            loading={update.isPending}
-            disabled={!canSave}
-            onClick={save}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            Save
-          </Button>
-
-          <Button
-            size="sm"
-            variant="ghost"
-            color="danger"
-            shape="square"
-            className="shrink-0"
-            aria-label="Remove this source"
-            title="Remove this source"
-            loading={remove.isPending}
-            onClick={() => {
-              void removeSource();
-            }}
-          >
-            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-          </Button>
-
-          {/* Re-reads liveness/last-sync from the server without remounting, so
-              an in-progress draft survives the refresh. */}
-          <RefreshButton
-            isFetching={isFetching ?? sync.isPending}
-            updatedAt={source ? new Date(source.updatedAt).getTime() : undefined}
-            onRefresh={() => {
-              onRefresh?.();
-            }}
-          />
-        </PaneToolbar>
+          }
+        />
+      ) : (
+        <PaneToolbar
+          label="Stock source actions"
+          status={
+            state ? (
+              <Badge color={state.tone} variant="soft" size="sm">
+                {state.label}
+              </Badge>
+            ) : null
+          }
+          // Save is `primary`, never `controls`: `controls` relocates into the
+          // overflow popover under 672px, and a commit action must be reachable
+          // at every width. Enforced by scripts/check-toolbar-primary.mjs.
+          primary={
+            <Button
+              size="sm"
+              color="module"
+              className="shrink-0"
+              loading={update.isPending}
+              disabled={!canSave}
+              onClick={save}
+            >
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+              Save
+            </Button>
+          }
+          controls={
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0"
+                loading={update.isPending}
+                onClick={togglePaused}
+              >
+                {source?.status === 'paused' ? (
+                  <>
+                    <Icon glyph={faPlay} className="size-4" aria-hidden />
+                    <span className="hidden @lg:inline">Turn on</span>
+                  </>
+                ) : (
+                  <>
+                    <Icon glyph={faPause} className="size-4" aria-hidden />
+                    <span className="hidden @lg:inline">Pause</span>
+                  </>
+                )}
+              </Button>
+              {type === 'agent' ? null : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  color="neutral"
+                  className="shrink-0"
+                  loading={sync.isPending}
+                  disabled={source?.status === 'paused'}
+                  onClick={runSync}
+                >
+                  <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+                  <span className="hidden @lg:inline">Sync now</span>
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                color="danger"
+                shape="square"
+                className="shrink-0"
+                aria-label="Remove this source"
+                title="Remove this source"
+                loading={remove.isPending}
+                onClick={() => {
+                  void removeSource();
+                }}
+              >
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+              </Button>
+            </>
+          }
+          refresh={
+            /* Re-reads liveness/last-sync from the server without remounting, so
+              an in-progress draft survives the refresh. */
+            <RefreshButton
+              isFetching={isFetching ?? sync.isPending}
+              updatedAt={source ? new Date(source.updatedAt).getTime() : undefined}
+              onRefresh={() => {
+                onRefresh?.();
+              }}
+            />
+          }
+        />
       )}
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a stock source
-              </Heading>
-              <Text>
-                {productCopy(
-                  'inventory.source.addIntro',
-                  'Connect something outside Piggles that keeps its own count. Once it is set up, its numbers flow in and become the stock you sell against.'
-                )}
-              </Text>
-            </div>
+            <Text>
+              {productCopy(
+                'inventory.source.addIntro',
+                'Connect something outside Piggles that keeps its own count. Once it is set up, its numbers flow in and become the stock you sell against.'
+              )}
+            </Text>
           ) : source ? (
             // The name is an editable field below, so it is NOT repeated as a
             // heading. Identity here is what KIND this is and where it points.

@@ -2,7 +2,7 @@
 #
 # Without this, the Repeating costs surface is a form that saves a template
 # nothing ever reads. A tenant sets up "Rent — $2,000, every month" and no
-# expense is ever created, in any month, for anyone. `packages/finance-worker`
+# expense is ever created, in any month, for anyone. `wizeworks/packages/finance-worker`
 # has handled `finance.recurring.due` since the module shipped; Finance was
 # simply the only module in the platform with no cron file at all.
 #

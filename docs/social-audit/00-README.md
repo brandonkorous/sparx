@@ -11,7 +11,7 @@ Last Updated: 2026-07-28
 > hand-offs.
 
 > **Scope: the `social` module ONLY.** The subject is the whole vertical — the
-> [`@sparx/social`](../../packages/social/) package (contract, registry, renderer, adapters), the
+> [`@wizeworks/social`](../../packages/social/) package (contract, registry, renderer, adapters), the
 > api-rest [social routes](../../services/api-rest/src/routes/v1/social/), the
 > [`social-worker`](../../services/social-worker/) publish + metrics drains, the
 > [workbench social surfaces](../../apps/workbench/surfaces/social/), the `social.post` automation
@@ -54,15 +54,15 @@ with the check that would settle it.
 Roughly 13,600 lines across five layers, and the architecture is not the problem. The layering is
 clean and the discipline held:
 
-| Layer                                                                 | Owner                  | Where                                                                                                                                          |
-| --------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Adapter contract, registry, renderer, constraints, crypto, catalog    | `@sparx/social` — pure | [packages/social/src/](../../packages/social/src/)                                                                                             |
-| 8 platform adapters (pure I/O, no DB)                                 | `@sparx/social`        | [adapters/](../../packages/social/src/adapters/)                                                                                               |
-| Post + connection services (one service, many transports)             | `@sparx/social`        | [posts.ts](../../packages/social/src/posts.ts), [connections.ts](../../packages/social/src/connections.ts)                                     |
-| Connect / compose / lifecycle / metrics HTTP, scheduled drain         | api-rest               | [routes/v1/social/](../../services/api-rest/src/routes/v1/social/), [social-scheduled.ts](../../services/api-rest/src/lib/social-scheduled.ts) |
-| Token resolve → render → publish → per-target result; metrics collect | `social-worker`        | [services/social-worker/src/](../../services/social-worker/src/)                                                                               |
-| Calendar · Posts · Composer · Approvals · Insights · Connections      | workbench              | [surfaces/social/](../../apps/workbench/surfaces/social/)                                                                                      |
-| `social.post` as a first-class automation step + 2 seeded automations | automation-actions     | [automation-actions/src/social.ts](../../packages/automation-actions/src/social.ts)                                                            |
+| Layer                                                                 | Owner                      | Where                                                                                                                                          |
+| --------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Adapter contract, registry, renderer, constraints, crypto, catalog    | `@wizeworks/social` — pure | [wizeworks/packages/social/src/](../../packages/social/src/)                                                                                   |
+| 8 platform adapters (pure I/O, no DB)                                 | `@wizeworks/social`        | [adapters/](../../packages/social/src/adapters/)                                                                                               |
+| Post + connection services (one service, many transports)             | `@wizeworks/social`        | [posts.ts](../../packages/social/src/posts.ts), [connections.ts](../../packages/social/src/connections.ts)                                     |
+| Connect / compose / lifecycle / metrics HTTP, scheduled drain         | api-rest                   | [routes/v1/social/](../../services/api-rest/src/routes/v1/social/), [social-scheduled.ts](../../services/api-rest/src/lib/social-scheduled.ts) |
+| Token resolve → render → publish → per-target result; metrics collect | `social-worker`            | [services/social-worker/src/](../../services/social-worker/src/)                                                                               |
+| Calendar · Posts · Composer · Approvals · Insights · Connections      | workbench                  | [surfaces/social/](../../apps/workbench/surfaces/social/)                                                                                      |
+| `social.post` as a first-class automation step + 2 seeded automations | automation-actions         | [automation-actions/src/social.ts](../../packages/automation-actions/src/social.ts)                                                            |
 
 Adapters never touch the database; the worker owns every write; api-rest only flips state and emits
 an event. Partial failure is a real state (`partially_published`) rather than a rollback. Targets
@@ -260,7 +260,7 @@ Worth naming, because the roadmap is long and none of it should erode these.
 ## 7. Deployment state (blocks the score, not the code)
 
 Per [implementation/social.md §5](../implementation/social.md), two whole verticals are code-complete
-and not live: **UTM attribution** (needs `pnpm install` to link `@sparx/attribution` into
+and not live: **UTM attribution** (needs `pnpm install` to link `@wizeworks/attribution` into
 `social-worker`) and **all of Measure** (needs the `SocialPostMetric` migration + client regen, the
 `social.metrics.collect` topic + subscription via `terraform apply`, and a deploy of both services).
 The same Terraform apply carries `MEDIA_PUBLIC_BASE_URL` on the social-worker — **without it every
@@ -274,8 +274,8 @@ on deploy alone.
 ## 9. What shipped
 
 Built 2026-07-28, in one pass across the package, the API, the worker and the operator app.
-Typecheck, lint and tests green in `@sparx/social`, `social-worker`, `api-rest`, `@sparx/email` and
-`workbench`; 160 tests in `@sparx/social`, of which the cadence, rate-limiter, CSV-parser and
+Typecheck, lint and tests green in `@wizeworks/social`, `social-worker`, `api-rest`, `@wizeworks/email` and
+`workbench`; 160 tests in `@wizeworks/social`, of which the cadence, rate-limiter, CSV-parser and
 hashtag-normalizer suites are new.
 
 ### The four highest-impact gaps
@@ -407,7 +407,7 @@ Two scorecard rows were wrong when written:
      > **Correction (2026-07-28):** an earlier revision of this list said **four**, including
      > `catalog_management`. That was wrong. `catalog_management` **is** used — by the commerce
      > sales-channel sync in
-     > [packages/channels/src/adapters/meta.ts](../../packages/channels/src/adapters/meta.ts),
+     > [wizeworks/packages/channels/src/adapters/meta.ts](../../packages/channels/src/adapters/meta.ts),
      > which requests `catalog_management,business_management` and pushes the tenant's products
      > into their own Meta catalog via `items_batch` for Facebook & Instagram Shops. It belongs in
      > the submission; its description is now written, and its screencast must demo the **channel
@@ -572,7 +572,7 @@ Two scorecard rows were wrong when written:
      the scan only reads, and every per-row write still runs under `withTenant({tenantId})`.
 
      **Made non-recurring.** Nothing tied "add a scan" to "grant the owner read on what it scans" —
-     which is why it happened twice. `pnpm --filter @sparx/db db:rls-audit` (already in
+     which is why it happened twice. `pnpm --filter @wizeworks/db db:rls-audit` (already in
      [pre-push](../../.githooks/pre-push)) now parses every `find_*` SECURITY DEFINER body, resolves
      the relations it reads, and fails if any FORCE-RLS one lacks an owner-read policy. Verified both
      ways: it flags all six scans with the migration removed, and passes with it. The next scan added

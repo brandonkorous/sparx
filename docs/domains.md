@@ -57,7 +57,7 @@ Currently 301-redirect to the corresponding section on `sparx.works`. Replaced w
 | `sparx.market`   | Theme/plugin/connector marketplace         | 301 → sparx.works/market  |
 | `sparx.exchange` | Defensive registration                     | 301 → sparx.works         |
 
-> **Docs live on `sparx.works/docs`, not `sparx.software`.** Developer documentation is the strongest organic-backlink earner we have (API references get linked from forums, READMEs, tutorials), so it stays on the primary domain to consolidate link equity rather than splitting it across a second site. `sparx.software` is kept as a permanent 301 funnel + defensive hold — not a future standalone destination. The docs framework lives in `apps/web/app/docs/` (registry: `apps/web/lib/docs.ts`).
+> **Docs live on `sparx.works/docs`, not `sparx.software`.** Developer documentation is the strongest organic-backlink earner we have (API references get linked from forums, READMEs, tutorials), so it stays on the primary domain to consolidate link equity rather than splitting it across a second site. `sparx.software` is kept as a permanent 301 funnel + defensive hold — not a future standalone destination. The docs framework lives in `sparx/apps/web/app/docs/` (registry: `sparx/apps/web/lib/docs.ts`).
 
 ## Not acquired
 

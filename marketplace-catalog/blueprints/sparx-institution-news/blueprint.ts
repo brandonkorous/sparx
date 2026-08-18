@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-institution-news',
-    version: '1.4.0',
-    name: 'sparx — Institution News',
-    summary:
-        'A curated institutional newsroom for a university, hospital system, museum or agency — a marquee research lead over a rail of the day’s stories, a live feed, a departments directory, an upcoming-events band, and a bespoke bylined research writeup, in a paper-ground navy-primary + crimson-accent serif theme. Shipped as the Northgate University news office, with a light university-press + alumni store to demo content + commerce together.',
-    vertical: 'content',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-institution-news',
+  version: '1.4.0',
+  name: 'sparx — Institution News',
+  summary:
+    'A curated institutional newsroom for a university, hospital system, museum or agency — a marquee research lead over a rail of the day’s stories, a live feed, a departments directory, an upcoming-events band, and a bespoke bylined research writeup, in a paper-ground navy-primary + crimson-accent serif theme. Shipped as the Northgate University news office, with a light university-press + alumni store to demo content + commerce together.',
+  vertical: 'content',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Northgate University',
+    tagline: 'News from across the university.',
+    colors: {
+      primary: '#12366a',
+      primaryForeground: '#f4f9ff',
+      accent: '#ac1922',
+      secondary: '#4a596f',
+    },
+    fonts: {
+      heading: 'Spectral',
+      body: 'Work Sans',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'institution-news',
+    basePresetKey: 'institution-news',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Northgate University',
-        tagline: 'News from across the university.',
-        colors: {
-            primary: '#12366a',
-            primaryForeground: '#f4f9ff',
-            accent: '#ac1922',
-            secondary: '#4a596f',
-        },
-        fonts: {
-            heading: 'Spectral',
-            body: 'Work Sans',
-        },
+      colorPrimary: '#12366a',
+      colorAccent: '#ac1922',
+      colorSecondary: '#4a596f',
+      fontHeading: 'Spectral',
+      fontBody: 'Work Sans',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'institution-news',
-        basePresetKey: 'institution-news',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#12366a',
-            colorAccent: '#ac1922',
-            colorSecondary: '#4a596f',
-            fontHeading: 'Spectral',
-            fontBody: 'Work Sans',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

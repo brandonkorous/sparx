@@ -70,7 +70,7 @@ resource "azurerm_resource_group" "main" {
 # Postgres is VNet-integrated (private endpoint), NOT a public endpoint with
 # firewall rules. This mirrors the Cloud SQL setup it replaces — private-IP only
 # — and costs nothing extra. The consequence is the same one the GCP environment
-# already lives with and documents in packages/db/CLAUDE.md: you cannot reach the
+# already lives with and documents in wizeworks/packages/db/CLAUDE.md: you cannot reach the
 # database from a laptop. Migrations run as an in-cluster Job, which is exactly
 # how the local overlay already does it (scripts/local-up.ps1 -Migrate).
 #
@@ -336,7 +336,7 @@ resource "azurerm_postgresql_flexible_server_database" "sparx" {
 #
 # The two names are the ones the schema actually asks for; grep the migrations
 # before adding more:
-#     grep -rhoiE 'CREATE EXTENSION [^;]+' packages/db/prisma/migrations/
+#     grep -rhoiE 'CREATE EXTENSION [^;]+' wizeworks/packages/db/prisma/migrations/
 #
 #   pgcrypto    — gen_random_uuid() and the digest/hmac helpers.
 #   btree_gist  — required by the EXCLUDE constraints that stop overlapping
@@ -358,7 +358,7 @@ resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
 #
 # WHY THIS EXISTS. Media used to live in GCS. When GCP was retired
 # `GCS_MEDIA_BUCKET` went with it, and every `getStorage()` in the codebase —
-# api-rest, media-worker, packages/media — fell through to its LAST branch,
+# api-rest, media-worker, wizeworks/packages/media — fell through to its LAST branch,
 # LocalStorage, the backend written for a developer's laptop. Production media
 # was therefore served off a single ReadWriteOnce Azure Disk, which is why
 # api-rest and media-worker are pinned to the same node by pod affinity: a RWO

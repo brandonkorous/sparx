@@ -9,22 +9,20 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faFilter, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { ruleCount, segmentMembership, useSegments, type Segment } from './segments-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -82,72 +80,82 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Segment list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Segment list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              color="module"
+              size="sm"
+              aria-label="Search segments"
+              placeholder="Search segments…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          <Button
             color="module"
             size="sm"
-            aria-label="Search segments"
-            placeholder="Search segments…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-        <div className="hidden w-44 shrink-0 @lg:block">
-          <Select
-            color="module"
-            size="sm"
-            aria-label="Which segments to show"
-            value={scope}
-            items={scopeItems}
-            onValueChange={(next) => {
-              setScope(next as 'active' | 'all');
+            className="ml-auto shrink-0"
+            title="New segment — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            New segment
+          </Button>
+        }
+        controls={
+          <div className="w-44 shrink-0">
+            <Select
+              color="module"
+              size="sm"
+              aria-label="Which segments to show"
+              value={scope}
+              items={scopeItems}
+              onValueChange={(next) => {
+                setScope(next as 'active' | 'all');
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/crm/segments',
+          params: { q: search, scope },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setScope(next.scope === 'all' ? 'all' : 'active');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="New segment — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          New segment
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faFilter} className="size-6" aria-hidden />}
             title="Could not load your segments"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faFilter} className="size-6" aria-hidden />,

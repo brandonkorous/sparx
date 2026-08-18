@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-ceramics-modern',
-    version: '1.4.0',
-    name: 'sparx — Ceramics Studio (Modern)',
-    summary:
-        'A complete, working shop for a contemporary ceramics studio: a real catalogue of modern tableware — a cylinder mug, nesting bowls, a coupe plate set, a carafe & cup, a tumbler set, two sculptural vases, a cylinder planter and a full table set, each in three house colors — with categories, collections, a crisp-on-white PDP and a fully merchandised home page. Bright cool-white theme, near-black ink and a single bold clay-coral accent, in a geometric grotesk with sharp corners. Shipped as Form.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-ceramics-modern',
+  version: '1.4.0',
+  name: 'sparx — Ceramics Studio (Modern)',
+  summary:
+    'A complete, working shop for a contemporary ceramics studio: a real catalogue of modern tableware — a cylinder mug, nesting bowls, a coupe plate set, a carafe & cup, a tumbler set, two sculptural vases, a cylinder planter and a full table set, each in three house colors — with categories, collections, a crisp-on-white PDP and a fully merchandised home page. Bright cool-white theme, near-black ink and a single bold clay-coral accent, in a geometric grotesk with sharp corners. Shipped as Form.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Form',
+    tagline: 'Tableware, made to be used.',
+    colors: {
+      primary: '#1c1f25',
+      primaryForeground: '#f5f9ff',
+      accent: '#b23a26',
+      secondary: '#4f5661',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-ceramics-modern',
+    basePresetKey: 'retail-ceramics-modern',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Form',
-        tagline: 'Tableware, made to be used.',
-        colors: {
-            primary: '#1c1f25',
-            primaryForeground: '#f5f9ff',
-            accent: '#b23a26',
-            secondary: '#4f5661',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#1c1f25',
+      colorAccent: '#b23a26',
+      colorSecondary: '#4f5661',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-ceramics-modern',
-        basePresetKey: 'retail-ceramics-modern',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#1c1f25',
-            colorAccent: '#b23a26',
-            colorSecondary: '#4f5661',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

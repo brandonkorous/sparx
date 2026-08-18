@@ -12,7 +12,7 @@
 // so there is no validation gate, only a Save.
 
 import { useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
   Alert,
   AlertActions,
@@ -39,6 +39,7 @@ import { useDirtySource } from '../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../lib/timezones';
 import { FormSection } from '../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
+import { RefreshButton } from '../components/refresh-button';
 import { EditorLayout } from '../components/editor-layout';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 
@@ -185,7 +186,7 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [loaded, setLoaded] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
 
-  const { data, isError, isPending, refetch } = useQuery({
+  const { data, isError, isPending, isFetching, dataUpdatedAt, refetch } = useQuery({
     queryKey: ['tenant', 'business'],
     queryFn: () => api.get<BusinessDetails>('/v1/tenant/business'),
   });
@@ -284,24 +285,36 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Business details actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          // A malformed address blocks the save outright: the server rejects it
-          // anyway, and a 400 surfaces as a generic toast that never points at
-          // the field that caused it.
-          disabled={!dirty || emailMalformed || isPending || save.isPending}
-          onClick={() => {
-            setEmailTouched(true);
-            save.mutate();
-          }}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {save.isPending ? 'Saving…' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Business details actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            // A malformed address blocks the save outright: the server rejects it
+            // anyway, and a 400 surfaces as a generic toast that never points at
+            // the field that caused it.
+            disabled={!dirty || emailMalformed || isPending || save.isPending}
+            onClick={() => {
+              setEmailTouched(true);
+              save.mutate();
+            }}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {save.isPending ? 'Saving…' : 'Save'}
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorLayout

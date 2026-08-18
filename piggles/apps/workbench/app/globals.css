@@ -75,14 +75,14 @@
 
 /* @piggles/ui ships className strings (Section's padding and max-width), so the
  * same rule applies: unscanned, the panel renders with no layout and nothing
- * reports it. See packages/ui/CLAUDE.md. */
+ * reports it. See sparx/packages/ui/CLAUDE.md. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
 /* The CMS block editor's own surface styles (`.sparx-content-editor`), plus a
  * scan so Tailwind emits the utility classes its TOOLBAR carries in TSX. The
  * stylesheet is written on tokens this app defines, so it wears Piggles' values. */
-@import '@sparx/cms-editor/editor.css';
-@source '../../../../packages/cms-editor/src';
+@import '@wizeworks/cms-editor/editor.css';
+@source '../../../../wizeworks/packages/cms-editor/src';
 
 /* The silica Email Builder chrome (`builder.email.editor`) emits utility classes
  * as LITERAL strings from its shipped dist, so the two packages must be scanned
@@ -102,25 +102,25 @@
  * Turbopack tries to resolve a module called `x`, and the build fails. So:
  * silica-catalog/src whole, and for builder-schemas only the four
  * vocabulary-bearing sources. */
-@source '../../../../packages/silica-catalog/src';
-@source '../../../../packages/builder-schemas/src/catalog';
-@source '../../../../packages/builder-schemas/src/site-chrome.ts';
-@source '../../../../packages/builder-schemas/src/starters.ts';
-@source '../../../../packages/builder-schemas/src/box-to-class.ts';
+@source '../../../../wizeworks/packages/silica-catalog/src';
+@source '../../../../wizeworks/packages/builder-schemas/src/catalog';
+@source '../../../../wizeworks/packages/builder-schemas/src/site-chrome.ts';
+@source '../../../../wizeworks/packages/builder-schemas/src/starters.ts';
+@source '../../../../wizeworks/packages/builder-schemas/src/box-to-class.ts';
 
-/* The per-document builders (`@sparx/studio`). Its rails and canvas ship className
+/* The per-document builders (`@wizeworks/studio`). Its rails and canvas ship className
  * strings — the selection ring, the layer indents, the Inspector's whole control
  * vocabulary — and none of them appear in this app's own TSX. Without this line
  * every one of those classes resolves to nothing, while typecheck, lint and the
  * build all pass and the panes render as unstyled boxes. That failure has already
  * happened once here, to @piggles/brand's marks. */
-@source '../../../../packages/studio/src';
+@source '../../../../wizeworks/packages/studio/src';
 
-/* THE SHARED AUTHORING VOCABULARY — the same file apps/site imports, so the
+/* THE SHARED AUTHORING VOCABULARY — the same file wizeworks/apps/site imports, so the
  * canvas and the published page cannot disagree about what an author may write.
  * It is the home of the CONTAINER-QUERY set (`@2xl:grid-cols-3`), the sanctioned
  * responsive vocabulary and the only one the device toggle can actually preview. */
-@import '../../../../packages/silica-catalog/src/builder-vocabulary.css';
+@import '../../../../wizeworks/packages/silica-catalog/src/builder-vocabulary.css';
 
 /* ── The registered color roles ─────────────────────────────────────────────
  *
@@ -396,4 +396,122 @@ h6 {
      Skin, not geometry: the tab's box is unchanged, so drop targets and drag
      previews are untouched. */
   padding: 0;
+}
+
+/* ── Overlays have to clear the floating panes ────────────────────────────────
+ *
+ * Base UI portals every overlay — popover, select listbox, menu, tooltip,
+ * dialog — into `div[data-base-ui-portal]` on <body>, and silica positions them
+ * at `z-index: 70`. dockview's floating windows sit at 1001 and climb as you
+ * raise them, so ANY overlay opened inside a floating pane rendered BEHIND the
+ * pane: the control was mounted, correct and interactive, with the table painted
+ * over the top of it.
+ *
+ * It reads exactly like a transparency bug, which is how it survived — the
+ * popover's computed background is an opaque white the whole time. It was the
+ * toolbar's overflow popover that made it obvious, but nothing about it is
+ * specific to that: a `<Select>` in a floating pane had it too.
+ *
+ * The POSITIONER is raised rather than the portal. The portal is an unstyled
+ * container, and giving it `position` would re-anchor the absolutely-positioned
+ * children inside it — moving every overlay in the app to fix a paint order.
+ * The positioner is already `position: absolute`, so a z-index lands on it with
+ * nothing else changing, and silica's relative ordering among overlays is
+ * preserved because they all shift together. */
+[data-base-ui-portal] > * {
+  z-index: 10000;
+}
+
+/* ── WORKSPACE ZOOM: THE PANE-CONTENTS HALF ─────────────────────────────────
+ *
+ * The other half is in lib/window-zoom.ts, which scales each window's BOX. This
+ * scales what is inside it, so a window at 70% renders exactly as much as it did
+ * at 100% and the two halves add up to a zoomed workspace.
+ *
+ * Scoped to `.dv-content-container` on purpose: `.dv-react-part` is also what
+ * dockview mounts a title bar into, and chrome that shrank with the zoom would
+ * leave a 31px bar to grab on the small screen this feature exists for.
+ *
+ * `transform` rather than `zoom`: transform does not participate in layout, so
+ * the element is laid out at `100% / scale` and then painted down to fit, which
+ * is predictable inside a flex column. `!important` because dockview writes
+ * `height: 100%; width: 100%` as INLINE styles on that element, and an inline
+ * style is not otherwise reachable from a stylesheet.
+ *
+ * A data attribute rather than a custom property set from JS: the steps are a
+ * closed set, so they can be real rules in a real stylesheet.
+ *
+ * dockview never measures inside a content container — it positions windows from
+ * `.dv-resize-container` and sizes groups from `.dv-groupview` — so none of this
+ * is visible to its geometry. Overlays portalled to <body> (menus, selects,
+ * dialogs) sit outside the transform and stay full size, which is deliberate:
+ * they are things to read and act on, not part of the canvas. */
+
+.piggles-dock-host [data-zoom='50'] .dv-content-container > .dv-react-part {
+  transform: scale(0.5);
+  transform-origin: 0 0;
+  width: calc(100% / 0.5) !important;
+  height: calc(100% / 0.5) !important;
+}
+
+.piggles-dock-host [data-zoom='67'] .dv-content-container > .dv-react-part {
+  transform: scale(0.67);
+  transform-origin: 0 0;
+  width: calc(100% / 0.67) !important;
+  height: calc(100% / 0.67) !important;
+}
+
+.piggles-dock-host [data-zoom='80'] .dv-content-container > .dv-react-part {
+  transform: scale(0.8);
+  transform-origin: 0 0;
+  width: calc(100% / 0.8) !important;
+  height: calc(100% / 0.8) !important;
+}
+
+.piggles-dock-host [data-zoom='90'] .dv-content-container > .dv-react-part {
+  transform: scale(0.9);
+  transform-origin: 0 0;
+  width: calc(100% / 0.9) !important;
+  height: calc(100% / 0.9) !important;
+}
+
+.piggles-dock-host [data-zoom='110'] .dv-content-container > .dv-react-part {
+  transform: scale(1.1);
+  transform-origin: 0 0;
+  width: calc(100% / 1.1) !important;
+  height: calc(100% / 1.1) !important;
+}
+
+.piggles-dock-host [data-zoom='125'] .dv-content-container > .dv-react-part {
+  transform: scale(1.25);
+  transform-origin: 0 0;
+  width: calc(100% / 1.25) !important;
+  height: calc(100% / 1.25) !important;
+}
+
+.piggles-dock-host [data-zoom='150'] .dv-content-container > .dv-react-part {
+  transform: scale(1.5);
+  transform-origin: 0 0;
+  width: calc(100% / 1.5) !important;
+  height: calc(100% / 1.5) !important;
+}
+
+/* ── THE CANVAS IS GRABBABLE ────────────────────────────────────────────────
+ *
+ * Bare ground pans; a window does not. The cursor has to say so on the ground
+ * and stop saying it the moment the pointer crosses onto a window, or every
+ * table cell in the workspace would offer to be dragged. */
+
+.piggles-dock-host [data-zoom] {
+  cursor: grab;
+}
+
+.piggles-dock-host .dv-resize-container,
+.piggles-dock-host .dv-view-container {
+  cursor: auto;
+}
+
+.piggles-dock-host .is-panning,
+.piggles-dock-host .is-panning [data-zoom] {
+  cursor: grabbing;
 }

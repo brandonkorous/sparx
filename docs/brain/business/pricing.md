@@ -4,11 +4,11 @@ node: business
 type: reference
 status: active
 sources:
-  - packages/billing/src/price-catalog.ts
+  - wizeworks/packages/billing/src/price-catalog.ts
   - docs/17-billing-subscriptions.md
 ---
 
-> ⚠️ **Mirror of `packages/billing/src/price-catalog.ts` (`MODULE_MONTHLY_CENTS`).** Prices are materialized here because code is referenced last; the catalog is the source of truth — if they disagree, the **code wins** and you re-sync this note ([[CONTRACT]]). (Builder was once wrongly $49 → corrected to $10; treat the code as canonical, not memory.)
+> ⚠️ **Mirror of `wizeworks/packages/billing/src/price-catalog.ts` (`MODULE_MONTHLY_CENTS`).** Prices are materialized here because code is referenced last; the catalog is the source of truth — if they disagree, the **code wins** and you re-sync this note ([[CONTRACT]]). (Builder was once wrongly $49 → corrected to $10; treat the code as canonical, not memory.)
 
 **Sparx is module-based pricing: a flat monthly price per *active* module, one invoice, no tiers or plans.** Turn a module off → billing stops ("off means off"). The gating mechanism (flag, not plan) is [[billing-model]]; the module set is [[modules]].
 

@@ -1,44 +1,38 @@
 {
-    "schemaVersion": 1,
-    "category": "blueprint",
-    "slug": "sparx-retail-pet-playful",
-    "name": "Pet Supplies (Playful)",
-    "version": "1.4.0",
-    "tagline": "A bright, bouncy storefront for a fun-first pet brand.",
-    "description": "A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme — a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.",
-    "payload": "blueprint.ts",
-    "facets": {
-        "vertical": "retail",
-        "industry": "Pet supplies & accessories"
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-retail-pet-playful",
+  "name": "Pet Supplies (Playful)",
+  "version": "1.4.0",
+  "tagline": "A bright, bouncy storefront for a fun-first pet brand.",
+  "description": "A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme — a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Pet supplies & accessories"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Pet Supplies (Playful) icon"
     },
-    "pricing": {
-        "model": "free",
-        "priceCents": 0
-    },
-    "requires": {
-        "modules": [
-            "builder",
-            "commerce",
-            "cms",
-            "crm",
-            "email"
-        ]
-    },
-    "media": [
-        {
-            "file": "media/icon.png",
-            "kind": "icon",
-            "alt": "Pet Supplies (Playful) icon"
-        },
-        {
-            "file": "media/preview.png",
-            "kind": "preview",
-            "alt": "Pet Supplies (Playful) — home page preview"
-        }
-    ],
-    "author": {
-        "displayName": "WizeWorks"
-    },
-    "accent": "#0065d2",
-    "sortWeight": 84
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Pet Supplies (Playful) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "WizeWorks"
+  },
+  "accent": "#0065d2",
+  "sortWeight": 84
 }

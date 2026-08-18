@@ -7,13 +7,13 @@ applies-to: [platform]
 sources:
   - DESIGN.md
   - CLAUDE.md
-  - packages/brand/src/theme.css
+  - sparx/packages/brand/src/theme.css
 ---
 
 **silicaui is the design system. Feature code chooses; it does not paint.**
 
 **The promise:** change `--color-primary` once and every button, badge, tab, link and focus ring
-across `apps/workbench`, `apps/web` and `apps/market` follows. Change `--radius-field` and every
+across `sparx/apps/workbench`, `sparx/apps/web` and `sparx/apps/market` follows. Change `--radius-field` and every
 input re-shapes. Add a hover treatment to `.btn` and the whole platform gets it — no hunting, no
 sweep, no migration PR.
 
@@ -30,7 +30,7 @@ later.
 | `@sparx/brand/theme.css`       | the **values** (hexes light+dark, radius by role, 18 module hues) |
 | `@wizeworks/silicaui` (plugin) | the **appearance** (fill, ink, border, radius, hover/focus/active/disabled, soft/outline/ghost/dash, sizes, shapes) |
 | `@wizeworks/silicaui-react`    | **behavior + a11y** (Base UI state, roving focus, indicators) |
-| `@sparx/ui`                    | sparx **compositions** (shell, `PageHeader`, `ListToolbar`, `Stat`, `statusTone`) |
+| `@wizeworks/ui`                    | sparx **compositions** (shell, `PageHeader`, `ListToolbar`, `Stat`, `statusTone`) |
 | feature code in `apps/*`       | the **decision** (which `color × variant × size × shape`) **+ layout** (Tailwind for spacing/sizing/position) |
 
 **Feature code owns no appearance at all.**
@@ -43,7 +43,7 @@ instead of by role.
 
 **Not "never improve" — improve where it propagates.** Ladder: (1) is there a prop? (`get_component`
 first — there usually is); (2) is it a value? change the token in `@sparx/brand/theme.css`; (3) is it
-a missing variant/component? add it to silicaui or a composition to `@sparx/ui`; (4) only then, with
+a missing variant/component? add it to silicaui or a composition to `@wizeworks/ui`; (4) only then, with
 approval, a local exception documented as debt.
 
 **A call-site patch is a deferred fix, not a fix.** Receipt: `<TabsTab className="text-base-content">`

@@ -33,12 +33,12 @@ import { ModuleScope } from '../../components/module-scope';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import {
-    useAttributeSale,
-    useClearSaleAttribution,
-    useSaleAttribution,
-    useStaffMembers,
-    type CommissionOutcome,
-    type SaleType,
+  useAttributeSale,
+  useClearSaleAttribution,
+  useSaleAttribution,
+  useStaffMembers,
+  type CommissionOutcome,
+  type SaleType,
 } from '../staff/data';
 import { formatCents } from '../finance/format';
 
@@ -52,145 +52,145 @@ import { formatCents } from '../finance/format';
  * is a promise.
  */
 function outcomeMessage(result: CommissionOutcome, who: string): string {
-    switch (result.outcome) {
-        case 'recorded':
-            return result.amountCents
-                ? `${who} earned ${formatCents(result.amountCents)} on this order.`
-                : `Credited to ${who}. This order earned nothing — the amount it was based on came to zero.`;
-        case 'no-rate':
-            return `Credited to ${who}, but they are not on commission, so nothing was earned. Set a commission rate on their pay record to change that.`;
-        case 'not-payable':
-            return `Credited to ${who}. Commission is worked out once the order is paid.`;
-        case 'no-attribution':
-            return 'Nobody is credited with this sale yet.';
-        default:
-            return 'That sale could not be found.';
-    }
+  switch (result.outcome) {
+    case 'recorded':
+      return result.amountCents
+        ? `${who} earned ${formatCents(result.amountCents)} on this order.`
+        : `Credited to ${who}. This order earned nothing — the amount it was based on came to zero.`;
+    case 'no-rate':
+      return `Credited to ${who}, but they are not on commission, so nothing was earned. Set a commission rate on their pay record to change that.`;
+    case 'not-payable':
+      return `Credited to ${who}. Commission is worked out once the order is paid.`;
+    case 'no-attribution':
+      return 'Nobody is credited with this sale yet.';
+    default:
+      return 'That sale could not be found.';
+  }
 }
 
 export function SoldBySection({
-    type,
-    sourceId,
-    canSeePay,
+  type,
+  sourceId,
+  canSeePay,
 }: {
-    type: SaleType;
-    sourceId: string;
-    /** Staff module on AND this viewer has pay access. Both, or no section. */
-    canSeePay: boolean;
+  type: SaleType;
+  sourceId: string;
+  /** Staff module on AND this viewer has pay access. Both, or no section. */
+  canSeePay: boolean;
 }) {
-    const toast = useToast();
-    const confirm = useConfirm();
-    const [pending, setPending] = useState(false);
+  const toast = useToast();
+  const confirm = useConfirm();
+  const [pending, setPending] = useState(false);
 
-    const attribution = useSaleAttribution(type, sourceId, canSeePay);
-    const people = useStaffMembers({ status: 'active' });
-    const attribute = useAttributeSale(type, sourceId);
-    const clear = useClearSaleAttribution(type, sourceId);
+  const attribution = useSaleAttribution(type, sourceId, canSeePay);
+  const people = useStaffMembers({ status: 'active' });
+  const attribute = useAttributeSale(type, sourceId);
+  const clear = useClearSaleAttribution(type, sourceId);
 
-    if (!canSeePay) return null;
+  if (!canSeePay) return null;
 
-    const current = attribution.data ?? null;
-    const roster = people.data?.items ?? [];
+  const current = attribution.data ?? null;
+  const roster = people.data?.items ?? [];
 
-    const credit = (staffMemberId: string) => {
-        const who = roster.find((m) => m.id === staffMemberId)?.name ?? 'They';
-        setPending(true);
-        attribute.mutate(
-            { staffMemberId },
-            {
-                onSettled: () => {
-                    setPending(false);
-                },
-                onSuccess: (result) => {
-                    afterPaneChange(() => {
-                        toast.add({
-                            title: 'Sale credited',
-                            description: outcomeMessage(result.commission, who),
-                            type: result.commission.outcome === 'recorded' ? 'success' : 'info',
-                        });
-                    });
-                },
-                onError: () => {
-                    afterPaneChange(() => {
-                        toast.add({ title: 'That did not save', type: 'error' });
-                    });
-                },
-            }
-        );
-    };
-
-    const remove = () => {
-        void (async () => {
-            const ok = await confirm({
-                title: 'Remove the credit for this sale?',
-                // Says exactly what survives. A confirm that only asks "are you sure"
-                // leaves the reader to guess whether the money goes with it.
-                description:
-                    'Nobody will be credited with selling this order. Any commission already earned on it stays on their record — void it from their pay page if that is what you mean.',
-                confirmLabel: 'Remove credit',
-                cancelLabel: 'Keep it',
-                color: 'danger',
+  const credit = (staffMemberId: string) => {
+    const who = roster.find((m) => m.id === staffMemberId)?.name ?? 'They';
+    setPending(true);
+    attribute.mutate(
+      { staffMemberId },
+      {
+        onSettled: () => {
+          setPending(false);
+        },
+        onSuccess: (result) => {
+          afterPaneChange(() => {
+            toast.add({
+              title: 'Sale credited',
+              description: outcomeMessage(result.commission, who),
+              type: result.commission.outcome === 'recorded' ? 'success' : 'info',
             });
-            if (!ok) return;
-            setPending(true);
-            clear.mutate(undefined, {
-                onSettled: () => {
-                    setPending(false);
-                },
-                onSuccess: () => {
-                    afterPaneChange(() => {
-                        toast.add({ title: 'Credit removed', type: 'success' });
-                    });
-                },
-            });
-        })();
-    };
-
-    return (
-        <ModuleScope module="staff">
-            <FormSection
-                title="Who sold it"
-                description="Credit this sale to someone on your team. If they are paid on commission, theirs is worked out from it straight away."
-            >
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <Select
-                            className="min-w-56"
-                            aria-label="Who sold this order"
-                            disabled={pending || people.isPending}
-                            value={current?.staffMemberId ?? ''}
-                            onValueChange={(value) => {
-                                if (typeof value === 'string' && value) credit(value);
-                            }}
-                            items={[
-                                { value: '', label: 'Nobody yet' },
-                                ...roster.map((member) => ({ value: member.id, label: member.name })),
-                            ]}
-                        />
-                        {current ? (
-                            <Button size="sm" variant="ghost" color="danger" loading={pending} onClick={remove}>
-                                <Icon glyph={faXmark} className="size-4" aria-hidden />
-                                Remove
-                            </Button>
-                        ) : null}
-                    </div>
-
-                    {roster.length === 0 && !people.isPending ? (
-                        <Text className="text-base">
-                            Nobody is on your team yet. Add people under Your team, and they will appear here.
-                        </Text>
-                    ) : null}
-
-                    {current ? (
-                        <div className="flex items-center gap-2">
-                            <Icon glyph={faHandHoldingDollar} className="text-module size-4" aria-hidden />
-                            <Text className="text-base">
-                                Credited to {current.staffMemberName ?? 'someone no longer on the team'}.
-                            </Text>
-                        </div>
-                    ) : null}
-                </div>
-            </FormSection>
-        </ModuleScope>
+          });
+        },
+        onError: () => {
+          afterPaneChange(() => {
+            toast.add({ title: 'That did not save', type: 'error' });
+          });
+        },
+      }
     );
+  };
+
+  const remove = () => {
+    void (async () => {
+      const ok = await confirm({
+        title: 'Remove the credit for this sale?',
+        // Says exactly what survives. A confirm that only asks "are you sure"
+        // leaves the reader to guess whether the money goes with it.
+        description:
+          'Nobody will be credited with selling this order. Any commission already earned on it stays on their record — void it from their pay page if that is what you mean.',
+        confirmLabel: 'Remove credit',
+        cancelLabel: 'Keep it',
+        color: 'danger',
+      });
+      if (!ok) return;
+      setPending(true);
+      clear.mutate(undefined, {
+        onSettled: () => {
+          setPending(false);
+        },
+        onSuccess: () => {
+          afterPaneChange(() => {
+            toast.add({ title: 'Credit removed', type: 'success' });
+          });
+        },
+      });
+    })();
+  };
+
+  return (
+    <ModuleScope module="staff">
+      <FormSection
+        title="Who sold it"
+        description="Credit this sale to someone on your team. If they are paid on commission, theirs is worked out from it straight away."
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              className="min-w-56"
+              aria-label="Who sold this order"
+              disabled={pending || people.isPending}
+              value={current?.staffMemberId ?? ''}
+              onValueChange={(value) => {
+                if (typeof value === 'string' && value) credit(value);
+              }}
+              items={[
+                { value: '', label: 'Nobody yet' },
+                ...roster.map((member) => ({ value: member.id, label: member.name })),
+              ]}
+            />
+            {current ? (
+              <Button size="sm" variant="ghost" color="danger" loading={pending} onClick={remove}>
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
+                Remove
+              </Button>
+            ) : null}
+          </div>
+
+          {roster.length === 0 && !people.isPending ? (
+            <Text className="text-base">
+              Nobody is on your team yet. Add people under Your team, and they will appear here.
+            </Text>
+          ) : null}
+
+          {current ? (
+            <div className="flex items-center gap-2">
+              <Icon glyph={faHandHoldingDollar} className="text-module size-4" aria-hidden />
+              <Text className="text-base">
+                Credited to {current.staffMemberName ?? 'someone no longer on the team'}.
+              </Text>
+            </div>
+          ) : null}
+        </div>
+      </FormSection>
+    </ModuleScope>
+  );
 }

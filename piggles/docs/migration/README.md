@@ -12,7 +12,7 @@ closure), renders sparx's mascot and wordmark on screen, and every link the
 platform mails a Piggles customer points at `app.sparx.works`.
 
 **Track B — console completeness.** `piggles/apps/workbench` was forked from
-`apps/workbench` on 2026-08-14. Nineteen files came across as copies that nothing
+`sparx/apps/workbench` on 2026-08-14. Nineteen files came across as copies that nothing
 mounts, four OAuth callback routes did not come across at all, and the surfaces
 that link to them 404 today.
 
@@ -47,8 +47,8 @@ So the shape is:
 
 - **31 packages → rename and relocate.** `@sparx/x` → `@wizeworks/x`, moved to
   `wizeworks/packages/`. One copy, both brands import it, neither owns it.
-- **3 packages → split or fix.** `@sparx/brand` and `@sparx/ui` genuinely carry
-  sparx; `@sparx/links` and `@sparx/attribution` hardcode sparx hostnames inside
+- **3 packages → split or fix.** `@sparx/brand` and `@wizeworks/ui` genuinely carry
+  sparx; `@wizeworks/links` and `@wizeworks/attribution` hardcode sparx hostnames inside
   otherwise-neutral code.
 - **The sparx apps → move to `sparx/`.** Until they do, "delete sparx" is not an
   operation anybody can run, so the invariant cannot be tested.

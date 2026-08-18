@@ -4,6 +4,7 @@ import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
 import { appsInGroup } from '@piggles/config';
+import { PageHero } from '@/components/marketing/page-hero';
 import { GROUP_COPY } from '@/components/marketing/groups';
 
 // The 404.
@@ -22,34 +23,33 @@ import { GROUP_COPY } from '@/components/marketing/groups';
 export default function NotFound() {
   return (
     <>
-      <Section className="bg-base-100 border-base-300 border-b">
-        <div className="grid gap-8 lg:grid-cols-3 lg:gap-16">
-          <h1 className="text-4xl leading-tight font-extrabold sm:text-5xl lg:col-span-2">
-            That page isn&rsquo;t here any more.
-          </h1>
-          <div className="lg:pt-2">
-            <p className="text-lg">
-              Either the link was old or something moved. Nothing is broken on your side — here is
-              everything Piggles does, in case one of them is what you were after.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link className={buttonClasses({ color: 'primary', size: 'lg' })} href="/">
-                Back to the start
-              </Link>
-              <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
-                Pricing
-              </Link>
-            </div>
-          </div>
-        </div>
-      </Section>
+      {/* On <PageHero> like every other page. It carried a hand-built copy of
+          the OLD hero — `bg-base-100`, a hairline, the 2/1 column split — which
+          went on looking like the rest of the site right up until the rest of
+          the site changed. A duplicated layout only stays consistent until
+          somebody edits the original.
+
+          NO figure, deliberately. The lede points at the six group cards below
+          ("here is everything Piggles does"), and a wall of the same fifteen
+          apps in the fold would be answering the sentence before it finishes. */}
+      <PageHero
+        heading="That page isn’t here any more."
+        lede="Either the link was old or something moved. Nothing is broken on your side — here is everything Piggles does, in case one of them is what you were after."
+      >
+        <Link className={buttonClasses({ color: 'primary', size: 'lg' })} href="/">
+          Back to the start
+        </Link>
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
+          Pricing
+        </Link>
+      </PageHero>
 
       <Section>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PIGGLES_GROUPS.map((group) => (
             <Card key={group} data-group={group} className="bg-module bg-soft">
               <CardBody>
-                <h2 className="text-module text-xl font-bold">{GROUP_COPY[group].title}</h2>
+                <h2 className="ink-module text-xl font-bold">{GROUP_COPY[group].title}</h2>
                 <ul className="mt-3 space-y-1">
                   {appsInGroup(group).map((app) => (
                     <li key={app.id}>

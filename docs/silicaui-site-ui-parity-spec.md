@@ -26,7 +26,7 @@ surface-compile  (token wiring + allowlist)       ← author utilities resolve t
         ▼
 @sparx/site-ui   (recipe + ~90 components)        ← .st-c-* × .st-v-* × size; a small Radix subset for interactivity
         │
-        ├──►  dist/styles.css           (live site — apps/site)
+        ├──►  dist/styles.css           (live site — wizeworks/apps/site)
         └──►  dist/styles.canvas.css    (@scope (.bx-canvas){…} — the Builder editor canvas)
 ```
 
@@ -34,15 +34,15 @@ Three surfaces consume the output, and silicaui must serve **all three**: (1) th
 
 **Source-of-truth files in the sparx repo (for cross-reference while building silicaui):**
 
-| Concern                                   | File                                                   |
-| ----------------------------------------- | ------------------------------------------------------ |
-| Tenant color math                         | `packages/site-themes/src/v2/color.ts`                 |
-| `@theme` token remap                      | `packages/surface-compile/src/theme.ts`                |
-| Security allowlist                        | `packages/surface-compile/src/allowlist.ts`            |
-| Component recipe (color × variant × size) | `packages/site-ui/src/components/_recipes/variants.ts` |
-| Canvas-scoped build step                  | `packages/site-ui/scripts/scope-canvas.mjs`            |
-| Catalog authoring contract                | `packages/builder-schemas/src/catalog/CONTRACT.md`     |
-| Theme presets                             | `packages/site-themes/src/presets/*`                   |
+| Concern                                   | File                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| Tenant color math                         | `wizeworks/packages/site-themes/src/v2/color.ts`                 |
+| `@theme` token remap                      | `wizeworks/packages/surface-compile/src/theme.ts`                |
+| Security allowlist                        | `wizeworks/packages/surface-compile/src/allowlist.ts`            |
+| Component recipe (color × variant × size) | `wizeworks/packages/site-ui/src/components/_recipes/variants.ts` |
+| Canvas-scoped build step                  | `wizeworks/packages/site-ui/scripts/scope-canvas.mjs`            |
+| Catalog authoring contract                | `wizeworks/packages/builder-schemas/src/catalog/CONTRACT.md`     |
+| Theme presets                             | `wizeworks/packages/site-themes/src/presets/*`                   |
 
 ---
 
@@ -53,11 +53,11 @@ This is the headline capability and it is subtler than "N named colors." A tenan
 **Requirements**
 
 - [ ] **N first-class named theme colors.** Arbitrary named colors (not a fixed 8-slot set). This is silicaui's key advantage and it directly retires sparx's `ModuleProvider` / `--module-active` indirection: module hues (`commerce`, `crm`, `builder`, …) become _native_ theme colors.
-- [ ] **The utility → token contract** — every `bg-primary` / `text-base-content` / `border-base-200` / `rounded-box` / `gap-6` / `shadow-md` resolves to a per-tenant `--st-*`-style CSS variable, so **no baked color literal reaches the compiled output** and one sheet re-themes at runtime by swapping `:root` vars (the same model as a daisyUI `data-theme` switch). **The delivery mechanism is silicaui's choice, not part of the contract.** sparx hand-authors this as a Tailwind `@theme` block (`packages/surface-compile/src/theme.ts`); silicaui delivers the _same output_ via `@plugin "silicaui/theme"` (the model daisyUI v5 itself uses) — that is fully equivalent and preferred. What must hold either way: the §4 utility vocabulary still compiles, the output references vars (never hex), and it can be imported **selectively** (see isolation, next).
+- [ ] **The utility → token contract** — every `bg-primary` / `text-base-content` / `border-base-200` / `rounded-box` / `gap-6` / `shadow-md` resolves to a per-tenant `--st-*`-style CSS variable, so **no baked color literal reaches the compiled output** and one sheet re-themes at runtime by swapping `:root` vars (the same model as a daisyUI `data-theme` switch). **The delivery mechanism is silicaui's choice, not part of the contract.** sparx hand-authors this as a Tailwind `@theme` block (`wizeworks/packages/surface-compile/src/theme.ts`); silicaui delivers the _same output_ via `@plugin "silicaui/theme"` (the model daisyUI v5 itself uses) — that is fully equivalent and preferred. What must hold either way: the §4 utility vocabulary still compiles, the output references vars (never hex), and it can be imported **selectively** (see isolation, next).
 - [ ] **Isolation + canvas-scopeability** — whichever mechanism, the token wiring must apply **only where imported** (the tenant-site + canvas entrypoints, **never** the dashboard's own Tailwind), so `bg-primary` maps to `--st-*` on sites while the dashboard keeps its own `--color-*` palette — no cross-contamination. And the emitted `:root` / `:host` theme-var block must stay **retargetable to `:scope`** for the canvas build (§5), with any `@property` / `@layer` nesting cleanly under `@scope`.
 - [ ] **`-content` is a consumed var — silicaui does NOT compute contrast.** Two color populations, different sources:
   - **Platform-fixed colors** (module hues like `module-cms`; semantics like `success` / `danger`) are known at build time and never tenant-overridden → silicaui ships `-content` with a hand-picked readable default. No runtime math.
-  - **Tenant-runtime brand colors** (`primary` / `secondary` / `accent` / `base-*` on sites) are arbitrary hex. Their AA-legible `-content` is derived **dashboard-side** — the brand UI + `@sparx/site-themes` already do the WCAG contrast pick — and injected as a `:root` token. **silicaui only consumes it:** every foreground resolves `var(--st-<name>-content, <readable-default>)`, so the injected value wins for tenant brand and the default covers the fixed / unthemed case. silicaui must **never hardcode a foreground** — that var indirection is exactly what lets the derivation be controlled from the UI. (WCAG contrast can't be done reliably in pure CSS, so _someone_ must compute it; the point is that someone is the sparx side, not silicaui.) Everything else (hover, active, tint) is `color-mix(in oklab …)` off the base var.
+  - **Tenant-runtime brand colors** (`primary` / `secondary` / `accent` / `base-*` on sites) are arbitrary hex. Their AA-legible `-content` is derived **dashboard-side** — the brand UI + `@wizeworks/site-themes` already do the WCAG contrast pick — and injected as a `:root` token. **silicaui only consumes it:** every foreground resolves `var(--st-<name>-content, <readable-default>)`, so the injected value wins for tenant brand and the default covers the fixed / unthemed case. silicaui must **never hardcode a foreground** — that var indirection is exactly what lets the derivation be controlled from the UI. (WCAG contrast can't be done reliably in pure CSS, so _someone_ must compute it; the point is that someone is the sparx side, not silicaui.) Everything else (hover, active, tint) is `color-mix(in oklab …)` off the base var.
 - [ ] **Every color exposes its `-content` as a settable, default-backed var** (per above), plus a `base-100 / base-200 / base-300` surface scale + `base-content` ink.
 - [ ] **All non-color design axes tokenized too:** radius (`box` / `field` / `selector`), shadow scale (`sm` / `md` / `lg`), fonts (`heading` / `body`), a spacing base unit that reflows the whole numeric scale, and a container width.
 - [ ] **Light + dark derivation** for every token.
@@ -176,18 +176,18 @@ A small, closed, platform-authored runtime drives the interactive composites (au
 
 ## 8. Email is a different medium — and it is NOT silicaui's to compile
 
-> **Resolved (2026-07-05, aligns with §13).** An earlier draft of this section listed an inline-style **email compiler** as a parity requirement. That was miscategorized. **site-ui never owned email compilation** — `@sparx/email` does (its React-Email templates + the builder `render-email-tree` path). So replacing site-ui does **not** oblige silicaui to build an email compiler; silicaui ships **no `toEmail()` projection and no email linter**. The genuine silicaui-side obligation is only to keep the **class vocabulary email-degradable** so `@sparx/email` can keep consuming it. This is cheap authoring discipline, not a deliverable. (Companion: blocks-contract §12.)
+> **Resolved (2026-07-05, aligns with §13).** An earlier draft of this section listed an inline-style **email compiler** as a parity requirement. That was miscategorized. **site-ui never owned email compilation** — `@wizeworks/email` does (its React-Email templates + the builder `render-email-tree` path). So replacing site-ui does **not** oblige silicaui to build an email compiler; silicaui ships **no `toEmail()` projection and no email linter**. The genuine silicaui-side obligation is only to keep the **class vocabulary email-degradable** so `@wizeworks/email` can keep consuming it. This is cheap authoring discipline, not a deliverable. (Companion: blocks-contract §12.)
 
-Email is rendered by mail clients from **inline styles**, not the tenant stylesheet — so the honored subset below is a **constraint on the vocabulary**, not a compiler silicaui owes. `@sparx/email` stays the renderer and consumes the neutral node tree like any structured host (a Mode-3 consumer, blocks-contract §10).
+Email is rendered by mail clients from **inline styles**, not the tenant stylesheet — so the honored subset below is a **constraint on the vocabulary**, not a compiler silicaui owes. `@wizeworks/email` stays the renderer and consumes the neutral node tree like any structured host (a Mode-3 consumer, blocks-contract §10).
 
 **What "email-degradable" means (the cheap obligation — reference, not a silicaui build task):**
 
 - **Named nodes only** on the email surface — compose from `Section` / `Stack` / `Grid` / `Card` containers and `Heading` / `Text` / `Button` / `Divider` / `ImageDisplay` / `line_item_table` / `unsubscribe_link` / `physical_address` leaves.
-- **Base classes only** — no variants (`@3xl:` / `md:` / `hover:` / `dark:`), no arbitrary `[…]`. `@sparx/email` drops anything prefixed or bracketed.
+- **Base classes only** — no variants (`@3xl:` / `md:` / `hover:` / `dark:`), no arbitrary `[…]`. `@wizeworks/email` drops anything prefixed or bracketed.
 - **Honored subset only** — containers: `flex flex-col|flex-row` / `grid grid-cols-N` / `gap-N` / `p-N` / `bg-*`; leaves: text size/weight/leading/tracking, `text-*`/`bg-*`/`border-*` color, alignment, padding/margin, border, radius. Shadows/filters/transforms/sizing/position **no-op** in mail.
-- The wordmark header is pinned/auto-injected — an `@sparx/email` concern, listed for context.
+- The wordmark header is pinned/auto-injected — an `@wizeworks/email` concern, listed for context.
 
-**Acceptance test.** An `emailEligible` block references only the honored subset, so `@sparx/email` renders it to inline styles unchanged — **no silicaui-built email compiler is exercised or required.**
+**Acceptance test.** An `emailEligible` block references only the honored subset, so `@wizeworks/email` renders it to inline styles unchanged — **no silicaui-built email compiler is exercised or required.**
 
 ---
 
@@ -236,7 +236,7 @@ Real, but expensive and risky. Run it **after** Path A proves parity, as a stand
 
 ## 12. The payoff (why this is worth doing)
 
-Done right, silicaui doesn't just replace `@sparx/site-ui` — it becomes the **single substrate under both `@sparx/site-ui` and `@sparx/ui`** (the platform/dashboard library), which today maintain **two hand-synced copies** of the same variant algebra (`.st-c-*` and `.sx-c-*`). Consolidating them, plus retiring the `ModuleProvider` module-color indirection in favor of native named theme colors, is the real maintainability win.
+Done right, silicaui doesn't just replace `@sparx/site-ui` — it becomes the **single substrate under both `@sparx/site-ui` and `@wizeworks/ui`** (the platform/dashboard library), which today maintain **two hand-synced copies** of the same variant algebra (`.st-c-*` and `.sx-c-*`). Consolidating them, plus retiring the `ModuleProvider` module-color indirection in favor of native named theme colors, is the real maintainability win.
 
 **The win is consolidation + dogfooding your own product — not "fewer, simpler components."** The component count and the essential complexity (multi-tenant theming, dark mode, the builder, the security boundary) don't shrink; they move into one owned library instead of two. Judge silicaui's readiness against the acceptance tests above, not against a vibe of "it's cleaner."
 
@@ -253,7 +253,7 @@ Verdict against the actual `G:\code\@wizeworks\silicaui` source (not a hypotheti
 silicaui is **two independently-distributed layers**, and they map onto sparx's two consumption paths _differently_ — this is the single most important thing to internalize:
 
 - **`silicaui` (the CSS layer)** ships as a **Tailwind v4 plugin _source_** (`@plugin "silicaui"`, `addBase`) — **there is no pre-compiled `dist/styles.css` at all.** It emits its CSS during the _consumer's_ Tailwind build. This is the layer that maps to `surface-compile` + the **builder class-tree renderer** — the load-bearing path, since tenant pages are persisted as class trees. **This is the layer that actually replaces site-ui's recipe.**
-- **`silicaui-react`** ships as a tsup-built npm package on **Base UI** (`@base-ui-components/react`). It maps to site-ui's React exports — hand-authored `apps/site` chrome and the interactive subset. It does **not** feed the builder canvas (the canvas renders class-tree HTML, not React).
+- **`silicaui-react`** ships as a tsup-built npm package on **Base UI** (`@base-ui-components/react`). It maps to site-ui's React exports — hand-authored `wizeworks/apps/site` chrome and the interactive subset. It does **not** feed the builder canvas (the canvas renders class-tree HTML, not React).
 
 Consequence: "adopt silicaui" is really "adopt the CSS plugin under the builder pipeline" + "optionally adopt silicaui-react for hand-authored React." They are separable, and the CSS layer is where the parity win lives.
 
@@ -280,7 +280,7 @@ Consequence: "adopt silicaui" is really "adopt the CSS plugin under the builder 
 | 5   | Dual build (`@scope(.bx-canvas)`)                           | ➖ **sparx-side**             | silicaui ships no dist sheet, so the canvas-scoped output is produced by _sparx's_ build wrapping Tailwind — **and the `[data-theme]` model + "never repaint the host" design is _more_ canvas-embeddable than today's `:root` swap.** Not silicaui's job; silicaui eases it.                                                                                                                                                                                                              |
 | 6   | Security allowlist                                          | ➖ **sparx-side**             | silicaui adds component classes via `addBase`, **no new utilities** → doesn't widen the surface. sparx keeps `surface-compile`'s utility allowlist as the choke point (silicaui neither ships nor undermines it).                                                                                                                                                                                                                                                                          |
 | 7   | Behavior runtime                                            | ⚠️ **Divergence**             | The real seam. silicaui-react drives interactivity via **Base UI client components**; the builder renders class-tree HTML driven by sparx's **`behave()`/`part()` marker runtime** (no React on the page). So Base-UI carousel/menu/tabs do **not** drop into the canvas — only the CSS classes do. This mirrors how site-ui already works (CSS recipe for the builder + a separate React set), so it is **not a regression** — but "adopt silicaui-react" ≠ "builder interactivity done." |
-| 8   | Email medium                                                | ➖ **Out of scope by design** | Email compilation is `@sparx/email`'s job (React-Email + the builder email-tree renderer), never site-ui's — so it was never a real replacement requirement. silicaui's only obligation is an **email-degradable vocabulary** (§8, revised); no `toEmail()`, no email linter.                                                                                                                                                                                                              |
+| 8   | Email medium                                                | ➖ **Out of scope by design** | Email compilation is `@wizeworks/email`'s job (React-Email + the builder email-tree renderer), never site-ui's — so it was never a real replacement requirement. silicaui's only obligation is an **email-degradable vocabulary** (§8, revised); no `toEmail()`, no email linter.                                                                                                                                                                                                          |
 | 10  | Presets round-trip                                          | ⚠️ **Not done**               | The 6 packs (apex/industrial/drift/market/fleet/drop) must be expressed as `@plugin "silicaui/theme"` blocks — mechanically trivial (the playground already demonstrates the pattern), just unbuilt.                                                                                                                                                                                                                                                                                       |
 
 ### Recommended Path-A configuration (drop-in, do this first)
@@ -325,7 +325,7 @@ silicaui speaks sparx's contract with **zero catalog / DB migration**:
 - [ ] §5 Dual build: global + `@scope(.bx-canvas)` canvas sheet.
 - [ ] §6 Allowlist: `fixed` / `z-[…]` / `content-[…]` / `url()` denied; guarded `.st-fixed-*` only fixed; tenant tighten-only.
 - [ ] §7 Behavior runtime: `behave`/`part` hooks, both surfaces, `hidden` panels, CSS-only for `common`.
-- ~~§8 Email: inline-style compile~~ — **struck (2026-07-05).** Not a silicaui deliverable: email compilation stays on `@sparx/email`; silicaui's only obligation is an email-degradable vocabulary (§8). No `toEmail()`, no email linter.
+- ~~§8 Email: inline-style compile~~ — **struck (2026-07-05).** Not a silicaui deliverable: email compilation stays on `@wizeworks/email`; silicaui's only obligation is an email-degradable vocabulary (§8). No `toEmail()`, no email linter.
 - [ ] §9 A11y/motion: reduced-motion baseline, AA on arbitrary hex, keyboard/focus.
 - [ ] §10 Presets + saved themes + per-mode overrides round-trip.
 - [ ] §11 Migration path chosen (A first), §12 consolidation payoff understood.

@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-roofing-residential',
-    version: '1.3.0',
-    name: 'sparx — Roofing (Residential)',
-    summary:
-        'A dependable residential-roofing site — a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-roofing-residential',
+  version: '1.3.0',
+  name: 'sparx — Roofing (Residential)',
+  summary:
+    'A dependable residential-roofing site — a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Summit Roofing',
+    tagline: 'A roof that lasts, done right.',
+    colors: {
+      primary: '#314968',
+      primaryForeground: '#f4f9ff',
+      accent: '#d97e2c',
+      secondary: '#343b45',
+    },
+    fonts: {
+      heading: 'Archivo',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'summit',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Summit Roofing',
-        tagline: 'A roof that lasts, done right.',
-        colors: {
-            primary: '#314968',
-            primaryForeground: '#f4f9ff',
-            accent: '#d97e2c',
-            secondary: '#343b45',
-        },
-        fonts: {
-            heading: 'Archivo',
-            body: 'Inter',
-        },
+      colorPrimary: '#314968',
+      colorAccent: '#d97e2c',
+      colorSecondary: '#343b45',
+      fontHeading: 'Archivo',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'summit',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#314968',
-            colorAccent: '#d97e2c',
-            colorSecondary: '#343b45',
-            fontHeading: 'Archivo',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

@@ -31,7 +31,7 @@ import {
 import { faCheck, faClock, faGlobe, faLock, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { api } from '../../../lib/api/client';
-import { ApiError } from '@sparx/api-client';
+import { ApiError } from '@wizeworks/api-client';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import type { PendingDomain, RegistrantContact } from '../../../lib/onboarding/types';
 

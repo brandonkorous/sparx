@@ -38,7 +38,7 @@ data:
   CUSTOMER_AUTH_URL: https://api.sparx.works
   CUSTOMER_MCP_LOGIN_PAGE: /account/login
   # The ONE name for the workbench's public origin — every link a service puts in
-  # an email resolves through it (@sparx/links/server appOrigin). Four variables
+  # an email resolves through it (@wizeworks/links/server appOrigin). Four variables
   # used to mean this and each emitter read a different one with its own fallback,
   # so which host an email pointed at depended on which service sent it. The old
   # names still resolve, in a fixed order, so nothing breaks mid-rollout.
@@ -75,12 +75,15 @@ data:
   SPARX_BRAND_NAME: sparx
   PIGGLES_BRAND_NAME: Piggles
 
-  # CONFIRM BEFORE RELYING ON IT. This is the reply-to on a support answer, so a
-  # domain that does not accept mail silently bounces a customer's reply. If it
-  # is not live yet, DELETE the line — brand-core treats an unset address as
-  # "this brand has published none" and omits the reply-to entirely, which is the
-  # honest outcome. Do not substitute a guess.
-  PIGGLES_SUPPORT_EMAIL: support@meetpiggles.com
+  # PIGGLES_SUPPORT_EMAIL is DELETED, and the deletion is the answer rather than
+  # an omission. It was support@meetpiggles.com pending confirmation; checked on
+  # 2026-08-17, meetpiggles.com and getpiggles.com have NO MX RECORDS (only
+  # mypiggles.com does). That address cannot receive mail, so as a reply-to it
+  # bounces every Piggles support reply — invisibly to the sender, who believes
+  # they have replied and waits. Unset, brand-core treats it as "this brand has
+  # published none" and omits the reply-to and the billing line entirely. To turn
+  # it back on: MX on a Piggles domain, or an address on one that has it.
+
   # The brand's public home — the legal line at the foot of every platform email.
   SPARX_BRAND_URL: https://sparx.works
   PIGGLES_BRAND_URL: https://meetpiggles.com
@@ -90,6 +93,49 @@ data:
   # The zone a NEW tenant of this brand is minted in (vs SPARX_ZONE_DOMAINS, the
   # zones this deployment serves).
   PIGGLES_ZONE_DOMAIN: piggles.site
+  # The attribution badge on every tenant PUBLIC site. A literal hex, not a
+  # token — the badge renders on a tenant's own site and must be immune to that
+  # tenant's CSS, so it inlines everything it paints.
+  SPARX_BRAND_ACCENT: '#e04631'
+  PIGGLES_BRAND_ACCENT: '#FF6F86'
+  SPARX_CREDIT_URL: https://sparx.works/?utm_source=powered_by&utm_medium=site_badge&utm_campaign=made_with_sparx
+  PIGGLES_CREDIT_URL: https://meetpiggles.com/?utm_source=powered_by&utm_medium=site_badge&utm_campaign=made_with_piggles
+  PIGGLES_BRAND_ACCENT_CHARS: '0'
+
+  # The colors a PLATFORM email paints itself in — masthead band, the one action,
+  # receipt rules, footer well. One JSON object per brand: a palette is ONE
+  # decision, and half a palette (this brand's accent on that brand's ink) is the
+  # only outcome worse than none. Hex rather than tokens because mail clients
+  # strip <style>; six digits only, since 3- and 8-digit forms fail in Outlook.
+  #
+  # Unset is safe and VISIBLE: that brand sends in an achromatic fallback owned by
+  # nobody, and the worker warns naming the variable. Deliberately not sparx's
+  # values as the default — that is how the Ember masthead reached every Piggles
+  # owner. See wizeworks/packages/brand-core/src/email-palette.ts.
+  SPARX_EMAIL_PALETTE: '{"accent":"#e04631","accentContent":"#ffffff","accentEdge":"#c13a28","accentWash":"#fbe9e5","ink":"#0c1433","inkContent":"#ffffff","inkMeta":"#97a0bd","paper":"#ffffff","canvas":"#eceef2","well":"#fafafc","line":"#e8eaf0","lineStrong":"#d3d7e0","heading":"#0c1433","body":"#2b3242","lead":"#3a4152","label":"#4b5563","meta":"#5b6472","success":"#0f8a5f","successWash":"#e7f6ef","warnInk":"#7c3a06","warnWash":"#fbeed9","danger":"#c13a28","dangerWash":"#fdece9","info":"#3b5bdb","infoWash":"#eef2ff","dark":{"background":"#0b1120","foreground":"#e2e8f0","muted":"#111827","border":"#1f2937"}}'
+  # Piggles carries only what its approved board states, mapped by ROLE. Four
+  # roles (accentEdge, accentWash, inkMeta, lineStrong) are absent because the
+  # board has no value for them and deriving one would be inventing a Piggles
+  # color; they collapse until Brandon supplies four values.
+  PIGGLES_EMAIL_PALETTE: '{"accent":"#ff6f86","accentContent":"#ffffff","ink":"#2d3443","inkContent":"#ffffff","paper":"#ffffff","canvas":"#eef0f3","well":"#f7f8fa","line":"#eef0f3","heading":"#202631","body":"#202631","meta":"#52454f","dark":{"background":"#272d39","foreground":"#f4f5f7","muted":"#1c212c","border":"#151922","primary":"#ff7c91","primaryForeground":"#20151a"}}'
+
+  # What each brand INCLUDES, per tenant. Metering is platform (every tenant is
+  # measured nightly); the ceilings are commercial and therefore per brand.
+  # A meter absent here is METERED WITHOUT A CEILING: usage is shown because it
+  # is measured, and no bar or warning is drawn because there is nothing true to
+  # draw them against — which is what lets metering ship ahead of pricing, and it
+  # must, since usage history cannot be backfilled.
+  #
+  # SPARX_CAPACITY is deliberately UNSET: sparx sells per module, not per
+  # capacity, so every sparx meter reads unmetered.
+  #
+  # Piggles carries only the four allowances its pricing sheet states outright.
+  # storageBytes and emailSendsPerMonth are ABSENT because that sheet gives them
+  # as ranges it has not settled ("10–25 GB", "5,000–10,000 sends/month", under
+  # "Final numbers must be validated against infrastructure cost"). Rendering the
+  # middle of an undecided range as a limit manufactures a commercial decision,
+  # and the owner reading it cannot tell it from a real one.
+  PIGGLES_CAPACITY: '{"seats":3,"sites":1,"locations":1,"contacts":10000}'
 
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works
@@ -162,10 +208,10 @@ data:
   # FILL with the korous-store tenant id BEFORE doing the rename; empty → carve-out
   # off (safe default — reserved slugs blocked for everyone).
   SPARX_PLATFORM_TENANT_ID: 1bfef66a-a489-4e0f-99fd-f041adc7ffaa
-  # The slug the apps/web /early waitlist writes into
+  # The slug the sparx/apps/web /early waitlist writes into
   # (POST /v1/public/newsletter?tenant=…) — the final brand slug after the rename.
   SPARX_PLATFORM_TENANT_SLUG: wizeworks
-  # Meta review-gated social features (packages/social/src/adapters/_meta.ts).
+  # Meta review-gated social features (wizeworks/packages/social/src/adapters/_meta.ts).
   # Each flag turns its feature ON *and* adds its scopes to the connect-time OAuth
   # request. NOT secrets — they are on/off switches, not credentials.
   #

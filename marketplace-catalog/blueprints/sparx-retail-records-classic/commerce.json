@@ -1,692 +1,575 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "records",
+      "name": "Vinyl records",
+      "description": "New pressings and clean reissues across the classic genres.",
+      "featured": true
+    },
+    {
+      "handle": "gear",
+      "name": "Turntables & gear",
+      "description": "Decks, slipmats and record-care kit.",
+      "featured": true
+    },
+    {
+      "handle": "merch",
+      "name": "Merch",
+      "description": "Totes and shop goods.",
+      "featured": true
+    },
+    {
+      "handle": "subscription",
+      "name": "Subscription",
+      "description": "A record in the mail every month.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "this-month",
+      "name": "This month’s arrivals",
+      "description": "What landed in the bins this month.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "golden-hour",
+        "paper-moon-radio",
+        "dust-and-diamonds",
+        "harbor-lights",
+        "ferris-wheel"
+      ]
+    },
+    {
+      "handle": "staff-favourites",
+      "name": "Staff favourites",
+      "description": "The records we can’t stop playing behind the counter.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["golden-hour", "paper-moon-radio", "slow-sunday", "the-monthly-spin"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "What walks out the door the fastest.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "slow-sunday",
+        "ferris-wheel",
+        "sl-70-turntable",
+        "canvas-record-tote",
+        "the-monthly-spin"
+      ]
+    },
+    {
+      "handle": "soul-funk",
+      "name": "Soul & funk",
+      "description": "Warm, analogue soul and grooves that won’t sit still.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["paper-moon-radio", "slow-sunday", "harbor-lights"]
+    },
+    {
+      "handle": "folk-country",
+      "name": "Folk & country",
+      "description": "Porch-light soft-rock and dusty-road country.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["golden-hour", "dust-and-diamonds"]
+    },
+    {
+      "handle": "starter-kit",
+      "name": "Starter kit",
+      "description": "New to vinyl? Deck, mat and cleaning kit to get going.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["sl-70-turntable", "wool-felt-slipmat", "record-revival-kit"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "golden-hour",
+      "title": "Golden Hour — Marigold Avenue",
+      "description": "Sun-warmed soft-rock that sounds like the last hour of a long summer day — jangling twelve-strings, close harmonies, and a rhythm section that never hurries. Sequenced to play from the porch light coming on to the crickets starting up. A record made for a slow evening.",
+      "status": "active",
+      "productType": "Vinyl record",
+      "vendor": "Marigold Avenue",
+      "tags": ["soft-rock", "folk", "new-arrival", "color-vinyl"],
+      "categoryHandles": ["records"],
+      "collectionHandles": ["this-month", "staff-favourites", "folk-country"],
+      "seoTitle": "Marigold Avenue — Golden Hour (LP) | Sunset Sounds",
+      "seoDescription": "Sun-warmed soft-rock from Marigold Avenue on 180g vinyl. Limited Sunset color pressing available.",
+      "options": [
         {
-            "handle": "records",
-            "name": "Vinyl records",
-            "description": "New pressings and clean reissues across the classic genres.",
-            "featured": true
-        },
-        {
-            "handle": "gear",
-            "name": "Turntables & gear",
-            "description": "Decks, slipmats and record-care kit.",
-            "featured": true
-        },
-        {
-            "handle": "merch",
-            "name": "Merch",
-            "description": "Totes and shop goods.",
-            "featured": true
-        },
-        {
-            "handle": "subscription",
-            "name": "Subscription",
-            "description": "A record in the mail every month.",
-            "featured": true
+          "name": "Edition",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Standard 180g black"
+            },
+            {
+              "value": "Limited Sunset color"
+            }
+          ]
         }
-    ],
-    "collections": [
+      ],
+      "variants": [
         {
-            "handle": "this-month",
-            "name": "This month’s arrivals",
-            "description": "What landed in the bins this month.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "golden-hour",
-                "paper-moon-radio",
-                "dust-and-diamonds",
-                "harbor-lights",
-                "ferris-wheel"
-            ]
+          "sku": "SUN-LP-GOLDEN-BLK",
+          "priceCents": 2700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Standard 180g black"
+          }
         },
         {
-            "handle": "staff-favourites",
-            "name": "Staff favourites",
-            "description": "The records we can’t stop playing behind the counter.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "golden-hour",
-                "paper-moon-radio",
-                "slow-sunday",
-                "the-monthly-spin"
-            ]
-        },
-        {
-            "handle": "best-sellers",
-            "name": "Best sellers",
-            "description": "What walks out the door the fastest.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "slow-sunday",
-                "ferris-wheel",
-                "sl-70-turntable",
-                "canvas-record-tote",
-                "the-monthly-spin"
-            ]
-        },
-        {
-            "handle": "soul-funk",
-            "name": "Soul & funk",
-            "description": "Warm, analogue soul and grooves that won’t sit still.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "paper-moon-radio",
-                "slow-sunday",
-                "harbor-lights"
-            ]
-        },
-        {
-            "handle": "folk-country",
-            "name": "Folk & country",
-            "description": "Porch-light soft-rock and dusty-road country.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "golden-hour",
-                "dust-and-diamonds"
-            ]
-        },
-        {
-            "handle": "starter-kit",
-            "name": "Starter kit",
-            "description": "New to vinyl? Deck, mat and cleaning kit to get going.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "sl-70-turntable",
-                "wool-felt-slipmat",
-                "record-revival-kit"
-            ]
+          "sku": "SUN-LP-GOLDEN-COL",
+          "priceCents": 3300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Limited Sunset color"
+          }
         }
-    ],
-    "products": [
+      ],
+      "images": [
         {
-            "handle": "golden-hour",
-            "title": "Golden Hour — Marigold Avenue",
-            "description": "Sun-warmed soft-rock that sounds like the last hour of a long summer day — jangling twelve-strings, close harmonies, and a rhythm section that never hurries. Sequenced to play from the porch light coming on to the crickets starting up. A record made for a slow evening.",
-            "status": "active",
-            "productType": "Vinyl record",
-            "vendor": "Marigold Avenue",
-            "tags": [
-                "soft-rock",
-                "folk",
-                "new-arrival",
-                "color-vinyl"
-            ],
-            "categoryHandles": [
-                "records"
-            ],
-            "collectionHandles": [
-                "this-month",
-                "staff-favourites",
-                "folk-country"
-            ],
-            "seoTitle": "Marigold Avenue — Golden Hour (LP) | Sunset Sounds",
-            "seoDescription": "Sun-warmed soft-rock from Marigold Avenue on 180g vinyl. Limited Sunset color pressing available.",
-            "options": [
-                {
-                    "name": "Edition",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Standard 180g black"
-                        },
-                        {
-                            "value": "Limited Sunset color"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-LP-GOLDEN-BLK",
-                    "priceCents": 2700,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Standard 180g black"
-                    }
-                },
-                {
-                    "sku": "SUN-LP-GOLDEN-COL",
-                    "priceCents": 3300,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Limited Sunset color"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-golden-hour",
-                    "isPrimary": true,
-                    "alt": "Golden Hour LP sleeve"
-                }
-            ]
-        },
-        {
-            "handle": "paper-moon-radio",
-            "title": "Paper Moon Radio — The Clementine Sisters",
-            "description": "Vintage-soul pop with three voices braided into one — handclaps, a walking bassline, and hooks that lodge for a week. It swings like an AM radio station you can’t quite find again the next morning. Warm, analogue, and impossible to sit still to.",
-            "status": "active",
-            "productType": "Vinyl record",
-            "vendor": "The Clementine Sisters",
-            "tags": [
-                "soul",
-                "pop",
-                "new-arrival"
-            ],
-            "categoryHandles": [
-                "records"
-            ],
-            "collectionHandles": [
-                "this-month",
-                "staff-favourites",
-                "soul-funk"
-            ],
-            "seoTitle": "The Clementine Sisters — Paper Moon Radio (LP) | Sunset Sounds",
-            "seoDescription": "Vintage-soul pop from The Clementine Sisters, pressed on 180g vinyl.",
-            "options": [
-                {
-                    "name": "Edition",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Standard 180g black"
-                        },
-                        {
-                            "value": "Limited Sunset color"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-LP-PAPER-BLK",
-                    "priceCents": 2600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Standard 180g black"
-                    }
-                },
-                {
-                    "sku": "SUN-LP-PAPER-COL",
-                    "priceCents": 3200,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Limited Sunset color"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-paper-moon",
-                    "isPrimary": true,
-                    "alt": "Paper Moon Radio LP sleeve"
-                }
-            ]
-        },
-        {
-            "handle": "dust-and-diamonds",
-            "title": "Dust & Diamonds — Wendell Rhodes",
-            "description": "Dusty-road country from a voice with gravel and honey in it — pedal steel that cries in all the right places, songs about leaving and the roads that bring you back. The kind of record that sounds even better on a rainy afternoon with the lamp on.",
-            "status": "active",
-            "productType": "Vinyl record",
-            "vendor": "Wendell Rhodes",
-            "tags": [
-                "country",
-                "americana",
-                "new-arrival"
-            ],
-            "categoryHandles": [
-                "records"
-            ],
-            "collectionHandles": [
-                "this-month",
-                "folk-country"
-            ],
-            "seoTitle": "Wendell Rhodes — Dust & Diamonds (LP) | Sunset Sounds",
-            "seoDescription": "Dusty-road country and americana from Wendell Rhodes on 180g vinyl.",
-            "options": [
-                {
-                    "name": "Edition",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Standard 180g black"
-                        },
-                        {
-                            "value": "Limited Sunset color"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-LP-DUST-BLK",
-                    "priceCents": 2500,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Standard 180g black"
-                    }
-                },
-                {
-                    "sku": "SUN-LP-DUST-COL",
-                    "priceCents": 3100,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Limited Sunset color"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-dust-diamonds",
-                    "isPrimary": true,
-                    "alt": "Dust & Diamonds LP sleeve"
-                }
-            ]
-        },
-        {
-            "handle": "harbor-lights",
-            "title": "Harbor Lights — The Ambergris Quartet",
-            "description": "A late-night jazz session cut straight to tape — brushed drums, a bass you can lean on, and a tenor sax that leaves plenty of room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room after everyone’s gone home.",
-            "status": "active",
-            "productType": "Vinyl record",
-            "vendor": "The Ambergris Quartet",
-            "tags": [
-                "jazz",
-                "audiophile",
-                "reissue"
-            ],
-            "categoryHandles": [
-                "records"
-            ],
-            "collectionHandles": [
-                "this-month",
-                "staff-favourites",
-                "soul-funk"
-            ],
-            "seoTitle": "The Ambergris Quartet — Harbor Lights (LP) | Sunset Sounds",
-            "seoDescription": "A late-night jazz session on audiophile 180g vinyl — brushed drums, walking bass, room to breathe.",
-            "options": [
-                {
-                    "name": "Edition",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Standard 180g black"
-                        },
-                        {
-                            "value": "Limited Sunset color"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-LP-HARBOR-BLK",
-                    "priceCents": 3300,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Standard 180g black"
-                    }
-                },
-                {
-                    "sku": "SUN-LP-HARBOR-COL",
-                    "priceCents": 3900,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Limited Sunset color"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-harbor-lights",
-                    "isPrimary": true,
-                    "alt": "Harbor Lights LP sleeve"
-                }
-            ]
-        },
-        {
-            "handle": "slow-sunday",
-            "title": "Slow Sunday — June Calloway",
-            "description": "Deep, unhurried soul from a singer who never wastes a note — a Hammond organ that simmers, horns that punch just enough, and a voice that sounds like it’s telling you the truth. The record that clears the counter every time we drop the needle on it.",
-            "status": "active",
-            "productType": "Vinyl record",
-            "vendor": "June Calloway",
-            "tags": [
-                "soul",
-                "funk",
-                "best-seller"
-            ],
-            "categoryHandles": [
-                "records"
-            ],
-            "collectionHandles": [
-                "staff-favourites",
-                "soul-funk",
-                "best-sellers"
-            ],
-            "seoTitle": "June Calloway — Slow Sunday (LP) | Sunset Sounds",
-            "seoDescription": "Deep, unhurried soul from June Calloway on 180g vinyl.",
-            "options": [
-                {
-                    "name": "Edition",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Standard 180g black"
-                        },
-                        {
-                            "value": "Limited Sunset color"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-LP-SLOW-BLK",
-                    "priceCents": 2800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Standard 180g black"
-                    }
-                },
-                {
-                    "sku": "SUN-LP-SLOW-COL",
-                    "priceCents": 3400,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Limited Sunset color"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-slow-sunday",
-                    "isPrimary": true,
-                    "alt": "Slow Sunday LP sleeve"
-                }
-            ]
-        },
-        {
-            "handle": "ferris-wheel",
-            "title": "Ferris Wheel — The Tangerine Set",
-            "description": "Sunny psych-pop with the top down — fuzz guitars, a farfisa organ, and choruses built for a carnival at dusk. Ten tracks and not a dull one, sequenced to flip straight back over the second side B runs out. Play it loud with the windows open.",
-            "status": "active",
-            "productType": "Vinyl record",
-            "vendor": "The Tangerine Set",
-            "tags": [
-                "psych",
-                "classic-rock",
-                "color-vinyl"
-            ],
-            "categoryHandles": [
-                "records"
-            ],
-            "collectionHandles": [
-                "this-month",
-                "best-sellers"
-            ],
-            "seoTitle": "The Tangerine Set — Ferris Wheel (LP) | Sunset Sounds",
-            "seoDescription": "Sunny psych-pop from The Tangerine Set on 180g vinyl. Limited Sunset color pressing available.",
-            "options": [
-                {
-                    "name": "Edition",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Standard 180g black"
-                        },
-                        {
-                            "value": "Limited Sunset color"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-LP-FERRIS-BLK",
-                    "priceCents": 2700,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Standard 180g black"
-                    }
-                },
-                {
-                    "sku": "SUN-LP-FERRIS-COL",
-                    "priceCents": 3300,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Edition": "Limited Sunset color"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-ferris-wheel",
-                    "isPrimary": true,
-                    "alt": "Ferris Wheel LP sleeve"
-                }
-            ]
-        },
-        {
-            "handle": "sl-70-turntable",
-            "title": "Sunset SL-70 Belt-Drive Turntable",
-            "description": "The deck we set up for people getting back into records — a belt-drive turntable in a warm walnut plinth, with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. An adjustable counterweight that’s actually easy to set, felt feet, and a hush to the background you’ll notice on the first play. Sounds far better than it has any right to at the price.",
-            "status": "active",
-            "productType": "Equipment",
-            "vendor": "Sunset Sounds",
-            "tags": [
-                "gear",
-                "turntable",
-                "belt-drive"
-            ],
-            "categoryHandles": [
-                "gear"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "starter-kit"
-            ],
-            "seoTitle": "Sunset SL-70 Belt-Drive Turntable | Sunset Sounds",
-            "seoDescription": "A walnut belt-drive turntable with a pre-mounted cartridge and built-in preamp — plug-and-play into powered speakers or an amp.",
-            "variants": [
-                {
-                    "sku": "SUN-GEAR-SL70",
-                    "priceCents": 32900,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-turntable",
-                    "isPrimary": true,
-                    "alt": "The Sunset Sounds belt-drive turntable in walnut"
-                }
-            ]
-        },
-        {
-            "handle": "wool-felt-slipmat",
-            "title": "Wool-Felt Slipmat",
-            "description": "A soft wool-felt slipmat that sits quietly under the record and keeps static and dust from creeping in between plays. Fits any standard 12-inch platter, screen-printed with the little Sunset mark. Cheap enough to buy two and keep one clean.",
-            "status": "active",
-            "productType": "Equipment",
-            "vendor": "Sunset Sounds",
-            "tags": [
-                "gear",
-                "slipmat",
-                "accessory"
-            ],
-            "categoryHandles": [
-                "gear"
-            ],
-            "collectionHandles": [
-                "starter-kit"
-            ],
-            "seoTitle": "Wool-Felt Slipmat — turntable accessory | Sunset Sounds",
-            "seoDescription": "A soft wool-felt slipmat that keeps static and dust down between plays. Fits any 12-inch platter.",
-            "variants": [
-                {
-                    "sku": "SUN-GEAR-MAT",
-                    "priceCents": 1600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-slipmat",
-                    "isPrimary": true,
-                    "alt": "A wool-felt turntable slipmat"
-                }
-            ]
-        },
-        {
-            "handle": "record-revival-kit",
-            "title": "Record Revival Cleaning Kit",
-            "description": "Everything to bring a tired record back to life — an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a soft microfibre cloth, in a little tin that lives next to the deck. Two minutes before a play and most of the pops and crackle simply go away.",
-            "status": "active",
-            "productType": "Equipment",
-            "vendor": "Sunset Sounds",
-            "tags": [
-                "gear",
-                "cleaning",
-                "care"
-            ],
-            "categoryHandles": [
-                "gear"
-            ],
-            "collectionHandles": [
-                "starter-kit"
-            ],
-            "seoTitle": "Record Revival Cleaning Kit — record care | Sunset Sounds",
-            "seoDescription": "An anti-static brush, alcohol-free fluid and a microfibre cloth to bring a tired record back to life.",
-            "variants": [
-                {
-                    "sku": "SUN-GEAR-CLEAN",
-                    "priceCents": 3200,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-cleaning-kit",
-                    "isPrimary": true,
-                    "alt": "A record-revival cleaning kit with brush and fluid"
-                }
-            ]
-        },
-        {
-            "handle": "canvas-record-tote",
-            "title": "Sunset Canvas Record Tote",
-            "description": "A heavy 16oz natural-canvas tote sized to carry a dozen LPs home without the corners going soft — a flat bottom, reinforced straps, and the sunset mark printed low on the side. The bag you’ll grab on the way out the door every single time.",
-            "status": "active",
-            "productType": "Merch",
-            "vendor": "Sunset Sounds",
-            "tags": [
-                "merch",
-                "tote",
-                "canvas"
-            ],
-            "categoryHandles": [
-                "merch"
-            ],
-            "collectionHandles": [
-                "best-sellers"
-            ],
-            "seoTitle": "Sunset Canvas Record Tote | Sunset Sounds",
-            "seoDescription": "A heavy 16oz natural-canvas tote sized to carry a dozen LPs home, printed with the sunset mark.",
-            "variants": [
-                {
-                    "sku": "SUN-MERCH-TOTE",
-                    "priceCents": 2000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-tote",
-                    "isPrimary": true,
-                    "alt": "A natural canvas record tote bag"
-                }
-            ]
-        },
-        {
-            "handle": "the-monthly-spin",
-            "title": "The Monthly Spin — Vinyl Subscription",
-            "description": "One record in the mail every month, wrapped in brown paper and chosen by the people behind the counter to match the corners of the shop you love — a new pressing or a clean reissue we think you should hear, with the hand-written card that tells you why. Skip a month, change your taste, or cancel any time. The warmest way to keep the shelf growing.",
-            "status": "active",
-            "productType": "Subscription",
-            "vendor": "Sunset Sounds",
-            "tags": [
-                "subscription",
-                "monthly-spin",
-                "gift"
-            ],
-            "categoryHandles": [
-                "subscription"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "staff-favourites"
-            ],
-            "seoTitle": "The Monthly Spin — Vinyl Subscription | Sunset Sounds",
-            "seoDescription": "A hand-picked record in the mail every month, wrapped in paper and matched to your taste. Skip, swap or cancel any time.",
-            "options": [
-                {
-                    "name": "Plan",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "One record"
-                        },
-                        {
-                            "value": "Two records"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SUN-SUB-1",
-                    "priceCents": 3000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Plan": "One record"
-                    }
-                },
-                {
-                    "sku": "SUN-SUB-2",
-                    "priceCents": 5400,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Plan": "Two records"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-subscription",
-                    "isPrimary": true,
-                    "alt": "A paper-wrapped subscription record tied with twine"
-                }
-            ]
+          "assetId": "prod-golden-hour",
+          "isPrimary": true,
+          "alt": "Golden Hour LP sleeve"
         }
-    ]
+      ]
+    },
+    {
+      "handle": "paper-moon-radio",
+      "title": "Paper Moon Radio — The Clementine Sisters",
+      "description": "Vintage-soul pop with three voices braided into one — handclaps, a walking bassline, and hooks that lodge for a week. It swings like an AM radio station you can’t quite find again the next morning. Warm, analogue, and impossible to sit still to.",
+      "status": "active",
+      "productType": "Vinyl record",
+      "vendor": "The Clementine Sisters",
+      "tags": ["soul", "pop", "new-arrival"],
+      "categoryHandles": ["records"],
+      "collectionHandles": ["this-month", "staff-favourites", "soul-funk"],
+      "seoTitle": "The Clementine Sisters — Paper Moon Radio (LP) | Sunset Sounds",
+      "seoDescription": "Vintage-soul pop from The Clementine Sisters, pressed on 180g vinyl.",
+      "options": [
+        {
+          "name": "Edition",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Standard 180g black"
+            },
+            {
+              "value": "Limited Sunset color"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUN-LP-PAPER-BLK",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Standard 180g black"
+          }
+        },
+        {
+          "sku": "SUN-LP-PAPER-COL",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Limited Sunset color"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-paper-moon",
+          "isPrimary": true,
+          "alt": "Paper Moon Radio LP sleeve"
+        }
+      ]
+    },
+    {
+      "handle": "dust-and-diamonds",
+      "title": "Dust & Diamonds — Wendell Rhodes",
+      "description": "Dusty-road country from a voice with gravel and honey in it — pedal steel that cries in all the right places, songs about leaving and the roads that bring you back. The kind of record that sounds even better on a rainy afternoon with the lamp on.",
+      "status": "active",
+      "productType": "Vinyl record",
+      "vendor": "Wendell Rhodes",
+      "tags": ["country", "americana", "new-arrival"],
+      "categoryHandles": ["records"],
+      "collectionHandles": ["this-month", "folk-country"],
+      "seoTitle": "Wendell Rhodes — Dust & Diamonds (LP) | Sunset Sounds",
+      "seoDescription": "Dusty-road country and americana from Wendell Rhodes on 180g vinyl.",
+      "options": [
+        {
+          "name": "Edition",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Standard 180g black"
+            },
+            {
+              "value": "Limited Sunset color"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUN-LP-DUST-BLK",
+          "priceCents": 2500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Standard 180g black"
+          }
+        },
+        {
+          "sku": "SUN-LP-DUST-COL",
+          "priceCents": 3100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Limited Sunset color"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dust-diamonds",
+          "isPrimary": true,
+          "alt": "Dust & Diamonds LP sleeve"
+        }
+      ]
+    },
+    {
+      "handle": "harbor-lights",
+      "title": "Harbor Lights — The Ambergris Quartet",
+      "description": "A late-night jazz session cut straight to tape — brushed drums, a bass you can lean on, and a tenor sax that leaves plenty of room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room after everyone’s gone home.",
+      "status": "active",
+      "productType": "Vinyl record",
+      "vendor": "The Ambergris Quartet",
+      "tags": ["jazz", "audiophile", "reissue"],
+      "categoryHandles": ["records"],
+      "collectionHandles": ["this-month", "staff-favourites", "soul-funk"],
+      "seoTitle": "The Ambergris Quartet — Harbor Lights (LP) | Sunset Sounds",
+      "seoDescription": "A late-night jazz session on audiophile 180g vinyl — brushed drums, walking bass, room to breathe.",
+      "options": [
+        {
+          "name": "Edition",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Standard 180g black"
+            },
+            {
+              "value": "Limited Sunset color"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUN-LP-HARBOR-BLK",
+          "priceCents": 3300,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Standard 180g black"
+          }
+        },
+        {
+          "sku": "SUN-LP-HARBOR-COL",
+          "priceCents": 3900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Limited Sunset color"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-harbor-lights",
+          "isPrimary": true,
+          "alt": "Harbor Lights LP sleeve"
+        }
+      ]
+    },
+    {
+      "handle": "slow-sunday",
+      "title": "Slow Sunday — June Calloway",
+      "description": "Deep, unhurried soul from a singer who never wastes a note — a Hammond organ that simmers, horns that punch just enough, and a voice that sounds like it’s telling you the truth. The record that clears the counter every time we drop the needle on it.",
+      "status": "active",
+      "productType": "Vinyl record",
+      "vendor": "June Calloway",
+      "tags": ["soul", "funk", "best-seller"],
+      "categoryHandles": ["records"],
+      "collectionHandles": ["staff-favourites", "soul-funk", "best-sellers"],
+      "seoTitle": "June Calloway — Slow Sunday (LP) | Sunset Sounds",
+      "seoDescription": "Deep, unhurried soul from June Calloway on 180g vinyl.",
+      "options": [
+        {
+          "name": "Edition",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Standard 180g black"
+            },
+            {
+              "value": "Limited Sunset color"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUN-LP-SLOW-BLK",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Standard 180g black"
+          }
+        },
+        {
+          "sku": "SUN-LP-SLOW-COL",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Limited Sunset color"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-slow-sunday",
+          "isPrimary": true,
+          "alt": "Slow Sunday LP sleeve"
+        }
+      ]
+    },
+    {
+      "handle": "ferris-wheel",
+      "title": "Ferris Wheel — The Tangerine Set",
+      "description": "Sunny psych-pop with the top down — fuzz guitars, a farfisa organ, and choruses built for a carnival at dusk. Ten tracks and not a dull one, sequenced to flip straight back over the second side B runs out. Play it loud with the windows open.",
+      "status": "active",
+      "productType": "Vinyl record",
+      "vendor": "The Tangerine Set",
+      "tags": ["psych", "classic-rock", "color-vinyl"],
+      "categoryHandles": ["records"],
+      "collectionHandles": ["this-month", "best-sellers"],
+      "seoTitle": "The Tangerine Set — Ferris Wheel (LP) | Sunset Sounds",
+      "seoDescription": "Sunny psych-pop from The Tangerine Set on 180g vinyl. Limited Sunset color pressing available.",
+      "options": [
+        {
+          "name": "Edition",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Standard 180g black"
+            },
+            {
+              "value": "Limited Sunset color"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUN-LP-FERRIS-BLK",
+          "priceCents": 2700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Standard 180g black"
+          }
+        },
+        {
+          "sku": "SUN-LP-FERRIS-COL",
+          "priceCents": 3300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Edition": "Limited Sunset color"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ferris-wheel",
+          "isPrimary": true,
+          "alt": "Ferris Wheel LP sleeve"
+        }
+      ]
+    },
+    {
+      "handle": "sl-70-turntable",
+      "title": "Sunset SL-70 Belt-Drive Turntable",
+      "description": "The deck we set up for people getting back into records — a belt-drive turntable in a warm walnut plinth, with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. An adjustable counterweight that’s actually easy to set, felt feet, and a hush to the background you’ll notice on the first play. Sounds far better than it has any right to at the price.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Sunset Sounds",
+      "tags": ["gear", "turntable", "belt-drive"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["best-sellers", "starter-kit"],
+      "seoTitle": "Sunset SL-70 Belt-Drive Turntable | Sunset Sounds",
+      "seoDescription": "A walnut belt-drive turntable with a pre-mounted cartridge and built-in preamp — plug-and-play into powered speakers or an amp.",
+      "variants": [
+        {
+          "sku": "SUN-GEAR-SL70",
+          "priceCents": 32900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-turntable",
+          "isPrimary": true,
+          "alt": "The Sunset Sounds belt-drive turntable in walnut"
+        }
+      ]
+    },
+    {
+      "handle": "wool-felt-slipmat",
+      "title": "Wool-Felt Slipmat",
+      "description": "A soft wool-felt slipmat that sits quietly under the record and keeps static and dust from creeping in between plays. Fits any standard 12-inch platter, screen-printed with the little Sunset mark. Cheap enough to buy two and keep one clean.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Sunset Sounds",
+      "tags": ["gear", "slipmat", "accessory"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["starter-kit"],
+      "seoTitle": "Wool-Felt Slipmat — turntable accessory | Sunset Sounds",
+      "seoDescription": "A soft wool-felt slipmat that keeps static and dust down between plays. Fits any 12-inch platter.",
+      "variants": [
+        {
+          "sku": "SUN-GEAR-MAT",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-slipmat",
+          "isPrimary": true,
+          "alt": "A wool-felt turntable slipmat"
+        }
+      ]
+    },
+    {
+      "handle": "record-revival-kit",
+      "title": "Record Revival Cleaning Kit",
+      "description": "Everything to bring a tired record back to life — an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a soft microfibre cloth, in a little tin that lives next to the deck. Two minutes before a play and most of the pops and crackle simply go away.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Sunset Sounds",
+      "tags": ["gear", "cleaning", "care"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["starter-kit"],
+      "seoTitle": "Record Revival Cleaning Kit — record care | Sunset Sounds",
+      "seoDescription": "An anti-static brush, alcohol-free fluid and a microfibre cloth to bring a tired record back to life.",
+      "variants": [
+        {
+          "sku": "SUN-GEAR-CLEAN",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cleaning-kit",
+          "isPrimary": true,
+          "alt": "A record-revival cleaning kit with brush and fluid"
+        }
+      ]
+    },
+    {
+      "handle": "canvas-record-tote",
+      "title": "Sunset Canvas Record Tote",
+      "description": "A heavy 16oz natural-canvas tote sized to carry a dozen LPs home without the corners going soft — a flat bottom, reinforced straps, and the sunset mark printed low on the side. The bag you’ll grab on the way out the door every single time.",
+      "status": "active",
+      "productType": "Merch",
+      "vendor": "Sunset Sounds",
+      "tags": ["merch", "tote", "canvas"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": ["best-sellers"],
+      "seoTitle": "Sunset Canvas Record Tote | Sunset Sounds",
+      "seoDescription": "A heavy 16oz natural-canvas tote sized to carry a dozen LPs home, printed with the sunset mark.",
+      "variants": [
+        {
+          "sku": "SUN-MERCH-TOTE",
+          "priceCents": 2000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tote",
+          "isPrimary": true,
+          "alt": "A natural canvas record tote bag"
+        }
+      ]
+    },
+    {
+      "handle": "the-monthly-spin",
+      "title": "The Monthly Spin — Vinyl Subscription",
+      "description": "One record in the mail every month, wrapped in brown paper and chosen by the people behind the counter to match the corners of the shop you love — a new pressing or a clean reissue we think you should hear, with the hand-written card that tells you why. Skip a month, change your taste, or cancel any time. The warmest way to keep the shelf growing.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Sunset Sounds",
+      "tags": ["subscription", "monthly-spin", "gift"],
+      "categoryHandles": ["subscription"],
+      "collectionHandles": ["best-sellers", "staff-favourites"],
+      "seoTitle": "The Monthly Spin — Vinyl Subscription | Sunset Sounds",
+      "seoDescription": "A hand-picked record in the mail every month, wrapped in paper and matched to your taste. Skip, swap or cancel any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One record"
+            },
+            {
+              "value": "Two records"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUN-SUB-1",
+          "priceCents": 3000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "One record"
+          }
+        },
+        {
+          "sku": "SUN-SUB-2",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Two records"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A paper-wrapped subscription record tied with twine"
+        }
+      ]
+    }
+  ]
 }

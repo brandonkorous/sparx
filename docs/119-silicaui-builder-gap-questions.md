@@ -26,7 +26,7 @@ Doc 118's core reasoning was: _silicaui-builder ships no data-binding / collecti
 
 Three things are true at once:
 
-1. **The document + render + apps/site migration is required either way.** Whoever owns the editor, the document must speak silica classes and the storefront must render silica through sparx's binding runtime (silicaui-html resolves no published data). So doc 118's WS-2/3/4/5/6/8/9 are not in question.
+1. **The document + render + wizeworks/apps/site migration is required either way.** Whoever owns the editor, the document must speak silica classes and the storefront must render silica through sparx's binding runtime (silicaui-html resolves no published data). So doc 118's WS-2/3/4/5/6/8/9 are not in question.
 2. **The _only_ thing in question is the editor itself** — re-skin sparx's `.bx-*` chrome (doc 118 WS-7, ~1600 lines to polish then maintain forever) **vs.** adopt a silicaui engine that has grown the capabilities below.
 3. **WizeWorks owns both sides.** "Invest in the engine" is not a bet on a third party — it is choosing _where_ to spend the same effort: into a reusable product, or into sparx-only chrome.
 
@@ -65,7 +65,7 @@ silicaui-html **declares** binding/repeat/action in its schema and **lowers** th
 
 - **Generic problem (the keystone).** The engine `extract()`s a static document; the host publishes it. But a data-bound page must resolve bindings **at request time on the live site**, forever, outside the editor. Who renders that?
 - **Contract stance / shipped.** builder-contract implies the host renders extracted documents (§7: "a host may render extracted documents through silicaui-react"). silicaui-html's `renderSite` resolves **no** data. So today the answer is "the host builds its own runtime" — which is exactly what sparx did.
-- **Motivating instance (sparx).** `apps/site` walks the tree with `runtime.ts` + `builder-data.ts` (`__pins`/`__sources`) — a full server-side data-resolving renderer.
+- **Motivating instance (sparx).** `wizeworks/apps/site` walks the tree with `runtime.ts` + `builder-data.ts` (`__pins`/`__sources`) — a full server-side data-resolving renderer.
 - **Open questions.** Should the silicaui _family_ ship a **framework-neutral, data-resolving renderer** (a `render(tree, { resolve, resolveCollection })`) that BOTH the editor canvas and a host's published site call — so preview==production is structural, not hoped-for? Or is data-resolution deliberately host territory, and the family only ships the static `toHtml`? This single decision reshapes the whole migration.
 - **Candidate generic direction.** A `silicaui-html`-level **resolving projection** (`toHtml`/`toDom` accepting an optional `resolve`/`resolveCollection`) would make the engine's canvas and the host's live site share one renderer — the thing sparx had to hand-build as `renderLeaf` shared across surfaces. This is the highest-leverage generic investment.
 
@@ -261,7 +261,7 @@ ref, { attr })` overload would close it.
 undefined (reading 'className')`. **It failed at request time only** — `tsc` and `eslint`
   were perfectly happy. (`children` survives the same boundary because React _renders_ it
   rather than introspecting it.)
-- **Motivating instance (sparx).** Migrating `apps/site` onto silicaui-react broke five
+- **Motivating instance (sparx).** Migrating `wizeworks/apps/site` onto silicaui-react broke five
   server components at once, including the storefront home page, `/products`, and
   `/search` — all HTTP 500, all green in CI.
 - **Resolution.** 0.13.0 shipped `mergeProps(ours, theirs = {})`. Verified live on 0.14.0
@@ -273,7 +273,7 @@ undefined (reading 'className')`. **It failed at request time only** — `tsc` a
   Server Component can style a plain element directly:
   `<Link className={buttonClasses({ color, variant, size })}>`. That keeps `<Button>` out
   of the client bundle of a page whose only need was a styled anchor. Sparx uses it in
-  `apps/site/components/button-link.tsx`.
+  `wizeworks/apps/site/components/button-link.tsx`.
 - **Residual nit.** The `= {}` default means a future prop-forwarding regression would drop
   the `href` **silently** instead of throwing. A dev-mode warning when `render` is an
   element with no `props` would surface it.
@@ -317,7 +317,7 @@ undefined (reading 'className')`. **It failed at request time only** — `tsc` a
     : { ...rest };
   ```
 
-- **Sparx's bridge (delete-on-fix).** `@sparx/silica-catalog/src/attr-binding.ts` —
+- **Sparx's bridge (delete-on-fix).** `@wizeworks/silica-catalog/src/attr-binding.ts` —
   `bindAttr(el, 'href', 'url')` tucks a bound `<input type="hidden" name="__sui-attr:href">`
   **leaf** inside the element (a leaf has no children to lose), and `hoistAttrBindings`
   lifts the resolved value onto the parent's real attribute and strips the carrier between

@@ -30,11 +30,11 @@ import {
   FieldDescription,
   FieldLabel,
   Input,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCalendarClock, faReceipt, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';

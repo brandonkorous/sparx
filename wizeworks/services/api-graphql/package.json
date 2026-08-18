@@ -1,0 +1,42 @@
+{
+  "name": "@wizeworks/api-graphql",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx public GraphQL API — Fastify + Mercurius service hosting /v1/graphql. Mirrors the content/media slice of api-rest with a single SDL endpoint for flexible client queries; deep integrations and CRUD live on the REST surface (docs/06-api-specification.md §10).",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@fastify/jwt": "^9.0.4",
+    "@google-cloud/pubsub": "^5.3.0",
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/api-core": "workspace:*",
+    "@wizeworks/auth": "workspace:*",
+    "@wizeworks/cms": "workspace:*",
+    "@wizeworks/cms-schemas": "workspace:*",
+    "@wizeworks/crm": "workspace:*",
+    "@wizeworks/crm-schemas": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "fastify": "^5.6.1",
+    "fastify-plugin": "^5.0.1",
+    "mercurius": "^16.0.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "pino-pretty": "^13.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

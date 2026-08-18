@@ -10,13 +10,13 @@ const config = {
     '@piggles/brand',
     '@piggles/config',
     '@piggles/mascot',
-    '@sparx/auth',
+    '@wizeworks/auth',
     '@wizeworks/silicaui-react',
   ],
   typedRoutes: true,
   output: 'standalone',
   // Monorepo: trace from the REPO root, not from `piggles/`. This app pulls
-  // workspace deps from BOTH trees — `@piggles/*` alongside it and `@sparx/auth`
+  // workspace deps from BOTH trees — `@piggles/*` alongside it and `@wizeworks/auth`
   // above it — so a tracing root inside `piggles/` would produce a standalone
   // bundle missing the platform half.
   outputFileTracingRoot: join(__dirname, '../../../'),

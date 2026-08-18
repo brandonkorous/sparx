@@ -28,7 +28,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Switch,
@@ -46,7 +45,9 @@ import {
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { InlineWaiting } from '../../components/inline-waiting';
 import { useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { canApprove, canCompose, socialErrorMessage, useSocialOverview } from './data';
@@ -622,25 +623,30 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Cadence controls">
-        <Icon glyph={faCalendarClock} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Cadence
-        </Heading>
-      </PaneToolbar>
+      {/* Otherwise bare: the bar carries the pane's copy-link and anchors the beta
+          module's standing notice. */}
+      <PaneToolbar
+        label="Cadence controls"
+        refresh={
+          <RefreshButton
+            isFetching={slots.isFetching || sets.isFetching || overview.isFetching}
+            updatedAt={slots.data ? slots.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void slots.refetch();
+              void sets.refetch();
+              void overview.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Your posting rhythm
-            </Heading>
-            <Text>
-              Set the times you mean to post, save the hashtags you use again and again, and bring
-              in a whole month at once from a spreadsheet. The calendar draws your times as gaps
-              waiting to be filled.
-            </Text>
-          </div>
+          <Text>
+            Set the times you mean to post, save the hashtags you use again and again, and bring in
+            a whole month at once from a spreadsheet. The calendar draws your times as gaps waiting
+            to be filled.
+          </Text>
 
           <FormSection
             title="When you post"
@@ -669,8 +675,13 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               />
             ) : null}
+            {/* Both of this pane's sections keep their compact EmptyState: each is
+                one FormSection among several (already a card), not the pane's
+                content region. The hand-written "Loading…" line is the part that
+                was wrong — <InlineWaiting> is the one shape for a block that is
+                still fetching. */}
             {slots.isPending ? (
-              <Text className="text-sm">Loading…</Text>
+              <InlineWaiting />
             ) : (slots.data ?? []).length === 0 && !addingSlot ? (
               <EmptyState
                 size="sm"
@@ -725,7 +736,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
               />
             ) : null}
             {sets.isPending ? (
-              <Text className="text-sm">Loading…</Text>
+              <InlineWaiting />
             ) : (sets.data ?? []).length === 0 && !addingSet ? (
               <EmptyState
                 size="sm"

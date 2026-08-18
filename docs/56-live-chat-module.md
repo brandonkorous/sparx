@@ -13,7 +13,7 @@
 > framework); sparx never bills an LLM call to a platform credential. Read §4/§11's
 > "Claude Haiku" as "the tenant's configured model." **(2) AI retrieval reads tenant
 > data over DB/RLS, not Typesense** (a documented deviation from §4/§11). Built + live:
-> the site widget, the WebSocket transport, and the operator inbox (in `apps/workbench`,
+> the site widget, the WebSocket transport, and the operator inbox (in `sparx/apps/workbench`,
 > the operator app formerly `apps/dashboard`). Still open: Surface 3 — the sparx.market
 > "Chat with [Tenant]" button (§3.3, §14).
 
@@ -106,7 +106,7 @@ PostgreSQL        — conversation and message storage
 Redis pub/sub     — route messages to correct tenant dashboard
                     already in stack
 
-React chat widget — @sparx/chat-widget package
+React chat widget — @wizeworks/chat-widget package
                     embeds on site via Next.js component
 
 AI layer          — Anthropic API (claude-haiku-4-5)
@@ -253,14 +253,14 @@ A message is marked `read_at = NOW()` when the recipient's browser receives it o
 
 ## 10. Site Widget
 
-The `@sparx/chat-widget` package exports a single React component:
+The `@wizeworks/chat-widget` package exports a single React component:
 
 ```tsx
 <ChatWidget tenantId={tenant.id} config={chatConfig} customer={currentCustomer} />
 ```
 
 - Rendered client-side only (`'use client'`)
-- Hydrated via `@sparx/customer-auth` session cookie for identification
+- Hydrated via `@wizeworks/customer-auth` session cookie for identification
 - Opens as a floating panel over the page (not an iframe — same domain)
 - Pre-chat form: if `collectEmail: true` and visitor is anonymous, asks for name + email before connecting
 - Conversation history: if returning visitor (matched by email or customer session), shows last conversation
@@ -321,7 +321,7 @@ Inside hours: normal chat. The operating hours check runs client-side (widget) a
 
 ## 14. sparx.market Integration
 
-Product pages on sparx.market show a "Chat with [Tenant Name]" button when the tenant has chat enabled. Clicking opens an inline chat panel (same `@sparx/chat-widget`, configured with `source: 'sparx_market'`).
+Product pages on sparx.market show a "Chat with [Tenant Name]" button when the tenant has chat enabled. Clicking opens an inline chat panel (same `@wizeworks/chat-widget`, configured with `source: 'sparx_market'`).
 
 If the shopper has a sparx account (signed in to sparx.market), their identity is passed to the widget automatically. If anonymous, `collectEmail: true` is forced.
 
@@ -339,7 +339,7 @@ Conversations from sparx.market appear in the tenant's inbox with source badge "
 | Standalone           | No (requires Builder) |
 | Billing product name | "sparx Chat"          |
 
-Add to `PRICE_CATALOG` in `packages/billing/src/price-catalog.ts` and create the Stripe product/prices during the billing Phase 1 work (docs/67).
+Add to `PRICE_CATALOG` in `wizeworks/packages/billing/src/price-catalog.ts` and create the Stripe product/prices during the billing Phase 1 work (docs/67).
 
 ---
 
@@ -352,7 +352,7 @@ Add to `PRICE_CATALOG` in `packages/billing/src/price-catalog.ts` and create the
 - [ ] Public API endpoints (`/v1/public/chat/*`) — customer-auth scoped
 - [ ] Private API endpoints (`/v1/chat/*`) — tenant API key scoped
 - [ ] AI handler — Anthropic Haiku integration with Typesense product context
-- [ ] `@sparx/chat-widget` package: floating bubble, message thread, pre-chat form
+- [ ] `@wizeworks/chat-widget` package: floating bubble, message thread, pre-chat form
 - [ ] Site integration: widget injected in site layout when module active
 - [ ] Widget configuration UI (Settings → Chat) — follows settings page archetype
 - [ ] Dashboard inbox UI — two-panel, conversation list + thread view

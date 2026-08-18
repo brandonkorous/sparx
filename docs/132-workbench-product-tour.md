@@ -80,7 +80,7 @@ never during onboarding, never over the first-run gate.
 
 **Persistence — no new table.** Tour state rides the existing per-user
 `users.preferences` JSON blob via the **merge-patch** endpoint that already exists:
-`PATCH /v1/me/preferences` ([services/api-rest/src/routes/v1/me.ts](../services/api-rest/src/routes/v1/me.ts))
+`PATCH /v1/me/preferences` ([wizeworks/services/api-rest/src/routes/v1/me.ts](../services/api-rest/src/routes/v1/me.ts))
 preserves keys it doesn't own, so we add a `tour` key alongside the view defaults
 and notification prefs already living there. **No migration, no new endpoint.**
 
@@ -363,30 +363,30 @@ patch doesn't carry. Absent module key = never entered that tool.
 
 ## 7. File map (built)
 
-- `apps/workbench/lib/tour/types.ts` — the `TourStep` shape + persisted-state types.
-- `apps/workbench/lib/tour/steps.ts` — the curriculum: `CORE_STEPS`, `CLOSING_STEP`,
+- `sparx/apps/workbench/lib/tour/types.ts` — the `TourStep` shape + persisted-state types.
+- `sparx/apps/workbench/lib/tour/steps.ts` — the curriculum: `CORE_STEPS`, `CLOSING_STEP`,
   `MODULE_STEP_DEFS`, and `buildTourSteps()` (composes + gates on rail presence).
-- `apps/workbench/lib/tour/use-tour.ts` — the themed driver.js wrapper (`onPopoverRender`,
+- `sparx/apps/workbench/lib/tour/use-tour.ts` — the themed driver.js wrapper (`onPopoverRender`,
   module tint, art slot) + the tier-2 `ensureStep` orchestration hook (open surface →
   wait → advance).
-- `apps/workbench/lib/tour/first-run-tour.tsx` — tier-1 trigger + resume + persistence +
+- `sparx/apps/workbench/lib/tour/first-run-tour.tsx` — tier-1 trigger + resume + persistence +
   the brand-art portal; exports `launchTour()` for the account-menu replay.
-- `apps/workbench/lib/tour/module-tours.ts` — tier-2 content: one `ModuleTour` per tool,
+- `sparx/apps/workbench/lib/tour/module-tours.ts` — tier-2 content: one `ModuleTour` per tool,
   `TOURABLE_MODULES`, `getModuleTour`, `isTourableModule` (re-exports `moduleLabel`).
-- `apps/workbench/lib/tour/module-tour-offers.tsx` — the tier-2 driver: the first-open
+- `sparx/apps/workbench/lib/tour/module-tour-offers.tsx` — the tier-2 driver: the first-open
   offer card, the orchestrated run + outcome recording, the art portal; exports
   `launchModuleTour()` for the module-panel replay. Mounted beside `FirstRunTour`.
-- `apps/workbench/lib/tour/data.ts` — `useTourPrefs` / `useSaveTourOutcome` (tier 1) /
+- `sparx/apps/workbench/lib/tour/data.ts` — `useTourPrefs` / `useSaveTourOutcome` (tier 1) /
   `useSaveModuleTourOutcome` (tier 2, `tour.modules[slug]`).
-- `apps/workbench/lib/tour/tour.css` — the silica skin + hero layout + motion + hue map +
+- `sparx/apps/workbench/lib/tour/tour.css` — the silica skin + hero layout + motion + hue map +
   the offer-card rise.
 - toolbar.tsx / rail.tsx / workbench-shell.tsx — the tier-1 `data-tour` anchors + mount.
 - module-panel.tsx — the compass "Take the `<tool>` tour" replay affordance.
 - `surfaces/{commerce,cms,crm,scheduling,b2b,builder}/…` — the tier-2 `data-tour` anchors
   on real CTAs (see §4 table).
-- `services/api-rest/src/routes/v1/me.ts` — `TourPrefs` (`welcome` + `modules`) +
+- `wizeworks/services/api-rest/src/routes/v1/me.ts` — `TourPrefs` (`welcome` + `modules`) +
   `parsePreferences` + the `tour` **deep-merge** in the PATCH handler.
-- `apps/workbench/package.json` — `driver.js` dependency.
+- `sparx/apps/workbench/package.json` — `driver.js` dependency.
 
 ---
 

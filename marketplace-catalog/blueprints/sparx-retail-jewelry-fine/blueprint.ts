@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-jewelry-fine',
-    version: '1.4.0',
-    name: 'sparx — Fine Jeweler',
-    summary:
-        'A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces — a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme — a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-jewelry-fine',
+  version: '1.4.0',
+  name: 'sparx — Fine Jeweler',
+  summary:
+    'A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces — a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme — a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Aurelia',
+    tagline: 'Fine jewelry, made to be worn every day.',
+    colors: {
+      primary: '#261d16',
+      primaryForeground: '#fef7f2',
+      accent: '#815c0a',
+      secondary: '#5e4f41',
+    },
+    fonts: {
+      heading: 'Cormorant Garamond',
+      body: 'Outfit',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-jewelry-fine',
+    basePresetKey: 'retail-jewelry-fine',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Aurelia',
-        tagline: 'Fine jewelry, made to be worn every day.',
-        colors: {
-            primary: '#261d16',
-            primaryForeground: '#fef7f2',
-            accent: '#815c0a',
-            secondary: '#5e4f41',
-        },
-        fonts: {
-            heading: 'Cormorant Garamond',
-            body: 'Outfit',
-        },
+      colorPrimary: '#261d16',
+      colorAccent: '#815c0a',
+      colorSecondary: '#5e4f41',
+      fontHeading: 'Cormorant Garamond',
+      fontBody: 'Outfit',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-jewelry-fine',
-        basePresetKey: 'retail-jewelry-fine',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#261d16',
-            colorAccent: '#815c0a',
-            colorSecondary: '#5e4f41',
-            fontHeading: 'Cormorant Garamond',
-            fontBody: 'Outfit',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

@@ -9,7 +9,7 @@
 // site installs it. Use `{ $prop: 'key' }` slots for values the installer fills in,
 // and declare each slot in `propSpec`.
 
-import { seedNode, type BuilderNode } from '@sparx/builder-schemas';
+import { seedNode, type BuilderNode } from '@wizeworks/builder-schemas';
 
 let n = 0;
 const node = (type: string, opts: Parameters<typeof seedNode>[2] = {}): BuilderNode =>

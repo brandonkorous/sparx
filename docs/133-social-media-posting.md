@@ -56,7 +56,7 @@ platforms, different capability, different OAuth scopes.
 ## 2. Module wiring
 
 Add `social` to the `ModuleSlug` union and `ALL_MODULES` in
-[packages/modules/src/index.ts](../packages/modules/src/index.ts).
+[wizeworks/packages/modules/src/index.ts](../packages/modules/src/index.ts).
 
 - **`REQUIRES`:** none. It runs fully standalone.
 - **`BUNDLED_FREE`:** none — it is not "included with" a paid module; it is simply
@@ -65,7 +65,7 @@ Add `social` to the `ModuleSlug` union and `ALL_MODULES` in
   disabling it still zeroes overhead (no workers, no rows).
 - **Billing:** a $0 line so activation flows through the same Stripe/module-toggle
   path as everything else — no special-case "always on" code. Activation emits
-  `module.activated` (already in [packages/events/src/types.ts](../packages/events/src/types.ts))
+  `module.activated` (already in [wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts))
   which seeds the module's defaults (see §11) and flips the gate cache.
 - **Gate:** existing `requireModule(session, 'social')` / `isModuleEnabled`.
 
@@ -75,15 +75,15 @@ Add `social` to the `ModuleSlug` union and `ALL_MODULES` in
 
 ## 3. Reuse vs. build
 
-| Concern                                        | Reuse                                                                                                                                                                                      | Build                                                                                            |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| Per-platform OAuth connect + signed-state CSRF | channels OAuth helper + `connectUrl`/`exchangeCode`/`refresh` pattern ([106](106-channel-marketplace-strategy.md), `services/api-rest/src/lib/channels-oauth.ts`)                          | Per-platform _posting_ scopes (a different, broader scope set than feed)                         |
-| Encrypted token storage (AES-256-GCM row box)  | the same crypto util pattern channels uses (`packages/channels/src/crypto.ts`)                                                                                                             | A **separate** `SocialConnection` table (§5) — a posting grant is not a sales-channel connection |
-| "Post to social" as an automation step         | `ActionType` enum + `registerAction` executor seam ([packages/automation-schemas/src/action.ts](../packages/automation-schemas/src/action.ts), `packages/automation-actions/src/index.ts`) | `social.post` action type + its executor                                                         |
-| Fire scheduled items on a timer                | advisory-lock tick pattern (`services/api-rest/src/lib/scheduled-publish.ts`, `find_due_*` SECURITY DEFINER)                                                                               | A `find_due_social_posts()` query + the scheduled-post drain                                     |
-| Compose text + media                           | CMS entry body + media asset service ([packages/media/src/](../packages/media/src/), `upload_image`/`set_image_from_url`)                                                                  | Nothing — reused as-is for attachments                                                           |
-| Async worker on Pub/Sub                        | worker fleet; `services/channel-sync-worker` as the template                                                                                                                               | `services/social-worker`                                                                         |
-| Events                                         | `EventType` union naming convention                                                                                                                                                        | `social.*` literals (§10)                                                                        |
+| Concern                                        | Reuse                                                                                                                                                                                                          | Build                                                                                            |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Per-platform OAuth connect + signed-state CSRF | channels OAuth helper + `connectUrl`/`exchangeCode`/`refresh` pattern ([106](106-channel-marketplace-strategy.md), `wizeworks/services/api-rest/src/lib/channels-oauth.ts`)                                    | Per-platform _posting_ scopes (a different, broader scope set than feed)                         |
+| Encrypted token storage (AES-256-GCM row box)  | the same crypto util pattern channels uses (`wizeworks/packages/channels/src/crypto.ts`)                                                                                                                       | A **separate** `SocialConnection` table (§5) — a posting grant is not a sales-channel connection |
+| "Post to social" as an automation step         | `ActionType` enum + `registerAction` executor seam ([wizeworks/packages/automation-schemas/src/action.ts](../packages/automation-schemas/src/action.ts), `wizeworks/packages/automation-actions/src/index.ts`) | `social.post` action type + its executor                                                         |
+| Fire scheduled items on a timer                | advisory-lock tick pattern (`wizeworks/services/api-rest/src/lib/scheduled-publish.ts`, `find_due_*` SECURITY DEFINER)                                                                                         | A `find_due_social_posts()` query + the scheduled-post drain                                     |
+| Compose text + media                           | CMS entry body + media asset service ([wizeworks/packages/media/src/](../packages/media/src/), `upload_image`/`set_image_from_url`)                                                                            | Nothing — reused as-is for attachments                                                           |
+| Async worker on Pub/Sub                        | worker fleet; `services/channel-sync-worker` as the template                                                                                                                                                   | `services/social-worker`                                                                         |
+| Events                                         | `EventType` union naming convention                                                                                                                                                                            | `social.*` literals (§10)                                                                        |
 
 **The genuine gap (all new):** the post/campaign domain model, a publish-direction
 adapter method per platform, the one-post→N-platforms renderer, the approval
@@ -97,7 +97,7 @@ is production-grade.
 
 A **sibling** to `ChannelAdapter`, not an extension of it (the channel adapter is
 product/order-centric; overloading it would muddy both). It lives in a new
-`@sparx/social` package and follows the same "pure I/O, worker owns writes, tokens
+`@wizeworks/social` package and follows the same "pure I/O, worker owns writes, tokens
 passed in" discipline.
 
 ```ts
@@ -178,7 +178,7 @@ enable per approval.
 
 ## 5. Domain model
 
-New tables in `packages/db/prisma/schema/` (RLS + `tenant_id` like everything else),
+New tables in `wizeworks/packages/db/prisma/schema/` (RLS + `tenant_id` like everything else),
 authored through the [db-migration](../packages/db/CLAUDE.md) pipeline.
 
 - **`SocialConnection`** — one per (tenant, platform, external account). Holds
@@ -284,7 +284,7 @@ compose ─▶ draft ─▶ (submit) ─▶ pending_approval ─▶ (approve) �
 ```
 
 - The **scheduled drain** reuses the advisory-lock timer pattern from
-  `services/api-rest/src/lib/scheduled-publish.ts`: a `find_due_social_posts()`
+  `wizeworks/services/api-rest/src/lib/scheduled-publish.ts`: a `find_due_social_posts()`
   SECURITY DEFINER query pulls posts whose `scheduledAt <= NOW()` and
   `status='scheduled'`, flips them to `publishing`, and publishes
   `social.post.due` for the worker to drain (keeps heavy platform I/O off the
@@ -317,7 +317,7 @@ The composer is the heart of the UX and the one genuinely new piece of product.
 - **Per-channel overrides** are explicit and stored on `SocialPostTarget`: tweak the
   text for X, swap the image aspect for a Story, drop LinkedIn from this one.
 - **Media is auto-adapted per platform, not the tenant's problem.** On attach, the
-  media worker ([packages/media/src/](../packages/media/src/)) derives the aspect
+  media worker ([wizeworks/packages/media/src/](../packages/media/src/)) derives the aspect
   variants each target needs from the source asset — feed (1:1 / 4:5), story/reel
   (9:16), landscape (16:9) — via an attention/subject-aware crop, and the composer
   shows the resulting crop per target with a draggable focal point so the tenant can
@@ -339,9 +339,9 @@ The composer is the heart of the UX and the one genuinely new piece of product.
 ## 9. Automation integration
 
 Add `'social.post'` to the `ActionType` enum in
-[packages/automation-schemas/src/action.ts](../packages/automation-schemas/src/action.ts)
+[wizeworks/packages/automation-schemas/src/action.ts](../packages/automation-schemas/src/action.ts)
 and register its executor via `installModuleActions()` in
-`packages/automation-actions/src/index.ts`. That single seam makes "post to social" a
+`wizeworks/packages/automation-actions/src/index.ts`. That single seam makes "post to social" a
 first-class step usable from **any** event or schedule trigger, e.g.:
 
 - `product.published` → draft a launch post (into `pending_approval`, respecting the
@@ -360,7 +360,7 @@ the person ships.
 ## 10. Events
 
 Add to the `EventType` union in
-[packages/events/src/types.ts](../packages/events/src/types.ts) (dot-namespaced,
+[wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts) (dot-namespaced,
 topic == type; provision topics + subscribers in Terraform per the file's checklist):
 
 ```
@@ -389,7 +389,7 @@ picks targets, and enables it.
 
 ## 12. Workbench surface
 
-A `social` surface in [apps/workbench](123-workbench.md):
+A `social` surface in [sparx/apps/workbench](123-workbench.md):
 
 - **Connections** — connect / reconnect / disconnect accounts; per-target enable.
 - **Composer** — author, preview per platform, schedule or post now, save draft.
@@ -410,7 +410,7 @@ frame header per [86](86-surface-frame-pattern.md).
   approvals likewise. Code cannot un-gate these; lead time is external.
 - **Phase 1 — the spine + two easy platforms (Google Business Profile + LinkedIn).**
   `social` module wiring, `SocialConnection`/`SocialTarget`/`SocialPost`/
-  `SocialPostTarget` + RLS, `@sparx/social` package + `SocialAdapter`, the two
+  `SocialPostTarget` + RLS, `@wizeworks/social` package + `SocialAdapter`, the two
   adapters, the renderer + composer, `social-worker` + scheduled drain, `social.post`
   automation action, the workbench surface. This is the ~2–3 week core; everything
   after is "one adapter + one OAuth app."
@@ -429,7 +429,7 @@ Paid ads are a different beast (campaign → ad set → creative → budget → 
 bidding → **spend** on the tenant's ad account), a stricter API approval, and money
 moving that sparx _reads_ but does not charge. The genuinely valuable, genuinely hard
 part is **closing the loop** — tying ad spend back to attributed sparx orders via the
-existing UTM classifier in `packages/attribution/`, so a tenant sees ROAS against
+existing UTM classifier in `wizeworks/packages/attribution/`, so a tenant sees ROAS against
 real revenue, not just platform-reported conversions.
 
 Likely shape (to be its own doc): a separate **paid** `ads` module that `REQUIRES`

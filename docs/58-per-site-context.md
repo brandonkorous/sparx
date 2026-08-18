@@ -153,7 +153,7 @@ single-site tenant    → no filter, no Site control                // zero beha
    tenants and call `set_config('app.tenant_id')` — `orders` is FORCE-RLS and
    `sparx_owner` is non-superuser in prod, `feedback_sparx_db_rls_pattern`.)
 
-2. **Capture** (`@sparx/commerce` checkout→order path): set `cart.property_id` from
+2. **Capture** (`@wizeworks/commerce` checkout→order path): set `cart.property_id` from
    the site's active property when a site cart is created; copy it onto
    the order at placement. The order-event consumer keeps maintaining
    `customers.totalSpent`/`orderCount` — now naturally **per-membership** (per-site),
@@ -192,7 +192,7 @@ The two-layer split (D2/D6):
    `identity_id` at it, set `property_id` = the tenant's **primary** property, re-home
    the credential / session / reset rows onto the identity, then swap the unique index.
    (Cloud SQL is private-IP → lands via the DB Migrate pipeline only.)
-3. **Recognition flow** (`@sparx/customer-auth`, docs/27 — D6): on sign-in / sign-up at
+3. **Recognition flow** (`@wizeworks/customer-auth`, docs/27 — D6): on sign-in / sign-up at
    a property, resolve the identity by `(tenant, email)`. If it exists but this property
    has no membership, return a "recognized — link?" state; on confirm, create the
    membership with **fresh consent** and issue the session. One login, per-site consent.

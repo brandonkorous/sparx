@@ -47,12 +47,12 @@ import {
   Input,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import {
   faClipboardCheck,
@@ -95,6 +95,10 @@ import {
 } from './counts-data';
 import { ScanInput, playScanFeedback } from './scan-input';
 import { useScanQueue, useScanToCount, type ScanActionResult } from './scan-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
 
 /** Centred and capped — a count torn onto a second monitor is 2000px wide, and
  *  uncapped the difference column drifts a foot from the item it belongs to. */
@@ -171,19 +175,22 @@ function StartCount({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New count actions">
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto"
-          disabled={warehouseId === '' || create.isPending}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
-          Start counting
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New count actions"
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto"
+            disabled={warehouseId === '' || create.isPending}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
+            Start counting
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -208,14 +215,9 @@ function StartCount({ ctx }: { ctx: SurfaceContext }) {
             />
           ) : (
             <section className="card bg-base-100 flex flex-col gap-4 p-4">
-              <div className="flex flex-col gap-0.5">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Start a stock count
-                </Heading>
-                <Text className="text-sm">
-                  Count what is really on the shelf, then apply it to put your numbers right.
-                </Text>
-              </div>
+              <Text className="text-sm">
+                Count what is really on the shelf, then apply it to put your numbers right.
+              </Text>
 
               <Field>
                 <FieldLabel>Where are you counting?</FieldLabel>
@@ -810,115 +812,123 @@ function CountSession({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Count actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        {/* The sticker that makes "scan the count sheet" true. Without it that
-            instruction in warehouse mode has nothing to scan. */}
-        <Tooltip content="Print a scannable label for the count sheet">
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            shape="square"
-            className="shrink-0"
-            aria-label="Print a scannable label for this count"
-            onClick={() => {
-              ctx.open(
-                'inventory.documents.label',
-                {
-                  number: count.number,
-                  title: 'Stock count',
-                  subtitle: count.warehouseName ?? '',
-                },
-                { target: 'beside' }
-              );
-            }}
-          >
-            <Icon glyph={faPrint} className="size-4" aria-hidden />
-          </Button>
-        </Tooltip>
-
-        {editable ? (
+      <PaneToolbar
+        label="Count actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
           <>
-            {changed.length > 0 ? (
+            {editable ? (
+              <>
+                {changed.length > 0 ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    color="neutral"
+                    className="ml-auto shrink-0 whitespace-nowrap"
+                    loading={enter.isPending}
+                    onClick={() => {
+                      void doSave();
+                    }}
+                  >
+                    <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+                    Save
+                  </Button>
+                ) : null}
+                <Button
+                  size="sm"
+                  color="module"
+                  className={`shrink-0 whitespace-nowrap${changed.length > 0 ? '' : 'ml-auto'}`}
+                  disabled={!canFinish}
+                  loading={submit.isPending || enter.isPending}
+                  title={
+                    canFinish ? undefined : 'Enter a quantity for every item before you can finish.'
+                  }
+                  onClick={() => {
+                    void doFinish();
+                  }}
+                >
+                  <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
+                  Finish counting
+                </Button>
+              </>
+            ) : null}
+            {canApprove ? (
               <Button
                 size="sm"
-                variant="outline"
-                color="neutral"
+                color="module"
                 className="ml-auto shrink-0 whitespace-nowrap"
-                loading={enter.isPending}
+                loading={approve.isPending}
                 onClick={() => {
-                  void doSave();
+                  void doApprove();
                 }}
               >
-                <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-                Save
+                <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
+                Approve
               </Button>
             ) : null}
+            {canApply ? (
+              <Button
+                size="sm"
+                color="module"
+                className="ml-auto shrink-0 whitespace-nowrap"
+                loading={post.isPending}
+                onClick={() => {
+                  void doApply();
+                }}
+              >
+                <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
+                Apply corrections
+              </Button>
+            ) : null}
+          </>
+        }
+        controls={
+          /* The sticker that makes "scan the count sheet" true. Without it that
+            instruction in warehouse mode has nothing to scan. */
+          <Tooltip content="Print a scannable label for the count sheet">
             <Button
               size="sm"
-              color="module"
-              className={`shrink-0 whitespace-nowrap${changed.length > 0 ? '' : 'ml-auto'}`}
-              disabled={!canFinish}
-              loading={submit.isPending || enter.isPending}
-              title={
-                canFinish ? undefined : 'Enter a quantity for every item before you can finish.'
-              }
+              variant="ghost"
+              color="neutral"
+              shape="square"
+              className="shrink-0"
+              aria-label="Print a scannable label for this count"
               onClick={() => {
-                void doFinish();
+                ctx.open(
+                  'inventory.documents.label',
+                  {
+                    number: count.number,
+                    title: 'Stock count',
+                    subtitle: count.warehouseName ?? '',
+                  },
+                  { target: 'beside' }
+                );
               }}
             >
-              <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
-              Finish counting
+              <Icon glyph={faPrint} className="size-4" aria-hidden />
             </Button>
-          </>
-        ) : null}
-
-        {canApprove ? (
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            loading={approve.isPending}
-            onClick={() => {
-              void doApprove();
-            }}
-          >
-            <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
-            Approve
-          </Button>
-        ) : null}
-
-        {canApply ? (
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            loading={post.isPending}
-            onClick={() => {
-              void doApply();
-            }}
-          >
-            <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
-            Apply corrections
-          </Button>
-        ) : null}
-
-        {/* ALWAYS the last child of a toolbar — see RefreshButton. Picks up a
-            change someone else made to this count while it sat open. Carries the
-            ml-auto itself when no primary action is present to push it over. */}
-        <RefreshButton
-          className={editable || canApprove || canApply ? undefined : 'ml-auto'}
-          isFetching={
-            isFetching || enter.isPending || submit.isPending || post.isPending || approve.isPending
-          }
-          updatedAt={updatedAt}
-          onRefresh={onRefresh}
-        />
-      </PaneToolbar>
+          </Tooltip>
+        }
+        refresh={
+          /* ALWAYS the last child of a toolbar — see RefreshButton. Picks up a
+            change someone else made to this count while it sat open. */
+          <RefreshButton
+            isFetching={
+              isFetching ||
+              enter.isPending ||
+              submit.isPending ||
+              post.isPending ||
+              approve.isPending
+            }
+            updatedAt={updatedAt}
+            onRefresh={onRefresh}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -1080,6 +1090,7 @@ function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
             title="No count was chosen"
             description="This pane shows one stock count. Open it from the Stock counts list, or start a new one."

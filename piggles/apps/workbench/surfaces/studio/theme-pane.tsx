@@ -19,6 +19,7 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { OpenHistory, OpenPreview } from './open-history';
 import { ThemeLibrary } from './theme-library';
 import { useThemeDocument } from './use-theme-document';
 
@@ -47,6 +48,7 @@ export function ThemePaneSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <DocumentProvider store={state.store}>
       <ThemePaneBody
+        ctx={ctx}
         state={state}
         openId={openId}
         onOpen={setOpenId}
@@ -57,11 +59,13 @@ export function ThemePaneSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ThemePaneBody({
+  ctx,
   state,
   openId,
   onOpen,
   onTitle,
 }: {
+  ctx: SurfaceContext;
   state: ReturnType<typeof useThemeDocument>;
   openId: string | null;
   onOpen: (id: string) => void;
@@ -83,28 +87,7 @@ function ThemePaneBody({
   return (
     <ThemeBuilder
       toolbar={
-        <>
-          <ThemeLibrary appliedId={state.appliedId} openId={openId} onOpen={onOpen} />
-          <Button
-            size="sm"
-            color="primary"
-            variant="soft"
-            disabled={!dirty || state.saving}
-            onClick={() => void state.save()}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            {state.saving ? 'Saving…' : 'Save'}
-          </Button>
-          <Button
-            size="sm"
-            color="primary"
-            disabled={state.publishing}
-            onClick={() => void state.publish()}
-          >
-            <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />
-            {state.publishing ? 'Publishing…' : 'Publish'}
-          </Button>
-        </>
+        <ThemeActions ctx={ctx} state={state} openId={openId} onOpen={onOpen} dirty={dirty} />
       }
       statusBar={
         <ThemeStatus
@@ -114,6 +97,47 @@ function ThemePaneBody({
         />
       }
     />
+  );
+}
+
+function ThemeActions({
+  ctx,
+  state,
+  openId,
+  onOpen,
+  dirty,
+}: {
+  ctx: SurfaceContext;
+  state: ReturnType<typeof useThemeDocument>;
+  openId: string | null;
+  onOpen: (id: string) => void;
+  dirty: boolean;
+}) {
+  return (
+    <>
+      <ThemeLibrary appliedId={state.appliedId} openId={openId} onOpen={onOpen} />
+      <OpenPreview ctx={ctx} />
+      <OpenHistory ctx={ctx} />
+      <Button
+        size="sm"
+        color="primary"
+        variant="soft"
+        disabled={!dirty || state.saving}
+        onClick={() => void state.save()}
+      >
+        <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+        {state.saving ? 'Saving…' : 'Save'}
+      </Button>
+      <Button
+        size="sm"
+        color="primary"
+        disabled={state.publishing}
+        onClick={() => void state.publish()}
+      >
+        <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />
+        {state.publishing ? 'Publishing…' : 'Publish'}
+      </Button>
+    </>
   );
 }
 

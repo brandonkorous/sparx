@@ -13,7 +13,7 @@ builds sparx, kanNINJA, and client software.
 
 This is the _parent brand_, not a product. sparx has its own brand guide
 ([docs/sparx-brand-guide.md](../sparx-brand-guide.md)) and its own marketing site
-([apps/web](../../apps/web)). WizeWorks sits above both.
+([sparx/apps/web](../../apps/web)). WizeWorks sits above both.
 
 **The WizeWorks site will be built in sparx — entirely through the sparx MCP, as a tenant.**
 No `@sparx/*` or `@wizeworks/*` package edits, no app code, no `globals.css`. Anything the MCP
@@ -72,7 +72,7 @@ Added 2026-07-30:
 - **No social proof.** No testimonials, logos, counts, or customer stories — a position, not a
   gap. The software is the proof ([02 §8](02-positioning-and-audience.md)).
 - **Legal entity is WizeWorks LLC.** `WizeWorks, Inc.` was wrong in 11 shipped places across
-  `apps/web` and `apps/market`; all corrected.
+  `sparx/apps/web` and `sparx/apps/market`; all corrected.
 - **HelpNinja is discontinued.** The portfolio is sparx and kanNINJA.
 
 - **Palette locked: earthy, and a full palette — not primary everywhere.** Warm bone chassis,
@@ -112,5 +112,5 @@ them is the cheapest differentiation available to us.
 - [docs/00-README.md](../00-README.md) — the sparx platform documentation index
 - [docs/brain/README.md](../brain/README.md) — the knowledge brain; start there for any
   non-trivial platform work
-- [packages/brand/](../../packages/brand/) — the live brand tokens, marks, and React components
-- [packages/ui/CLAUDE.md](../../packages/ui/CLAUDE.md) — component-library mechanics
+- [sparx/packages/brand/](../../packages/brand/) — the live brand tokens, marks, and React components
+- [sparx/packages/ui/CLAUDE.md](../../packages/ui/CLAUDE.md) — component-library mechanics

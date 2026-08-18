@@ -21,11 +21,13 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
+  Card,
   Checkbox,
-  EmptyState,
   Heading,
   Rating,
   Text,
@@ -34,19 +36,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import {
-  faCheck,
-  faEyeSlash,
-  faMessage,
-  faReply,
-  faServer,
-  faTrashCan,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faCheck, faEyeSlash, faReply, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, reviewState } from './products-data';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import {
   useBulkDeleteReviews,
   useBulkModerateReviews,
@@ -57,8 +56,6 @@ import {
   useRespondQueueReview,
   type QueueReview,
 } from './moderation-data';
-
-const LABEL = 'Reviews';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -435,61 +432,66 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Reviews queue controls">
-        <Icon glyph={faMessage} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {LABEL}
-        </Heading>
-        {rows.length > 0 ? (
-          <Badge color="warning" variant="soft" size="sm">
-            {rows.length === 1 ? '1 waiting' : `${String(rows.length)} waiting`}
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={reviews.isFetching}
-          updatedAt={reviews.data ? reviews.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void reviews.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Reviews queue controls"
+        status={
+          rows.length > 0 ? (
+            <Badge color="warning" variant="soft" size="sm">
+              {rows.length === 1 ? '1 waiting' : `${String(rows.length)} waiting`}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            className="ml-auto"
+            isFetching={reviews.isFetching}
+            updatedAt={reviews.data ? reviews.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void reviews.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* All three non-ready states are carded, matching the queue itself — a
+              stack of review cards. */}
           {reviews.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load the reviews queue"
-              description={productErrorMessage(
-                reviews.error,
-                'This is a problem reaching the server. Nothing customers wrote has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void reviews.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
+                title="Could not load the reviews queue"
+                description={productErrorMessage(
+                  reviews.error,
+                  'This is a problem reaching the server. Nothing customers wrote has been lost.'
+                )}
+                onRetry={() => {
+                  void reviews.refetch();
+                }}
+              />
+            </Card>
           ) : reviews.isLoading ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : rows.length === 0 && !focused && !focusPending ? (
-            <EmptyState
-              icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
-              title="Nothing waiting"
-              description="Every review across your whole catalog has had a decision. New ones from customers who didn't buy through a tracked order appear here for you to publish or hide before they go on your website."
-            />
+            /* A queue with nothing in it — nothing is narrowing it, so this is
+               <PaneEmpty> rather than <ListEmptyState>'s two-branch choice. */
+            <Card>
+              <PaneEmpty
+                module={MODULE}
+                icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
+                title="Nothing waiting"
+                description="Every review across your whole catalog has had a decision. New ones from customers who didn't buy through a tracked order appear here for you to publish or hide before they go on your website."
+              />
+            </Card>
           ) : (
             <>
               {focused ? (
                 <div ref={focusRef} className="flex flex-col gap-2">
-                  <Heading level={1} className="text-2xl font-semibold">
+                  <Heading level={2} className="text-2xl font-semibold">
                     This review
                   </Heading>
                   <ReviewCard
@@ -510,7 +512,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : (
                 <>
                   <div className="flex flex-col gap-1">
-                    <Heading level={1} className="text-2xl font-semibold">
+                    <Heading level={2} className="text-2xl font-semibold">
                       Reviews waiting for you
                     </Heading>
                     <Text className="text-sm">

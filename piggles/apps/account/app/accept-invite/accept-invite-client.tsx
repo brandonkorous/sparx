@@ -10,7 +10,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Alert, Button } from '@wizeworks/silicaui-react';
-import { signOut } from '@sparx/auth/client';
+import { signOut } from '@wizeworks/auth/client';
 import { acceptInvitation, resendInviteVerification } from './actions';
 
 /**
@@ -28,7 +28,9 @@ export function AcceptInviteButton({
   invitationId: string;
   orgName: string;
 }) {
-  const router = useRouter();
+  // No `useRouter` here — accepting an invitation leaves this origin, so there
+  // is no client-side navigation left for it to do. The other control on this
+  // page stays on getpiggles.com and keeps its own.
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
@@ -37,8 +39,13 @@ export function AcceptInviteButton({
     startTransition(async () => {
       const result = await acceptInvitation(invitationId);
       if (result.ok) {
-        router.replace('/handoff');
-        router.refresh();
+        // A REAL browser navigation, not `router.replace`. `/handoff` 303s to
+        // another origin, and the client router would try to fetch that as an
+        // RSC payload first — a cross-origin fetch CORS refuses, so the accept
+        // ends on a failed request and a fallback rather than on the console.
+        // `router.refresh()` went with it: there is nothing left to refresh
+        // once the page is leaving this origin entirely.
+        window.location.assign('/handoff');
       } else {
         setError(result.error ?? 'We could not accept that invitation.');
       }

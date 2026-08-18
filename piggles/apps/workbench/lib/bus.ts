@@ -5,7 +5,8 @@
 // So every fact that must look the same in two windows at once travels as a
 // message on this channel:
 //
-//   • theme      — toggling dark mode in one window must repaint all of them
+//   • theme      — changing the appearance in one window must repaint all of
+//                  them, including a popout on a second monitor
 //   • data       — saving an invoice in a detached pane must refresh the list
 //                  pane still sitting in the main window
 //   • panes      — "open this in the main window", and tab hand-off between
@@ -19,7 +20,7 @@
 // state still arrives over the API.
 
 import type { PaneDescriptor } from './surfaces/descriptor';
-import type { Theme } from './theme';
+import type { ThemeChoice } from './theme';
 
 export const BUS_CHANNEL = 'piggles-console';
 
@@ -36,8 +37,12 @@ export type WindowId = string;
 export const MAIN_WINDOW: WindowId = 'main';
 
 export type BusMessage =
-  /** Theme changed anywhere; every window repaints its own document. */
-  | { type: 'theme.changed'; theme: Theme }
+  /**
+   * Somebody picked a new appearance. Carries the CHOICE, not the resolved
+   * theme: `system` has to be resolved per window against that window's own
+   * machine, and sending 'dark' would pin a window that was meant to follow.
+   */
+  | { type: 'theme.changed'; choice: ThemeChoice }
   /**
    * Server data changed. `keys` are query-key prefixes to invalidate. Sent after
    * every successful mutation so panes in other windows stop showing stale rows.

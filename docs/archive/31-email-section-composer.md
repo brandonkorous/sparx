@@ -6,7 +6,7 @@
 
 > **RETIRED (2026-06-04).** The section model described here is superseded by the
 > **Email Builder** node-tree model ([docs/52](52-email-builder.md)). `@sparx/email-sections`,
-> `@sparx/email`'s `sections/*` (`renderSections`), and the authored-template path
+> `@wizeworks/email`'s `sections/*` (`renderSections`), and the authored-template path
 > were deleted in docs/52 Phase 5 (§8). Marketing emails are authored in
 > `/builder/email`; built-in transactional templates are unchanged. This doc is
 > kept for historical context — do not build against the section model.
@@ -35,7 +35,7 @@ never override). Where the Site Builder composes a **page** bound to a sample it
 composer composes a **message** bound to a sample **recipient** — the same direct-manipulation tool,
 a different render target.
 
-**Non-goal:** this build does not edit `@sparx/sitebuilder-schemas` or the site renderer. Email
+**Non-goal:** this build does not edit `@wizeworks/sitebuilder-schemas` or the site renderer. Email
 sections live in their own package (§8) to avoid colliding with the in-flight Site Builder
 workstream, structured so a future shared "section kernel" absorbs both with no rework (§12).
 
@@ -150,13 +150,13 @@ caller (preview, render, editor load) sees the section-list shape.
 ## 6. Section catalog (v1)
 
 Defined in `@sparx/email-sections` (§8). Each entry is `{ type, tier, label, description, icon,
-schema (Zod), fields (descriptors) }` — the same registry shape as `@sparx/sitebuilder-schemas`,
+schema (Zod), fields (descriptors) }` — the same registry shape as `@wizeworks/sitebuilder-schemas`,
 plus `tier`.
 
 **Static**
 
 - `heading` — text, level (h1/h2), align.
-- `rich-text` — a `CmsDoc` (the existing TipTap editor); serialized via `@sparx/cms-editor/serialize`.
+- `rich-text` — a `CmsDoc` (the existing TipTap editor); serialized via `@wizeworks/cms-editor/serialize`.
 - `image` — media id (CMS media picker), alt, link, width.
 - `button` — label, url, align.
 - `divider`, `spacer` — layout atoms.
@@ -208,7 +208,7 @@ the whole message per recipient when any block is personalized.
 
 ### 7.2 Data resolution layer
 
-A `section-data` resolver in `@sparx/email-platform` (server-side; reads Commerce/CMS/CRM through
+A `section-data` resolver in `@wizeworks/email-platform` (server-side; reads Commerce/CMS/CRM through
 their service layers — never new schema, per [docs/02](../02-architecture-overview.md)):
 
 ```ts
@@ -225,7 +225,7 @@ The resolver is the **only** place that reaches into other modules; renderers (�
 
 ### 7.3 Rendering
 
-`@sparx/email` gains one React Email component per section type and a `renderSections(sections,
+`@wizeworks/email` gains one React Email component per section type and a `renderSections(sections,
 dataById, { brand })` composer that maps each instance → its component, wraps the result in
 `<BrandProvider>` + `<EmailLayout>`, and renders to inlined `html` + `text`. Brand is threaded
 exactly as today (§10). Renderers are email-safe (inlined styles, `<img>`/`<a>`, table layout) —
@@ -235,17 +235,17 @@ they share **schemas** with the site, never **renderers**.
 
 ## 8. Packages & boundaries
 
-| Concern                                              | Home                                         | Notes                                                                            |
-| ---------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------- |
-| Section schemas, registry, `tier`, field descriptors | **`@sparx/email-sections`** (new, zod-only)  | Mirrors `@sparx/sitebuilder-schemas` structure; no React, importable everywhere. |
-| Section renderers + `renderSections()`               | **`@sparx/email`**                           | React Email components; brand via context.                                       |
-| Body model types + `normalizeBody()`                 | **`@sparx/email-sections`**                  | Shared by service, REST, dashboard.                                              |
-| Data resolution (`resolveSectionData`)               | **`@sparx/email-platform`**                  | Reads Commerce/CMS/CRM via their services.                                       |
-| Render orchestration (path choice, per-recipient)    | **`@sparx/email-platform`** + `email-worker` | §7.1.                                                                            |
-| Composer UI                                          | **`apps/dashboard`** (`/email/.../design`)   | §9.                                                                              |
+| Concern                                              | Home                                             | Notes                                                                                |
+| ---------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Section schemas, registry, `tier`, field descriptors | **`@sparx/email-sections`** (new, zod-only)      | Mirrors `@wizeworks/sitebuilder-schemas` structure; no React, importable everywhere. |
+| Section renderers + `renderSections()`               | **`@wizeworks/email`**                           | React Email components; brand via context.                                           |
+| Body model types + `normalizeBody()`                 | **`@sparx/email-sections`**                      | Shared by service, REST, dashboard.                                                  |
+| Data resolution (`resolveSectionData`)               | **`@wizeworks/email-platform`**                  | Reads Commerce/CMS/CRM via their services.                                           |
+| Render orchestration (path choice, per-recipient)    | **`@wizeworks/email-platform`** + `email-worker` | §7.1.                                                                                |
+| Composer UI                                          | **`apps/dashboard`** (`/email/.../design`)       | §9.                                                                                  |
 
 `@sparx/email-sections` is the only new package. It is deliberately a **structural mirror** of
-`@sparx/sitebuilder-schemas` (same `SectionField`/registry/`parseSectionConfig` shapes) so the
+`@wizeworks/sitebuilder-schemas` (same `SectionField`/registry/`parseSectionConfig` shapes) so the
 eventual shared section kernel (§12) absorbs both. It does **not** import sitebuilder-schemas
 (avoids coupling email to the in-flight redesign).
 
@@ -253,7 +253,7 @@ eventual shared section kernel (§12) absorbs both. It does **not** import siteb
 
 ## 9. The dashboard composer
 
-A full-bleed workspace (§3) with three regions, all built from `@sparx/ui` (no raw Tailwind in
+A full-bleed workspace (§3) with three regions, all built from `@wizeworks/ui` (no raw Tailwind in
 feature code, per [docs/23](../23-frontend-component-architecture.md)).
 
 ### 9.1 Palette (left)
@@ -307,9 +307,9 @@ though personalization renders later.
 - **P1 — `@sparx/email-sections`.** Section-instance + body model, `normalizeBody()`, field
   descriptors, tier-tagged registry, the v1 catalog's Zod schemas, `parseSectionConfig`/defaults,
   unit tests. _Ships: the catalog + validation, no behavior change yet._
-- **P2 — Renderers (`@sparx/email`).** One React Email component per section type + `renderSections`;
+- **P2 — Renderers (`@wizeworks/email`).** One React Email component per section type + `renderSections`;
   static + dynamic render correctly given data; render tests. _Ships: section bodies can be rendered._
-- **P3 — Service wiring (`@sparx/email-platform`).** `resolveSectionData` (static + dynamic);
+- **P3 — Service wiring (`@wizeworks/email-platform`).** `resolveSectionData` (static + dynamic);
   template/broadcast services consume section-list bodies; legacy `normalizeBody` on read; preview
   endpoint renders the section list. Render-once path end to end. _Ships: section templates send
   (static + dynamic)._
@@ -325,7 +325,7 @@ though personalization renders later.
 
 ## 12. Convergence with the shared kernel
 
-The Site Builder redesign keeps its section registry in `@sparx/sitebuilder-schemas` and is
+The Site Builder redesign keeps its section registry in `@wizeworks/sitebuilder-schemas` and is
 extending it with bound sections (doc 30 §4.2, §11). `@sparx/email-sections` is built as a
 **structural twin** so that, once both surfaces are stable, a `@sparx/sections-core` can be
 extracted holding the surface-agnostic primitives — the `SectionField` descriptor types, the

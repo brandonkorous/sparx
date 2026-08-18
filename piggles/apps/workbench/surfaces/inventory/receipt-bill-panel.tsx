@@ -33,13 +33,13 @@ import {
   Field,
   FieldLabel,
   Input,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faReceipt } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useMutation, useQuery } from '@sparx/query';
+import { useMutation, useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { FormSection } from '../../components/form-section';
 import { afterCommit } from '../../lib/defer';

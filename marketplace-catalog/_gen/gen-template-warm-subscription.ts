@@ -17,10 +17,10 @@
 //
 // This file is JUST the SPEC; the composition + emission live in the shared
 // `template-sites/harness.ts`, which the other nine templates reuse. Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-warm-subscription.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-warm-subscription.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-warm-subscription/**" \
 //     "marketplace-catalog/_gen/gen-template-warm-subscription.ts"
-//   pnpm --filter @sparx/api-rest marketplace:self-register
+//   pnpm --filter @wizeworks/api-rest marketplace:self-register
 //
 // WHY RELATIVE IMPORTS — see the harness header (marketplace-catalog has no node_modules).
 
@@ -30,8 +30,8 @@ import { pathToFileURL } from 'node:url';
 import {
     el,
     type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { productsBlock } from '../../packages/silica-catalog/src/commerce';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { productsBlock } from '../../wizeworks/packages/silica-catalog/src/commerce';
 import {
     actions,
     body,
@@ -44,8 +44,8 @@ import {
     sectionAlt,
     sectionHead,
     CARD,
-} from '../../packages/silica-catalog/src/sections/_shell';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/src/sections/_shell';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';

@@ -14,7 +14,7 @@
 // This file is JUST the SPEC; composition + emission live in the shared
 // `template-sites/harness.ts`, and the bylined article DATA plumbing in the shared
 // `template-sites/article.ts` kit. Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-institution-news.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-institution-news.ts"
 //   pnpm exec prettier --write "marketplace-catalog/_gen/gen-template-institution-news.ts" \
 //     "marketplace-catalog/blueprints/sparx-institution-news/**"
 //
@@ -31,10 +31,10 @@ import { pathToFileURL } from 'node:url';
 import {
   el,
   type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { productsBlock } from '../../packages/silica-catalog/src/commerce';
-import { blogPostGrid } from '../../packages/silica-catalog/src/cms';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { productsBlock } from '../../wizeworks/packages/silica-catalog/src/commerce';
+import { blogPostGrid } from '../../wizeworks/packages/silica-catalog/src/cms';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';

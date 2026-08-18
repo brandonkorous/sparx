@@ -6,7 +6,7 @@
 // which exist before any pane does. Everything here rides the same token/client
 // as the panes, so the chrome holds no second auth path.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from './client';
 import { getTokenState } from './token';
 import type { WorkbenchController } from '../workbench/controller';
@@ -152,7 +152,7 @@ export function useModuleStates() {
 }
 
 /** Same cookie the dashboard uses; the token route reads it server-side. */
-const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
+const ACTIVE_PROPERTY_COOKIE = 'piggles_active_property';
 
 /**
  * Switches the active site — the per-site-workspaces model.

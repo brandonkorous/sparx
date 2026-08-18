@@ -7,7 +7,7 @@ Last Updated: 2026-06-02
 > **⚠ Superseded by [61](61-utility-authoring-system.md) (2026-06-07).** This is the class-first
 > _proposal_; 61 is the **executed** model and wins on any disagreement. Two decisions below did **not**
 > ship as written: (1) the `@sparx/site-ui` → `@sparx/surface` rename **never happened** — the component
-> library is still **`@sparx/site-ui`** (only the per-tenant _compile_ package is `@sparx/surface-compile`);
+> library is still **`@sparx/site-ui`** (only the per-tenant _compile_ package is `@wizeworks/surface-compile`);
 > (2) the node's per-instance slot shipped as **`props`**, not `data`. **Current node shape:**
 > `{ id, type, class?, props, binding?, children? }`. The authoring surface also moved to Tailwind-native
 > utility tokens (not a curated dialect) — see 61.
@@ -190,11 +190,11 @@ tenant's tree as the content source** and compile on the events that already exi
 
 ### 5.1 Three layers, not one
 
-| Layer                                                       | What                                         | When built                                                                 | Scope                                  |
-| ----------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------- |
-| **Token theme** (`--st-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@sparx/site-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
-| **Component library** (`site-ui` semantic CSS + archetypes) | `navbar`, `hero`, `card-feature`, the recipe | once, at **platform** build                                                | shipped to every tenant                |
-| **Per-tenant utility delta** (`tenant.css`)                 | Only the utilities a tenant actually typed   | on **save** (`temp.css`) and **publish** (`tenant.css`)                    | small static diff, one tenant          |
+| Layer                                                       | What                                         | When built                                                                     | Scope                                  |
+| ----------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------- |
+| **Token theme** (`--st-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@wizeworks/site-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
+| **Component library** (`site-ui` semantic CSS + archetypes) | `navbar`, `hero`, `card-feature`, the recipe | once, at **platform** build                                                    | shipped to every tenant                |
+| **Per-tenant utility delta** (`tenant.css`)                 | Only the utilities a tenant actually typed   | on **save** (`temp.css`) and **publish** (`tenant.css`)                        | small static diff, one tenant          |
 
 The per-tenant delta is the _only_ new artifact, and it is small — it is the utilities **beyond**
 the shipped archetype/recipe CSS, generated from that one tenant's pages.

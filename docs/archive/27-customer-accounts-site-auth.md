@@ -11,7 +11,7 @@
 This document specifies **Layer 2 authentication** — accounts for the _shoppers_ who buy
 from a tenant's site. It is deliberately separate from **Layer 1** (tenant staff
 auth, [docs/16-auth-security.md](../16-auth-security.md)), which uses Better Auth and lives in
-`packages/auth`.
+`wizeworks/packages/auth`.
 
 A shopper who registers at `acme.sparx.zone` is a customer of **Acme**, not of sparx. They
 have no relationship to the sparx dashboard, no `users` row, and no presence on any other
@@ -49,7 +49,7 @@ instance." We are **not** doing that, and the reason is structural, not stylisti
 Better Auth keys credential sign-in on a **globally unique email**. Staff auth leans on this
 hard: `users.email` carries a global `@unique`, and `signUpMerchant` provisions a fresh tenant
 per registration so the compound `(tenantId, email)` never actually mattered
-([docs/16 §1](../16-auth-security.md), `packages/db/prisma/schema/03-auth.prisma`). Sign-in does
+([docs/16 §1](../16-auth-security.md), `wizeworks/packages/db/prisma/schema/03-auth.prisma`). Sign-in does
 `findOne({ email })` with no tenant in the predicate.
 
 For shoppers that assumption is **wrong**: the same email must be able to register at two
@@ -63,7 +63,7 @@ are worse than the alternative.
 
 **For a shopper, the tenant is known _before_ authentication.** It is the site's
 hostname (`acme.sparx.zone`, or `?tenant=acme` in dev), resolved at the edge in
-[apps/site/middleware.ts](../../apps/site/middleware.ts) and carried to `api-rest` as
+[wizeworks/apps/site/middleware.ts](../../apps/site/middleware.ts) and carried to `api-rest` as
 the `?tenant=<slug>` param the public commerce surface already uses. Staff sign-in can't do
 this — a staff member types only an email, and the tenant is _discovered_ from their user row.
 A shopper's tenant is ambient context.
@@ -76,20 +76,20 @@ no namespacing. The hard problem Better Auth would have forced on us simply does
 
 ### Decision
 
-Build a **purpose-built, tenant-scoped customer-auth module**, `@sparx/customer-auth`, that
+Build a **purpose-built, tenant-scoped customer-auth module**, `@wizeworks/customer-auth`, that
 reuses the platform's existing primitives rather than a framework:
 
 - **Hashing:** Argon2id via `@node-rs/argon2` — the identical algorithm and parameters Layer 1
-  uses (already a dependency of `@sparx/db`, see `packages/db/prisma/seed.ts`).
+  uses (already a dependency of `@wizeworks/db`, see `wizeworks/packages/db/prisma/seed.ts`).
 - **Sessions:** opaque 256-bit random tokens, SHA-256-hashed at rest, in a first-party
-  httpOnly cookie — the same shape as our API-key model (`packages/auth/src/api-keys.ts`).
+  httpOnly cookie — the same shape as our API-key model (`wizeworks/packages/auth/src/api-keys.ts`).
 - **Isolation:** every table is tenant-scoped with `ENABLE + FORCE` RLS and a
   `tenant_isolation` policy on `current_tenant_id()`; every query runs in `withTenant()` on the
   standard `sparx_app` (NOBYPASSRLS) client.
 
 This is ~300 lines under our full control, it is auditable, and it never touches the staff auth
 package or its tables. It honours the boundary rule in
-`memory/feedback_respect_architectural_boundaries.md`: `@sparx/auth` stays "the Better Auth
+`memory/feedback_respect_architectural_boundaries.md`: `@wizeworks/auth` stays "the Better Auth
 package"; customer auth gets its own clearly-named home.
 
 ---
@@ -100,13 +100,13 @@ package"; customer auth gets its own clearly-named home.
 Browser (acme.sparx.zone)
   │  POST /api/sparx/v1/public/commerce/account/register   { email, password, name }
   ▼
-apps/site  /api/sparx/[...path]  (same-origin proxy)
+wizeworks/apps/site  /api/sparx/[...path]  (same-origin proxy)
   │  forwards to api-rest; relays Set-Cookie back as first-party on acme.sparx.zone
   ▼
-services/api-rest  /v1/public/commerce/account/*   (tenant by ?tenant=<slug>)
+wizeworks/services/api-rest  /v1/public/commerce/account/*   (tenant by ?tenant=<slug>)
   │  resolves tenantId, asserts Site/Commerce module active
   ▼
-@sparx/customer-auth   registerCustomer / authenticateCustomer / {create,verify,revoke}Session
+@wizeworks/customer-auth   registerCustomer / authenticateCustomer / {create,verify,revoke}Session
   │  Argon2id hashing · opaque session tokens · all inside withTenant()
   ▼
 Postgres (RLS FORCE)   customer_credentials · customer_sessions · customer_password_resets
@@ -122,7 +122,7 @@ Two cookies coexist on the site origin, never colliding with staff auth (which l
 | `sparx_customer_session` | this doc | authenticated shopper session         | httpOnly, SameSite=Lax, Secure, Path=/ |
 
 The proxy already relays `Set-Cookie` and `cookie` in both directions
-([apps/site/app/api/sparx/[...path]/route.ts](../../apps/site/app/api/sparx/%5B...path%5D/route.ts)),
+([wizeworks/apps/site/app/api/sparx/[...path]/route.ts](../../apps/site/app/api/sparx/%5B...path%5D/route.ts)),
 so no proxy change is needed beyond ensuring the customer cookie name is forwarded.
 
 ---
@@ -130,7 +130,7 @@ so no proxy change is needed beyond ensuring the customer cookie name is forward
 ## 4. Data model
 
 The CRM **already owns the customer spine** (`customers`,
-`packages/db/prisma/schema/20-crm-customers.prisma`) with `(tenantId, email)` unique and an
+`wizeworks/packages/db/prisma/schema/20-crm-customers.prisma`) with `(tenantId, email)` unique and an
 `authUserId` column reserved for exactly this layer. We **do not** create a parallel customer
 table. Customer auth adds only the credential + session + reset tables that hang off a
 `customers.id`.
@@ -138,7 +138,7 @@ table. Customer auth adds only the credential + session + reset tables that hang
 ### 4.1 New tables
 
 ```prisma
-// packages/db/prisma/schema/40-customer-auth.prisma  (new file)
+// wizeworks/packages/db/prisma/schema/40-customer-auth.prisma  (new file)
 
 // Credential for a site shopper. One row per registered customer.
 // A `customers` row can exist with no credential (guest checkout, CRM-imported
@@ -234,15 +234,15 @@ guard), same as every prior migration.
 
 ---
 
-## 5. `@sparx/customer-auth` package
+## 5. `@wizeworks/customer-auth` package
 
 New workspace package. Server-only (no React surface; the site calls it via `api-rest`,
 never directly — honouring the "site talks to api-rest only" constraint). Mirrors the
-ergonomics of `packages/auth` but is its own thing.
+ergonomics of `wizeworks/packages/auth` but is its own thing.
 
 ```
-packages/customer-auth/
-  package.json          // deps: @sparx/db, @node-rs/argon2, zod; type: module
+wizeworks/packages/customer-auth/
+  package.json          // deps: @wizeworks/db, @node-rs/argon2, zod; type: module
   tsconfig.json
   eslint.config.js
   src/
@@ -283,9 +283,9 @@ resetPassword(ctx, { token, password }) → void
 
 ### 5.2 Email
 
-Password-reset and welcome emails publish `email.send` to Pub/Sub via `@sparx/events`, the
-same path `packages/auth/src/email-events.ts` uses — never a direct send. New templates
-(`customer-welcome`, `customer-password-reset`) are added to `packages/email` in the
+Password-reset and welcome emails publish `email.send` to Pub/Sub via `@wizeworks/events`, the
+same path `wizeworks/packages/auth/src/email-events.ts` uses — never a direct send. New templates
+(`customer-welcome`, `customer-password-reset`) are added to `wizeworks/packages/email` in the
 atomic-component style mandated by CLAUDE.md. (OTP-style synchronous send is **not** needed
 here; reset is a link, not a code.)
 
@@ -293,7 +293,7 @@ here; reset is a link, not a code.)
 
 ## 6. `api-rest` public account routes
 
-New file `services/api-rest/src/routes/v1/public/account.ts`, registered in
+New file `wizeworks/services/api-rest/src/routes/v1/public/account.ts`, registered in
 [app.ts](../../services/api-rest/src/routes/v1/public) alongside `publicCartRoutes` /
 `publicCheckoutRoutes`. All routes resolve the tenant via the existing
 `publicCommerceContext(request)` helper and gate on the Site module.
@@ -331,7 +331,7 @@ is a later enhancement.
 
 ---
 
-## 7. Site UI (`apps/site`)
+## 7. Site UI (`wizeworks/apps/site`)
 
 All token-driven `st-*` classes (no Tailwind in feature code), responsive, with loading/empty/
 error states. New customer-session client mirrors the existing `cart-provider` pattern.
@@ -358,7 +358,7 @@ register, logout, refresh }`; hydrates from `/account/me` on mount.
 
 Per `memory/feedback_deploy_early_deploy_small.md`, ship in independently-deployable slices:
 
-1. **DB + package** — migration (through the pipeline) + `@sparx/customer-auth` with unit tests
+1. **DB + package** — migration (through the pipeline) + `@wizeworks/customer-auth` with unit tests
    for hash/verify, session lifecycle, register/login/reset. Nothing user-facing yet.
 2. **API** — `account.ts` routes (register/login/logout/me) + session preHandler + cart merge.
    Verifiable with `curl` against a seeded tenant.
@@ -382,7 +382,7 @@ Per `memory/feedback_deploy_early_deploy_small.md`, ship in independently-deploy
 - [x] Login + password-reset request are enumeration-safe; login is timing-flattened (dummy
       verify on unknown email).
 - [x] Per-IP rate-limiting (10/min) on `register` / `login` / `password/forgot` / `password/reset`.
-- [x] No customer-auth code imports or mutates the staff `@sparx/auth` instance or its tables.
+- [x] No customer-auth code imports or mutates the staff `@wizeworks/auth` instance or its tables.
 
 **Verification status.** Unit tests (hash/session) + DB-gated integration tests (service +
 cross-tenant RLS) green; api-rest routes exercised end-to-end via `app.inject` against docker

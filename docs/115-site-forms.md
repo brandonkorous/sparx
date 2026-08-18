@@ -60,7 +60,7 @@ The submit endpoint `POST /v1/public/forms/submit` is anonymous and internet-fac
   (owner notify + autoresponder) and `form.submitted`, and returns. Workers /
   the in-process CRM consumer do the rest.
 
-## 3. Data model (`packages/db/prisma/schema/85-forms.prisma`)
+## 3. Data model (`wizeworks/packages/db/prisma/schema/85-forms.prisma`)
 
 - **`FormSubmission`** — the durable inbox row. `tenant_id` (RLS), optional
   `property_id` (SetNull), `form_node_id` (stable Builder id), `page_slug`,
@@ -79,8 +79,8 @@ so no FORCE-RLS backfill loop).
 ## 4. The Contact form block
 
 `ContactForm` is a wired interactive leaf — the richer sibling of the `Signup`
-island (`packages/builder-render/src/contact-form.tsx`). Contract in
-`packages/builder-schemas/src/forms.ts`. It renders a fixed, well-designed contact
+island (`wizeworks/packages/builder-render/src/contact-form.tsx`). Contract in
+`wizeworks/packages/builder-schemas/src/forms.ts`. It renders a fixed, well-designed contact
 field set (Name, Email, optional Phone, Message) and, on the live site only,
 submits through the injected runtime effect `submitForm`. Config in `props`:
 `title/description/submitLabel/successMessage`, `showPhone/messageRequired`,
@@ -88,7 +88,7 @@ submits through the injected runtime effect `submitForm`. Config in `props`:
 sensitive `recipients[]`. The catalog `contact_form` entry now stamps this node.
 
 Runtime path: island → `useBuilderRuntime().submitForm({nodeId, values, honeypot})`
-→ the apps/site bridge (`storefront-builder-runtime.tsx`) adds the trusted
+→ the wizeworks/apps/site bridge (`storefront-builder-runtime.tsx`) adds the trusted
 tenant/site slugs + the current page slug → `contact-client.ts` → `/api/sparx`
 proxy → the public endpoint. The editor canvas no-ops the effect, so the form
 renders + validates in preview without capturing.
@@ -125,14 +125,14 @@ Per the DB rule, the schema + migration + dependent code are committed as **file
 only**; the DB-adjacent steps run through the pipeline:
 
 1. Regenerate the Prisma client (adds `FormSubmission` / `FormDefinition`): the
-   DB-dependent packages (`@sparx/builder`, `@sparx/crm`, `api-rest`) will not
+   DB-dependent packages (`@wizeworks/builder`, `@wizeworks/crm`, `api-rest`) will not
    typecheck until this runs — expected. The DB-independent packages
-   (`builder-schemas`, `events`, `email`, `builder-render`, `apps/site`) already
+   (`builder-schemas`, `events`, `email`, `builder-render`, `wizeworks/apps/site`) already
    typecheck clean.
 2. Apply the migration via the **DB Migrate** workflow (Cloud SQL is private-IP).
 3. `terraform apply` to create the `form.submitted` topic (added to
    `terraform/envs/prod/main.tf`).
-4. Deploy api-rest + email-worker + apps/site + apps/dashboard.
+4. Deploy api-rest + email-worker + wizeworks/apps/site + apps/dashboard.
 
 ## 8. Follow-ups
 

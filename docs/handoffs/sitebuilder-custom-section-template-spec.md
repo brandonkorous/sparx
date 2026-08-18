@@ -50,7 +50,7 @@ The interpreter does **not** replace the existing code-section path — it exten
 - **Snapshots.** Publishing pins the definition into the `SiteVersion` (§8) so render is deterministic.
 
 The custom section stays inside the flat-stack model — one block, not a nesting mechanism — and on the
-site's own CSS surface (it never consumes `@sparx/ui`).
+site's own CSS surface (it never consumes `@wizeworks/ui`).
 
 ---
 
@@ -319,7 +319,7 @@ applied to local docker; prod applies via the DB Migrate pipeline on push.
 
 **Ships (server-safe split per [[feedback_dockerfile_package_wiring]]):**
 
-- ✅ `@sparx/sitebuilder-schemas` (zod-only, no React): the `SectionTemplate` AST schema, value-expression +
+- ✅ `@wizeworks/sitebuilder-schemas` (zod-only, no React): the `SectionTemplate` AST schema, value-expression +
   condition schemas, the author-time validator, `fieldSpecToZod`, the pure evaluator
   (`resolveValue` / `evalCondition` / `resolveEnum` / formatters), **and `custom-section.ts`** — the
   `custom:<slug>` namespace, `toCustomSectionDefinition` (stored record → registry-shaped definition),
@@ -331,10 +331,10 @@ applied to local docker; prod applies via the DB Migrate pipeline on push.
   **and the `SectionRenderer` `custom:*` branch** — it resolves a section's pinned template from
   `snapshot.definitions` (threaded through all four page routes) and renders it. Image node = token-driven
   background-image div, not `<img>`.
-- ✅ `@sparx/db`: `TenantSectionDefinition` model + the hand-edited RLS migration
+- ✅ `@wizeworks/db`: `TenantSectionDefinition` model + the hand-edited RLS migration
   `20260617000000_sitebuilder_section_definitions` (ENABLE+FORCE RLS + `tenant_isolation` policy per
   [[feedback_sparx_db_rls_pattern]]), plus a `definitions_snapshot` JSONB column on `sitebuilder_versions`.
-- ✅ `@sparx/sitebuilder` service: `definition-service.ts` (CRUD + version bump + in-use delete guard +
+- ✅ `@wizeworks/sitebuilder` service: `definition-service.ts` (CRUD + version bump + in-use delete guard +
   semantic `validateTemplate` on write), `section-service` validates/scope-checks `custom:<slug>` writes via
   the loaded tenant definitions, and `publishWithinTx` **pins** the referenced definitions into
   `definitionsSnapshot` (getDraftSnapshot pins too, for live preview). Rollback re-references live defs.

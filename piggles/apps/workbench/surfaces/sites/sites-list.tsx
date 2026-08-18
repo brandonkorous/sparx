@@ -8,9 +8,10 @@
 // switching between them. A site is a workspace, not a record.
 
 import { useMemo, useState } from 'react';
-import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { faArrowUpRightFromSquare, faGlobe, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -23,6 +24,10 @@ import { useActiveSiteId } from '../../lib/api/shell-data';
 import { switchSite } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains, useSites, type Domain, type Site } from './data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'platform';
 
 /** Same modifier contract as the launcher and every other list. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -104,21 +109,13 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneEmpty
+        <PaneLoadError
           icon={<Icon glyph={faGlobe} className="size-6" aria-hidden />}
           title="Could not load your sites"
           description="This is a problem reaching the server, not a problem with your sites."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </Card>
     );
@@ -168,57 +165,77 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
     // Surfaces, not one slab: the pane is base-200 and the toolbar is a base-100
     // card lifted onto it, matching invoicing and orders. The house pattern.
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Site list controls">
-        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
+      <PaneToolbar
+        label="Site list controls"
+        search={
+          /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
             reaches the element that actually lays out. `min-w-0` then lets the
             box give up width as the pane narrows — without it a flex item
             refuses to shrink below its content, so everything to its right gets
-            squeezed instead, which is what made the count and button wrap. */}
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search sites"
-            placeholder="Search sites…"
-            value={search}
-            onValueChange={changeSearch}
-          />
-        </div>
-        {/* Never wraps and never shrinks: "3 of 12" breaking across two lines
+            squeezed instead, which is what made the count and button wrap. */
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search sites"
+              placeholder="Search sites…"
+              value={search}
+              onValueChange={changeSearch}
+            />
+          </div>
+        }
+        status={
+          <>
+            {/* Never wraps and never shrinks: "3 of 12" breaking across two lines
             makes the toolbar taller than the rows it describes, and this is a
             pane the operator can drag to any width. The box above yields first. */}
-        <p className="shrink-0 text-sm whitespace-nowrap">
-          {needle
-            ? `${String(rows.length)} of ${String(all.length)}`
-            : all.length === 1
-              ? '1 site'
-              : `${String(all.length)} sites`}
-        </p>
-        <div className="flex-1" />
-        {/* Same reasoning as the count: the label stays on one line and the
+            <p className="shrink-0 text-sm whitespace-nowrap">
+              {needle
+                ? `${String(rows.length)} of ${String(all.length)}`
+                : all.length === 1
+                  ? '1 site'
+                  : `${String(all.length)} sites`}
+            </p>
+            <div className="flex-1" />
+          </>
+        }
+        primary={
+          /* Same reasoning as the count: the label stays on one line and the
             button keeps its width, so a narrow pane shrinks the search box
-            rather than turning the primary action into two stacked words. */}
-        <Button
-          color="module"
-          size="sm"
-          className="shrink-0 whitespace-nowrap"
-          title="New site — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('platform.settings.site', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          New site
-        </Button>
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={sites ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+            rather than turning the primary action into two stacked words. */
+          <Button
+            color="module"
+            size="sm"
+            className="shrink-0 whitespace-nowrap"
+            title="New site — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('platform.settings.site', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            New site
+          </Button>
+        }
+        views={{
+          target: '/platform/settings/sites',
+          params: { q: search.trim() },
+          // `changeSearch`, not `setSearch` — applying a view changes what
+          // matches, so it owes the same return to page 1 that typing does.
+          onApply: (next) => {
+            changeSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={sites ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {/* The base-200 backdrop and its padding now live on the pane root, above,
           so the toolbar sits on the same surface as the list rather than being
@@ -236,6 +253,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // telling someone to create their first site when they have twelve
           // and simply mistyped is the more annoying of the two mistakes.
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(needle)}
             noResults={{
               icon: <Icon glyph={faGlobe} className="size-6" aria-hidden />,

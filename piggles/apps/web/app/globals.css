@@ -10,8 +10,8 @@
  * imports @sparx/brand/theme.css — only the four sparx apps do, and no shared
  * package pulls it in. Do not add a sparx stylesheet here.
  *
- * There is deliberately NO second token system. apps/web (sparx) still loads
- * @sparx/ui/tokens.css alongside brand during its silicaui migration; Piggles
+ * There is deliberately NO second token system. sparx/apps/web (sparx) still loads
+ * @wizeworks/ui/tokens.css alongside brand during its silicaui migration; Piggles
  * starts after that migration, so brand is the sole token authority from day
  * one and there is nothing to coexist with. */
 @import '@piggles/brand/layers.css';
@@ -61,7 +61,7 @@
 
 /* @piggles/ui ships className strings (Section's padding and max-width), so the
  * same rule applies: unscanned, the panel renders with no layout and nothing
- * reports it. See packages/ui/CLAUDE.md. */
+ * reports it. See sparx/packages/ui/CLAUDE.md. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
 /* Bridge the brand's font tokens into the Tailwind v4 theme, so `font-heading`
@@ -238,6 +238,33 @@ h6 {
   .float {
     animation: piggles-float 4.5s var(--ease-out-soft) infinite alternate;
   }
+}
+
+/* ── `.ink-module` — a group hue used as INK ──────────────────────────────────
+ *
+ * The six group hues are FILLS. @piggles/brand's theme.css says so at the point
+ * it declares them, and the numbers agree: `web` is `#9da7c7`, which measures
+ * 2.3:1 as a word on `base-100` — a pale lavender heading that looks faded
+ * because it IS faded. `text-module` paints exactly that, and it had reached
+ * /apps, /apps/[app] and every group heading on the site.
+ *
+ * The brand file names this class as the answer and both this file and home.tsx
+ * already referred to it — it was simply never defined, so `.ink-module` was a
+ * class name doing nothing and the hue silently fell back to inherited ink. That
+ * is the failure mode the platform's own note about absence describes: a missing
+ * definition renders like a deliberate one.
+ *
+ * DERIVED, never a second palette. The hue is mixed toward the surface's own ink
+ * so it stays recognisably that group's color while carrying enough weight to be
+ * read, and a change to a group token in @piggles/brand moves it — thirty
+ * hand-picked hex values would be thirty things to keep in step. It inverts for
+ * free: on the dark canvas `base-content` is near-white, so the same mix lightens
+ * instead of darkening.
+ *
+ * This is the ONLY sanctioned way to put a group hue on a word. `text-module`
+ * stays correct where the hue is a fill — `bg-module`, a badge, a rail glyph. */
+.ink-module {
+  color: color-mix(in oklab, var(--color-module) 52%, var(--color-base-content));
 }
 
 /* The desk in <TheDay>.
@@ -431,3 +458,31 @@ h6 {
  * over 100% of the card and crop against `overflow-hidden`, because a room
  * extending past its frame is what a room does, and shrinking it instead is how
  * the character size drifts back apart. */
+
+/* ── The product screenshots: theme is SERVED, never clicked ──────────────────
+ *
+ * Every capture of the console exists in both themes (content/shots.ts). The
+ * page already knows which one the visitor is in, so it shows the matching file
+ * — a dark screenshot on a light page is a picture of a setting they did not
+ * choose, and making them click a carousel slide to reach the right one is the
+ * site asking them to do its job.
+ *
+ * Both <img> elements are in the markup and CSS picks. That is deliberate: the
+ * alternative is reading the theme in JavaScript, which cannot be done during
+ * server render, so the first paint would show the wrong image and swap after
+ * hydration. This has no flash and no client state.
+ *
+ * The cost is that the browser may fetch both files. Accepted: they are the
+ * same screen twice, `sizes` keeps each request small, and a visible flash on
+ * every app page is the worse trade. */
+.shot-dark {
+  display: none;
+}
+
+[data-theme='dark'] .shot-light {
+  display: none;
+}
+
+[data-theme='dark'] .shot-dark {
+  display: block;
+}

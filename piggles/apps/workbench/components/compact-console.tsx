@@ -3,71 +3,54 @@
 // The compact shell — the same product, presented for one hand and one column.
 //
 // It carries the same responsibilities as the desktop shell (where you are,
-// search, navigation, you) in a bar the height of a thumb. What it deliberately
-// does NOT carry is the desktop's arrangement chrome: no rail, no status strip,
-// no tear-off. Those are not "hidden on mobile", they are absent, because the
-// stack host reports that it cannot do them.
+// search, navigation, you) — but on a phone they live in a floating bar within
+// thumb reach rather than behind a ☰ in the top-left corner, which is the one
+// pattern the evidence is most consistently against.
 //
-// The status strip goes because its signals do not survive the trip: an
-// always-visible strip costs about 7% of a phone's height to say that you are
-// online. Unsaved work — the one signal that can lose data — is not dropped; it
-// rides the panel switcher's close button, which is where the decision is made.
+// What it deliberately does NOT carry is the desktop's arrangement chrome: no
+// rail, no status strip, no tear-off. Those are not "hidden on mobile", they are
+// absent, because the stack host reports that it cannot do them.
+//
+// ── THE SHELL OWNS THE HOST ─────────────────────────────────────────────────
+//
+// The stack used to mint its own StackPaneHost and pin the open panes in a strip
+// under itself. The bar's Open tab is that strip, so whoever renders both has to
+// own the host — it is created here and handed down.
 //
 // This is a full presentation, not a fallback. A business owner doing the books
 // on a phone in a stockroom is the normal case for this product, not the edge.
 
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import {
-  faBars,
-  faChevronLeft,
-  faChevronRight,
-  faGrid2Plus,
-  faMagnifyingGlass,
-  faShareNodes,
-} from '@fortawesome/pro-solid-svg-icons';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { faShareNodes } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import {
-  Button,
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarItem,
-} from '@wizeworks/silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
-import { PRODUCT } from '@piggles/config';
+import { MODULE_TO_APP, PRODUCT } from '@piggles/config';
 import { titleFor } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
 import { ChromeBoundary } from '@/components/chrome-boundary';
 import { useCopyLink, usePaneLink } from '@/components/copy-pane-link';
-import { useFeedback } from '@/components/feedback/provider';
 import { MobileStack } from '@/components/mobile-stack';
-import type { Theme } from '@/lib/theme';
+import type { Theme, ThemeChoice } from '@/lib/theme';
 import type { ConsoleNavApp } from '@/lib/console/nav';
-import { AllAppsDialog } from './all-apps-dialog';
-import { AppPanel } from './app-panel';
-import { AppScope } from './app-scope';
+import { StackPaneHost } from '@/lib/workbench/stack-host';
+import { getSurface } from '@/lib/surfaces/registry';
+import { AccountMenu } from './mobile/account-menu';
+import { AppsSheet } from './mobile/apps-sheet';
+import { NavBar, type NavTab } from './mobile/nav-bar';
+import { OpenSheet } from './mobile/open-sheet';
 
 interface CompactConsoleProps {
   nav: ConsoleNavApp[];
   userName: string;
   userEmail: string;
+  themeChoice: ThemeChoice;
   theme: Theme;
   siteKey: string | null;
   accountOrigin: string;
-  navOpen: boolean;
-  onNavOpenChange: (open: boolean) => void;
-  onToggleTheme: () => void;
+  navTab: NavTab | null;
+  onNavTabChange: (tab: NavTab | null) => void;
+  onSetTheme: (choice: ThemeChoice) => void;
   onOpenLauncher: () => void;
 }
 
@@ -75,17 +58,29 @@ export function CompactConsole({
   nav,
   userName,
   userEmail,
+  themeChoice,
   theme,
   siteKey,
   accountOrigin,
-  navOpen,
-  onNavOpenChange,
-  onToggleTheme,
+  navTab,
+  onNavTabChange,
+  onSetTheme,
   onOpenLauncher,
 }: CompactConsoleProps) {
   const { controller } = useWorkbench();
-  const feedback = useFeedback();
-  const signOutForm = useRef<HTMLFormElement>(null);
+
+  // Created here, not in the stack: the bar's Open tab switches panes, so the
+  // component rendering both has to hold the host.
+  const hostRef = useRef<StackPaneHost | null>(null);
+  hostRef.current ??= new StackPaneHost();
+  const host = hostRef.current;
+  const stack = useSyncExternalStore(host.subscribe, host.getSnapshot, host.getServerSnapshot);
+
+  /** Shut whichever sheet is up. Stable identity so the sheets do not re-render
+   *  on every keystroke elsewhere in the shell. */
+  const dismiss = useCallback(() => {
+    onNavTabChange(null);
+  }, [onNavTabChange]);
 
   // SUBSCRIBED, not just read. Reading `getActiveDescriptor()` during render
   // gets the right answer once and then never updates, so the header would keep
@@ -96,6 +91,10 @@ export function CompactConsole({
     () => controller.getActiveDescriptor(),
     () => null
   );
+  // Which app the focused pane belongs to. The bar's Open tab wears its hue —
+  // the only place a phone can carry module colour once the rail is gone.
+  const activeSurface = active ? getSurface(active.surface) : undefined;
+  const activeApp = activeSurface ? (MODULE_TO_APP[activeSurface.module] ?? 'home') : 'home';
 
   return (
     <div className="bg-base-200 flex h-dvh w-full flex-col overflow-hidden">
@@ -106,19 +105,6 @@ export function CompactConsole({
         whatStopped="Search and your account menu have stopped working."
       >
         <header className="border-base-300 bg-base-100 flex h-14 shrink-0 items-center gap-1 border-b px-1">
-          <Button
-            color="neutral"
-            variant="ghost"
-            shape="square"
-            className="min-h-11 min-w-11"
-            aria-label="Open the menu"
-            onClick={() => {
-              onNavOpenChange(true);
-            }}
-          >
-            <Icon glyph={faBars} className="size-5" aria-hidden />
-          </Button>
-
           {/* The title is what you are looking at — on one column that IS your
               location, so it replaces the lockup the desktop bar can afford to
               keep. The mark moves into the account menu.
@@ -126,6 +112,7 @@ export function CompactConsole({
               `titleFor()`, not `descriptor.title`: the latter is only populated
               once a screen has renamed itself, so reading it directly showed the
               product name for every panel that never called setTitle. */}
+          <Logo className="ms-2 h-5 w-auto shrink-0" title={PRODUCT.name} />
           <p className="min-w-0 flex-1 truncate font-medium">
             {active ? titleFor(active) : PRODUCT.name}
           </p>
@@ -136,237 +123,65 @@ export function CompactConsole({
               were going to paste into anyway — and falls back to the clipboard. */}
           <SharePanelButton paneId={active?.id ?? null} />
 
-          <Button
-            color="neutral"
-            variant="ghost"
-            shape="square"
-            className="min-h-11 min-w-11"
-            aria-label="Search everything"
-            onClick={onOpenLauncher}
-          >
-            <Icon glyph={faMagnifyingGlass} className="size-5" aria-hidden />
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button
-                color="neutral"
-                variant="ghost"
-                shape="circle"
-                className="min-h-11 min-w-11"
-                aria-label="You"
-              >
-                {initials(userName, userEmail)}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>
-                  <span className="block truncate">{userName}</span>
-                  <span className="block truncate text-sm">{userEmail}</span>
-                </DropdownMenuLabel>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onToggleTheme}>
-                {theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  controller.open('platform.settings.general');
-                }}
-              >
-                Business details
-              </DropdownMenuItem>
-              {/* Feedback reaches the same inbox from a phone as from a desk —
-                  the account menu carries it here because a one-column header has
-                  no room for another icon, not because it matters less. */}
-              <DropdownMenuItem
-                onClick={() => {
-                  feedback.openList();
-                }}
-              >
-                Your feedback
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  window.location.href = `${accountOrigin}/account`;
-                }}
-              >
-                Your plan and billing
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  // POST, for the same reason as on desktop: signing out revokes
-                  // the session row and clears this domain's cookie, and a GET
-                  // that does that can be triggered by any page the person
-                  // happens to visit.
-                  signOutForm.current?.requestSubmit();
-                }}
-              >
-                Sign out
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>
-                  <Logo className="h-4 w-auto" title={PRODUCT.name} />
-                </DropdownMenuLabel>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Outside the menu, whose content is portalled and unmounts the moment
-              an item is clicked. */}
-          <form ref={signOutForm} action="/sign-out" method="post" className="hidden" />
+          <AccountMenu
+            userName={userName}
+            userEmail={userEmail}
+            themeChoice={themeChoice}
+            theme={theme}
+            accountOrigin={accountOrigin}
+            onSetTheme={onSetTheme}
+          />
         </header>
       </ChromeBoundary>
 
-      {/* Same gate as the dock: the stack must not restore Site A's panels and
-          then discover we are on Site B. */}
-      {siteKey ? <MobileStack siteKey={siteKey} /> : <div className="flex-1" />}
+      {/* `relative`: the bar floats against THIS box, over the stack and over
+          any sheet, so navigation is never the thing you have to dismiss
+          something else to reach. */}
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        {/* Same gate as the dock: the stack must not restore Site A's panels and
+            then discover we are on Site B. */}
+        {siteKey ? <MobileStack siteKey={siteKey} host={host} /> : <div className="flex-1" />}
 
-      {/* Silent: the drawer is closed almost always, so a visible fallback would
-          be a permanent warning strip for a thing that is not on screen. */}
-      <ChromeBoundary region="app-drawer" whatStopped="The menu has stopped working." silent>
-        <AppDrawer nav={nav} open={navOpen} onOpenChange={onNavOpenChange} />
-      </ChromeBoundary>
+        {/* Silent: a sheet is shut almost always, so a visible fallback would be
+            a permanent warning strip for a thing that is not on screen. */}
+        <ChromeBoundary region="app-drawer" whatStopped="The menu has stopped working." silent>
+          <OpenSheet
+            open={navTab === 'open'}
+            host={host}
+            order={stack.order}
+            activeId={stack.activeId}
+            onDismiss={dismiss}
+          />
+          <AppsSheet open={navTab === 'all'} nav={nav} onDismiss={dismiss} />
+        </ChromeBoundary>
+
+        <ChromeBoundary
+          region="nav-bar"
+          whatStopped="The menu along the bottom has stopped working."
+        >
+          <NavBar
+            active={navTab}
+            openCount={stack.order.length}
+            activeApp={activeApp}
+            onSelect={(next) => {
+              // Home and Search are ACTIONS, not sheets — they open something
+              // and leave the work uncovered.
+              if (next === 'home') {
+                controller.open('piggles.home');
+                dismiss();
+                return;
+              }
+              if (next === 'search') {
+                onOpenLauncher();
+                return;
+              }
+              // Tapping the sheet you are already in closes it.
+              onNavTabChange(navTab === next ? null : next);
+            }}
+          />
+        </ChromeBoundary>
+      </div>
     </div>
-  );
-}
-
-/**
- * Navigation as a drawer, in two levels.
- *
- * The desktop rail and app panel are two columns you read at once. On a phone
- * there is only ever one column, so the same information becomes a drill-down:
- * apps, then that app's screens, with a way back.
- *
- * The second level REUSES <AppPanel> rather than reimplementing it. That keeps
- * one answer to "what is in Sell" — including its filter, its section headings
- * and its quick-create — and means a screen added to the platform appears on
- * both presentations with no second edit.
- */
-function AppDrawer({
-  nav,
-  open,
-  onOpenChange,
-}: {
-  nav: ConsoleNavApp[];
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  // null = the app list; an id = that app's screens.
-  const [appId, setAppId] = useState<string | null>(null);
-  const [allAppsOpen, setAllAppsOpen] = useState(false);
-  const entry =
-    appId === null ? null : (nav.find((candidate) => candidate.app.id === appId) ?? null);
-
-  const close = () => {
-    onOpenChange(false);
-    // Reset to the app list only AFTER the drawer is shut, so the panel does not
-    // visibly snap back to level one while sliding away.
-    setTimeout(() => {
-      setAppId(null);
-    }, 200);
-  };
-
-  return (
-    <Drawer
-      open={open}
-      onOpenChange={(next) => {
-        if (next) onOpenChange(true);
-        else close();
-      }}
-    >
-      {/* w-[85vw] leaves a strip of the app visible, so the drawer reads as
-          covering the screen rather than being a new one. */}
-      <DrawerContent side="left" className="w-[85vw] max-w-sm p-0">
-        {entry ? (
-          <>
-            <DrawerHeader sticky className="gap-2">
-              <Button
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                className="min-h-11 gap-1"
-                onClick={() => {
-                  setAppId(null);
-                }}
-              >
-                <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
-                All apps
-              </Button>
-            </DrawerHeader>
-            {/* Never pinned: on a phone the panel IS the drawer, and opening
-                something has to dismiss it or the screen stays covered. */}
-            <AppPanel
-              entry={entry}
-              pinned={false}
-              pinnable={false}
-              // The drawer decides the width here, not the panel — see the prop.
-              width="fill"
-              onTogglePin={() => undefined}
-              onDismiss={close}
-            />
-          </>
-        ) : (
-          <>
-            <DrawerHeader sticky>
-              <DrawerTitle>Everything {PRODUCT.name} does</DrawerTitle>
-            </DrawerHeader>
-            {/* Fills the drawer. Left at silica's own 16rem it was a 256px list
-                inside a 328px drawer, with 72px of nothing down the right-hand
-                side — and every row's tap target 72px narrower than the sheet
-                it appears to be part of. */}
-            <Sidebar
-              collapsed={false}
-              color="module"
-              aria-label="Apps"
-              className="h-full w-full [--sidebar-w:100%]"
-            >
-              <SidebarContent>
-                <SidebarGroup>
-                  {nav.map((candidate) => (
-                    <AppScope key={candidate.app.id} app={candidate.app.id}>
-                      <SidebarItem
-                        // min-h-11 (44px) is the thumb-target floor. The rail's
-                        // desktop density is a mouse affordance and would be a
-                        // mis-tap generator here.
-                        className="min-h-11"
-                        icon={
-                          <Icon glyph={candidate.icon} className="text-module size-5" aria-hidden />
-                        }
-                        trailing={<Icon glyph={faChevronRight} className="size-4" aria-hidden />}
-                        onClick={() => {
-                          setAppId(candidate.app.id);
-                        }}
-                      >
-                        {candidate.label}
-                      </SidebarItem>
-                    </AppScope>
-                  ))}
-                </SidebarGroup>
-                {/* The same permanent door as the desktop rail's footer, for the
-                    same reason: an app that is not switched on has to stay
-                    visible, or onboarding's question becomes a paywall. */}
-                <SidebarGroup>
-                  <SidebarItem
-                    className="min-h-11"
-                    icon={<Icon glyph={faGrid2Plus} className="size-5" aria-hidden />}
-                    onClick={() => {
-                      setAllAppsOpen(true);
-                    }}
-                  >
-                    All apps
-                  </SidebarItem>
-                </SidebarGroup>
-              </SidebarContent>
-            </Sidebar>
-          </>
-        )}
-      </DrawerContent>
-      <AllAppsDialog open={allAppsOpen} onOpenChange={setAllAppsOpen} />
-    </Drawer>
   );
 }
 
@@ -409,11 +224,4 @@ function SharePanelButton({ paneId }: { paneId: string | null }) {
       <Icon glyph={faShareNodes} className="size-5" aria-hidden />
     </Button>
   );
-}
-
-function initials(name: string, email: string): string {
-  const source = name.trim() || email;
-  const parts = source.split(/[\s@._-]+/).filter(Boolean);
-  const letters = (parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '');
-  return letters.toUpperCase() || '?';
 }

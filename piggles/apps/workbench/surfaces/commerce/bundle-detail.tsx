@@ -23,7 +23,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   SearchInput,
   Select,
@@ -34,12 +33,13 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { faCubes, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { type ProductRow } from './products-data';
 import { VariantPicker } from './variant-picker';
@@ -140,7 +140,7 @@ export function BundleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function BundleLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: bundle, isPending, isError, refetch } = useBundle(id);
+  const { data: bundle, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBundle(id);
 
   if (isError) {
     return (
@@ -162,17 +162,35 @@ function BundleLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <BundleEditor ctx={ctx} id={id} bundle={bundle} />;
+  return (
+    <BundleEditor
+      ctx={ctx}
+      id={id}
+      bundle={bundle}
+      isFetching={isFetching}
+      updatedAt={bundle ? dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function BundleEditor({
   ctx,
   id,
   bundle,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   bundle?: BundleDetail;
+  /** Only the saved-bundle state has a query behind it; "new" has none. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -343,44 +361,48 @@ function BundleEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Bundle actions">
-        {!isNew ? (
-          <Badge color="info" variant="soft" size="sm">
-            <Icon glyph={faCubes} className="size-3" aria-hidden />
-            <span className="hidden @md:inline">Bundle</span>
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create bundle' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Bundle actions"
+        status={
+          !isNew ? (
+            <Badge color="info" variant="soft" size="sm">
+              <Icon glyph={faCubes} className="size-3" aria-hidden />
+              <span className="hidden @md:inline">Bundle</span>
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(blocked) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create bundle' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a bundle
-              </Heading>
-              <Text>
-                A bundle sells several products together as one item. Pick the product it is sold
-                as, add the products that go inside, and choose how it is priced.
-              </Text>
-            </div>
+            <Text>
+              A bundle sells several products together as one item. Pick the product it is sold as,
+              add the products that go inside, and choose how it is priced.
+            </Text>
           ) : (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {draft.bundleProductTitle}
-              </Heading>
-              <Text>Sold as one item, made up of the products below.</Text>
-            </div>
+            <Text>Sold as one item, made up of the products below.</Text>
           )}
 
           {failure ? (

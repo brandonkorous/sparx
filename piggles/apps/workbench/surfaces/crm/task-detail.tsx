@@ -25,7 +25,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Text,
@@ -37,6 +36,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
@@ -130,7 +130,7 @@ export function TaskDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function TaskLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: task, isPending, isError, refetch } = useTask(id);
+  const { data: task, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTask(id);
 
   if (isError) {
     return (
@@ -152,10 +152,37 @@ function TaskLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <TaskEditor ctx={ctx} id={id} task={task} />;
+  return (
+    <TaskEditor
+      ctx={ctx}
+      id={id}
+      task={task}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
-function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?: Task }) {
+function TaskEditor({
+  ctx,
+  id,
+  task,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  id: string;
+  task?: Task;
+  /** The loader's query, threaded down. Absent while adding — a task that does
+   *  not exist yet has nothing to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
+}) {
   const isNew = id === 'new';
   const toast = useToast();
 
@@ -315,47 +342,58 @@ function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?:
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Task actions">
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-        {!isNew && !isDone ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="success"
-            className="ml-auto shrink-0"
-            loading={complete.isPending}
-            onClick={onComplete}
-          >
-            <Icon glyph={faCircleCheck} className="size-4" aria-hidden />
-            Mark done
-          </Button>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className={isNew || isDone ? 'ml-auto shrink-0' : 'shrink-0'}
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Add task' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Task actions"
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={Boolean(isFetching)}
+              updatedAt={task ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+        status={
+          <Badge color={meta.tone} variant="soft" size="sm">
+            {meta.label}
+          </Badge>
+        }
+        primary={
+          <>
+            {!isNew && !isDone ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="success"
+                className="ml-auto shrink-0"
+                loading={complete.isPending}
+                onClick={onComplete}
+              >
+                <Icon glyph={faCircleCheck} className="size-4" aria-hidden />
+                Mark done
+              </Button>
+            ) : null}
+            <Button
+              color="module"
+              size="sm"
+              className={isNew || isDone ? 'ml-auto shrink-0' : 'shrink-0'}
+              loading={saving}
+              disabled={Boolean(blocked) || (!isNew && !dirty)}
+              onClick={submit}
+            >
+              {isNew ? 'Add task' : 'Save'}
+            </Button>
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a task
-              </Heading>
-              <Text>
-                A task is something to do for a customer or a deal — a call to make, a quote to
-                send. Give it to someone on your team and, if it matters, a date it is due.
-              </Text>
-            </div>
+            <Text>
+              A task is something to do for a customer or a deal — a call to make, a quote to send.
+              Give it to someone on your team and, if it matters, a date it is due.
+            </Text>
           ) : null}
 
           {failure ? (

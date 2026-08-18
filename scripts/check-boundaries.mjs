@@ -9,7 +9,7 @@
 // That defended the right boundary for the question it was asked — "does Piggles
 // import sparx's app code?" — and the wrong one for the question that matters:
 // **can sparx be deleted without affecting Piggles?** Under the second, a package
-// named `@sparx/db` that Piggles cannot boot without is an unanswered question,
+// named `@wizeworks/db` that Piggles cannot boot without is an unanswered question,
 // not a pass. So the app-crossing rules below are carried over verbatim, and a
 // third rule counts the scope usage and refuses to let it grow.
 //
@@ -30,12 +30,56 @@ const BASELINE = path.join(ROOT, 'piggles/docs/migration/sparx-usage-baseline.js
 const PIGGLES_TO_SPARX = [
   // The alias that started it.
   /@workbench\//,
-  // Any path, relative or otherwise, that lands in an app directory.
-  /['"`][^'"`\n]*\.\.\/apps\/(workbench|web|site|market|admin)\//,
-  /['"`]apps\/(workbench|web|site|market|admin)\//,
+  // Any path, relative or otherwise, that lands in a sparx tree.
+  /['"`][^'"`\n]*\.\.\/sparx\/(apps|packages)\//,
+  /['"`]sparx\/(apps|packages)\//,
 ];
 
 const SPARX_TO_PIGGLES = [/@piggles\//, /['"`][^'"`\n]*piggles\/(apps|packages)\//];
+
+/**
+ * RULE 1, live as of the tree move (A4.8).
+ *
+ * The shared platform may not import from EITHER brand. It was dormant while
+ * there was no `wizeworks/` tree to scan, and deliberately unwritten rather than
+ * written-and-vacuous — a check that scans a directory which does not exist
+ * passes, and that pass is indistinguishable from a real one.
+ *
+ * This is the rule the whole migration is for. Everything else — the ban, the
+ * ratchet, the closure walk — approximates it from one side or the other. Here
+ * it is directly: platform code that reaches into a brand is not platform code.
+ */
+const WIZEWORKS_TO_BRAND = [
+  /@piggles\//,
+  /@sparx\//,
+  /['"`][^'"`\n]*\.\.\/(sparx|piggles)\/(apps|packages)\//,
+  /['"`](sparx|piggles)\/(apps|packages)\//,
+];
+
+/**
+ * Rule 1 exceptions — EMPTY, and the goal is that it stays that way.
+ *
+ * It briefly held nine files, and what they were is worth remembering because
+ * both turned out to be fixable rather than inherent:
+ *
+ *   · `wizeworks/apps/site`, the tenant site renderer, mounted a fixed
+ *     `MadeWithSparx` — so every Piggles business's PUBLIC footer credited
+ *     another company and linked their visitors to it. Now `PlatformCredit`,
+ *     brand-blind and resolved per tenant from `platform_brand`. It turned out
+ *     to need nothing else from `@sparx/brand` at all.
+ *   · `wizeworks/apps/admin`, the WizeWorks staff console, took its tokens and
+ *     its wordmark from `@sparx/brand` because it had no identity of its own to
+ *     wear. It does: the palette locked on 2026-07-30 in
+ *     docs/wizeworks/04-brand-and-visual-identity.md, now shipped as
+ *     `@wizeworks/brand`. This was never a design decision — it was a lookup
+ *     nobody had done.
+ *
+ * If something has to go back on this list, it goes on by FILE with the reason
+ * written beside it. An allowlist, never a softened pattern: "allow
+ * @sparx/brand under wizeworks/" would let the next one in silently, where a
+ * named file has to be added in a diff somebody reads.
+ */
+const RULE_1_EXCEPTIONS = new Set([]);
 
 /** The scope itself, in an import or a dependency key — the thing being retired. */
 const SPARX_SCOPE = /@sparx\/[a-z0-9-]+/g;
@@ -49,14 +93,19 @@ const SPARX_SCOPE = /@sparx\/[a-z0-9-]+/g;
  * a hard ban there would fire constantly and get switched off by the second
  * afternoon.
  *
- * These two are a different thing. `@sparx/brand` is sparx's marks, mascot and
- * token VALUES; `@sparx/ui` is its compositions. Piggles has `@piggles/brand`,
- * `@piggles/mascot` and `@piggles/ui` of its own, so there is no honest reason
- * to reach for either — and being able to baseline one away is exactly how the
- * five sparx-mark render sites survived the fork unnoticed. A count is not a
- * defence when the correct number is zero.
+ * `@sparx/brand` is a different thing: sparx's marks, mascot and token VALUES.
+ * Piggles has `@piggles/brand`, `@piggles/mascot` and `@piggles/ui` of its own,
+ * so there is no honest reason to reach for it — and being able to baseline one
+ * away is exactly how five sparx-mark render sites survived the fork unnoticed.
+ * A count is not a defence when the correct number is zero.
+ *
+ * It used to be two. The other was sparx's old `ui` package, and it no longer
+ * exists under that scope: it was brand-blind apart from four re-exported marks,
+ * so the tree move split it into `@wizeworks/ui` (the compositions) with the
+ * marks returned to `@sparx/brand/react`, where they had always actually lived.
+ * That is why the WizeWorks staff console can depend on it at all.
  */
-const BANNED_PACKAGES = new Set(['@sparx/brand', '@sparx/ui']);
+const BANNED_PACKAGES = new Set(['@sparx/brand']);
 
 function walk(dir, out = []) {
   let entries;
@@ -85,9 +134,10 @@ function code(source) {
 
 const rel = (file) => path.relative(ROOT, file).replace(/\\/g, '/');
 
-function scan(root, patterns, label) {
+function scan(root, patterns, label, exceptions) {
   const problems = [];
   for (const file of walk(path.join(ROOT, root))) {
+    if (exceptions?.has(rel(file))) continue;
     const source = code(fs.readFileSync(file, 'utf8'));
     source.split('\n').forEach((line, index) => {
       if (patterns.some((pattern) => pattern.test(line))) {
@@ -148,7 +198,7 @@ function checkBanned(banned) {
 /**
  * The soft half — a ratchet over the brand-blind packages.
  *
- * Not a ban, because a ban on `@sparx/query` would fail on day one of a
+ * Not a ban, because a ban on `@wizeworks/query` would fail on day one of a
  * migration that takes weeks and be switched off by the second afternoon: every
  * new Piggles pane legitimately reaches for the data layer, so the number rises
  * whenever anybody builds anything. What a ratchet buys is a floor — the total
@@ -217,18 +267,24 @@ const { counts, banned } = countScopeUsage();
 
 let failures = 0;
 failures += scan('piggles', PIGGLES_TO_SPARX, 'piggles/ reaches into a sparx APP');
-failures += scan('apps', SPARX_TO_PIGGLES, 'apps/ reaches into piggles/');
+failures += scan('sparx', SPARX_TO_PIGGLES, 'sparx/ reaches into piggles/');
+failures += scan(
+  'wizeworks',
+  WIZEWORKS_TO_BRAND,
+  'wizeworks/ reaches into a BRAND tree',
+  RULE_1_EXCEPTIONS
+);
 // The ban runs even under --update-baseline. A brand leak is never something a
 // regenerate should be able to absorb, and the whole reason this rule exists is
 // that five of them survived the fork by being invisible.
 failures += checkBanned(banned);
 failures += checkRatchet(counts, update, banned);
 
-// Rules 1, 3 and 4 from wizeworks/CLAUDE.md — no import from wizeworks/ into a
-// brand tree, no literal hex under wizeworks/, no brand name in a user-facing
-// string there — are DORMANT until phase A4 creates that tree. They are not
-// written yet on purpose: a check that scans a directory which does not exist
-// passes vacuously, and a vacuous pass is indistinguishable from a real one.
+// Rule 1 from wizeworks/CLAUDE.md is LIVE — see WIZEWORKS_TO_BRAND above; the
+// tree move gave it a directory to scan. Rules 3 and 4 (no literal hex under
+// wizeworks/, no brand name in a user-facing string there) remain unwritten:
+// both need a real inventory of legitimate exceptions first, and a check that
+// fires on every chart palette gets switched off within a day.
 
 if (failures > 0) {
   console.error(

@@ -46,7 +46,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { faBullseye, faGripDots, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Badge } from '@wizeworks/silicaui-react';
-import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
+import type { Action, ConditionGroup, Trigger } from '@wizeworks/automation-schemas';
 import {
   CONDITIONS_NODE,
   GOAL_NODE,

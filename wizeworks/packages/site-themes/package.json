@@ -1,0 +1,36 @@
+{
+  "name": "@wizeworks/site-themes",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx Site Builder — the tenant theme COMPILER: layers a site's own preset with the tenant brand and presentation overlay into the compiled light+dark theme the storefront renders, plus the platform base a site falls back to. The shipped themes themselves live in @wizeworks/silica-catalog (docs/29-sitebuilder-architecture.md §4).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./brand-palette": {
+      "types": "./src/brand-palette.ts",
+      "default": "./src/brand-palette.ts"
+    },
+    "./color": {
+      "types": "./src/v2/color.ts",
+      "default": "./src/v2/color.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

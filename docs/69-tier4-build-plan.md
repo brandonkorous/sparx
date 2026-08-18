@@ -28,7 +28,7 @@ Tracks A and B are independent. They can be built in either order or in parallel
 
 **Goal:** data layer and REST endpoints in place; no UI yet.
 
-**DB migration** (`packages/db/prisma/migrations/`):
+**DB migration** (`wizeworks/packages/db/prisma/migrations/`):
 
 ```sql
 CREATE TABLE chat_conversations (
@@ -92,9 +92,9 @@ CREATE INDEX idx_chat_messages_conversation
   ON chat_messages(conversation_id, created_at);
 ```
 
-**Prisma schema additions** (`packages/db/prisma/schema.prisma`): add `ChatConversation`, `ChatMessage`, `ChatQuickReply` models with the `@map`/`@@map` conventions matching the project.
+**Prisma schema additions** (`wizeworks/packages/db/prisma/schema.prisma`): add `ChatConversation`, `ChatMessage`, `ChatQuickReply` models with the `@map`/`@@map` conventions matching the project.
 
-**Module flag**: add `chat` to the `ModuleKey` union in `packages/db/src/types/module.ts` and to the default `settings.modules` shape in the tenant seed/onboarding flow.
+**Module flag**: add `chat` to the `ModuleKey` union in `wizeworks/packages/db/src/types/module.ts` and to the default `settings.modules` shape in the tenant seed/onboarding flow.
 
 **REST endpoints** (`apps/api-rest/src/routes/chat/`):
 
@@ -139,7 +139,7 @@ All `/v1/chat/*` routes gated by `requireModule('chat')`. Public routes are on t
 - Channel pattern: `chat:tenant:{tenantId}:new` — published when a new inbound message arrives on any conversation for that tenant
 - The dashboard WebSocket connection subscribes to this channel to drive the "unread badge" in the sidebar nav
 
-**Types**: add `ChatSocketEvents` to `packages/events/src/chat.ts` (typed socket event map, reused by widget and dashboard).
+**Types**: add `ChatSocketEvents` to `wizeworks/packages/events/src/chat.ts` (typed socket event map, reused by widget and dashboard).
 
 ---
 
@@ -175,14 +175,14 @@ const response = await anthropic.messages.create({
 
 ---
 
-### Phase A-4 — `@sparx/chat-widget` package + site integration
+### Phase A-4 — `@wizeworks/chat-widget` package + site integration
 
 **Goal:** floating chat bubble on every site page when module is active.
 
-New package: `packages/chat-widget/` with the standard package scaffold (`package.json`, `tsconfig.json`, `src/index.ts`).
+New package: `wizeworks/packages/chat-widget/` with the standard package scaffold (`package.json`, `tsconfig.json`, `src/index.ts`).
 
 ```tsx
-// packages/chat-widget/src/ChatWidget.tsx
+// wizeworks/packages/chat-widget/src/ChatWidget.tsx
 'use client';
 
 export function ChatWidget({ tenantId, config, customer }: ChatWidgetProps) {
@@ -193,7 +193,7 @@ export function ChatWidget({ tenantId, config, customer }: ChatWidgetProps) {
 }
 ```
 
-Widget is injected into the tenant site layout (`apps/site/src/app/layout.tsx`) when `tenant.settings.modules.chat?.enabled`:
+Widget is injected into the tenant site layout (`wizeworks/apps/site/src/app/layout.tsx`) when `tenant.settings.modules.chat?.enabled`:
 
 ```tsx
 {
@@ -253,12 +253,12 @@ Route: `apps/app/src/app/(dashboard)/chat/` — chat module gated by `<ModuleGat
 **Email fallback** (email-worker):
 
 - `chat.message.received` Pub/Sub consumer in `services/email-worker/src/handlers/chat.ts`
-- Sends "New chat message from {customerName}" email using `ChatNotificationTemplate` in `packages/email/src/templates/`
+- Sends "New chat message from {customerName}" email using `ChatNotificationTemplate` in `wizeworks/packages/email/src/templates/`
 - Guard: only send if no Web Push subscription OR push failed (fallback, not duplicate)
 
-**sparx.market** (`apps/web/src/app/(market)/products/[slug]/`):
+**sparx.market** (`sparx/apps/web/src/app/(market)/products/[slug]/`):
 
-- Import `ChatWidget` from `@sparx/chat-widget`
+- Import `ChatWidget` from `@wizeworks/chat-widget`
 - Show "Chat with {tenantName}" CTA on product pages when the selling tenant has chat enabled
 - Source parameter: `source: 'sparx_market'`
 
@@ -283,7 +283,7 @@ Steps:
 3. **Inventory** (Physical only) — Track inventory toggle, Quantity, Low stock threshold, Weight + dimensions
 4. **Review** — Summary card, "Create product" button → single `POST /v1/products`
 
-Uses the existing `<Stepper>` component from `@sparx/ui`. All state lifted to the wizard parent; no network writes until Step 4 submit.
+Uses the existing `<Stepper>` component from `@wizeworks/ui`. All state lifted to the wizard parent; no network writes until Step 4 submit.
 
 Step files: `_components/product-wizard/step-basics.tsx`, `step-pricing.tsx`, `step-inventory.tsx`, `step-review.tsx`.
 
@@ -293,7 +293,7 @@ Step files: `_components/product-wizard/step-basics.tsx`, `step-pricing.tsx`, `s
 
 **Goal:** CSV in/out on both the Products list and CRM Customers list.
 
-**New Cloud Run worker**: `services/import-worker/` — follows the `cloud-run-worker` Terraform module pattern (same as email-worker). Subscribes to `import.job.created` Pub/Sub topic.
+**New Cloud Run worker**: `wizeworks/services/import-worker/` — follows the `cloud-run-worker` Terraform module pattern (same as email-worker). Subscribes to `import.job.created` Pub/Sub topic.
 
 Worker processes:
 
@@ -346,7 +346,7 @@ GET    /v1/export/products      — synchronous CSV <5k rows; async + email >5k
 GET    /v1/export/customers     — same
 ```
 
-**UI components** (`packages/ui/src/components/data/`):
+**UI components** (`sparx/packages/ui/src/components/data/`):
 
 - `ImportDialog` — 5-step dialog: Upload → Preview → Column mapping → Confirm → Progress/results
 - `ExportButton` — dropdown: "Export all" / "Export filtered" / "Export selected"
@@ -359,7 +359,7 @@ Wire into Products list (`apps/app/src/app/(dashboard)/commerce/products/`) and 
 
 **Goal:** slide-up bulk action bar on all entity list views.
 
-**New component**: `packages/ui/src/components/data/BulkActionBar.tsx`
+**New component**: `sparx/packages/ui/src/components/data/BulkActionBar.tsx`
 
 ```tsx
 <BulkActionBar
@@ -408,7 +408,7 @@ Wire `BulkActionBar` into each list view's selection state.
 
 **Goal:** guided creation flow for CMS content entries.
 
-**New shared component**: `packages/ui/src/components/form/SchemaFieldRenderer.tsx` — maps content type schema field types to `@sparx/ui` inputs:
+**New shared component**: `sparx/packages/ui/src/components/form/SchemaFieldRenderer.tsx` — maps content type schema field types to `@wizeworks/ui` inputs:
 
 | Schema field type | Component                               |
 | ----------------- | --------------------------------------- |
@@ -491,7 +491,7 @@ Entry point has a dropdown split: "Quick add" / "Full profile"
 | A-1   | Chat    | DB schema + REST API                     | None                              |
 | A-2   | Chat    | WebSocket + Redis routing                | A-1                               |
 | A-3   | Chat    | AI handler                               | A-1, A-2                          |
-| A-4   | Chat    | `@sparx/chat-widget` + site              | A-1, A-2                          |
+| A-4   | Chat    | `@wizeworks/chat-widget` + site          | A-1, A-2                          |
 | A-5   | Chat    | Dashboard inbox UI                       | A-1, A-2, A-3                     |
 | A-6   | Chat    | Notifications + sparx.market             | A-5                               |
 | B-1   | Wizards | Product wizard                           | None                              |

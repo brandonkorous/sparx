@@ -231,14 +231,14 @@ sale path; commerce and B2B are _integrations layered on top_, not prerequisites
 first-class treatment as any other module: its own module color (amber), its own marketing surface, its
 own overview dashboard, and its own MCP/AI tool surface.
 
-The current code scattered this — supply logic was built inside `@sparx/commerce` (`/commerce/warehouses`,
+The current code scattered this — supply logic was built inside `@wizeworks/commerce` (`/commerce/warehouses`,
 `/commerce/lots`) while a half-built parallel sync module squatted on `/inventory`. The fix **promotes
 inventory to its own product/module**, it does not fold it into commerce.
 
 |         | **Inventory** (`inventory` — supply)                                                                                                                       | **Commerce** (`commerce` — demand)                                                                 |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | Owns    | warehouses/locations, the stock ledger (levels + movements), reservations engine, suppliers, POs, receiving, lots/serials, counts, transfers, ERP/WMS sync | catalog (products/variants/collections), pricing, carts, checkout, orders, returns, sales channels |
-| Package | **new `@sparx/inventory`** (extract today's `inventoryService` out of `@sparx/commerce`)                                                                   | `@sparx/commerce` (depends on `@sparx/inventory`)                                                  |
+| Package | **new `@wizeworks/inventory`** (extract today's `inventoryService` out of `@wizeworks/commerce`)                                                           | `@wizeworks/commerce` (depends on `@wizeworks/inventory`)                                          |
 | Pages   | `/inventory/*` (warehouses, stock, movements, POs, receiving, counts, lots, sync)                                                                          | `/commerce/*` (products, orders, carts…)                                                           |
 
 **The seam (event-driven, thin):** the `ProductVariant` stays owned by commerce; inventory holds stock
@@ -254,7 +254,7 @@ tenant may activate inventory, dropship, or both. Inventory becomes properly mod
 
 1. **One inventory source of truth, owned by the inventory module.** `InventoryLevel` keyed by
    `(variant, location)` is the master ledger of `onHand` / `allocated` / `available` / cost — extracted
-   into `@sparx/inventory` (tables renamed to the `inventory_*` namespace). `Warehouse` absorbs the
+   into `@wizeworks/inventory` (tables renamed to the `inventory_*` namespace). `Warehouse` absorbs the
    location _types_ the sync module invented (`bin` / `3pl` / `transit` / `virtual`), so there is exactly
    **one** location model. `stock_levels` / `StockLocation` are retired (or demoted to raw inbound-staging
    used only for reconciliation diffing). The sync module becomes an **ingestion source that writes into

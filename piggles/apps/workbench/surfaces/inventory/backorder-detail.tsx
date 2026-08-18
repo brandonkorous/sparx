@@ -22,16 +22,17 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Card,
   EmptyState,
   Field,
   FieldLabel,
   Input,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faBoxMagnifyingGlass,
   faCalendarXmark,
@@ -40,13 +41,19 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useEffect, useState } from 'react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage } from './data';
+
+/** Registry module for this pane, so the brand draws Stock's own picture rather
+ *  than the generic one. */
+const MODULE = 'inventory';
 import {
   backorderStatusTone,
   promiseSourceLabel,
@@ -66,7 +73,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isLoading, isError } = useBackorder(id);
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useBackorder(id);
   const update = useUpdateBackorder(id);
   const notify = useMarkBackorderNotified(id);
   const cancel = useCancelBackorder(id);
@@ -83,21 +90,32 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(data.variantSku ? `Owed · ${data.variantSku}` : 'Owed');
   }, [data, ctx]);
 
+  // Both non-ready states fill the same card the detail itself does, so the pane
+  // does not go from a bare recessed surface to a grid of lifted panels as the
+  // record arrives.
   if (isLoading) {
     return (
       <div className={PANE_SHELL}>
-        <PaneWaiting label="Loading the commitment…" />
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneWaiting module={MODULE} label="Loading the commitment…" />
+        </Card>
       </div>
     );
   }
   if (isError || !data) {
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
-          title="Could not load that commitment"
-          description="It may have been cancelled, or the server is unreachable. Try the queue again."
-        />
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneLoadError
+            module={MODULE}
+            icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
+            title="Could not load that commitment"
+            description="It may have been cancelled, or the server is unreachable. Nothing anyone is owed has changed."
+            onRetry={() => {
+              void refetch();
+            }}
+          />
+        </Card>
       </div>
     );
   }
@@ -143,74 +161,90 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Commitment controls">
-        <Badge color={backorderStatusTone(data.status)} variant="soft">
-          {data.isOverdue ? 'Past the date' : data.status}
-        </Badge>
-        {data.position !== null ? (
-          <Text className="text-sm">
-            Number {data.position} in the queue for this item at{' '}
-            {data.warehouseName ?? 'this location'}
-          </Text>
-        ) : null}
-
-        <Button
-          color="primary"
-          variant="soft"
-          size="sm"
-          className="ml-auto"
-          disabled={notify.isPending || data.promisedAt === null}
-          onClick={() => {
-            notify.mutate(undefined, {
-              onSuccess: () => {
-                afterCommit(() => {
-                  toast.add({
-                    title: 'Marked as told',
-                    description:
-                      'If the date moves from here, this commitment will show up as worth a second call.',
-                    type: 'success',
-                  });
-                });
-              },
-              onError: fail('Could not record that'),
-            });
-          }}
-        >
-          <Icon glyph={faEnvelopeCircleCheck} className="size-4" aria-hidden />
-          Mark as told
-        </Button>
-
-        {isLive ? (
+      <PaneToolbar
+        label="Commitment controls"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+        status={
+          <>
+            <Badge color={backorderStatusTone(data.status)} variant="soft">
+              {data.isOverdue ? 'Past the date' : data.status}
+            </Badge>
+            {data.position !== null ? (
+              <Text className="text-sm">
+                Number {data.position} in the queue for this item at{' '}
+                {data.warehouseName ?? 'this location'}
+              </Text>
+            ) : null}
+          </>
+        }
+        primary={
           <Button
-            color="danger"
+            color="primary"
             variant="soft"
             size="sm"
-            disabled={cancel.isPending}
+            className="ml-auto"
+            disabled={notify.isPending || data.promisedAt === null}
             onClick={() => {
-              void confirm({
-                title: 'Drop this commitment?',
-                description: `${plural(data.outstanding, 'unit', 'units')} owed to ${data.customerName ?? 'a guest'} will stop being tracked. The order itself is untouched — do this only when the customer no longer wants it.`,
-                confirmLabel: 'Drop it',
-                cancelLabel: 'Keep it',
-                color: 'danger',
-              }).then((confirmed) => {
-                if (!confirmed) return;
-                cancel.mutate('Dropped from the queue by hand.', {
-                  onSuccess: () => {
-                    afterCommit(() => {
-                      toast.add({ title: 'Commitment dropped', type: 'info' });
+              notify.mutate(undefined, {
+                onSuccess: () => {
+                  afterCommit(() => {
+                    toast.add({
+                      title: 'Marked as told',
+                      description:
+                        'If the date moves from here, this commitment will show up as worth a second call.',
+                      type: 'success',
                     });
-                  },
-                  onError: fail('Could not drop it'),
-                });
+                  });
+                },
+                onError: fail('Could not record that'),
               });
             }}
           >
-            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-            Drop
+            <Icon glyph={faEnvelopeCircleCheck} className="size-4" aria-hidden />
+            Mark as told
           </Button>
-        ) : null}
-      </PaneToolbar>
+        }
+        controls={
+          isLive ? (
+            <Button
+              color="danger"
+              variant="soft"
+              size="sm"
+              disabled={cancel.isPending}
+              onClick={() => {
+                void confirm({
+                  title: 'Drop this commitment?',
+                  description: `${plural(data.outstanding, 'unit', 'units')} owed to ${data.customerName ?? 'a guest'} will stop being tracked. The order itself is untouched — do this only when the customer no longer wants it.`,
+                  confirmLabel: 'Drop it',
+                  cancelLabel: 'Keep it',
+                  color: 'danger',
+                }).then((confirmed) => {
+                  if (!confirmed) return;
+                  cancel.mutate('Dropped from the queue by hand.', {
+                    onSuccess: () => {
+                      afterCommit(() => {
+                        toast.add({ title: 'Commitment dropped', type: 'info' });
+                      });
+                    },
+                    onError: fail('Could not drop it'),
+                  });
+                });
+              }}
+            >
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+              Drop
+            </Button>
+          ) : null
+        }
+      />
 
       <div className="grid min-h-0 flex-1 gap-3 overflow-auto @3xl:grid-cols-2">
         {/* ── Who and what ─────────────────────────────────────────────── */}

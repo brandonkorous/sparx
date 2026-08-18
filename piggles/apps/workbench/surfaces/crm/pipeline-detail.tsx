@@ -29,7 +29,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Text,
@@ -47,6 +46,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SLUG_RE, slugify } from './segment-rules';
@@ -81,7 +81,14 @@ export function PipelineDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function PipelineLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: pipeline, isPending, isError, refetch } = usePipeline(id);
+  const {
+    data: pipeline,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = usePipeline(id);
 
   if (isError) {
     return (
@@ -103,7 +110,18 @@ function PipelineLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <PipelineEditor ctx={ctx} id={id} pipeline={pipeline} />;
+  return (
+    <PipelineEditor
+      ctx={ctx}
+      id={id}
+      pipeline={pipeline}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 interface Identity {
@@ -115,10 +133,16 @@ function PipelineEditor({
   ctx,
   id,
   pipeline,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   pipeline?: Pipeline;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -280,41 +304,52 @@ function PipelineEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Pipeline actions">
-        {pipeline?.isDefault ? (
-          <Badge color="module" variant="soft" size="sm">
-            Default
-          </Badge>
-        ) : null}
-        {isArchived ? (
-          <Badge color="neutral" variant="soft" size="sm">
-            Archived
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create pipeline' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Pipeline actions"
+        status={
+          <>
+            {pipeline?.isDefault ? (
+              <Badge color="module" variant="soft" size="sm">
+                Default
+              </Badge>
+            ) : null}
+            {isArchived ? (
+              <Badge color="neutral" variant="soft" size="sm">
+                Archived
+              </Badge>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            loading={saving}
+            disabled={Boolean(blocked) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create pipeline' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={pipeline ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Create a pipeline
-              </Heading>
-              <Text>
-                A pipeline is your own set of stages a deal moves through. Name it, then add the
-                stages — from first contact to won or lost.
-              </Text>
-            </div>
+            <Text>
+              A pipeline is your own set of stages a deal moves through. Name it, then add the
+              stages — from first contact to won or lost.
+            </Text>
           ) : null}
 
           {failure ? (

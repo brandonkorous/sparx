@@ -21,10 +21,9 @@ import {
   EmptyState,
   SearchInput,
   Select,
-  Table,
   Timestamp,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowDown,
   faArrowUp,
@@ -39,6 +38,10 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { supplierState, useSuppliersPage, type SortDir, type SupplierSort } from './dropship-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'dropship';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -116,61 +119,72 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search suppliers"
-            placeholder="Search by name…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <div className="hidden w-44 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Show which suppliers"
-            value={status}
-            items={{
-              all: 'All suppliers',
-              active: 'Connected',
-              error: 'Needs attention',
-              connecting: 'Connecting',
-            }}
-            onValueChange={(next) => {
-              setStatus(next as string);
-              resetWindow();
-            }}
-          />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="Connect a supplier — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Supplier list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search suppliers"
+              placeholder="Search by name…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Connect a supplier',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open('dropship.supplier.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Connect a supplier</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'Connect a supplier — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <div className="w-44 shrink-0">
+            <Select
+              size="sm"
+              aria-label="Show which suppliers"
+              value={status}
+              items={{
+                all: 'All suppliers',
+                active: 'Connected',
+                error: 'Needs attention',
+                connecting: 'Connecting',
+              }}
+              onValueChange={(next) => {
+                setStatus(next as string);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/dropship/suppliers',
+          params: { q: search.trim(), status, sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus(next.status ?? 'all');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as SupplierSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
@@ -183,6 +197,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading suppliers…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(search) || status !== 'all'}
             noResults={{
               icon: <Icon glyph={faLink} className="size-6" aria-hidden />,

@@ -1,4 +1,4 @@
-# apps/admin — the WizeWorks operator console. Next.js standalone on port 3000,
+# wizeworks/apps/admin — the WizeWorks operator console. Next.js standalone on port 3000,
 # in the wize-admin namespace with its own SA + secrets. Fronted by Caddy
 # (admin.wize.works) behind Cloudflare Access. Image substituted at deploy time.
 ---

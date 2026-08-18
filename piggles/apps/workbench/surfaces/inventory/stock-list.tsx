@@ -34,15 +34,13 @@ import {
   Button,
   Card,
   EmptyState,
-  NativeSelect,
   SearchInput,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
-  ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowDown,
   faArrowTrendDown,
@@ -53,7 +51,7 @@ import {
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { SavedViewsBar } from '../../components/saved-views';
+import type { ToolbarFilter } from '../../components/pane-toolbar-filters';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -102,17 +100,12 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     dir: 'desc',
   });
 
-  // What this list is showing, as plain strings — the shape a saved view stores
-  // and re-applies. Derived rather than held separately so a view can never
-  // drift out of step with the controls above it.
+  // The half of this list's state the toolbar does not already hold. The
+  // location filter rides the `filters` slot, so a saved view picks it up
+  // without being told.
   const viewParams = useMemo(
-    () => ({
-      q: search.trim(),
-      warehouse: locationId,
-      low: lowOnly ? '1' : '',
-      sort: `${sort.key}:${sort.dir}`,
-    }),
-    [search, locationId, lowOnly, sort]
+    () => ({ q: search.trim(), low: lowOnly ? '1' : '', sort: `${sort.key}:${sort.dir}` }),
+    [search, lowOnly, sort]
   );
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
@@ -145,6 +138,24 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const resetWindow = () => {
     setPage(1);
     setTake(pageSize);
+  };
+
+  // A picker rather than chips: a business can have twenty locations, and twenty
+  // chips is a toolbar taller than the table.
+  const locationFilter: ToolbarFilter = {
+    label: 'Show stock kept at',
+    key: 'warehouse',
+    present: 'select',
+    value: locationId,
+    neutralValue: '',
+    options: [
+      { value: '', label: 'Every location' },
+      ...activeLocations.map((location) => ({ value: location.id, label: location.name })),
+    ],
+    onValueChange: (next) => {
+      setLocationId(next);
+      resetWindow();
+    },
   };
 
   const toggleSort = (key: StockSortKey) => {
@@ -348,16 +359,11 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      {/* Four controls and no primary action — stock is not something you create
-          here, it arrives by counting, receiving or selling. So the refresh
-          button carries the `ml-auto` that a primary action normally would.
-          Nothing wraps: the location picker sheds to a narrow control and the
-          search box absorbs whatever is left. */}
-      <PaneToolbar label="Stock list controls">
-        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
-            its inner <input>, so a sizing class aimed at the control never
-            reaches the element that actually lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
+      {/* No primary action — stock is not something you create here, it arrives
+          by counting, receiving or selling. */}
+      <PaneToolbar
+        label="Stock list controls"
+        search={
           <SearchInput
             size="sm"
             aria-label="Search stock"
@@ -368,83 +374,57 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
               resetWindow();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        {/* A picker rather than chips: a business can have twenty locations, and
-            twenty chips is a toolbar that is taller than the table. */}
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show stock kept at"
-          value={locationId}
-          onChange={(event) => {
-            setLocationId(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Every location</option>
-          {activeLocations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        {/* One pressed button, not a chip pair: this is a single yes/no question,
-            and "All / Running low" as two chips reads as two categories of
-            stock. It sheds its label below @2xl — the falling arrow plus the
-            tooltip carries it, and search is used far more often than this. */}
-        <ToggleGroup
-          size="sm"
-          color="module"
-          className="shrink-0"
-          value={lowOnly ? ['low'] : []}
-          onValueChange={(next: unknown[]) => {
-            setLowOnly(next.includes('low'));
-            resetWindow();
-          }}
-        >
-          <ToggleGroupItem
-            value="low"
-            aria-label="Only show what is running low"
-            title="Only show what is running low"
+        }
+        filters={[locationFilter]}
+        // One pressed button, not a chip pair: this is a single yes/no question,
+        // and "All / Running low" as two chips reads as two categories of stock.
+        controls={
+          <ToggleGroup
+            size="sm"
+            color="module"
+            className="shrink-0"
+            value={lowOnly ? ['low'] : []}
+            onValueChange={(next: unknown[]) => {
+              setLowOnly(next.includes('low'));
+              resetWindow();
+            }}
           >
-            <Icon glyph={faArrowTrendDown} className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">Running low</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        {/* Saved views (docs/146 Phase 10.2). A person who has got this list
-            exactly right — one location, running low, sorted by what to sell —
-            should not rebuild it tomorrow. `ml-auto` moves here so the views
-            control and refresh sit together on the right. */}
-        <SavedViewsBar
-          target="/inventory/stock"
-          params={viewParams}
-          className="ml-auto"
-          onApply={(next) => {
+            <ToggleGroupItem
+              value="low"
+              aria-label="Only show what is running low"
+              title="Only show what is running low"
+            >
+              <Icon glyph={faArrowTrendDown} className="size-4" aria-hidden />
+              <span className="hidden @2xl:inline">Running low</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        }
+        activeControls={lowOnly ? 1 : 0}
+        // A person who has got this list exactly right — one location, running
+        // low, sorted by what to sell — should not rebuild it tomorrow.
+        views={{
+          target: '/inventory/stock',
+          params: viewParams,
+          onApply: (next) => {
             setSearch(next.q ?? '');
-            setLocationId(next.warehouse ?? '');
             setLowOnly(next.low === '1');
             const [key, dir] = (next.sort ?? '').split(':');
             if (key && (dir === 'asc' || dir === 'desc')) {
               setSort({ key: key as StockSortKey, dir });
             }
             resetWindow();
-          }}
-        />
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>

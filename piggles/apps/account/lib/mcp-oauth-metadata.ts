@@ -22,9 +22,9 @@
 // because the plugin hardcodes `scopes_supported` to the four OIDC scopes and
 // never surfaces the MCP business-scope vocabulary. The endpoints below are the
 // plugin's mcp() routes under /api/auth; /mcp/authorize is guarded by the
-// consent-grant `before` hook in @sparx/auth, so advertising it is safe.
+// consent-grant `before` hook in @wizeworks/auth, so advertising it is safe.
 
-import { MCP_ALL_OAUTH_SCOPES } from '@sparx/auth';
+import { MCP_ALL_OAUTH_SCOPES } from '@wizeworks/auth';
 
 /**
  * Canonical public origin of the authorization server.

@@ -1,792 +1,637 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "cleanse",
+      "name": "Cleanse",
+      "description": "Cleansers and gentle exfoliants.",
+      "featured": true
+    },
+    {
+      "handle": "treat",
+      "name": "Treat",
+      "description": "Serums, oils, masks and eye care.",
+      "featured": true
+    },
+    {
+      "handle": "moisturize",
+      "name": "Moisturize",
+      "description": "Creams and hydrating mists.",
+      "featured": true
+    },
+    {
+      "handle": "protect",
+      "name": "Protect",
+      "description": "Daily mineral sun protection.",
+      "featured": true
+    },
+    {
+      "handle": "body",
+      "name": "Body",
+      "description": "Body and lip care for every day.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "best-sellers",
+      "name": "Best Sellers",
+      "description": "The essentials most people start with.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "everyday-cleanser",
+        "barrier-repair-serum",
+        "ultimate-moisturizer",
+        "daily-mineral-spf",
+        "the-complete-ritual"
+      ]
+    },
+    {
+      "handle": "the-morning-ritual",
+      "name": "The Morning Ritual",
+      "description": "Cleanse, treat, moisturize, protect — in five minutes.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "everyday-cleanser",
+        "barrier-repair-serum",
+        "ultimate-moisturizer",
+        "daily-mineral-spf"
+      ]
+    },
+    {
+      "handle": "the-evening-ritual",
+      "name": "The Evening Ritual",
+      "description": "The slower steps, for the end of the day.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "everyday-cleanser",
+        "facial-recovery-oil",
+        "overnight-renewal-mask",
+        "quiet-eye-cream",
+        "overnight-lip-mask"
+      ]
+    },
+    {
+      "handle": "new-arrivals",
+      "name": "New Arrivals",
+      "description": "The latest additions to the range.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["barrier-repair-serum", "hydrating-essence-mist", "the-complete-ritual"]
+    },
+    {
+      "handle": "the-essentials",
+      "name": "The Essentials",
+      "description": "The short list, if you only buy a few.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "everyday-cleanser",
+        "ultimate-moisturizer",
+        "daily-mineral-spf",
+        "body-softening-lotion"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "everyday-cleanser",
+      "title": "The Everyday Cleanser",
+      "description": "A soft gel-to-milk cleanser that lifts sunscreen, make-up and the day off your skin without the tight, squeaky feeling that means you have stripped it. Fragrance-free, pH-balanced, and gentle enough to use morning and night.",
+      "status": "active",
+      "productType": "Cleanser",
+      "vendor": "Nue Skincare",
+      "tags": ["cleanser", "gentle", "fragrance-free", "daily"],
+      "categoryHandles": ["cleanse"],
+      "collectionHandles": [
+        "best-sellers",
+        "the-morning-ritual",
+        "the-evening-ritual",
+        "the-essentials"
+      ],
+      "seoTitle": "The Everyday Cleanser — gentle daily face wash",
+      "seoDescription": "A soft gel-to-milk cleanser that removes make-up and SPF without stripping the skin.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Mild coconut-derived surfactants lift away sunscreen, make-up and grime, while glycerin and panthenol keep the barrier soft — so skin is clean without the tight, squeaky feeling that means it has been stripped.",
+        "howToUse": "Massage a small amount over damp skin morning and night; it turns from a gel to a light milk as you work it in. Rinse with lukewarm water and pat dry. Follow with serum and moisturiser while skin is still slightly damp.",
+        "skinType": ["all"],
+        "volume": "150 ml / 250 ml",
+        "fullIngredients": "Aqua, Glycerin, Coco-Glucoside, Sodium Cocoyl Isethionate, Panthenol, Sodium Hyaluronate, Allantoin, Citric Acid, Sodium Benzoate, Potassium Sorbate."
+      },
+      "options": [
         {
-            "handle": "cleanse",
-            "name": "Cleanse",
-            "description": "Cleansers and gentle exfoliants.",
-            "featured": true
-        },
-        {
-            "handle": "treat",
-            "name": "Treat",
-            "description": "Serums, oils, masks and eye care.",
-            "featured": true
-        },
-        {
-            "handle": "moisturize",
-            "name": "Moisturize",
-            "description": "Creams and hydrating mists.",
-            "featured": true
-        },
-        {
-            "handle": "protect",
-            "name": "Protect",
-            "description": "Daily mineral sun protection.",
-            "featured": true
-        },
-        {
-            "handle": "body",
-            "name": "Body",
-            "description": "Body and lip care for every day.",
-            "featured": false
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "150ml"
+            },
+            {
+              "value": "250ml"
+            }
+          ]
         }
-    ],
-    "collections": [
+      ],
+      "variants": [
         {
-            "handle": "best-sellers",
-            "name": "Best Sellers",
-            "description": "The essentials most people start with.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "everyday-cleanser",
-                "barrier-repair-serum",
-                "ultimate-moisturizer",
-                "daily-mineral-spf",
-                "the-complete-ritual"
-            ]
+          "sku": "NUE-CLEAN-150",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "150ml"
+          }
         },
         {
-            "handle": "the-morning-ritual",
-            "name": "The Morning Ritual",
-            "description": "Cleanse, treat, moisturize, protect — in five minutes.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "everyday-cleanser",
-                "barrier-repair-serum",
-                "ultimate-moisturizer",
-                "daily-mineral-spf"
-            ]
-        },
-        {
-            "handle": "the-evening-ritual",
-            "name": "The Evening Ritual",
-            "description": "The slower steps, for the end of the day.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "everyday-cleanser",
-                "facial-recovery-oil",
-                "overnight-renewal-mask",
-                "quiet-eye-cream",
-                "overnight-lip-mask"
-            ]
-        },
-        {
-            "handle": "new-arrivals",
-            "name": "New Arrivals",
-            "description": "The latest additions to the range.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "barrier-repair-serum",
-                "hydrating-essence-mist",
-                "the-complete-ritual"
-            ]
-        },
-        {
-            "handle": "the-essentials",
-            "name": "The Essentials",
-            "description": "The short list, if you only buy a few.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "everyday-cleanser",
-                "ultimate-moisturizer",
-                "daily-mineral-spf",
-                "body-softening-lotion"
-            ]
+          "sku": "NUE-CLEAN-250",
+          "priceCents": 4000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250ml"
+          }
         }
-    ],
-    "products": [
+      ],
+      "images": [
         {
-            "handle": "everyday-cleanser",
-            "title": "The Everyday Cleanser",
-            "description": "A soft gel-to-milk cleanser that lifts sunscreen, make-up and the day off your skin without the tight, squeaky feeling that means you have stripped it. Fragrance-free, pH-balanced, and gentle enough to use morning and night.",
-            "status": "active",
-            "productType": "Cleanser",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "cleanser",
-                "gentle",
-                "fragrance-free",
-                "daily"
-            ],
-            "categoryHandles": [
-                "cleanse"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "the-morning-ritual",
-                "the-evening-ritual",
-                "the-essentials"
-            ],
-            "seoTitle": "The Everyday Cleanser — gentle daily face wash",
-            "seoDescription": "A soft gel-to-milk cleanser that removes make-up and SPF without stripping the skin.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Mild coconut-derived surfactants lift away sunscreen, make-up and grime, while glycerin and panthenol keep the barrier soft — so skin is clean without the tight, squeaky feeling that means it has been stripped.",
-                "howToUse": "Massage a small amount over damp skin morning and night; it turns from a gel to a light milk as you work it in. Rinse with lukewarm water and pat dry. Follow with serum and moisturiser while skin is still slightly damp.",
-                "skinType": [
-                    "all"
-                ],
-                "volume": "150 ml / 250 ml",
-                "fullIngredients": "Aqua, Glycerin, Coco-Glucoside, Sodium Cocoyl Isethionate, Panthenol, Sodium Hyaluronate, Allantoin, Citric Acid, Sodium Benzoate, Potassium Sorbate."
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "150ml"
-                        },
-                        {
-                            "value": "250ml"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "NUE-CLEAN-150",
-                    "priceCents": 2800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "150ml"
-                    }
-                },
-                {
-                    "sku": "NUE-CLEAN-250",
-                    "priceCents": 4000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "250ml"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "everyday-cleanser",
-                    "isPrimary": true,
-                    "alt": "The Everyday Cleanser"
-                }
-            ]
-        },
-        {
-            "handle": "gentle-exfoliant",
-            "title": "Gentle Exfoliant",
-            "description": "A low-percentage overnight exfoliant that resurfaces with lactic and gluconolactone acids — enough to smooth and brighten, not so much that it stings. The one acid step most routines actually need, and the only one Nue makes.",
-            "status": "active",
-            "productType": "Exfoliant",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "exfoliant",
-                "lactic-acid",
-                "resurfacing",
-                "treat"
-            ],
-            "categoryHandles": [
-                "cleanse"
-            ],
-            "collectionHandles": [
-                "the-evening-ritual"
-            ],
-            "seoTitle": "Gentle Exfoliant — low-percentage lactic acid treatment",
-            "seoDescription": "A gentle overnight lactic-acid exfoliant that smooths and brightens without stinging.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "A low percentage of lactic acid resurfaces and brightens, paired with gluconolactone — a gentle PHA that also holds water — and allantoin to soothe, so it smooths without the sting of a harsher acid.",
-                "howToUse": "At night, two or three times a week, smooth a thin layer over clean, dry skin and let it absorb before moisturiser. Introduce it slowly, avoid layering with other acids, and always wear SPF the next morning.",
-                "skinType": [
-                    "all",
-                    "sensitive"
-                ],
-                "volume": "100 ml / 3.4 fl oz",
-                "fullIngredients": "Aqua, Lactic Acid, Gluconolactone, Glycerin, Sodium Hydroxide, Allantoin, Panthenol, Xanthan Gum, Sodium Benzoate, Potassium Sorbate."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-EXFOL-100",
-                    "priceCents": 3400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "gentle-exfoliant",
-                    "isPrimary": true,
-                    "alt": "The Gentle Exfoliant"
-                }
-            ]
-        },
-        {
-            "handle": "barrier-repair-serum",
-            "title": "Barrier Repair Serum",
-            "description": "A quiet workhorse of niacinamide, ceramides and panthenol that rebuilds a stressed skin barrier over a few weeks — the reason skin stops feeling reactive, red and thirsty. Layers under anything, plays well with everything.",
-            "status": "active",
-            "productType": "Serum",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "serum",
-                "niacinamide",
-                "ceramides",
-                "barrier",
-                "treat"
-            ],
-            "categoryHandles": [
-                "treat"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "the-morning-ritual",
-                "new-arrivals"
-            ],
-            "seoTitle": "Barrier Repair Serum — niacinamide & ceramide serum",
-            "seoDescription": "A niacinamide, ceramide and panthenol serum that rebuilds a stressed skin barrier.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Niacinamide calms and helps skin make its own lipids, ceramides replace the ones a stressed barrier has lost, and panthenol soothes — together they rebuild reactive, red, thirsty skin over a few weeks.",
-                "howToUse": "Press a few drops into clean skin morning and night, before your moisturiser. It layers under anything and plays well with everything, so it fits either end of the routine. Used daily, the effect builds quietly.",
-                "skinType": [
-                    "dry",
-                    "sensitive"
-                ],
-                "volume": "30 ml / 50 ml",
-                "fullIngredients": "Aqua, Niacinamide, Glycerin, Ceramide NP, Panthenol, Sodium Hyaluronate, Cetearyl Alcohol, Squalane, Xanthan Gum, Phenoxyethanol."
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "30ml"
-                        },
-                        {
-                            "value": "50ml"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "NUE-SERUM-30",
-                    "priceCents": 5800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "30ml"
-                    }
-                },
-                {
-                    "sku": "NUE-SERUM-50",
-                    "priceCents": 8200,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "50ml"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "barrier-repair-serum",
-                    "isPrimary": true,
-                    "alt": "The Barrier Repair Serum"
-                }
-            ]
-        },
-        {
-            "handle": "facial-recovery-oil",
-            "title": "Facial Recovery Oil",
-            "description": "A weightless blend of squalane, rosehip and a little vitamin E that seals in everything beneath it and leaves skin soft by morning. Three or four drops, pressed in last at night — the difference between hydrated and truly comfortable skin.",
-            "status": "active",
-            "productType": "Face oil",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "oil",
-                "squalane",
-                "rosehip",
-                "overnight",
-                "treat"
-            ],
-            "categoryHandles": [
-                "treat"
-            ],
-            "collectionHandles": [
-                "the-evening-ritual"
-            ],
-            "seoTitle": "Facial Recovery Oil — squalane & rosehip night oil",
-            "seoDescription": "A weightless squalane and rosehip night oil that seals in hydration and softens skin.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Plant-derived squalane mimics skin’s own oils to seal in everything beneath it, rosehip seed oil brings essential fatty acids to soften and even tone, and a little vitamin E steadies the blend.",
-                "howToUse": "As the last step at night, warm three or four drops between the palms and press — do not rub — over moisturiser to lock in hydration. Use nightly for dry skin, or a couple of nights a week when skin feels tight.",
-                "skinType": [
-                    "dry",
-                    "normal"
-                ],
-                "volume": "30 ml / 1.0 fl oz",
-                "fullIngredients": "Squalane, Rosa Canina (Rosehip) Seed Oil, Caprylic/Capric Triglyceride, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopherol, Bisabolol."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-OIL-30",
-                    "priceCents": 6400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "facial-recovery-oil",
-                    "isPrimary": true,
-                    "alt": "The Facial Recovery Oil"
-                }
-            ]
-        },
-        {
-            "handle": "overnight-renewal-mask",
-            "title": "Overnight Renewal Mask",
-            "description": "A rich leave-on cream mask you wear to bed twice a week — hyaluronic acid and shea to flood dry, tired skin, so you wake to the plump, rested face a good night is supposed to give you. No rinsing, no mess on the pillow.",
-            "status": "active",
-            "productType": "Mask",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "mask",
-                "overnight",
-                "hyaluronic-acid",
-                "hydrating",
-                "treat"
-            ],
-            "categoryHandles": [
-                "treat"
-            ],
-            "collectionHandles": [
-                "the-evening-ritual"
-            ],
-            "seoTitle": "Overnight Renewal Mask — leave-on hydrating night mask",
-            "seoDescription": "A rich leave-on overnight cream mask with hyaluronic acid and shea for tired, dry skin.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Multi-weight hyaluronic acid floods dry, tired skin with water, while shea butter and glycerin seal it in overnight — so you wake to the plump, rested face a good night is meant to give you.",
-                "howToUse": "Twice a week, smooth a generous layer over clean skin as the final step before bed and leave it on — no rinsing. It sinks in without transferring to the pillow. On very dry nights, use it in place of your moisturiser.",
-                "skinType": [
-                    "dry",
-                    "normal"
-                ],
-                "volume": "50 ml / 1.7 fl oz",
-                "fullIngredients": "Aqua, Glycerin, Butyrospermum Parkii (Shea) Butter, Sodium Hyaluronate, Squalane, Cetearyl Alcohol, Panthenol, Allantoin, Xanthan Gum, Phenoxyethanol."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-MASK-50",
-                    "priceCents": 4800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "overnight-renewal-mask",
-                    "isPrimary": true,
-                    "alt": "The Overnight Renewal Mask"
-                }
-            ]
-        },
-        {
-            "handle": "quiet-eye-cream",
-            "title": "Quiet Eye Cream",
-            "description": "A light caffeine-and-peptide cream for the thin skin around the eyes — enough to de-puff a slow morning and soften fine lines, without the pilling that ruins concealer. A little goes a long way, so a tube lasts.",
-            "status": "active",
-            "productType": "Eye cream",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "eye-cream",
-                "caffeine",
-                "peptides",
-                "treat"
-            ],
-            "categoryHandles": [
-                "treat"
-            ],
-            "collectionHandles": [
-                "the-evening-ritual"
-            ],
-            "seoTitle": "Quiet Eye Cream — caffeine & peptide eye cream",
-            "seoDescription": "A light caffeine-and-peptide eye cream that de-puffs and softens fine lines without pilling.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Caffeine helps de-puff a slow morning, peptides support firmness over time, and a light dose of hyaluronic acid smooths the look of fine lines — in a fast-absorbing cream that will not pill under concealer.",
-                "howToUse": "Morning and night, tap a small amount around the orbital bone with your ring finger, working from the inner corner outward. A little goes a long way, so a tube lasts. Let it settle before eye make-up.",
-                "skinType": [
-                    "all"
-                ],
-                "volume": "15 ml / 0.5 fl oz",
-                "fullIngredients": "Aqua, Glycerin, Caffeine, Acetyl Hexapeptide-8, Sodium Hyaluronate, Squalane, Cetearyl Alcohol, Panthenol, Tocopherol, Phenoxyethanol."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-EYE-15",
-                    "priceCents": 4600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "quiet-eye-cream",
-                    "isPrimary": true,
-                    "alt": "The Quiet Eye Cream"
-                }
-            ]
-        },
-        {
-            "handle": "ultimate-moisturizer",
-            "title": "Ultimate Moisturizer",
-            "description": "The cream the whole range is built around — glycerin, squalane and ceramides in a texture that sinks in fast and sits invisibly under SPF or make-up. Rich enough for winter, light enough for summer, and the last step most days need.",
-            "status": "active",
-            "productType": "Moisturizer",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "moisturizer",
-                "ceramides",
-                "glycerin",
-                "daily",
-                "moisturize"
-            ],
-            "categoryHandles": [
-                "moisturize"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "the-morning-ritual",
-                "the-essentials"
-            ],
-            "seoTitle": "Ultimate Moisturizer — daily ceramide face cream",
-            "seoDescription": "A glycerin, squalane and ceramide face cream that sinks in fast and layers under SPF.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Glycerin draws water in, squalane softens, and ceramides shore up the barrier — a balanced trio in a texture that sinks in fast and sits invisibly under SPF or make-up, rich enough for winter, light enough for summer.",
-                "howToUse": "Smooth a pea-to-almond-sized amount over the face and neck as the last step of the routine — after serum, and in the morning before SPF. Warm it between the fingers first so it presses in rather than dragging.",
-                "skinType": [
-                    "all"
-                ],
-                "volume": "50 ml / 100 ml",
-                "fullIngredients": "Aqua, Glycerin, Squalane, Ceramide NP, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Sodium Hyaluronate, Panthenol, Tocopherol, Phenoxyethanol."
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "50ml"
-                        },
-                        {
-                            "value": "100ml"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "NUE-MOIST-50",
-                    "priceCents": 5400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "50ml"
-                    }
-                },
-                {
-                    "sku": "NUE-MOIST-100",
-                    "priceCents": 8800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "100ml"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "ultimate-moisturizer",
-                    "isPrimary": true,
-                    "alt": "The Ultimate Moisturizer"
-                }
-            ]
-        },
-        {
-            "handle": "daily-mineral-spf",
-            "title": "Daily Mineral SPF 30",
-            "description": "A lightweight mineral sunscreen that finishes matte and leaves no white cast on any skin tone — the one step that does more for how skin ages than everything else combined. Wears cleanly under make-up, reapplies without a fuss.",
-            "status": "active",
-            "productType": "SPF",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "spf",
-                "mineral",
-                "sunscreen",
-                "daily",
-                "protect"
-            ],
-            "categoryHandles": [
-                "protect"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "the-morning-ritual",
-                "the-essentials"
-            ],
-            "seoTitle": "Daily Mineral SPF 30 — no-white-cast mineral sunscreen",
-            "seoDescription": "A lightweight matte mineral SPF 30 that leaves no white cast and wears under make-up.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Non-nano zinc oxide gives broad-spectrum SPF 30 mineral protection tinted to leave no white cast on any skin tone, with niacinamide and glycerin so it wears like skincare rather than a chalky sunscreen.",
-                "howToUse": "As the final morning step, apply two finger-lengths over the face and neck — more than feels necessary — and let it set before make-up. Reapply across a long day outdoors; do not rely on the SPF in your make-up alone.",
-                "skinType": [
-                    "all",
-                    "sensitive"
-                ],
-                "volume": "50 ml / 1.7 fl oz",
-                "fullIngredients": "Aqua, Zinc Oxide (non-nano), Caprylic/Capric Triglyceride, Glycerin, Niacinamide, Cetearyl Alcohol, Silica, Iron Oxides (CI 77491, CI 77492), Tocopherol, Phenoxyethanol."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-SPF-50",
-                    "priceCents": 3800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "daily-mineral-spf",
-                    "isPrimary": true,
-                    "alt": "The Daily Mineral SPF 30"
-                }
-            ]
-        },
-        {
-            "handle": "hydrating-essence-mist",
-            "title": "Hydrating Essence Mist",
-            "description": "A fine essence mist of hyaluronic acid and aloe to press in before serum, or over make-up when skin feels tight. Not a gimmick spritz — a real hydrating layer that helps everything after it absorb, and a small ritual on a long day.",
-            "status": "active",
-            "productType": "Mist",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "mist",
-                "essence",
-                "hyaluronic-acid",
-                "hydrating",
-                "moisturize"
-            ],
-            "categoryHandles": [
-                "moisturize"
-            ],
-            "collectionHandles": [
-                "new-arrivals"
-            ],
-            "seoTitle": "Hydrating Essence Mist — hyaluronic acid face mist",
-            "seoDescription": "A fine hyaluronic-acid and aloe essence mist that hydrates and preps skin for serum.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Low-weight hyaluronic acid and betaine lay down a real hydrating layer that helps everything after it absorb, while aloe and panthenol calm — not a gimmick spritz, but a genuine essence step.",
-                "howToUse": "Mist over clean skin and press in with the palms before serum, or spritz over make-up through the day when skin feels tight. Hold it a hand’s width away and let the fine mist settle rather than soaking the face.",
-                "skinType": [
-                    "all"
-                ],
-                "volume": "100 ml / 3.4 fl oz",
-                "fullIngredients": "Aqua, Glycerin, Sodium Hyaluronate, Aloe Barbadensis Leaf Juice, Panthenol, Betaine, Allantoin, Sodium Benzoate, Potassium Sorbate."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-MIST-100",
-                    "priceCents": 3200,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "hydrating-essence-mist",
-                    "isPrimary": true,
-                    "alt": "The Hydrating Essence Mist"
-                }
-            ]
-        },
-        {
-            "handle": "body-softening-lotion",
-            "title": "Body Softening Lotion",
-            "description": "A fast-absorbing body lotion with oat, shea and glycerin that softens rough patches and settles in seconds, so you can dress straight after. Lightly and briefly scented, then gone — nothing that fights your fragrance.",
-            "status": "active",
-            "productType": "Body",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "body",
-                "lotion",
-                "oat",
-                "shea",
-                "daily"
-            ],
-            "categoryHandles": [
-                "body"
-            ],
-            "collectionHandles": [
-                "the-essentials"
-            ],
-            "seoTitle": "Body Softening Lotion — fast-absorbing oat & shea lotion",
-            "seoDescription": "A fast-absorbing oat, shea and glycerin body lotion that softens skin in seconds.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Colloidal oat calms and softens rough, tight patches, shea butter and glycerin hold in moisture, and a light non-greasy base absorbs in seconds — so you can dress straight after without waiting for it to sink in.",
-                "howToUse": "Smooth over the whole body after a shower while skin is still slightly damp, concentrating on elbows, knees and anywhere that runs dry. Lightly and briefly scented, then gone — nothing that fights your fragrance.",
-                "skinType": [
-                    "all",
-                    "dry"
-                ],
-                "volume": "250 ml / 400 ml",
-                "fullIngredients": "Aqua, Glycerin, Avena Sativa (Oat) Kernel Extract, Butyrospermum Parkii (Shea) Butter, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Panthenol, Tocopherol, Phenoxyethanol."
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "250ml"
-                        },
-                        {
-                            "value": "400ml"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "NUE-BODY-250",
-                    "priceCents": 3600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "250ml"
-                    }
-                },
-                {
-                    "sku": "NUE-BODY-400",
-                    "priceCents": 5200,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "400ml"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "body-softening-lotion",
-                    "isPrimary": true,
-                    "alt": "The Body Softening Lotion"
-                }
-            ]
-        },
-        {
-            "handle": "overnight-lip-mask",
-            "title": "Overnight Lip Mask",
-            "description": "A thick, non-sticky balm that repairs chapped, flaking lips while you sleep — shea, squalane and a whisper of vanilla. Wake up to soft lips that take color cleanly. Keeps in a pocket for the worst of winter, too.",
-            "status": "active",
-            "productType": "Lip care",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "lip",
-                "balm",
-                "overnight",
-                "shea",
-                "body"
-            ],
-            "categoryHandles": [
-                "body"
-            ],
-            "collectionHandles": [
-                "the-evening-ritual"
-            ],
-            "seoTitle": "Overnight Lip Mask — repairing shea lip balm",
-            "seoDescription": "A thick, non-sticky overnight lip mask of shea and squalane that repairs chapped lips.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "Shea butter and squalane form a rich, cushioning seal that repairs chapped, flaking lips overnight, with a whisper of vanilla and vitamin E — thick enough to work while you sleep, never sticky or waxy.",
-                "howToUse": "Press a generous layer onto the lips as the last thing before bed and wake to soft lips that take color cleanly. Keep it in a pocket for the worst of winter, and use it as a nightly balm whenever lips feel raw.",
-                "skinType": [
-                    "all"
-                ],
-                "volume": "15 ml / 0.5 fl oz",
-                "fullIngredients": "Butyrospermum Parkii (Shea) Butter, Squalane, Hydrogenated Polyisobutene, Ricinus Communis (Castor) Seed Oil, Tocopheryl Acetate, Vanillin, Bisabolol."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-LIP-15",
-                    "priceCents": 2400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "overnight-lip-mask",
-                    "isPrimary": true,
-                    "alt": "The Overnight Lip Mask"
-                }
-            ]
-        },
-        {
-            "handle": "the-complete-ritual",
-            "title": "The Complete Ritual",
-            "description": "The whole routine in one box — cleanser, barrier serum, moisturizer and SPF, at a saving on buying them apart. The honest way to start with Nue: everything you need for the four-step ritual, and nothing you do not.",
-            "status": "active",
-            "productType": "Set",
-            "vendor": "Nue Skincare",
-            "tags": [
-                "set",
-                "ritual",
-                "gift",
-                "starter"
-            ],
-            "categoryHandles": [
-                "treat"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "new-arrivals"
-            ],
-            "seoTitle": "The Complete Ritual — Nue four-step skincare set",
-            "seoDescription": "The full four-step routine — cleanser, serum, moisturizer and SPF — in one boxed set.",
-            "productTypeKey": "cosmetics",
-            "attributes": {
-                "keyIngredients": "The four essentials that carry the routine: the gel-to-milk Everyday Cleanser, the niacinamide-and-ceramide Barrier Repair Serum, the glycerin-squalane-ceramide Ultimate Moisturizer, and the no-cast Daily Mineral SPF 30.",
-                "howToUse": "The whole method is the order. Morning: cleanse, serum, moisturiser, then SPF. Evening: cleanse, serum, moisturiser. Introduce it as your everyday routine and give it a month — skin changes slowly, and the results that last arrive quietly.",
-                "skinType": [
-                    "all"
-                ],
-                "volume": "Four full-size essentials",
-                "fullIngredients": "Each essential carries its own full INCI list — see the Everyday Cleanser, Barrier Repair Serum, Ultimate Moisturizer and Daily Mineral SPF 30 pages for the complete lists."
-            },
-            "variants": [
-                {
-                    "sku": "NUE-RITUAL-SET",
-                    "priceCents": 18000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "the-complete-ritual",
-                    "isPrimary": true,
-                    "alt": "The Complete Ritual set"
-                }
-            ]
+          "assetId": "everyday-cleanser",
+          "isPrimary": true,
+          "alt": "The Everyday Cleanser"
         }
-    ]
+      ]
+    },
+    {
+      "handle": "gentle-exfoliant",
+      "title": "Gentle Exfoliant",
+      "description": "A low-percentage overnight exfoliant that resurfaces with lactic and gluconolactone acids — enough to smooth and brighten, not so much that it stings. The one acid step most routines actually need, and the only one Nue makes.",
+      "status": "active",
+      "productType": "Exfoliant",
+      "vendor": "Nue Skincare",
+      "tags": ["exfoliant", "lactic-acid", "resurfacing", "treat"],
+      "categoryHandles": ["cleanse"],
+      "collectionHandles": ["the-evening-ritual"],
+      "seoTitle": "Gentle Exfoliant — low-percentage lactic acid treatment",
+      "seoDescription": "A gentle overnight lactic-acid exfoliant that smooths and brightens without stinging.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "A low percentage of lactic acid resurfaces and brightens, paired with gluconolactone — a gentle PHA that also holds water — and allantoin to soothe, so it smooths without the sting of a harsher acid.",
+        "howToUse": "At night, two or three times a week, smooth a thin layer over clean, dry skin and let it absorb before moisturiser. Introduce it slowly, avoid layering with other acids, and always wear SPF the next morning.",
+        "skinType": ["all", "sensitive"],
+        "volume": "100 ml / 3.4 fl oz",
+        "fullIngredients": "Aqua, Lactic Acid, Gluconolactone, Glycerin, Sodium Hydroxide, Allantoin, Panthenol, Xanthan Gum, Sodium Benzoate, Potassium Sorbate."
+      },
+      "variants": [
+        {
+          "sku": "NUE-EXFOL-100",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "gentle-exfoliant",
+          "isPrimary": true,
+          "alt": "The Gentle Exfoliant"
+        }
+      ]
+    },
+    {
+      "handle": "barrier-repair-serum",
+      "title": "Barrier Repair Serum",
+      "description": "A quiet workhorse of niacinamide, ceramides and panthenol that rebuilds a stressed skin barrier over a few weeks — the reason skin stops feeling reactive, red and thirsty. Layers under anything, plays well with everything.",
+      "status": "active",
+      "productType": "Serum",
+      "vendor": "Nue Skincare",
+      "tags": ["serum", "niacinamide", "ceramides", "barrier", "treat"],
+      "categoryHandles": ["treat"],
+      "collectionHandles": ["best-sellers", "the-morning-ritual", "new-arrivals"],
+      "seoTitle": "Barrier Repair Serum — niacinamide & ceramide serum",
+      "seoDescription": "A niacinamide, ceramide and panthenol serum that rebuilds a stressed skin barrier.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Niacinamide calms and helps skin make its own lipids, ceramides replace the ones a stressed barrier has lost, and panthenol soothes — together they rebuild reactive, red, thirsty skin over a few weeks.",
+        "howToUse": "Press a few drops into clean skin morning and night, before your moisturiser. It layers under anything and plays well with everything, so it fits either end of the routine. Used daily, the effect builds quietly.",
+        "skinType": ["dry", "sensitive"],
+        "volume": "30 ml / 50 ml",
+        "fullIngredients": "Aqua, Niacinamide, Glycerin, Ceramide NP, Panthenol, Sodium Hyaluronate, Cetearyl Alcohol, Squalane, Xanthan Gum, Phenoxyethanol."
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "30ml"
+            },
+            {
+              "value": "50ml"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "NUE-SERUM-30",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "30ml"
+          }
+        },
+        {
+          "sku": "NUE-SERUM-50",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "50ml"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "barrier-repair-serum",
+          "isPrimary": true,
+          "alt": "The Barrier Repair Serum"
+        }
+      ]
+    },
+    {
+      "handle": "facial-recovery-oil",
+      "title": "Facial Recovery Oil",
+      "description": "A weightless blend of squalane, rosehip and a little vitamin E that seals in everything beneath it and leaves skin soft by morning. Three or four drops, pressed in last at night — the difference between hydrated and truly comfortable skin.",
+      "status": "active",
+      "productType": "Face oil",
+      "vendor": "Nue Skincare",
+      "tags": ["oil", "squalane", "rosehip", "overnight", "treat"],
+      "categoryHandles": ["treat"],
+      "collectionHandles": ["the-evening-ritual"],
+      "seoTitle": "Facial Recovery Oil — squalane & rosehip night oil",
+      "seoDescription": "A weightless squalane and rosehip night oil that seals in hydration and softens skin.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Plant-derived squalane mimics skin’s own oils to seal in everything beneath it, rosehip seed oil brings essential fatty acids to soften and even tone, and a little vitamin E steadies the blend.",
+        "howToUse": "As the last step at night, warm three or four drops between the palms and press — do not rub — over moisturiser to lock in hydration. Use nightly for dry skin, or a couple of nights a week when skin feels tight.",
+        "skinType": ["dry", "normal"],
+        "volume": "30 ml / 1.0 fl oz",
+        "fullIngredients": "Squalane, Rosa Canina (Rosehip) Seed Oil, Caprylic/Capric Triglyceride, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopherol, Bisabolol."
+      },
+      "variants": [
+        {
+          "sku": "NUE-OIL-30",
+          "priceCents": 6400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "facial-recovery-oil",
+          "isPrimary": true,
+          "alt": "The Facial Recovery Oil"
+        }
+      ]
+    },
+    {
+      "handle": "overnight-renewal-mask",
+      "title": "Overnight Renewal Mask",
+      "description": "A rich leave-on cream mask you wear to bed twice a week — hyaluronic acid and shea to flood dry, tired skin, so you wake to the plump, rested face a good night is supposed to give you. No rinsing, no mess on the pillow.",
+      "status": "active",
+      "productType": "Mask",
+      "vendor": "Nue Skincare",
+      "tags": ["mask", "overnight", "hyaluronic-acid", "hydrating", "treat"],
+      "categoryHandles": ["treat"],
+      "collectionHandles": ["the-evening-ritual"],
+      "seoTitle": "Overnight Renewal Mask — leave-on hydrating night mask",
+      "seoDescription": "A rich leave-on overnight cream mask with hyaluronic acid and shea for tired, dry skin.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Multi-weight hyaluronic acid floods dry, tired skin with water, while shea butter and glycerin seal it in overnight — so you wake to the plump, rested face a good night is meant to give you.",
+        "howToUse": "Twice a week, smooth a generous layer over clean skin as the final step before bed and leave it on — no rinsing. It sinks in without transferring to the pillow. On very dry nights, use it in place of your moisturiser.",
+        "skinType": ["dry", "normal"],
+        "volume": "50 ml / 1.7 fl oz",
+        "fullIngredients": "Aqua, Glycerin, Butyrospermum Parkii (Shea) Butter, Sodium Hyaluronate, Squalane, Cetearyl Alcohol, Panthenol, Allantoin, Xanthan Gum, Phenoxyethanol."
+      },
+      "variants": [
+        {
+          "sku": "NUE-MASK-50",
+          "priceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "overnight-renewal-mask",
+          "isPrimary": true,
+          "alt": "The Overnight Renewal Mask"
+        }
+      ]
+    },
+    {
+      "handle": "quiet-eye-cream",
+      "title": "Quiet Eye Cream",
+      "description": "A light caffeine-and-peptide cream for the thin skin around the eyes — enough to de-puff a slow morning and soften fine lines, without the pilling that ruins concealer. A little goes a long way, so a tube lasts.",
+      "status": "active",
+      "productType": "Eye cream",
+      "vendor": "Nue Skincare",
+      "tags": ["eye-cream", "caffeine", "peptides", "treat"],
+      "categoryHandles": ["treat"],
+      "collectionHandles": ["the-evening-ritual"],
+      "seoTitle": "Quiet Eye Cream — caffeine & peptide eye cream",
+      "seoDescription": "A light caffeine-and-peptide eye cream that de-puffs and softens fine lines without pilling.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Caffeine helps de-puff a slow morning, peptides support firmness over time, and a light dose of hyaluronic acid smooths the look of fine lines — in a fast-absorbing cream that will not pill under concealer.",
+        "howToUse": "Morning and night, tap a small amount around the orbital bone with your ring finger, working from the inner corner outward. A little goes a long way, so a tube lasts. Let it settle before eye make-up.",
+        "skinType": ["all"],
+        "volume": "15 ml / 0.5 fl oz",
+        "fullIngredients": "Aqua, Glycerin, Caffeine, Acetyl Hexapeptide-8, Sodium Hyaluronate, Squalane, Cetearyl Alcohol, Panthenol, Tocopherol, Phenoxyethanol."
+      },
+      "variants": [
+        {
+          "sku": "NUE-EYE-15",
+          "priceCents": 4600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "quiet-eye-cream",
+          "isPrimary": true,
+          "alt": "The Quiet Eye Cream"
+        }
+      ]
+    },
+    {
+      "handle": "ultimate-moisturizer",
+      "title": "Ultimate Moisturizer",
+      "description": "The cream the whole range is built around — glycerin, squalane and ceramides in a texture that sinks in fast and sits invisibly under SPF or make-up. Rich enough for winter, light enough for summer, and the last step most days need.",
+      "status": "active",
+      "productType": "Moisturizer",
+      "vendor": "Nue Skincare",
+      "tags": ["moisturizer", "ceramides", "glycerin", "daily", "moisturize"],
+      "categoryHandles": ["moisturize"],
+      "collectionHandles": ["best-sellers", "the-morning-ritual", "the-essentials"],
+      "seoTitle": "Ultimate Moisturizer — daily ceramide face cream",
+      "seoDescription": "A glycerin, squalane and ceramide face cream that sinks in fast and layers under SPF.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Glycerin draws water in, squalane softens, and ceramides shore up the barrier — a balanced trio in a texture that sinks in fast and sits invisibly under SPF or make-up, rich enough for winter, light enough for summer.",
+        "howToUse": "Smooth a pea-to-almond-sized amount over the face and neck as the last step of the routine — after serum, and in the morning before SPF. Warm it between the fingers first so it presses in rather than dragging.",
+        "skinType": ["all"],
+        "volume": "50 ml / 100 ml",
+        "fullIngredients": "Aqua, Glycerin, Squalane, Ceramide NP, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Sodium Hyaluronate, Panthenol, Tocopherol, Phenoxyethanol."
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "50ml"
+            },
+            {
+              "value": "100ml"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "NUE-MOIST-50",
+          "priceCents": 5400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "50ml"
+          }
+        },
+        {
+          "sku": "NUE-MOIST-100",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "100ml"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ultimate-moisturizer",
+          "isPrimary": true,
+          "alt": "The Ultimate Moisturizer"
+        }
+      ]
+    },
+    {
+      "handle": "daily-mineral-spf",
+      "title": "Daily Mineral SPF 30",
+      "description": "A lightweight mineral sunscreen that finishes matte and leaves no white cast on any skin tone — the one step that does more for how skin ages than everything else combined. Wears cleanly under make-up, reapplies without a fuss.",
+      "status": "active",
+      "productType": "SPF",
+      "vendor": "Nue Skincare",
+      "tags": ["spf", "mineral", "sunscreen", "daily", "protect"],
+      "categoryHandles": ["protect"],
+      "collectionHandles": ["best-sellers", "the-morning-ritual", "the-essentials"],
+      "seoTitle": "Daily Mineral SPF 30 — no-white-cast mineral sunscreen",
+      "seoDescription": "A lightweight matte mineral SPF 30 that leaves no white cast and wears under make-up.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Non-nano zinc oxide gives broad-spectrum SPF 30 mineral protection tinted to leave no white cast on any skin tone, with niacinamide and glycerin so it wears like skincare rather than a chalky sunscreen.",
+        "howToUse": "As the final morning step, apply two finger-lengths over the face and neck — more than feels necessary — and let it set before make-up. Reapply across a long day outdoors; do not rely on the SPF in your make-up alone.",
+        "skinType": ["all", "sensitive"],
+        "volume": "50 ml / 1.7 fl oz",
+        "fullIngredients": "Aqua, Zinc Oxide (non-nano), Caprylic/Capric Triglyceride, Glycerin, Niacinamide, Cetearyl Alcohol, Silica, Iron Oxides (CI 77491, CI 77492), Tocopherol, Phenoxyethanol."
+      },
+      "variants": [
+        {
+          "sku": "NUE-SPF-50",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "daily-mineral-spf",
+          "isPrimary": true,
+          "alt": "The Daily Mineral SPF 30"
+        }
+      ]
+    },
+    {
+      "handle": "hydrating-essence-mist",
+      "title": "Hydrating Essence Mist",
+      "description": "A fine essence mist of hyaluronic acid and aloe to press in before serum, or over make-up when skin feels tight. Not a gimmick spritz — a real hydrating layer that helps everything after it absorb, and a small ritual on a long day.",
+      "status": "active",
+      "productType": "Mist",
+      "vendor": "Nue Skincare",
+      "tags": ["mist", "essence", "hyaluronic-acid", "hydrating", "moisturize"],
+      "categoryHandles": ["moisturize"],
+      "collectionHandles": ["new-arrivals"],
+      "seoTitle": "Hydrating Essence Mist — hyaluronic acid face mist",
+      "seoDescription": "A fine hyaluronic-acid and aloe essence mist that hydrates and preps skin for serum.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Low-weight hyaluronic acid and betaine lay down a real hydrating layer that helps everything after it absorb, while aloe and panthenol calm — not a gimmick spritz, but a genuine essence step.",
+        "howToUse": "Mist over clean skin and press in with the palms before serum, or spritz over make-up through the day when skin feels tight. Hold it a hand’s width away and let the fine mist settle rather than soaking the face.",
+        "skinType": ["all"],
+        "volume": "100 ml / 3.4 fl oz",
+        "fullIngredients": "Aqua, Glycerin, Sodium Hyaluronate, Aloe Barbadensis Leaf Juice, Panthenol, Betaine, Allantoin, Sodium Benzoate, Potassium Sorbate."
+      },
+      "variants": [
+        {
+          "sku": "NUE-MIST-100",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "hydrating-essence-mist",
+          "isPrimary": true,
+          "alt": "The Hydrating Essence Mist"
+        }
+      ]
+    },
+    {
+      "handle": "body-softening-lotion",
+      "title": "Body Softening Lotion",
+      "description": "A fast-absorbing body lotion with oat, shea and glycerin that softens rough patches and settles in seconds, so you can dress straight after. Lightly and briefly scented, then gone — nothing that fights your fragrance.",
+      "status": "active",
+      "productType": "Body",
+      "vendor": "Nue Skincare",
+      "tags": ["body", "lotion", "oat", "shea", "daily"],
+      "categoryHandles": ["body"],
+      "collectionHandles": ["the-essentials"],
+      "seoTitle": "Body Softening Lotion — fast-absorbing oat & shea lotion",
+      "seoDescription": "A fast-absorbing oat, shea and glycerin body lotion that softens skin in seconds.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Colloidal oat calms and softens rough, tight patches, shea butter and glycerin hold in moisture, and a light non-greasy base absorbs in seconds — so you can dress straight after without waiting for it to sink in.",
+        "howToUse": "Smooth over the whole body after a shower while skin is still slightly damp, concentrating on elbows, knees and anywhere that runs dry. Lightly and briefly scented, then gone — nothing that fights your fragrance.",
+        "skinType": ["all", "dry"],
+        "volume": "250 ml / 400 ml",
+        "fullIngredients": "Aqua, Glycerin, Avena Sativa (Oat) Kernel Extract, Butyrospermum Parkii (Shea) Butter, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Panthenol, Tocopherol, Phenoxyethanol."
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250ml"
+            },
+            {
+              "value": "400ml"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "NUE-BODY-250",
+          "priceCents": 3600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250ml"
+          }
+        },
+        {
+          "sku": "NUE-BODY-400",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "400ml"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "body-softening-lotion",
+          "isPrimary": true,
+          "alt": "The Body Softening Lotion"
+        }
+      ]
+    },
+    {
+      "handle": "overnight-lip-mask",
+      "title": "Overnight Lip Mask",
+      "description": "A thick, non-sticky balm that repairs chapped, flaking lips while you sleep — shea, squalane and a whisper of vanilla. Wake up to soft lips that take color cleanly. Keeps in a pocket for the worst of winter, too.",
+      "status": "active",
+      "productType": "Lip care",
+      "vendor": "Nue Skincare",
+      "tags": ["lip", "balm", "overnight", "shea", "body"],
+      "categoryHandles": ["body"],
+      "collectionHandles": ["the-evening-ritual"],
+      "seoTitle": "Overnight Lip Mask — repairing shea lip balm",
+      "seoDescription": "A thick, non-sticky overnight lip mask of shea and squalane that repairs chapped lips.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "Shea butter and squalane form a rich, cushioning seal that repairs chapped, flaking lips overnight, with a whisper of vanilla and vitamin E — thick enough to work while you sleep, never sticky or waxy.",
+        "howToUse": "Press a generous layer onto the lips as the last thing before bed and wake to soft lips that take color cleanly. Keep it in a pocket for the worst of winter, and use it as a nightly balm whenever lips feel raw.",
+        "skinType": ["all"],
+        "volume": "15 ml / 0.5 fl oz",
+        "fullIngredients": "Butyrospermum Parkii (Shea) Butter, Squalane, Hydrogenated Polyisobutene, Ricinus Communis (Castor) Seed Oil, Tocopheryl Acetate, Vanillin, Bisabolol."
+      },
+      "variants": [
+        {
+          "sku": "NUE-LIP-15",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "overnight-lip-mask",
+          "isPrimary": true,
+          "alt": "The Overnight Lip Mask"
+        }
+      ]
+    },
+    {
+      "handle": "the-complete-ritual",
+      "title": "The Complete Ritual",
+      "description": "The whole routine in one box — cleanser, barrier serum, moisturizer and SPF, at a saving on buying them apart. The honest way to start with Nue: everything you need for the four-step ritual, and nothing you do not.",
+      "status": "active",
+      "productType": "Set",
+      "vendor": "Nue Skincare",
+      "tags": ["set", "ritual", "gift", "starter"],
+      "categoryHandles": ["treat"],
+      "collectionHandles": ["best-sellers", "new-arrivals"],
+      "seoTitle": "The Complete Ritual — Nue four-step skincare set",
+      "seoDescription": "The full four-step routine — cleanser, serum, moisturizer and SPF — in one boxed set.",
+      "productTypeKey": "cosmetics",
+      "attributes": {
+        "keyIngredients": "The four essentials that carry the routine: the gel-to-milk Everyday Cleanser, the niacinamide-and-ceramide Barrier Repair Serum, the glycerin-squalane-ceramide Ultimate Moisturizer, and the no-cast Daily Mineral SPF 30.",
+        "howToUse": "The whole method is the order. Morning: cleanse, serum, moisturiser, then SPF. Evening: cleanse, serum, moisturiser. Introduce it as your everyday routine and give it a month — skin changes slowly, and the results that last arrive quietly.",
+        "skinType": ["all"],
+        "volume": "Four full-size essentials",
+        "fullIngredients": "Each essential carries its own full INCI list — see the Everyday Cleanser, Barrier Repair Serum, Ultimate Moisturizer and Daily Mineral SPF 30 pages for the complete lists."
+      },
+      "variants": [
+        {
+          "sku": "NUE-RITUAL-SET",
+          "priceCents": 18000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "the-complete-ritual",
+          "isPrimary": true,
+          "alt": "The Complete Ritual set"
+        }
+      ]
+    }
+  ]
 }

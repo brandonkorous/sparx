@@ -12,7 +12,8 @@
 // the list down the page on every visit for the sake of an action taken once,
 // and duplicated the empty state directly underneath itself.
 
-import { Badge, Button, Card, EmptyState, Table, useToast } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { faPhone, faPhoneVolume, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -88,26 +89,30 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Phone system controls">
-        <Button
-          color="module"
-          size="sm"
-          disabled={forbidden || moduleOff}
-          title="Connect a phone system — hold Shift to open alongside, Alt for a new window"
-          onClick={connectPhoneSystem}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Connect a phone system
-        </Button>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Phone system controls"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            disabled={forbidden || moduleOff}
+            title="Connect a phone system — hold Shift to open alongside, Alt for a new window"
+            onClick={connectPhoneSystem}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Connect a phone system
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
         <Card className="min-h-0 flex-1">

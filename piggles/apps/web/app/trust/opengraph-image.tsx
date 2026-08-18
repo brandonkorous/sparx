@@ -1,4 +1,5 @@
-import { OG_SIZE, renderOg } from '@/lib/og';
+import { OG_SIZE, renderOg } from '@piggles/brand/og';
+import { MASCOT_POSES } from '@piggles/mascot';
 
 export const runtime = 'nodejs';
 export const size = OG_SIZE;
@@ -9,5 +10,6 @@ export default function Image() {
   return renderOg({
     title: 'The boring things, done properly.',
     subtitle: 'How your information is kept, who can reach it, and how you get it back.',
+    pose: MASCOT_POSES.protector,
   });
 }

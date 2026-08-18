@@ -32,7 +32,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Select,
@@ -310,43 +309,45 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Chat settings actions">
-        {dirty ? (
-          <Badge color="warning" variant="soft" size="sm">
-            Unsaved changes
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={update.isPending}
-          disabled={!canEdit || !dirty}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save changes
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={config ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Chat settings actions"
+        status={
+          dirty ? (
+            <Badge color="warning" variant="soft" size="sm">
+              Unsaved changes
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={update.isPending}
+            disabled={!canEdit || !dirty}
+            onClick={save}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save changes
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={config ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Chat settings
-            </Heading>
-            <Text>
-              Set up the chat box that greets people on your site — how it looks, when you are
-              around, and what happens when you are not.
-            </Text>
-          </div>
+          <Text>
+            Set up the chat box that greets people on your site — how it looks, when you are around,
+            and what happens when you are not.
+          </Text>
 
           {!canEdit ? (
             <Alert color="info" variant="soft">

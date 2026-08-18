@@ -21,7 +21,7 @@ real tenants. The cost of doing it now is only engineering time.
 Delete these completely. No stubs. No soft deprecation. No "deprecated" comments.
 
 ```
-@sparx/email-platform:
+@wizeworks/email-platform:
   → DEFAULT_AUTOMATIONS constant / catalog
   → evaluateTrigger() engine and all its callsites
   → The seeding logic that installs these rows on email activation
@@ -443,7 +443,7 @@ Do not build these as part of this slice. They are separate work:
 This slice is complete when:
 
 ```
-✅ Legacy @sparx/email-platform automations code deleted
+✅ Legacy @wizeworks/email-platform automations code deleted
 ✅ Legacy email automations dashboard page removed
 ✅ All 14 Builder-email templates provisioned on email activation
 ✅ Nightly reconcile provisions templates for existing tenants

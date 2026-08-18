@@ -31,6 +31,7 @@ import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
   Field,
   FieldControl,
@@ -44,8 +45,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { faGlobe, faLinkSlash, faServer, faShop } from '@fortawesome/pro-solid-svg-icons';
+import { MARKET_CATEGORIES } from '@wizeworks/commerce-schemas';
+import { faLinkSlash, faServer, faShop } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -63,8 +64,13 @@ import {
   type Product,
 } from './products-data';
 import { productHidesFeature } from '../../lib/product';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { InlineWaiting } from '../../components/inline-waiting';
 
 const LABEL = 'Where it sells';
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 
 /** Slug → the name a shopper browsing the marketplace would see. */
 const CATEGORY_ITEMS = Object.fromEntries(
@@ -306,7 +312,7 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [listings.data]);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
 
   const product = scope.product;
@@ -320,60 +326,53 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${LABEL} actions`}>
-        <Icon glyph={faGlobe} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={listings.isFetching}
-          updatedAt={listings.dataUpdatedAt}
-          onRefresh={() => {
-            void listings.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label={`${LABEL} actions`}
+        status={
+          scope.isFollowing ? (
+            <Badge color="info" variant="soft" size="sm">
+              Following
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={listings.isFetching}
+            updatedAt={listings.dataUpdatedAt}
+            onRefresh={() => {
+              void listings.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <FollowingNotice scope={scope} />
 
+          {/* Carded, because the branch beside it is a stack of FormSections —
+              each already a card. A failed load that skipped it floated on the
+              pane's recessed surface and made the pane jump as it recovered. */}
           {listings.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load where this sells"
-              description={productErrorMessage(
-                listings.error,
-                'This is a problem reaching the server. Nothing about your listings has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void listings.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load where this sells"
+                description={productErrorMessage(
+                  listings.error,
+                  'This is a problem reaching the server. Nothing about your listings has changed.'
+                )}
+                onRetry={() => {
+                  void listings.refetch();
+                }}
+              />
+            </Card>
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  {product.title}
-                </Heading>
-                <Text className="text-sm">
-                  Every place this product is offered, and whether each one is live.
-                </Text>
-              </div>
+              <Text className="text-sm">
+                Every place this product is offered, and whether each one is live.
+              </Text>
 
               <FormSection
                 title="Your own websites"
@@ -422,7 +421,12 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
                 title="Other shops you sell through"
                 description="Marketplaces you have connected, like Etsy or TikTok Shop. Listings are created when a shop is synced, not typed in here."
               >
-                {grouped.length === 0 ? (
+                {listings.isPending ? (
+                  // "No listings" and "not read yet" are different facts. Saying
+                  // the first while the second is true reports an absence nobody
+                  // has established.
+                  <InlineWaiting />
+                ) : grouped.length === 0 ? (
                   <EmptyState
                     size="sm"
                     icon={<Icon glyph={faShop} className="size-6" aria-hidden />}

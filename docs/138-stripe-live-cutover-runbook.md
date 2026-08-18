@@ -53,10 +53,10 @@ Three places hold Stripe config. Each row is a test→live swap.
 key is public by design). Injected as Docker build-args in
 [build-images.yml](../.github/workflows/build-images.yml) L142–147.
 
-| Variable                                    | Test → Live               | Consumed by            |
-| ------------------------------------------- | ------------------------- | ---------------------- |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`        | `pk_test_…` → `pk_live_…` | `apps/site` storefront |
-| `NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY` | `pk_test_…` → `pk_live_…` | `apps/market`          |
+| Variable                                    | Test → Live               | Consumed by                      |
+| ------------------------------------------- | ------------------------- | -------------------------------- |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`        | `pk_test_…` → `pk_live_…` | `wizeworks/apps/site` storefront |
+| `NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY` | `pk_test_…` → `pk_live_…` | `sparx/apps/market`              |
 
 > ⚠️ **Build-time inlining.** `NEXT_PUBLIC_*` is baked into the image at build. Setting it
 > on the pod does nothing. It only takes effect on the **NEXT image build**, so set these
@@ -149,7 +149,7 @@ isn't registered (docs/92 §1). When you turn this on **in live**:
 1. Run the provisioner with the **live** key — creates products, prices, meter, portal
    config in live mode and **prints the `STRIPE_PRICE_*` env block**:
    ```bash
-   STRIPE_SECRET_KEY=sk_live_… pnpm --filter @sparx/billing provision-stripe
+   STRIPE_SECRET_KEY=sk_live_… pnpm --filter @wizeworks/billing provision-stripe
    ```
 2. Add each printed `STRIPE_PRICE_<MODULE>_MONTHLY` / `_ANNUAL` (+ `MANAGED_HOSTING`) to
    Secret Manager via `gcloud secrets versions add`. The secret **containers, the

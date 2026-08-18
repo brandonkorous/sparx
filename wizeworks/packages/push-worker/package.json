@@ -1,0 +1,31 @@
+{
+  "name": "@wizeworks/push-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx web-push worker. Receives push.send events via Pub/Sub push (Cloud Run HTTP entrypoint) and delivers Web Push notifications to staff browser subscriptions via VAPID. Prunes expired (410/404) subscriptions. No-ops when VAPID keys are unset so it is deployable before keys are provisioned.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "pino": "^9.5.0",
+    "web-push": "^3.6.7",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/web-push": "^3.6.4",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

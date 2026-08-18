@@ -1,17 +1,17 @@
 'use client';
 
-import { useActionState, useMemo, useState } from 'react';
+import { useActionState, useEffect, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import {
-    Alert,
-    AlertDescription,
-    Button,
-    Checkbox,
-    Field,
-    FieldDescription,
-    FieldLabel,
-    Input,
-    NativeSelect,
+  Alert,
+  AlertDescription,
+  Button,
+  Checkbox,
+  Field,
+  FieldDescription,
+  FieldLabel,
+  Input,
+  NativeSelect,
 } from '@wizeworks/silicaui-react';
 import type { PigglesGroup } from '@piggles/brand';
 import { appsInGroup } from '@piggles/config';
@@ -57,15 +57,15 @@ import { RailPreview } from './rail-preview';
 // their own business (RULE #3). Ordered by how likely somebody is to find
 // themselves in it, with the catch-all last where a catch-all belongs.
 const TRADES: { value: string; label: string }[] = [
-    { value: 'food', label: 'Food & drink' },
-    { value: 'salon', label: 'Beauty & salon' },
-    { value: 'apparel', label: 'Clothing & accessories' },
-    { value: 'professional', label: 'Professional services' },
-    { value: 'fitness', label: 'Fitness & wellbeing' },
-    { value: 'auto-parts', label: 'Car parts & repair' },
-    { value: 'electronics', label: 'Electronics & tech' },
-    { value: 'wholesale', label: 'Wholesale & trade supply' },
-    { value: 'generic', label: 'Something else' },
+  { value: 'food', label: 'Food & drink' },
+  { value: 'salon', label: 'Beauty & salon' },
+  { value: 'apparel', label: 'Clothing & accessories' },
+  { value: 'professional', label: 'Professional services' },
+  { value: 'fitness', label: 'Fitness & wellbeing' },
+  { value: 'auto-parts', label: 'Car parts & repair' },
+  { value: 'electronics', label: 'Electronics & tech' },
+  { value: 'wholesale', label: 'Wholesale & trade supply' },
+  { value: 'generic', label: 'Something else' },
 ];
 
 /** The brand's own showcase — always offered, always first, preselected. */
@@ -85,133 +85,143 @@ const LOOK_LIMIT = 6;
  * to everything when a trade has no obvious shelf.
  */
 const TRADE_SHELF: Record<string, string> = {
-    food: 'retail',
-    salon: 'services',
-    apparel: 'retail',
-    professional: 'services',
-    fitness: 'services',
-    'auto-parts': 'services',
-    electronics: 'retail',
-    wholesale: 'b2b',
+  food: 'retail',
+  salon: 'services',
+  apparel: 'retail',
+  professional: 'services',
+  fitness: 'services',
+  'auto-parts': 'services',
+  electronics: 'retail',
+  wholesale: 'b2b',
 };
 
 const OPTIONS: { group: PigglesGroup; label: string; hint: string }[] = [
-    { group: 'web', label: 'I need a website', hint: 'Pages, writing, and turning up in search' },
-    { group: 'sell', label: 'I sell things', hint: 'Products or services, and what you have left' },
-    {
-        group: 'people',
-        label: 'I deal with customers',
-        hint: 'Their history, messages, appointments',
-    },
-    { group: 'money', label: 'I invoice people', hint: 'Bills, payments, and where you stand' },
-    { group: 'run', label: 'I work with a team', hint: 'Who can see what, and the routine jobs' },
+  { group: 'web', label: 'I need a website', hint: 'Pages, writing, and turning up in search' },
+  { group: 'sell', label: 'I sell things', hint: 'Products or services, and what you have left' },
+  {
+    group: 'people',
+    label: 'I deal with customers',
+    hint: 'Their history, messages, appointments',
+  },
+  { group: 'money', label: 'I invoice people', hint: 'Bills, payments, and where you stand' },
+  { group: 'run', label: 'I work with a team', hint: 'Who can see what, and the routine jobs' },
 ];
 
 function Submit() {
-    const { pending } = useFormStatus();
-    return (
-        <Button type="submit" color="primary" size="lg" block loading={pending}>
-            {pending ? 'Setting things up' : 'Take me in'}
-        </Button>
-    );
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" color="primary" size="lg" block loading={pending}>
+      {pending ? 'Setting things up' : 'Take me in'}
+    </Button>
+  );
 }
 
 export function Onboarding({
-    suggestedName,
-    blueprints,
+  suggestedName,
+  blueprints,
 }: {
-    suggestedName: string;
-    blueprints: BlueprintChoice[];
+  suggestedName: string;
+  blueprints: BlueprintChoice[];
 }) {
-    const [state, action] = useActionState<OnboardingState, FormData>(completeOnboarding, {
-        error: null,
-    });
-    const [picked, setPicked] = useState<PigglesGroup[]>([]);
-    const [trade, setTrade] = useState('');
-    const [look, setLook] = useState(SHOWCASE_KEY);
+  const [state, action] = useActionState<OnboardingState, FormData>(completeOnboarding, {
+    error: null,
+  });
 
-    const toggle = (g: PigglesGroup) =>
-        setPicked((cur) => (cur.includes(g) ? cur.filter((x) => x !== g) : [...cur, g]));
+  // Setup finished: leave for the console with a REAL navigation. The action
+  // used to `redirect('/handoff')` itself, which made the client router fetch an
+  // RSC payload for a route that 303s to another origin — a doomed request, a
+  // fallback, and `/handoff` hit twice. It mints a single-use token, so the
+  // second hit found it spent and bounced a brand-new customer back to sign-in
+  // at the end of setting up their business. Full reasoning on `OnboardingState.done`.
+  useEffect(() => {
+    if (state.done) window.location.assign(state.done);
+  }, [state.done]);
+  const [picked, setPicked] = useState<PigglesGroup[]>([]);
+  const [trade, setTrade] = useState('');
+  const [look, setLook] = useState(SHOWCASE_KEY);
 
-    // The showcase first, then this trade's shelf, capped. Recomputed as the trade
-    // changes, so answering "what kind of business" visibly re-orders the looks
-    // rather than leaving a stale set that no longer matches the answer above it.
-    const looks = useMemo(() => {
-        const showcase = blueprints.filter((b) => b.key === SHOWCASE_KEY);
-        const shelf = TRADE_SHELF[trade];
-        const rest = blueprints.filter((b) => b.key !== SHOWCASE_KEY);
-        const onShelf = shelf ? rest.filter((b) => b.vertical === shelf) : rest;
-        // Falling back to the whole list matters: a trade whose shelf happens to be
-        // empty must still offer looks, or the section renders as one lonely card
-        // and reads like the catalog is broken.
-        const pool = onShelf.length > 0 ? onShelf : rest;
-        return [...showcase, ...pool].slice(0, LOOK_LIMIT);
-    }, [blueprints, trade]);
+  const toggle = (g: PigglesGroup) =>
+    setPicked((cur) => (cur.includes(g) ? cur.filter((x) => x !== g) : [...cur, g]));
 
-    return (
-        <AuthShell
-            shape="setup"
-            heading="A few quick things."
-            lede="Then you are in. Nothing here is a commitment — we set it all up for you and you can change your mind once you are inside."
-            panel={<RailPreview picked={picked} />}
-        >
-            <form action={action} className="flex flex-col gap-8">
-                {state.error ? (
-                    <Alert color="danger" variant="soft">
-                        <AlertDescription>{state.error}</AlertDescription>
-                    </Alert>
-                ) : null}
+  // The showcase first, then this trade's shelf, capped. Recomputed as the trade
+  // changes, so answering "what kind of business" visibly re-orders the looks
+  // rather than leaving a stale set that no longer matches the answer above it.
+  const looks = useMemo(() => {
+    const showcase = blueprints.filter((b) => b.key === SHOWCASE_KEY);
+    const shelf = TRADE_SHELF[trade];
+    const rest = blueprints.filter((b) => b.key !== SHOWCASE_KEY);
+    const onShelf = shelf ? rest.filter((b) => b.vertical === shelf) : rest;
+    // Falling back to the whole list matters: a trade whose shelf happens to be
+    // empty must still offer looks, or the section renders as one lonely card
+    // and reads like the catalog is broken.
+    const pool = onShelf.length > 0 ? onShelf : rest;
+    return [...showcase, ...pool].slice(0, LOOK_LIMIT);
+  }, [blueprints, trade]);
 
-                {/* The business itself — what it is called and what it does for a
+  return (
+    <AuthShell
+      shape="setup"
+      heading="A few quick things."
+      lede="Then you are in. Nothing here is a commitment — we set it all up for you and you can change your mind once you are inside."
+      panel={<RailPreview picked={picked} />}
+    >
+      <form action={action} className="flex flex-col gap-8">
+        {state.error ? (
+          <Alert color="danger" variant="soft">
+            <AlertDescription>{state.error}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        {/* The business itself — what it is called and what it does for a
             living. Two fields, one question: both describe the same thing, and
             splitting them into separate beats would make a two-question screen
             claim to be three. */}
-                <div className="flex flex-col gap-5">
-                    <Field>
-                        <FieldLabel>What is your business called?</FieldLabel>
-                        <Input
-                            name="businessName"
-                            size="lg"
-                            defaultValue={suggestedName}
-                            required
-                            maxLength={120}
-                        />
-                    </Field>
+        <div className="flex flex-col gap-5">
+          <Field>
+            <FieldLabel>What is your business called?</FieldLabel>
+            <Input
+              name="businessName"
+              size="lg"
+              defaultValue={suggestedName}
+              required
+              maxLength={120}
+            />
+          </Field>
 
-                    <Field>
-                        <FieldLabel>What kind of business is it?</FieldLabel>
-                        <NativeSelect
-                            name="industry"
-                            size="lg"
-                            value={trade}
-                            onChange={(e) => setTrade(e.target.value)}
-                            required
-                        >
-                            <option value="" disabled>
-                                Pick the closest one
-                            </option>
-                            {TRADES.map((t) => (
-                                <option key={t.value} value={t.value}>
-                                    {t.label}
-                                </option>
-                            ))}
-                        </NativeSelect>
-                        <FieldDescription>
-                            We use this to fill your account with realistic examples — products, customers,
-                            bookings and pages — so nothing is empty when you walk in. Change or clear them
-                            whenever you like.
-                        </FieldDescription>
-                    </Field>
-                </div>
+          <Field>
+            <FieldLabel>What kind of business is it?</FieldLabel>
+            <NativeSelect
+              name="industry"
+              size="lg"
+              value={trade}
+              onChange={(e) => setTrade(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Pick the closest one
+              </option>
+              {TRADES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <FieldDescription>
+              We use this to fill your account with realistic examples — products, customers,
+              bookings and pages — so nothing is empty when you walk in. Change or clear them
+              whenever you like.
+            </FieldDescription>
+          </Field>
+        </div>
 
-                <div>
-                    <h2 className="text-xl font-bold">What do you do?</h2>
-                    <p className="mt-1 text-base">
-                        Pick any that fit. This only decides what you see first — everything is included either
-                        way, and nothing is switched off by leaving it unticked.
-                    </p>
+        <div>
+          <h2 className="text-xl font-bold">What do you do?</h2>
+          <p className="mt-1 text-base">
+            Pick any that fit. This only decides what you see first — everything is included either
+            way, and nothing is switched off by leaving it unticked.
+          </p>
 
-                    {/* Two columns from `sm` up. Five rows in one column is a scroll for
+          {/* Two columns from `sm` up. Five rows in one column is a scroll for
               something that should be taken in at a glance — the whole question is
               "which of these are you", which needs them side by side to compare.
 
@@ -222,13 +232,13 @@ export function Onboarding({
               already here is `home` — which is on the rail whatever anybody ticks
               (see RailPreview), so a row for it would be a checkbox that cannot
               change anything. If the option list ever becomes even, drop the span. */}
-                    <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                        {OPTIONS.map((o, i) => {
-                            const on = picked.includes(o.group);
-                            const last = i === OPTIONS.length - 1;
-                            return (
-                                <li key={o.group} data-group={o.group} className={last ? 'sm:col-span-2' : ''}>
-                                    {/* A label bound to a real checkbox: the whole row is the hit
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {OPTIONS.map((o, i) => {
+              const on = picked.includes(o.group);
+              const last = i === OPTIONS.length - 1;
+              return (
+                <li key={o.group} data-group={o.group} className={last ? 'sm:col-span-2' : ''}>
+                  {/* A label bound to a real checkbox: the whole row is the hit
                       target, keyboard focus and the space bar work with no
                       handlers of ours, and it is announced as a checkbox because
                       it IS one.
@@ -241,89 +251,91 @@ export function Onboarding({
                       the label than a tool will look for it, which is what
                       jsx-a11y objects to. The grid gets the same layout with the
                       text where it belongs. */}
-                                    <label
-                                        htmlFor={`does-${o.group}`}
-                                        className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
-                                            }`}
-                                    >
-                                        <Checkbox
-                                            id={`does-${o.group}`}
-                                            name="does"
-                                            value={o.group}
-                                            color="module"
-                                            checked={on}
-                                            onChange={() => toggle(o.group)}
-                                            className="row-span-3 mt-0.5"
-                                        />
-                                        <span className="text-lg font-bold">{o.label}</span>
-                                        <span className="text-base">{o.hint}</span>
-                                        <span className="mt-2 text-base font-semibold">
-                                            {appsInGroup(o.group)
-                                                .map((a) => a.label)
-                                                .join(' · ')}
-                                        </span>
-                                    </label>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </div>
+                  <label
+                    htmlFor={`does-${o.group}`}
+                    className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${
+                      on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
+                    }`}
+                  >
+                    <Checkbox
+                      id={`does-${o.group}`}
+                      name="does"
+                      value={o.group}
+                      color="module"
+                      checked={on}
+                      onChange={() => toggle(o.group)}
+                      className="row-span-3 mt-0.5"
+                    />
+                    <span className="text-lg font-bold">{o.label}</span>
+                    <span className="text-base">{o.hint}</span>
+                    <span className="mt-2 text-base font-semibold">
+                      {appsInGroup(o.group)
+                        .map((a) => a.label)
+                        .join(' · ')}
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
-                {/* The look. Shown only when the catalog answered — an empty list means
+        {/* The look. Shown only when the catalog answered — an empty list means
             the picker could not load, and the action falls back to the brand's
             own showcase, so a broken fetch costs a choice rather than a site. */}
-                {looks.length > 0 ? (
-                    <div>
-                        <h2 className="text-xl font-bold">How should it look?</h2>
-                        <p className="mt-1 text-base">
-                            Every one is a complete working site — shop, journal, bookings and all. You can
-                            rewrite any of it once you are in.
-                        </p>
+        {looks.length > 0 ? (
+          <div>
+            <h2 className="text-xl font-bold">How should it look?</h2>
+            <p className="mt-1 text-base">
+              Every one is a complete working site — shop, journal, bookings and all. You can
+              rewrite any of it once you are in.
+            </p>
 
-                        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                            {looks.map((b) => {
-                                const on = look === b.key;
-                                return (
-                                    <li key={b.key}>
-                                        <label
-                                            htmlFor={`look-${b.key}`}
-                                            className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
-                                                }`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                id={`look-${b.key}`}
-                                                name="blueprintKey"
-                                                value={b.key}
-                                                checked={on}
-                                                onChange={() => setLook(b.key)}
-                                                className="radio radio-module row-span-3 mt-0.5"
-                                            />
-                                            <span className="text-lg font-bold">{b.name}</span>
-                                            <span className="text-base">{b.summary}</span>
-                                            {b.preview ? (
-                                                // A plain <img>, not next/image: the card art is served by
-                                                // api-rest's media proxy on a host this app has no remote
-                                                // pattern for, and adding one is a wider change than this
-                                                // screen. Lazy, and decorative — the name beside it is the
-                                                // accessible label, so the alt is deliberately empty.
-                                                <img
-                                                    src={b.preview}
-                                                    alt=""
-                                                    loading="lazy"
-                                                    className="rounded-box border-base-300 mt-3 w-full border"
-                                                />
-                                            ) : null}
-                                        </label>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                ) : null}
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {looks.map((b) => {
+                const on = look === b.key;
+                return (
+                  <li key={b.key}>
+                    <label
+                      htmlFor={`look-${b.key}`}
+                      className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${
+                        on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        id={`look-${b.key}`}
+                        name="blueprintKey"
+                        value={b.key}
+                        checked={on}
+                        onChange={() => setLook(b.key)}
+                        className="radio radio-module row-span-3 mt-0.5"
+                      />
+                      <span className="text-lg font-bold">{b.name}</span>
+                      <span className="text-base">{b.summary}</span>
+                      {b.preview ? (
+                        // A plain <img>, not next/image: the card art is served by
+                        // api-rest's media proxy on a host this app has no remote
+                        // pattern for, and adding one is a wider change than this
+                        // screen. Lazy, and decorative — the name beside it is the
+                        // accessible label, so the alt is deliberately empty.
+                        <img
+                          src={b.preview}
+                          alt=""
+                          loading="lazy"
+                          className="rounded-box border-base-300 mt-3 w-full border"
+                        />
+                      ) : null}
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
 
-                <Submit />
-            </form>
-        </AuthShell>
-    );
+        <Submit />
+      </form>
+    </AuthShell>
+  );
 }

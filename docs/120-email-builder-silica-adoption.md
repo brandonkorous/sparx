@@ -14,7 +14,7 @@
 > authored on the sparx engine: 231 keyed and, critically, **30 custom-key** ones, which have no
 > code default to fall back to. Resetting them to defaults would have silently destroyed edits and
 > had no answer at all for the custom emails. So `emailTreeToSilica`
-> ([packages/builder-schemas/src/email-legacy-to-silica.ts](../packages/builder-schemas/src/email-legacy-to-silica.ts))
+> ([wizeworks/packages/builder-schemas/src/email-legacy-to-silica.ts](../packages/builder-schemas/src/email-legacy-to-silica.ts))
 > converts each row **from its own tree** — total over the ten node types the live table actually
 > contains, with the ten mapping cleanly onto the slice-6 authoring kit (`conditional_block` →
 > `when()`, `line_item_table` → `itemsTable()`, and the wordmark / unsubscribe / postal-address
@@ -75,7 +75,7 @@ email data layer was added. The whole-family pin bump to `^0.17.0` (in
 ## 2. Current state — what we're replacing (and must not break)
 
 sparx's email system is rich and **data-bound**, and it is the egress for far more than
-marketing. One render primitive — `@sparx/email`'s **`renderEmailTree`**
+marketing. One render primitive — `@wizeworks/email`'s **`renderEmailTree`**
 ([render-email-tree.tsx](../packages/email/src/builder/render-email-tree.tsx)) — walks a
 `BuilderEmail` node tree → table HTML + auto plain-text, and it serves **four** callers:
 
@@ -123,7 +123,7 @@ roster" IS the sparx catalog of `BuilderEmail` rows; silica mounts one document 
 The `(tenant, property?, key?)` + provisioning + fork machinery is untouched — a silica email
 is the same row, carrying a silica document instead of a sparx tree.
 
-**D2 — One resolving send primitive, host-composed frame.** New `@sparx/email/silica`
+**D2 — One resolving send primitive, host-composed frame.** New `@wizeworks/email/silica`
 export `renderSilicaEmail(doc, { host, brand, compliance, marketing, subject, preheader })`:
 
 1. compose the **send document** = branded wordmark header section ⊕ `doc.root.children` ⊕
@@ -154,7 +154,7 @@ reads badly once built, request a `headerSlot`/`toolbarSlot` on `<EmailBuilder>`
 generic silica ask) — deferred until we see it, not a blocker.
 
 **D4 — Reuse the site builder's host modules.** `host.resolveBinding`/`resolveCollection` =
-`@sparx/builder-schemas/silica-resolve`; `host.dataSources()` = `silica-data-sources` narrowed
+`@wizeworks/builder-schemas/silica-resolve`; `host.dataSources()` = `silica-data-sources` narrowed
 to the email binding catalog; `host.catalog().extend` = email composites (line-item table,
 product grid, wordmark) authored from silica primitives; `host.inspectorPanels(node)` = a
 sparx **merge-tag picker** panel over `emailMergeTags()` (the structured counterpart to typing
@@ -177,10 +177,10 @@ marketing send with no configured `physicalAddress`/unsubscribe still refuses, u
 2. **Storage (D1).** Migration `builder_emails.silica_draft_document`/`silica_published_document`
    `JSONB` (additive, nullable, RLS inherited — the table is already ENABLE+FORCE) +
    `BuilderEmail.silicaDraftDocument`/`silicaPublishedDocument Json?` + `EmailDocument`
-   zod/types in `@sparx/builder-schemas` (opaque, like `site-sync`). Author files; user runs
+   zod/types in `@wizeworks/builder-schemas` (opaque, like `site-sync`). Author files; user runs
    install; I run `prisma generate` + `migrate deploy` (authorized per the established pattern,
    [[feedback_wait_for_db_impact]]).
-3. **Send primitive (D2).** `@sparx/email/silica` `renderSilicaEmail` (frame inject + resolving
+3. **Send primitive (D2).** `@wizeworks/email/silica` `renderSilicaEmail` (frame inject + resolving
    `toEmailHtml` + `{{token}}` pass + html-to-text) + unit tests (a bound line-item table, a
    `{{token}}`, an injected legal footer, plain-text parity).
 4. **Editor swap (D3/D4).** `/builder/email` mounts `<EmailBuilder>` inside the sparx lifecycle
@@ -215,7 +215,7 @@ marketing send with no configured `physicalAddress`/unsubscribe still refuses, u
 7. **Flip + delete — ✅ DONE (2026-07-12).** Every path is silica. `renderEmailTree`, the email
    leaf renderer, `EmailBuilderApp` (+ preview modal + merge-tags panel), `email-surface-data.ts`,
    and the tree-shaped `resolveEmailData`/`emailDataResolver` are deleted; the parallel-run branch
-   is gone from all four send callers and the dispatch tick. `@sparx/email`'s atomic components
+   is gone from all four send callers and the dispatch tick. `@wizeworks/email`'s atomic components
    stay (the injected frame sections still use them / their tokens). Pre-cutover rows are
    CONVERTED, not reset — see `emailTreeToSilica` + the repair pass in `provisionDefaultEmails`.
    The `draft_tree`/`published_tree` columns survive one more deploy as the conversion source.
@@ -287,7 +287,7 @@ upstream they'd become Q26–Q27. Neither changes the slice plan.
       footer, and plain-text all verified on the silica path.
 - [x] The email builder is `<EmailBuilder>` on silica; the site + email builders are one engine.
 - [x] The provisioned defaults are silica `EmailDocument`s; provisioning writes silica.
-- [x] Legacy `renderEmailTree` + `EmailBuilderApp` deleted; `@sparx/email` atomic components kept.
+- [x] Legacy `renderEmailTree` + `EmailBuilderApp` deleted; `@wizeworks/email` atomic components kept.
 - [x] Pre-cutover rows CONVERTED from their own trees (never reset), on read + via a persisting
       repair pass; proven by unit tests on the mapping and render tests on the resulting email.
 - [x] Per-site override + keyed-default behavior unchanged end-to-end. Compliance changed

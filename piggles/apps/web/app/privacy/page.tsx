@@ -1,25 +1,24 @@
 import type { Metadata } from 'next';
 import { Section } from '@piggles/ui';
 import Link from 'next/link';
-import { Alert, Card, CardBody } from '@wizeworks/silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
+import { brandLegal } from '@wizeworks/legal';
 import { PageHero } from '@/components/marketing/page-hero';
+import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 
 // /privacy — what is collected, where it lives, and who else touches it.
 //
 // ── WHAT THIS PAGE IS, EXACTLY ──────────────────────────────────────────────
 //
-// A FACTUAL DESCRIPTION assembled from the codebase, not a legal instrument.
-// Everything below is a thing the software demonstrably does — the tables it
-// writes, the services it calls, the flags it honours. It is deliberately NOT a
-// legal privacy notice, and it does not pretend to be one: the notice a
-// regulator holds you to has to name a controller, a legal basis per purpose, a
-// retention period per category and a named supervisory authority, and inventing
-// any of those would be worse than having none.
+// EVERY LINE IS ASSEMBLED FROM THE CODEBASE. Everything below is a thing the
+// software demonstrably does — the tables it writes, the services it calls, the
+// flags it honours. Nothing is here because other companies say it, and nothing
+// describes an intention.
 //
-// So the banner at the top is load-bearing and stays until a reviewed notice
-// replaces this. A page that LOOKS legally reviewed and is not is the failure
-// mode here, and it is a worse one than an obvious draft.
+// That is also the maintenance rule: this page goes stale the moment the code
+// does something it does not describe. A change to what is collected, stored or
+// sent is a change to this page in the same commit.
 //
 // ── THE SUB-PROCESSORS ARE NAMED, AND THAT IS THE POINT ─────────────────────
 //
@@ -38,17 +37,17 @@ import { PageHero } from '@/components/marketing/page-hero';
 //
 // ── SOURCES, so the next person can re-check rather than re-guess ───────────
 //
-//   • Social platforms — packages/social/src/adapters (nine of them).
-//   • Sales channels and suppliers — packages/channels, packages/dropship.
-//   • Shipping, tax, dropship, AI — packages/integration-framework's provider
+//   • Social platforms — wizeworks/packages/social/src/adapters (nine of them).
+//   • Sales channels and suppliers — wizeworks/packages/channels, packages/dropship.
+//   • Shipping, tax, dropship, AI — wizeworks/packages/integration-framework's provider
 //     kinds and the descriptors registered against packages/integrations.
 //   • Mailgun, Twilio, Stripe, PayPal, PostHog, Cloudflare — named across
 //     packages/* and services/*; PostHog is workbench-only (lib/analytics.ts).
 //   • Google sign-in — apps/account/components/social-sign-in.tsx, live today.
-//   • Isolation, encryption, exports, BYOK-only AI — apps/web/app/trust, which
+//   • Isolation, encryption, exports, BYOK-only AI — sparx/apps/web/app/trust, which
 //     is already-approved copy; this page must not contradict it.
-//   • Cookies — apps/web/app/cookies, derived from the code.
-//   • Usage metering — packages/usage, RollupTenantDailyUsage.
+//   • Cookies — sparx/apps/web/app/cookies, derived from the code.
+//   • Usage metering — wizeworks/packages/usage, RollupTenantDailyUsage.
 //
 // EXCLUDED ON PURPOSE: sparx.market. piggles/CLAUDE.md RULE #0 — a sparx PRODUCT
 // is not a Piggles capability. A Piggles customer cannot list on it, so naming
@@ -83,7 +82,11 @@ const COLLECTED = [
   },
   {
     title: 'How the workspace gets used',
-    body: 'Inside the workspace, which screens get opened and where something broke — so we can find out that a screen is confusing before you have to tell us. None of this runs on the marketing site you are reading now.',
+    body: 'Inside the workspace, which screens get opened and where something broke — so we can find out that a screen is confusing before you have to tell us. You are asked on the way in, the answer is kept with your account, and saying no means none of it runs.',
+  },
+  {
+    title: 'How you found us — if you say yes',
+    body: 'On this site only: whether you arrived from a search, an advert or somebody else’s link, and which campaign it was. It tells us what is worth doing more of. Nothing is recorded until you agree to it in the bar at the bottom of the page, the more precise half (which advert you clicked) is a separate question again, and either answer is changeable whenever you like.',
   },
 ];
 
@@ -102,7 +105,7 @@ const NEVER = [
   },
   {
     title: 'We do not advertise to you elsewhere',
-    body: 'Nothing on a Piggles site follows you onto somebody else’s website. There is no ad pixel on any of the three.',
+    body: 'Nothing on a Piggles site follows you onto somebody else’s website. There is no ad network and no advertising pixel on any of the three. If you agree to it, this site notes which advert brought you here — that is us reading the tag already on the link you arrived by, once, and it goes nowhere but our own records.',
   },
 ];
 
@@ -213,28 +216,14 @@ export default function PrivacyPage() {
       <PageHero
         heading="What we hold, why, and who else can touch it."
         lede="Written for the person running the business rather than for a lawyer: what comes in, where it goes, what we will never do with it, and how to get all of it back."
+        figure={
+          <DocumentFigure
+            sections={`${COLLECTED.length} kinds of information`}
+            covers="All three Piggles sites"
+            effective={brandLegal('piggles').versions.privacy?.effectiveDate}
+          />
+        }
       />
-
-      <section className="px-6 pt-10">
-        <div className="mx-auto max-w-7xl">
-          {/* Stays until a reviewed notice replaces this. A page that LOOKS
-              legally reviewed and is not is a worse failure than an obvious
-              draft — see the header of this file. */}
-          <Alert color="warning" variant="soft">
-            <div>
-              <p className="font-bold">
-                This is a plain-language description, not the legal notice.
-              </p>
-              <p className="mt-1 text-base">
-                Everything on this page is something the software genuinely does, and it is
-                accurate. It has not been through legal review, and it does not yet name a data
-                controller or a legal basis for each purpose. The reviewed notice replaces this page
-                before Piggles opens to the public.
-              </p>
-            </div>
-          </Alert>
-        </div>
-      </section>
 
       <Section>
         <h2 className="text-3xl font-extrabold sm:text-4xl">What Piggles holds</h2>

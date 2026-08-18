@@ -18,7 +18,7 @@ If information can be collected later without blocking launch, it is collected l
 
 ## 2. Shape: A Full-Page, Two-Pane Flow
 
-Onboarding is **not a modal**. It is a focused full-screen route in the workbench app (`apps/workbench/surfaces/onboarding/`, wizard under `wizard/`) outside the dashboard shell — no sidebar, no topbar.
+Onboarding is **not a modal**. It is a focused full-screen route in the workbench app (`sparx/apps/workbench/surfaces/onboarding/`, wizard under `wizard/`) outside the dashboard shell — no sidebar, no topbar.
 
 - **Persistent left rail** (Builder Indigo): the sparx wordmark, an **always-visible vertical journey** (every step with done/current state), and a one-line context blurb that changes per step. The rail never moves — it is the single source of progress and a sense of place.
 - **Clean working pane** on the right: the only thing that changes between steps. Left-aligned headline + supporting line at the top of each step. Nothing floats center-stacked in a void.
@@ -49,7 +49,7 @@ Sign up ──▶ ① Modules ──▶ ② Template ──▶ ③ Workspace ─
 
 ### 4.1 — Step 1 · Modules
 
-An exact replica of the marketing **pricing switchboard** (`apps/web/components/marketing/pricing-switchboard.tsx`): one toggle row per module + a live **calculated plan card** (total $/mo, per-module breakdown, "save $X on one bill," module count). Same modules, prices, colors, and copy — onboarding and the public pricing page must never diverge.
+An exact replica of the marketing **pricing switchboard** (`sparx/apps/web/components/marketing/pricing-switchboard.tsx`): one toggle row per module + a live **calculated plan card** (total $/mo, per-module breakdown, "save $X on one bill," module count). Same modules, prices, colors, and copy — onboarding and the public pricing page must never diverge.
 
 - Modules and prices are owned by **docs/17 §2**. Defaults on: **Builder ($10) + Commerce ($49) + CMS ($49)** = $108/mo.
 - The plan card shows what the tenant pays **after** the 14-day trial. The CTA is **Continue** (the trial already started at signup; see §8). Subtext: _"Free for 14 days · no card today."_
@@ -174,10 +174,10 @@ After launch the tenant lands in the dashboard. Everything deferred to protect t
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the previous "design-complete; not yet built"
 > status is obsolete. The 6-step wizard (Modules → Template → Workspace → Domain → Payments\* →
-> Launch) is live at [`apps/workbench/surfaces/onboarding/wizard/`](../apps/workbench/surfaces/onboarding/wizard)
+> Launch) is live at [`sparx/apps/workbench/surfaces/onboarding/wizard/`](../apps/workbench/surfaces/onboarding/wizard)
 > (`step-modules` / `step-blueprint` / `step-workspace` / `step-domain` / `step-payments` /
-> `step-launch`, orchestrated by `wizard.tsx`), backed by `apps/workbench/lib/onboarding/`. The
+> `step-launch`, orchestrated by `wizard.tsx`), backed by `sparx/apps/workbench/lib/onboarding/`. The
 > post-launch welcome checklist (§6) ships in `surfaces/onboarding/welcome/`. Stripe Connect (Step 5)
-> and its callback route (`apps/workbench/app/onboarding/stripe-callback/`) are wired.
+> and its callback route (`sparx/apps/workbench/app/onboarding/stripe-callback/`) are wired.
 
 Interactive mockups (historical): `mockups/onboarding.html` (the wizard) and `mockups/new-user-flow.html` (this flow + the billing lifecycle).

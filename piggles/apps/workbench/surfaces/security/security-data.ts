@@ -19,12 +19,12 @@
 //     names. It rides the same token/client as every other pane.
 //
 // Two-step verification is Better Auth's as well (the `twoFactor` plugin, wired
-// in packages/auth/src/server.ts), so it rides the same same-origin authClient
+// in wizeworks/packages/auth/src/server.ts), so it rides the same same-origin authClient
 // as passwords and sessions — see the two-factor section at the foot of this
 // file.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
-import { authClient } from '@sparx/auth/client';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { authClient } from '@wizeworks/auth/client';
 import { api } from '../../lib/api/client';
 import { productName } from '../../lib/product';
 

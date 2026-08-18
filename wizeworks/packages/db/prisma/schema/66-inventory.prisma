@@ -1,0 +1,208 @@
+// Inventory Sync — external feeds into the unified stock model.
+// (docs/64 Inventory Sync Ph1; unified onto the master model in docs/100 P1c)
+//
+// InventorySource represents a feed/connection that provides stock counts
+// (e.g. a warehouse CSV feed, a WMS API, or a 3PL).
+//
+// There is ONE stock model: the master `inventory_levels` / `inventory_warehouses`
+// (schema/34, owned by @wizeworks/inventory). The old standalone `stock_levels` /
+// `stock_locations` tables were folded into it (docs/100 P1c) — a feed's incoming
+// quantity is reconciled into `inventory_levels` through `applyMovement()` (a
+// corrective `sync` movement), so onHand stays reconcilable to `Σ(movements)` and
+// every source funnels through the one ledger writer.
+//
+// InventorySourceLink binds a source's external SKU/location to the corresponding
+// (ProductVariant, Warehouse) pair inside Sparx so the sync worker can map
+// incoming rows to the right DB records.
+
+model InventorySource {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String    @map("tenant_id") @db.Uuid
+  name            String    @db.VarChar(255)
+  // csv (Tier C file pull) | api (Tier B SaaS pull) | agent (Tier A on-prem push)
+  type            String    @db.VarChar(30)
+  // Credentials/endpoint bag (URL, API key, etc.) — stored server-side.
+  config          Json      @default("{}")
+  // active | paused | error
+  status          String    @default("active") @db.VarChar(20)
+  lastSyncAt      DateTime? @map("last_sync_at") @db.Timestamptz
+  // Sync interval hint in seconds (0 = manual only).
+  syncIntervalSec Int       @default(0) @map("sync_interval_sec")
+  notes           String?   @db.Text
+
+  // ── Freshness SLO (docs/146 Phase 1) ──────────────────────────────────────
+  //
+  // `syncIntervalSec` says how often we INTEND to pull. It says nothing about
+  // when the number stops being trustworthy, and those are different questions:
+  // a nightly feed is perfectly healthy at 23 hours old and alarming at 30.
+  //
+  // `expectedIntervalSec` is the promise — the age past which stock from this
+  // source must be treated as suspect. 0 = no SLO declared (the source is
+  // exempt; used for one-shot imports). Defaulted from syncIntervalSec × 2 on
+  // enrollment so a source that declares a cadence gets an SLO for free.
+  expectedIntervalSec Int @default(0) @map("expected_interval_sec")
+
+  // What to DO on a breach — the whole point of noticing:
+  //   warn          — flag the source, banner every surface reading it. Default:
+  //                   loud, reversible, safe for a tenant who is still tuning.
+  //   buffer_up     — additionally withhold `stalenessBuffer` extra units from
+  //                   every channel served by this source's levels, so the lag
+  //                   eats the cushion instead of the customer's order.
+  //   pause_channel — additionally stop pushing/selling this source's stock on
+  //                   external channels until a sync lands. The nuclear option,
+  //                   and the right one for a marketplace where an oversell
+  //                   costs account health rather than one apology.
+  stalenessPolicy String @default("warn") @map("staleness_policy") @db.VarChar(20)
+  stalenessBuffer Int    @default(0) @map("staleness_buffer")
+
+  // Breach state, maintained by the freshness sweep. `staleSince` is the first
+  // moment the source was observed in breach and is CLEARED on a successful sync
+  // — so "stale for 3 days" is answerable, not just "stale".
+  isStale    Boolean   @default(false) @map("is_stale")
+  staleSince DateTime? @map("stale_since") @db.Timestamptz
+
+  // Tier A on-prem bridge enrollment (docs/28 §3, docs/100 P5d). An `agent` source
+  // is fed by an outbound-HTTPS bridge the tenant installs on their network;
+  // pairing mints a tenant-scoped API key (`api_keys`) the agent authenticates
+  // with. We keep a reference (id + visible prefix) so the connection can show
+  // "paired" + rotate/revoke the key. `agentLastSeenAt` is bumped on every push
+  // AND every heartbeat → it drives the online/offline indicator (a Tier-A agent
+  // WILL go offline; surface it loudly rather than serve stale stock).
+  apiKeyId        String?   @map("api_key_id") @db.Uuid
+  apiKeyPrefix    String?   @map("api_key_prefix") @db.VarChar(16)
+  enrolledAt      DateTime? @map("enrolled_at") @db.Timestamptz
+  agentLastSeenAt DateTime? @map("agent_last_seen_at") @db.Timestamptz
+  agentVersion    String?   @map("agent_version") @db.VarChar(50)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  links        InventorySourceLink[]
+  syncRuns     InventorySyncRun[]
+  unmappedSkus InventoryUnmappedSku[]
+
+  @@index([tenantId, status])
+  @@map("inventory_sources")
+}
+
+// Maps an external SKU/location reference from an InventorySource to a
+// (ProductVariant, Warehouse) inside Sparx. The matched feed quantity is
+// reconciled into `inventory_levels` for that (variant, warehouse) via
+// `applyMovement()` (docs/100 P1c).
+model InventorySourceLink {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  sourceId    String @map("source_id") @db.Uuid
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  // External identifiers as they appear in the source feed.
+  externalSku      String  @map("external_sku") @db.VarChar(255)
+  externalLocation String? @map("external_location") @db.VarChar(255)
+
+  // Unit-of-measure conversion (docs/28 §6): a feed may report in a pack UoM (e.g.
+  // a case of 12) while the catalog sells "each". The feed quantity is multiplied
+  // by `unitsPerExternal` before it reconciles the level; `externalUom` is the
+  // human label for that pack. Default 1 = 1:1, no conversion.
+  externalUom      String? @map("external_uom") @db.VarChar(30)
+  unitsPerExternal Int     @default(1) @map("units_per_external")
+
+  // Stale-link tracking (docs/28 §6): `lastSeenAt` is stamped each time a feed row
+  // matches this link; on a full-snapshot sync a link whose external SKU is ABSENT
+  // is flagged `isStale` (its external part likely vanished) for the health alert.
+  lastSeenAt DateTime? @map("last_seen_at") @db.Timestamptz
+  isStale    Boolean   @default(false) @map("is_stale")
+
+  // Last-writer ordering (docs/28 §6, Tier B/A): when a feed row carries the
+  // source's own observation timestamp (`source_synced_at`), we record the newest
+  // one applied here. A later row whose timestamp is OLDER (out-of-order delivery /
+  // a replayed snapshot) is dropped rather than clobbering a fresher value. CSV
+  // feeds carry no per-row timestamp, so this stays null and ordering is skipped.
+  lastSourceSyncedAt DateTime? @map("last_source_synced_at") @db.Timestamptz
+
+  // active | disabled
+  status    String   @default("active") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source    InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  variant   ProductVariant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse       @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, sourceId, externalSku, externalLocation], map: "inventory_source_link_unique")
+  @@index([tenantId, sourceId])
+  @@index([tenantId, variantId])
+  @@map("inventory_source_links")
+}
+
+// One ingest run per feed fetch/push (docs/100 P5 Tier C). Records full
+// bookkeeping — how many rows resolved to a link, how many were a real correction
+// (`rowsChanged`) vs unchanged, how many had no link (`rowsUnmatched`, queued
+// below), how many errored — so the dashboard sync-health panel can answer "is
+// this source healthy, and what did the last sync actually do?". Append-only.
+model InventorySyncRun {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  sourceId String @map("source_id") @db.Uuid
+
+  // manual | scheduled | push | api — how this run was initiated.
+  trigger String @db.VarChar(20)
+  // success | partial | error
+  status  String @db.VarChar(20)
+
+  rowsTotal     Int @default(0) @map("rows_total")
+  rowsMatched   Int @default(0) @map("rows_matched")
+  rowsChanged   Int @default(0) @map("rows_changed")
+  rowsUnchanged Int @default(0) @map("rows_unchanged")
+  rowsUnmatched Int @default(0) @map("rows_unmatched")
+  rowsSkipped   Int @default(0) @map("rows_skipped")
+  // Matched rows dropped as out-of-order by last-writer ordering (an older
+  // source_synced_at than the value already applied to that link) — Tier B/A.
+  rowsStale     Int @default(0) @map("rows_stale")
+
+  error      String?   @db.Text
+  startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sourceId, startedAt])
+  @@map("inventory_sync_runs")
+}
+
+// The tenant-facing review queue for external SKUs a feed reported that resolve
+// to NO InventorySourceLink (docs/28 §6/§7). We never auto-create products — the
+// tenant maps the SKU to a (variant, warehouse), which mints a link and resolves
+// (deletes) the row, or ignores it (kept so re-appearances don't re-surface).
+model InventoryUnmappedSku {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  sourceId String @map("source_id") @db.Uuid
+
+  externalSku      String  @map("external_sku") @db.VarChar(255)
+  externalLocation String? @map("external_location") @db.VarChar(255)
+
+  // Last on-hand the feed reported for this unmapped SKU.
+  lastQuantity Int    @map("last_quantity")
+  // How many sync runs have surfaced this SKU.
+  seenCount    Int    @default(1) @map("seen_count")
+  // pending | ignored (a mapped SKU is resolved → the row is deleted)
+  status       String @default("pending") @db.VarChar(20)
+
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, sourceId, externalSku, externalLocation], map: "inventory_unmapped_sku_unique")
+  @@index([tenantId, sourceId, status])
+  @@map("inventory_unmapped_skus")
+}

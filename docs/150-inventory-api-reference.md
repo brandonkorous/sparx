@@ -628,6 +628,6 @@ DELETE  /v1/inventory/sources/:sourceId/links/:id
 
 ## Sources
 
-- Routes: `services/api-rest/src/routes/v1/inventory`
+- Routes: `wizeworks/services/api-rest/src/routes/v1/inventory`
 - Capability plan: [docs/146](146-inventory-parity-and-gap-closure.md)
 - Platform API spec: [docs/06](06-api-specification.md)

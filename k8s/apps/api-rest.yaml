@@ -1,4 +1,4 @@
-# services/api-rest — production manifest. Mirrors the api-rest.example.yaml
+# wizeworks/services/api-rest — production manifest. Mirrors the api-rest.example.yaml
 # template; differences from the template:
 #   - PORT is set to 3000 (Fastify env default)
 #   - Health probe path /health (no envelope — see src/routes/health.ts)
@@ -91,9 +91,9 @@ spec:
               value: '--max-old-space-size=384'
             # Typesense — api-rest's /v1/search/* read path queries the
             # in-cluster Typesense (ClusterIP Service named `typesense`, the
-            # @sparx/search default host). The key matches the secret
+            # @wizeworks/search default host). The key matches the secret
             # bootstrap.yml mints from Secret Manager's typesense-api-key. Port
-            # (8108) + protocol (http) come from the @sparx/search defaults — no
+            # (8108) + protocol (http) come from the @wizeworks/search defaults — no
             # need to pin them here now that `enableServiceLinks: false` (above)
             # stops k8s from injecting a bogus `TYPESENSE_PORT`.
             - name: TYPESENSE_HOST

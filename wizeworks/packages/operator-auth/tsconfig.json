@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // Consumed as raw source via the package `exports` map (./src/*.ts), never
+    // built to dist — so no declaration emit is needed. Turning it off (as
+    // @wizeworks/auth does) also sidesteps TS2883: better-auth's createAuthClient
+    // infers a type that references an un-nameable internal, which only trips
+    // the declaration-portability check.
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["src/**/*", "test/**/*"]
+}

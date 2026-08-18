@@ -26,7 +26,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Switch,
@@ -191,41 +190,43 @@ export function ProfileSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Listing actions">
-        <Badge color={form.directoryVisible ? 'success' : 'neutral'} variant="soft" size="sm">
-          {form.directoryVisible ? 'Listed publicly' : 'Not listed'}
-        </Badge>
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!nameOk || !dirty}
-          loading={update.isPending}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save
-        </Button>
-        <RefreshButton
-          isFetching={profile.isFetching}
-          updatedAt={profile.data ? profile.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void profile.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Listing actions"
+        status={
+          <Badge color={form.directoryVisible ? 'success' : 'neutral'} variant="soft" size="sm">
+            {form.directoryVisible ? 'Listed publicly' : 'Not listed'}
+          </Badge>
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={!nameOk || !dirty}
+            loading={update.isPending}
+            onClick={save}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={profile.isFetching}
+            updatedAt={profile.data ? profile.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void profile.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Your directory listing
-            </Heading>
-            <Text>
-              This is how you appear in the sparx partner directory, where businesses go looking for
-              someone to help them build. Turn listing off to stay unlisted while still earning.
-            </Text>
-          </div>
+          <Text>
+            This is how you appear in the sparx partner directory, where businesses go looking for
+            someone to help them build. Turn listing off to stay unlisted while still earning.
+          </Text>
 
           {/* Read-only grounding facts — what the partner can't change here. */}
           <div className="border-base-300 flex flex-wrap gap-x-6 gap-y-1 rounded-lg border px-4 py-3">

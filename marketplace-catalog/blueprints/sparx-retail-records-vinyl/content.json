@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "just-landed-this-week",
-        "status": "published",
-        "body": {
-            "title": "Just landed: five records worth flipping to",
-            "excerpt": "A synth-pop debut, a piano trio cut to tape, and a post-punk record that never lets up — here’s what filed into the racks this week.",
-            "featuredImage": {
-                "$asset": "post-arrivals"
+  {
+    "typeKey": "blog_post",
+    "slug": "just-landed-this-week",
+    "status": "published",
+    "body": {
+      "title": "Just landed: five records worth flipping to",
+      "excerpt": "A synth-pop debut, a piano trio cut to tape, and a post-punk record that never lets up — here’s what filed into the racks this week.",
+      "featuredImage": {
+        "$asset": "post-arrivals"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Restock day is the best day behind the counter. A pallet comes in, we unbox it onto the back table, and half of it gets played before it ever reaches a bin. Here’s what made this week worth talking about."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Restock day is the best day behind the counter. A pallet comes in, we unbox it onto the back table, and half of it gets played before it ever reaches a bin. Here’s what made this week worth talking about."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The one to hear loud"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The Hollow Coast’s Paper Cathedral is the record we’ve had on repeat. It builds like weather — hushed verses that break into guitars big enough to take the roof off — and it’s pressed on quiet, heavy vinyl that gives all that reverb somewhere to live. Put it on with the windows open."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The one for a quiet room"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Midnight Ledger, the Cole Ambrose Trio session, is the opposite kind of pleasure: brushed drums, a walking bass, and playing that leaves space between the notes. It’s an audiophile 180g cut, so it rewards a decent stylus and a room without much else going on. A late-night record in the truest sense."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "staff-picks-this-month",
-        "status": "published",
-        "body": {
-            "title": "Staff picks this month",
-            "excerpt": "Everyone behind the counter gets a card in the rack. Here’s what we’re each pushing on customers right now, and why.",
-            "featuredImage": {
-                "$asset": "post-staff-picks"
+            "content": [
+              {
+                "type": "text",
+                "text": "The one to hear loud"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Hollow Coast’s Paper Cathedral is the record we’ve had on repeat. It builds like weather — hushed verses that break into guitars big enough to take the roof off — and it’s pressed on quiet, heavy vinyl that gives all that reverb somewhere to live. Put it on with the windows open."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The little handwritten cards tucked into the sleeves aren’t marketing — they’re just us telling you what we’d take home. A staff pick is a record someone here will personally vouch for, and this month the racks are full of them."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Neon Meridian — Violet Transit"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If you grew up on the sound of a synth arpeggio and a chorus built for the highway, this debut is going to hit. It’s sequenced as one continuous night, and it’s best heard that way — side A into side B, no skipping. The limited color pressing is genuinely gorgeous under the lights, too."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Static Gospel — Rue Delacroix"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Soul with grit under its fingernails. Punchy horns, a simmering organ, and a voice that sounds like it’s been up all night with something to tell you. Warm, analogue and impossible to sit still to — the record that clears the counter every time we drop the needle on it."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "keep-your-records-quiet",
-        "status": "published",
-        "body": {
-            "title": "How to keep your records quiet",
-            "excerpt": "Most pops and crackle aren’t damage — they’re dust and static. Two minutes of care before each play makes a bigger difference than any upgrade.",
-            "featuredImage": {
-                "$asset": "post-care"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "People spend a fortune chasing a quieter background from their records and skip the two things that actually cause the noise: dust in the groove and a static charge that pulls more of it in. Handle both and most of the crackle disappears — no new cartridge required."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Before every play"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter — hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is what dust sticks to in the first place."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Every so often, a proper clean"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "When a record’s been passed around or bought second-hand, it’s worth a wet clean — a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the decks out of direct sun. Do that and a record you buy today will still sound right in thirty years."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "The one for a quiet room"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Midnight Ledger, the Cole Ambrose Trio session, is the opposite kind of pleasure: brushed drums, a walking bass, and playing that leaves space between the notes. It’s an audiophile 180g cut, so it rewards a decent stylus and a room without much else going on. A late-night record in the truest sense."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "staff-picks-this-month",
+    "status": "published",
+    "body": {
+      "title": "Staff picks this month",
+      "excerpt": "Everyone behind the counter gets a card in the rack. Here’s what we’re each pushing on customers right now, and why.",
+      "featuredImage": {
+        "$asset": "post-staff-picks"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The little handwritten cards tucked into the sleeves aren’t marketing — they’re just us telling you what we’d take home. A staff pick is a record someone here will personally vouch for, and this month the racks are full of them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Neon Meridian — Violet Transit"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you grew up on the sound of a synth arpeggio and a chorus built for the highway, this debut is going to hit. It’s sequenced as one continuous night, and it’s best heard that way — side A into side B, no skipping. The limited color pressing is genuinely gorgeous under the lights, too."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Static Gospel — Rue Delacroix"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Soul with grit under its fingernails. Punchy horns, a simmering organ, and a voice that sounds like it’s been up all night with something to tell you. Warm, analogue and impossible to sit still to — the record that clears the counter every time we drop the needle on it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "keep-your-records-quiet",
+    "status": "published",
+    "body": {
+      "title": "How to keep your records quiet",
+      "excerpt": "Most pops and crackle aren’t damage — they’re dust and static. Two minutes of care before each play makes a bigger difference than any upgrade.",
+      "featuredImage": {
+        "$asset": "post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People spend a fortune chasing a quieter background from their records and skip the two things that actually cause the noise: dust in the groove and a static charge that pulls more of it in. Handle both and most of the crackle disappears — no new cartridge required."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Before every play"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter — hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is what dust sticks to in the first place."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Every so often, a proper clean"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When a record’s been passed around or bought second-hand, it’s worth a wet clean — a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the decks out of direct sun. Do that and a record you buy today will still sound right in thirty years."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

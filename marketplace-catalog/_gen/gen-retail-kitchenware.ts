@@ -15,7 +15,7 @@
 // This file is JUST the SPEC; composition + emission live in the shared
 // `template-sites/harness.ts`; the PDP's data plumbing lives in the shared
 // `template-sites/pdp.ts` kit. Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-retail-kitchenware.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-retail-kitchenware.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-retail-kitchenware/**" \
 //     "marketplace-catalog/_gen/gen-retail-kitchenware.ts"
 //
@@ -30,10 +30,10 @@ import { pathToFileURL } from 'node:url';
 import {
   el,
   type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { productsBlock } from '../../packages/silica-catalog/src/commerce';
-import { defineTheme, face, STATUS_ON_DARK, STATUS_ON_LIGHT } from '../../packages/silica-catalog/src/themes';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { productsBlock } from '../../wizeworks/packages/silica-catalog/src/commerce';
+import { defineTheme, face, STATUS_ON_DARK, STATUS_ON_LIGHT } from '../../wizeworks/packages/silica-catalog/src/themes';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';

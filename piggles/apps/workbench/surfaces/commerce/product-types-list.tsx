@@ -22,13 +22,11 @@ import {
   Button,
   Card,
   EmptyState,
-  Filter,
-  FilterItem,
   Heading,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faShapes } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -37,6 +35,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProductTypeList, type ProductType } from './product-types-data';
 import { productCopy } from '../../lib/product';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 const KIND_FILTERS = [
   { value: 'all', label: 'All' },
@@ -94,52 +96,54 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Product type list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search product types"
-            placeholder="Name or id…"
-            value={search}
-            onValueChange={setSearch}
+      <PaneToolbar
+        label="Product type list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search product types"
+              placeholder="Name or id…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New type',
+          icon: faPlus,
+          onClick: create,
+          title:
+            'Define a new kind of product — hold Shift to open alongside, Alt for a new window',
+        }}
+        filters={[
+          {
+            label: 'Kind',
+            key: 'kind',
+            value: kind,
+            onValueChange: (next) => {
+              setKind((next as KindFilterValue | null) ?? 'all');
+            },
+            options: KIND_FILTERS,
+          },
+        ]}
+        views={{
+          target: '/commerce/product-types',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-
-        <Filter
-          color="module"
-          value={kind}
-          onValueChange={(next) => {
-            setKind((next as KindFilterValue | null) ?? 'all');
-          }}
-          showReset={false}
-          aria-label="Filter by kind"
-        >
-          {KIND_FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Define a new kind of product — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @2xl:inline">New type</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
@@ -170,6 +174,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : filtered.length === 0 ? (
           <Card className="flex-1">
             <ListEmptyState
+              module={MODULE}
               filtered={narrowed}
               noResults={{
                 icon: <Icon glyph={faShapes} className="size-6" aria-hidden />,

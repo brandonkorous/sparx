@@ -44,7 +44,7 @@ The realtime layer **must not** be required for correctness. If the socket never
 
 ```
  order.paid / review.published / question.* / inventory.low
-        │  (Google Pub/Sub — @sparx/events)
+        │  (Google Pub/Sub — @wizeworks/events)
         ▼
  activity-fanout-worker            (Cloud Run, Pub/Sub push — new)
    • resolve event → affected productId(s)
@@ -64,7 +64,7 @@ The realtime layer **must not** be required for correctness. If the socket never
 
 Two reuse decisions, both deliberate:
 
-1. **Same socket.io server, new namespace.** The Live Chat server is already attached to the Fastify HTTP server at `/ws/chat` with the Redis adapter when `REDIS_URL` is set (`services/api-rest/src/index.ts`, `websocket/chat-namespace.ts`). We add a sibling **`/ws/activity`** namespace on the same `io` instance — separate auth, separate rooms, shared transport + adapter. We do **not** overload the chat namespace (different auth model, different blast radius).
+1. **Same socket.io server, new namespace.** The Live Chat server is already attached to the Fastify HTTP server at `/ws/chat` with the Redis adapter when `REDIS_URL` is set (`wizeworks/services/api-rest/src/index.ts`, `websocket/chat-namespace.ts`). We add a sibling **`/ws/activity`** namespace on the same `io` instance — separate auth, separate rooms, shared transport + adapter. We do **not** overload the chat namespace (different auth model, different blast radius).
 2. **Event → side-effect via a Cloud Run worker + internal HTTP**, mirroring `cache-revalidation-worker`. api-rest stays a request/response service; the worker owns the Pub/Sub subscription and POSTs to an internal broadcast endpoint. Any replica that receives the POST broadcasts through the Redis adapter, so all subscribers across pods get it. (Respects the service-boundary rule — api-rest doesn't grow a Pub/Sub consumer; cf. docs/02, services/CLAUDE.md.)
 
 We keep the **broadcaster-getter** decoupling pattern from chat (`getChatBroadcaster()`): the internal route calls `getActivityBroadcaster()?.emit(...)`, the websocket layer installs the real implementation at boot, and it's a no-op in tests.
@@ -128,7 +128,7 @@ type ActivityEvent =
 
 Source-event → `ActivityEvent` mapping (owned by the fanout worker):
 
-| Domain event (@sparx/events)               | Activity   | Notes                                                                                                                             |
+| Domain event (@wizeworks/events)           | Activity   | Notes                                                                                                                             |
 | ------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `order.paid`                               | `purchase` | Canonical "money received." Resolve order → line items → productIds; one event per distinct product. `qty` bucketed, never exact. |
 | `review.published`                         | `review`   | Reuses the public review shape (author = displayName, excerpt = first ~140 chars).                                                |
@@ -183,7 +183,7 @@ The socket room size _is_ the viewer count (via the Redis adapter's room cardina
 
 ## 11. Client integration (storefront)
 
-- A small client module (`@sparx/site-ui` activity client, or a `apps/site` hook `useProductActivity(productId)`) connects on PDP mount, joins the room, and exposes an event stream; disconnects on unmount; reconnects with backoff; gives up quietly after N attempts (fallback = static page).
+- A small client module (`@sparx/site-ui` activity client, or a `wizeworks/apps/site` hook `useProductActivity(productId)`) connects on PDP mount, joins the room, and exposes an event stream; disconnects on unmount; reconnects with backoff; gives up quietly after N attempts (fallback = static page).
 - **Purchase / stock** → a toast (reuse the storefront toast surface), respecting `prefers-reduced-motion` (no slide, just appear), auto-dismiss, capped to one visible at a time.
 - **Review** → the reviews section (already SSR-rendered, docs: just shipped) prepends the new card and bumps the ★ summary. The section becomes hydration-aware: SSR list + client-appended live items, deduped by id.
 - **Q&A** → likewise inserts/updates the answered question in place.
@@ -228,6 +228,6 @@ Bucketed `viewers` count from room cardinality; `stock` toasts from `inventory.l
 ## 15. Open questions
 
 1. **Order → productIds resolution.** Does `order.paid`'s payload carry line-item productIds, or does the worker read the order? Prefer enriching the event so the worker stays storage-light; otherwise the worker does one tenant-scoped read. (Decide when wiring Phase 1.)
-2. **`@sparx/site-ui` vs `apps/site` for the client.** A reusable activity client in `@sparx/site-ui` lets the Builder render path and the legacy PDP share it; an `apps/site` hook is simpler to start. Lean shared once Phase 2 needs both reviews + Q&A to merge live.
+2. **`@sparx/site-ui` vs `wizeworks/apps/site` for the client.** A reusable activity client in `@sparx/site-ui` lets the Builder render path and the legacy PDP share it; an `wizeworks/apps/site` hook is simpler to start. Lean shared once Phase 2 needs both reviews + Q&A to merge live.
 3. **B2B suppression.** Should purchase toasts auto-suppress on B2B/wholesale contexts regardless of toggle? Likely yes (wholesale buyers don't want consumer theater) — gate on the active sales channel, not just the tenant toggle.
 4. **Region source for guest/digital orders** with no shipping address — fall back to "no region" (the default), never to IP geolocation (PII / consent surface).

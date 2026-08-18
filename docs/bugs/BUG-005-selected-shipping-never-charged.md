@@ -3,8 +3,8 @@
 Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24**
 Severity: **High** — the merchant eats the shipping cost on every order
 Found: 2026-07-24, production payments E2E (order `O-000002`)
-Surfaces: `packages/commerce/src/services/checkout-service.ts` (`submitShipping`),
-`packages/commerce/src/services/shipping-service.ts`, `services/api-rest/src/routes/v1/public/checkout.ts`
+Surfaces: `wizeworks/packages/commerce/src/services/checkout-service.ts` (`submitShipping`),
+`wizeworks/packages/commerce/src/services/shipping-service.ts`, `wizeworks/services/api-rest/src/routes/v1/public/checkout.ts`
 
 ## Symptom
 

@@ -31,11 +31,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBan, faBoxCheck, faBoxMagnifyingGlass } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -215,7 +215,10 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         </Alert>
       )}
 
-      <Card className="min-h-0 overflow-x-auto">
+      {/* `shrink-0`: this pane is one scrolling COLUMN, and a card that may
+          shrink absorbs the whole overflow — squashing the lines to a couple of
+          rows while the column itself never scrolls. */}
+      <Card className="shrink-0 overflow-x-auto">
         <Table size="sm">
           <thead>
             <tr>

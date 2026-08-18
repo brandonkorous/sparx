@@ -16,17 +16,17 @@ context or env in the base manifests lands here automatically.
 
 ## What replaced what
 
-| Production                           | Here                                            |
-| ------------------------------------ | ----------------------------------------------- |
-| GKE Autopilot                        | Docker Desktop Kubernetes, one node             |
-| Cloud SQL Postgres 18                | `postgres:18-alpine` StatefulSet (`infra.yaml`) |
-| PgBouncer                            | nothing — one replica each, direct connections  |
-| 11 Cloud Run workers                 | Deployments (`../self-hosted/workers.yaml`)     |
-| Pub/Sub (~60 topics)                 | direct HTTP dispatch — **see Known gaps**       |
-| GCS media buckets                    | a PVC + `packages/media`'s LocalStorage backend |
-| Secret Manager                       | `secrets.env` → a k8s Secret                    |
-| Caddy + on-demand TLS + LoadBalancer | Caddy on plain HTTP + cloudflared               |
-| Typesense / Redis (GKE)              | same images, workstation-sized                  |
+| Production                           | Here                                                      |
+| ------------------------------------ | --------------------------------------------------------- |
+| GKE Autopilot                        | Docker Desktop Kubernetes, one node                       |
+| Cloud SQL Postgres 18                | `postgres:18-alpine` StatefulSet (`infra.yaml`)           |
+| PgBouncer                            | nothing — one replica each, direct connections            |
+| 11 Cloud Run workers                 | Deployments (`../self-hosted/workers.yaml`)               |
+| Pub/Sub (~60 topics)                 | direct HTTP dispatch — **see Known gaps**                 |
+| GCS media buckets                    | a PVC + `wizeworks/packages/media`'s LocalStorage backend |
+| Secret Manager                       | `secrets.env` → a k8s Secret                              |
+| Caddy + on-demand TLS + LoadBalancer | Caddy on plain HTTP + cloudflared                         |
+| Typesense / Redis (GKE)              | same images, workstation-sized                            |
 
 Unchanged: all 8 app images, all 11 worker images, all 15 CronJobs, every
 route in the ingress, and every public hostname.
@@ -136,7 +136,7 @@ proxy a wildcard on this plan — was asserted without testing it. It is false.
 A **proxied** `CNAME *.sparx.zone → <UUID>.cfargotunnel.com` is accepted, and
 tenant subdomains resolve automatically exactly as they did on GKE. Nothing has
 to be created per tenant, which matters because nothing in the platform creates
-Cloudflare DNS records: neither `packages/registrar` nor `domain-worker` touches
+Cloudflare DNS records: neither `wizeworks/packages/registrar` nor `domain-worker` touches
 the Cloudflare API, so a per-tenant record would have to be added by hand at
 signup. Set the wildcard once and leave it.
 
@@ -162,7 +162,7 @@ impossible. Same hostname, same `MEDIA_DIRECT_BASE_URL`, no adapter changes.
 Well inside the Workers free tier.
 
 Independent confirmation that this is the right lever: `fetchImageBinary` in
-[packages/social/src/adapters/\_media.ts](../../packages/social/src/adapters/_media.ts)
+[wizeworks/packages/social/src/adapters/\_media.ts](../../packages/social/src/adapters/_media.ts)
 documents Facebook hitting the identical 206 and being fixed by "a plain GET (no
 Range) returns a clean 200".
 

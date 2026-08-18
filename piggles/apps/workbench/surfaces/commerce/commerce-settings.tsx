@@ -23,7 +23,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   NumberField,
   Select,
   Switch,
@@ -32,6 +31,7 @@ import {
 import { useToast } from '@wizeworks/silicaui-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -85,7 +85,15 @@ function samePolicy(a: DunningPolicy, b: DunningPolicy): boolean {
 }
 
 export function CommerceSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: settings, isPending, isError, error, refetch } = useCommerceSettings();
+  const {
+    data: settings,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useCommerceSettings();
 
   useEffect(() => {
     ctx.setTitle('Selling settings');
@@ -124,10 +132,29 @@ export function CommerceSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  return <SettingsForm settings={settings} />;
+  return (
+    <SettingsForm
+      settings={settings}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
-function SettingsForm({ settings }: { settings: CommerceSettings }) {
+function SettingsForm({
+  settings,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  settings: CommerceSettings;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const update = useUpdateCommerceSettings();
 
@@ -188,30 +215,31 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Selling settings actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={update.isPending}
-          disabled={!dirty}
-          onClick={submit}
-        >
-          Save
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Selling settings actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={update.isPending}
+            disabled={!dirty}
+            onClick={submit}
+          >
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Selling settings
-            </Heading>
-            <Text className="text-sm">
-              The rules that apply to every sale on this site. These affect what shoppers see and
-              how checkout works.
-            </Text>
-          </div>
+          <Text className="text-sm">
+            The rules that apply to every sale on this site. These affect what shoppers see and how
+            checkout works.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">

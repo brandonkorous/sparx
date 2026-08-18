@@ -1,7 +1,7 @@
 // The shared marketing-email builder for blueprint starters.
 //
 // Every blueprint's welcome / win-back / re-book email routes through here, and here
-// routes through the platform's own silica email KIT (`@sparx/builder-schemas`) — the
+// routes through the platform's own silica email KIT (`@wizeworks/builder-schemas`) — the
 // same `copyBlock` / `heading` / `para` / `button` / `featureList` / `calloutCard` the
 // keyed transactional defaults use. So a blueprint's marketing email is built to the
 // SAME elevated standard as an order confirmation, and inherits every future kit
@@ -22,7 +22,7 @@ import {
   heading,
   para,
   text,
-} from '../../../packages/builder-schemas/src/silica-email-kit';
+} from '../../../wizeworks/packages/builder-schemas/src/silica-email-kit';
 
 export interface BlueprintEmail {
   subject: string;

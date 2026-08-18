@@ -31,9 +31,9 @@ Status (at fix time): **FIXED (code) 2026-07-24 — awaiting deploy**
 Severity: **High** — with live carrier rates enabled, every checkout that picks a
 real USPS/UPS/FedEx rate dead-ends; only the manual flat rate can complete
 Found: 2026-07-24, production shipping E2E on `keen-cedar-6433` (Shippo just enabled)
-Surfaces: `packages/commerce/src/services/checkout-service.ts` (`submitShipping`),
-`packages/commerce-schemas/src/checkout.ts`, `services/api-rest/src/routes/v1/public/checkout.ts`,
-`apps/site/components/checkout/checkout-flow.tsx`, `apps/site/lib/checkout-client.ts`
+Surfaces: `wizeworks/packages/commerce/src/services/checkout-service.ts` (`submitShipping`),
+`wizeworks/packages/commerce-schemas/src/checkout.ts`, `wizeworks/services/api-rest/src/routes/v1/public/checkout.ts`,
+`wizeworks/apps/site/components/checkout/checkout-flow.tsx`, `wizeworks/apps/site/lib/checkout-client.ts`
 
 ## Symptom
 
@@ -106,7 +106,7 @@ with `country: 'US'` and nothing else, so `resolveShipFromAddress` threw and
 connected silently got manual rates only, no live options shown, no warning.
 
 **Not a module gap.** `inventory` is `BUNDLED_FREE` with `commerce`/`b2b`
-(`packages/modules/src/index.ts`), so any tenant that can check out already has the
+(`wizeworks/packages/modules/src/index.ts`), so any tenant that can check out already has the
 full inventory surface at $0 — the warehouse always exists and the
 `requireInventoryModule`-gated locations API is bundle-aware. Only a WMS-only tenant
 (no commerce/b2b) pays for standalone inventory, and it isn't selling anyway. So the

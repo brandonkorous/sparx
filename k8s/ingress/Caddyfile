@@ -430,10 +430,11 @@ import mode.caddy
 #
 # Tenant sites need NO block of their own: the catch-all below already serves any
 # host that reaches it, which is how `<tenant>.sparx.zone` works today. What they
-# DO need is a certificate, and that is decided by the on-demand ask endpoint,
-# which currently recognises exactly one zone. See the note on
-# `piggles_site_wildcard` in terraform/modules/dns/main.tf — DNS resolving while
-# the handshake fails is the symptom to expect until api-rest learns the second.
+# DO need is a certificate, and that is decided by the on-demand ask endpoint —
+# which now knows BOTH zones (SPARX_ZONE_DOMAINS=sparx.zone,piggles.site in the
+# shared ConfigMap, read by api-rest's lib/domain.ts). This note used to warn that
+# it recognised only one and that failed handshakes were the symptom to expect;
+# that has been fixed, and the warning was left behind to send somebody chasing it.
 {$SX_SCHEME:https}://piggles.site, {$SX_SCHEME:https}://www.piggles.site {
 	import tls_policy
 	redir https://meetpiggles.com{uri} permanent

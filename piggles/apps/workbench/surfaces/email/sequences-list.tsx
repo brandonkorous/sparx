@@ -12,23 +12,21 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faRoute } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { sequenceState, useSequences, type SequenceRow } from './sequences-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'email';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -72,78 +70,79 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Email sequences list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search sequences"
-            placeholder="Search sequences…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <div className="hidden w-40 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Filter by status"
-            value={status}
-            items={{
-              all: 'Any status',
-              active: 'On',
-              draft: 'Draft',
-              archived: 'Stopped',
-            }}
-            onValueChange={(next) => {
-              setStatus((next as string) || 'all');
-            }}
-          />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="New sequence — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Email sequences list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search sequences"
+              placeholder="Search sequences…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New sequence',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New sequence</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'New sequence — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <div className="w-40 shrink-0">
+            <Select
+              size="sm"
+              aria-label="Filter by status"
+              value={status}
+              items={{
+                all: 'Any status',
+                active: 'On',
+                draft: 'Draft',
+                archived: 'Stopped',
+              }}
+              onValueChange={(next) => {
+                setStatus((next as string) || 'all');
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/email/sequences',
+          params: { q: search.trim(), status },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus(next.status ?? 'all');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
             title="Could not load your sequences"
             description="Something went wrong reaching the server. Anyone already in a sequence is unaffected — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting label="Loading sequences…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtering}
             noResults={{
               icon: <Icon glyph={faRoute} className="size-6" aria-hidden />,

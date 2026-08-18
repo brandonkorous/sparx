@@ -4,6 +4,7 @@ import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
 import { accountUrl } from '@piggles/config';
 import { PigglesMascot } from '@piggles/mascot/react';
+import { PageHero } from '../page-hero';
 import { GROUP_COPY } from '../groups';
 import { CloseBand } from '../close-band';
 import { TOOLS, toolGroup } from './registry';
@@ -38,47 +39,49 @@ export function ToolsIndex() {
     <>
       <ToolsIndexJsonLd tools={TOOLS} />
 
-      <Section>
-        <div className="grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-end lg:gap-16">
-          <div>
-            <h1 className="text-5xl leading-[0.95] font-extrabold text-balance sm:text-6xl lg:text-7xl">
-              Seventeen small tools.
-              <br />
-              <span className="text-primary">No sign-up, no catch.</span>
-            </h1>
-            <p className="mt-8 max-w-2xl text-lg sm:text-xl">
-              The odd jobs that come up when you are running a business — a favicon, an invoice, a
-              QR code for the table, the sum you always redo on the back of an envelope. All free,
-              all in your browser, and none of them asking for an email address first.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                className={buttonClasses({ color: 'primary', size: 'lg' })}
-                href={accountUrl('signup', 'tools-hub')}
-              >
-                Get Piggles — $49/month
-              </a>
-              <Link
-                className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
-                href="/apps"
-              >
-                See the actual product
-              </Link>
-            </div>
-          </div>
+      {/* On <PageHero> like every other page. It had a hand-built opening — a
+          7xl heading, its own grid, the mascot beside it — which was the best of
+          the interior heroes and still the one page whose top did not match the
+          others.
 
+          The figure is deliberately NOT a wall of the seventeen names: the
+          browser below is a searchable, filterable index of exactly those
+          seventeen, so listing them again a hundred pixels higher would be the
+          page saying the same thing twice in two worse ways. She is what the
+          fold has that the browser does not. */}
+      <PageHero
+        heading={
+          <>
+            Seventeen small tools. <span className="text-primary">No sign-up, no catch.</span>
+          </>
+        }
+        lede="The odd jobs that come up when you are running a business — a favicon, an invoice, a QR code for the table, the sum you always redo on the back of an envelope. All free, all in your browser, and none of them asking for an email address first."
+        figure={
           <PigglesMascot
             intent="welcome"
             size={{ base: 'md', lg: 'lg' }}
-            className="mx-auto lg:mx-0"
+            className="float mx-auto"
           />
-        </div>
+        }
+        assurances={['Nothing to sign up for', 'No watermark', 'Nothing uploaded']}
+      >
+        <a
+          className={buttonClasses({ color: 'primary', size: 'lg' })}
+          href={accountUrl('signup', 'tools-hub')}
+        >
+          Get Piggles — $49/month
+        </a>
+        {/* No `color` at all. It was pinned to `neutral`, which is Brandon's
+            call every time (root RULE #4) — and an uncolored `.btn` resolves to
+            `base-content`, which is the right ink here and stays right on any
+            surface it is moved to. */}
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
+          See the actual product
+        </Link>
+      </PageHero>
 
-        {/* The browser is part of the same section as the heading that
-            introduces it — a gap here would read as two unrelated blocks. */}
-        <div className="mt-12">
-          <ToolBrowser items={items} groups={chips} />
-        </div>
+      <Section>
+        <ToolBrowser items={items} groups={chips} />
       </Section>
 
       <Section className="bg-base-100 border-base-300 border-y">

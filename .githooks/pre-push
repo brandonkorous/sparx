@@ -65,7 +65,7 @@ if node -e "
   // require.resolve here throws MODULE_NOT_FOUND even when the client is
   // perfectly healthy — which would regenerate on every single push.
   const dir = path.dirname(
-    require.resolve('@prisma/client', { paths: [path.join(process.cwd(), 'packages', 'db')] })
+    require.resolve('@prisma/client', { paths: [path.join(process.cwd(), 'wizeworks', 'packages', 'db')] })
   );
   const found = ['../..', '..', '../../..']
     .map((up) => path.join(dir, up, '.prisma', 'client', 'index.js'))
@@ -75,8 +75,8 @@ if node -e "
   ok "client already generated"
 else
   printf "  no generated Prisma client (fresh checkout) — generating once\n"
-  pnpm --filter @sparx/db db:generate >/dev/null 2>&1 \
-    || fail "prisma generate failed — run \`pnpm --filter @sparx/db db:generate\` to see it"
+  pnpm --filter @wizeworks/db db:generate >/dev/null 2>&1 \
+    || fail "prisma generate failed — run \`pnpm --filter @wizeworks/db db:generate\` to see it"
   ok "client generated"
 fi
 
@@ -84,7 +84,7 @@ fi
 # they catch the class of drift that otherwise surfaces minutes into a release
 # build: an event with no topic, a surface with no address, an image built
 # without a package it imports.
-step "structural checks (events, routes, dockerfiles, brand isolation)"
+step "structural checks (events, routes, dockerfiles, brand isolation, console parity)"
 node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
 node scripts/check-surface-routes.mjs >/dev/null || fail "surface/address parity failed — run \`pnpm check:routes\` to see it"
 node scripts/check-dockerfile-deps.mjs >/dev/null || fail "a Dockerfile is missing a workspace package it imports — run \`pnpm check:docker\` to see it"
@@ -92,6 +92,8 @@ node scripts/check-boundaries.mjs >/dev/null || fail "a product boundary broke, 
 node scripts/check-deletability.mjs >/dev/null || fail "piggles now depends on a sparx-owned package — deleting sparx would break its build. Run \`pnpm check:deletability\` for the chain"
 node scripts/check-webhook-events.mjs >/dev/null || fail "webhook event lists have drifted — run \`pnpm check:webhooks\` to see it"
 node scripts/check-inventory-api-docs.mjs >/dev/null || fail "the inventory API reference is stale — run \`pnpm gen:inventory-api\` to rebuild it"
+node piggles/scripts/check-toolbar-primary.mjs >/dev/null || fail "a Piggles toolbar put a commit action in the relocatable `controls` slot — run `pnpm check:piggles-toolbars` to see it"
+node scripts/check-console-parity.mjs >/dev/null || fail "the two consoles have drifted — one has system furniture the other lacks. Run \`pnpm check:console-parity\` to see which, and either build it or argue it onto the exception list"
 ok "structure clean"
 
 step "pnpm format:check"
@@ -157,8 +159,8 @@ step "pnpm -r run test"
 CI=true pnpm -r --workspace-concurrency=4 run test || fail "tests failed — fix the failures above and commit"
 ok "tests clean"
 
-step "pnpm --filter @sparx/db db:rls-audit"
-pnpm --filter @sparx/db db:rls-audit >/dev/null || fail "RLS audit failed — see output above; hand-edit the migration SQL to add the missing clauses (ENABLE+FORCE+POLICY, a current_tenant_id() GUC read, or an owner-read policy for a cross-tenant scan)"
+step "pnpm --filter @wizeworks/db db:rls-audit"
+pnpm --filter @wizeworks/db db:rls-audit >/dev/null || fail "RLS audit failed — see output above; hand-edit the migration SQL to add the missing clauses (ENABLE+FORCE+POLICY, a current_tenant_id() GUC read, or an owner-read policy for a cross-tenant scan)"
 ok "RLS audit clean"
 
 printf "${GREEN}✓ pre-push checks passed${RESET}\n"

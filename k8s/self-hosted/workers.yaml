@@ -14,7 +14,7 @@
 # image on one SHA (no independent deploy), and only media-worker had a distinct
 # runtime. Twelve of them are now handlers inside `event-worker`, each keeping
 # its own JetStream durable name so no consumer cursor moved. The reasoning in
-# full is in services/event-worker/src/index.ts.
+# full is in wizeworks/services/event-worker/src/index.ts.
 #
 # WHY THESE TWO STAYED OUT. Merging trades process isolation for memory, so the
 # two most likely to need isolation kept it: media-worker runs sharp over image
@@ -125,7 +125,7 @@ spec:
 #
 # The ONLY worker with a volume. It transcodes uploads into variants and must
 # write to the SAME local-disk media root api-rest streams from, since
-# GCS_MEDIA_BUCKET is unset and packages/media falls back to LocalStorage.
+# GCS_MEDIA_BUCKET is unset and wizeworks/packages/media falls back to LocalStorage.
 # Mismatch here = uploads that transcode successfully and then 404 forever.
 # ---------------------------------------------------------------------------
 apiVersion: apps/v1

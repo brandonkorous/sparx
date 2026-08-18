@@ -44,12 +44,12 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faBan,
   faCheck,
@@ -310,7 +310,10 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         </Alert>
       ) : null}
 
-      <Card className="min-h-0 overflow-x-auto">
+      {/* `shrink-0`: this pane is one scrolling COLUMN, and a card that may
+          shrink absorbs the whole overflow — squashing the lines to a couple of
+          rows while the column itself never scrolls. */}
+      <Card className="shrink-0 overflow-x-auto">
         <Table size="sm">
           <thead>
             <tr>

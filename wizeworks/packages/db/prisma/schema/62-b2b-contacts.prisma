@@ -1,0 +1,40 @@
+// B2B account contacts — maps Customer memberships to B2B accounts with roles.
+// (docs/10 §11, docs/64 B2B Ph5)
+//
+// A B2B account can have multiple customer contacts, each with a role.
+// The portal access check: find a B2bAccountContact where customerId = current
+// customer AND isActive = true. The `role` gates which portal sections appear.
+//
+// Role hierarchy (docs/64 §5.2):
+//   primary_contact → all portal features + can submit quotes
+//   buyer           → can place orders + submit quotes + view invoices
+//   approver        → can approve orders (Ph6 purchase approval)
+//   viewer          → read-only (invoices, orders, quotes)
+//
+// Note: `customers.company_id` remains the "primary account" FK. This
+// table is additive — a contact can see their primary account, plus other
+// accounts they've been explicitly added to. Most customers will have exactly
+// one row here matching their `customers.company_id`.
+
+model B2bAccountContact {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  accountId  String @map("account_id") @db.Uuid
+  customerId String @map("customer_id") @db.Uuid
+
+  // Role: primary_contact | buyer | approver | viewer
+  role     String  @default("buyer") @db.VarChar(30)
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  account  Company  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, accountId, customerId], map: "b2b_account_contacts_unique")
+  @@index([tenantId, customerId])
+  @@index([tenantId, accountId])
+  @@map("b2b_account_contacts")
+}

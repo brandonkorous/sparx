@@ -37,7 +37,7 @@ function signature(value, secret) {
 // itself, take the node_modules directory it landed in, and reach for its
 // sibling by path.
 const betterAuthEntry = require.resolve('better-auth', {
-  paths: [fileURLToPath(new URL('../../../../packages/auth/', import.meta.url))],
+  paths: [fileURLToPath(new URL('../../../../wizeworks/packages/auth/', import.meta.url))],
 });
 const marker = `node_modules${sep}`;
 const nodeModules = betterAuthEntry.slice(0, betterAuthEntry.lastIndexOf(marker) + marker.length);

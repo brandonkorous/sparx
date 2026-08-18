@@ -130,7 +130,7 @@ spec:
           # No CPU limit, memory ceilinged — see the note in piggles-web.yaml.
           # 256Mi is an ESTIMATE from sparx's workbench (measured 232Mi), which
           # is the nearest thing to this app's shape: a small route table over
-          # @sparx/auth and Prisma. Measure and move it.
+          # @wizeworks/auth and Prisma. Measure and move it.
           resources:
             requests:
               cpu: '25m'

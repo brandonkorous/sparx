@@ -3,8 +3,8 @@
 Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24**
 Severity: **Critical** — a refund could be recorded on the books while the customer was never paid back
 Found: 2026-07-24, production payments E2E (trying to refund `O-000002`)
-Surfaces: `services/api-rest/src/lib/order-refund.ts` (new),
-`services/api-rest/src/routes/v1/orders.ts`, `apps/workbench/surfaces/commerce/order-detail.tsx`
+Surfaces: `wizeworks/services/api-rest/src/lib/order-refund.ts` (new),
+`wizeworks/services/api-rest/src/routes/v1/orders.ts`, `sparx/apps/workbench/surfaces/commerce/order-detail.tsx`
 
 ## Symptom
 

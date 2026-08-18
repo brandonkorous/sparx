@@ -271,7 +271,7 @@ that exists.
 gh workflow run release.yml
 ```
 
-**4 — Local dev:** add the same three to `services/api-rest/.env` (gitignored) and restart `api-rest`.
+**4 — Local dev:** add the same three to `wizeworks/services/api-rest/.env` (gitignored) and restart `api-rest`.
 
 **Verify:** `GET /v1/seo/search-console/status` returns `{ configured: true }`; the workbench Search Console surface shows the connect flow instead of "not available".
 

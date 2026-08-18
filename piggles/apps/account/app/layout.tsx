@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fredoka, Inter } from 'next/font/google';
 import { PRODUCT } from '@piggles/config';
+import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
 // getpiggles.com — sign up, sign in, set the business up, and pay us.
@@ -41,8 +42,24 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // NO `data-theme` on <html>, and that is load-bearing rather than an omission.
+  // React owns every attribute it renders and re-asserts it whenever the element
+  // is created, so a hardcoded value here is a second writer racing the script
+  // below — able to put somebody who chose dark back on white after the script
+  // had already decided otherwise. THEME_SCRIPT is the one thing allowed to put
+  // an appearance on this document at load; @piggles/ui's `useAppearance` is the
+  // one thing allowed to change it afterwards. `suppressHydrationWarning` is its
+  // counterpart: the attribute the client sees was never in the server's markup.
+  // See lib/theme.ts.
   return (
-    <html lang="en" data-theme="light" className={`${inter.variable} ${fredoka.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${fredoka.variable}`}>
+      <head>
+        {/* In <head> and blocking, so it lands before anything is painted. An
+            effect, a provider or a server-read cookie are all later than the
+            first frame, which is the one frame this exists to fix — and on a
+            sign-in page a white flash is the first thing a customer sees of us. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

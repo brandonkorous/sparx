@@ -1,4 +1,4 @@
-# apps/workbench — production manifest. Next.js standalone server on port 3000.
+# sparx/apps/workbench — production manifest. Next.js standalone server on port 3000.
 # Serves app.sparx.works (it replaced the dashboard; Caddy reverse-proxies the
 # host here). Shares the sparx-app-env ConfigMap and sparx-app-secrets Secret with
 # api-rest (DATABASE_URL, SPARX_INTERNAL_JWT_SECRET, etc.).

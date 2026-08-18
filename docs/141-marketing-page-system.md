@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-02
 
-The homepage (`apps/web/app/page.tsx` → `components/marketing/landing/*`) is the only
+The homepage (`sparx/apps/web/app/page.tsx` → `components/marketing/landing/*`) is the only
 page on sparx.works that was designed as a whole rather than assembled. Everything else
 reads as leftover content because it was built against a different, older vocabulary and
 never given a compositional system.
@@ -14,7 +14,7 @@ type, structure, motion, CTA — so the other ~40 routes can be brought up to it
 each being redesigned from scratch.
 
 It is the **composition** layer. The **component** layer already has a contract:
-[apps/web/components/marketing/SILICA-VOCABULARY.md](../apps/web/components/marketing/SILICA-VOCABULARY.md)
+[sparx/apps/web/components/marketing/SILICA-VOCABULARY.md](../apps/web/components/marketing/SILICA-VOCABULARY.md)
 (which component, which token, which ink). Read that one for "what do I build this out
 of." Read this one for "how do the pieces sit together to make an argument."
 
@@ -459,7 +459,7 @@ is a fair warning about what will happen on forty less-reviewed ones.
 
 ## 10. What the other pages do instead
 
-The gap is not taste, it is **vocabulary age**. Measured across `apps/web`:
+The gap is not taste, it is **vocabulary age**. Measured across `sparx/apps/web`:
 
 | Legacy pattern                                                                         | Instances |
 | -------------------------------------------------------------------------------------- | --------- |
@@ -551,7 +551,7 @@ lg:py-32`; content caps at `max-w-7xl`.
 
 ## Related
 
-- [apps/web/components/marketing/SILICA-VOCABULARY.md](../apps/web/components/marketing/SILICA-VOCABULARY.md)
+- [sparx/apps/web/components/marketing/SILICA-VOCABULARY.md](../apps/web/components/marketing/SILICA-VOCABULARY.md)
   — which component and which token (the layer below this one)
 - [docs/35-ui-variant-system.md](35-ui-variant-system.md) — the four-axis control system
 - [docs/sparx-brand-guide.md](sparx-brand-guide.md) — the module hues and brand marks

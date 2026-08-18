@@ -1,44 +1,38 @@
 {
-    "schemaVersion": 1,
-    "category": "blueprint",
-    "slug": "sparx-playful-mission",
-    "name": "Playful Mission",
-    "version": "1.4.0",
-    "tagline": "A bright, warm template for playful, mission-driven brands with a give-back at their heart.",
-    "description": "A playful, colorful, mission-driven DTC storefront for a give-back brand — a warm-cream page broken up by saturated color bands (a marigold buy-one-give-one band, a navy impact stat, a sage \"the rest\" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.",
-    "payload": "blueprint.ts",
-    "facets": {
-        "vertical": "retail",
-        "industry": "Pet supplies with giveback"
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-playful-mission",
+  "name": "Playful Mission",
+  "version": "1.4.0",
+  "tagline": "A bright, warm template for playful, mission-driven brands with a give-back at their heart.",
+  "description": "A playful, colorful, mission-driven DTC storefront for a give-back brand — a warm-cream page broken up by saturated color bands (a marigold buy-one-give-one band, a navy impact stat, a sage \"the rest\" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Pet supplies with giveback"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Playful Mission icon"
     },
-    "pricing": {
-        "model": "free",
-        "priceCents": 0
-    },
-    "requires": {
-        "modules": [
-            "builder",
-            "commerce",
-            "cms",
-            "crm",
-            "email"
-        ]
-    },
-    "media": [
-        {
-            "file": "media/icon.png",
-            "kind": "icon",
-            "alt": "Playful Mission icon"
-        },
-        {
-            "file": "media/preview.png",
-            "kind": "preview",
-            "alt": "Playful Mission — home page preview"
-        }
-    ],
-    "author": {
-        "displayName": "WizeWorks"
-    },
-    "accent": "#eab532",
-    "sortWeight": 75
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Playful Mission — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "WizeWorks"
+  },
+  "accent": "#eab532",
+  "sortWeight": 75
 }

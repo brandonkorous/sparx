@@ -6,6 +6,7 @@ import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
 import { accountUrl, appsInGroup } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
+import { StepsFigure } from '@/components/marketing/hero/steps-figure';
 import { GROUP_COPY } from '@/components/marketing/groups';
 import { CloseBand } from '@/components/marketing/close-band';
 
@@ -96,6 +97,8 @@ export default function HowItWorksPage() {
       <PageHero
         heading="Two questions, and then a business that already works."
         lede="Fifteen apps is a lot to look at and nothing to set up. Signing up asks what the business is called and what you want to start with — and everything below is already done by the time you get there."
+        figure={<StepsFigure />}
+        assurances={['Free for 14 days', 'No card needed', 'Nobody rings you']}
       >
         <a
           className={buttonClasses({ color: 'primary', size: 'lg' })}
@@ -144,7 +147,7 @@ export default function HowItWorksPage() {
                       data-group={group}
                       className={`rounded-field border px-4 py-3 text-base font-semibold ${
                         on
-                          ? 'bg-module bg-soft border-module text-module'
+                          ? 'bg-module bg-soft border-module ink-module'
                           : 'bg-base-100 border-base-300'
                       }`}
                     >
@@ -178,7 +181,7 @@ export default function HowItWorksPage() {
               data-group={group}
               className="bg-module bg-soft border-base-300 rounded-section border p-6 sm:p-8"
             >
-              <h3 className="text-module font-heading text-xl font-black sm:text-2xl">
+              <h3 className="ink-module font-heading text-xl font-black sm:text-2xl">
                 {GROUP_COPY[group].title}
               </h3>
               <p className="mt-2.5 text-base">{ARRIVES[group]}</p>

@@ -1,278 +1,245 @@
 {
-    "policies": [
+  "policies": [
+    {
+      "handle": "consult-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel a consultation. We’ll send a reminder the day before and again two hours ahead."
+    },
+    {
+      "handle": "event-deposit",
+      "name": "Event booking deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 10000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Wedding and event consultations hold a $100 deposit that comes off your final floral proposal. Reschedule with 48 hours’ notice and it carries over to your new date."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rosa",
+      "name": "Rosa Vale",
+      "kind": "staff",
+      "skillTags": ["wedding", "design", "events"],
+      "windows": [
         {
-            "handle": "consult-standard",
-            "name": "Standard consultation",
-            "depositType": "none",
-            "cancellationWindowHours": 48,
-            "reminderOffsetsMin": [
-                1440,
-                120
-            ],
-            "policyText": "Please give us at least 48 hours’ notice to change or cancel a consultation. We’ll send a reminder the day before and again two hours ahead."
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "event-deposit",
-            "name": "Event booking deposit",
-            "depositType": "deposit",
-            "depositAmountCents": 10000,
-            "cancellationWindowHours": 48,
-            "reminderOffsetsMin": [
-                2880,
-                1440,
-                120
-            ],
-            "policyText": "Wedding and event consultations hold a $100 deposit that comes off your final floral proposal. Reschedule with 48 hours’ notice and it carries over to your new date."
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
         }
-    ],
-    "resources": [
+      ]
+    },
+    {
+      "handle": "ines",
+      "name": "Inés Marlow",
+      "kind": "staff",
+      "skillTags": ["events", "design", "arrangements"],
+      "windows": [
         {
-            "handle": "rosa",
-            "name": "Rosa Vale",
-            "kind": "staff",
-            "skillTags": [
-                "wedding",
-                "design",
-                "events"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                }
-            ]
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
         },
         {
-            "handle": "ines",
-            "name": "Inés Marlow",
-            "kind": "staff",
-            "skillTags": [
-                "events",
-                "design",
-                "arrangements"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 0,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                }
-            ]
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
         },
         {
-            "handle": "thea",
-            "name": "Thea Quinn",
-            "kind": "staff",
-            "skillTags": [
-                "wedding",
-                "arrangements",
-                "design"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 600,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 600,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 600,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 600,
-                    "endMinute": 1020
-                }
-            ]
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1080
         }
-    ],
-    "services": [
+      ]
+    },
+    {
+      "handle": "thea",
+      "name": "Thea Quinn",
+      "kind": "staff",
+      "skillTags": ["wedding", "arrangements", "design"],
+      "windows": [
         {
-            "handle": "discovery-call",
-            "name": "Discovery call",
-            "description": "A relaxed 30-minute call to talk through your date, your vision and your budget — no cost, no pressure.",
-            "durationMinutes": 30,
-            "priceCents": 0,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consult-standard"
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1020
         },
         {
-            "handle": "wedding-floral-consult",
-            "name": "Wedding floral consultation",
-            "description": "A full sit-down for your wedding — ceremony and reception, color story, flowers by season, and a proposal to follow.",
-            "durationMinutes": 60,
-            "priceCents": 5000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "event-deposit"
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1020
         },
         {
-            "handle": "event-design-consult",
-            "name": "Event design consultation",
-            "description": "Full floral design for showers, galas, launches and dinners — installations, tablescapes, and setup planned end to end.",
-            "durationMinutes": 60,
-            "priceCents": 5000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "event-deposit"
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1020
         },
         {
-            "handle": "bridal-bouquet-consult",
-            "name": "Bridal bouquet consultation",
-            "description": "A focused session for the bouquets — yours and the party’s — with stems, shape and ribbon chosen to suit the day.",
-            "durationMinutes": 45,
-            "priceCents": 3500,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consult-standard"
-        },
-        {
-            "handle": "celebration-florals-consult",
-            "name": "Celebration florals consultation",
-            "description": "Flowers for the milestones — birthdays, anniversaries, welcome-homes — planned to match the moment and the room.",
-            "durationMinutes": 45,
-            "priceCents": 3500,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consult-standard"
-        },
-        {
-            "handle": "seasonal-subscription-consult",
-            "name": "Seasonal subscription consultation",
-            "description": "Set up a recurring arrangement for your home or studio — locally grown, always in season, delivered on a rhythm that suits you.",
-            "durationMinutes": 30,
-            "priceCents": 2500,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consult-standard"
-        },
-        {
-            "handle": "custom-arrangement-consult",
-            "name": "Custom arrangement consultation",
-            "description": "A one-off, made-to-order arrangement — a gift, a gesture, a centrepiece — designed around what you have in mind.",
-            "durationMinutes": 45,
-            "priceCents": 3500,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "designer",
-                    "kind": "staff",
-                    "skillTags": [
-                        "design"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consult-standard"
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1020
         }
-    ],
-    "locations": [
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A relaxed 30-minute call to talk through your date, your vision and your budget — no cost, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
         {
-            "handle": "premises",
-            "name": "Wildstem Floral",
-            "timezone": "UTC"
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
         }
-    ]
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "wedding-floral-consult",
+      "name": "Wedding floral consultation",
+      "description": "A full sit-down for your wedding — ceremony and reception, color story, flowers by season, and a proposal to follow.",
+      "durationMinutes": 60,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "event-deposit"
+    },
+    {
+      "handle": "event-design-consult",
+      "name": "Event design consultation",
+      "description": "Full floral design for showers, galas, launches and dinners — installations, tablescapes, and setup planned end to end.",
+      "durationMinutes": 60,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "event-deposit"
+    },
+    {
+      "handle": "bridal-bouquet-consult",
+      "name": "Bridal bouquet consultation",
+      "description": "A focused session for the bouquets — yours and the party’s — with stems, shape and ribbon chosen to suit the day.",
+      "durationMinutes": 45,
+      "priceCents": 3500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "celebration-florals-consult",
+      "name": "Celebration florals consultation",
+      "description": "Flowers for the milestones — birthdays, anniversaries, welcome-homes — planned to match the moment and the room.",
+      "durationMinutes": 45,
+      "priceCents": 3500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "seasonal-subscription-consult",
+      "name": "Seasonal subscription consultation",
+      "description": "Set up a recurring arrangement for your home or studio — locally grown, always in season, delivered on a rhythm that suits you.",
+      "durationMinutes": 30,
+      "priceCents": 2500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "custom-arrangement-consult",
+      "name": "Custom arrangement consultation",
+      "description": "A one-off, made-to-order arrangement — a gift, a gesture, a centrepiece — designed around what you have in mind.",
+      "durationMinutes": 45,
+      "priceCents": 3500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["design"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Wildstem Floral",
+      "timezone": "UTC"
+    }
+  ]
 }

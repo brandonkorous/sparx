@@ -43,8 +43,8 @@ export function PreviewPaneSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="bg-base-200 flex h-full items-center justify-center p-6 text-center">
         <p className="text-base-content">
-          Open this from the thing you want to see — a page, your header and footer, a saved
-          piece or an email.
+          Open this from the thing you want to see — a page, your header and footer, a saved piece
+          or an email.
         </p>
       </div>
     );

@@ -77,7 +77,7 @@ Applied per tier:
 curated catalog of good starting points; a tenant picks one, it is instantiated into an editable
 Layout, and they take it from there.
 
-Today's code already has the seed of this: `DEFAULT_TEMPLATES` (in `@sparx/sitebuilder-schemas`) is
+Today's code already has the seed of this: `DEFAULT_TEMPLATES` (in `@wizeworks/sitebuilder-schemas`) is
 the **built-in default Page Template** for `product` and `collection` — a code-defined composition
 that the site falls back to and that "Customize this layout" materializes into real rows. The
 generalization: `DEFAULT_TEMPLATES` becomes one entry in a **Page Template catalog**, and
@@ -381,7 +381,7 @@ Postgres and applied via the DB Migrate workflow.
   it (`itemRef` = a group ref); defer until a real need appears.
 - **12.4 Registration mechanism. — RESOLVED (P-B, [docs/handoffs/sitebuilder-pb-spec.md](handoffs/sitebuilder-pb-spec.md) §2).**
   Code-level provider (the lean): a static target catalog + a `cms:content-type:<id>` factory in
-  `@sparx/sitebuilder-schemas`. Runtime registration is a later, additive step, only if/when modules deploy
+  `@wizeworks/sitebuilder-schemas`. Runtime registration is a later, additive step, only if/when modules deploy
   independently of SB.
 - **12.5 Catalog storage (§10).** When (not whether) the code-first Template catalog gains a DB table.
   Out of near-term scope.

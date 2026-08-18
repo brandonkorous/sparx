@@ -1,0 +1,31 @@
+{
+  "name": "@wizeworks/site-mcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx Site MCP — the shopper-facing tool catalog (docs/113). A thin, declarative set of tools over the public /v1/public/* REST API, shared by the mcp-site service and the site concierge (docs/56). No DB, no module packages: every tool is an HTTP adapter over the public API contract.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

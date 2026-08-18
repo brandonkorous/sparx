@@ -1,8 +1,8 @@
 # Piggles builders — tasks
 
-**Version:** 1.4
+**Version:** 1.9
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-16
+**Last Updated:** 2026-08-17
 
 Progress for the plan in [README.md](README.md). One line per task. Tick a box
 only when the thing is built to production quality — not stubbed, not "wired but
@@ -35,8 +35,10 @@ still unproven is how it FEELS in a browser, which is task 9.4.
 
 ## Phase 1 — the package
 
-- [~] 1.1 `packages/studio` scaffolded via the `new-workspace-package` skill;
-  `.` and `./react` exports; typecheck + lint clean
+- [x] 1.1 `wizeworks/packages/studio` — both exports (`.` and `./react`), in the
+      workspace glob, typecheck + lint clean, 94 tests. Built by hand rather than
+      through the `new-workspace-package` skill, which is why this sat open; the
+      package it produced is complete either way
 - [x] 1.2 Document types — `ThemeDoc`, `LayoutDoc`, `PageDoc`, `ComponentDoc`,
       `EmailDoc`; each with identity, draft tree/tokens, and publish state
 - [x] 1.3 `Session` — holds open documents, subscriptions, dirty state; one per
@@ -66,14 +68,32 @@ still unproven is how it FEELS in a browser, which is task 9.4.
 - [x] 2.6 Per-document endpoints. Themes are new (`/v1/builder/themes/*` +
       `/selection`). Pages, layouts and components ALREADY had them — the blob was
       never the only writer, it was just the only one the editor used.
-- [~] 2.6b Silica-aware per-document writes. `PUT /v1/builder/pages/:id/silica`
-  and `PUT /v1/builder/layouts/silica` land now — they take ONE document's
-  root, so two panes saving two different pages cannot overwrite each other.
-  They still route through `syncScripted` internally (read whole, splice one,
-  write whole), which is safe and is not yet a per-ROW write. Narrowing that
-  is an optimisation with no behaviour change. Components still to do.
-- [ ] 2.7 Version history + release rows per document type
-- [ ] 2.8 Marketplace read: list installable themes, install → `builder_themes` row
+- [x] 2.6b TRUE per-row writes — `writePageRoot` and `writeFrameRoot`: one row, one
+      UPDATE, nothing else read or written. **This was not the optimisation it was
+      filed as.** The old path spliced the document into a whole-site payload and
+      handed it to `sync`, which upserts EVERY page in the roster — so two panes
+      saving two different pages could put a stale copy of one back over a save that
+      had already landed. Deletion was never the exposure (`pagesToDelete` refuses to
+      infer a removal from absence), which is exactly why nothing caught it: what it
+      cost was the CONTENT of a page nobody had open. Components were already narrow
+- [x] 2.7 Version history for every document type. Pages, the chrome and saved
+      pieces are DERIVED from the existing site snapshots (`documentHistoryService`,
+      see 8.2). A LOOK gets its own table — `builder_theme_versions`, migration
+      `20270328000000` — because a look is TENANT-wide and those snapshots are
+      PROPERTY-scoped: a history keyed by property could only say when one of the
+      sites wearing it happened to be saved, never when the look itself changed.
+      Sealed on save, publish and restore, deduped by content hash so a rename adds
+      no row, pruned on a 30-newest + 90-day window. The backfill gives every
+      existing look a first version, so the pane never opens on "nothing saved yet"
+      for something someone has been using for months
+- [x] 2.8 Marketplace looks — a third shelf in the look dialog, under the business's
+      own and the ready-made ones. Installing COPIES the listing into a
+      `builder_themes` row tagged with which listing and which version, so "there is
+      a newer version of this" stays answerable while the row is theirs from the
+      moment it lands. A pointer would be the other design and it is the wrong one
+      for a LIVE site: a publisher revising their theme would repaint someone's shop
+      with no warning. A listing with no token bag resolves by slug from code and is
+      left OUT of the shelf rather than shown with a button that cannot work
 - [x] 2.9 `check:routes`, `check:events` and `check:migration-order` pass; the
       blob route still serves sparx unchanged
 - [x] 2.10 The storefront reads the new pointer — `resolveStagedTheme` and
@@ -91,10 +111,13 @@ still unproven is how it FEELS in a browser, which is task 9.4.
       / `SCALAR_TOKENS` rather than a hand-written list, with live contrast
       warnings and a real-component preview
 - [x] 3.3 Theme library: the tenant's own + the 20 ready-made shelves; picking one
-      COPIES it and applies it. Marketplace install still to wire (2.8)
-- [~] 3.4 Duplicate and rename land; DELETE is not wired to the pane yet — the
-  endpoint and its "a site is wearing this" refusal exist, the `useConfirm`
-  that names the sites does not
+      COPIES it and applies it, and the marketplace shelf beside them (2.8)
+- [x] 3.4 Duplicate, rename and DELETE, from the look's own row. The confirm NAMES
+      the sites wearing it, read at the moment of asking rather than held from when
+      the pane opened — and `themeService.usages` now returns those names, because a
+      property id answers nothing a business owner can act on. Delete stays refused
+      server-side while a site wears it, and the server's own sentence is what the
+      toast shows
 - [x] 3.5 Save · publish for the theme alone. History pane is 8.2
 
 ## Phase 4 — layout builder pane
@@ -253,34 +276,93 @@ still unproven is how it FEELS in a browser, which is task 9.4.
 
 ## Phase 8 — lifecycle panes
 
-- [ ] 8.1 Preview pane — live, in-console, beside the canvas; no tab hop and no
-      preview token leaving the console
-- [ ] 8.2 History pane — draft versions + releases, per document, restore
-- [ ] 8.3 Publish pane — pre-publish check, what changed since the last release,
-      the release list, rollback
-- [ ] 8.4 One dirty indicator across every open builder pane; close-guard honours it
-- [ ] 8.5 Session survives pane close/reopen and a popout tear-off
+- [x] 8.0 **Every studio pane had an address at last.** `check:routes` scanned
+      sparx's catalog ALONE, so six panes built across Phases 3–8 — page, header &
+      footer, look, saved piece, history, preview — went the whole way with no route.
+      Nothing failed: an unaddressed pane falls back to `/`, so the bar goes blank
+      when you focus it and a link to a page editor cannot be sent. The script now
+      scans BOTH consoles, which is what stops it happening again
+- [x] 8.1 Preview pane — the real page, served by the real storefront, in a pane
+      BESIDE the canvas. The token no longer reaches an address bar, browser history
+      or a paste buffer, and it is re-minted per preview (a stale one renders the
+      PUBLISHED site while claiming to be a preview). An EMAIL previews as the
+      email-safe markup the send produces, with its pre-send checks above it. A
+      document with no address of its own — the chrome, a look, a piece — previews
+      the home page and says so
+- [x] 8.2 History pane — per document, two ladders, restore. **Derived, not stored:**
+      the whole-site snapshots already carry a manifest of `{ownerKind, ownerId,
+hash}`, so one document's history is the points where ITS hash changed. No
+      table, no migration, and no second write path to disagree with the first.
+      Four stores behind one shape — the site snapshots, the shared-piece library,
+      an email's own versions, and a look, which has none yet and SAYS so rather than
+      showing an empty list that would read as "you have never changed this"
+- [x] 8.2b A restore RESETS the open document. It is the one write where the server
+      is the authority, so the pane is handed the restored copy rather than left
+      holding the tree the author just asked to be rid of — which the next Save would
+      have put straight back
+- [x] 8.2c Saving or deleting a saved piece now seals a version. It wrote the JSON
+      column directly and skipped the snapshot, which made a piece the ONE document
+      with no way back
+- [x] 8.3 Publish pane — what is waiting, the pre-publish check (advisory, run on
+      ask, grouped by severity rather than by page so one mistake does not look like
+      four), every version that went live, and rollback. Rollback is WHOLE-SITE and
+      confirmed: it is the only control in the console that changes what visitors see
+      with no publish step after it
+- [x] 8.4 One dirty indicator: every builder pane declares itself through
+      `useDirtySource`, so the tab dot, the status bar and the close guard all agree.
+      Plus the hole those cannot see — a document can be unsaved with NO PANE OPEN,
+      because the session outlives its panes on purpose — closed with an unload guard
+      on the session itself
+- [~] 8.5 The session survives a pane closing and reopening by construction: it is
+  mounted above the dock, `open` returns the store already holding a document, and
+  a torn-off pane moves DOM rather than remounting the provider. **Unproven in a
+  browser**, which is 9.4 — and a tear-off is exactly the case where "by
+  construction" has been wrong before
 
 ## Phase 9 — cutover
 
-- [ ] 9.1 Piggles console stops importing `@wizeworks/silicaui-builder` chrome
-- [ ] 9.2 Retire the inherited `surfaces/builder/studio/*` and
-      `surfaces/builder/email/*` from `piggles/apps/workbench`. **Not a plain
-      delete** — four of those modules are Piggles' own domain code, not silicaui
-      chrome, and the new builder already depends on them: `brand-theme.ts` (the
-      brand-derived fallback theme), `host-cores.tsx` (what a live region looks like
-      on a canvas), `preview-data.ts` (the sample-data root), and the query hooks in
-      `data.ts` that the studio reuses. They MOVE to `lib/studio/`. Deleting the
-      directory wholesale would take the canvas's colors, its brand mark and its
-      sample data with it
-- [ ] 9.3 Every new file inside piggles RULE #0.5 — no file over 250 lines, no
-      method over 50
+**SPARX IS NOT TOUCHED BY ANY OF THIS.** `sparx/apps/workbench` keeps its editor
+exactly as it is, forever as far as this plan is concerned. What Phase 9 retires is
+**Piggles' own copy** of it: the fork on 2026-08-14 duplicated the whole tree, so
+`piggles/apps/workbench/surfaces/builder/studio/` is thirteen files of Piggles' own
+that reference nothing under `sparx/` and that nothing under `sparx/` references.
+Deleting them is invisible to the other product — which is the entire point of the
+fork, and the reason this is safe to do at all. Root RULE #0 is the check.
+
+- [x] 9.1 The Piggles console no longer mounts `@wizeworks/silicaui-builder`'s
+      EDITOR. What it still imports from that package is the document layer — the
+      email schema, the palette types — which is what `@wizeworks/studio` is built
+      on and is not chrome. sparx's console goes on mounting the editor; the package
+      is not being retired.
+- [x] 9.2 Piggles' copy of the old editor is gone — nine files, 4,810 lines, plus
+      the `builder.studio` registry entry. **sparx's originals are untouched.** The
+      four domain modules MOVED to `lib/studio/` rather than being deleted with it
+      (`brand-theme`, `host-cores`, `preview-data`, `saved-pieces`), and the reads
+      the studio needed out of the old 815-line `data.ts` were extracted into
+      `lib/studio/site-data.ts` — the site facts every pane sits on, without the
+      whole-site load/save/publish that went with the editor.
+      `/builder` still addresses sparx's editor, so a link to it resolves there and
+      simply resolves to nothing in Piggles, which is the honest answer for a screen
+      that product no longer has
+- [x] 9.3 RULE #0.5 across the studio: no file over 250 lines, no function over 50.
+      Fourteen were over — the fix was mostly pulling a row, a toolbar or a write out
+      of a component that had quietly become three things
 - [ ] 9.4 Drive it as a business owner: build a site end to end — theme, layout,
       three pages, a component, an email — and publish it. Click it, do not
       `fetch` it.
-- [ ] 9.5 Typecheck, lint (`--max-warnings=0`), prettier, `pnpm test`,
-      `check:events` / `check:routes` / `check:docker`
-- [ ] 9.6 Update [STATUS.md](../../../STATUS.md); close anything this resolves in
+- [x] 9.5 `piggles/apps/workbench` typechecks and lints clean (`--max-warnings=0`),
+      prettier clean, `@wizeworks/studio` 94 tests green, and `check:routes` (336
+      surfaces) / `check:events` / `check:boundaries` (0 `@sparx/*` under piggles) /
+      `check:deletability` all pass. **`check:migration-order` cannot run yet** — it
+      reads migrations at git HEAD and the tree move is still uncommitted, so it
+      reports the path rather than passing silently. `20270328000000` sorts after
+      `20270327000000` by hand.
+- [x] 9.6 [STATUS.md](../../../STATUS.md) records the cutover — the eight panes, the
+      deleted copy, the three defects no check could find, and what is still unproven.
+      Nothing in [FOLLOW_UPS.md](../../FOLLOW_UPS.md) was about the builder, so
+      nothing closes there
+- [ ] 9.6b Update [STATUS.md](../../../STATUS.md) again after 9.4 — the drive-through
+      is what turns "built" into "verified", and this file says so in its own header
       [FOLLOW_UPS.md](../../FOLLOW_UPS.md)
 
 ---
@@ -306,8 +388,8 @@ keeps producing: **absent behaves like a confident wrong answer.**
 | Check                                                           | Result                          |
 | --------------------------------------------------------------- | ------------------------------- |
 | `@wizeworks/studio` typecheck · lint · tests                    | clean · clean · **58 passing**  |
-| `@sparx/builder` typecheck · lint · tests                       | clean · clean · **112 passing** |
-| `services/api-rest` typecheck · lint                            | clean                           |
+| `@wizeworks/builder` typecheck · lint · tests                   | clean · clean · **112 passing** |
+| `wizeworks/services/api-rest` typecheck · lint                  | clean                           |
 | `piggles/apps/workbench` typecheck · lint                       | clean                           |
 | `check:routes` · `check:events` · `check:boundaries` · order    | all pass                        |
 | prettier                                                        | clean                           |
@@ -315,18 +397,18 @@ keeps producing: **absent behaves like a confident wrong answer.**
 
 `check:boundaries` landed mid-slice — a ratchet on `@sparx/*` usage under
 `piggles/`, which may only go down. The new studio code sits inside it (432,
-baseline 432): the only platform packages it reaches for are `@sparx/query`,
-`@sparx/builder-schemas` and `@sparx/silica-catalog`, all brand-blind and all in
+baseline 432): the only platform packages it reaches for are `@wizeworks/query`,
+`@wizeworks/builder-schemas` and `@wizeworks/silica-catalog`, all brand-blind and all in
 the rename waves.
 
 **Not clean, and not this slice.** The `@sparx/*` → `@wizeworks/*` migration is
 in flight in the same tree, and it currently breaks three things this work has to
-share a repo with: `packages/auth/src/server.ts` cannot resolve
-`@sparx/links/server`, `packages/cms-editor/src/editor.tsx` cannot resolve
+share a repo with: `wizeworks/packages/auth/src/server.ts` cannot resolve
+`@wizeworks/links/server`, `wizeworks/packages/cms-editor/src/editor.tsx` cannot resolve
 `@wizeworks/silica-corrections`, and `check:docker` wants 14 COPY lines for
 `silica-corrections` / `ui` / `brand`. One knock-on lands in api-rest's own lint:
 `routes/internal/operator-feedback.ts` reports six unsafe-type errors, all from an
-import it can no longer resolve. `packages/studio` is copied correctly in the
+import it can no longer resolve. `wizeworks/packages/studio` is copied correctly in the
 Piggles console image, and every file in this slice is clean on its own.
 
 Phase 6's full-`src` lint also caught eight `await`s on `toBuilderTenantContext`,
@@ -349,9 +431,9 @@ make.
 ## Open questions
 
 - [x] Q1 Package name — ANSWERED 2026-08-16. `@wizeworks/studio` in root
-      `packages/studio`. Piggles takes no new `@sparx/*` dependency; the twenty it
+      `wizeworks/packages/studio`. Piggles takes no new `@sparx/*` dependency; the twenty it
       already has are unchanged, and the package itself may still import
-      `@sparx/silica-catalog` + `@sparx/site-themes`.
+      `@wizeworks/silica-catalog` + `@wizeworks/site-themes`.
 - [ ] Q2 Does `frameId = 'none'` survive the one-layout-per-site decision?
       (Assumed yes — the column and its CHECK constraint already exist.)
       answer: yes

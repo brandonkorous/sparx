@@ -29,10 +29,10 @@ Fixed (code): 2026-07-24 — all three parts landed in the working tree (typeche
 not yet deployed, so `O-000001` is still stranded until deploy + a Stripe resend (see recovery).
 Owner surfaces:
 
-- `packages/commerce/src/services/checkout-service.ts` → `complete()` (threads `paymentRef`/`paymentProviderSlug` out)
-- `services/api-rest/src/routes/v1/public/checkout.ts` → complete route (Part A call, post-commit)
-- `services/api-rest/src/lib/payment-webhook-reconcile.ts` → `reconcilePaymentEvent` (Part B), `reconcileCompletedCheckoutPayment` + `sweepStrandedCheckoutPayments` (Parts A/C)
-- `services/api-rest/src/routes/internal/commerce-cron.ts` + `k8s/cronjobs/commerce-payment-reconcile-sweep.yaml` (Part C cron)
+- `wizeworks/packages/commerce/src/services/checkout-service.ts` → `complete()` (threads `paymentRef`/`paymentProviderSlug` out)
+- `wizeworks/services/api-rest/src/routes/v1/public/checkout.ts` → complete route (Part A call, post-commit)
+- `wizeworks/services/api-rest/src/lib/payment-webhook-reconcile.ts` → `reconcilePaymentEvent` (Part B), `reconcileCompletedCheckoutPayment` + `sweepStrandedCheckoutPayments` (Parts A/C)
+- `wizeworks/services/api-rest/src/routes/internal/commerce-cron.ts` + `k8s/cronjobs/commerce-payment-reconcile-sweep.yaml` (Part C cron)
 
 ---
 
@@ -94,7 +94,7 @@ composition, orthogonal to payments) — worth a separate look.
 
 1. `createPaymentIntent()` opens the PaymentIntent + writes the `payment_intents` ledger
    row (status `requires_*`). No order/OrderPayment yet.
-2. Shopper confirms the card **client-side** (`apps/site/components/checkout/payment-step.tsx`
+2. Shopper confirms the card **client-side** (`wizeworks/apps/site/components/checkout/payment-step.tsx`
    → `stripe.confirmPayment`). Charge succeeds → Stripe fires `payment_intent.succeeded`
    **immediately**.
 3. `handleSucceeded` runs (logged at `1784888717910`). It sets the ledger row to
@@ -127,7 +127,7 @@ works. The defects are the timing race + the event-id gate.
 
 ## What was built (2026-07-24) — all three parts landed
 
-All three parts are implemented in the working tree; `@sparx/commerce` + `@sparx/api-rest`
+All three parts are implemented in the working tree; `@wizeworks/commerce` + `@wizeworks/api-rest`
 typecheck and lint clean. Summary of what shipped, then the original design notes.
 
 - **Part A — real-time capture at checkout-complete (closes the race for the common case).**

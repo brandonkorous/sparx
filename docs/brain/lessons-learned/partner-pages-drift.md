@@ -12,7 +12,7 @@ sources:
 
 **What happened:** the partner feature's pages read as "completely detached from our designs."
 
-**What actually drifted (autopsy):** narrow, not total. The components were used correctly — `@sparx/ui`, a real `partner` module hue, `statusTone` badges, `SurfaceFrame` forms. The drift was **composition-level**: marketing idioms in the operator console — an uppercase eyebrow kicker, hand-typeset `text-[2rem]` hero-number strips (instead of `<Stat>`), identical value-prop card grids. The linter can't catch these; it only flags control re-skins.
+**What actually drifted (autopsy):** narrow, not total. The components were used correctly — `@wizeworks/ui`, a real `partner` module hue, `statusTone` badges, `SurfaceFrame` forms. The drift was **composition-level**: marketing idioms in the operator console — an uppercase eyebrow kicker, hand-typeset `text-[2rem]` hero-number strips (instead of `<Stat>`), identical value-prop card grids. The linter can't catch these; it only flags control re-skins.
 
 **Root causes → what each produced:**
 

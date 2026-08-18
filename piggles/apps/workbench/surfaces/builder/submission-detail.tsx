@@ -211,80 +211,85 @@ function SubmissionBody({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Submission actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
+      <PaneToolbar
+        label="Submission actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        controls={
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            {isArchived ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                disabled={busy}
+                onClick={() => {
+                  changeStatus('read', 'Moved back to your inbox');
+                }}
+              >
+                <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
+                Back to inbox
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                color="module"
+                disabled={busy}
+                onClick={() => {
+                  changeStatus('archived', 'Marked as handled');
+                }}
+              >
+                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
+                Mark as handled
+              </Button>
+            )}
 
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          {isArchived ? (
+            {isSpam ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                disabled={busy}
+                onClick={() => {
+                  changeStatus('read', 'No longer marked as spam');
+                }}
+              >
+                Not spam
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                disabled={busy}
+                onClick={() => {
+                  changeStatus('spam', 'Marked as spam');
+                }}
+              >
+                <Icon glyph={faBan} className="size-4" aria-hidden />
+                Spam
+              </Button>
+            )}
+
             <Button
               size="sm"
               variant="outline"
               color="neutral"
-              disabled={busy}
-              onClick={() => {
-                changeStatus('read', 'Moved back to your inbox');
-              }}
+              title="Download this as a spreadsheet"
+              onClick={onExport}
             >
-              <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
-              Back to inbox
+              <Icon glyph={faDownload} className="size-4" aria-hidden />
+              Export
             </Button>
-          ) : (
-            <Button
-              size="sm"
-              color="module"
-              disabled={busy}
-              onClick={() => {
-                changeStatus('archived', 'Marked as handled');
-              }}
-            >
-              <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-              Mark as handled
-            </Button>
-          )}
-
-          {isSpam ? (
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              disabled={busy}
-              onClick={() => {
-                changeStatus('read', 'No longer marked as spam');
-              }}
-            >
-              Not spam
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              disabled={busy}
-              onClick={() => {
-                changeStatus('spam', 'Marked as spam');
-              }}
-            >
-              <Icon glyph={faBan} className="size-4" aria-hidden />
-              Spam
-            </Button>
-          )}
-
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            title="Download this as a spreadsheet"
-            onClick={onExport}
-          >
-            <Icon glyph={faDownload} className="size-4" aria-hidden />
-            Export
-          </Button>
-        </div>
-
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+          </div>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -343,10 +348,7 @@ function IdentityCard({ submission, site }: { submission: FormSubmission; site: 
 
   return (
     <Card className="p-4">
-      <Heading level={1} className="text-2xl font-semibold">
-        {submitterLabel(submission)}
-      </Heading>
-      <Text className="mt-1">{where}</Text>
+      <Text>{where}</Text>
       <Text className="mt-1 text-sm">Received {formatDateTime(submission.createdAt)}</Text>
 
       {submission.email || submission.phone ? (

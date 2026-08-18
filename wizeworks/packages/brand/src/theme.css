@@ -1,0 +1,106 @@
+/* @wizeworks/theme — the WizeWorks house token set.
+ *
+ * WHY THIS EXISTS. `wizeworks/apps/admin` is the WizeWorks STAFF console: it
+ * administers tenants of every brand and belongs to none of them. It had no
+ * theme of its own, so it imported `@sparx/brand/theme.css` and wore sparx's —
+ * which made the console you need in order to run Piggles break if sparx were
+ * deleted. That is the one thing the whole migration exists to prevent
+ * (check-boundaries rule 1, and admin was its last six violations).
+ *
+ * These are NOT invented values. They are the palette locked on 2026-07-30 in
+ * docs/wizeworks/04-brand-and-visual-identity.md — read that before changing
+ * anything here; it carries the contrast measurements and the reasoning.
+ *
+ * Structurally identical to `@sparx/brand/theme.css`: same token NAMES, same
+ * light/dark pairs, so swapping one import for the other is a drop-in. The
+ * platform owns which tokens exist; a brand owns what they equal
+ * (wizeworks/CLAUDE.md, "The design contract this layer owns").
+ */
+
+:root {
+  /* ── Layer 1: neutrals, the chassis ────────────────────────────────────
+   * Warm, not cool — neither pure white nor pure black in either mode. Set the
+   * bone canvas beside a cool #F4F4F5 and the difference reads instantly; the
+   * warmth is the whole reason this palette is worth having. */
+  --color-base-100: #ffffff;
+  --color-base-200: #f6f4ef;
+  --color-base-300: #e5e1d8;
+  --color-base-content: #191713;
+
+  /* ── Layer 2: the house trio, each with a fixed job ────────────────────
+   * Pine owns primary actions, links, active nav. Brass owns FIGURES — the
+   * number that matters, step numerals, chart keys. Clay owns editorial
+   * emphasis. One hue per FUNCTION; the chassis stays neutral. */
+  --color-primary: #1b5e43;
+  --color-primary-content: #ffffff;
+  --color-secondary: #a9761f;
+  /* Brass carries DARK ink, always. White on brass measures 4.0:1 and fails AA
+   * for body text — this pairing is not a preference, it is the reason the
+   * token exists in this direction. */
+  --color-secondary-content: #1a1206;
+  --color-accent: #9c4a2f;
+  --color-accent-content: #ffffff;
+
+  /* ── Layer 5: semantics — a separate axis from brand colour ────────────
+   * Resolved via `statusTone()`. These say what STATE a thing is in, never
+   * whose product it is, so they are shared with sparx's set rather than
+   * re-picked: a success green that differs between two consoles would be a
+   * difference carrying no meaning. */
+  --color-success: #16865a;
+  --color-success-content: #ffffff;
+  --color-info: #147ea3;
+  --color-info-content: #ffffff;
+  --color-warning: #f2b84b;
+  --color-warning-content: #191713;
+  --color-error: #b42318;
+  --color-error-content: #ffffff;
+  --color-danger: #b42318;
+  --color-danger-content: #ffffff;
+
+  /* The high-contrast inverse panel. Warm coal rather than a cool slate, to
+   * match the chassis it sits on. */
+  --color-neutral: #28251e;
+  --color-neutral-content: #f2efe8;
+
+  /* Module identity degrades to the house primary outside any ModuleProvider,
+   * exactly as it does for sparx. The per-module hues themselves are NOT here:
+   * admin registers `module` alone. */
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
+}
+
+:root:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --color-base-100: #141310;
+    --color-base-200: #0f0e0b;
+    --color-base-300: #28251e;
+    --color-base-content: #f2efe8;
+
+    --color-primary: #3fa47b;
+    --color-primary-content: #08120e;
+    --color-secondary: #d3a24c;
+    --color-secondary-content: #1a1206;
+    --color-accent: #c4704f;
+    --color-accent-content: #ffffff;
+
+    --color-neutral: #f2efe8;
+    --color-neutral-content: #191713;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-base-100: #141310;
+  --color-base-200: #0f0e0b;
+  --color-base-300: #28251e;
+  --color-base-content: #f2efe8;
+
+  --color-primary: #3fa47b;
+  --color-primary-content: #08120e;
+  --color-secondary: #d3a24c;
+  --color-secondary-content: #1a1206;
+  --color-accent: #c4704f;
+  --color-accent-content: #ffffff;
+
+  --color-neutral: #f2efe8;
+  --color-neutral-content: #191713;
+}

@@ -17,16 +17,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faBagShopping } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -173,56 +165,61 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     // base-100 cards lifted onto it. The gutter shrinks to nothing under 30rem —
     // in a pane docked beside an order, 12px a side is real column width.
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Order list controls" wrap>
-        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
+      <PaneToolbar
+        label="Order list controls"
+        search={
+          /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
-            reaches the element that actually lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search orders"
-            placeholder="Order number or customer…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+            reaches the element that actually lays out. */
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search orders"
+              placeholder="Order number or customer…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        filters={[
+          {
+            label: 'Show',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
               resetWindow();
+            },
+            options: FILTERS,
+          },
+        ]}
+        views={{
+          target: '/commerce/orders',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as OrderSortKey, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. This
+            list has no primary action: orders arrive from customers, they are
+            not something you create here. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        {/* `showReset={false}` because "All" already IS the reset; a × beside it
-            would be two controls for one idea. */}
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter orders"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. `ml-auto`
-            because this list has no primary action to push it right: orders
-            arrive from customers, they are not something you create here. */}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (

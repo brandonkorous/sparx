@@ -1,518 +1,406 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "red",
+      "name": "Red",
+      "description": "Light, chillable and structured natural reds.",
+      "featured": true
+    },
+    {
+      "handle": "white",
+      "name": "White",
+      "description": "Mineral, textured and dry natural whites.",
+      "featured": true
+    },
+    {
+      "handle": "orange-petnat",
+      "name": "Orange & Pét-Nat",
+      "description": "Skin-contact oranges and bottle-fermented sparkling.",
+      "featured": true
+    },
+    {
+      "handle": "rose",
+      "name": "Rosé",
+      "description": "Dry, savoury pink wine with real texture.",
+      "featured": true
+    },
+    {
+      "handle": "mixed-packs",
+      "name": "Mixed packs",
+      "description": "Curated cases at a better price.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "Just landed",
+      "description": "The newest bottles on the shelf.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "frizzante-petnat",
+        "cold-press-chillable-red",
+        "blush-riot-rose",
+        "free-spirit-non-alc",
+        "the-weeknight-six"
+      ]
+    },
+    {
+      "handle": "low-intervention",
+      "name": "Low intervention",
+      "description": "Nothing added, nothing taken away.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "frizzante-petnat",
+        "amber-hours-skin-contact",
+        "cold-press-chillable-red",
+        "slate-and-stone-white",
+        "blush-riot-rose",
+        "house-pour-everyday-red"
+      ]
+    },
+    {
+      "handle": "chillable",
+      "name": "Chill it down",
+      "description": "Everything that loves a half-hour in the fridge.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["frizzante-petnat", "cold-press-chillable-red", "blush-riot-rose"]
+    },
+    {
+      "handle": "staff-picks",
+      "name": "From the shop floor",
+      "description": "What the counter is drinking this month.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "amber-hours-skin-contact",
+        "cold-press-chillable-red",
+        "slate-and-stone-white",
+        "house-pour-everyday-red"
+      ]
+    },
+    {
+      "handle": "gifts",
+      "name": "Worth gifting",
+      "description": "Big formats and cases for the generous.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["big-night-magnum", "the-weeknight-six"]
+    },
+    {
+      "handle": "cellar-worthy",
+      "name": "Lay it down",
+      "description": "Bottles with the structure to age a while.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["amber-hours-skin-contact", "slate-and-stone-white", "big-night-magnum"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "frizzante-petnat",
+      "title": "Frizzante Pét-Nat",
+      "description": "A cloudy, crown-capped sparkler finished in the bottle the old way — one fermentation, no dosage, nothing added. Bone-dry and gently fizzy, with green apple, lemon pith and a little bready funk. The bottle we open first, every time.",
+      "status": "active",
+      "productType": "Sparkling wine",
+      "vendor": "Sediment",
+      "tags": ["pet-nat", "sparkling", "dry", "chillable", "natural"],
+      "categoryHandles": ["orange-petnat"],
+      "collectionHandles": ["new-arrivals", "low-intervention", "chillable", "staff-picks"],
+      "seoTitle": "Frizzante Pét-Nat — dry sparkling natural wine | Sediment",
+      "seoDescription": "A bone-dry, gently fizzy pét-nat finished in the bottle — green apple, lemon pith, a little bready funk.",
+      "variants": [
         {
-            "handle": "red",
-            "name": "Red",
-            "description": "Light, chillable and structured natural reds.",
-            "featured": true
-        },
-        {
-            "handle": "white",
-            "name": "White",
-            "description": "Mineral, textured and dry natural whites.",
-            "featured": true
-        },
-        {
-            "handle": "orange-petnat",
-            "name": "Orange & Pét-Nat",
-            "description": "Skin-contact oranges and bottle-fermented sparkling.",
-            "featured": true
-        },
-        {
-            "handle": "rose",
-            "name": "Rosé",
-            "description": "Dry, savoury pink wine with real texture.",
-            "featured": true
-        },
-        {
-            "handle": "mixed-packs",
-            "name": "Mixed packs",
-            "description": "Curated cases at a better price.",
-            "featured": true
+          "sku": "SEDIMENT-PETNAT-01",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
         }
-    ],
-    "collections": [
+      ],
+      "images": [
         {
-            "handle": "new-arrivals",
-            "name": "Just landed",
-            "description": "The newest bottles on the shelf.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "frizzante-petnat",
-                "cold-press-chillable-red",
-                "blush-riot-rose",
-                "free-spirit-non-alc",
-                "the-weeknight-six"
-            ]
-        },
-        {
-            "handle": "low-intervention",
-            "name": "Low intervention",
-            "description": "Nothing added, nothing taken away.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "frizzante-petnat",
-                "amber-hours-skin-contact",
-                "cold-press-chillable-red",
-                "slate-and-stone-white",
-                "blush-riot-rose",
-                "house-pour-everyday-red"
-            ]
-        },
-        {
-            "handle": "chillable",
-            "name": "Chill it down",
-            "description": "Everything that loves a half-hour in the fridge.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "frizzante-petnat",
-                "cold-press-chillable-red",
-                "blush-riot-rose"
-            ]
-        },
-        {
-            "handle": "staff-picks",
-            "name": "From the shop floor",
-            "description": "What the counter is drinking this month.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "amber-hours-skin-contact",
-                "cold-press-chillable-red",
-                "slate-and-stone-white",
-                "house-pour-everyday-red"
-            ]
-        },
-        {
-            "handle": "gifts",
-            "name": "Worth gifting",
-            "description": "Big formats and cases for the generous.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "big-night-magnum",
-                "the-weeknight-six"
-            ]
-        },
-        {
-            "handle": "cellar-worthy",
-            "name": "Lay it down",
-            "description": "Bottles with the structure to age a while.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "amber-hours-skin-contact",
-                "slate-and-stone-white",
-                "big-night-magnum"
-            ]
+          "assetId": "prod-petnat",
+          "isPrimary": true,
+          "alt": "A crown-capped bottle of cloudy pét-nat sparkling wine"
         }
-    ],
-    "products": [
+      ]
+    },
+    {
+      "handle": "amber-hours-skin-contact",
+      "title": "Amber Hours Skin-Contact",
+      "description": "White grapes left on their skins for two weeks, the way orange wine has been made for millennia. Deep amber, lightly tannic and properly savoury — dried apricot, orange peel, black tea and a grippy, moreish finish. Treat it like a light red.",
+      "status": "active",
+      "productType": "Orange wine",
+      "vendor": "Sediment",
+      "tags": ["orange", "skin-contact", "savoury", "natural"],
+      "categoryHandles": ["orange-petnat"],
+      "collectionHandles": ["low-intervention", "staff-picks", "cellar-worthy"],
+      "seoTitle": "Amber Hours Skin-Contact — orange wine | Sediment",
+      "seoDescription": "A properly savoury skin-contact orange wine — dried apricot, orange peel, black tea and a grippy finish.",
+      "variants": [
         {
-            "handle": "frizzante-petnat",
-            "title": "Frizzante Pét-Nat",
-            "description": "A cloudy, crown-capped sparkler finished in the bottle the old way — one fermentation, no dosage, nothing added. Bone-dry and gently fizzy, with green apple, lemon pith and a little bready funk. The bottle we open first, every time.",
-            "status": "active",
-            "productType": "Sparkling wine",
-            "vendor": "Sediment",
-            "tags": [
-                "pet-nat",
-                "sparkling",
-                "dry",
-                "chillable",
-                "natural"
-            ],
-            "categoryHandles": [
-                "orange-petnat"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "low-intervention",
-                "chillable",
-                "staff-picks"
-            ],
-            "seoTitle": "Frizzante Pét-Nat — dry sparkling natural wine | Sediment",
-            "seoDescription": "A bone-dry, gently fizzy pét-nat finished in the bottle — green apple, lemon pith, a little bready funk.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-PETNAT-01",
-                    "priceCents": 2800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-petnat",
-                    "isPrimary": true,
-                    "alt": "A crown-capped bottle of cloudy pét-nat sparkling wine"
-                }
-            ]
-        },
-        {
-            "handle": "amber-hours-skin-contact",
-            "title": "Amber Hours Skin-Contact",
-            "description": "White grapes left on their skins for two weeks, the way orange wine has been made for millennia. Deep amber, lightly tannic and properly savoury — dried apricot, orange peel, black tea and a grippy, moreish finish. Treat it like a light red.",
-            "status": "active",
-            "productType": "Orange wine",
-            "vendor": "Sediment",
-            "tags": [
-                "orange",
-                "skin-contact",
-                "savoury",
-                "natural"
-            ],
-            "categoryHandles": [
-                "orange-petnat"
-            ],
-            "collectionHandles": [
-                "low-intervention",
-                "staff-picks",
-                "cellar-worthy"
-            ],
-            "seoTitle": "Amber Hours Skin-Contact — orange wine | Sediment",
-            "seoDescription": "A properly savoury skin-contact orange wine — dried apricot, orange peel, black tea and a grippy finish.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-ORANGE-01",
-                    "priceCents": 3200,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-orange",
-                    "isPrimary": true,
-                    "alt": "A bottle of amber skin-contact orange wine"
-                }
-            ]
-        },
-        {
-            "handle": "cold-press-chillable-red",
-            "title": "Cold Press Chillable Red",
-            "description": "A light, bright red built to go in the fridge — low tannin, high glee. Crunchy red cherry, cranberry and a peppery lift, with a whole-bunch juiciness that begs for a half-hour chill. Pizza wine, picnic wine, Tuesday wine.",
-            "status": "active",
-            "productType": "Red wine",
-            "vendor": "Sediment",
-            "tags": [
-                "red",
-                "chillable",
-                "light-bodied",
-                "natural"
-            ],
-            "categoryHandles": [
-                "red"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "low-intervention",
-                "chillable",
-                "staff-picks"
-            ],
-            "seoTitle": "Cold Press Chillable Red — light natural red | Sediment",
-            "seoDescription": "A light, low-tannin red built for the fridge — crunchy red cherry, cranberry and a peppery lift.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-RED-CHILL-01",
-                    "priceCents": 2400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-chill-red",
-                    "isPrimary": true,
-                    "alt": "A bottle of bright, chillable red wine"
-                }
-            ]
-        },
-        {
-            "handle": "slate-and-stone-white",
-            "title": "Slate & Stone White",
-            "description": "A taut, mineral white from old vines on poor soil — the kind that gives more flavour and less crop. Bone-dry and saline, with green apple, white flowers and a wet-stone snap that runs right through the finish. Oysters would be thrilled.",
-            "status": "active",
-            "productType": "White wine",
-            "vendor": "Sediment",
-            "tags": [
-                "white",
-                "mineral",
-                "dry",
-                "natural"
-            ],
-            "categoryHandles": [
-                "white"
-            ],
-            "collectionHandles": [
-                "low-intervention",
-                "staff-picks",
-                "cellar-worthy"
-            ],
-            "seoTitle": "Slate & Stone White — mineral natural white | Sediment",
-            "seoDescription": "A taut, saline mineral white — green apple, white flowers and a wet-stone snap. Bone-dry.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-WHITE-01",
-                    "priceCents": 2600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-mineral-white",
-                    "isPrimary": true,
-                    "alt": "A bottle of pale mineral white wine"
-                }
-            ]
-        },
-        {
-            "handle": "blush-riot-rose",
-            "title": "Blush Riot Rosé",
-            "description": "A dry, pale rosé with none of the sugary softness the color gets blamed for. Wild strawberry, pink grapefruit and a herbal, savoury edge, with real texture underneath. The house rosé from the first warm day to the last.",
-            "status": "active",
-            "productType": "Rosé wine",
-            "vendor": "Sediment",
-            "tags": [
-                "rose",
-                "dry",
-                "chillable",
-                "natural"
-            ],
-            "categoryHandles": [
-                "rose"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "low-intervention",
-                "chillable"
-            ],
-            "seoTitle": "Blush Riot Rosé — dry natural rosé | Sediment",
-            "seoDescription": "A dry, pale rosé with real texture — wild strawberry, pink grapefruit and a savoury, herbal edge.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-ROSE-01",
-                    "priceCents": 2300,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-rose",
-                    "isPrimary": true,
-                    "alt": "A bottle of dry pale rosé"
-                }
-            ]
-        },
-        {
-            "handle": "house-pour-everyday-red",
-            "title": "House Pour Everyday Red",
-            "description": "The bottle we reach for on a weeknight and the one we recommend most. A medium red with dark cherry, plum and a little wild herb, soft enough to drink on its own and structured enough to sit with dinner. Great value, honestly farmed.",
-            "status": "active",
-            "productType": "Red wine",
-            "vendor": "Sediment",
-            "tags": [
-                "red",
-                "medium-bodied",
-                "everyday",
-                "natural"
-            ],
-            "categoryHandles": [
-                "red"
-            ],
-            "collectionHandles": [
-                "low-intervention",
-                "staff-picks"
-            ],
-            "seoTitle": "House Pour Everyday Red — natural red wine | Sediment",
-            "seoDescription": "A soft, structured everyday red — dark cherry, plum and a little wild herb. Great value, honestly farmed.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-RED-HOUSE-01",
-                    "priceCents": 2100,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-everyday-red",
-                    "isPrimary": true,
-                    "alt": "A bottle of easy everyday red wine"
-                }
-            ]
-        },
-        {
-            "handle": "free-spirit-non-alc",
-            "title": "Free Spirit Non-Alc Sparkling",
-            "description": "A grown-up alcohol-free sparkling for the nights you are not drinking but still want something in the good glass. Gently fizzy and properly dry, with white peach, elderflower and a citrus snap — none of the cloying sweetness most non-alc falls into.",
-            "status": "active",
-            "productType": "Non-alcoholic",
-            "vendor": "Sediment",
-            "tags": [
-                "non-alc",
-                "sparkling",
-                "dry",
-                "alcohol-free"
-            ],
-            "categoryHandles": [
-                "white"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "staff-picks"
-            ],
-            "seoTitle": "Free Spirit Non-Alc Sparkling — alcohol-free wine | Sediment",
-            "seoDescription": "A grown-up alcohol-free sparkling — dry, gently fizzy, white peach and elderflower. No cloying sweetness.",
-            "variants": [
-                {
-                    "sku": "SEDIMENT-NONALC-01",
-                    "priceCents": 1900,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-nonalc",
-                    "isPrimary": true,
-                    "alt": "A bottle of non-alcoholic sparkling wine on ice"
-                }
-            ]
-        },
-        {
-            "handle": "big-night-magnum",
-            "title": "Big Night Magnum",
-            "description": "A magnum of our juicy house red — the same honest bottle, at twice the size and built for a full table. There is something about pulling the cork on a big format that turns a dinner into an occasion; wine keeps better and ages slower in a magnum, too.",
-            "status": "active",
-            "productType": "Red wine",
-            "vendor": "Sediment",
-            "tags": [
-                "red",
-                "magnum",
-                "large-format",
-                "gift",
-                "natural"
-            ],
-            "categoryHandles": [
-                "red"
-            ],
-            "collectionHandles": [
-                "gifts",
-                "cellar-worthy",
-                "staff-picks"
-            ],
-            "seoTitle": "Big Night Magnum — 1.5L natural red wine | Sediment",
-            "seoDescription": "A 1.5L magnum of our juicy house red — built for a full table and a real occasion.",
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Magnum · 1.5L"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SEDIMENT-MAGNUM-15L",
-                    "priceCents": 5800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "Magnum · 1.5L"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-magnum",
-                    "isPrimary": true,
-                    "alt": "A magnum bottle of red wine on a table"
-                }
-            ]
-        },
-        {
-            "handle": "the-weeknight-six",
-            "title": "The Weeknight Six",
-            "description": "Six bottles, our pick, at a better price than buying them one by one — the easiest way to fill the rack with low-intervention wine you will actually finish. Choose a mix of colors, all reds, or all whites and oranges; we swap the line-up every month.",
-            "status": "active",
-            "productType": "Mixed case",
-            "vendor": "Sediment",
-            "tags": [
-                "mixed-case",
-                "value",
-                "gift",
-                "natural"
-            ],
-            "categoryHandles": [
-                "mixed-packs"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "staff-picks",
-                "gifts"
-            ],
-            "seoTitle": "The Weeknight Six — mixed natural wine case | Sediment",
-            "seoDescription": "A curated six-bottle case of low-intervention wine at a better price — mixed, all red, or all white and orange.",
-            "options": [
-                {
-                    "name": "Selection",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Mixed colors"
-                        },
-                        {
-                            "value": "All reds"
-                        },
-                        {
-                            "value": "Whites & oranges"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "SEDIMENT-SIX-MIX",
-                    "priceCents": 13500,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Selection": "Mixed colors"
-                    }
-                },
-                {
-                    "sku": "SEDIMENT-SIX-RED",
-                    "priceCents": 13500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Selection": "All reds"
-                    }
-                },
-                {
-                    "sku": "SEDIMENT-SIX-WHT",
-                    "priceCents": 13500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Selection": "Whites & oranges"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-sixpack",
-                    "isPrimary": true,
-                    "alt": "Six wine bottles standing together in a cardboard case"
-                }
-            ]
+          "sku": "SEDIMENT-ORANGE-01",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
         }
-    ]
+      ],
+      "images": [
+        {
+          "assetId": "prod-orange",
+          "isPrimary": true,
+          "alt": "A bottle of amber skin-contact orange wine"
+        }
+      ]
+    },
+    {
+      "handle": "cold-press-chillable-red",
+      "title": "Cold Press Chillable Red",
+      "description": "A light, bright red built to go in the fridge — low tannin, high glee. Crunchy red cherry, cranberry and a peppery lift, with a whole-bunch juiciness that begs for a half-hour chill. Pizza wine, picnic wine, Tuesday wine.",
+      "status": "active",
+      "productType": "Red wine",
+      "vendor": "Sediment",
+      "tags": ["red", "chillable", "light-bodied", "natural"],
+      "categoryHandles": ["red"],
+      "collectionHandles": ["new-arrivals", "low-intervention", "chillable", "staff-picks"],
+      "seoTitle": "Cold Press Chillable Red — light natural red | Sediment",
+      "seoDescription": "A light, low-tannin red built for the fridge — crunchy red cherry, cranberry and a peppery lift.",
+      "variants": [
+        {
+          "sku": "SEDIMENT-RED-CHILL-01",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-chill-red",
+          "isPrimary": true,
+          "alt": "A bottle of bright, chillable red wine"
+        }
+      ]
+    },
+    {
+      "handle": "slate-and-stone-white",
+      "title": "Slate & Stone White",
+      "description": "A taut, mineral white from old vines on poor soil — the kind that gives more flavour and less crop. Bone-dry and saline, with green apple, white flowers and a wet-stone snap that runs right through the finish. Oysters would be thrilled.",
+      "status": "active",
+      "productType": "White wine",
+      "vendor": "Sediment",
+      "tags": ["white", "mineral", "dry", "natural"],
+      "categoryHandles": ["white"],
+      "collectionHandles": ["low-intervention", "staff-picks", "cellar-worthy"],
+      "seoTitle": "Slate & Stone White — mineral natural white | Sediment",
+      "seoDescription": "A taut, saline mineral white — green apple, white flowers and a wet-stone snap. Bone-dry.",
+      "variants": [
+        {
+          "sku": "SEDIMENT-WHITE-01",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-mineral-white",
+          "isPrimary": true,
+          "alt": "A bottle of pale mineral white wine"
+        }
+      ]
+    },
+    {
+      "handle": "blush-riot-rose",
+      "title": "Blush Riot Rosé",
+      "description": "A dry, pale rosé with none of the sugary softness the color gets blamed for. Wild strawberry, pink grapefruit and a herbal, savoury edge, with real texture underneath. The house rosé from the first warm day to the last.",
+      "status": "active",
+      "productType": "Rosé wine",
+      "vendor": "Sediment",
+      "tags": ["rose", "dry", "chillable", "natural"],
+      "categoryHandles": ["rose"],
+      "collectionHandles": ["new-arrivals", "low-intervention", "chillable"],
+      "seoTitle": "Blush Riot Rosé — dry natural rosé | Sediment",
+      "seoDescription": "A dry, pale rosé with real texture — wild strawberry, pink grapefruit and a savoury, herbal edge.",
+      "variants": [
+        {
+          "sku": "SEDIMENT-ROSE-01",
+          "priceCents": 2300,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-rose",
+          "isPrimary": true,
+          "alt": "A bottle of dry pale rosé"
+        }
+      ]
+    },
+    {
+      "handle": "house-pour-everyday-red",
+      "title": "House Pour Everyday Red",
+      "description": "The bottle we reach for on a weeknight and the one we recommend most. A medium red with dark cherry, plum and a little wild herb, soft enough to drink on its own and structured enough to sit with dinner. Great value, honestly farmed.",
+      "status": "active",
+      "productType": "Red wine",
+      "vendor": "Sediment",
+      "tags": ["red", "medium-bodied", "everyday", "natural"],
+      "categoryHandles": ["red"],
+      "collectionHandles": ["low-intervention", "staff-picks"],
+      "seoTitle": "House Pour Everyday Red — natural red wine | Sediment",
+      "seoDescription": "A soft, structured everyday red — dark cherry, plum and a little wild herb. Great value, honestly farmed.",
+      "variants": [
+        {
+          "sku": "SEDIMENT-RED-HOUSE-01",
+          "priceCents": 2100,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-everyday-red",
+          "isPrimary": true,
+          "alt": "A bottle of easy everyday red wine"
+        }
+      ]
+    },
+    {
+      "handle": "free-spirit-non-alc",
+      "title": "Free Spirit Non-Alc Sparkling",
+      "description": "A grown-up alcohol-free sparkling for the nights you are not drinking but still want something in the good glass. Gently fizzy and properly dry, with white peach, elderflower and a citrus snap — none of the cloying sweetness most non-alc falls into.",
+      "status": "active",
+      "productType": "Non-alcoholic",
+      "vendor": "Sediment",
+      "tags": ["non-alc", "sparkling", "dry", "alcohol-free"],
+      "categoryHandles": ["white"],
+      "collectionHandles": ["new-arrivals", "staff-picks"],
+      "seoTitle": "Free Spirit Non-Alc Sparkling — alcohol-free wine | Sediment",
+      "seoDescription": "A grown-up alcohol-free sparkling — dry, gently fizzy, white peach and elderflower. No cloying sweetness.",
+      "variants": [
+        {
+          "sku": "SEDIMENT-NONALC-01",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-nonalc",
+          "isPrimary": true,
+          "alt": "A bottle of non-alcoholic sparkling wine on ice"
+        }
+      ]
+    },
+    {
+      "handle": "big-night-magnum",
+      "title": "Big Night Magnum",
+      "description": "A magnum of our juicy house red — the same honest bottle, at twice the size and built for a full table. There is something about pulling the cork on a big format that turns a dinner into an occasion; wine keeps better and ages slower in a magnum, too.",
+      "status": "active",
+      "productType": "Red wine",
+      "vendor": "Sediment",
+      "tags": ["red", "magnum", "large-format", "gift", "natural"],
+      "categoryHandles": ["red"],
+      "collectionHandles": ["gifts", "cellar-worthy", "staff-picks"],
+      "seoTitle": "Big Night Magnum — 1.5L natural red wine | Sediment",
+      "seoDescription": "A 1.5L magnum of our juicy house red — built for a full table and a real occasion.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Magnum · 1.5L"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SEDIMENT-MAGNUM-15L",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Magnum · 1.5L"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-magnum",
+          "isPrimary": true,
+          "alt": "A magnum bottle of red wine on a table"
+        }
+      ]
+    },
+    {
+      "handle": "the-weeknight-six",
+      "title": "The Weeknight Six",
+      "description": "Six bottles, our pick, at a better price than buying them one by one — the easiest way to fill the rack with low-intervention wine you will actually finish. Choose a mix of colors, all reds, or all whites and oranges; we swap the line-up every month.",
+      "status": "active",
+      "productType": "Mixed case",
+      "vendor": "Sediment",
+      "tags": ["mixed-case", "value", "gift", "natural"],
+      "categoryHandles": ["mixed-packs"],
+      "collectionHandles": ["new-arrivals", "staff-picks", "gifts"],
+      "seoTitle": "The Weeknight Six — mixed natural wine case | Sediment",
+      "seoDescription": "A curated six-bottle case of low-intervention wine at a better price — mixed, all red, or all white and orange.",
+      "options": [
+        {
+          "name": "Selection",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Mixed colors"
+            },
+            {
+              "value": "All reds"
+            },
+            {
+              "value": "Whites & oranges"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SEDIMENT-SIX-MIX",
+          "priceCents": 13500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Selection": "Mixed colors"
+          }
+        },
+        {
+          "sku": "SEDIMENT-SIX-RED",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Selection": "All reds"
+          }
+        },
+        {
+          "sku": "SEDIMENT-SIX-WHT",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Selection": "Whites & oranges"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sixpack",
+          "isPrimary": true,
+          "alt": "Six wine bottles standing together in a cardboard case"
+        }
+      ]
+    }
+  ]
 }

@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { faTriangleExclamation } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
+import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { reportCrash } from '@/lib/analytics';
 import { productName } from '@/lib/product';
 

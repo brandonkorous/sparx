@@ -4,7 +4,7 @@ import type { DockviewApi, SerializedDockview } from 'dockview';
 import type { WorkbenchController } from '@/lib/workbench/controller';
 import type { PaneDescriptor } from '@/lib/surfaces/descriptor';
 import { loadModeLayout, saveModeLayout } from './mode-layouts';
-import { boxAtPoint, cascadeBox, type FloatPoint } from './window-placement';
+import { boxAtPoint, cascadeBox, type FloatPoint, type FloatViewport } from './window-placement';
 
 // Windows or tabs — how the console presents what you have open.
 //
@@ -67,9 +67,9 @@ export function writeWindowMode(mode: WindowMode): void {
  * window somebody deliberately tore off; dragging it back because a toggle was
  * flipped would be the console reaching into another window and closing it.
  */
-export function applyWindowMode(api: DockviewApi, mode: WindowMode): void {
+export function applyWindowMode(api: DockviewApi, mode: WindowMode, view: FloatViewport): void {
   if (mode === 'windows') {
-    evictFromGrid(api, null);
+    evictFromGrid(api, null, view);
     return;
   }
 
@@ -92,7 +92,7 @@ export function applyWindowMode(api: DockviewApi, mode: WindowMode): void {
  * every floating window, which reads as the drag having failed. Passing `at`
  * puts that window where the drag was released; everything else cascades.
  */
-export function evictFromGrid(api: DockviewApi, at: FloatPoint | null): void {
+export function evictFromGrid(api: DockviewApi, at: FloatPoint | null, view: FloatViewport): void {
   const stranded = [...api.groups].filter(
     (group) => group.api.location.type === 'grid' && group.panels.length > 0
   );
@@ -104,7 +104,7 @@ export function evictFromGrid(api: DockviewApi, at: FloatPoint | null): void {
   for (const group of stranded) {
     // The drop point describes ONE window. If a sweep found several (a stale
     // layout, a mode switch), only a cascade can place them all.
-    const box = at && stranded.length === 1 ? boxAtPoint(api, at) : cascadeBox(api, index);
+    const box = at && stranded.length === 1 ? boxAtPoint(view, at) : cascadeBox(view, index);
     api.addFloatingGroup(group, box);
     index += 1;
   }
@@ -144,7 +144,8 @@ export function switchWindowMode(
   controller: WorkbenchController,
   siteKey: string,
   from: WindowMode,
-  to: WindowMode
+  to: WindowMode,
+  view: FloatViewport
 ): void {
   // Photograph the arrangement being left FIRST, and unconditionally — even if
   // everything below fails, the way it looked is not what gets lost.
@@ -153,7 +154,7 @@ export function switchWindowMode(
   const snapshot = loadModeLayout(siteKey, to);
   if (!snapshot) {
     // Never been in this presentation on this site. Synthesise one.
-    applyWindowMode(api, to);
+    applyWindowMode(api, to, view);
     return;
   }
 
@@ -179,11 +180,11 @@ export function switchWindowMode(
     // that threw mid-restore is in no state to be trusted. Synthesising from
     // whatever survived beats a workspace nobody can get out of.
     console.warn('[piggles] could not restore that arrangement; rebuilding it', error);
-    applyWindowMode(api, to);
+    applyWindowMode(api, to, view);
     return;
   }
 
-  reconcile(api, controller, to, openBefore);
+  reconcile(api, controller, to, openBefore, view);
   controller.hostChanged();
 }
 
@@ -197,7 +198,8 @@ function reconcile(
   api: DockviewApi,
   controller: WorkbenchController,
   mode: WindowMode,
-  openBefore: Record<string, PaneDescriptor>
+  openBefore: Record<string, PaneDescriptor>,
+  view: FloatViewport
 ): void {
   // Panes the snapshot remembers that have since been closed, resurrected by the
   // restore. Straight to `panel.api.close()` rather than the controller's guard:
@@ -223,5 +225,5 @@ function reconcile(
   // give the new arrivals the presentation too. Anything the snapshot already
   // placed is in the right place and is left alone, which is what
   // applyWindowMode does by reading each group's real location.
-  applyWindowMode(api, mode);
+  applyWindowMode(api, mode, view);
 }

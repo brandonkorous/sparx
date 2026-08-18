@@ -155,12 +155,12 @@ Three things about the bundle are load-bearing:
 
 `sparx_app` does not exist until the deploy workflow creates it, and that is not
 an oversight —
-[packages/db/docker/init/01-roles.sql](../../packages/db/docker/init/01-roles.sql)
+[wizeworks/packages/db/docker/init/01-roles.sql](../../packages/db/docker/init/01-roles.sql)
 is a **Docker image entrypoint convention** (`/docker-entrypoint-initdb.d`) that
 a managed server will never execute. The server is also VNet-private, so it
 cannot be reached from a laptop.
 
-So [packages/db/sql/azure-bootstrap.sql](../../packages/db/sql/azure-bootstrap.sql)
+So [wizeworks/packages/db/sql/azure-bootstrap.sql](../../packages/db/sql/azure-bootstrap.sql)
 runs as an in-cluster Job, first thing in the release's data stage. Unlike the
 GCP script it must CREATE the roles as well as grant to them, since Azure has no
 equivalent of `gcloud sql users create`. It is idempotent and runs on every
@@ -189,7 +189,7 @@ and only left the rest unusable.
 ## Still outstanding
 
 - **Media durability.** The media PVC is a single unreplicated Azure Disk with no
-  snapshot schedule. Blob Storage would need a third driver in `packages/media`
+  snapshot schedule. Blob Storage would need a third driver in `wizeworks/packages/media`
   (which has exactly two: GCS and local disk) — a deliberate later decision.
 - **No message broker.** `SPARX_DEV_WORKER_ROUTES` dispatches events over plain
   HTTP: no retry, no dead-letter queue. An event published while a worker is

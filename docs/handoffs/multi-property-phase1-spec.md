@@ -40,7 +40,7 @@ first-class type↔template link). To make progress without a schema-file collis
 
 ## 3. Step A — exact deltas
 
-### 3.1 New model — `packages/db/prisma/schema/08-property.prisma`
+### 3.1 New model — `wizeworks/packages/db/prisma/schema/08-property.prisma`
 
 ```prisma
 model Property {
@@ -66,7 +66,7 @@ model Property {
   **RLS policy** are not expressible in Prisma — they live in the migration SQL only (Prisma's
   differ ignores both), mirroring `builder_layouts_one_active_per_tenant` and every `*_tenant_isolation`.
 
-### 3.2 `packages/db/prisma/schema/02-tenant.prisma`
+### 3.2 `wizeworks/packages/db/prisma/schema/02-tenant.prisma`
 
 Add one back-relation in the "Platform core" section:
 
@@ -99,7 +99,7 @@ Not built in this slice. When the content-types Builder-schema work merges:
    `getPublishedByRecordType` filters by property.
 2. `BuilderLayout`: add `propertyId`; partial unique `(tenant_id) WHERE is_active` →
    `(tenant_id, property_id) WHERE is_active` (one active chrome **per property**).
-3. `ServiceContext` (`packages/builder/src/errors.ts` = `TenantContext`) gains optional `propertyId`;
+3. `ServiceContext` (`wizeworks/packages/builder/src/errors.ts` = `TenantContext`) gains optional `propertyId`;
    every read in `page-service.ts` / `layout-service.ts` / `surface-css-service.ts` filters by it.
 4. `resolvePrimaryProperty(tenantId)` helper; the public route (`v1/public/builder.ts`) and dashboard
    Server Actions resolve the **primary** property and pass it in — **zero observable change** until

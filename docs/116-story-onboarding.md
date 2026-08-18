@@ -98,8 +98,8 @@ electronics, auto-parts, salon, fitness, professional, wholesale). Picking it:
 3. **Preloads** the starter's seed data on commit and records `settings.category`.
 
 Starters are defined in
-[services/api-rest/src/lib/industry-starters.ts](../services/api-rest/src/lib/industry-starters.ts)
-(contract `packages/modules/src/starters.ts`). An `IndustryStarter` **never writes
+[wizeworks/services/api-rest/src/lib/industry-starters.ts](../services/api-rest/src/lib/industry-starters.ts)
+(contract `wizeworks/packages/modules/src/starters.ts`). An `IndustryStarter` **never writes
 `settings.modules`** — it only provisions presets into modules the story already turned
 on.
 
@@ -174,7 +174,7 @@ back to `/story?stripe_connected=1` (clearing it). A failed round-trip comes bac
 ### 7.4 Persistence + resume (compose _and_ tail)
 
 The whole narrative persists under `settings.onboarding.story` (the `StoryNarrative` zod
-in [services/api-rest/src/routes/v1/tenant.ts](../services/api-rest/src/routes/v1/tenant.ts))
+in [wizeworks/services/api-rest/src/routes/v1/tenant.ts](../services/api-rest/src/routes/v1/tenant.ts))
 — both a signal we can surface later and the resume substrate. Two resume paths:
 
 - **Post-commit tail** — after the Stripe reload, `story/page.tsx` sees
@@ -255,7 +255,7 @@ Story obeys the same rules as every surface:
   rail + journey + `RailFooter`) and the shared `<SummaryCard>` — the same chrome as the
   wizard, so the two flows feel like one product.
 - Clause chips are bespoke module-tinted tokens via `color-mix` on the module color vars
-  (mirroring the `@sparx/ui` recipe) — they are _not_ re-skinned controls; the CTA is a
+  (mirroring the `@wizeworks/ui` recipe) — they are _not_ re-skinned controls; the CTA is a
   real `<Button>` and "Included" is a real `<Badge>`.
 - 16px body floor, no gradients, no eyebrow kickers, responsive (rail collapses under
   ~940px, the two-pane grid stacks to one column).

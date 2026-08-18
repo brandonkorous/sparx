@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-// ── Brand geometry (from packages/brand/src/marks.ts) — never re-drawn by hand ──
+// ── Brand geometry (from sparx/packages/brand/src/marks.ts) — never re-drawn by hand ──
 const EMBER = '#e04631',
   INK = '#0c1433',
   WHITE = '#ffffff';
@@ -56,7 +56,7 @@ const accentOnNavy = (hex) => {
   return out;
 };
 
-// ── The 13 modules (packages/modules/src/index.ts ALL_MODULES) ────────────────
+// ── The 13 modules (wizeworks/packages/modules/src/index.ts ALL_MODULES) ────────────────
 // hue  = --color-module-<slug> (theme.css / MODULE_HEX). accentOnNavy() lifts it
 //        to a legible on-navy tint that paints both the accent line and the pill.
 // em   = the hook line(s), painted in the (lifted) module hue

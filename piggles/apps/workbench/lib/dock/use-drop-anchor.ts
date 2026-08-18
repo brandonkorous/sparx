@@ -7,21 +7,25 @@ import type { FloatPoint } from '../window-placement';
 const FRESH_MS = 1000;
 
 /**
- * Where the last drag inside the dock was released, in dock-relative pixels.
+ * Where the last drag inside the dock was released, in CANVAS pixels.
  *
  * A tab dropped into empty space becomes a window, and it should appear where it
  * was let go rather than at the top of a cascade. dockview reports the new group
  * but not the pointer that made it, so the DOM is where that has to come from.
+ *
+ * Measured against the CANVAS rather than the scrolling frame, because that is
+ * the space dockview positions floating groups in — and once the workspace has
+ * been scrolled the two differ by exactly the amount that would put the new
+ * window somewhere nobody is looking. The canvas rectangle already carries the
+ * scroll, so subtracting it is the whole conversion.
  */
-export function useDropAnchor(): {
-  rootRef: RefObject<HTMLDivElement | null>;
+export function useDropAnchor(canvas: RefObject<HTMLElement | null>): {
   takeDropPoint: () => FloatPoint | null;
 } {
-  const rootRef = useRef<HTMLDivElement | null>(null);
   const released = useRef<{ point: FloatPoint; at: number } | null>(null);
 
   useEffect(() => {
-    const root = rootRef.current;
+    const root = canvas.current;
     if (!root) return;
 
     const record = (event: DragEvent) => {
@@ -40,7 +44,7 @@ export function useDropAnchor(): {
       root.removeEventListener('drop', record, true);
       root.removeEventListener('dragend', record, true);
     };
-  }, []);
+  }, [canvas]);
 
   // Read once and cleared: a point that has already placed a window must not
   // place the next one somewhere the pointer has long since left.
@@ -51,5 +55,5 @@ export function useDropAnchor(): {
     return last.point;
   }, []);
 
-  return { rootRef, takeDropPoint };
+  return { takeDropPoint };
 }

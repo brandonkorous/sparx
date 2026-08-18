@@ -20,16 +20,8 @@
 // looked at later. Scrap leaves nothing — no units, no movement, no artefact —
 // so the written reason IS the record, and the button will not fire without one.
 
-import {
-  Badge,
-  Button,
-  EmptyState,
-  Input,
-  Table,
-  Text,
-  Timestamp,
-  useToast,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Input, Text, Timestamp, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faBoxCheck,
   faShieldExclamation,
@@ -38,8 +30,13 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
 import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
+
+/** Registry module for this panel, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import { afterCommit } from '../../lib/defer';
 import {
   dispositionLabel,
@@ -131,7 +128,12 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
         {isLoading ? (
           <PaneWaiting label="Loading the inspection…" />
         ) : rows.length === 0 ? (
-          <EmptyState
+          /* No extra card: the FormSection above IS one, and nesting a Card
+             inside it would double the resting shadow (DESIGN.md §4). The
+             wrapper is here for the brand's picture, which the raw EmptyState
+             beside a <PaneWaiting> was skipping. */
+          <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
             title="Nothing inspected yet"
             description="Record an inspection first. Deciding where goods go before anybody has looked at them is how a damaged item ends up back on the shelf."

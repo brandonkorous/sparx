@@ -31,12 +31,12 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCalculator, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';

@@ -29,7 +29,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   TagInput,
@@ -43,6 +42,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
@@ -130,7 +130,7 @@ export function DealDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function DealLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: deal, isPending, isError, refetch } = useDeal(id);
+  const { data: deal, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDeal(id);
 
   if (isError) {
     return (
@@ -152,10 +152,35 @@ function DealLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <DealEditor ctx={ctx} id={id} deal={deal} />;
+  return (
+    <DealEditor
+      ctx={ctx}
+      id={id}
+      deal={deal}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
-function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?: Deal }) {
+function DealEditor({
+  ctx,
+  id,
+  deal,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  id: string;
+  deal?: Deal;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
+}) {
   const isNew = id === 'new';
   const toast = useToast();
   const confirm = useConfirm();
@@ -371,34 +396,43 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Deal actions">
-        <Badge color={stageMeta.tone} variant="soft" size="sm">
-          {currentStage?.name ?? stageMeta.label}
-        </Badge>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create deal' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Deal actions"
+        status={
+          <Badge color={stageMeta.tone} variant="soft" size="sm">
+            {currentStage?.name ?? stageMeta.label}
+          </Badge>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            loading={saving}
+            disabled={Boolean(blocked) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create deal' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={deal ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Start a deal
-              </Heading>
-              <Text>
-                A deal is a sale you are working on. Put it on a pipeline, set what it is worth, and
-                move it along as it progresses.
-              </Text>
-            </div>
+            <Text>
+              A deal is a sale you are working on. Put it on a pipeline, set what it is worth, and
+              move it along as it progresses.
+            </Text>
           ) : null}
 
           {failure ? (

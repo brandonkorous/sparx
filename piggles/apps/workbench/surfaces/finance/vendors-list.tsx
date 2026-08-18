@@ -19,7 +19,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Field,
   FieldControl,
   FieldLabel,
@@ -42,6 +41,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -55,6 +55,10 @@ import {
   type Vendor,
 } from './spend-data';
 import { formatCents } from './format';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'finance';
 
 interface FormState {
   name: string;
@@ -357,71 +361,80 @@ export function VendorsListSurface() {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Vendor list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search who you pay"
-            placeholder="Search by name, email or account…"
-            value={search}
-            onValueChange={setSearch}
+      <PaneToolbar
+        label="Vendor list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search who you pay"
+              placeholder="Search by name, email or account…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        controls={
+          <>
+            <Button
+              size="sm"
+              color="module"
+              onClick={() => {
+                setAdding(true);
+                setEditing(null);
+              }}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              Add
+            </Button>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="vendors-show-archived"
+                color="module"
+                checked={showArchived}
+                onCheckedChange={setShowArchived}
+              />
+              <label htmlFor="vendors-show-archived" className="text-sm whitespace-nowrap">
+                Include archived
+              </label>
+            </div>
+          </>
+        }
+        views={{
+          target: '/finance/vendors',
+          params: { q: search.trim(), archived: showArchived ? '1' : '' },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setShowArchived(next.archived === '1');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-
-        <Button
-          size="sm"
-          color="module"
-          onClick={() => {
-            setAdding(true);
-            setEditing(null);
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add
-        </Button>
-
-        <div className="flex items-center gap-2">
-          <Switch
-            id="vendors-show-archived"
-            color="module"
-            checked={showArchived}
-            onCheckedChange={setShowArchived}
-          />
-          <label htmlFor="vendors-show-archived" className="text-sm whitespace-nowrap">
-            Include archived
-          </label>
-        </div>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
-            title="Could not load who you pay"
-            description="The server could not be reached. Your records are unaffected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
+              title="Could not load who you pay"
+              description="The server could not be reached. Your records are unaffected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
             {(data.length > 0 || adding) && totalSpend > 0 ? (
@@ -448,6 +461,7 @@ export function VendorsListSurface() {
             {vendors.length === 0 && !adding ? (
               <Card>
                 <ListEmptyState
+                  module={MODULE}
                   filtered={search.trim() !== ''}
                   noResults={{
                     icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,

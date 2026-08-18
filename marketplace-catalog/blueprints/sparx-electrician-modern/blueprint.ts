@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-electrician-modern',
-    version: '1.3.0',
-    name: 'sparx — Electrician (Modern)',
-    summary:
-        'A sleek, high-tech electrical-contractor site — a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-electrician-modern',
+  version: '1.3.0',
+  name: 'sparx — Electrician (Modern)',
+  summary:
+    'A sleek, high-tech electrical-contractor site — a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Voltline Electric',
+    tagline: 'Wired for what’s next.',
+    colors: {
+      primary: '#00a2f5',
+      primaryForeground: '#040c13',
+      accent: '#00d8e1',
+      secondary: '#b2c8d5',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'voltline',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Voltline Electric',
-        tagline: 'Wired for what’s next.',
-        colors: {
-            primary: '#00a2f5',
-            primaryForeground: '#040c13',
-            accent: '#00d8e1',
-            secondary: '#b2c8d5',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#00a2f5',
+      colorAccent: '#00d8e1',
+      colorSecondary: '#b2c8d5',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'voltline',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#00a2f5',
-            colorAccent: '#00d8e1',
-            colorSecondary: '#b2c8d5',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

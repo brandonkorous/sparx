@@ -143,8 +143,8 @@ sources. Output: docs 109 + 110. **Done when** both docs land.
 - **GAP A — Connect payout balance ✅ (shipped).** `GET /v1/commerce/payments/sparx-pay/balance` calls
   Stripe `balance.retrieve({}, { stripeAccount })` for the tenant's connected account and returns
   available + pending (in the account's default currency) + the payout cadence. Guarded like the rest
-  of `@sparx/payments` — no platform key or no connected account → `null`, so dev/test is a clean
-  no-op. Lib: `getSparxPayBalance` in `services/api-rest/src/lib/payments-onboarding.ts`. Surfaces on
+  of `@wizeworks/payments` — no platform key or no connected account → `null`, so dev/test is a clean
+  no-op. Lib: `getSparxPayBalance` in `wizeworks/services/api-rest/src/lib/payments-onboarding.ts`. Surfaces on
   Overview + Payouts.
 - **GAP B — Unified AR summary ✅ (already closed, no new endpoint).** The intended read already exists:
   `GET /v1/invoicing/aging` with **no `scope`** aggregates open balances + aging buckets across BOTH
@@ -176,7 +176,7 @@ sources. Output: docs 109 + 110. **Done when** both docs land.
   drift from the Finance source. Don't leave two live editors for the same config.
 - **F4 — Finance owns a hue (money green `#16A34A`), superseding "neutral chrome."** As of v1.2
   ([109 D7](109-finance-hub.md#3-binding-decisions-do-not-re-litigate)) Finance has its own module color
-  in `@sparx/ui` — the rail icon, contextual panel, and every `/finance/*` page wear finance green, NOT
+  in `@wizeworks/ui` — the rail icon, contextual panel, and every `/finance/*` page wear finance green, NOT
   a per-section borrow of commerce/invoicing hues. On the Overview tint exactly ONE finance card (the
   cash-in hero); the rest stay plain (one-primary-card-per-hue, root CLAUDE.md). A finance signal
   embedded in another module wears finance green via a nested `<ModuleProvider module="finance">`.

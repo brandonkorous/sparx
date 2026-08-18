@@ -144,11 +144,14 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Phone system connection actions">
-        <Button color="module" size="sm" disabled={!canSubmit} onClick={submit}>
-          {connect.isPending ? 'Connecting…' : 'Connect phone system'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Phone system connection actions"
+        primary={
+          <Button color="module" size="sm" disabled={!canSubmit} onClick={submit}>
+            {connect.isPending ? 'Connecting…' : 'Connect phone system'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <Card className="p-4">

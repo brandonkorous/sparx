@@ -27,26 +27,26 @@ doc is the _how_: package topology, data model, the six phases, and the exact in
 
 The module is **half-scaffolded** already — completing it, not inventing it:
 
-| Already exists                     | Location                                                                                                 |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `inventory` module slug + type     | `packages/modules/src/index.ts` (`ModuleSlug`, `ALL_MODULES`)                                            |
-| Activation validation slug         | `services/api-rest/src/routes/v1/tenant.ts` `MODULE_SLUGS`; `settings/modules/actions.ts` `VALID_SLUGS`  |
-| Module color (amber `#F59E0B`)     | `packages/ui/src/providers/module-provider.tsx` `MODULE_COLORS`; `variants.ts` `MODULE_COLOR_KEYS`       |
-| Marketing catalog entry            | `apps/web/lib/capabilities.ts`; `apps/dashboard/components/module-catalog.ts`                            |
-| Dashboard nav manifest             | `apps/dashboard/app/(dashboard)/_shell/registry.ts` imports `inventoryManifest`                          |
-| Operational stock engine           | `packages/commerce/src/services/inventory-service.ts` (21 fns) — **to extract**                          |
-| Operational tables                 | `schema/34-commerce-inventory.prisma`, `35-commerce-lot-serial.prisma` — **survivors**                   |
-| Sync module (parallel, to fold in) | `schema/66-inventory.prisma`, `services/api-rest/src/routes/v1/inventory/`, `services/inventory-worker/` |
-| Valuation cron + lib               | `services/api-rest/src/lib/inventory-valuation.ts`, `routes/internal/inventory-cron.ts`                  |
+| Already exists                     | Location                                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `inventory` module slug + type     | `wizeworks/packages/modules/src/index.ts` (`ModuleSlug`, `ALL_MODULES`)                                            |
+| Activation validation slug         | `wizeworks/services/api-rest/src/routes/v1/tenant.ts` `MODULE_SLUGS`; `settings/modules/actions.ts` `VALID_SLUGS`  |
+| Module color (amber `#F59E0B`)     | `sparx/packages/ui/src/providers/module-provider.tsx` `MODULE_COLORS`; `variants.ts` `MODULE_COLOR_KEYS`           |
+| Marketing catalog entry            | `sparx/apps/web/lib/capabilities.ts`; `apps/dashboard/components/module-catalog.ts`                                |
+| Dashboard nav manifest             | `apps/dashboard/app/(dashboard)/_shell/registry.ts` imports `inventoryManifest`                                    |
+| Operational stock engine           | `wizeworks/packages/commerce/src/services/inventory-service.ts` (21 fns) — **to extract**                          |
+| Operational tables                 | `schema/34-commerce-inventory.prisma`, `35-commerce-lot-serial.prisma` — **survivors**                             |
+| Sync module (parallel, to fold in) | `schema/66-inventory.prisma`, `wizeworks/services/api-rest/src/routes/v1/inventory/`, `services/inventory-worker/` |
+| Valuation cron + lib               | `wizeworks/services/api-rest/src/lib/inventory-valuation.ts`, `routes/internal/inventory-cron.ts`                  |
 
 **Missing module wiring** (the footgun lists — add `'inventory'`):
 
-1. `services/api-rest/src/routes/v1/dashboard.ts` — `MODULE_SLUGS` (home-card metrics)
-2. `services/api-rest/src/routes/v1/properties.ts` — `MODULE_SLUGS` (per-site scope)
+1. `wizeworks/services/api-rest/src/routes/v1/dashboard.ts` — `MODULE_SLUGS` (home-card metrics)
+2. `wizeworks/services/api-rest/src/routes/v1/properties.ts` — `MODULE_SLUGS` (per-site scope)
 3. `apps/dashboard/lib/modules.ts` — `SWITCHBOARD_MODULES` (pricing switchboard)
-4. `packages/billing/src/price-catalog.ts` — `MODULE_MONTHLY_CENTS.inventory = 2900` ($29/mo)
-5. `packages/blueprints/src/manifest.ts` — `BlueprintModuleSlug` enum (if inventory is blueprintable)
-6. `packages/modules/src/index.ts` + `apps/dashboard/lib/modules.ts` — `BUNDLED_FREE`: bundle `inventory`
+4. `wizeworks/packages/billing/src/price-catalog.ts` — `MODULE_MONTHLY_CENTS.inventory = 2900` ($29/mo)
+5. `wizeworks/packages/blueprints/src/manifest.ts` — `BlueprintModuleSlug` enum (if inventory is blueprintable)
+6. `wizeworks/packages/modules/src/index.ts` + `apps/dashboard/lib/modules.ts` — `BUNDLED_FREE`: bundle `inventory`
    free when `commerce` **or** `b2b` is active (mirrors invoicing↔b2b). Standalone activation bills $29.
 
 **Packaging (§7):** Inventory is **bundled-free with Commerce or B2B**, and **$29/mo standalone** for
@@ -61,18 +61,18 @@ on with the module.
 ### 2.1 Package topology
 
 ```
-@sparx/inventory          NEW — owns the supply domain (service + events + errors + MCP tools)
-   ├─ depends on: @sparx/db, @sparx/commerce-schemas¹, shared low-level publisher
+@wizeworks/inventory          NEW — owns the supply domain (service + events + errors + MCP tools)
+   ├─ depends on: @wizeworks/db, @wizeworks/commerce-schemas¹, shared low-level publisher
    └─ depends on NO other module package  ← keeps the dependency graph acyclic
-@sparx/inventory-schemas  DEFERRED¹ — Zod inputs stay in @sparx/commerce-schemas for now
-@sparx/commerce           consumes @sparx/inventory (checkout reserve/commit, return restock)
-@sparx/crm                emits order.* events; an inventory consumer reacts (no direct dep)
+@sparx/inventory-schemas  DEFERRED¹ — Zod inputs stay in @wizeworks/commerce-schemas for now
+@wizeworks/commerce           consumes @wizeworks/inventory (checkout reserve/commit, return restock)
+@wizeworks/crm                emits order.* events; an inventory consumer reacts (no direct dep)
 services/inventory-worker EXISTING — repurposed to write the master ledger, + sync adapters
 ```
 
 > **¹ Deferral (as built in P1a, 2026-06-16).** The standalone `@sparx/inventory-schemas` split was
-> **deferred**. The inventory Zod inputs continue to live in `@sparx/commerce-schemas`, which is a
-> dependency-free **shared leaf** — `@sparx/inventory` importing it keeps the graph acyclic, so the split
+> **deferred**. The inventory Zod inputs continue to live in `@wizeworks/commerce-schemas`, which is a
+> dependency-free **shared leaf** — `@wizeworks/inventory` importing it keeps the graph acyclic, so the split
 > buys ownership tidiness, not correctness. The blocker: inventory's Zod inputs share primitives
 > (`AddressSnapshot`, `HazmatClass`, money/units helpers) with the commerce schemas, so a clean split
 > means first extracting those primitives to a third shared leaf — a knot not worth untying mid-foundation.
@@ -84,15 +84,15 @@ extraction must also lift the shared primitives inventory currently borrows from
 
 ### 2.2 The extraction untangle (Phase 1 core)
 
-`inventory-service.ts` today imports from `@sparx/commerce`'s internals:
+`inventory-service.ts` today imports from `@wizeworks/commerce`'s internals:
 
-| Borrowed today                                              | Resolution                                                                                                                                  |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@sparx/commerce-schemas` (inputs/types)                    | **DEFERRED** — Zod inputs stay in `@sparx/commerce-schemas` (shared leaf, acyclic); `@sparx/inventory-schemas` split postponed (see §2.1 ¹) |
-| `../audit` (`writeAuditLog`)                                | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@sparx/db`) both modules import                             |
-| `../events` (`publishCommerceEvent`, `indexCommerceEntity`) | publish `inventory.*` via the **shared low-level publisher** (`createPublisher`) directly; inventory owns its own event helper              |
-| `../errors` (`CommerceOutOfStockError`, …)                  | define `@sparx/inventory` error classes (or a shared `@sparx/errors`)                                                                       |
-| `@sparx/db` (Prisma)                                        | unchanged — single shared client                                                                                                            |
+| Borrowed today                                              | Resolution                                                                                                                                      |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@wizeworks/commerce-schemas` (inputs/types)                | **DEFERRED** — Zod inputs stay in `@wizeworks/commerce-schemas` (shared leaf, acyclic); `@sparx/inventory-schemas` split postponed (see §2.1 ¹) |
+| `../audit` (`writeAuditLog`)                                | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@wizeworks/db`) both modules import                             |
+| `../events` (`publishCommerceEvent`, `indexCommerceEntity`) | publish `inventory.*` via the **shared low-level publisher** (`createPublisher`) directly; inventory owns its own event helper                  |
+| `../errors` (`CommerceOutOfStockError`, …)                  | define `@wizeworks/inventory` error classes (or a shared `@sparx/errors`)                                                                       |
+| `@wizeworks/db` (Prisma)                                    | unchanged — single shared client                                                                                                                |
 
 > Prisma is **one shared client over one schema folder** — "extracting a package" is **code
 > organization + ownership**, not a separate database. **Tables are renamed `commerce_* → inventory_*`
@@ -159,29 +159,29 @@ Each phase is independently deployable (docs/03 deploy-early) and the **whole su
 phases are a deploy order, not a scope cut. "Standalone?" = does this phase work with inventory active
 and commerce off.
 
-| Phase | Theme                                                                    | Standalone?       | Ships                                             |
-| ----- | ------------------------------------------------------------------------ | ----------------- | ------------------------------------------------- |
-| P1    | Foundation: extract `@sparx/inventory`, unify to one ledger, re-point UI | ✅                | `/inventory` shows real data + non-zero valuation |
-| P2    | Sell path: wire reserve/commit/release into commerce                     | n/a (integration) | real-time accurate stock, oversell protection     |
-| P3    | Supply path: suppliers, POs, receiving, reorder engine                   | ✅                | inbound + replenishment workflow                  |
-| P4    | Counts, transfers, audit UI                                              | ✅                | auditable corrections + cross-location moves      |
-| P5    | External sync: Tier C/B/A adapters (Fishbowl)                            | ✅                | ERP/WMS-backed tenants live                       |
-| P6    | API contract + reporting + MCP + B2B                                     | ✅                | headless + AI + wholesale complete                |
+| Phase | Theme                                                                        | Standalone?       | Ships                                             |
+| ----- | ---------------------------------------------------------------------------- | ----------------- | ------------------------------------------------- |
+| P1    | Foundation: extract `@wizeworks/inventory`, unify to one ledger, re-point UI | ✅                | `/inventory` shows real data + non-zero valuation |
+| P2    | Sell path: wire reserve/commit/release into commerce                         | n/a (integration) | real-time accurate stock, oversell protection     |
+| P3    | Supply path: suppliers, POs, receiving, reorder engine                       | ✅                | inbound + replenishment workflow                  |
+| P4    | Counts, transfers, audit UI                                                  | ✅                | auditable corrections + cross-location moves      |
+| P5    | External sync: Tier C/B/A adapters (Fishbowl)                                | ✅                | ERP/WMS-backed tenants live                       |
+| P6    | API contract + reporting + MCP + B2B                                         | ✅                | headless + AI + wholesale complete                |
 
 ---
 
 ### Phase 1 — Foundation (extract + unify + re-point)
 
 **Goal:** one inventory module backed by one ledger, showing real data, with the engine living in
-`@sparx/inventory`. This phase alone fixes docs/99 defect D1 and makes `/inventory` useful.
+`@wizeworks/inventory`. This phase alone fixes docs/99 defect D1 and makes `/inventory` useful.
 
 **Work:**
 
-1. **Create `@sparx/inventory`** (use the `new-workspace-package` skill). _(`@sparx/inventory-schemas`
-   split **deferred** — Zod inputs stay in `@sparx/commerce-schemas`; see §2.1 ¹.)_
+1. **Create `@wizeworks/inventory`** (use the `new-workspace-package` skill). _(`@sparx/inventory-schemas`
+   split **deferred** — Zod inputs stay in `@wizeworks/commerce-schemas`; see §2.1 ¹.)_
    Move `inventory-service.ts`; resolve the §2.2 untangle (own events/errors, shared audit). Re-export so
-   existing importers (MCP read/write tools, reservation-reaper) switch to `@sparx/inventory`.
-   `@sparx/commerce` keeps a thin re-export shim only if needed for an interim. ✅ **DONE (P1a, PR #64).**
+   existing importers (MCP read/write tools, reservation-reaper) switch to `@wizeworks/inventory`.
+   `@wizeworks/commerce` keeps a thin re-export shim only if needed for an interim. ✅ **DONE (P1a, PR #64).**
 2. **Unify the stock model.** Make `InventoryLevel`/`Warehouse` the single master:
    - Migrate any `StockLevel`/`StockLocation` data into `InventoryLevel`/`Warehouse`; map location
      types; add `transit`/`bin`/`virtual` to `Warehouse.type`. ✅ **DONE (P1c)** — the migration lifts
@@ -212,7 +212,7 @@ and commerce off.
    service was split by concern (warehouses · levels · ledger · movements · reservations · lots). The
    `onHand == Σ(movements)` reconcile invariant is guaranteed structurally (single writer + `balanceAfter`);
    a standalone reconcile/audit report is P4. ✅ **Hardened + proven (P1e)** — the deferred DB-backed
-   integration test (`packages/inventory/test/integration/ledger.test.ts`, real Postgres) pins the
+   integration test (`wizeworks/packages/inventory/test/integration/ledger.test.ts`, real Postgres) pins the
    Σ-invariant + running `balanceAfter`, idempotency-key dedupe, the absolute `setOnHand` reconcile, AND a
    concurrent-writer test. That last one surfaced a real hole: the "ensure the level row exists" step used a
    Prisma `upsert` (SELECT-then-INSERT), so a concurrent burst of the **first** movement on a brand-new
@@ -242,9 +242,9 @@ and commerce off.
 6. **Finish module wiring** — add `'inventory'` to the lists in §1 (price `2900`, `BUNDLED_FREE` with
    commerce/b2b) and build the commerce/b2b **degrade-without-inventory** path (untracked = always available).
    ✅ **DONE (P1e)** — `MODULE_MONTHLY_CENTS.inventory = 2900`; `BUNDLED_FREE: inventory → [commerce, b2b]`
-   in `@sparx/modules` + the dashboard/web switchboard mirrors; `properties.ts` `MODULE_SLUGS` +
+   in `@wizeworks/modules` + the dashboard/web switchboard mirrors; `properties.ts` `MODULE_SLUGS` +
    `BlueprintModuleSlug` extended (dashboard.ts + activation slugs already had it). The degrade path is the
-   shared `computeAvailability(levels, policy, { inventoryActive })` in `@sparx/inventory` — the single home
+   shared `computeAvailability(levels, policy, { inventoryActive })` in `@wizeworks/inventory` — the single home
    for "untracked = always available" — wired into the storefront PDP read (`mapFullProduct` passes
    `isModuleEnabled(tenantId, 'inventory')`); module off → unbounded, always in stock, seam no-ops.
 7. **Seed** real inventory data (warehouses + levels + movements + lots) so a fresh tenant shows a
@@ -266,7 +266,7 @@ flows unaffected (they didn't touch inventory yet anyway).
 > Next: **P2 — wire reserve/commit/release into cart → checkout → order**.
 
 **Risks:** data move `StockLevel`→`InventoryLevel` (idempotent migration + reconcile); RLS on any new/
-renamed table (hand-edit, FORCE-RLS backfill footgun per packages/db/CLAUDE.md); the package extraction
+renamed table (hand-edit, FORCE-RLS backfill footgun per wizeworks/packages/db/CLAUDE.md); the package extraction
 touching MCP/scheduler imports (typecheck-driven).
 
 ---
@@ -278,7 +278,7 @@ enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
 
 **Work (exact seam points from the audit):**
 
-1. **Cart soft-hold** — `packages/commerce/src/services/cart-service.ts`:
+1. **Cart soft-hold** — `wizeworks/packages/commerce/src/services/cart-service.ts`:
    - `addItem()` (after `cartItem.create`): reserves the line atomically inside the cart tx and stores the
      `reservationId` on the line. A `deny`-policy shortfall throws and rolls the add back (can't add past
      available). ✅ **DONE** — via the tx-aware `inventoryService.reserveOnTx(tx, ctx, {…})`.
@@ -294,7 +294,7 @@ enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
    `order-service` stays inventory-agnostic by design (checkout owns the seam). ✅ **DONE.** The B2B
    **approval route** (`/v1/b2b/approval-queue/:orderId/approve`) commits the decrement when it places a
    held order — the other placement path. ✅ **DONE.**
-3. **Release on cancel / payment-fail** — new commerce **event consumer** (`@sparx/commerce/consumers`,
+3. **Release on cancel / payment-fail** — new commerce **event consumer** (`@wizeworks/commerce/consumers`,
    installed at api-rest/api-mcp boot on the in-process platform bus, gated per-tenant on the inventory
    module): on `order.cancelled`, `inventoryService.reverseOrderSale({orderId})` reverses each `sale`
    movement with a compensating `cancel` movement (idempotency-keyed off the source movement) and releases
@@ -319,7 +319,7 @@ warehouseId, idempotencyKey})`; quantity is the line's approved (accepted-back) 
 hides at zero under `deny`, backorders allowed under `continue`; cancel/refund restock verified. The
 inventory-side guarantees (oversell block under `deny`, commit drops onHand + releases allocated keeping
 `onHand == Σ(movements)`, idempotent re-commit, cancel restock + idempotent redelivery, backorder under
-`continue`) are pinned by `packages/inventory/test/integration/sell-path.test.ts` (DB-backed); the full
+`continue`) are pinned by `wizeworks/packages/inventory/test/integration/sell-path.test.ts` (DB-backed); the full
 storefront e2e is the review/Playwright pass.
 
 > **✅ Phase 2 (Sell path) is COMPLETE.** The reservation engine is wired end-to-end: cart soft-holds with
@@ -347,7 +347,7 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 
 1. `Supplier` CRUD + per-variant supplier links (cost feeds valuation/margin). ✅ **DONE (P3a).**
    `inventory_suppliers` + `inventory_supplier_variants` tables (migration `20260904000000_inventory_suppliers`,
-   FORCE RLS); `@sparx/inventory` services (`suppliers.ts` CRUD + soft archive; `supplier-variants.ts` upsert/
+   FORCE RLS); `@wizeworks/inventory` services (`suppliers.ts` CRUD + soft archive; `supplier-variants.ts` upsert/
    remove/list + **one-preferred-supplier-per-variant** invariant + `suppliersForVariant` reverse lookup +
    SKU→variant resolver); API `/v1/inventory/suppliers` (+ `/:id/variants` + `variant-lookup`),
    `requireInventoryModule` (standalone-usable); dashboard `/inventory/suppliers` (list/create/detail with
@@ -356,7 +356,7 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 2. `PurchaseOrder` lifecycle + lines; PO document/print (reuse the billing-document/canvas pattern).
    ✅ **DONE (P3b).** `inventory_purchase_orders` + `inventory_purchase_order_lines` tables (migration
    `20260905000000_inventory_purchase_orders`, FORCE RLS + a `status` CHECK pinning the six-state
-   vocabulary); `@sparx/inventory` services split by concern (`purchase-order-shared.ts` serializers +
+   vocabulary); `@wizeworks/inventory` services split by concern (`purchase-order-shared.ts` serializers +
    helpers, `purchase-orders.ts` CRUD with per-tenant `PO-000001` numbering + retry-on-collision,
    `purchase-order-lines.ts` draft-only line add/update/remove, `purchase-order-lifecycle.ts`
    submit/cancel/close, `purchase-order-document.ts` a pure self-contained print-HTML renderer + loader).
@@ -375,7 +375,7 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
    partial receipts; over/under-receipt handling.
    ✅ **DONE (P3c).** `inventory_goods_receipts` + `inventory_goods_receipt_lines` tables (migration
    `20260906000000_inventory_goods_receipts`, FORCE RLS); a receipt is **posted atomically** (no editable
-   draft — corrections are a later adjustment/count). `@sparx/inventory` `goods-receipts.ts`
+   draft — corrections are a later adjustment/count). `@wizeworks/inventory` `goods-receipts.ts`
    `createGoodsReceipt` routes every line through `applyMovement` (`receive`, +qty, `referenceType:
 'GoodsReceipt'`, `idempotencyKey: goods-receipt:<lineId>`), so the moving-average `avgCostCents` updates
    (the onHand=0 case seeds the average from the receipt cost — the div-by-zero guard already lives in the
@@ -429,7 +429,7 @@ movements; reorder suggestion drafts a PO. All with commerce off.
    (`inventory_counts` + `inventory_count_lines`, migration `20260907000000_inventory_counts`, canonical
    FORCE RLS + `type`/`status` CHECKs); a count is scoped to one warehouse and snapshots `expectedQuantity`
    = on-hand at line creation. Lifecycle `counting → review → [approved] → posted` (+ `cancelled`): the
-   editable phase (`@sparx/inventory` `inventory-counts.ts`) creates the session (a `full` count snapshots
+   editable phase (`@wizeworks/inventory` `inventory-counts.ts`) creates the session (a `full` count snapshots
    every level in the warehouse, a `cycle` count the chosen variants), adds/removes lines, and records
    counted quantities; the lifecycle (`inventory-count-lifecycle.ts`) submits for review (freezing
    `varianceValueCents` = Σ |Δ|·cost and `requiresApproval` when it clears the per-count
@@ -450,7 +450,7 @@ movements; reorder suggestion drafts a PO. All with commerce off.
    `is_system` flag on `inventory_warehouses` marking the per-tenant **in-transit holding warehouse**
    (provisioned lazily on first ship; `listWarehouses` excludes system warehouses so it never appears in
    the pickers/list). A transfer is a document: lifecycle `draft → in_transit → received` (+ `cancelled`).
-   The editable phase (`@sparx/inventory` `inventory-transfers.ts`) composes the lines (variant + qty); the
+   The editable phase (`@wizeworks/inventory` `inventory-transfers.ts`) composes the lines (variant + qty); the
    lifecycle (`inventory-transfer-lifecycle.ts`) **ships** (each line writes `transfer_out` from source +
    `transfer_in` to the in-transit warehouse — so total stock is conserved while units are in motion),
    **receives** (in-transit → destination; a per-line receipt short of the shipped quantity writes the
@@ -468,7 +468,7 @@ movements; reorder suggestion drafts a PO. All with commerce off.
 3. **Movement / audit-log viewer** — `/inventory/movements`: the `inventory_movements` ledger, filter by
    variant/warehouse/reason/actor/date. This is the compliance surface docs/99 D5 flagged missing.
    ✅ **DONE (P4c).** No new tables — a read-only, filterable, paginated view over the append-only ledger
-   every mutation already writes. New `@sparx/inventory` `movement-log.ts` `listMovements(ctx, filter)`
+   every mutation already writes. New `@wizeworks/inventory` `movement-log.ts` `listMovements(ctx, filter)`
    (Prisma `findMany` enriched with the variant SKU/product title + warehouse name; filters
    variant/warehouse/reason/actor-type/actor-id/reference/created-at-range; **explicitly scopes `tenant_id`**
    — not just RLS — because the local `sparx_owner` superuser bypasses RLS and a tenant-wide scan would
@@ -481,7 +481,7 @@ movements; reorder suggestion drafts a PO. All with commerce off.
    by reason/variant/warehouse + AND-combined; actor-type + pagination; date range — inventory suite 40/40).
 4. **Lots/serials UI** — per-variant lot creation tab + serial list/status (models exist; no UI today).
    ✅ **DONE (P4d).** No new tables — a management surface on the existing `LotBatch`/`SerialUnit` models. New
-   `@sparx/inventory` `lot-management.ts` adds the reads + status mutations on top of the create primitives
+   `@wizeworks/inventory` `lot-management.ts` adds the reads + status mutations on top of the create primitives
    in `lots.ts`: `listLots` (filterable by item/warehouse/recall-state/expiry/lot-number, enriched with the
    item + serial count, **explicit `tenant_id` scope** per the RLS-bypass precedent), `getLotBatch` (detail +
    a serial-status breakdown), `listSerials`, `updateSerialStatus` (traceability metadata — it does NOT move
@@ -540,7 +540,7 @@ gating ties into the roles model (`editor`/`admin`) — the `/approve` route req
      ✅ **DONE (P5c)** — a generic config-driven HTTP-API pull, see the P5c callout below.
    - **Tier A (on-prem agent)** — outbound-HTTPS bridge for Fishbowl (Gillett); enrollment mints a
      tenant-scoped API key; `POST /v1/inventory/sources/:id/push` already exists as the ingress.
-     ✅ **DONE (P5d)** — the `@sparx/inventory-bridge` agent + pairing/heartbeat, see the P5d callout
+     ✅ **DONE (P5d)** — the `@wizeworks/inventory-bridge` agent + pairing/heartbeat, see the P5d callout
      below. The Fishbowl-NATIVE reader stays gated on a real instance (docs/28 §8); the agent ships with
      the universal file (CSV/JSON export) reader.
 2. **Conflict resolution** (docs/28 §6): external authoritative on `on_hand` ✅ (P5a reconcile);
@@ -565,7 +565,7 @@ reconciliation overwrites must still preserve in-flight `committed`.
 > **P5a (Tier C — CSV sync, hardened) ✅ DONE.** The existing CSV path worked but was lossy + opaque —
 > unmatched SKUs vanished into a log line and "sync health" was just a `lastSyncAt` timestamp. P5a turns
 > CSV into a trustworthy, usable connection: (1) **one ingest funnel** — `inventoryService.ingestFeed`
-> (packages/inventory `feed-ingest.ts`) is the single path BOTH the CSV worker and the
+> (wizeworks/packages/inventory `feed-ingest.ts`) is the single path BOTH the CSV worker and the
 > `/sources/:id/push` endpoint call (no more duplicated link-resolution logic); it matches rows to links,
 > reconciles matches through the ledger (corrective `sync` movement, Σ-invariant preserved), queues
 > unmatched SKUs, and records the run. (2) **Two new tables** (`inventory_sync_runs`,
@@ -631,7 +631,7 @@ reconciliation overwrites must still preserve in-flight `committed`.
 > **outbound from the tenant's side** — a small agent they install on their network. **Server side** (the
 > ingress was already built in P5a — `/sources/:id/push` + the ingest funnel): a new `agent` source type
 > (Tier A, push-only — the worker never pulls it); **pairing** mints a tenant-scoped API key via
-> `@sparx/auth` (`POST /sources/:id/enroll`, returned ONCE, re-enroll rotates + revokes the old key),
+> `@wizeworks/auth` (`POST /sources/:id/enroll`, returned ONCE, re-enroll rotates + revokes the old key),
 > recorded on the source (id + visible prefix); **`POST …/revoke-agent`** unpairs; **`POST …/heartbeat`**
 > (authenticated by the agent's own key) bumps liveness. The push endpoint now accepts a per-row
 > `synced_at` (→ last-writer ordering, P5c) and a `mode: snapshot|delta` (a snapshot is the agent's full
@@ -639,7 +639,7 @@ reconciliation overwrites must still preserve in-flight `committed`.
 > from `agent_last_seen_at` within a 5-min grace — surfaced loudly in the connection's **Bridge agent
 > panel** (pair / rotate / unpair, the show-once key + install snippet, online/offline + last-seen +
 > version). The minted secret is never returned again (only the prefix). **The agent** — a new standalone
-> package `@sparx/inventory-bridge` (`services/inventory-bridge`, zero `@sparx` deps, shipped to the
+> package `@wizeworks/inventory-bridge` (`wizeworks/services/inventory-bridge`, zero `@sparx` deps, shipped to the
 > tenant): config (zod env), a retrying push client (snapshot + heartbeat, exp-backoff, fatal on 4xx), a
 > reconcile loop (snapshot on `SYNC_INTERVAL`, heartbeat on `HEARTBEAT_INTERVAL`), and a **pluggable
 > reader** — a working **file reader** (CSV/JSON export, mtime = `synced_at`) as the universal production
@@ -678,9 +678,9 @@ exercised; a B2B account sees account-scoped availability.
 > enriched + paginated + `q` search), `PATCH /v1/inventory/:variant_id` (set an absolute on-hand OR a signed
 > delta), `POST /v1/inventory/adjustments` (bulk JSON **or** `text/csv`, ≤1000 rows, each row isolated in
 > its own tx so one failure can't roll back the batch), `GET /v1/inventory/alerts` (low-stock). New service
-> `@sparx/inventory` `public-api.ts` (`listInventory` / `updateLevelCount` / `bulkAdjust`) — every write
+> `@wizeworks/inventory` `public-api.ts` (`listInventory` / `updateLevelCount` / `bulkAdjust`) — every write
 > through the `applyMovement` ledger funnel; SKU resolution + broad-scan reads explicitly tenant-scoped
-> (superuser-bypasses-RLS precedent). **Per-API-key scope enforcement** landed in `@sparx/api-core`:
+> (superuser-bypasses-RLS precedent). **Per-API-key scope enforcement** landed in `@wizeworks/api-core`:
 > `AuthContext.scopes` (lifted from the verified key) + a `requireScope(request, scope)` helper — an `api`
 > actor must carry `read:inventory` / `write:inventory` (`403 FORBIDDEN` otherwise); JWT/dashboard actors
 > bypass (gated by role). docs/06 §7 reconciled to the implemented shape (spec ↔ routes agree). Tests: 3
@@ -689,7 +689,7 @@ exercised; a B2B account sees account-scoped availability.
 > MODULE_DISABLED). typecheck clean (api-core / commerce-schemas / inventory / api-rest); lint 0 errors.
 
 > **P6b DONE — Reporting (docs/09 §8).** ✅ The analytical lens over the master model + ledger, in a new
-> `@sparx/inventory` `analytics.ts` (shared by REST **and** the P6c MCP tools): `inventoryValuation`
+> `@wizeworks/inventory` `analytics.ts` (shared by REST **and** the P6c MCP tools): `inventoryValuation`
 > (units + cost/retail), `turnoverReport` (COGS over a window / average inventory value → inventory turns +
 > **DIO**; average inventory from the daily valuation snapshots, falling back to current valuation),
 > `agingReport` (on-hand value bucketed by days-since-last-sale 0-30/31-60/61-90/90+/never + the
@@ -707,7 +707,7 @@ exercised; a B2B account sees account-scoped availability.
 > errors (warn-only max-lines on the cohesive analytics SQL bodies).
 
 > **P6c DONE — MCP supply tools (docs/07).** ✅ Inventory gets its OWN first-class MCP surface (per §4.0): a
-> new `@sparx/inventory/mcp` registry (mirrors commerce/crm) with `read:inventory` / `write:inventory`
+> new `@wizeworks/inventory/mcp` registry (mirrors commerce/crm) with `read:inventory` / `write:inventory`
 > scopes. Six tools — the supply loop the AI runs end-to-end: **read** `get_low_inventory`,
 > `get_inventory_valuation`, `suggest_reorders`; **write** (confirmation) `update_inventory` (forces
 > `actorType:'ai'` → ledger attributes it to the agent), `create_purchase_order`, `receive_stock`. MCP tool
@@ -716,7 +716,7 @@ exercised; a B2B account sees account-scoped availability.
 > `get_inventory_valuation` now reads the inventory package's valuation). **api-mcp wiring**: the two scopes
 > added to the McpScope union + `DEFAULT_SCOPES_BY_ROLE` (owner/admin/editor write, viewer read) +
 > `WRITE_SCOPES`; `inventoryMcpTools` registered in `ALL_MCP_TOOLS`; **`MODULE_BY_SCOPE`** gates both on the
-> `inventory` module (refuses when off — standalone-safe). New deps: `@sparx/inventory` (api-mcp) + `zod`
+> `inventory` module (refuses when off — standalone-safe). New deps: `@wizeworks/inventory` (api-mcp) + `zod`
 > (inventory package). **Latent bug fixed**: `listLowStock` relied on RLS only — under the superuser-local
 > role it leaked other tenants' rows; added explicit `l.tenant_id = ctx.tenantId` (reorder/movement-log/
 > analytics precedent). Tests: 5 api-mcp tests (`inventory-tools.test.ts`: globally-unique names [SDK-
@@ -731,7 +731,7 @@ exercised; a B2B account sees account-scoped availability.
 > `B2bFleetHold` (`b2b_fleet_holds`) + `min_order_qty`/`max_order_qty` on `b2b_account_product_overrides`
 > (migration `20260913000000_b2b_fleet_holds`, FORCE RLS, status CHECK); back-relations on Tenant /
 > B2BAccount / ProductVariant / Warehouse; `work_order` added to the reservation holderType enum.
-> **Service** `@sparx/inventory` `b2b-holds.ts`: `accountAvailability` (master available net of buffer +
+> **Service** `@wizeworks/inventory` `b2b-holds.ts`: `accountAvailability` (master available net of buffer +
 > the account's own active holds + its min/max limits — explicitly tenant-scoped), `createFleetHold`
 > (enforces min/max → reserves via the reservation engine [holderType `work_order`] → records the hold, so
 > total stock is conserved as `allocated`), `releaseFleetHold` (frees the reservation), `consumeFleetHold`

@@ -14,7 +14,7 @@ WizeWorks has three frontend applications sharing a common design system and com
 2. **Site** — Customer-facing website (Next.js, multi-tenant, theme-driven)
 3. **B2B Portal** — Wholesale/fleet account portal (Next.js)
 
-All three consume the WizeWorks REST/GraphQL API and share the `@sparx/ui` component library.
+All three consume the WizeWorks REST/GraphQL API and share the `@wizeworks/ui` component library.
 
 ---
 
@@ -65,7 +65,7 @@ packages/
 
 ### Design Tokens (CSS Custom Properties)
 
-The dashboard runs on **silicaui** (`@wizeworks/silicaui`, a Tailwind v4 plugin) with `@sparx/brand/theme.css` (`packages/brand`) as the single **color** authority. Non-color tokens (type, space, radius, shadow, motion) plus the `--chart-*` palette live in `packages/ui/src/tokens.css`. Each app's `globals.css` registers the palette once — `@plugin '@wizeworks/silicaui' { colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module }` — and the plugin statically emits every color + component utility (`.btn-*`, `.badge-*`, `.alert-*`, `bg-primary`, `bg-soft`, …). `danger` and `module` are sparx's two registered extras.
+The dashboard runs on **silicaui** (`@wizeworks/silicaui`, a Tailwind v4 plugin) with `@sparx/brand/theme.css` (`sparx/packages/brand`) as the single **color** authority. Non-color tokens (type, space, radius, shadow, motion) plus the `--chart-*` palette live in `sparx/packages/ui/src/tokens.css`. Each app's `globals.css` registers the palette once — `@plugin '@wizeworks/silicaui' { colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module }` — and the plugin statically emits every color + component utility (`.btn-*`, `.badge-*`, `.alert-*`, `bg-primary`, `bg-soft`, …). `danger` and `module` are sparx's two registered extras.
 
 ```css
 /* @sparx/brand/theme.css — colors (defined once; dark resolves here too) */
@@ -103,7 +103,7 @@ The dashboard runs on **silicaui** (`@wizeworks/silicaui`, a Tailwind v4 plugin)
 ```
 
 ```css
-/* packages/ui/src/tokens.css — non-color tokens only */
+/* sparx/packages/ui/src/tokens.css — non-color tokens only */
 :root {
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -133,11 +133,11 @@ Tenant themes override the base tokens via CSS custom properties on the `:root` 
 
 ---
 
-## 5. Component Library (silicaui + `@sparx/ui`)
+## 5. Component Library (silicaui + `@wizeworks/ui`)
 
 > See [docs/23-frontend-component-architecture.md](23-frontend-component-architecture.md) for the authoritative component spec (silicaui primitives, the four-axis variant system, ModuleProvider, full inventory). This section is a summary.
 
-The dashboard's **primitives** are imported directly from `@wizeworks/silicaui-react` (Button, Input, Select, Badge, Card, Table, Tabs, Dialog, Alert, …). `@sparx/ui` survives as the home of the ~25 sparx **compositions** — the shell (`SidebarAppShell`/`BrandRail`, built on silica's `Sidebar` primitive), `ModuleProvider`, `SurfaceFrame`/`SurfaceStep`/`SurfaceSummary`, `ListToolbar`/`FilterBar`/`BulkActionBar`, `ConfirmProvider`, `PageHeader`, `Wordmark`, `toast`/`Toaster`, `statusTone`/`statusLabel`, `cn`, `Stat`, and the chart wrappers — all rebuilt on silicaui primitives.
+The dashboard's **primitives** are imported directly from `@wizeworks/silicaui-react` (Button, Input, Select, Badge, Card, Table, Tabs, Dialog, Alert, …). `@wizeworks/ui` survives as the home of the ~25 sparx **compositions** — the shell (`SidebarAppShell`/`BrandRail`, built on silica's `Sidebar` primitive), `ModuleProvider`, `SurfaceFrame`/`SurfaceStep`/`SurfaceSummary`, `ListToolbar`/`FilterBar`/`BulkActionBar`, `ConfirmProvider`, `PageHeader`, `Wordmark`, `toast`/`Toaster`, `statusTone`/`statusLabel`, `cn`, `Stat`, and the chart wrappers — all rebuilt on silicaui primitives.
 
 ### Core Components
 
@@ -170,7 +170,7 @@ Every color-bearing control is **`color × variant × size × shape`** — four 
 <Badge color={statusTone(status)} variant="soft">{statusLabel(status)}</Badge>
 ```
 
-silica variant vocabulary: `solid` (bare `btn`), `soft` (`btn-soft`), `outline` (`btn-outline`), `dashed` → `btn-dash`, `ghost` (`btn-ghost`), `link` (`btn-link`); sizes `xs…xl`; shapes `square` / `circle` / `block` / `wide`. A **tint** is always `<color> + soft` (e.g. `bg-module bg-soft`, `bg-success bg-soft`) — a theme-aware `color-mix`, never a baked tint token. `@sparx/ui`'s `cn` extends tailwind-merge so `bg-<color> bg-soft` survives merging.
+silica variant vocabulary: `solid` (bare `btn`), `soft` (`btn-soft`), `outline` (`btn-outline`), `dashed` → `btn-dash`, `ghost` (`btn-ghost`), `link` (`btn-link`); sizes `xs…xl`; shapes `square` / `circle` / `block` / `wide`. A **tint** is always `<color> + soft` (e.g. `bg-module bg-soft`, `bg-success bg-soft`) — a theme-aware `color-mix`, never a baked tint token. `@wizeworks/ui`'s `cn` extends tailwind-merge so `bg-<color> bg-soft` survives merging.
 
 ---
 

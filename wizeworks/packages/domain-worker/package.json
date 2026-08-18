@@ -1,0 +1,30 @@
+{
+  "name": "@wizeworks/domain-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cloud Run worker subscribed to domain.purchased. Retries DNS configuration, polls CNAME propagation, marks domains active, and sends renewal reminder emails (docs/64 Module 1 Ph3).",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/links": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

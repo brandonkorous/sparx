@@ -231,7 +231,7 @@ teaching device for content source, not a hardcoded-vs-dynamic wall.
 layout is a `const` composition in code, not DB rows.**
 
 - A `DEFAULT_TEMPLATES: Record<'product'|'collection', SectionSnapshot[]>` lives in
-  `@sparx/sitebuilder-schemas` (shared shape) and is consumed by the site resolver as the
+  `@wizeworks/sitebuilder-schemas` (shared shape) and is consumed by the site resolver as the
   fallback when the snapshot carries no template for that scope.
 - The product default expresses today's PDP exactly: `product-buy-box` → `product-description` →
   `product-fitment` → `product-reviews` → `product-questions` → `product-related`. The collection
@@ -454,7 +454,7 @@ layer — sequenced deploy-small so the e2e store never breaks mid-rollout.
 - **Section parent = `templateId`** (mirrors the FK). A small **templates resource** resolves/creates a
   template by `(scope, key)`. The editor resolves the template, then does section CRUD by `templateId`.
 - **`pageKey` retired from the live API** (routes, MCP, dashboard, input schemas, `SectionView`). The
-  only survivor is the site **snapshot read shim** (`apps/site/lib/site.ts`) — pre-Phase-3
+  only survivor is the site **snapshot read shim** (`wizeworks/apps/site/lib/site.ts`) — pre-Phase-3
   published `SiteVersion`s carry `pageKey`, so mapping old snapshots stays; that's data back-compat, not
   API cruft. `scopeKeyForPageKey`/`pageKeyForTemplate` move there (or stay internal to publish read).
 - **First edit = explicit "Customize this layout"** (B.K.): a never-customized scope shows the seeded
@@ -492,7 +492,7 @@ layer — sequenced deploy-small so the e2e store never breaks mid-rollout.
   `resolveTemplateForWrite`, `SectionView += templateId/scope/templateKey`), and scope validation in
   `create` (→ 422). Section routes accept **either** `template_id` **or** `page_key` (alias) so the
   un-migrated dashboard + MCP keep working. `getOrCreate`/`materializeDefault` parse raw input so the
-  Zod schemas stay the service boundary (api-rest keeps zero `@sparx/sitebuilder-schemas` dep). 9 new
+  Zod schemas stay the service boundary (api-rest keeps zero `@wizeworks/sitebuilder-schemas` dep). 9 new
   integration tests (13 total pass); typecheck/lint/format clean. _Not deployed by me — user-triggered._
 - **3.3b — Dashboard, Layouts UI. ✅ Shipped 2026-05-31 (green).** Manifest gained flat **Product
   pages** / **Collection pages** sections adjacent to Homepage/Pages (the shared shell nav is a flat

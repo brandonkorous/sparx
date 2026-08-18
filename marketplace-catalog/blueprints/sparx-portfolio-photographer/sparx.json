@@ -1,42 +1,38 @@
 {
-    "schemaVersion": 1,
-    "category": "blueprint",
-    "slug": "sparx-portfolio-photographer",
-    "name": "Photographer Portfolio",
-    "version": "1.2.0",
-    "tagline": "An image-first gallery portfolio for a photographer.",
-    "description": "An image-first portfolio for a photographer: a centered wordmark, a near-full-bleed hero, selected series as large edge-to-edge frames, and photo-story pages that read like a gallery wall. Chrome recedes and type stays recessive so the photographs carry all the color. Dressed in a cool gallery-white theme with a near-black mono primary, zero radius and a serif display. Shipped as Mara Ilić.",
-    "payload": "blueprint.ts",
-    "facets": {
-        "vertical": "content",
-        "industry": "Photographer"
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-portfolio-photographer",
+  "name": "Photographer Portfolio",
+  "version": "1.2.0",
+  "tagline": "An image-first gallery portfolio for a photographer.",
+  "description": "An image-first portfolio for a photographer: a centered wordmark, a near-full-bleed hero, selected series as large edge-to-edge frames, and photo-story pages that read like a gallery wall. Chrome recedes and type stays recessive so the photographs carry all the color. Dressed in a cool gallery-white theme with a near-black mono primary, zero radius and a serif display. Shipped as Mara Ilić.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "content",
+    "industry": "Photographer"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "cms", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Photographer Portfolio icon"
     },
-    "pricing": {
-        "model": "free",
-        "priceCents": 0
-    },
-    "requires": {
-        "modules": [
-            "builder",
-            "cms",
-            "email"
-        ]
-    },
-    "media": [
-        {
-            "file": "media/icon.png",
-            "kind": "icon",
-            "alt": "Photographer Portfolio icon"
-        },
-        {
-            "file": "media/preview.png",
-            "kind": "preview",
-            "alt": "Photographer Portfolio — home page preview"
-        }
-    ],
-    "author": {
-        "displayName": "WizeWorks"
-    },
-    "accent": "#111212",
-    "sortWeight": 89
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Photographer Portfolio — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "WizeWorks"
+  },
+  "accent": "#111212",
+  "sortWeight": 89
 }

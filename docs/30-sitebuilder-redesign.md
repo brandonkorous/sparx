@@ -67,7 +67,7 @@ And two expansions of mission:
 ## 3. The unified editor
 
 A single full-bleed workspace at `/sitebuilder`, composed of four regions. All chrome is built
-from `@sparx/ui` components (CVA + Radix + tokens per [docs/23-frontend-component-architecture.md](23-frontend-component-architecture.md));
+from `@wizeworks/ui` components (CVA + Radix + tokens per [docs/23-frontend-component-architecture.md](23-frontend-component-architecture.md));
 no raw Tailwind appears in feature code, and the workspace sits inside `<ModuleProvider module="site">`.
 
 ```
@@ -277,7 +277,7 @@ This is the single highest-leverage fix and lands first.
 **Root cause.** `preview-frame.tsx` and `customizer.tsx` set the iframe src to
 `?sparxPreview=1`. The site treats `sparxPreview` as a **JWT preview token**, forwards it
 as `Authorization: Preview <jwt>`, and on an invalid/expired token **deliberately retries
-without preview**, returning the _published_ snapshot ([apps/site/lib/content.ts](../apps/site/lib/content.ts)).
+without preview**, returning the _published_ snapshot ([wizeworks/apps/site/lib/content.ts](../apps/site/lib/content.ts)).
 `1` is never a valid token, so the preview always renders published. Section edits save
 correctly but never appear; token (color) edits only _seem_ to work because the customizer
 injects them via `postMessage` CSS variables, bypassing the snapshot fetch entirely.
@@ -313,7 +313,7 @@ migration and no site change**.
 
 **Scope of the move**
 
-| Moves → CMS (`/cms`, `@sparx/cms-editor`)                                                       | Stays → Site Builder                                               | Unchanged (module-neutral)                                        |
+| Moves → CMS (`/cms`, `@wizeworks/cms-editor`)                                                   | Stays → Site Builder                                               | Unchanged (module-neutral)                                        |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | `NavigationMenu` + `NavigationItem` models (schema file → CMS domain, `@@map` unchanged)        | `SiteLayoutBlock` model                                            | Tables `navigation_menus` / `navigation_items` + RLS              |
 | `navigation/[location]/page.tsx`, `menu-editor.tsx`, `menu-detail.tsx`, `menu-actions.ts`, list | `layout-editor.tsx` (slots), `upsertLayout` action + slot MCP tool | `PUT /v1/navigation/menus/:location` (admin)                      |
@@ -376,7 +376,7 @@ faviconMediaId}` + Email `brandingOverride` into it; `resolveEmailBrand`, the si
 - **Default mapping** (new, Site-Builder-owned) — `(scope, contentTypeId?) → templateId`. The
   per-scope/per-type default. Read by the site resolver only.
 - **Per-item override** (module-owned) — see §5 / open question 13.1.
-- **Bound section schemas** (new, in `@sparx/sitebuilder-schemas`) — Zod schemas + registry
+- **Bound section schemas** (new, in `@wizeworks/sitebuilder-schemas`) — Zod schemas + registry
   entries for the product/collection bound section family (§4.2), scope-restricted.
 - **Navigation relocation** — `NavigationMenu` / `NavigationItem` move to `16-cms-navigation.prisma`
   (no table change, no migration).
@@ -384,7 +384,7 @@ faviconMediaId}` + Email `brandingOverride` into it; `resolveEmailBrand`, the si
 `SiteVersion` snapshots gain template/scope keying; `SiteLayoutBlock` is unchanged.
 
 Migrations are authored locally against docker Postgres and applied via the DB Migrate workflow
-(Cloud SQL is private-IP only) — see [packages/db/README.md](../packages/db/README.md) and
+(Cloud SQL is private-IP only) — see [wizeworks/packages/db/README.md](../packages/db/README.md) and
 [docs/29-sitebuilder-architecture.md](29-sitebuilder-architecture.md) §3.
 
 ---

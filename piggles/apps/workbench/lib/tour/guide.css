@@ -1,0 +1,40 @@
+/* The ring — how a guide points at something without covering anything.
+ *
+ * No overlay, no cut-out, no dimming. The thing being talked about gets a ring
+ * in the brand pink and everything around it carries on working, which is the
+ * whole difference between this and the usual spotlight tour.
+ *
+ * A ring rather than a fill: the element underneath keeps its own colour, so a
+ * ringed Sell row is still orange and a ringed Money row is still green. A tint
+ * would have painted over the one signal the guide is trying to teach.
+ *
+ * `outline` rather than `box-shadow` or `border`: it draws outside the box, so
+ * nothing shifts by a pixel when a step arrives — a nav row that jumps as it is
+ * pointed at is the tour breaking the layout it is explaining. */
+
+[data-guide-here] {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-field);
+  /* Two seconds, then it settles. Long enough to find with the eye on a full
+     rail, short enough that it is not still flashing while somebody reads. */
+  animation: piggles-guide-here 0.6s ease-out 0s 3;
+}
+
+@keyframes piggles-guide-here {
+  0%,
+  100% {
+    outline-color: var(--color-primary);
+  }
+  50% {
+    outline-color: color-mix(in oklab, var(--color-primary) 25%, transparent);
+  }
+}
+
+/* Somebody who has asked not to see motion gets the ring without the pulse. It
+   is the ring that does the pointing; the pulse only helps you find it faster. */
+@media (prefers-reduced-motion: reduce) {
+  [data-guide-here] {
+    animation: none;
+  }
+}

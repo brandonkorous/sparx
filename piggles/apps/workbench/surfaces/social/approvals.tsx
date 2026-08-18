@@ -10,6 +10,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -17,21 +19,18 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
-  Heading,
+  Card,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import {
-  faCheckDouble,
-  faInbox,
-  faPencilLine,
-  faServer,
-  faXmark,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faCheckDouble, faInbox, faPencilLine, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
+
+/** Registry module for this pane, so the brand draws Get Seen's own picture rather
+ *  than the generic one. */
+const MODULE = 'social';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
@@ -295,56 +294,58 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Approvals controls">
-        <Icon glyph={faInbox} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Approvals
-        </Heading>
-        {pending.length > 0 ? (
-          <Badge color="warning" variant="soft" size="sm">
-            {pending.length === 1 ? '1 waiting' : `${String(pending.length)} waiting`}
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={posts.isFetching}
-          updatedAt={posts.data ? posts.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void posts.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Approvals controls"
+        status={
+          pending.length > 0 ? (
+            <Badge color="warning" variant="soft" size="sm">
+              {pending.length === 1 ? '1 waiting' : `${String(pending.length)} waiting`}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={posts.isFetching}
+            updatedAt={posts.data ? posts.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void posts.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* All three non-ready states are carded, matching the inbox itself — a
+              stack of post cards. */}
           {posts.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load the approvals inbox"
-              description={socialErrorMessage(
-                posts.error,
-                'This is a problem reaching the server. Nothing about your posts has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void posts.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
+                title="Could not load the approvals inbox"
+                description={socialErrorMessage(
+                  posts.error,
+                  'This is a problem reaching the server. Nothing about your posts has changed.'
+                )}
+                onRetry={() => {
+                  void posts.refetch();
+                }}
+              />
+            </Card>
           ) : posts.isPending ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : pending.length === 0 ? (
-            <EmptyState
-              icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
-              title="Nothing waiting for approval"
-              description="When a teammate submits a post, or an automation drafts one, it lands here for an admin to approve before it goes live."
-            />
+            <Card>
+              <PaneEmpty
+                module={MODULE}
+                icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
+                title="Nothing waiting for approval"
+                description="When a teammate submits a post, or an automation drafts one, it lands here for an admin to approve before it goes live."
+              />
+            </Card>
           ) : (
             <>
               {!canDecide ? (

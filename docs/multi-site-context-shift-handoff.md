@@ -22,7 +22,7 @@ the context is property-scoped. Close the gap.
   from the `sparx_active_property` cookie (the site switcher). See
   `apps/dashboard/lib/api-rest-client.ts` (`ACTIVE_PROPERTY_COOKIE`, `activePropertyHeader`)
   and `apps/dashboard/lib/active-property.ts`.
-- api-rest resolves it via `services/api-rest/src/lib/property.ts`:
+- api-rest resolves it via `wizeworks/services/api-rest/src/lib/property.ts`:
   `resolvePropertyId(tenantId, requested)` (fail-closed to primary),
   `resolvePublicPropertyId`, `resolvePrimaryPropertyId`, and the Model-B `where` helpers
   `productSiteVisibilityWhere(propertyId)` / `contentSiteVisibilityWhere(propertyId)`.
@@ -30,13 +30,13 @@ the context is property-scoped. Close the gap.
 ## What ALREADY shifts per-property (don't redo)
 
 - **Builder** — pages, site layout, components, brand. All `PropertyContext`-scoped
-  (`packages/builder/src/services/page-service.ts`, `layout-service`, `component-service`).
+  (`wizeworks/packages/builder/src/services/page-service.ts`, `layout-service`, `component-service`).
   Public reads `/v1/public/builder/{page,collection,layout,home,styles}` all accept
-  `?property=` (`services/api-rest/src/routes/v1/public/builder.ts`).
+  `?property=` (`wizeworks/services/api-rest/src/routes/v1/public/builder.ts`).
 - **Site rendering** — home `/`, named pages, chrome, and brand identity now resolve
-  per-property (see "Changed this session" below). `apps/site/lib/tenant.ts`
+  per-property (see "Changed this session" below). `wizeworks/apps/site/lib/tenant.ts`
   (`resolveSiteRoute`/`resolveActivePropertySlug`) threads `?property=` into every
-  per-property Builder read; dev fallback is `?tenant=&?property=` via `apps/site/proxy.ts`.
+  per-property Builder read; dev fallback is `?tenant=&?property=` via `wizeworks/apps/site/proxy.ts`.
 
 ## What does NOT shift yet (your work)
 
@@ -51,12 +51,12 @@ the context is property-scoped. Close the gap.
    - Make "New X" default-scope to the active site (with an explicit "all sites" opt-out).
 2. **Full theme is tenant-wide.** Per-site `brand_override` only carries 4 identity fields —
    `businessName, colorPrimary, colorPrimaryForeground, colorAccent, logoMediaId`
-   (`services/api-rest/src/lib/property-brand.ts`). The complete token set + fonts come from
+   (`wizeworks/services/api-rest/src/lib/property-brand.ts`). The complete token set + fonts come from
    the tenant-wide saved theme / `sitebuilder_config` (keyed by `tenant_id`) and the legacy
    site snapshot. Make the full theme per-property.
 3. **Legacy site snapshot is tenant-wide.** `GET /v1/public/site/site` takes NO
    `property` param; it drives `compiledTokens`/`themeKey`/`appearancePolicy`, the legacy
-   home sections, and the chrome fallback. Read in `apps/site/lib/site.ts`
+   home sections, and the chrome fallback. Read in `wizeworks/apps/site/lib/site.ts`
    (`getPublishedSite`) by `app/page.tsx`, `app/[...slug]/page.tsx`, and `app/layout.tsx`.
    Either make it property-scoped (publish per-property snapshots + `?property=`) or retire
    it in favor of the per-property BuilderPage system.
@@ -81,24 +81,24 @@ the context is property-scoped. Close the gap.
 
 Coordinate with / build on these; don't revert them:
 
-- `packages/builder/src/services/page-service.ts` — added `getPublishedHome(ctx)` /
+- `wizeworks/packages/builder/src/services/page-service.ts` — added `getPublishedHome(ctx)` /
   `getDraftHome(ctx)` (home = published slugless singleton, lowest position, per property).
-- `services/api-rest/src/routes/v1/public/builder.ts` — added `GET /v1/public/builder/home`.
-- `apps/site/lib/builder.ts` — added `getPublishedBuilderHome(tenantSlug)`.
-- `apps/site/app/page.tsx` — renders the per-property BuilderPage home first (additive), then
+- `wizeworks/services/api-rest/src/routes/v1/public/builder.ts` — added `GET /v1/public/builder/home`.
+- `wizeworks/apps/site/lib/builder.ts` — added `getPublishedBuilderHome(tenantSlug)`.
+- `wizeworks/apps/site/app/page.tsx` — renders the per-property BuilderPage home first (additive), then
   the legacy snapshot, then the composed-commerce fallback.
-- `services/api-rest/src/lib/blueprint-installer.ts` — (a) a NON-primary install now writes
+- `wizeworks/services/api-rest/src/lib/blueprint-installer.ts` — (a) a NON-primary install now writes
   `properties.brand_override` instead of clobbering the tenant brand; (b) the home page
   REPLACES the property's existing slugless singleton instead of adding a second home.
 - **Media rendering (was entirely broken for by-id media):**
-  - `services/api-rest/src/routes/v1/public/media.ts` — added the missing
+  - `wizeworks/services/api-rest/src/routes/v1/public/media.ts` — added the missing
     `GET /v1/public/media/:id?tenant=<slug>` redirect (asset id → `mediaPublicUrl(key)` → 302).
-    Both `apps/site/lib/media.ts` and `services/api-rest/src/lib/email-data.ts` already built
+    Both `wizeworks/apps/site/lib/media.ts` and `wizeworks/services/api-rest/src/lib/email-data.ts` already built
     this URL but no route backed it; logos/favicons/og/any by-id `<img>` were 404ing.
-  - `packages/commerce/src/index.ts` — re-export `mediaPublicUrl` (was relative-only).
-  - `services/api-rest/src/routes/v1/public/commerce.ts` — the public product LIST now returns
+  - `wizeworks/packages/commerce/src/index.ts` — re-export `mediaPublicUrl` (was relative-only).
+  - `wizeworks/services/api-rest/src/routes/v1/public/commerce.ts` — the public product LIST now returns
     `primaryImageId` (hero thumbnail), mirroring `productService.list`; cards had no image.
-  - `apps/site/lib/builder-data.ts` — iterated cms entries now resolve `featuredImage`
+  - `wizeworks/apps/site/lib/builder-data.ts` — iterated cms entries now resolve `featuredImage`
     (media-id string → `{url}`) so `item.featuredImage` renders (the list analogue of
     `postToBuilderRecord`).
   - REMAINING image gap is the same root as #1: shared/global records with no per-site scope

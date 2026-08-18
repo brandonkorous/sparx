@@ -14,10 +14,23 @@
 // synchronising cache, auth and drafts across every window, and gets you a
 // second app that can drift from the first.
 //
-// The page renders nothing on purpose. It exists to be a styled, themed, empty
-// document — the root layout supplies globals.css and the pre-paint theme
+// The page renders almost nothing on purpose. It exists to be a styled, themed,
+// empty document — the root layout supplies globals.css and the pre-paint theme
 // script, and dockview clones the parent's stylesheets in on open.
+//
+// The one exception is the appearance. `data-theme` is an attribute on THIS
+// document's <html>, and this document is not the one the top bar is rendered
+// into — so a popout got the right theme at the moment it opened and then never
+// heard about a change again. PopoutAppearance is the listener that closes that:
+// the choice arrives on the bus, and this window resolves and applies it itself.
+
+import { PopoutAppearance } from './appearance';
 
 export default function PopoutPage() {
-  return <div id="workbench-popout" className="bg-base-100 h-dvh w-full" />;
+  return (
+    <>
+      <PopoutAppearance />
+      <div id="workbench-popout" className="bg-base-100 h-dvh w-full" />
+    </>
+  );
 }

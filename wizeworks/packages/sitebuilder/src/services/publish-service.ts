@@ -1,0 +1,315 @@
+// publishService — the draft → publish → rollback lifecycle.
+//
+// publishNow snapshots the draft into an immutable SiteVersion and write-throughs
+// the compiled light tokens to CommerceSiteTheme (all in one transaction; the
+// event fires only after commit). rollback restores a prior version's snapshot
+// into the draft and republishes it as a new version. getPublishedSnapshot is
+// the read the storefront's public endpoint consumes.
+
+import { PublishInput, RollbackInput } from '@wizeworks/sitebuilder-schemas';
+import type { SiteVersion } from '@wizeworks/db';
+import { withTenant, type TxClient } from '@wizeworks/db';
+import {
+  applyBrandIdentityTokens,
+  compileTokens,
+  compileTokensFromDefaults,
+  compileThemeForTenant,
+  type CompiledTokens,
+  type PresentationOverlayV2,
+  type ThemePresetV2,
+} from '@wizeworks/site-themes';
+
+import { publishSitebuilderEvent } from '../events';
+import type { PropertyContext } from '../errors';
+import { SitebuilderNotFoundError } from '../errors';
+import { getOrCreateConfig } from './_config';
+import { readAssignmentSnapshot } from './assignment-service';
+import {
+  materializeWithinTx,
+  publishWithinTx,
+  readDraft,
+  readDefinitionsForSections,
+  toPublishedSnapshot,
+  type PublishedSnapshot,
+} from './publish-internals';
+
+export async function publishNow(
+  ctx: PropertyContext,
+  rawInput: unknown = {}
+): Promise<SiteVersion> {
+  const input = PublishInput.parse(rawInput);
+  const version = await withTenant(ctx, async (tx) => {
+    await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
+    return publishWithinTx(tx, {
+      tenantId: ctx.tenantId,
+      propertyId: ctx.propertyId,
+      userId: ctx.userId ?? null,
+      note: input.note,
+    });
+  });
+
+  await publishSitebuilderEvent({
+    tenantId: ctx.tenantId,
+    topic: 'sitebuilder.published',
+    payload: {
+      versionId: version.id,
+      versionNumber: version.versionNumber,
+      themeKey: version.themeKey,
+    },
+    dedupeKey: `sitebuilder.published:${version.id}`,
+  });
+
+  return version;
+}
+
+export function listVersions(
+  ctx: PropertyContext,
+  opts: { take?: number; skip?: number } = {}
+): Promise<{ items: SiteVersion[]; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    const where = { propertyId: ctx.propertyId };
+    const [items, total] = await Promise.all([
+      tx.siteVersion.findMany({
+        where,
+        orderBy: { versionNumber: 'desc' },
+        take: Math.min(opts.take ?? 50, 200),
+        skip: opts.skip ?? 0,
+      }),
+      tx.siteVersion.count({ where }),
+    ]);
+    return { items, total };
+  });
+}
+
+export async function getVersion(ctx: PropertyContext, versionId: string): Promise<SiteVersion> {
+  // findFirst scoped to the active property — a version id from a sibling site
+  // (same tenant) is not addressable here.
+  const version = await withTenant(ctx, (tx) =>
+    tx.siteVersion.findFirst({ where: { id: versionId, propertyId: ctx.propertyId } })
+  );
+  if (!version) throw new SitebuilderNotFoundError('SiteVersion', versionId);
+  return version;
+}
+
+export async function rollback(ctx: PropertyContext, rawInput: unknown): Promise<SiteVersion> {
+  const input = RollbackInput.parse(rawInput);
+  const version = await withTenant(ctx, async (tx) => {
+    const target = await tx.siteVersion.findFirst({
+      where: { id: input.versionId, propertyId: ctx.propertyId },
+    });
+    if (!target) throw new SitebuilderNotFoundError('SiteVersion', input.versionId);
+    await materializeWithinTx(tx, ctx.tenantId, ctx.propertyId, target);
+    return publishWithinTx(tx, {
+      tenantId: ctx.tenantId,
+      propertyId: ctx.propertyId,
+      userId: ctx.userId ?? null,
+      note: `Rollback to v${target.versionNumber}`,
+    });
+  });
+
+  await publishSitebuilderEvent({
+    tenantId: ctx.tenantId,
+    topic: 'sitebuilder.rolled_back',
+    payload: { versionId: version.id, versionNumber: version.versionNumber },
+    dedupeKey: `sitebuilder.rolled_back:${version.id}`,
+  });
+
+  return version;
+}
+
+// Brand identity (docs/30 §6) is the tenant-level source of truth and is read
+// LIVE here, overlaid on top of the (published or draft) compiled tokens so a
+// brand edit reflects on the storefront without a full re-publish, and so brand
+// always WINS over theme/tenant identity values. Read-only — never written back.
+//
+// This is also where the Token Model v2 set is compiled (docs/33): the same live
+// brand columns + the presentation overlay (from the version snapshot or the
+// draft config) are layered over the theme preset via compileThemeForTenant. By
+// compiling at READ rather than baking at publish, a brand edit reflects
+// immediately on the v2 path too, and the stored SiteVersion shape is untouched.
+async function overlayBrand(
+  tx: TxClient,
+  tenantId: string,
+  // The active site. A NON-PRIMARY site's brand override (docs/49 "full per-site
+  // brand") is merged over the tenant base brand below, so per-site colors/type/
+  // shape reach both the draft preview and the live storefront — not just the
+  // primary. A primary site (or one with no override) compiles the base brand.
+  propertyId: string,
+  snapshot: PublishedSnapshot,
+  presentation: PresentationOverlayV2 | null,
+  // A DATA theme's inline v2 preset (docs/85 §7). When present the v2 compile uses
+  // it directly instead of resolving a code preset by themeKey — so a marketplace
+  // (no-code) theme renders with zero code-preset dependency.
+  preset: ThemePresetV2 | null
+): Promise<PublishedSnapshot> {
+  // EVERY site reads its own `brand_override` — the primary included. The primary
+  // used to be excluded here (and written straight to TenantBrand), which made the
+  // tenant base double as "the primary site's brand": branding the primary silently
+  // rebranded every sibling site that had no override of its own. A site's brand is
+  // its own; TenantBrand is only the inherited default for a site never branded.
+  const [base, override] = await Promise.all([
+    tx.tenantBrand.findUnique({
+      where: { tenantId },
+      select: {
+        colorPrimary: true,
+        colorPrimaryForeground: true,
+        colorAccent: true,
+        // secondary + the accent/secondary `-content` overrides — feed compiledV2
+        // only (the v1 identity overlay below has no slot for them).
+        colorAccentForeground: true,
+        colorSecondary: true,
+        colorSecondaryForeground: true,
+        fontHeading: true,
+        fontBody: true,
+        // shape/rhythm/effect — feeds compiledV2 (the v1 identity overlay below
+        // ignores it; applyBrandIdentityTokens only touches color/type).
+        tokens: true,
+      },
+    }),
+    readPropertyBrandOverride(tx, propertyId),
+  ]);
+  const brand = mergeCompileBrand(base, override);
+  const compiledTokens = brand
+    ? applyBrandIdentityTokens(snapshot.compiledTokens, brand)
+    : snapshot.compiledTokens;
+  const compiledV2 = compileThemeForTenant({ preset, brand, presentation });
+  return { ...snapshot, compiledTokens, compiledV2 };
+}
+
+// The compile-relevant brand columns (color/type/shape). `null` when the tenant
+// has no brand row AND no override (compile falls back to the preset defaults).
+interface CompileBrand {
+  colorPrimary: string | null;
+  colorPrimaryForeground: string | null;
+  colorAccent: string | null;
+  colorAccentForeground: string | null;
+  colorSecondary: string | null;
+  colorSecondaryForeground: string | null;
+  fontHeading: string | null;
+  fontBody: string | null;
+  tokens: unknown;
+}
+
+// Read a site's brand override (the compile-relevant subset) from the property's
+// `brand_override` JSON. Defensive — the column is unvalidated.
+async function readPropertyBrandOverride(
+  tx: TxClient,
+  propertyId: string
+): Promise<Partial<CompileBrand> | null> {
+  const row = await tx.property.findUnique({
+    where: { id: propertyId },
+    select: { brandOverride: true },
+  });
+  const raw = row?.brandOverride;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  return raw;
+}
+
+// Merge an override over the base brand, field-by-field (null/absent = inherit).
+// Returns null only when there is nothing to compile from.
+function mergeCompileBrand(
+  base: CompileBrand | null,
+  override: Partial<CompileBrand> | null
+): CompileBrand | null {
+  if (!base && !override) return null;
+  const b = base ?? ({} as Partial<CompileBrand>);
+  const o = override ?? {};
+  const pick = (k: keyof CompileBrand): string | null =>
+    (o[k] as string | null | undefined) ?? (b[k] as string | null | undefined) ?? null;
+  return {
+    colorPrimary: pick('colorPrimary'),
+    colorPrimaryForeground: pick('colorPrimaryForeground'),
+    colorAccent: pick('colorAccent'),
+    colorAccentForeground: pick('colorAccentForeground'),
+    colorSecondary: pick('colorSecondary'),
+    colorSecondaryForeground: pick('colorSecondaryForeground'),
+    fontHeading: pick('fontHeading'),
+    fontBody: pick('fontBody'),
+    tokens: o.tokens ?? b.tokens ?? null,
+  };
+}
+
+/** A DATA theme's inline payload, persisted in a settings JSON blob under
+ *  `themePreset` (docs/85 §7). `v1` drives the legacy snapshot compile; `v2` drives
+ *  the read-time v2 compile here. Typed loosely at the boundary. */
+function readThemePreset(settings: unknown): { v1?: CompiledTokens; v2?: ThemePresetV2 } | null {
+  if (!settings || typeof settings !== 'object') return null;
+  const p = (settings as { themePreset?: { v1?: CompiledTokens; v2?: ThemePresetV2 } }).themePreset;
+  return p && typeof p === 'object' ? p : null;
+}
+
+// The presentation overlay persisted in a settings JSON blob (draft config or a
+// published version's snapshot). Typed loosely at the boundary, then trusted by
+// the v2 compiler (which reads only nullable string slots).
+function readPresentation(settings: unknown): PresentationOverlayV2 | null {
+  if (!settings || typeof settings !== 'object') return null;
+  const p = (settings as { presentation?: unknown }).presentation;
+  return p && typeof p === 'object' ? p : null;
+}
+
+/** The published snapshot for the storefront. Null when nothing is published. */
+export async function getPublishedSnapshot(
+  ctx: PropertyContext
+): Promise<PublishedSnapshot | null> {
+  return withTenant(ctx, async (tx) => {
+    const config = await tx.siteConfig.findUnique({
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
+    });
+    if (!config?.publishedVersionId) return null;
+    const version = await tx.siteVersion.findUnique({ where: { id: config.publishedVersionId } });
+    if (!version) return null;
+    const presentation = readPresentation(version.settingsSnapshot);
+    const preset = readThemePreset(version.settingsSnapshot);
+    const withBrand = await overlayBrand(
+      tx,
+      ctx.tenantId,
+      ctx.propertyId,
+      toPublishedSnapshot(version),
+      presentation,
+      preset?.v2 ?? null
+    );
+    const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
+    return { ...withBrand, assignments };
+  });
+}
+
+/**
+ * The current DRAFT assembled into the same snapshot shape — what the
+ * customizer's live preview renders. Compiled on the fly (not yet a version).
+ */
+export async function getDraftSnapshot(ctx: PropertyContext): Promise<PublishedSnapshot> {
+  return withTenant(ctx, async (tx) => {
+    const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
+    const draft = await readDraft(tx);
+    const settings = (config.draftSettings ?? {}) as {
+      tokens?: { light?: Record<string, string>; dark?: Record<string, string> };
+      themePreset?: { v1?: CompiledTokens };
+    };
+    const inlineV1 = settings.themePreset?.v1;
+    const compiled = inlineV1
+      ? compileTokensFromDefaults(inlineV1, settings.tokens ?? {})
+      : compileTokens(settings.tokens ?? {});
+    const presentation = readPresentation(config.draftSettings);
+    const preset = readThemePreset(config.draftSettings);
+    const definitions = await readDefinitionsForSections(tx, draft.sections);
+    const snapshot: PublishedSnapshot = {
+      versionNumber: 0,
+      themeKey: config.themeKey,
+      appearancePolicy: config.appearancePolicy,
+      compiledTokens: compiled,
+      sections: draft.sections,
+      layout: draft.layout,
+      definitions,
+    };
+    const withBrand = await overlayBrand(
+      tx,
+      ctx.tenantId,
+      ctx.propertyId,
+      snapshot,
+      presentation,
+      preset?.v2 ?? null
+    );
+    const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
+    return { ...withBrand, assignments };
+  });
+}

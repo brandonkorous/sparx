@@ -1,0 +1,44 @@
+{
+  "name": "@wizeworks/b2b",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx B2B / wholesale — the trade service layer (pricing tiers + overrides, account trade config + fleet, purchase-approval rules + queue, net-terms AR invoices) extracted from the api-rest routes so REST and MCP share one implementation (one service, many transports). Its MCP subpath exposes the trade write surface as agent tools (docs/10).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./service": {
+      "types": "./src/service.ts",
+      "default": "./src/service.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp/index.ts",
+      "default": "./src/mcp/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@wizeworks/api-core": "workspace:*",
+    "@wizeworks/auth": "workspace:*",
+    "@wizeworks/crm": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/inventory": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

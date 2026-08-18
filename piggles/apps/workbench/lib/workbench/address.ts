@@ -8,13 +8,19 @@
 // bar" end up producing different URLs for the same pane, which is worse than
 // having neither.
 //
+// One deliberate divergence, and it is not a second implementation: a pane may
+// declare share params (lib/workbench/share-as.ts), which `usePaneLink` applies
+// on top of the descriptor. The bar keeps naming the pane the operator has —
+// a following pane, following — while a copied link names what they are looking
+// at. Both go through the functions below; only the descriptor differs.
+//
 // WHY THE SITE IS ALWAYS ON A COPYABLE LINK. A link is written to be READ BY
 // SOMEONE ELSE — pasted into a chat, sent in an email. The reader's workbench is
 // on whatever business they last used, and records belong to exactly one, so an
 // address without `?site=` opens the right surface against the wrong data. It is
 // the difference between "here's the order" and "here's an order screen".
 
-import { buildPath } from '@sparx/links';
+import { buildPath } from '@wizeworks/links';
 import type { PaneDescriptor } from '../surfaces/descriptor';
 
 /** The workbench root: your layout, no destination. What an unaddressable pane falls back to. */

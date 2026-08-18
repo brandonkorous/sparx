@@ -55,7 +55,7 @@ checkout, invoice payment links, B2B order payments — calls this interface.
 None of them know or care which vendor is behind it.
 
 ```typescript
-// packages/payments/src/gateway.ts
+// wizeworks/packages/payments/src/gateway.ts
 
 export interface PaymentIntent {
   id: string;
@@ -163,7 +163,7 @@ export interface ParsedWebhookEvent {
 ## 4. Gateway Registry
 
 ```typescript
-// packages/payments/src/registry.ts
+// wizeworks/packages/payments/src/registry.ts
 
 class GatewayRegistry {
   private gateways = new Map<string, PaymentGateway>();
@@ -223,7 +223,7 @@ interface TenantPaymentConfig {
 Payment service resolves the gateway at transaction time:
 
 ```typescript
-// packages/payments/src/payment.service.ts
+// wizeworks/packages/payments/src/payment.service.ts
 
 export class PaymentService {
   async getGatewayForTenant(tenantId: string): Promise<PaymentGateway> {
@@ -269,7 +269,7 @@ export class PaymentService {
 ## 6. sparx Pay Implementation (Stripe Connect Destination Charges)
 
 ```typescript
-// packages/payments/src/gateways/sparx-pay.ts
+// wizeworks/packages/payments/src/gateways/sparx-pay.ts
 
 import Stripe from 'stripe';
 
@@ -399,7 +399,7 @@ For merchants who want to use their own Stripe account directly.
 sparx is not in the payment flow. No platform fee collected.
 
 ```typescript
-// packages/payments/src/gateways/stripe-direct.ts
+// wizeworks/packages/payments/src/gateways/stripe-direct.ts
 
 export class StripeDirectGateway implements PaymentGateway {
   readonly id = 'stripe_direct';
@@ -648,7 +648,7 @@ Do not build any of the following. These are future decisions.
 ## 13. Definition of Done
 
 ```
-✅ PaymentGateway interface defined in packages/payments
+✅ PaymentGateway interface defined in wizeworks/packages/payments
 ✅ GatewayRegistry implemented and exported
 ✅ SparxPayGateway implemented (Stripe Connect destination charges)
 ✅ StripeDirectGateway implemented (merchant's own Stripe account)

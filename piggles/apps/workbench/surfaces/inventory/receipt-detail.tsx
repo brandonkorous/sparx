@@ -43,15 +43,14 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import {
   faBoxCheck,
@@ -358,40 +357,39 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Receive a delivery actions">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            Receive a delivery
-          </Text>
-        </span>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!canPost}
-          loading={createReceipt.isPending}
-          onClick={() => {
-            void post();
-          }}
-        >
-          <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
-          Book it in
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Receive a delivery actions"
+        status={
+          <span className="inline-flex items-center gap-1.5">
+            <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
+            <Text as="span" className="text-sm font-medium">
+              Receive a delivery
+            </Text>
+          </span>
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={!canPost}
+            loading={createReceipt.isPending}
+            onClick={() => {
+              void post();
+            }}
+          >
+            <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
+            Book it in
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Book in a delivery
-            </Heading>
-            <Text>
-              Pick the order it is for, enter what actually turned up, and book it in. That is the
-              moment your stock numbers go up.
-            </Text>
-          </div>
+          <Text>
+            Pick the order it is for, enter what actually turned up, and book it in. That is the
+            moment your stock numbers go up.
+          </Text>
 
           {/* Choosing the order — only when not opened from one already. */}
           {preTargetPoId === '' ? (
@@ -1087,79 +1085,82 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Receipt actions">
-        <Badge color="success" variant="soft" size="sm">
-          Booked in
-        </Badge>
-
-        {/* A receipt is history, so this is for TRACING rather than for a
+      <PaneToolbar
+        label="Receipt actions"
+        status={
+          <Badge color="success" variant="soft" size="sm">
+            Booked in
+          </Badge>
+        }
+        primary={
+          data.purchaseOrderId ? (
+            <Button
+              size="sm"
+              variant="outline"
+              color="neutral"
+              className="ml-auto shrink-0"
+              onClick={(event) => {
+                ctx.open(
+                  'inventory.purchase-orders.detail',
+                  { id: data.purchaseOrderId },
+                  { target: event.shiftKey ? 'beside' : 'tab' }
+                );
+              }}
+            >
+              <Icon glyph={faClipboardList} className="size-4" aria-hidden />
+              <span className="hidden @lg:inline">Open the order</span>
+            </Button>
+          ) : (
+            <span className="ml-auto" />
+          )
+        }
+        controls={
+          /* A receipt is history, so this is for TRACING rather than for a
             workflow: stick it on the carton that came in and a scan months later
-            says which delivery it arrived on. */}
-        <Tooltip content="Print a scannable label so this delivery can be traced later">
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            shape="square"
-            className="shrink-0"
-            aria-label="Print a scannable label for this delivery"
-            onClick={() => {
-              ctx.open(
-                'inventory.documents.label',
-                {
-                  number: data.number,
-                  title: 'Goods receipt',
-                  subtitle: data.warehouseName ?? '',
-                },
-                { target: 'beside' }
-              );
+            says which delivery it arrived on. */
+          <Tooltip content="Print a scannable label so this delivery can be traced later">
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              shape="square"
+              className="shrink-0"
+              aria-label="Print a scannable label for this delivery"
+              onClick={() => {
+                ctx.open(
+                  'inventory.documents.label',
+                  {
+                    number: data.number,
+                    title: 'Goods receipt',
+                    subtitle: data.warehouseName ?? '',
+                  },
+                  { target: 'beside' }
+                );
+              }}
+            >
+              <Icon glyph={faPrint} className="size-4" aria-hidden />
+            </Button>
+          </Tooltip>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={receipt.isFetching}
+            updatedAt={receipt.dataUpdatedAt}
+            onRefresh={() => {
+              void receipt.refetch();
             }}
-          >
-            <Icon glyph={faPrint} className="size-4" aria-hidden />
-          </Button>
-        </Tooltip>
-        {data.purchaseOrderId ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="ml-auto shrink-0"
-            onClick={(event) => {
-              ctx.open(
-                'inventory.purchase-orders.detail',
-                { id: data.purchaseOrderId },
-                { target: event.shiftKey ? 'beside' : 'tab' }
-              );
-            }}
-          >
-            <Icon glyph={faClipboardList} className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Open the order</span>
-          </Button>
-        ) : (
-          <span className="ml-auto" />
-        )}
-        <RefreshButton
-          isFetching={receipt.isFetching}
-          updatedAt={receipt.dataUpdatedAt}
-          onRefresh={() => {
-            void receipt.refetch();
-          }}
-        />
-      </PaneToolbar>
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="font-mono text-2xl font-semibold">
-              {data.number}
-            </Heading>
-            <Text className="text-sm">
-              {data.purchaseOrderNumber ? `Against order ${data.purchaseOrderNumber}` : 'No order'}
-              {data.warehouseName ? ` · Into ${data.warehouseName}` : ''}
-              {` · Received ${formatDay(data.receivedAt)}`}
-              {data.reference ? ` · Slip ${data.reference}` : ''}
-            </Text>
-          </div>
+          <Text className="text-sm">
+            {data.purchaseOrderNumber ? `Against order ${data.purchaseOrderNumber}` : 'No order'}
+            {data.warehouseName ? ` · Into ${data.warehouseName}` : ''}
+            {` · Received ${formatDay(data.receivedAt)}`}
+            {data.reference ? ` · Slip ${data.reference}` : ''}
+          </Text>
 
           <FormSection title="What was booked in">
             <Table size="sm">

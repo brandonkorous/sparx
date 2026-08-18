@@ -19,16 +19,13 @@ import { findNode, idOf } from '@wizeworks/studio';
 import { useApply, useDoc, useDocSnapshot } from '@wizeworks/studio/react';
 import { useCreatePiece } from '../../lib/studio/piece-data';
 
-export function SaveAsPiece() {
+/** Make the master and put an instance where the design was, in one act. */
+function useSaveSelection(onDone: () => void) {
   const doc = useDoc<TreeDoc>();
   const { selection } = useDocSnapshot();
   const apply = useApply();
   const createPiece = useCreatePiece();
   const toast = useToast();
-  const [naming, setNaming] = useState(false);
-  const [name, setName] = useState('');
-
-  const focusOnMount = useCallback((element: HTMLInputElement | null) => element?.focus(), []);
 
   const selectedId = selection[0];
   const node = selectedId ? findNode(doc.root, selectedId) : undefined;
@@ -38,8 +35,8 @@ export function SaveAsPiece() {
   // never be the selection.)
   const eligible = Boolean(node && !node.instanceOf && selectedId !== idOf(doc.root));
 
-  const run = async () => {
-    const trimmed = name.trim();
+  const run = async (rawName: string) => {
+    const trimmed = rawName.trim();
     if (!node || !selectedId || !trimmed) return;
     try {
       // The master keeps the design; the instance left behind keeps its position and
@@ -63,37 +60,33 @@ export function SaveAsPiece() {
     } catch {
       toast.add({ title: 'The piece could not be saved', type: 'error' });
     } finally {
-      setNaming(false);
-      setName('');
+      onDone();
     }
   };
 
+  return { eligible, run, saving: createPiece.isPending };
+}
+
+export function SaveAsPiece() {
+  const [naming, setNaming] = useState(false);
+  const [name, setName] = useState('');
+  const focusOnMount = useCallback((element: HTMLInputElement | null) => element?.focus(), []);
+
+  const { eligible, run, saving } = useSaveSelection(() => {
+    setNaming(false);
+    setName('');
+  });
+
   if (naming) {
     return (
-      <span className="flex items-center gap-1">
-        <Input
-          size="sm"
-          // Focus on mount via a ref, not `autoFocus`: the naming field REPLACES the
-          // button that was just clicked, so the keyboard has to follow it or the
-          // author is typing into nothing.
-          ref={focusOnMount}
-          value={name}
-          placeholder="Name this piece"
-          onChange={(event) => setName(event.currentTarget.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') void run();
-            if (event.key === 'Escape') setNaming(false);
-          }}
-        />
-        <Button
-          size="sm"
-          color="primary"
-          disabled={!name.trim() || createPiece.isPending}
-          onClick={() => void run()}
-        >
-          {createPiece.isPending ? 'Saving…' : 'Save'}
-        </Button>
-      </span>
+      <NameField
+        name={name}
+        saving={saving}
+        onName={setName}
+        onSave={() => void run(name)}
+        onCancel={() => setNaming(false)}
+        focusOnMount={focusOnMount}
+      />
     );
   }
 
@@ -113,5 +106,43 @@ export function SaveAsPiece() {
       <Icon glyph={faBookmark} className="size-4" aria-hidden />
       Save as piece
     </Button>
+  );
+}
+
+function NameField({
+  name,
+  saving,
+  onName,
+  onSave,
+  onCancel,
+  focusOnMount,
+}: {
+  name: string;
+  saving: boolean;
+  onName: (name: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+  focusOnMount: (element: HTMLInputElement | null) => void;
+}) {
+  return (
+    <span className="flex items-center gap-1">
+      <Input
+        size="sm"
+        // Focus on mount via a ref, not `autoFocus`: this field REPLACES the button
+        // that was just clicked, so the keyboard has to follow it or the author is
+        // typing into nothing.
+        ref={focusOnMount}
+        value={name}
+        placeholder="Name this piece"
+        onChange={(event) => onName(event.currentTarget.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') onSave();
+          if (event.key === 'Escape') onCancel();
+        }}
+      />
+      <Button size="sm" color="primary" disabled={!name.trim() || saving} onClick={onSave}>
+        {saving ? 'Saving…' : 'Save'}
+      </Button>
+    </span>
   );
 }

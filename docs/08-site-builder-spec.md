@@ -93,7 +93,7 @@ theme/
 > once the silica catalog landed, and all six shipped an identical settings schema,
 > so the per-theme field list never varied.
 >
-> sparx ships **forty** themes, as CODE, in `@sparx/silica-catalog`
+> sparx ships **forty** themes, as CODE, in `@wizeworks/silica-catalog`
 > (`FIRST_PARTY_THEMES`): twenty named for the **business** they suit (clinic,
 > workshop, kitchen…) and twenty named for the **look**, shipped by silicaui
 > (quartz, midnight, neon…). They are not rows and need no ingest — a theme reaches

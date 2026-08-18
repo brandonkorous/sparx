@@ -19,8 +19,8 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Card,
   EmptyState,
-  Heading,
   Text,
 } from '@wizeworks/silicaui-react';
 import { faBoxes, faPlus, faServer, faTruck } from '@fortawesome/pro-solid-svg-icons';
@@ -28,8 +28,14 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { coverageSummary } from './geo';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import {
   shippingErrorMessage,
   useShippingProfiles,
@@ -135,56 +141,46 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Shipping controls">
-        <Icon glyph={faTruck} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Shipping
-        </Heading>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={zones.data ? updatedAt : undefined}
-          onRefresh={() => {
-            void zones.refetch();
-            void profiles.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Shipping controls"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={zones.data ? updatedAt : undefined}
+            onRefresh={() => {
+              void zones.refetch();
+              void profiles.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Carded, because the branch beside it is a stack of FormSections —
+              each already a card. */}
           {zones.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load your shipping setup"
-              description={shippingErrorMessage(
-                zones.error,
-                'This is a problem reaching the server. Your delivery settings are unaffected.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void zones.refetch();
-                    void profiles.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load your shipping setup"
+                description={shippingErrorMessage(
+                  zones.error,
+                  'This is a problem reaching the server. Your delivery settings are unaffected.'
+                )}
+                onRetry={() => {
+                  void zones.refetch();
+                  void profiles.refetch();
+                }}
+              />
+            </Card>
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  How you deliver
-                </Heading>
-                <Text className="text-sm">
-                  Set up the places you deliver to and what each delivery option costs. Shoppers see
-                  the options for wherever their address is, and pay the price you set here.
-                </Text>
-              </div>
+              <Text className="text-sm">
+                Set up the places you deliver to and what each delivery option costs. Shoppers see
+                the options for wherever their address is, and pay the price you set here.
+              </Text>
 
               {shipFromWarning ? (
                 <Alert color="warning" variant="soft">
@@ -215,9 +211,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               >
                 {zones.isPending ? (
-                  <Text className="text-sm" role="status">
-                    Loading…
-                  </Text>
+                  <InlineWaiting />
                 ) : zoneRows.length === 0 ? (
                   <EmptyState
                     size="sm"
@@ -252,9 +246,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               >
                 {profiles.isPending ? (
-                  <Text className="text-sm" role="status">
-                    Loading…
-                  </Text>
+                  <InlineWaiting />
                 ) : profileRows.length === 0 ? (
                   <EmptyState
                     size="sm"

@@ -1,269 +1,238 @@
 {
-    "policies": [
+  "policies": [
+    {
+      "handle": "session-deposit",
+      "name": "Session deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [4320, 1440, 120],
+      "policyText": "Every session holds a $50 deposit that comes off your final total. Reschedule with at least 72 hours’ notice and it carries over; inside that window the deposit covers the reserved chair."
+    },
+    {
+      "handle": "consultation-free",
+      "name": "Free consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Consultations are free and take about half an hour. Give us a day’s notice if you need to move it — no charge either way."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "silas",
+      "name": "Silas Roan",
+      "kind": "staff",
+      "skillTags": ["blackwork", "traditional", "realism"],
+      "windows": [
         {
-            "handle": "session-deposit",
-            "name": "Session deposit",
-            "depositType": "deposit",
-            "depositAmountCents": 5000,
-            "cancellationWindowHours": 72,
-            "reminderOffsetsMin": [
-                4320,
-                1440,
-                120
-            ],
-            "policyText": "Every session holds a $50 deposit that comes off your final total. Reschedule with at least 72 hours’ notice and it carries over; inside that window the deposit covers the reserved chair."
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 1200
         },
         {
-            "handle": "consultation-free",
-            "name": "Free consultation",
-            "depositType": "none",
-            "cancellationWindowHours": 24,
-            "reminderOffsetsMin": [
-                1440,
-                120
-            ],
-            "policyText": "Consultations are free and take about half an hour. Give us a day’s notice if you need to move it — no charge either way."
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 1200
         }
-    ],
-    "resources": [
+      ]
+    },
+    {
+      "handle": "del",
+      "name": "Del Marrow",
+      "kind": "staff",
+      "skillTags": ["fineline", "color", "traditional"],
+      "windows": [
         {
-            "handle": "silas",
-            "name": "Silas Roan",
-            "kind": "staff",
-            "skillTags": [
-                "blackwork",
-                "traditional",
-                "realism"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 0,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                }
-            ]
+          "dayOfWeek": 2,
+          "startMinute": 780,
+          "endMinute": 1260
         },
         {
-            "handle": "del",
-            "name": "Del Marrow",
-            "kind": "staff",
-            "skillTags": [
-                "fineline",
-                "color",
-                "traditional"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 780,
-                    "endMinute": 1260
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 780,
-                    "endMinute": 1260
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 780,
-                    "endMinute": 1260
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 780,
-                    "endMinute": 1260
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 780,
-                    "endMinute": 1260
-                }
-            ]
+          "dayOfWeek": 3,
+          "startMinute": 780,
+          "endMinute": 1260
         },
         {
-            "handle": "june",
-            "name": "June Okonkwo",
-            "kind": "staff",
-            "skillTags": [
-                "realism",
-                "color",
-                "blackwork"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                },
-                {
-                    "dayOfWeek": 0,
-                    "startMinute": 720,
-                    "endMinute": 1200
-                }
-            ]
+          "dayOfWeek": 4,
+          "startMinute": 780,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 780,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 780,
+          "endMinute": 1260
         }
-    ],
-    "services": [
+      ]
+    },
+    {
+      "handle": "june",
+      "name": "June Okonkwo",
+      "kind": "staff",
+      "skillTags": ["realism", "color", "blackwork"],
+      "windows": [
         {
-            "handle": "consultation",
-            "name": "Consultation",
-            "description": "Free and unhurried. Bring references and your idea; we’ll talk placement, size, style and price, and plan the piece together before anything is booked.",
-            "durationMinutes": 30,
-            "priceCents": 0,
-            "requiresApproval": true,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "artist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "blackwork"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consultation-free"
+          "dayOfWeek": 2,
+          "startMinute": 720,
+          "endMinute": 1200
         },
         {
-            "handle": "small-tattoo",
-            "name": "Small tattoo",
-            "description": "A single, self-contained piece — up to palm-sized. Design, stencil and tattoo in one sitting.",
-            "durationMinutes": 120,
-            "priceCents": 18000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "artist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "traditional"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "session-deposit"
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 1200
         },
         {
-            "handle": "half-day-session",
-            "name": "Half-day session",
-            "description": "A four-hour block for a larger piece or the first pass of a bigger project.",
-            "durationMinutes": 240,
-            "priceCents": 48000,
-            "bufferAfterMin": 15,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "artist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "blackwork"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "session-deposit"
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 1200
         },
         {
-            "handle": "full-day-session",
-            "name": "Full-day session",
-            "description": "A seven-hour sitting for major work — sleeves, back pieces and full custom builds, with breaks.",
-            "durationMinutes": 420,
-            "priceCents": 84000,
-            "bufferAfterMin": 15,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "artist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "realism"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "session-deposit"
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 1200
         },
         {
-            "handle": "fine-line-piece",
-            "name": "Fine-line piece",
-            "description": "Delicate single-needle work — script, botanicals and small, precise line designs.",
-            "durationMinutes": 180,
-            "priceCents": 32000,
-            "bufferAfterMin": 10,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "artist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "fineline"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "session-deposit"
-        },
-        {
-            "handle": "cover-up-consultation",
-            "name": "Cover-up consultation",
-            "description": "A longer sit-down for reworking or covering existing ink. We assess what’s there and map out a design that lives on top of it — booked with approval first.",
-            "durationMinutes": 45,
-            "priceCents": 0,
-            "requiresApproval": true,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "artist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "blackwork"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "consultation-free"
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 1200
         }
-    ],
-    "locations": [
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "Consultation",
+      "description": "Free and unhurried. Bring references and your idea; we’ll talk placement, size, style and price, and plan the piece together before anything is booked.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
         {
-            "handle": "premises",
-            "name": "Ironwood Tattoo",
-            "timezone": "UTC"
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["blackwork"],
+          "count": 1
         }
-    ]
+      ],
+      "policyHandle": "consultation-free"
+    },
+    {
+      "handle": "small-tattoo",
+      "name": "Small tattoo",
+      "description": "A single, self-contained piece — up to palm-sized. Design, stencil and tattoo in one sitting.",
+      "durationMinutes": 120,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["traditional"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "half-day-session",
+      "name": "Half-day session",
+      "description": "A four-hour block for a larger piece or the first pass of a bigger project.",
+      "durationMinutes": 240,
+      "priceCents": 48000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["blackwork"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "full-day-session",
+      "name": "Full-day session",
+      "description": "A seven-hour sitting for major work — sleeves, back pieces and full custom builds, with breaks.",
+      "durationMinutes": 420,
+      "priceCents": 84000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["realism"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "fine-line-piece",
+      "name": "Fine-line piece",
+      "description": "Delicate single-needle work — script, botanicals and small, precise line designs.",
+      "durationMinutes": 180,
+      "priceCents": 32000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["fineline"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "cover-up-consultation",
+      "name": "Cover-up consultation",
+      "description": "A longer sit-down for reworking or covering existing ink. We assess what’s there and map out a design that lives on top of it — booked with approval first.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["blackwork"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consultation-free"
+    }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Ironwood Tattoo",
+      "timezone": "UTC"
+    }
+  ]
 }

@@ -13,7 +13,7 @@ This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchas
 > **Reconciled 2026-07-22 (docs-vs-built audit):** two "Context" assumptions below are now obsolete.
 > **Stripe payments are live** — full Stripe Connect is implemented, so the "stub the Stripe charge"
 > guidance no longer applies (real PaymentIntents/Connect, not placeholders). And **Dropship has a
-> full backend** — `packages/dropship` (`SupplierAdapter` + `createAdapter()` + `applyPricingRule()`
+> full backend** — `wizeworks/packages/dropship` (`SupplierAdapter` + `createAdapter()` + `applyPricingRule()`
 >
 > - `VENDOR_CATALOG`) and `services/dropship-worker` shipped (docs/14 §2). Treat the phase tables
 >   below as the historical plan, not current status.
@@ -34,13 +34,13 @@ This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchas
 ## Module 1 — Domain Purchase (docs/24)
 
 **Spec:** [docs/24-domain-purchase-management.md](archive/24-domain-purchase-management.md)
-**Existing foundation:** `services/api-rest/src/routes/v1/domains.ts` handles connect/verify. The `domains` table is live (non-RLS dispatch table). GoDaddy OTE environment available at `api.ote-godaddy.com`.
+**Existing foundation:** `wizeworks/services/api-rest/src/routes/v1/domains.ts` handles connect/verify. The `domains` table is live (non-RLS dispatch table). GoDaddy OTE environment available at `api.ote-godaddy.com`.
 **Stripe dependency:** Domain purchase requires a Stripe PaymentIntent. For now, implement the full flow but skip the charge — return a mock `payment_intent_id` so the rest of the flow (GoDaddy purchase → DNS config → DB record) can be tested end-to-end. Wire Stripe when billing lands.
 
 ### Phase 1 — GoDaddy client + DB schema (no UI)
 
 - Add `GODADDY_API_KEY_OTE`, `GODADDY_API_SECRET_OTE`, `GODADDY_API_KEY_PROD`, `GODADDY_API_SECRET_PROD` to Secret Manager and `.env.example`
-- Create `packages/godaddy/` (or `services/api-rest/src/lib/godaddy.ts`) with:
+- Create `wizeworks/packages/godaddy/` (or `wizeworks/services/api-rest/src/lib/godaddy.ts`) with:
   - `checkAvailability(domain)` → `{ available, price, currency, tld }`
   - `getDomainSuggestions(query, tlds?)` → `DomainSuggestion[]`
   - `purchaseDomain(domain, years, registrantContact, consent)` → `{ orderId }`
@@ -53,7 +53,7 @@ This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchas
 
 ### Phase 2 — API endpoints
 
-Extend `services/api-rest/src/routes/v1/domains.ts`:
+Extend `wizeworks/services/api-rest/src/routes/v1/domains.ts`:
 
 | Method  | Path                           | Body                                     | Returns                          |
 | ------- | ------------------------------ | ---------------------------------------- | -------------------------------- |
@@ -127,7 +127,7 @@ Dashboard UI (`apps/app/src/app/(dashboard)/commerce/b2b/`):
 - Account detail: info, contacts, credit summary, pricing override table, fleet profile editor, order history
 - Pricing Tiers list + create/edit form
 
-API routes (`services/api-rest/src/routes/v1/b2b/`):
+API routes (`wizeworks/services/api-rest/src/routes/v1/b2b/`):
 
 - `GET /v1/b2b/accounts` — list with filters (status, tier, overdue)
 - `GET/POST/PATCH /v1/b2b/accounts/:id`
@@ -173,7 +173,7 @@ Extend product variants with fitment data (JSONB `fitment` array). Product impor
 
 ### Phase 5 — B2B Portal (site-side)
 
-Extend `@sparx/customer-auth` (not Better Auth — see docs/27) with B2B account context. B2B portal routes under the tenant site: `/account/b2b/` — credit summary, invoice downloads, quote submission, reorder, saved carts. Access control: `account_admin` / `buyer` / `viewer` roles on `b2b_account_contacts`.
+Extend `@wizeworks/customer-auth` (not Better Auth — see docs/27) with B2B account context. B2B portal routes under the tenant site: `/account/b2b/` — credit summary, invoice downloads, quote submission, reorder, saved carts. Access control: `account_admin` / `buyer` / `viewer` roles on `b2b_account_contacts`.
 
 ### Phase 6 — Purchase approval workflows
 
@@ -188,7 +188,7 @@ Extend `@sparx/customer-auth` (not Better Auth — see docs/27) with B2B account
 ## Module 3 — Dropship (docs/14)
 
 **Spec:** [docs/14-dropship-integration-prd.md](14-dropship-integration-prd.md)
-**Status (2026-07-22):** **Built and live** — full backend shipped: `packages/dropship` (adapters + registry + pricing rules + `VENDOR_CATALOG`), `services/dropship-worker` (order routing + catalog sync), API routes, and the operator UI. The phases below are the historical plan.
+**Status (2026-07-22):** **Built and live** — full backend shipped: `wizeworks/packages/dropship` (adapters + registry + pricing rules + `VENDOR_CATALOG`), `services/dropship-worker` (order routing + catalog sync), API routes, and the operator UI. The phases below are the historical plan.
 **Module flag:** `dropship`
 
 ### Phase 1 — Connector framework + data model
@@ -200,7 +200,7 @@ New tables (all RLS ENABLE + FORCE):
 - `dropship_product_links`: id, tenant_id, product_id (→ products), dropship_product_id, supplier_sku, status (active/discontinued)
 - `dropship_orders`: id, tenant_id, order_id (→ orders), supplier_id, supplier_order_id, status (pending/submitted/shipped/delivered/failed), tracking_number, tracking_url, submitted_at, shipped_at
 
-`SupplierAdapter` interface in `packages/dropship/`:
+`SupplierAdapter` interface in `wizeworks/packages/dropship/`:
 
 ```typescript
 interface SupplierAdapter {
@@ -243,7 +243,7 @@ New Cloud Run worker `services/dropship-worker/`:
 
 ### Phase 4 — Native connectors
 
-**DSers/AliExpress** and **Spocket** adapters (most common use cases). Each is a standalone class implementing `SupplierAdapter` in `packages/dropship/adapters/`. Build one at a time — DSers first (largest catalog). Credentials: API key + secret stored in Secret Manager per tenant.
+**DSers/AliExpress** and **Spocket** adapters (most common use cases). Each is a standalone class implementing `SupplierAdapter` in `wizeworks/packages/dropship/adapters/`. Build one at a time — DSers first (largest catalog). Credentials: API key + secret stored in Secret Manager per tenant.
 
 ### Phase 5 — Profitability reporting
 
@@ -290,7 +290,7 @@ Dashboard UI — Connections → Inventory Source:
 
 ### Phase 3 — Cloud API adapter (Tier B)
 
-First cloud-API adapter. Candidate: **Cin7/DEAR** or **Katana** (widely used, good REST APIs). Do not implement until a merchant running one of these is confirmed. Adapter goes in `packages/inventory/adapters/`.
+First cloud-API adapter. Candidate: **Cin7/DEAR** or **Katana** (widely used, good REST APIs). Do not implement until a merchant running one of these is confirmed. Adapter goes in `wizeworks/packages/inventory/adapters/`.
 
 ### Phase 4 — On-prem bridge agent (Tier A)
 
@@ -326,7 +326,7 @@ When unblocked: Windows agent (Node.js + pkg or Tauri) that talks to Fishbowl's 
 
 ## Cross-cutting rules for every phase
 
-- All new Pub/Sub events follow the existing `publishEvent()` helper in `@sparx/events`
+- All new Pub/Sub events follow the existing `publishEvent()` helper in `@wizeworks/events`
 - All new Cloud Run workers use the `cloud-run-worker` Terraform module pattern (see `services/email-worker/` as reference)
 - New `@sparx/` packages need COPY lines in the consumer service Dockerfiles
 - Module gating: wrap routes in `requireModule('b2b')` / `requireModule('dropship')` — the same middleware used by other module routes

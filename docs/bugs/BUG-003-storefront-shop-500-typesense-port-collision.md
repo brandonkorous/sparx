@@ -9,7 +9,7 @@ same collision had been breaking indexing, so a working search result means both
 read and write paths are healthy again.
 Severity: **Critical** — every faceted PLP (`/shop`) and every product/⌘K search 500s in prod
 Found: 2026-07-24, diagnosing the test tenant `keen-cedar-6433.sparx.zone/shop`
-Surface: `packages/search` (Typesense client) + `services/api-rest` (`/v1/public/commerce/search`)
+Surface: `wizeworks/packages/search` (Typesense client) + `wizeworks/services/api-rest` (`/v1/public/commerce/search`)
 
 ## Symptom
 
@@ -45,12 +45,12 @@ which is exactly the name that collides with the k8s `<SERVICE>_PORT` injection.
 
 ## Fix
 
-1. **Code (comprehensive) — `packages/search/src/client.ts`:** `configFromEnv` now resolves
+1. **Code (comprehensive) — `wizeworks/packages/search/src/client.ts`:** `configFromEnv` now resolves
    host/port/protocol defensively via exported `resolveTypesensePort` / `resolveTypesenseHost`
    / `resolveTypesenseProtocol`. The port accepts ONLY a clean positive integer; the `tcp://…`
    string / empty / NaN fall back to 8108. Empty strings coerce to the default. This defends
    every consumer (api-rest, commerce-indexer, ⌘K) regardless of manifest drift or namespace.
-   `services/api-rest/src/routes/v1/search.ts` (`/v1/search/key`, which handed the browser a
+   `wizeworks/services/api-rest/src/routes/v1/search.ts` (`/v1/search/key`, which handed the browser a
    NaN port) now routes through the same resolvers.
 2. **Manifest (root-cause hygiene) — `k8s/apps/api-rest.yaml`:** `enableServiceLinks: false` on
    the pod spec, which turns off the deprecated Docker-link injection entirely so the bogus
@@ -62,7 +62,7 @@ which is exactly the name that collides with the k8s `<SERVICE>_PORT` injection.
 
 ## Deploy + verify
 
-- Code fix ships in the api-rest **and commerce-indexer** images (both use `@sparx/search`).
+- Code fix ships in the api-rest **and commerce-indexer** images (both use `@wizeworks/search`).
 - After deploy: `curl -sI https://<tenant>.sparx.zone/shop` → 200; product search + ⌘K return
   results; confirm the indexer is writing (a product appears in search).
 - Note: even after the URL fix, search shows results only once the indexer has populated

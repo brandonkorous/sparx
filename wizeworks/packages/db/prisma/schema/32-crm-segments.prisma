@@ -1,0 +1,81 @@
+// CRM — Segments (locked decision #4 — materialized, incremental).
+//
+// `rules` JSONB is validated against SegmentRuleSchema in @wizeworks/crm-schemas
+// at write time. Membership is materialized into segment_members by the
+// segment-evaluator consumer — never re-evaluated at email send or filter
+// time.
+
+model Segment {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String  @map("tenant_id") @db.Uuid
+  // The site whose customers this segment draws from (docs/131 §4/§5); null =
+  // tenant-wide (every customer). This closes a live inconsistency the doc
+  // names: `Customer` is already property-scoped and a segment FEEDS the
+  // property-scoped `Broadcast`, so an unscoped segment sat between two scoped
+  // endpoints — a "high-value customers" audience built on one business could
+  // silently feed the other's marketing.
+  //
+  // Nullable because a genuinely cross-business audience is real (an owner
+  // emailing every VIP they have), and the segment's site — when set — bounds
+  // which customers its rules evaluate over.
+  propertyId  String? @map("property_id") @db.Uuid
+  name        String  @db.VarChar(120)
+  slug        String  @db.VarChar(63)
+  description String? @db.Text
+
+  // `dynamic` | `static` (docs/144 §10).
+  //
+  // A DYNAMIC list is defined by its rules and recomputed by the evaluator — the
+  // only kind that existed before. A STATIC list is a hand-picked set: membership
+  // is written by a person or by an automation and the evaluator leaves it alone.
+  //
+  // Both are the same table on purpose. `segment_members` is unchanged, so every
+  // consumer of a segment — broadcasts, sequences, reports, the audience picker —
+  // takes static lists for free rather than growing a second code path. The ONE
+  // rule the evaluator needs is to skip `static` rows; forgetting it would empty
+  // a hand-built list on the next recompute.
+  kind String @default("dynamic") @db.VarChar(10)
+
+  // Ignored when `kind = 'static'`, and kept (not nulled) so a list converted to
+  // static and back doesn't lose the rules someone wrote.
+  rules      Json
+  color      String?   @db.VarChar(9)
+  isSystem   Boolean   @default(false) @map("is_system")
+  isBuiltIn  Boolean   @default(false) @map("is_built_in")
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a segment is an audience defined for one business.
+  property Property?                @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  members  SegmentMember[]
+  history  SegmentMembershipEvent[]
+
+  // (tenant, property, slug), NULLS NOT DISTINCT in SQL — two sites may each have
+  // a `vip` segment, and the tenant-wide tier still can't duplicate a slug.
+  @@unique([tenantId, propertyId, slug])
+  @@index([tenantId, archivedAt])
+  @@index([tenantId, propertyId, archivedAt])
+  @@map("segments")
+}
+
+model SegmentMember {
+  segmentId  String   @map("segment_id") @db.Uuid
+  customerId String   @map("customer_id") @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  enteredAt  DateTime @default(now()) @map("entered_at") @db.Timestamptz
+  score      Decimal? @db.Decimal(10, 4)
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  segment  Segment  @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  // No property_id here (docs/131 §2 pattern 3): a membership is the intersection
+  // of a segment and a customer, both of which already carry a site, so its site
+  // is theirs. A column would be a third copy able to disagree with either.
+  @@id([segmentId, customerId])
+  @@index([tenantId, segmentId, enteredAt(sort: Desc)])
+  @@index([tenantId, customerId])
+  @@map("segment_members")
+}

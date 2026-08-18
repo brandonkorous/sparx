@@ -33,6 +33,7 @@ import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
   Heading,
   Rating,
@@ -50,10 +51,8 @@ import { useConfirm } from '../../lib/confirm';
 import {
   faCheck,
   faEyeSlash,
-  faMessage,
   faMessages,
   faReply,
-  faServer,
   faTrashCan,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -63,6 +62,7 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ScrollStrip } from '../../components/scroll-strip';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   productErrorMessage,
   questionState,
@@ -80,6 +80,9 @@ import {
 } from './products-data';
 
 const LABEL = 'Reviews & questions';
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected' | 'flagged';
 
@@ -496,7 +499,7 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
   const unanswered = allQuestions.filter((q) => q.answers.length === 0).length;
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
 
   const busy = reviews.isFetching || questions.isFetching;
@@ -504,74 +507,71 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${LABEL} actions`}>
-        <Icon glyph={faMessage} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {scope.product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-        <Select
-          size="sm"
-          color="module"
-          // Bounded, not `flex-1`: an unbounded Select in a `w-full` toolbar
-          // grows to fill the bar and truncates the product name down to
-          // "Everyday Ceram…". The filter is the thing that gives way here.
-          className="ml-auto w-40 shrink-0"
-          value={filter}
-          // Silica renders the trigger's selected label from `items`, not from
-          // children — without it the bar reads "approved" instead of
-          // "Published".
-          items={FILTER_LABELS}
-          aria-label="Show only"
-          onValueChange={(next) => {
-            setFilter(String(next) as StatusFilter);
-          }}
-        />
-        <RefreshButton
-          isFetching={busy}
-          updatedAt={reviews.dataUpdatedAt}
-          onRefresh={() => {
-            void reviews.refetch();
-            void questions.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label={`${LABEL} actions`}
+        status={
+          scope.isFollowing ? (
+            <Badge color="info" variant="soft" size="sm">
+              Following
+            </Badge>
+          ) : null
+        }
+        controls={
+          <Select
+            size="sm"
+            color="module"
+            // Bounded, not `flex-1`: an unbounded Select in a `w-full` toolbar
+            // grows to fill the bar and truncates the product name down to
+            // "Everyday Ceram…". The filter is the thing that gives way here.
+            className="ml-auto w-40 shrink-0"
+            value={filter}
+            // Silica renders the trigger's selected label from `items`, not from
+            // children — without it the bar reads "approved" instead of
+            // "Published".
+            items={FILTER_LABELS}
+            aria-label="Show only"
+            onValueChange={(next) => {
+              setFilter(String(next) as StatusFilter);
+            }}
+          />
+        }
+        refresh={
+          <RefreshButton
+            isFetching={busy}
+            updatedAt={reviews.dataUpdatedAt}
+            onRefresh={() => {
+              void reviews.refetch();
+              void questions.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <FollowingNotice scope={scope} />
 
+          {/* Carded, because the branch beside it ends in FormSections — each
+              already a card. */}
           {failedToLoad ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load what customers said"
-              description={productErrorMessage(
-                reviews.error ?? questions.error,
-                'This is a problem reaching the server. Nothing customers wrote has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void reviews.refetch();
-                    void questions.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faMessages} className="size-6" aria-hidden />}
+                title="Could not load what customers said"
+                description={productErrorMessage(
+                  reviews.error ?? questions.error,
+                  'This is a problem reaching the server. Nothing customers wrote has been lost.'
+                )}
+                onRetry={() => {
+                  void reviews.refetch();
+                  void questions.refetch();
+                }}
+              />
+            </Card>
           ) : (
             <>
               <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  {scope.product.title}
-                </Heading>
                 <div className="flex flex-wrap items-center gap-2">
                   <Rating
                     value={Math.round(scope.product.averageRating ?? 0)}

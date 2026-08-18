@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Badge, Text } from '@wizeworks/silicaui-react';
 import { faCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { industryOf } from '@sparx/story-schemas';
+import { industryOf } from '@wizeworks/story-schemas';
 import { ModuleScope } from '../../../components/module-scope';
 import {
   MODULE_BY_KEY,

@@ -6,7 +6,7 @@
 // save on their own, which is the whole reason the panes can be open together
 // without fighting over one draft.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import type { Theme } from '@wizeworks/silicaui-html';
 import { api } from '../api/client';
 
@@ -121,14 +121,30 @@ export function useApplyTheme() {
   });
 }
 
+/** One site wearing a look, named the way its owner names it. */
+export interface ThemeUsage {
+  propertyId: string;
+  name: string;
+}
+
 /** Which sites wear a look — asked before deleting or replacing one. */
 export function useThemeUsages(id: string | null) {
   return useQuery({
     queryKey: ['studio', 'theme-usages', id],
     queryFn: () =>
-      api
-        .get<{ sites: { propertyId: string }[] }>(`/v1/builder/themes/${id}/usages`)
-        .then((r) => r.sites),
+      api.get<{ sites: ThemeUsage[] }>(`/v1/builder/themes/${id}/usages`).then((r) => r.sites),
     enabled: Boolean(id),
   });
+}
+
+/**
+ * Which sites wear a look, read at the moment of ASKING.
+ *
+ * Not held from the list: "this is on your shop" is the whole basis of the decision,
+ * and a number from when the pane opened can be wrong by the time someone acts on it.
+ */
+export function fetchThemeUsages(id: string): Promise<ThemeUsage[]> {
+  return api
+    .get<{ sites: ThemeUsage[] }>(`/v1/builder/themes/${encodeURIComponent(id)}/usages`)
+    .then((r) => r.sites);
 }

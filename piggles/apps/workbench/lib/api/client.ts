@@ -1,6 +1,6 @@
 // The browser's api-rest transport.
 //
-// Thin wrapper over @sparx/api-client's SparxClient, which is already
+// Thin wrapper over @wizeworks/api-client's SparxClient, which is already
 // zero-dependency and browser-safe. Two things are added here:
 //
 //   1. The base URL is resolved at RUNTIME from /api/token rather than baked in
@@ -11,7 +11,7 @@
 //   2. `x-sparx-property-id` is attached to every request, so panes never think
 //      about the active property.
 
-import { SparxClient, type RequestOptions, type ApiResponse } from '@sparx/api-client';
+import { SparxClient, type RequestOptions, type ApiResponse } from '@wizeworks/api-client';
 import { getTokenState, resolveToken } from './token';
 
 let client: SparxClient | null = null;

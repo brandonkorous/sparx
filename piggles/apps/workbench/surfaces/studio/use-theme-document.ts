@@ -49,36 +49,43 @@ export interface ThemeDocumentState {
  * The theme document this pane edits — the one the site wears, or the one the
  * author picked from the library.
  */
-export function useThemeDocument(selectedId: string | null): ThemeDocumentState {
+/** The one store this look lives in, however many panes are looking at it. */
+function useOpenTheme(row: ThemeRow | null) {
   const { session } = useStudioBinding();
-  const themes = useThemes();
-  const selection = useThemeSelection();
-  const saveTheme = useSaveTheme();
-  const publishTheme = usePublishTheme();
   const [store, setStore] = useState<DocumentStore<ThemeDoc> | null>(null);
-
-  const appliedId = selection.data?.themeId ?? null;
-  const openId = selectedId ?? appliedId;
-
-  // Tell the session which look the site wears, so every OTHER pane resolves
-  // through it. Without this a page canvas would fall back to brand-derived while
-  // the theme pane beside it showed something else.
-  useSyncSiteContext({ themeId: appliedId });
-
-  const row = useMemo(
-    () => themes.data?.find((candidate) => candidate.id === openId) ?? null,
-    [themes.data, openId]
-  );
 
   useEffect(() => {
     if (!session || !row) {
       setStore(null);
       return;
     }
-    // `open` hands back the store already holding this document when one exists,
-    // so a second pane never replaces a draft the first has unsaved edits in.
+    // `open` hands back the store already holding this document when one exists, so
+    // a second pane never replaces a draft the first has unsaved edits in.
     setStore(session.open(toDoc(row)));
   }, [session, row]);
+
+  return store;
+}
+
+export function useThemeDocument(selectedId: string | null): ThemeDocumentState {
+  const themes = useThemes();
+  const selection = useThemeSelection();
+  const saveTheme = useSaveTheme();
+  const publishTheme = usePublishTheme();
+
+  const appliedId = selection.data?.themeId ?? null;
+  const openId = selectedId ?? appliedId;
+
+  // Tell the session which look the site wears, so every OTHER pane resolves through
+  // it. Without this a page canvas would fall back to brand-derived while the theme
+  // pane beside it showed something else.
+  useSyncSiteContext({ themeId: appliedId });
+
+  const row = useMemo(
+    () => themes.data?.find((candidate) => candidate.id === openId) ?? null,
+    [themes.data, openId]
+  );
+  const store = useOpenTheme(row);
 
   const save = useCallback(async () => {
     if (!store) return;

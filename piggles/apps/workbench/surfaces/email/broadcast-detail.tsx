@@ -31,7 +31,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -50,6 +49,7 @@ import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -124,7 +124,14 @@ export function BroadcastDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function LoadBroadcast({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: broadcast, isPending, isError, refetch } = useBroadcast(id);
+  const {
+    data: broadcast,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useBroadcast(id);
 
   if (isError) {
     return (
@@ -148,7 +155,17 @@ function LoadBroadcast({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   // Only a draft is editable; everything past that is read-only.
   if (broadcast.status === 'draft') return <BroadcastComposer ctx={ctx} broadcast={broadcast} />;
-  return <BroadcastReview ctx={ctx} broadcast={broadcast} />;
+  return (
+    <BroadcastReview
+      ctx={ctx}
+      broadcast={broadcast}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 /* ── The composer (new draft, or editing a draft) ─────────────────────────── */
@@ -321,74 +338,92 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Broadcast composer actions" wrap>
-        <Badge color="info" variant="soft" size="sm">
-          Draft
-        </Badge>
-        {recipientCount !== undefined ? (
-          <Text as="span" className="text-sm">
-            {recipientCount.toLocaleString()} {recipientCount === 1 ? 'person' : 'people'}
-          </Text>
-        ) : null}
-
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          className="ml-auto shrink-0"
-          disabled={!canSave || busy || (!dirty && currentId !== null)}
-          loading={(create.isPending || update.isPending) && !send.isPending && !schedule.isPending}
-          onClick={() => {
-            void onSaveDraft();
-          }}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save draft
-        </Button>
-
-        {timing === 'now' ? (
+      <PaneToolbar
+        label="Broadcast composer actions"
+        // The composer reads three lists off the server — audiences, designed
+        // emails, the sending address — and each has an in-body "try refreshing"
+        // message with nothing to press. This is that button.
+        refresh={
+          <RefreshButton
+            isFetching={audiences.isFetching || designed.isFetching || settings.isFetching}
+            updatedAt={audiences.data ? audiences.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void audiences.refetch();
+              void designed.refetch();
+              void settings.refetch();
+            }}
+          />
+        }
+        status={
+          <>
+            <Badge color="info" variant="soft" size="sm">
+              Draft
+            </Badge>
+            {recipientCount !== undefined ? (
+              <Text as="span" className="text-sm">
+                {recipientCount.toLocaleString()} {recipientCount === 1 ? 'person' : 'people'}
+              </Text>
+            ) : null}
+          </>
+        }
+        primary={
           <Button
             size="sm"
-            color="module"
-            className="shrink-0"
-            disabled={!ready || busy}
-            loading={send.isPending}
+            variant="outline"
+            color="neutral"
+            className="ml-auto shrink-0"
+            disabled={!canSave || busy || (!dirty && currentId !== null)}
+            loading={
+              (create.isPending || update.isPending) && !send.isPending && !schedule.isPending
+            }
             onClick={() => {
-              void onSend();
+              void onSaveDraft();
             }}
           >
-            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
-            Send now
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save draft
           </Button>
-        ) : (
-          <Button
-            size="sm"
-            color="module"
-            className="shrink-0"
-            disabled={!ready || !scheduleValid || busy}
-            loading={schedule.isPending}
-            onClick={() => {
-              void onSchedule();
-            }}
-          >
-            <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
-            Schedule
-          </Button>
-        )}
-      </PaneToolbar>
+        }
+        controls={
+          timing === 'now' ? (
+            <Button
+              size="sm"
+              color="module"
+              className="shrink-0"
+              disabled={!ready || busy}
+              loading={send.isPending}
+              onClick={() => {
+                void onSend();
+              }}
+            >
+              <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
+              Send now
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              color="module"
+              className="shrink-0"
+              disabled={!ready || !scheduleValid || busy}
+              loading={schedule.isPending}
+              onClick={() => {
+                void onSchedule();
+              }}
+            >
+              <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
+              Schedule
+            </Button>
+          )
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {broadcast ? null : (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Write a broadcast
-              </Heading>
-              <Text>
-                One email to a whole audience at once. Choose who it goes to and what it says, then
-                send it now or pick a time.
-              </Text>
-            </div>
+            <Text>
+              One email to a whole audience at once. Choose who it goes to and what it says, then
+              send it now or pick a time.
+            </Text>
           )}
 
           {serverError ? (
@@ -666,7 +701,19 @@ function formatList(parts: string[]): string {
 
 /* ── The review (sent, scheduled, and the terminal states) ────────────────── */
 
-function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: Broadcast }) {
+function BroadcastReview({
+  ctx,
+  broadcast,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  broadcast: Broadcast;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
   const cancel = useCancelBroadcast();
@@ -714,35 +761,47 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Broadcast actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        {broadcast.status === 'scheduled' ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="danger"
-            className="ml-auto shrink-0"
-            loading={cancel.isPending}
-            onClick={() => {
-              void onCancel();
+      <PaneToolbar
+        label="Broadcast actions"
+        // Opens and clicks keep arriving for days after a send, and a scheduled
+        // broadcast becomes a sent one without anything on screen changing.
+        refresh={
+          <RefreshButton
+            isFetching={isFetching || stats.isFetching}
+            updatedAt={updatedAt}
+            onRefresh={() => {
+              onRefresh();
+              void stats.refetch();
             }}
-          >
-            <Icon glyph={faXmark} className="size-4" aria-hidden />
-            Cancel send
-          </Button>
-        ) : null}
-      </PaneToolbar>
+          />
+        }
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          broadcast.status === 'scheduled' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              color="danger"
+              className="ml-auto shrink-0"
+              loading={cancel.isPending}
+              onClick={() => {
+                void onCancel();
+              }}
+            >
+              <Icon glyph={faXmark} className="size-4" aria-hidden />
+              Cancel send
+            </Button>
+          ) : null
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {broadcast.name}
-            </Heading>
-            <Text className="text-sm">{broadcast.subject}</Text>
-          </div>
+          <Text className="text-sm">{broadcast.subject}</Text>
 
           {broadcast.status === 'scheduled' && broadcast.scheduledAt ? (
             <Alert color="warning" variant="soft">

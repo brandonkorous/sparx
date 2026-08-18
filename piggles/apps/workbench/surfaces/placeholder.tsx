@@ -16,8 +16,10 @@
 
 import type { PigglesIcon } from '@piggles/ui';
 import { Icon } from '@piggles/ui';
-import { EmptyState } from '@wizeworks/silicaui-react';
-import type { SurfaceContext } from '../lib/surfaces/registry';
+import { Card } from '@wizeworks/silicaui-react';
+import { PaneEmpty } from '../components/pane-empty';
+import { PANE_SHELL } from '../components/pane-toolbar';
+import { getSurface, type SurfaceContext } from '../lib/surfaces/registry';
 
 interface PlaceholderOptions {
   /** Matches the nav row's icon, so the pane reads as the thing that was clicked. */
@@ -32,15 +34,24 @@ interface PlaceholderOptions {
 }
 
 export function createPlaceholderSurface({ icon, title, body }: PlaceholderOptions) {
-  function PlaceholderSurface(_props: { ctx: SurfaceContext }) {
+  function PlaceholderSurface({ ctx }: { ctx: SurfaceContext }) {
+    // Every stub shares this component, so the module comes from the registry
+    // entry the pane was opened as — `stub()` already declares it there.
+    const module = getSurface(ctx.descriptor.surface)?.module;
     return (
-      <div className="grid h-full place-items-center overflow-y-auto p-8">
-        <EmptyState
-          className="max-w-md"
-          icon={<Icon glyph={icon} className="text-module size-8" aria-hidden />}
-          title={title}
-          description={`${body} This screen is still being built — it will open here when it is ready.`}
-        />
+      // The message is this pane's whole content, so it sits on a card like every
+      // other pane's content does rather than floating on the recessed surface —
+      // and it goes through <PaneEmpty>, which is what puts the brand's picture
+      // here instead of a grey glyph chip.
+      <div className={`${PANE_SHELL} grid place-items-center`}>
+        <Card className="max-w-md p-8">
+          <PaneEmpty
+            module={module}
+            icon={<Icon glyph={icon} className="size-8" aria-hidden />}
+            title={title}
+            description={`${body} This screen is still being built — it will open here when it is ready.`}
+          />
+        </Card>
       </div>
     );
   }

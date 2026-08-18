@@ -38,6 +38,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '../invoicing/money-input';
@@ -133,10 +134,35 @@ function TierLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  return <TierEditor ctx={ctx} id={id} tier={tierQuery.data} />;
+  return (
+    <TierEditor
+      ctx={ctx}
+      id={id}
+      tier={tierQuery.data}
+      isFetching={tierQuery.isFetching}
+      updatedAt={tierQuery.dataUpdatedAt}
+      onRefresh={() => {
+        void tierQuery.refetch();
+      }}
+    />
+  );
 }
 
-function TierEditor({ ctx, id, tier }: { ctx: SurfaceContext; id: string; tier?: TierRow }) {
+function TierEditor({
+  ctx,
+  id,
+  tier,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  id: string;
+  tier?: TierRow;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
+}) {
   const isNew = id === 'new';
   const toast = useToast();
   const confirm = useConfirm();
@@ -258,36 +284,45 @@ function TierEditor({ ctx, id, tier }: { ctx: SurfaceContext; id: string; tier?:
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Price tier actions">
-        {tier?.accountCount !== undefined ? (
-          <Badge color="neutral" variant="soft" size="sm">
-            {tier.accountCount === 1 ? '1 account' : `${String(tier.accountCount)} accounts`}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={create.isPending || update.isPending}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create tier' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Price tier actions"
+        status={
+          tier?.accountCount !== undefined ? (
+            <Badge color="neutral" variant="soft" size="sm">
+              {tier.accountCount === 1 ? '1 account' : `${String(tier.accountCount)} accounts`}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={create.isPending || update.isPending}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create tier' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a price tier
-              </Heading>
-              <Text>
-                Set a discount once and give it to every account you put on this tier — instead of
-                setting one per customer.
-              </Text>
-            </div>
+            <Text>
+              Set a discount once and give it to every account you put on this tier — instead of
+              setting one per customer.
+            </Text>
           ) : null}
 
           {failure ? (

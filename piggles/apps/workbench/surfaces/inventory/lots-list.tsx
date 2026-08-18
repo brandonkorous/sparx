@@ -43,12 +43,11 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBarcodeRead, faLayerGroup } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -236,128 +235,150 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
           text search, a location, and then either an expiry window + recall
           state (batches) or a lifecycle status (serials). That cannot reduce to
           one line in a docked pane, so this is one of the rare bars that wraps.
-          Nothing is a create action; the refresh button carries `ml-auto`. */}
-      <PaneToolbar label="Lots and serials controls" wrap>
-        <ToggleGroup
-          size="sm"
-          color="module"
-          className="shrink-0"
-          value={[mode]}
-          onValueChange={(next: unknown[]) => {
-            if (next.includes('serials')) switchMode('serials');
-            else if (next.includes('lots')) switchMode('lots');
-          }}
-        >
-          <ToggleGroupItem value="lots" aria-label="Show batches">
-            <Icon glyph={faLayerGroup} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Batches</span>
-          </ToggleGroupItem>
-          <ToggleGroupItem value="serials" aria-label="Show serial numbers">
-            <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Serials</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
+          Nothing here is a create action. */}
+      <PaneToolbar
+        label="Lots and serials controls"
+        search={
+          /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
-            reaches the element that lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label={mode === 'lots' ? 'Search batch codes' : 'Search serial numbers'}
-            placeholder={mode === 'lots' ? 'Batch code…' : 'Serial number…'}
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+            reaches the element that lays out. */
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label={mode === 'lots' ? 'Search batch codes' : 'Search serial numbers'}
+              placeholder={mode === 'lots' ? 'Batch code…' : 'Serial number…'}
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        controls={
+          <>
+            <ToggleGroup
+              size="sm"
+              color="module"
+              className="shrink-0"
+              value={[mode]}
+              onValueChange={(next: unknown[]) => {
+                if (next.includes('serials')) switchMode('serials');
+                else if (next.includes('lots')) switchMode('lots');
+              }}
+            >
+              <ToggleGroupItem value="lots" aria-label="Show batches">
+                <Icon glyph={faLayerGroup} className="size-4" aria-hidden />
+                <span>Batches</span>
+              </ToggleGroupItem>
+              <ToggleGroupItem value="serials" aria-label="Show serial numbers">
+                <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
+                <span>Serials</span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Show what is kept at"
+              value={locationId}
+              onChange={(event) => {
+                setLocationId(event.target.value);
+                resetWindow();
+              }}
+            >
+              <option value="">Every location</option>
+              {activeLocations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </NativeSelect>
+            {mode === 'lots' ? (
+              <>
+                <NativeSelect
+                  size="sm"
+                  className="max-w-40 shrink"
+                  aria-label="Filter by expiry"
+                  value={expiry}
+                  onChange={(event) => {
+                    setExpiry(event.target.value as '' | 'soon' | 'expired');
+                    resetWindow();
+                  }}
+                >
+                  <option value="">Any expiry</option>
+                  <option value="soon">Expiring soon</option>
+                  <option value="expired">Already expired</option>
+                </NativeSelect>
+
+                <NativeSelect
+                  size="sm"
+                  className="max-w-40 shrink"
+                  aria-label="Filter by recall"
+                  value={recall}
+                  onChange={(event) => {
+                    setRecall(event.target.value);
+                    resetWindow();
+                  }}
+                >
+                  <option value="">Any recall status</option>
+                  <option value="active">Recalled</option>
+                  <option value="pending">Recall pending</option>
+                  <option value="cleared">Recall cleared</option>
+                </NativeSelect>
+              </>
+            ) : (
+              <NativeSelect
+                size="sm"
+                className="max-w-40 shrink"
+                aria-label="Filter by status"
+                value={serialStatus}
+                onChange={(event) => {
+                  setSerialStatus(event.target.value);
+                  resetWindow();
+                }}
+              >
+                <option value="">Any status</option>
+                <option value="in_stock">In stock</option>
+                <option value="reserved">Set aside</option>
+                <option value="sold">Sold</option>
+                <option value="returned">Returned</option>
+                <option value="scrapped">Scrapped</option>
+                <option value="lost">Lost</option>
+              </NativeSelect>
+            )}
+          </>
+        }
+        views={{
+          target: '/inventory/lots',
+          params: {
+            mode,
+            q: search.trim(),
+            warehouse: locationId,
+            expiry,
+            recall,
+            status: serialStatus,
+          },
+          onApply: (next) => {
+            setMode(next.mode === 'serials' ? 'serials' : 'lots');
+            setSearch(next.q ?? '');
+            setLocationId(next.warehouse ?? '');
+            setExpiry((next.expiry ?? '') as '' | 'soon' | 'expired');
+            setRecall(next.recall ?? '');
+            setSerialStatus(next.status ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show what is kept at"
-          value={locationId}
-          onChange={(event) => {
-            setLocationId(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Every location</option>
-          {activeLocations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        {mode === 'lots' ? (
-          <>
-            <NativeSelect
-              size="sm"
-              className="max-w-40 shrink"
-              aria-label="Filter by expiry"
-              value={expiry}
-              onChange={(event) => {
-                setExpiry(event.target.value as '' | 'soon' | 'expired');
-                resetWindow();
-              }}
-            >
-              <option value="">Any expiry</option>
-              <option value="soon">Expiring soon</option>
-              <option value="expired">Already expired</option>
-            </NativeSelect>
-
-            <NativeSelect
-              size="sm"
-              className="max-w-40 shrink"
-              aria-label="Filter by recall"
-              value={recall}
-              onChange={(event) => {
-                setRecall(event.target.value);
-                resetWindow();
-              }}
-            >
-              <option value="">Any recall status</option>
-              <option value="active">Recalled</option>
-              <option value="pending">Recall pending</option>
-              <option value="cleared">Recall cleared</option>
-            </NativeSelect>
-          </>
-        ) : (
-          <NativeSelect
-            size="sm"
-            className="max-w-40 shrink"
-            aria-label="Filter by status"
-            value={serialStatus}
-            onChange={(event) => {
-              setSerialStatus(event.target.value);
-              resetWindow();
-            }}
-          >
-            <option value="">Any status</option>
-            <option value="in_stock">In stock</option>
-            <option value="reserved">Set aside</option>
-            <option value="sold">Sold</option>
-            <option value="returned">Returned</option>
-            <option value="scrapped">Scrapped</option>
-            <option value="lost">Lost</option>
-          </NativeSelect>
-        )}
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>

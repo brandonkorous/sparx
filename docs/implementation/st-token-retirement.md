@@ -12,11 +12,11 @@
 > rejected (§4 Step 3).**
 >
 > · **`--st-*` TOKENS: done.** Not emitted, not aliased, not derived.
-> · **`st-*` CLASSES: done.** `packages/site-ui` is deleted; the render path emits silicaui's own
+> · **`st-*` CLASSES: done.** `wizeworks/packages/site-ui` is deleted; the render path emits silicaui's own
 > classes; the persisted-data migration is written (§4 Step 4). Every remaining repo match is prose
 > explaining the removal, or a test asserting the vocabulary is absent.
 > · **`--sx-*` TOKENS: done (§7).** `--sx-sel` / `--sx-sel-fg` are gone, along with the six
-> `@sparx/ui` controls that hand-rolled Radix versions of components silicaui now ships and the
+> `@wizeworks/ui` controls that hand-rolled Radix versions of components silicaui now ships and the
 > `colorVars()` helper that fed them. What remains under an `sx-` prefix — `data-sx-*` and ~13 CSS
 > classes — is **not** the same problem, and §7 gives the test for telling them apart.
 >
@@ -26,7 +26,7 @@
 > **One thing to raise upstream:** silicaui's `.checkbox` has no `:indeterminate` styling (§7).
 
 This is now the single tracking doc for both halves. [st-removal-handoff.md](st-removal-handoff.md)
-is the earlier, narrower brief (migrating `apps/site`'s own components off `st-*`); it is largely
+is the earlier, narrower brief (migrating `wizeworks/apps/site`'s own components off `st-*`); it is largely
 landed and superseded by §4 Step 4 here.
 
 §1–3 are the token diagnosis, written in the present tense of the bug and kept because the failure
@@ -67,9 +67,9 @@ the authored theme or the legacy brand compile wins depends on whether the app s
 the inline `<style>` lands last in `<head>`. That is the "switched theme, kept the old primary"
 symptom.
 
-That block's own comment says it exists because `@sparx/ui/tokens.css` sets brand `--color-*` in an
+That block's own comment says it exists because `@wizeworks/ui/tokens.css` sets brand `--color-*` in an
 unlayered `:root`. **That is no longer true** — the silicaui migration removed the color half of
-`packages/ui/src/tokens.css` (it now only _reads_ `--color-module*`). The block is obsolete and is now
+`sparx/packages/ui/src/tokens.css` (it now only _reads_ `--color-module*`). The block is obsolete and is now
 purely the thing that beats the tenant's real theme.
 
 **B. Fonts are a deterministic loss.** [globals.css:78-79](../../apps/site/app/globals.css#L78-L79)
@@ -88,15 +88,15 @@ the new pine palette while the site kept `colorPrimary: "#4F46E5"`, `fontHeading
 
 ~985 occurrences of `--st-`, very unevenly distributed:
 
-| Area                                                       | Count | Notes                                                                |
-| ---------------------------------------------------------- | ----- | -------------------------------------------------------------------- |
-| `packages/site-ui`                                         | ~500  | the parallel `st-*` component library; only 3 exports still consumed |
-| `apps/site/app/site.css`                                   | 109   | the `st-legacy` layer + bespoke composites                           |
-| `packages/section-template-react/src/section-template.css` | 66    | reads `--st-space-*` throughout                                      |
-| `packages/site-themes/src/v2/css.ts`                       | 65    | the `--st-*` emitter                                                 |
-| `apps/site/app/globals.css`                                | 54    | the two bridge blocks                                                |
-| `packages/surface-compile/src/theme.ts`                    | 38    | compiled into **every** builder surface stylesheet                   |
-| `packages/site-themes/src/tokens.ts`                       | 14    | the v1 `TOKEN_CSS_VARS` dual-write map                               |
+| Area                                                                 | Count | Notes                                                                |
+| -------------------------------------------------------------------- | ----- | -------------------------------------------------------------------- |
+| `wizeworks/packages/site-ui`                                         | ~500  | the parallel `st-*` component library; only 3 exports still consumed |
+| `wizeworks/apps/site/app/site.css`                                   | 109   | the `st-legacy` layer + bespoke composites                           |
+| `wizeworks/packages/section-template-react/src/section-template.css` | 66    | reads `--st-space-*` throughout                                      |
+| `wizeworks/packages/site-themes/src/v2/css.ts`                       | 65    | the `--st-*` emitter                                                 |
+| `wizeworks/apps/site/app/globals.css`                                | 54    | the two bridge blocks                                                |
+| `wizeworks/packages/surface-compile/src/theme.ts`                    | 38    | compiled into **every** builder surface stylesheet                   |
+| `wizeworks/packages/site-themes/src/tokens.ts`                       | 14    | the v1 `TOKEN_CSS_VARS` dual-write map                               |
 
 ---
 
@@ -132,7 +132,7 @@ wrong and no page that can render unthemed. Don't reintroduce the gate.
 
 - [x] Delete the obsolete unlayered `:root` block in
       [globals.css](../../apps/site/app/globals.css). The stated reason for it
-      (`@sparx/ui/tokens.css` asserting brand colors unlayered) no longer holds. **This is the fix
+      (`@wizeworks/ui/tokens.css` asserting brand colors unlayered) no longer holds. **This is the fix
       for failure A** — color now has exactly ONE unlayered declaration on the storefront, the
       injected theme.
 - [x] Point `--font-heading` / `--font-body` in [globals.css](../../apps/site/app/globals.css) at
@@ -142,7 +142,7 @@ wrong and no page that can render unthemed. Don't reintroduce the gate.
 - [x] Retarget [surface-compile/theme.ts](../../packages/surface-compile/src/theme.ts) onto silica's
       `--color-*` / `--radius-*` / `--font-*`, so builder-authored surfaces compile against the same
       vocabulary the storefront injects. Its fallback values interpolate from `BASE_SILICA_THEME`
-      rather than duplicating a palette — this adds `@sparx/silica-catalog` as a dependency
+      rather than duplicating a palette — this adds `@wizeworks/silica-catalog` as a dependency
       (**needs `pnpm install`**). Shadows now ride silica's `--depth`, and `--spacing` anchors to the
       standard `0.25rem` (silica has no tenant-rescalable spacing unit — docs/118).
 - [x] Retarget the `.st-hover--*` shadow tints in
@@ -152,7 +152,7 @@ wrong and no page that can render unthemed. Don't reintroduce the gate.
 ### Step 2 — stop emitting `--st-*` ✅
 
 - [x] Stop injecting `themeCss` in [layout.tsx](../../apps/site/app/layout.tsx); delete
-      `apps/site/lib/theme.ts`. `silicaThemeCss` is now emitted **unconditionally** rather than gated
+      `wizeworks/apps/site/lib/theme.ts`. `silicaThemeCss` is now emitted **unconditionally** rather than gated
       on `silicaActive` — with the legacy payload gone, gating would mean a page rendering unthemed,
       and resolving `silicaFrame.theme ?? BASE_SILICA_THEME` everywhere removes the branch entirely.
 - [x] Replace the `@theme` color registrations in [globals.css](../../apps/site/app/globals.css)
@@ -171,7 +171,7 @@ wrong and no page that can render unthemed. Don't reintroduce the gate.
 
 ### Step 3 — delete the machinery ✅
 
-- [x] Remap **all ~500 `--st-*` reads in `packages/site-ui`** onto silica tokens directly. The built
+- [x] Remap **all ~500 `--st-*` reads in `wizeworks/packages/site-ui`** onto silica tokens directly. The built
       `dist/styles.css` now contains zero `--st-*` and reads `var(--color-primary)` et al.
 - [x] Delete `v2/css.ts` (the `--st-*` emitter), `v2/legacy.ts` (the v1→v2 bridge feeding it), their
       tests, and the `TOKEN_CSS_VARS` / `tokensToCssVars` / `tokensToCss` half of `tokens.ts`.
@@ -192,7 +192,7 @@ the second SOURCE OF TRUTH; this removes the second VOCABULARY. `--sx-*` was que
 grounds, sized here at "**29 token refs + 196 `sx-` classes**" — a stale count from before the
 silicaui migration. §7 has the real one and the outcome.
 
-Starting count 2769 `st-*` class occurrences: 1885 inside `packages/site-ui` (which dies with the
+Starting count 2769 `st-*` class occurrences: 1885 inside `wizeworks/packages/site-ui` (which dies with the
 package), 884 in consumers.
 
 - [x] **The builder catalog** (`builder-schemas/src/catalog/*.ts`) — all 48 distinct recipe strings
@@ -205,8 +205,8 @@ btn-<treatment> btn-<size>`; badges → `badge badge-*`; fields → `input-*`. Z
       `section-renderer.tsx` wrote `data-st-reveal`, `layout.tsx`'s `REVEAL_INIT_SCRIPT` added
       `st-reveal-ready`/`st-anim-ready`, and MCP `vocabulary.ts` instructed agents to author
       `st-reveal` / `st-hover--*`. **Always grep for the emitter after renaming a behaviour class.**
-- [x] **Ported `@sparx/builder-render` off `@sparx/site-ui`.** The blast radius turned out to be small:
-      only `apps/site` consumed either package (the dashboard canvas that used to is gone, and the
+- [x] **Ported `@wizeworks/builder-render` off `@sparx/site-ui`.** The blast radius turned out to be small:
+      only `wizeworks/apps/site` consumed either package (the dashboard canvas that used to is gone, and the
       workbench builder studio never used them). Every other repo hit was a comment.
 - [x] **Collapsed the recipe bridge.** `recipeFromClass` parsed `st-c-*` / `st-v-*` / `--sz-*` back
       out of the class to feed typed props, because the vocabulary and the props were two spellings
@@ -215,15 +215,15 @@ btn-<treatment> btn-<size>`; badges → `badge badge-*`; fields → `input-*`. Z
       is guaranteeing the base class for a node authored before the class-first catalog.
 - [x] **Built the sparx components for the gaps** (Brandon, 2026-07-31 — build them on silicaui rather
       than keep site-ui for them), in
-      [packages/builder-render/src/atoms/](../../packages/builder-render/src/atoms/). Its
+      [wizeworks/packages/builder-render/src/atoms/](../../packages/builder-render/src/atoms/). Its
       `index.ts` states the bar for adding one: silica has no equivalent AND the difference is real —
       a different mechanism (`ThemeToggle` needs a cookie, not localStorage, so the server can resolve
       the mode without a flash), a different owner (`SocialLinks` draws other companies' marks), or a
       constraint from builder NODES (`NavShell` must render its children exactly once because a node
       id is also a dnd-kit sortable id). "silica's version looks slightly different" is not on it.
-- [x] **Deleted `packages/site-ui`** + its stylesheet import, its `apps/site` dependency, its
+- [x] **Deleted `wizeworks/packages/site-ui`** + its stylesheet import, its `wizeworks/apps/site` dependency, its
       Dockerfile build step, and the `Sparx*` rows in the app's jsx-a11y map.
-- [x] **Deleted `packages/db/scripts/backfill-sf-to-st.ts`** and unregistered `db:backfill:sf-to-st`.
+- [x] **Deleted `wizeworks/packages/db/scripts/backfill-sf-to-st.ts`** and unregistered `db:backfill:sf-to-st`.
       It renamed `sf-` → `st-`; leaving it runnable left a one-command path back to the vocabulary
       this doc exists to remove.
 
@@ -254,7 +254,7 @@ through because both ARE registered with the plugin in each app's `globals.css`.
 It covers pages, layouts, emails, email blocks, component versions and archetypes per tenant, plus
 the platform-scoped `platform_components`. It deliberately skips the manifest tables (reference lists,
 not trees) and the silica page/email documents (authored in silica's vocabulary from the start).
-**Prod** runs through the pipeline, not a laptop ([packages/db/CLAUDE.md](../../packages/db/CLAUDE.md)).
+**Prod** runs through the pipeline, not a laptop ([wizeworks/packages/db/CLAUDE.md](../../packages/db/CLAUDE.md)).
 
 #### Applied to local dev, and what that run taught
 
@@ -275,7 +275,7 @@ Three things the run changed about the migration itself, none of which the synth
    exact decoy strings.
 3. **Local cannot prove the prod RLS path.** `sparx_owner` is a SUPERUSER on docker, so RLS is
    bypassed and a migration that forgot `set_config('app.tenant_id')` would pass here and update
-   zero rows in prod — the failure mode [packages/db/CLAUDE.md](../../packages/db/CLAUDE.md) warns
+   zero rows in prod — the failure mode [wizeworks/packages/db/CLAUDE.md](../../packages/db/CLAUDE.md) warns
    about. It was rehearsed separately in a throwaway Postgres with `sparx_owner` as a NON-superuser,
    FORCE RLS on, and the live policies copied in (`tenant_id = current_tenant_id()` for the builder
    tables, `platform_components_owner_all USING (true)` for the global one). All three tenants were
@@ -297,12 +297,12 @@ versions, decoy rows included.
 ## 6. State (2026-07-31)
 
 **The `st-*` work is complete and verified.** `pnpm install` has run (two dependency edges changed:
-`@sparx/surface-compile` gained `@sparx/silica-catalog`, and `@sparx/builder-render` swapped
+`@wizeworks/surface-compile` gained `@wizeworks/silica-catalog`, and `@wizeworks/builder-render` swapped
 `@sparx/site-ui` for `@wizeworks/silicaui-react`). Nothing is committed — it is all in the working
 tree; Brandon commits.
 
 Green across every touched package — typecheck + lint on `builder-render`, `builder-schemas`,
-`apps/site`, `silica-catalog`, `surface-compile`, `site-themes`, `sitebuilder`, `builder`,
+`wizeworks/apps/site`, `silica-catalog`, `surface-compile`, `site-themes`, `sitebuilder`, `builder`,
 `sitebuilder-schemas`, `section-template-react`, `db`; tests 75 / 300 / 650 / 46 / 74 / 45 / 88;
 `pnpm format:check` clean repo-wide.
 
@@ -328,8 +328,8 @@ for no gain. Documented in place so it doesn't read as a miss.
 ### Two things worth knowing before touching this area again
 
 - **The storefront's Tailwind bundle only emits classes from sources it SCANS.** `builder-render`
-  authors its layout as literal strings, so `apps/site/app/globals.css` now `@source`s
-  `packages/builder-render/src/**`. Adding a component elsewhere without a matching `@source` ships
+  authors its layout as literal strings, so `wizeworks/apps/site/app/globals.css` now `@source`s
+  `wizeworks/packages/builder-render/src/**`. Adding a component elsewhere without a matching `@source` ships
   correct markup with no layout at all — and nothing fails loudly.
 - **Renaming a behaviour class means grepping for its emitter.** Three separate places wrote
   `data-st-reveal` / `st-reveal-ready` / told MCP agents to author `st-reveal`; a CSS-only rename
@@ -356,17 +356,17 @@ grep for a token that starts with `--` silently returns clean.
 
 ### What it actually was
 
-Not a token problem at heart — a **component** problem. Six `@sparx/ui` components hand-rolled
+Not a token problem at heart — a **component** problem. Six `@wizeworks/ui` components hand-rolled
 Radix controls that silicaui had since grown natively:
 
-| `@sparx/ui`       | Consumers outside its own test | Silica equivalent            |
-| ----------------- | ------------------------------ | ---------------------------- |
-| `Slider`          | **0**                          | `Slider` / `Range`           |
-| `RadioGroup`      | **0**                          | `RadioGroup` / `RadioOption` |
-| `Card`'s `accent` | **0**                          | `bg-<color> bg-soft`         |
-| `Progress`        | 2 (both inside `packages/ui`)  | `Progress`                   |
-| `Switch`          | 2                              | `Switch`                     |
-| `Checkbox`        | 3                              | `Checkbox`                   |
+| `@wizeworks/ui`   | Consumers outside its own test      | Silica equivalent            |
+| ----------------- | ----------------------------------- | ---------------------------- |
+| `Slider`          | **0**                               | `Slider` / `Range`           |
+| `RadioGroup`      | **0**                               | `RadioGroup` / `RadioOption` |
+| `Card`'s `accent` | **0**                               | `bg-<color> bg-soft`         |
+| `Progress`        | 2 (both inside `sparx/packages/ui`) | `Progress`                   |
+| `Switch`          | 2                                   | `Switch`                     |
+| `Checkbox`        | 3                                   | `Checkbox`                   |
 
 A Radix control can't take a plugin color class, so each one set a per-instance `--sx-sel` custom
 property from a `colorVars(color)` helper and consumed it through `data-[state=checked]:bg-[var(--sx-sel)]`.
@@ -375,13 +375,13 @@ That was a reasonable bridge when it was written. It stopped being one the momen
 spellings and only stylesheet order decided which won — the same shape as the `--st-*` bug in §1.
 
 **The call sites had already voted.** 45 of 47 `Switch` imports, 33 of 35 `Checkbox`, 6 of 8
-`Progress` were pointing at `@wizeworks/silicaui-react` before this work started. The `@sparx/ui`
+`Progress` were pointing at `@wizeworks/silicaui-react` before this work started. The `@wizeworks/ui`
 copies were stragglers, so this was deletion rather than migration.
 
 ### What changed
 
 - **Deleted** `checkbox` / `switch` / `radio-group` / `slider` / `progress` (+ 4 test files) from
-  `packages/ui`, and their five exports from the barrel. They are **not** re-exported — a wrapper
+  `sparx/packages/ui`, and their five exports from the barrel. They are **not** re-exported — a wrapper
   would be a second name for one control.
 - **Deleted** `colorVars()`. `_recipes/variants.ts` now exports `pluginColor()` instead: a slot name
   → its silicaui plugin color name (`commerce` → `module-commerce`). It returns a CLASS FRAGMENT,
@@ -391,8 +391,8 @@ copies were stragglers, so this was deletion rather than migration.
   now, so retuning it is one change there rather than a sweep here. The card sets **no inline style
   at all**; there is a test asserting that.
 - **Re-pointed 6 consumers**: `selection-list`, `schema-field-renderer`, `bar-list`, `import-dialog`
-  (all `packages/ui`), plus `triage-controls` and `module-switchboard` in `apps/admin`.
-- **Dropped 4 now-unused deps** from `packages/ui/package.json`: `@radix-ui/react-{checkbox,switch,slider,radio-group}`.
+  (all `sparx/packages/ui`), plus `triage-controls` and `module-switchboard` in `wizeworks/apps/admin`.
+- **Dropped 4 now-unused deps** from `sparx/packages/ui/package.json`: `@radix-ui/react-{checkbox,switch,slider,radio-group}`.
 
 ### Two behaviour notes
 
@@ -420,8 +420,8 @@ it, written against silica's OWN `.checkbox` class and its OWN `--checkbox-accen
 set, not a call-site patch and not a new class. **Raise it upstream; delete the block when silica
 ships it** (it will be redundant, never conflicting).
 
-It lives in `@sparx/brand`, not `packages/ui/src/tokens.css`, and that placement is the whole point:
-**workbench imports no `@sparx/ui` CSS at all**, so a rule added to `tokens.css` would have shipped
+It lives in `@sparx/brand`, not `sparx/packages/ui/src/tokens.css`, and that placement is the whole point:
+**workbench imports no `@wizeworks/ui` CSS at all**, so a rule added to `tokens.css` would have shipped
 to four apps and missed the only one that needed it. It was written there first; the mistake was
 caught by checking which apps actually import the file rather than assuming.
 

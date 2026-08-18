@@ -4,7 +4,7 @@ Version: 0.9 (run)
 Author: Brandon Korous
 Last Updated: 2026-08-16
 
-> Status: **built end to end.** Schema + migration, [`@sparx/finance`](../packages/finance/)
+> Status: **built end to end.** Schema + migration, [`@wizeworks/finance`](../packages/finance/)
 > (85 pure-unit tests plus a DB-backed integration suite), the whole `/v1/finance/*`
 > spend API, the finance worker, the CSV connector, **all nine workbench panes**, the
 > marketing-site entry, and — new in 0.4 — the **`/finance` landing page** itself.
@@ -99,9 +99,9 @@ or does it help someone file something?** The first is ours. The second is an ex
 ## 2. Module wiring and price
 
 `finance` is registered in the `ModuleSlug` union and `ALL_MODULES`
-([packages/modules/src/index.ts](../packages/modules/src/index.ts)) and priced at
+([wizeworks/packages/modules/src/index.ts](../packages/modules/src/index.ts)) and priced at
 `finance: 2900` in `MODULE_MONTHLY_CENTS`
-([packages/billing/src/price-catalog.ts](../packages/billing/src/price-catalog.ts)).
+([wizeworks/packages/billing/src/price-catalog.ts](../packages/billing/src/price-catalog.ts)).
 
 **$29/month standalone, and free with Commerce or B2B.** Same tier as inventory,
 dropship and scheduling. Two reasons for that number specifically:
@@ -325,7 +325,7 @@ exactly the right shape for this feature, and daily/weekly is opt-in once they t
 
 ### Registry note for whoever writes the first adapter
 
-`IntegrationCategory` in [packages/integrations/src/types.ts](../packages/integrations/src/types.ts)
+`IntegrationCategory` in [wizeworks/packages/integrations/src/types.ts](../packages/integrations/src/types.ts)
 does **not** carry an `accounting` member today, and that is correct by that file's own
 rule: a category is added the day a live adapter dispatches it, not the day one is
 planned. Two categories were previously deleted for being listed with nothing behind
@@ -356,12 +356,12 @@ Topic name == event type, per the platform convention:
   trigger that can never fire is worse than one that is missing.
 
 Add each to the `EventType` union in
-[packages/events/src/types.ts](../packages/events/src/types.ts).
+[wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts).
 
 ## 8. Worker
 
 A `finance-worker` **package** exporting `createSubscription(logger)`, running inside
-`services/event-worker` — not a new Deployment. Twelve separate worker Deployments were
+`wizeworks/services/event-worker` — not a new Deployment. Twelve separate worker Deployments were
 an inheritance that cost 37% of a node's memory to do 14 millicores of work
 ([services/CLAUDE.md](../services/CLAUDE.md)); a new handler is a package.
 
@@ -386,7 +386,7 @@ Three jobs: generate due recurring expenses, recompute dirty days of
 
 1. ~~**Schema + migration**~~ — **done.** Applied locally; RLS audit passes over all
    ten tables; `NULLS NOT DISTINCT` verified on the two nullable-property grains.
-2. ~~**`@sparx/finance` package**~~ — **done.** Service layer, the 19 seeded
+2. ~~**`@wizeworks/finance` package**~~ — **done.** Service layer, the 19 seeded
    categories, the allocation guard, recurring generation, and the profit rollup.
    `ModuleSlug` + price catalog + the per-surface gate landed with it, per §2.
    59 tests: 30 pure-arithmetic units, 29 integration against real Postgres
@@ -396,7 +396,7 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    plus `financeErrorMapper` (over-allocation → 422; the category guards → 409).
 4. ~~**Workbench surfaces**~~ — **done.** All nine panes in §5, registered in
    [catalog/finance.ts](../apps/workbench/lib/surfaces/catalog/finance.ts) and each
-   with an address in [packages/links/src/routes.ts](../packages/links/src/routes.ts)
+   with an address in [wizeworks/packages/links/src/routes.ts](../packages/links/src/routes.ts)
    (`check:routes` enforces it). Shared by all of them:
    `spend-data.ts` (every hook + type on one cache root, so the list, the bills
    screen and the profit figure cannot disagree for a render), `period.ts` (one
@@ -424,13 +424,13 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    One backend gap surfaced while building: `GET /v1/finance/jobs/:type/:id`
    answered "what did this job cost" but nothing RANKED jobs, which is the whole
    point of the surface. Added `jobProfitability()` + `GET /v1/finance/jobs`
-   ([packages/finance/src/jobs.ts](../packages/finance/src/jobs.ts)), worst-margin
+   ([wizeworks/packages/finance/src/jobs.ts](../packages/finance/src/jobs.ts)), worst-margin
    first by default because the losing jobs are the actionable end of the list.
    It carries `revenueBasis` per row — an order knows what it collected, a booking
    only knows its service's list price, and the surface labels every list-price
    row rather than blending the two into one misleading number.
 
-5. ~~**finance-worker**~~ — **done.** A package inside `services/event-worker` (not
+5. ~~**finance-worker**~~ — **done.** A package inside `wizeworks/services/event-worker` (not
    a Deployment), handling recurring generation and rollup recomputation, with a
    400-day clamp so a replayed event cannot loop in the shared process. Five
    `finance.*` events added to the catalog AND provisioned in
@@ -447,7 +447,7 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    `:id/disconnect`) landed with docs/146 Phase 10.7–10.8, but **nothing in the
    repo called any of them** — no button, no landing route — so the round trip
    existed and could not be started. It now runs from
-   [apps/workbench/surfaces/finance/accounting.tsx](../apps/workbench/surfaces/finance/accounting.tsx)
+   [sparx/apps/workbench/surfaces/finance/accounting.tsx](../apps/workbench/surfaces/finance/accounting.tsx)
    through a popup, landing on
    [app/finance/accounting/callback](../apps/workbench/app/finance/accounting/callback/page.tsx).
    Four things about it are load-bearing:
@@ -491,18 +491,18 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    were sent to every `viewer` who opened the screen. The workbench's own
    `AccountingConnection` interface listed only the safe fields, which is exactly
    why nobody saw it — **a type on the client is a claim about the wire, not a
-   filter on it.** `toPublicConnection` in `@sparx/finance` is now the allow-list,
+   filter on it.** `toPublicConnection` in `@wizeworks/finance` is now the allow-list,
    applied at the three places a connection is returned, and
    `connections.test.ts` pins its exact key set so any new field has to be
    reviewed rather than silently shipped.
 
-7. ~~**Marketing site**~~ — **done.** `finance` added to every place `apps/web`
+7. ~~**Marketing site**~~ — **done.** `finance` added to every place `sparx/apps/web`
    enumerates modules: the catalog + its four color maps + the icon, the megamenu
    grouping (a typed `Record`, so it broke the build until it was given a column —
    working exactly as its own comment promised), the pricing ledger, the feature
    table, both switchboards' `ELSEWHERE_MONTHLY`, the platform page, and the
    vertical registry's `StackModule` union. `module-finance` is now registered in
-   `apps/web`'s `@plugin` block and has a `MODULE_HEX` entry — without both, every
+   `sparx/apps/web`'s `@plugin` block and has a `MODULE_HEX` entry — without both, every
    `bg-module-finance` would have rendered unstyled grey, silently.
 
    The module count moved 12 → 13 across the site, and with it the headline savings
@@ -564,7 +564,7 @@ so `GET /v1/finance/expenses` had never once succeeded and Spending showed its
 "could not be reached" state for every tenant since launch.
 
 The two fields are now re-declared on the ROUTE's `ListQuery` with `queryInt` /
-`queryBool` from `@sparx/api-core/query`. Doing it there rather than in
+`queryBool` from `@wizeworks/api-core/query`. Doing it there rather than in
 `schemas.ts` keeps that file's zod-only, browser-importable promise intact.
 
 **The same mistake, in its other form, was in 42 route files**:
@@ -594,7 +594,7 @@ its flag is never written — but `applyModuleWrites` deliberately announces
 **derived-state** transitions, and its comment already said why: "enabling B2B
 makes `invoicing` available with no invoicing flag of its own, and its seeding
 consumer must still run." The announcement was right; the consumer was missing.
-`packages/finance-worker` now handles `module.activated` and provisions on it.
+`wizeworks/packages/finance-worker` now handles `module.activated` and provisions on it.
 
 Adding a subject to a shipped durable is safe — `consumers.add` upserts, so the
 cursor is not reset — and with `DeliverPolicy.All` the widened filter replays
@@ -678,7 +678,7 @@ exported `daysPastDue`, which compares whole days.
 
 Finance was **the only module in the platform with no cron file.** Every other one
 has an `internal/<module>-cron.ts` and a matching `k8s/cronjobs/*.yaml`; finance
-had neither, and `packages/finance-worker` had been sitting there since launch
+had neither, and `wizeworks/packages/finance-worker` had been sitting there since launch
 handling two events **nobody published**. Two whole capabilities looked finished
 and did nothing:
 

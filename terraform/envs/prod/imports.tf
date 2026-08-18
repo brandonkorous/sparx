@@ -7,7 +7,7 @@
 # the blocks become no-ops and can be deleted in a follow-up commit.
 #
 # ── google-client-id / google-client-secret ──────────────────────────────────
-# The Google OAuth client credentials backing @sparx/auth's "Continue with
+# The Google OAuth client credentials backing @wizeworks/auth's "Continue with
 # Google" provider. The secret CONTAINERS were created manually in Secret Manager
 # (values added out-of-band per module "secrets"); these blocks adopt the empty
 # containers so module.secrets can manage them going forward. Import id uses the

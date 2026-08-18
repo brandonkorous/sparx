@@ -38,7 +38,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Switch,
   Text,
@@ -315,22 +314,18 @@ function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
   if (created) {
     return (
       <div className={PANE_SHELL}>
-        <PaneToolbar label="New webhook actions">
-          <Button color="module" size="sm" className="ml-auto" onClick={goManage}>
-            Done — manage this webhook
-          </Button>
-        </PaneToolbar>
+        <PaneToolbar
+          label="New webhook actions"
+          primary={
+            <Button color="module" size="sm" className="ml-auto" onClick={goManage}>
+              Done — manage this webhook
+            </Button>
+          }
+        />
 
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className={COLUMN}>
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {created.name} is set up
-              </Heading>
-              <Text>
-                Copy its signing secret now — this is the only time we can show it to you.
-              </Text>
-            </div>
+            <Text>Copy its signing secret now — this is the only time we can show it to you.</Text>
 
             <Alert color="success" variant="soft">
               <AlertContent>
@@ -359,30 +354,28 @@ function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New webhook actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!canCreate}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Create webhook
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New webhook actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!canCreate}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Create webhook
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Set up a webhook
-            </Heading>
-            <Text>
-              Tell another system the moment something happens on your site. Give it an address,
-              tick the events to listen for, and we will send a message there each time one occurs.
-            </Text>
-          </div>
+          <Text>
+            Tell another system the moment something happens on your site. Give it an address, tick
+            the events to listen for, and we will send a message there each time one occurs.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -587,24 +580,29 @@ function ManageBody({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Webhook actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!canSave}
-          loading={update.isPending}
-          onClick={save}
-        >
-          Save
-        </Button>
-
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Webhook actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!canSave}
+            loading={update.isPending}
+            onClick={save}
+          >
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

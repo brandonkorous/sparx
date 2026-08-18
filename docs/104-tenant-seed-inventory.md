@@ -230,7 +230,7 @@ Legend: 🟢 generic default (L2/L1) · 🟣 starter config (L2) · 🟡 starter
 | Marketing/campaign `BuilderEmail` templates                 | 🔵 / 🟣   | ⚠️       | Branded design = **blueprint**; industry campaigns = starter config.       |
 | `EmailSettings` (from-name/address)                         | 🟢        | ⚠️       | Row exists, stays empty until configured — never fabricate a from-address. |
 | System `Automation` set (welcome, abandoned-cart, dunning…) | 🟢        | ✅       | `seedSystemAutomations` per `module.activated`; idempotent + reconcile.    |
-| React-Email platform templates                              | 🟢 (code) | ✅       | Shipped in `@sparx/email`.                                                 |
+| React-Email platform templates                              | 🟢 (code) | ✅       | Shipped in `@wizeworks/email`.                                             |
 | `Broadcast`, `Suppression`, `EmailEvent`, runs              | ⚪        | —        | Runtime.                                                                   |
 
 ### 5.7 Inventory · 5.8 B2B / Invoicing / Dropship / Chat / Scheduling

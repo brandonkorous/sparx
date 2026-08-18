@@ -26,7 +26,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   NumberField,
   Select,
@@ -38,6 +37,7 @@ import { useConfirm } from '../../lib/confirm';
 import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -75,7 +75,14 @@ export function ShippingZoneDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: zone, isPending, isError, refetch } = useShippingZone(id);
+  const {
+    data: zone,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useShippingZone(id);
 
   if (isError) {
     return (
@@ -97,10 +104,35 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <ZoneEditor ctx={ctx} id={id} zone={zone} />;
+  return (
+    <ZoneEditor
+      ctx={ctx}
+      id={id}
+      zone={zone}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
-function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?: ShippingZone }) {
+function ZoneEditor({
+  ctx,
+  id,
+  zone,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  id: string;
+  zone?: ShippingZone;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
+}) {
   const isNew = id === 'new';
   const toast = useToast();
   const confirm = useConfirm();
@@ -210,49 +242,53 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Delivery region actions">
-        {!isNew ? (
-          <Badge
-            color={zone && zone.rateCount > 0 ? 'success' : 'warning'}
-            variant="soft"
+      <PaneToolbar
+        label="Delivery region actions"
+        status={
+          !isNew ? (
+            <Badge
+              color={zone && zone.rateCount > 0 ? 'success' : 'warning'}
+              variant="soft"
+              size="sm"
+            >
+              {zone && zone.rateCount > 0
+                ? `${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'}`
+                : 'No delivery options'}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
           >
-            {zone && zone.rateCount > 0
-              ? `${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'}`
-              : 'No delivery options'}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create region' : 'Save'}
-        </Button>
-      </PaneToolbar>
+            {isNew ? 'Create region' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={zone ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a delivery region
-              </Heading>
-              <Text>
-                A region is a set of places you deliver to. Name it, choose where it covers, then —
-                once it exists — add the delivery options shoppers there can pick from.
-              </Text>
-            </div>
+            <Text>
+              A region is a set of places you deliver to. Name it, choose where it covers, then —
+              once it exists — add the delivery options shoppers there can pick from.
+            </Text>
           ) : (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {zone?.name}
-              </Heading>
-              <Text className="text-sm">{coverageSummary(draft.countries)}</Text>
-            </div>
+            <Text className="text-sm">{coverageSummary(draft.countries)}</Text>
           )}
 
           {failure ? (

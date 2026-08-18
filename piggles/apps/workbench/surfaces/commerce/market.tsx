@@ -18,19 +18,20 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
+  Card,
   Checkbox,
   EmptyState,
-  Heading,
   Select,
   Switch,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
+import { MARKET_CATEGORIES } from '@wizeworks/commerce-schemas';
 import { faBagShopping, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -48,9 +49,10 @@ import {
   type MarketProfile,
   type OptedInProduct,
 } from './market-data';
-import { InlineWaiting } from '../../components/inline-waiting';
 
-const LABEL = 'sparx.market';
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 
 /** Slug → the section name a shopper browsing the marketplace sees. */
 const CATEGORY_ITEMS = Object.fromEntries(
@@ -299,15 +301,10 @@ function EnrolledBody({ profile, ctx }: { profile: MarketProfile; ctx: SurfaceCo
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          Your products on sparx.market
-        </Heading>
-        <Text className="text-sm">
-          You’re taking part in the shared marketplace. Products you list here appear in front of
-          shoppers who’ve never heard of you; sparx takes the payment and pays you the rest.
-        </Text>
-      </div>
+      <Text className="text-sm">
+        You’re taking part in the shared marketplace. Products you list here appear in front of
+        shoppers who’ve never heard of you; sparx takes the payment and pays you the rest.
+      </Text>
 
       {summary ? (
         <FormSection
@@ -433,16 +430,11 @@ function NotEnrolled({ profile }: { profile: MarketProfile }) {
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          Sell on sparx.market
-        </Heading>
-        <Text className="text-sm">
-          sparx.market is a shared marketplace of products from every business on sparx. Taking part
-          puts your products in front of shoppers who’ve never heard of you. sparx takes the payment
-          and pays you the rest, weekly, keeping a small share of each sale.
-        </Text>
-      </div>
+      <Text className="text-sm">
+        sparx.market is a shared marketplace of products from every business on sparx. Taking part
+        puts your products in front of shoppers who’ve never heard of you. sparx takes the payment
+        and pays you the rest, weekly, keeping a small share of each sale.
+      </Text>
 
       <FormSection title="Join the marketplace">
         <div className="flex items-center gap-3">
@@ -490,50 +482,49 @@ export function MarketSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="sparx.market controls">
-        <Icon glyph={faBagShopping} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {LABEL}
-        </Heading>
-        {profile?.enabled ? (
-          <Badge color="success" variant="soft" size="sm">
-            Taking part
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={profileQuery.isFetching}
-          updatedAt={profile ? profileQuery.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void profileQuery.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="sparx.market controls"
+        status={
+          profile?.enabled ? (
+            <Badge color="success" variant="soft" size="sm">
+              Taking part
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={profileQuery.isFetching}
+            updatedAt={profile ? profileQuery.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void profileQuery.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Both non-ready states are carded, because both ready bodies are
+              stacks of FormSections — each already a card. */}
           {profileQuery.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load sparx.market"
-              description={productErrorMessage(
-                profileQuery.error,
-                'This is a problem reaching the server. Nothing about your marketplace has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void profileQuery.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load sparx.market"
+                description={productErrorMessage(
+                  profileQuery.error,
+                  'This is a problem reaching the server. Nothing about your marketplace has changed.'
+                )}
+                onRetry={() => {
+                  void profileQuery.refetch();
+                }}
+              />
+            </Card>
           ) : profile === undefined ? (
-            <InlineWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : profile.enabled ? (
             <EnrolledBody profile={profile} ctx={ctx} />
           ) : (

@@ -8,8 +8,8 @@
 // whole workspace into every app image is what took a release generation to ~18 GB.
 // The hand-written list is
 // the price of that, and a hand-written list drifts the moment a new package appears:
-// `@sparx/field-schema` landed under commerce-schemas and cms-schemas, both apps' images
-// were built without it, and `Module not found: Can't resolve '@sparx/field-schema'` came
+// `@wizeworks/field-schema` landed under commerce-schemas and cms-schemas, both apps' images
+// were built without it, and `Module not found: Can't resolve '@wizeworks/field-schema'` came
 // back three minutes into the release — for a fact that was knowable from two package.json
 // files before the push.
 //
@@ -44,7 +44,15 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
  * If a third brand ever appears, it goes here in the same edit as its first
  * Dockerfile.
  */
-const WORKSPACE_GROUPS = ['apps', 'services', 'packages', 'piggles/apps', 'piggles/packages'];
+const WORKSPACE_GROUPS = [
+  'wizeworks/apps',
+  'wizeworks/services',
+  'wizeworks/packages',
+  'sparx/apps',
+  'sparx/packages',
+  'piggles/apps',
+  'piggles/packages',
+];
 
 /** Read every workspace package: name → { dir, workspace deps }. */
 function readWorkspace() {
@@ -90,6 +98,17 @@ const shipped = new Set(
   [...releaseYml.matchAll(/dockerfile:\s*([\w./-]+\/Dockerfile)/g)].map((m) => m[1])
 );
 
+// A group that does not exist means the tree moved and this list did not. The
+// check would then examine fewer images and still print a tick.
+for (const group of WORKSPACE_GROUPS) {
+  if (!existsSync(join(repoRoot, group))) {
+    console.error(`check-dockerfile-deps: workspace group '${group}' does not exist.`);
+    console.error('  The scan would cover less than the repo and still pass.');
+    console.error('  Fix WORKSPACE_GROUPS to match pnpm-workspace.yaml.\n');
+    process.exit(1);
+  }
+}
+
 const targets = [];
 const orphans = [];
 for (const group of WORKSPACE_GROUPS) {
@@ -106,7 +125,11 @@ for (const group of WORKSPACE_GROUPS) {
     // Either spelling of a hand-listed image. A Dockerfile with no package COPY
     // at all builds FROM the shared base (the whole workspace) and cannot get
     // this wrong.
-    if (!/^COPY (piggles\/)?packages\//m.test(text)) continue;
+    // Any tree's packages. This read `^COPY (piggles/)?packages/` until the A4
+    // move put every package under a tree — after which five of the eight images
+    // stopped matching, were skipped, and the run still printed
+    // "3 hand-listed image(s), every workspace dependency copied" in green.
+    if (!/^COPY (wizeworks|sparx|piggles)\/packages\//m.test(text)) continue;
     targets.push({ dir: `${group}/${entry}`, text });
   }
 }
@@ -127,18 +150,18 @@ for (const { dir, text } of targets) {
   // Which one a Dockerfile uses is read off the file rather than configured, so neither
   // has to be declared anywhere and a third shape is a check change, not a silent pass.
   //
-  // Both PREFIXES are read, and they are kept apart. `packages/ui` and
+  // Both PREFIXES are read, and they are kept apart. `sparx/packages/ui` and
   // `piggles/packages/brand` are different packages that happen to share a
-  // shape, and a Piggles image needs `packages/brand` (sparx's tokens, pulled in
-  // through @sparx/ui) AND `piggles/packages/brand` (its own) — matching on the
+  // shape, and a Piggles image needs `sparx/packages/brand` (sparx's tokens, pulled in
+  // through @wizeworks/ui) AND `piggles/packages/brand` (its own) — matching on the
   // slug alone would let either one satisfy the other and pass an image that
   // cannot build.
   const copied = (pattern) => new Set([...text.matchAll(pattern)].map((m) => m[1] + '/' + m[2]));
   const manifestCopies = copied(
-    /^COPY (piggles\/packages|packages)\/([a-z0-9-]+)\/package\.json/gm
+    /^COPY ((?:wizeworks|sparx|piggles)\/packages)\/([a-z0-9-]+)\/package\.json/gm
   );
   const dirCopies = copied(
-    /^COPY (piggles\/packages|packages)\/([a-z0-9-]+) +\.?\/?(?:piggles\/)?packages\//gm
+    /^COPY ((?:wizeworks|sparx|piggles)\/packages)\/([a-z0-9-]+) +\.?\/?(?:wizeworks|sparx|piggles)\/packages\//gm
   );
   const twoPhase = manifestCopies.size > 0;
 

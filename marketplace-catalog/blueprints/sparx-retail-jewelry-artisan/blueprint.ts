@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-jewelry-artisan',
-    version: '1.4.0',
-    name: 'sparx — Artisan Jeweler',
-    summary:
-        'A complete, working shop for a handmade / artisan jeweler: a real catalogue of hand-forged pieces in recycled sterling silver and bronze — hammered hoops, a raw-stone ring, a hand-stamped cuff, a mixed-metal pendant, studs, a forged chain, a signet and a raw birthstone pendant — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Earthy theme — warm clay ground, bark ink, oxidised-bronze primary, fired-copper accent. Shipped as Forge & Fold.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-jewelry-artisan',
+  version: '1.4.0',
+  name: 'sparx — Artisan Jeweler',
+  summary:
+    'A complete, working shop for a handmade / artisan jeweler: a real catalogue of hand-forged pieces in recycled sterling silver and bronze — hammered hoops, a raw-stone ring, a hand-stamped cuff, a mixed-metal pendant, studs, a forged chain, a signet and a raw birthstone pendant — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Earthy theme — warm clay ground, bark ink, oxidised-bronze primary, fired-copper accent. Shipped as Forge & Fold.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Forge & Fold',
+    tagline: 'Made at the bench, one at a time.',
+    colors: {
+      primary: '#683f25',
+      primaryForeground: '#fef7f2',
+      accent: '#a7490d',
+      secondary: '#664d3a',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Karla',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-jewelry-artisan',
+    basePresetKey: 'retail-jewelry-artisan',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Forge & Fold',
-        tagline: 'Made at the bench, one at a time.',
-        colors: {
-            primary: '#683f25',
-            primaryForeground: '#fef7f2',
-            accent: '#a7490d',
-            secondary: '#664d3a',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Karla',
-        },
+      colorPrimary: '#683f25',
+      colorAccent: '#a7490d',
+      colorSecondary: '#664d3a',
+      fontHeading: 'Fraunces',
+      fontBody: 'Karla',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-jewelry-artisan',
-        basePresetKey: 'retail-jewelry-artisan',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#683f25',
-            colorAccent: '#a7490d',
-            colorSecondary: '#664d3a',
-            fontHeading: 'Fraunces',
-            fontBody: 'Karla',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

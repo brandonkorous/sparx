@@ -34,10 +34,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faBoxOpen,
   faBoxes,
@@ -106,7 +106,12 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
   const measuredSuppliers = (leadTimes.data?.items ?? []).filter((l) => l.isReliable).length;
 
   return (
-    <div className="flex flex-col gap-3">
+    // `h-full` because the parent is PlanningShell's scroll container — a block
+    // with a definite height, not a flex column — so a percentage resolves. That
+    // makes THIS a flex column with real free space to hand the table below, so
+    // its sideways scrollbar lands at the foot of the pane instead of floating
+    // under the last row of a six-row list.
+    <div className="flex h-full flex-col gap-3">
       <Stats className="w-full">
         <Stat>
           <StatTitle>Sales at risk</StatTitle>
@@ -161,7 +166,7 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
           />
         )
       ) : (
-        <Card className="overflow-x-auto">
+        <Card className="min-h-0 flex-1 overflow-auto">
           <Table size="sm" hover>
             <thead>
               <tr>

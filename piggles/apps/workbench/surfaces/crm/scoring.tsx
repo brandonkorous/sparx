@@ -35,16 +35,16 @@ import {
   Field,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { faArrowsRotate, faGauge, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { faArrowsRotate, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { customerName, useCustomers } from './customers-data';
@@ -289,8 +289,10 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
     typeof ctx.params.objectKey === 'string' ? ctx.params.objectKey : 'contact'
   );
 
-  const { data: modelPage } = useScoringModels(objectKey);
-  const { data: fieldsResponse } = useScoringFields();
+  const models = useScoringModels(objectKey);
+  const scoringFields = useScoringFields();
+  const modelPage = models.data;
+  const fieldsResponse = scoringFields.data;
 
   // The ACTIVE model is the one being edited. Two active models cannot exist —
   // the database refuses — so "the model" is a well-defined thing here.
@@ -410,19 +412,26 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Scoring controls">
-        <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Scoring
-        </Heading>
-
+      <PaneToolbar
+        label="Scoring controls"
+        refresh={
+          <RefreshButton
+            isFetching={models.isFetching || scoringFields.isFetching}
+            updatedAt={models.data ? models.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void models.refetch();
+              void scoringFields.refetch();
+            }}
+          />
+        }
+      >
         <div className="ml-auto flex shrink-0 items-center gap-1">
           {SCOREABLE.map((s) => (
             <Button
               key={s.objectKey}
               size="sm"
               variant={objectKey === s.objectKey ? 'soft' : 'ghost'}
-              color={objectKey === s.objectKey ? 'module' : 'neutral'}
+              color={objectKey === s.objectKey ? 'module' : undefined}
               onClick={() => {
                 setObjectKey(s.objectKey);
               }}
@@ -435,7 +444,6 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
         <Button
           size="sm"
           variant="outline"
-          color="neutral"
           disabled={recompute.isPending || rules.length === 0}
           onClick={() => {
             void onRecompute();

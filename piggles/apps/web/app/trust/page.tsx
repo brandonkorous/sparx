@@ -5,6 +5,7 @@ import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
+import { TrustFigure } from '@/components/marketing/hero/trust-figure';
 import { CloseBand } from '@/components/marketing/close-band';
 
 // /trust — the page a careful person reads before putting their business on
@@ -134,6 +135,7 @@ export default function TrustPage() {
       <PageHero
         heading="The boring things, done properly."
         lede="You are about to run your business on this. Here is exactly how your information is kept, who can reach it, and how you get it back — in plain words, with nothing dressed up."
+        figure={<TrustFigure />}
       >
         <a
           className={buttonClasses({ color: 'primary', size: 'lg' })}

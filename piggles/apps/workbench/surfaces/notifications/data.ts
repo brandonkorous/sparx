@@ -9,7 +9,7 @@
 // default — so `channels` is always a complete map, never a sparse one this
 // surface has to reason about.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
   faBox,
   faBoxes,

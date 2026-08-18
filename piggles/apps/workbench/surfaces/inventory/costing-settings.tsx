@@ -37,7 +37,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   RadioGroup,
   RadioOption,
@@ -154,15 +153,10 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            How your stock is valued
-          </Heading>
-          <Text>
-            The one setting behind every money figure you see about stock — what it is worth, what
-            your goods cost you, and what your margin actually is.
-          </Text>
-        </div>
+        <Text>
+          The one setting behind every money figure you see about stock — what it is worth, what
+          your goods cost you, and what your margin actually is.
+        </Text>
 
         {policy.data && !policy.data.configured ? (
           <Alert color="info" variant="soft">
@@ -286,38 +280,46 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Stock valuation actions">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faScaleBalanced} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            How stock is valued
-          </Text>
-        </span>
-        {policy.data ? (
-          <Badge color={policy.data.configured ? 'module' : 'neutral'} variant="soft" size="sm">
-            {methodLabel(policy.data.method)}
-          </Badge>
-        ) : null}
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!dirty}
-          loading={savePolicy.isPending}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save
-        </Button>
-        <RefreshButton
-          isFetching={policy.isFetching}
-          updatedAt={policy.dataUpdatedAt}
-          onRefresh={() => {
-            void policy.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Stock valuation actions"
+        status={
+          <>
+            <span className="inline-flex items-center gap-1.5">
+              <Icon glyph={faScaleBalanced} className="size-4" aria-hidden />
+              <Text as="span" className="text-sm font-medium">
+                How stock is valued
+              </Text>
+            </span>
+            {policy.data ? (
+              <Badge color={policy.data.configured ? 'module' : 'neutral'} variant="soft" size="sm">
+                {methodLabel(policy.data.method)}
+              </Badge>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={!dirty}
+            loading={savePolicy.isPending}
+            onClick={save}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={policy.isFetching}
+            updatedAt={policy.dataUpdatedAt}
+            onRefresh={() => {
+              void policy.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>

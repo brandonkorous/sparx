@@ -2,8 +2,8 @@
 # runs BEFORE the containers. Applied by .github/workflows/release.yml;
 # ${IMAGE} and ${RUN_ID} are substituted via `envsubst`.
 #
-# Runs the @sparx/db runner image with its migration ENTRYPOINT overridden to
-# packages/db/prisma/seed-platform.ts — the platform-only half of seeding. It is
+# Runs the @wizeworks/db runner image with its migration ENTRYPOINT overridden to
+# wizeworks/packages/db/prisma/seed-platform.ts — the platform-only half of seeding. It is
 # NOT `prisma/seed.ts`, and that distinction is the entire point of the file
 # existing: the full seed provisions a demo tenant with an invented parts
 # catalog, fake orders and a fake partner payout. Because the two lived behind
@@ -52,7 +52,7 @@ spec:
           image: ${IMAGE}
           imagePullPolicy: IfNotPresent
           # Overrides the image ENTRYPOINT (scripts/run-migrations.ts). WORKDIR
-          # is /app/packages/db, so this relative path resolves.
+          # is /app/wizeworks/packages/db, so this relative path resolves.
           command: ['pnpm', 'exec', 'tsx', 'prisma/seed-platform.ts']
           envFrom:
             - configMapRef:

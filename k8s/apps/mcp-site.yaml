@@ -1,4 +1,4 @@
-# services/mcp-site — production manifest (docs/113). The shopper-facing
+# wizeworks/services/mcp-site — production manifest (docs/113). The shopper-facing
 # MCP plane. Mirrors api-mcp.yaml; the differences:
 #   - Image tag `mcp-site`, port 3200
 #   - Fronted by the Caddy `/mcp*` carve-out on every site host AND the

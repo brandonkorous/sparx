@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-esthetics-glow',
-    version: '1.3.0',
-    name: 'sparx — Esthetics (Glow Bar)',
-    summary:
-        'A playful, dewy express-facial glow bar — a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as "Dewy Skin Bar", a fun, feel-good glow on your lunch break.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-esthetics-glow',
+  version: '1.3.0',
+  name: 'sparx — Esthetics (Glow Bar)',
+  summary:
+    'A playful, dewy express-facial glow bar — a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as "Dewy Skin Bar", a fun, feel-good glow on your lunch break.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Dewy Skin Bar',
+    tagline: 'Glow on your lunch break.',
+    colors: {
+      primary: '#f48462',
+      primaryForeground: '#120806',
+      accent: '#5ed3d3',
+      secondary: '#513d36',
+    },
+    fonts: {
+      heading: 'Quicksand',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'dewy',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Dewy Skin Bar',
-        tagline: 'Glow on your lunch break.',
-        colors: {
-            primary: '#f48462',
-            primaryForeground: '#120806',
-            accent: '#5ed3d3',
-            secondary: '#513d36',
-        },
-        fonts: {
-            heading: 'Quicksand',
-            body: 'Inter',
-        },
+      colorPrimary: '#f48462',
+      colorAccent: '#5ed3d3',
+      colorSecondary: '#513d36',
+      fontHeading: 'Quicksand',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'dewy',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#f48462',
-            colorAccent: '#5ed3d3',
-            colorSecondary: '#513d36',
-            fontHeading: 'Quicksand',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

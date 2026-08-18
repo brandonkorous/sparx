@@ -29,10 +29,9 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBoxMagnifyingGlass, faHandshake } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useState } from 'react';
@@ -154,40 +153,42 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Ownership controls">
-        <NativeSelect
-          size="sm"
-          className="max-w-52 shrink"
-          aria-label="Which ownership"
-          value={ownership}
-          onChange={(event) => {
-            setOwnership(event.target.value);
-          }}
-        >
-          <option value="">Everything that is not yours</option>
-          <option value="consignment">On consignment</option>
-          <option value="customer_owned">A customer’s</option>
-          <option value="3pl_owned">Your warehouse partner’s</option>
-          <option value="owned">Yours</option>
-        </NativeSelect>
-
-        <ToolbarSeparator />
-
-        <Text className="text-sm">
-          {rows.length === 0
-            ? 'Nothing to show'
-            : `${formatCents(totalValueCents)} across ${plural(rows.length, 'line', 'lines')}`}
-        </Text>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={list.isFetching}
-          updatedAt={list.data ? list.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void list.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Ownership controls"
+        status={
+          <Text className="text-sm">
+            {rows.length === 0
+              ? 'Nothing to show'
+              : `${formatCents(totalValueCents)} across ${plural(rows.length, 'line', 'lines')}`}
+          </Text>
+        }
+        controls={
+          <NativeSelect
+            size="sm"
+            className="max-w-52 shrink"
+            aria-label="Which ownership"
+            value={ownership}
+            onChange={(event) => {
+              setOwnership(event.target.value);
+            }}
+          >
+            <option value="">Everything that is not yours</option>
+            <option value="consignment">On consignment</option>
+            <option value="customer_owned">A customer’s</option>
+            <option value="3pl_owned">Your warehouse partner’s</option>
+            <option value="owned">Yours</option>
+          </NativeSelect>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={list.isFetching}
+            updatedAt={list.data ? list.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void list.refetch();
+            }}
+          />
+        }
+      />
 
       {rows.length > 0 ? (
         <Alert color="info" variant="soft">

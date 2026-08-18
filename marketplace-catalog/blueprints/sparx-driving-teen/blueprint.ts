@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-driving-teen',
-    version: '1.3.0',
-    name: 'sparx — Driving School (Teen)',
-    summary:
-        'A cheerful, safety-first template for a teen driving school — a warm off-white palette with a friendly blue and a sunny coral, rounded and encouraging. Installs a working booking flow: real lessons and packages (intro drive, behind-the-wheel, driver’s ed, permit and road-test prep), patient instructors you book by name, and dual-brake training cars booked alongside them for behind-the-wheel time. Ships as "RoadReady Driving School".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-driving-teen',
+  version: '1.3.0',
+  name: 'sparx — Driving School (Teen)',
+  summary:
+    'A cheerful, safety-first template for a teen driving school — a warm off-white palette with a friendly blue and a sunny coral, rounded and encouraging. Installs a working booking flow: real lessons and packages (intro drive, behind-the-wheel, driver’s ed, permit and road-test prep), patient instructors you book by name, and dual-brake training cars booked alongside them for behind-the-wheel time. Ships as "RoadReady Driving School".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'RoadReady Driving School',
+    tagline: 'Confident drivers start here.',
+    colors: {
+      primary: '#0083c4',
+      primaryForeground: '#040c13',
+      accent: '#f0834e',
+      secondary: '#2c3947',
+    },
+    fonts: {
+      heading: 'Nunito',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'roadready',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'RoadReady Driving School',
-        tagline: 'Confident drivers start here.',
-        colors: {
-            primary: '#0083c4',
-            primaryForeground: '#040c13',
-            accent: '#f0834e',
-            secondary: '#2c3947',
-        },
-        fonts: {
-            heading: 'Nunito',
-            body: 'Inter',
-        },
+      colorPrimary: '#0083c4',
+      colorAccent: '#f0834e',
+      colorSecondary: '#2c3947',
+      fontHeading: 'Nunito',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'roadready',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#0083c4',
-            colorAccent: '#f0834e',
-            colorSecondary: '#2c3947',
-            fontHeading: 'Nunito',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

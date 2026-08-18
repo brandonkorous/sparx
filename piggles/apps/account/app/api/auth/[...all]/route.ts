@@ -1,9 +1,9 @@
-import { auth } from '@sparx/auth';
+import { auth } from '@wizeworks/auth';
 import { toNextJsHandler } from 'better-auth/next-js';
 
 // Better Auth catches every /api/auth/* request here: sign-in, sign-up, session
 // lookup, password reset, verification. Mounting it at this path means the
-// client SDK inside @sparx/auth/client needs no baseURL config.
+// client SDK inside @wizeworks/auth/client needs no baseURL config.
 //
 // THIS IS THE ONLY PLACE IN PIGGLES THAT MOUNTS IT. getpiggles.com is the auth
 // authority; mypiggles.com deliberately does not mount a handler and has no

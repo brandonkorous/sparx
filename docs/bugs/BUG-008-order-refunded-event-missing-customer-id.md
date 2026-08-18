@@ -5,8 +5,8 @@ Severity: Medium — the refund itself succeeds (money moves, order flips to
 refunded); only the downstream CRM bookkeeping fails, silently and after the fact
 Found: 2026-07-24, production payments E2E — the FIRST real order-level refund
 (BUG-007's fix made order refunds fire for the first time, which is what exposed this)
-Surfaces: `packages/crm/src/services/order-refunds-service.ts` (publisher),
-`packages/crm/src/consumers/order-events.ts` (consumer)
+Surfaces: `wizeworks/packages/crm/src/services/order-refunds-service.ts` (publisher),
+`wizeworks/packages/crm/src/consumers/order-events.ts` (consumer)
 
 ## Symptom
 

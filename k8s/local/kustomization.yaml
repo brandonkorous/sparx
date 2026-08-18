@@ -84,7 +84,7 @@ images:
 # wholesale rather than patching it — nearly every value differs, and a partial
 # patch would leave a stale GCP_PROJECT_ID behind, which is the single switch
 # that decides whether the publisher talks to a Pub/Sub project that no longer
-# exists (packages/events/src/publisher.ts `createPublisher`).
+# exists (wizeworks/packages/events/src/publisher.ts `createPublisher`).
 configMapGenerator:
   - name: sparx-app-env
     behavior: create
@@ -113,7 +113,7 @@ configMapGenerator:
     files:
       - mode.caddy
   # NOTE: the `postgres-init` ConfigMap is deliberately NOT generated here.
-  # It has to carry packages/db/docker/init/01-roles.sql — the same file the dev
+  # It has to carry wizeworks/packages/db/docker/init/01-roles.sql — the same file the dev
   # compose stack mounts, so local k8s and `pnpm db:up` provision `sparx_app`
   # and `wize_operator` identically and cannot drift. kustomize refuses to read
   # a file outside its own directory (a load restriction that `kubectl apply -k`
@@ -277,7 +277,7 @@ patches:
                     value: '--max-old-space-size=1024'
                 # Same claim media-worker mounts. api-rest STREAMS variants from
                 # here (GET /v1/public/media/variants/...) now that
-                # GCS_MEDIA_PUBLIC_BUCKET is unset and packages/media resolves to
+                # GCS_MEDIA_PUBLIC_BUCKET is unset and wizeworks/packages/media resolves to
                 # LocalStorage; media-worker writes them. Two different volumes
                 # would transcode successfully and then 404 forever.
                 volumeMounts:

@@ -20,13 +20,13 @@ Scope: the event **registry** (the typed vocabulary), the **publish paths**, and
 
 Three publish paths:
 
-| #   | Path                                                                                | What it does                                                                                               | `EventType` source                                                                                | Used by                                                  |
-| --- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| 1   | [`packages/api-core/src/pubsub.ts`](../packages/api-core/src/pubsub.ts) `publish()` | Enqueues outbound webhook deliveries **and** publishes to per-type Pub/Sub topic                           | its **own** local `EventType` union (L22-71)                                                      | api-rest route handlers                                  |
-| 2   | [`packages/events/`](../packages/events/src/publisher.ts) `publisher.ts`            | Per-type Pub/Sub publish only                                                                              | [`packages/events/src/types.ts`](../packages/events/src/types.ts) — a **different, larger** union | standalone Cloud Run workers (e.g. `b2b-overdue-worker`) |
-| 3   | [`packages/crm/src/pubsub-bridge.ts`](../packages/crm/src/pubsub-bridge.ts)         | Tees CRM's two in-process buses (CRM bus `crm.*` + platform bus `order.*`) to real Pub/Sub for the indexer | CRM's own `CrmEvent` / `PlatformEvent` types                                                      | commerce-indexer (Pub/Sub push)                          |
+| #   | Path                                                                                          | What it does                                                                                               | `EventType` source                                                                                          | Used by                                                  |
+| --- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| 1   | [`wizeworks/packages/api-core/src/pubsub.ts`](../packages/api-core/src/pubsub.ts) `publish()` | Enqueues outbound webhook deliveries **and** publishes to per-type Pub/Sub topic                           | its **own** local `EventType` union (L22-71)                                                                | api-rest route handlers                                  |
+| 2   | [`wizeworks/packages/events/`](../packages/events/src/publisher.ts) `publisher.ts`            | Per-type Pub/Sub publish only                                                                              | [`wizeworks/packages/events/src/types.ts`](../packages/events/src/types.ts) — a **different, larger** union | standalone Cloud Run workers (e.g. `b2b-overdue-worker`) |
+| 3   | [`wizeworks/packages/crm/src/pubsub-bridge.ts`](../packages/crm/src/pubsub-bridge.ts)         | Tees CRM's two in-process buses (CRM bus `crm.*` + platform bus `order.*`) to real Pub/Sub for the indexer | CRM's own `CrmEvent` / `PlatformEvent` types                                                                | commerce-indexer (Pub/Sub push)                          |
 
-The two unions have **drifted**: `api-core`'s is missing `order.paid`, `cart.*`, `inventory.low`, and the entire `b2b.*` set that `@sparx/events` carries. The envelope is consistent across paths (`SparxEvent<T> = { type, tenantId, actorId, occurredAt, data }`; topic name == event type), which is the one thing that makes consolidation tractable.
+The two unions have **drifted**: `api-core`'s is missing `order.paid`, `cart.*`, `inventory.low`, and the entire `b2b.*` set that `@wizeworks/events` carries. The envelope is consistent across paths (`SparxEvent<T> = { type, tenantId, actorId, occurredAt, data }`; topic name == event type), which is the one thing that makes consolidation tractable.
 
 Consequences that block docs/81:
 
@@ -40,13 +40,13 @@ Consequences that block docs/81:
 
 ### 3.1 One canonical registry
 
-`@sparx/events` becomes the **single source of truth** for `EventType` and shared payload contracts:
+`@wizeworks/events` becomes the **single source of truth** for `EventType` and shared payload contracts:
 
 - Consolidate both unions into one **superset** there.
-- `api-core` deletes its local `EventType` and re-exports / depends on `@sparx/events`. (Runtime is unchanged — topics are named by string today; this is a type-level unification.)
+- `api-core` deletes its local `EventType` and re-exports / depends on `@wizeworks/events`. (Runtime is unchanged — topics are named by string today; this is a type-level unification.)
 - CRM's `crm.*` vocabulary is represented in the canonical union (namespaced, not flattened) so the whole event surface is enumerable in one place.
 
-> **Footgun:** any service that newly depends on `@sparx/events` needs the `COPY` lines in its Dockerfile + the transitive closure (the package-wiring footgun). Most backends already install it; verify per service.
+> **Footgun:** any service that newly depends on `@wizeworks/events` needs the `COPY` lines in its Dockerfile + the transitive closure (the package-wiring footgun). Most backends already install it; verify per service.
 
 ### 3.2 Publish paths stay layered, registry shared
 
@@ -96,10 +96,10 @@ Each: add literal to canonical `EventType` → provision per-type topic + fan-in
 
 Each step is independently shippable and reversible; the tee is additive, so existing consumers are unaffected throughout.
 
-1. **Expand:** add the canonical superset registry to `@sparx/events`.
+1. **Expand:** add the canonical superset registry to `@wizeworks/events`.
 2. **Point:** `api-core` re-exports the canonical `EventType`; fix any resulting type mismatches. No runtime change.
 3. **Provision:** add the `automation.trigger` topic + push subscription (Terraform `for_each` addition).
-4. **Tee:** install the fan-in tee in all three publish paths (api-core `publish`, `@sparx/events` publisher, CRM bridge).
+4. **Tee:** install the fan-in tee in all three publish paths (api-core `publish`, `@wizeworks/events` publisher, CRM bridge).
 5. **Grow:** add the `[ADD]` events incrementally, as each trigger is actually needed by docs/81.
 6. **Contract:** delete `api-core`'s local `EventType` union once nothing references it.
 
@@ -113,18 +113,18 @@ Steps 1–4 unblock docs/81 Phase 1; steps 5–6 run alongside docs/81 build.
 - **Double delivery.** Every event now lands on its per-type topic **and** the fan-in. Consumers must be idempotent; the automation engine already dedupes on `(automation_id, dedupe_key)` (docs/81 §7).
 - **No ordering.** Pub/Sub is unordered. Automations must not assume event sequence — the engine hydrates current entity state (docs/81 §5.3) rather than trusting payload order.
 - **CRM two-bus.** As §3.3 notes — install/verify the tee on both CRM bus wrappers, or `crm.*` triggers silently disappear.
-- **Dockerfile wiring.** Any service newly depending on `@sparx/events` needs the `COPY` lines + transitive closure, or the image build fails (lint/tsc won't catch it).
+- **Dockerfile wiring.** Any service newly depending on `@wizeworks/events` needs the `COPY` lines + transitive closure, or the image build fails (lint/tsc won't catch it).
 - **Fan-in volume / cost.** The firehose carries all events. One subscription keeps it cheap; watch egress, but acceptable for Phase 1 (revisit only on a stated scale trigger).
 
 ---
 
 ## 7. Checklist
 
-- [ ] Canonical `EventType` + shared payloads consolidated in `@sparx/events` (superset of both unions)
+- [ ] Canonical `EventType` + shared payloads consolidated in `@wizeworks/events` (superset of both unions)
 - [ ] `api-core` re-exports canonical; local union deleted (contract step)
 - [ ] `crm.*` vocabulary represented in the canonical registry
 - [ ] `automation.trigger` topic + push subscription provisioned (Terraform)
-- [ ] Fan-in tee installed in api-core `publish`, `@sparx/events` publisher, CRM `pubsub-bridge` (both bus wrappers)
+- [ ] Fan-in tee installed in api-core `publish`, `@wizeworks/events` publisher, CRM `pubsub-bridge` (both bus wrappers)
 - [ ] `EventType` ↔ Terraform-topic parity test
 - [ ] `[ADD]` events emitted at source + topics provisioned (incremental, per docs/81 need)
 - [ ] End-to-end: an event reaches `automation.trigger` and the engine dedupes a redelivery

@@ -24,9 +24,9 @@ All three can be built in parallel by separate agents. Dependencies are noted pe
 
 ### Phase 1 — Stripe integration foundation
 
-Install `stripe` SDK in `services/api-rest/`. Add to Secret Manager and `.env.example`: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`.
+Install `stripe` SDK in `wizeworks/services/api-rest/`. Add to Secret Manager and `.env.example`: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`.
 
-Create `services/api-rest/src/lib/stripe.ts`:
+Create `wizeworks/services/api-rest/src/lib/stripe.ts`:
 
 - Stripe client singleton (reads key from env)
 - `createPaymentIntent(params)` — creates PaymentIntent with `automatic_payment_methods: { enabled: true }`
@@ -34,11 +34,11 @@ Create `services/api-rest/src/lib/stripe.ts`:
 - `createRefund(paymentIntentId, amountCents?)` — full or partial
 - `constructWebhookEvent(body, sig)` — webhook signature verification
 
-Pub/Sub events to add in `@sparx/events`: `order.created`, `order.fulfilled`, `order.refunded`, `payment.captured`, `payment.failed`.
+Pub/Sub events to add in `@wizeworks/events`: `order.created`, `order.fulfilled`, `order.refunded`, `payment.captured`, `payment.failed`.
 
 ### Phase 2 — Checkout API
 
-New route file `services/api-rest/src/routes/v1/checkout.ts` (or extend existing checkout-sessions):
+New route file `wizeworks/services/api-rest/src/routes/v1/checkout.ts` (or extend existing checkout-sessions):
 
 | Method  | Path                                       | Description                                                                              |
 | ------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
@@ -102,7 +102,7 @@ API:
 
 ### Phase 6 — Site checkout UI
 
-`apps/site/app/checkout/` — multi-step React form:
+`wizeworks/apps/site/app/checkout/` — multi-step React form:
 
 1. Cart review (items, subtotal, discount code input)
 2. Customer info (email, name — pre-populated if logged in)
@@ -182,7 +182,7 @@ Add the combined acceptance checkbox to the sign-up form: _"I agree to the sparx
 
 ### Phase 1 — Service scaffold + auth
 
-New service `services/api-mcp/` as a GKE Deployment (not Cloud Run — it runs persistent SSE connections).
+New service `wizeworks/services/api-mcp/` as a GKE Deployment (not Cloud Run — it runs persistent SSE connections).
 
 Setup:
 

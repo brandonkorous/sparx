@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-roofing-storm',
-    version: '1.3.0',
-    name: 'sparx — Roofing (Storm)',
-    summary:
-        'A bold storm-damage and exteriors template — a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as "Ironclad Roofing & Exteriors".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-roofing-storm',
+  version: '1.3.0',
+  name: 'sparx — Roofing (Storm)',
+  summary:
+    'A bold storm-damage and exteriors template — a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as "Ironclad Roofing & Exteriors".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Ironclad Roofing & Exteriors',
+    tagline: 'We handle the storm and the claim.',
+    colors: {
+      primary: '#212937',
+      primaryForeground: '#f5f9ff',
+      accent: '#d9302e',
+      secondary: '#3c434e',
+    },
+    fonts: {
+      heading: 'Oswald',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'ironclad',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Ironclad Roofing & Exteriors',
-        tagline: 'We handle the storm and the claim.',
-        colors: {
-            primary: '#212937',
-            primaryForeground: '#f5f9ff',
-            accent: '#d9302e',
-            secondary: '#3c434e',
-        },
-        fonts: {
-            heading: 'Oswald',
-            body: 'Inter',
-        },
+      colorPrimary: '#212937',
+      colorAccent: '#d9302e',
+      colorSecondary: '#3c434e',
+      fontHeading: 'Oswald',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'ironclad',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#212937',
-            colorAccent: '#d9302e',
-            colorSecondary: '#3c434e',
-            fontHeading: 'Oswald',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

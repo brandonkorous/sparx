@@ -19,11 +19,11 @@
 
 ## 1. What shipped in Slice 8 (the ground we build on)
 
-| Action                     | State today                                                                                                                                                                                                                                  | Where                                                                                                                                              |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Module activate/deactivate | **Fully enforced.** Operator route drives the tenant's own toggle path (event announce on both buses, default seeding, Stripe item sync) via the shared `lib/module-toggle.ts`; stamps the tenant's `audit_logs` as `actor_type='operator'`. | `services/api-rest/src/routes/internal/operator-tenant.ts` (`PATCH …/modules/:slug`), `services/api-rest/src/lib/module-toggle.ts`                 |
-| Suspend / unsuspend        | **Status-only.** Flips `tenants.status` between `active`/`suspended` and records it in the tenant's own activity log. **No request path blocks a suspended tenant** — see §2.                                                                | `operator-tenant.ts` (`PATCH …/status`), admin `…/[id]/_components/suspend-control.tsx`                                                            |
-| Storage-limit override     | **Stored + displayed.** Operator sets/clears a per-tenant cap at `settings.limits.storageBytes`; shown on the tenant detail. **Nothing enforces it at upload time** — see §3.                                                                | `operator-tenant.ts` (`PATCH …/storage-limit`), `services/api-rest/src/lib/tenant-limits.ts`, admin `…/[id]/_components/storage-limit-control.tsx` |
+| Action                     | State today                                                                                                                                                                                                                                  | Where                                                                                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Module activate/deactivate | **Fully enforced.** Operator route drives the tenant's own toggle path (event announce on both buses, default seeding, Stripe item sync) via the shared `lib/module-toggle.ts`; stamps the tenant's `audit_logs` as `actor_type='operator'`. | `wizeworks/services/api-rest/src/routes/internal/operator-tenant.ts` (`PATCH …/modules/:slug`), `wizeworks/services/api-rest/src/lib/module-toggle.ts`       |
+| Suspend / unsuspend        | **Status-only.** Flips `tenants.status` between `active`/`suspended` and records it in the tenant's own activity log. **No request path blocks a suspended tenant** — see §2.                                                                | `operator-tenant.ts` (`PATCH …/status`), admin `…/[id]/_components/suspend-control.tsx`                                                                      |
+| Storage-limit override     | **Stored + displayed.** Operator sets/clears a per-tenant cap at `settings.limits.storageBytes`; shown on the tenant detail. **Nothing enforces it at upload time** — see §3.                                                                | `operator-tenant.ts` (`PATCH …/storage-limit`), `wizeworks/services/api-rest/src/lib/tenant-limits.ts`, admin `…/[id]/_components/storage-limit-control.tsx` |
 
 Both scoped actions are **capability-gated** (`tenant:suspend`), **confirmed**, and **dual-audited**
 (the tenant's `audit_logs` + the `wize_admin` operator audit). The confirm copy tells the operator,
@@ -46,7 +46,7 @@ storefront still serves — the status is cosmetic until this lands.
 
 1. **Staff + API blocked (bounded).** A suspended tenant's authenticated staff/API requests are
    rejected. One choke point: the shared auth `preHandler` in
-   [`packages/api-core/src/auth.ts`](../../../packages/api-core/src/auth.ts) — after resolving
+   [`wizeworks/packages/api-core/src/auth.ts`](../../../packages/api-core/src/auth.ts) — after resolving
    `request.auth`, look up the tenant's status and throw `forbidden` when suspended. The public
    storefront (which skips auth via `publicPrefixes`) stays up.
 2. **Also take the public site offline (larger).** Additionally make the public storefront +
@@ -61,7 +61,7 @@ storefront still serves — the status is cosmetic until this lands.
   (api-rest, api-graphql, api-mcp). A naive `SELECT status FROM tenants` per request adds a DB
   round-trip to the hottest path. Mitigation: a small in-process cache keyed by tenant with a short
   TTL — the **exact pattern already accepted** for module gating
-  ([`packages/modules/src/index.ts`](../../../packages/modules/src/index.ts), `isModuleEnabled`, 60s
+  ([`wizeworks/packages/modules/src/index.ts`](../../../packages/modules/src/index.ts), `isModuleEnabled`, 60s
   TTL). Invalidate on the suspend/unsuspend write (same as `invalidateModuleCache`). Surface the
   decision before adding per-request cost (memory rule: verify recurring-cost/hot-path changes).
 - **JWT staleness.** Staff JWTs live ~5 min (`auth.ts`), so a just-suspended tenant's existing
@@ -85,7 +85,7 @@ The suspend write + audit + UI are already done, so this is purely the read-side
 There is **no storage-quota system anywhere** in the platform: no default limit, no per-tenant cap
 enforcement, nothing in the media-upload path that refuses a write. Slice 8 added the **override
 value** (`settings.limits.storageBytes`, read/written via
-[`services/api-rest/src/lib/tenant-limits.ts`](../../../services/api-rest/src/lib/tenant-limits.ts))
+[`wizeworks/services/api-rest/src/lib/tenant-limits.ts`](../../../services/api-rest/src/lib/tenant-limits.ts))
 and surfaces it, but nothing consumes it yet. Real per-tenant usage is already computed (media
 asset + variant `byteSize` sum, shown on the tenant detail since Slice 3).
 
@@ -96,7 +96,7 @@ asset + variant `byteSize` sum, shown on the tenant detail since Slice 3).
    tenant), NOT a per-plan limit. The operator override then raises/lowers it per tenant. Pick the
    default GB deliberately (a cost/UX decision).
 2. **Enforcement at the upload path.** The write choke points are the authenticated media upload /
-   presign routes (`services/api-rest/src/routes/v1/media/uploads.ts`, and the public
+   presign routes (`wizeworks/services/api-rest/src/routes/v1/media/uploads.ts`, and the public
    `routes/v1/public/media-upload.ts`) and/or `media-worker` at finalize. Before issuing a presigned
    URL (or at finalize), compare current usage + the incoming size against the effective cap
    (override ?? default) and refuse over-limit with a clear, typed error.

@@ -14,6 +14,7 @@
 
 import { useMemo } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Badge,
@@ -25,10 +26,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faComment, faSparkles, faUser } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -47,6 +48,10 @@ import {
   type ChatActivityItem,
   type ChatSource,
 } from './data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'chat';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 
@@ -189,21 +194,13 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
     if (summary.isError) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
-          <PaneEmpty
+          <PaneLoadError
             icon={<Icon glyph={faComment} className="size-6" aria-hidden />}
             title="Could not load your chat report"
             description="This is a problem reaching the server. Your conversations are unaffected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void summary.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void summary.refetch();
+            }}
           />
         </Card>
       );
@@ -217,6 +214,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faComment} className="size-6" aria-hidden />}
             title="No conversations to report on yet"
             description="Once people start chatting on your site, this page fills in with how many conversations you get, how fast you reply, and who is handling them."
@@ -240,14 +238,9 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            Messages overview
-          </Heading>
-          <Text>
-            How busy your live chat has been over the last 30 days, and who has been handling it.
-          </Text>
-        </div>
+        <Text>
+          How busy your live chat has been over the last 30 days, and who has been handling it.
+        </Text>
 
         <section className="card bg-base-100">
           <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @lg:grid-cols-2 @3xl:grid-cols-4">
@@ -452,16 +445,21 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Messages overview controls">
-        <RefreshButton
-          className="ml-auto"
-          isFetching={
-            summary.isFetching || timeseries.isFetching || agents.isFetching || activity.isFetching
-          }
-          updatedAt={summary.data ? summary.dataUpdatedAt : undefined}
-          onRefresh={refreshAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Messages overview controls"
+        refresh={
+          <RefreshButton
+            isFetching={
+              summary.isFetching ||
+              timeseries.isFetching ||
+              agents.isFetching ||
+              activity.isFetching
+            }
+            updatedAt={summary.data ? summary.dataUpdatedAt : undefined}
+            onRefresh={refreshAll}
+          />
+        }
+      />
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>
   );

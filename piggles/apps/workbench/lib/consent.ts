@@ -32,14 +32,14 @@
 //
 // ── WHAT IS DELIBERATELY NOT GATED ──────────────────────────────────────────
 //
-// `sparx_active_property` — it exists only for a signed-in operator, holds the
+// `piggles_active_property` — it exists only for a signed-in operator, holds the
 // id of one of their OWN sites, and is what makes the workspace open where they
 // left it. That is the service working as asked for rather than something done
 // to them, so it is strictly necessary. It is still listed on
 // meetpiggles.com/cookies: "not asked about" and "not disclosed" are very
 // different things.
 
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from './api/client';
 
 /** The `consent` branch of GET /v1/me/preferences. `null` when no decision is on

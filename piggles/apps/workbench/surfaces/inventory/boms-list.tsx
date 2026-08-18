@@ -14,20 +14,19 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  EmptyState,
-  NativeSelect,
-  SearchInput,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { Badge, Button, Card, NativeSelect, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faPotFood } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+
+/** Registry module for this pane, so the brand draws Stock's own picture rather
+ *  than the generic one. */
+const MODULE = 'inventory';
 import { formatCents, plural } from './data';
 import { bomState, useBoms, type Bom } from './assembly-data';
 
@@ -55,28 +54,35 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (boms.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
+          module={MODULE}
           icon={<Icon glyph={faPotFood} className="size-6" aria-hidden />}
           title="Could not load your recipes"
           description="This is a problem reaching the server. Your recipes are unaffected."
+          onRetry={() => {
+            void boms.refetch();
+          }}
         />
       );
     }
     if (boms.isPending) {
-      return <PaneWaiting />;
+      return <PaneWaiting module={MODULE} />;
     }
     if (rows.length === 0) {
       return (
-        <EmptyState
-          icon={<Icon glyph={faPotFood} className="size-6" aria-hidden />}
-          title={q || status ? 'Nothing matches that' : 'No recipes yet'}
-          description={
-            q || status
-              ? 'Try a different search, or clear the filters.'
-              : 'A recipe says what a finished thing is made of — the parts, how many of each, and how much gets wasted making it. Once you have one, you can see how many you could make right now and record it when you do.'
-          }
-          actions={
-            q || status ? null : (
+        <ListEmptyState
+          module={MODULE}
+          filtered={Boolean(q || status)}
+          noResults={{
+            icon: <Icon glyph={faPotFood} className="size-6" aria-hidden />,
+            title: 'Nothing matches that',
+            description: 'Try a different search, or clear the filters.',
+          }}
+          firstRun={{
+            title: 'No recipes yet',
+            description:
+              'A recipe says what a finished thing is made of — the parts, how many of each, and how much gets wasted making it. Once you have one, you can see how many you could make right now and record it when you do.',
+            actions: (
               <Button
                 color="module"
                 onClick={() => {
@@ -86,8 +92,8 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Write a recipe
               </Button>
-            )
-          }
+            ),
+          }}
         />
       );
     }
@@ -160,56 +166,69 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Recipe list controls">
-        <SearchInput
-          value={q}
-          placeholder="Search recipes"
-          onValueChange={(value) => {
-            setQ(value);
-            setSkip(0);
-          }}
-        />
-        <NativeSelect
-          size="sm"
-          className="max-w-36 shrink"
-          aria-label="Status"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value);
-            setSkip(0);
-          }}
-        >
-          <option value="">Any status</option>
-          <option value="active">In use</option>
-          <option value="draft">Draft</option>
-          <option value="archived">Retired</option>
-        </NativeSelect>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Recipe list controls"
+        search={
+          <SearchInput
+            value={q}
+            placeholder="Search recipes"
+            onValueChange={(value) => {
+              setQ(value);
+              setSkip(0);
+            }}
+          />
+        }
+        primaryAction={{
+          label: 'Write a recipe',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open(
               'inventory.boms.detail',
               { id: 'new' },
               { target: event.shiftKey ? 'beside' : 'tab' }
             );
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Write a recipe</span>
-        </Button>
-        <RefreshButton
-          isFetching={boms.isFetching}
-          updatedAt={boms.dataUpdatedAt}
-          onRefresh={() => {
-            void boms.refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        controls={
+          <NativeSelect
+            size="sm"
+            className="max-w-36 shrink"
+            aria-label="Status"
+            value={status}
+            onChange={(event) => {
+              setStatus(event.target.value);
+              setSkip(0);
+            }}
+          >
+            <option value="">Any status</option>
+            <option value="active">In use</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Retired</option>
+          </NativeSelect>
+        }
+        views={{
+          target: '/inventory/boms',
+          params: { q, status },
+          onApply: (next) => {
+            setQ(next.q ?? '');
+            setStatus(next.status ?? '');
+            setSkip(0);
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={boms.isFetching}
+            updatedAt={boms.dataUpdatedAt}
+            onRefresh={() => {
+              void boms.refetch();
+            }}
+          />
+        }
+      />
 
-      <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
+      {/* ONE card around the whole conditional — loading, failure, empty and the
+          table all fill the same content region, so the pane never jumps. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
       {total > PAGE ? (
         <div className="border-base-300 flex items-center justify-between gap-2 border-t px-3 py-2">

@@ -14,22 +14,20 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
   Card,
   Checkbox,
   EmptyState,
-  Filter,
-  FilterItem,
   Rating,
   SearchInput,
-  Table,
   Timestamp,
-  ToolbarSeparator,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import {
   faArrowDown,
@@ -245,61 +243,71 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Reviews list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Reviews list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search reviews"
+              placeholder="Search reviews…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            color="module"
+            variant="soft"
             size="sm"
-            aria-label="Search reviews"
-            placeholder="Search reviews…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+            className="ml-auto"
+            title="Work the queue — read and reply to reviews one at a time. Hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              openQueue(event);
+            }}
+          >
+            <Icon glyph={faListCheck} className="size-4" aria-hidden />
+            <span className="hidden @lg:inline">Work the queue</span>
+          </Button>
+        }
+        filters={[
+          {
+            label: 'Status',
+            key: 'status',
+            value: status,
+            onValueChange: (next) => {
+              setStatus(next ?? 'pending');
               resetWindow();
+            },
+            options: STATUS_FILTERS,
+          },
+        ]}
+        views={{
+          target: '/commerce/reviews',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as ReviewSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <Filter
-          color="module"
-          value={status}
-          onValueChange={(next) => {
-            setStatus(next ?? 'pending');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by status"
-        >
-          {STATUS_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <Button
-          color="module"
-          variant="soft"
-          size="sm"
-          className="ml-auto"
-          title="Work the queue — read and reply to reviews one at a time. Hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            openQueue(event);
-          }}
-        >
-          <Icon glyph={faListCheck} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Work the queue</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       {selectedIds.length > 0 ? (
         <div className="bg-base-100 border-base-300 flex flex-wrap items-center gap-2 rounded-lg border p-2">
@@ -356,21 +364,13 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
             title="Could not load the reviews"
             description="Something went wrong reaching the server. Nothing customers wrote has been lost — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading reviews…" />

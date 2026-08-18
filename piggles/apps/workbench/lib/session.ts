@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSession, type SparxSession } from '@sparx/auth';
+import { getSession, type SparxSession } from '@wizeworks/auth';
 import { handoffEntryUrl } from '@piggles/auth-handoff';
 
 // Who is signed in — and where an unsigned visitor goes.

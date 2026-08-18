@@ -50,6 +50,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from '../crm/custom-properties-panel';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -186,17 +187,34 @@ function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <AccountEditor ctx={ctx} id={id} account={accountQuery.data} />;
+  return (
+    <AccountEditor
+      ctx={ctx}
+      id={id}
+      account={accountQuery.data}
+      isFetching={accountQuery.isFetching}
+      updatedAt={accountQuery.dataUpdatedAt}
+      onRefresh={() => {
+        void accountQuery.refetch();
+      }}
+    />
+  );
 }
 
 function AccountEditor({
   ctx,
   id,
   account,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   account?: AccountDetail;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -393,46 +411,50 @@ function AccountEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Account actions">
-        {state ? (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Add account' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Account actions"
+        status={
+          state ? (
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Add account' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a trade account
-              </Heading>
-              <Text>
-                Set up a business you supply on agreed prices and terms. Once it&apos;s saved you
-                can add the people who order for them and see their orders, quotes and invoices.
-              </Text>
-            </div>
+            <Text>
+              Set up a business you supply on agreed prices and terms. Once it&apos;s saved you can
+              add the people who order for them and see their orders, quotes and invoices.
+            </Text>
           ) : account ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {account.companyName}
-              </Heading>
-              <Text className="text-sm">
-                {account.pricingTierName ? `${account.pricingTierName} · ` : ''}
-                {paymentTermsLabel(account.paymentTerms)}
-              </Text>
-            </div>
+            <Text className="text-sm">
+              {account.pricingTierName ? `${account.pricingTierName} · ` : ''}
+              {paymentTermsLabel(account.paymentTerms)}
+            </Text>
           ) : null}
 
           {failure ? (

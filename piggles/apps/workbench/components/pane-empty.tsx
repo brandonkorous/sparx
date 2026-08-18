@@ -37,33 +37,33 @@ import { EmptyState } from '@wizeworks/silicaui-react';
 import { hasStateArt, StateArt } from './state-art';
 
 export function PaneEmpty({
-    icon,
-    module,
-    title,
-    description,
-    actions,
+  icon,
+  module,
+  title,
+  description,
+  actions,
 }: {
-    /** The surface's own glyph, so the state still looks like the pane it is. */
-    icon?: ReactNode;
-    /** Which module's pane this is, so a brand with per-app artwork can draw the
-     *  right picture. */
-    module?: string;
-    title: ReactNode;
-    description?: ReactNode;
-    /** The way out — usually the thing that would fill this pane. */
-    actions?: ReactNode;
+  /** The surface's own glyph, so the state still looks like the pane it is. */
+  icon?: ReactNode;
+  /** Which module's pane this is, so a brand with per-app artwork can draw the
+   *  right picture. */
+  module?: string;
+  title: ReactNode;
+  description?: ReactNode;
+  /** The way out — usually the thing that would fill this pane. */
+  actions?: ReactNode;
 }) {
-    const branded = hasStateArt();
+  const branded = hasStateArt();
 
-    return (
-        <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
-            <StateArt state="empty" module={module} />
-            <EmptyState
-                icon={branded ? undefined : icon ? <span className="text-module">{icon}</span> : undefined}
-                title={title}
-                description={description}
-                actions={actions}
-            />
-        </div>
-    );
+  return (
+    <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
+      <StateArt state="empty" module={module} />
+      <EmptyState
+        icon={branded ? undefined : icon ? <span className="text-module">{icon}</span> : undefined}
+        title={title}
+        description={description}
+        actions={actions}
+      />
+    </div>
+  );
 }

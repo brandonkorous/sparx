@@ -176,70 +176,78 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Instructions list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search instructions"
-            placeholder="Search by name or wording…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <div className="w-44 shrink-0">
-          <Select
-            color="module"
-            size="sm"
-            aria-label="Filter by what it is for"
-            value={categoryValue}
-            items={{
-              all: 'Every kind',
-              ...Object.fromEntries(PROMPT_CATEGORIES.map((c) => [c, categoryLabel(c)])),
+      <PaneToolbar
+        label="Instructions list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search instructions"
+              placeholder="Search by name or wording…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          canEdit ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0"
+              title="Write a new instruction — hold Shift to open alongside, Alt for a new window"
+              onClick={openNew}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              New instruction
+            </Button>
+          ) : null
+        }
+        controls={
+          <div className="w-44 shrink-0">
+            <Select
+              color="module"
+              size="sm"
+              aria-label="Filter by what it is for"
+              value={categoryValue}
+              items={{
+                all: 'Every kind',
+                ...Object.fromEntries(PROMPT_CATEGORIES.map((c) => [c, categoryLabel(c)])),
+              }}
+              onValueChange={(next) => {
+                setCategoryValue(next as 'all' | PromptCategory);
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/ai/prompts',
+          params: { q: search.trim(), category: categoryValue },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setCategoryValue((next.category ?? 'all') as 'all' | PromptCategory);
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
-            onValueChange={(next) => {
-              setCategoryValue(next as 'all' | PromptCategory);
-            }}
           />
-        </div>
-
-        {canEdit ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0"
-            title="Write a new instruction — hold Shift to open alongside, Alt for a new window"
-            onClick={openNew}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New instruction
-          </Button>
-        ) : null}
-
-        <RefreshButton
-          className={canEdit ? undefined : 'ml-auto'}
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Instructions
-              </Heading>
-              <Text>
-                {productCopy(
-                  'ai.prompts.intro',
-                  'The voice and rules Piggles follows when it writes for you using your own AI account — how to sound, what to say, and what to never say, right down to your site’s chat personality. The ones you turn on are the ones it follows.'
-                )}
-              </Text>
-            </div>
+            <Text>
+              {productCopy(
+                'ai.prompts.intro',
+                'The voice and rules Piggles follows when it writes for you using your own AI account — how to sound, what to say, and what to never say, right down to your site’s chat personality. The ones you turn on are the ones it follows.'
+              )}
+            </Text>
             <div className="border-base-300 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg border px-3 py-2">
               <Text as="span" className="text-sm">
                 This is not about letting an outside AI app into your business to look things up or

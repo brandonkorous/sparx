@@ -174,7 +174,7 @@ rather than an exception to it.
 
 ## 5. Surfaces
 
-All six are built — [apps/workbench/surfaces/staff/](../apps/workbench/surfaces/staff/),
+All six are built — [sparx/apps/workbench/surfaces/staff/](../apps/workbench/surfaces/staff/),
 registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.people`,
 `staff.person`, `staff.timesheets`, `staff.schedule`, `staff.timeoff`,
 `staff.certifications`.
@@ -237,7 +237,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
    used. Rail label is **"Your team"** — "HR" names a department the audience does not
    have — and the icon is `ContactRound`, deliberately not `Users`, which is Customers.
 
-3. ~~**`@sparx/staff`**~~ — **done.** Roster, effective-dated rates, time entries + the
+3. ~~**`@wizeworks/staff`**~~ — **done.** Roster, effective-dated rates, time entries + the
    clock, timesheets, shifts, time off, certifications, documents, commissions, and the
    labour deriver. 68 tests.
 
@@ -269,7 +269,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
    and the decision is still recorded, so the API reports `blocksBookings` rather than
    letting the surface imply the block always happens.
 
-5. ~~**staff-worker**~~ — **done.** A package inside `services/event-worker`, subscribing
+5. ~~**staff-worker**~~ — **done.** A package inside `wizeworks/services/event-worker`, subscribing
    to `staff.time.approved` only — approval is the trigger, not clock-out. Five `staff.*`
    events added to the catalog AND provisioned in `terraform/envs/prod/main.tf`
    (`check:events` green). Unpriced hours are logged at WARN, because the wages figure
@@ -317,7 +317,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
    People, Person, Timesheets, Schedule, Time off, Certifications, over a shared
    `data.ts`/`format.ts`. Registered in
    [catalog/staff.ts](../apps/workbench/lib/surfaces/catalog/staff.ts) and addressed under
-   `/team/*` in `packages/links` (`check:routes`: 324 surfaces, all addressed).
+   `/team/*` in `wizeworks/packages/links` (`check:routes`: 324 surfaces, all addressed).
 
    Two surfaces carry the module's convictions rather than just its data. **Timesheets**
    renders an uncostable person as `N hours unpriced` in solid `error` and labels the
@@ -339,7 +339,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
     ledger row and feature card, both `ELSEWHERE_MONTHLY` maps at $60, the platform page,
     the `MarketingModule` union, `ModulePageSlug` + `MODULE_ORDER` in `lib/modules.ts`
     (which carries sitemap, both `llms*.txt` and the module page for free), the OG story
-    card, and `module-staff` in `apps/web`'s `@plugin` block — **verified emitted**:
+    card, and `module-staff` in `sparx/apps/web`'s `@plugin` block — **verified emitted**:
     `.bg-module-staff` is in the built CSS bundle, which is the silent-grey failure this
     step exists to avoid. Module count moved 13 → 14 and every derived figure with it
     (`$440/mo`, `$3,946` separate, `$42,100/yr` saved, "fourteen" in six copy locations).
@@ -388,7 +388,7 @@ that nobody got.
 
 **It deliberately does NOT send email, which is a change from what this section used to
 ask for.** The platform already has a shape for this: `emitOverdueTaskReminders` in
-`@sparx/crm` publishes an event "so the email automation engine can fire a templated
+`@wizeworks/crm` publishes an event "so the email automation engine can fire a templated
 reminder". The reason to follow it rather than hard-code a template is that _who_ should
 hear about a forklift ticket differs per business — the person, their supervisor, a
 compliance mailbox, or a task on a board rather than mail at all — and sparx should not
@@ -399,7 +399,7 @@ nothing, which is the exact bug shape this whole release is about. So the trigge
 registered in the workbench's `TRIGGER_EVENTS` catalog, alongside the other four staff
 events and `finance.expense.recorded`. That required adding `staff` and `finance` to the
 **local** `ModuleSlug` union in `automations-catalog.ts` — a hand-kept list, separate
-from `@sparx/modules`, that neither module had ever been added to. **An event a tenant
+from `@wizeworks/modules`, that neither module had ever been added to. **An event a tenant
 cannot pick from a list may as well not be published.**
 
 **Invoked for the first time (2026-08-16).** A cron endpoint that has never been called
@@ -503,7 +503,7 @@ absent behaves exactly like a thing that is fine** — and that shape will recur
 
 2. **Both hues rendered grey.** `module-finance` and `module-staff` were defined in
    `@sparx/brand/theme.css` but never added to the `@plugin '@wizeworks/silicaui'` color
-   list in `apps/workbench/app/globals.css`. An unregistered color emits **no class at
+   list in `sparx/apps/workbench/app/globals.css`. An unregistered color emits **no class at
    all**, so `bg-module-staff` resolves to nothing and the element quietly falls back to
    the chassis — the exact monochrome failure RULE #4 exists to stop, arriving by
    omission rather than by choice. A token is necessary and not sufficient; the plugin
@@ -574,6 +574,6 @@ site. [lib/confirm.ts](../apps/workbench/lib/confirm.ts) already defers our half
 the other half and belongs in a Base UI upgrade, not a patch here.
 
 `GET /v1/finance/expenses` answers **422** (a `FinanceError`), so Finance → Spending shows
-its "could not load" state. Nothing in the staff module touches `packages/finance`; the
+its "could not load" state. Nothing in the staff module touches `wizeworks/packages/finance`; the
 staff → `finance_expenses` chain itself is proven by the DB-backed
 [labor.integration.test.ts](../packages/staff/test/integration/labor.integration.test.ts).

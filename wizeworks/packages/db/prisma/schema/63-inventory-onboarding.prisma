@@ -1,0 +1,183 @@
+// Onboarding — beating the spreadsheet (docs/146 Phase 11).
+//
+// Three tables, and each one exists because something a business does in its
+// first hour has to survive the browser tab closing.
+//
+//   setup progress   where they got to, and WHEN each step happened — the
+//                    thirty-minute claim is measured from these stamps rather
+//                    than asserted in a marketing page.
+//   import profiles  what their columns meant, so the second import is a click.
+//   custom fields    the one or two columns their spreadsheet had that no
+//                    schema anticipated. "You'd lose that column" is a complete
+//                    reason not to switch.
+//
+// The VALUES of those custom fields are not here: they are a `custom_fields`
+// JSON column on the four records themselves (variant, level, supplier,
+// purchase order). A value table would make the stock grid — three hundred rows
+// with their custom columns — a four-way join for nothing sparx would use.
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 11.1 — The guided setup, and the clock against it
+// ─────────────────────────────────────────────────────────────────────────────
+
+// One row per tenant. The wizard's own memory.
+//
+// ── Why the timings are stored per step rather than as a duration ────────────
+//
+// docs/146 §6 sets a thirty-minute target for inventory setup. A target nobody
+// measures is a slogan, so this measures — but a naive `completedAt - startedAt`
+// measures lunch. The step stamps let `summarizeSetup()` (pure, in
+// @wizeworks/commerce-schemas) report two honest numbers instead of one dishonest
+// one: hands-on time, with any gap longer than a sitting excluded, and how many
+// sittings it took. Both are shown; neither is inferred from the other.
+//
+// A step that was SKIPPED is recorded as skipped, never as absent. Six months
+// later, "why is there no opening count" has an answer.
+
+model InventorySetupProgress {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// `Partial<Record<SetupStepKey, SetupStepState>>` — per step, when it was
+  /// completed or skipped and what it produced (the warehouse created, the
+  /// batch imported, the count posted). Json rather than a child table: it is
+  /// read and written whole, five keys deep, and never queried across tenants.
+  steps Json @default("{}")
+
+  /// First interaction. Null until they begin — a tenant who has never opened
+  /// the wizard has not taken zero minutes over it.
+  startedAt DateTime? @map("started_at") @db.Timestamptz
+
+  /// Set when the last non-skipped step lands. The wall-clock duration is
+  /// derived from this and `startedAt`, and is deliberately NOT the number the
+  /// thirty-minute target is judged against.
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+
+  /// They closed the wizard for good without finishing. Kept distinct from
+  /// completion: "chose to stop" and "got to the end" are different outcomes and
+  /// only one of them is a product problem.
+  dismissedAt DateTime? @map("dismissed_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId], map: "inventory_setup_progress_tenant_unique")
+  @@map("inventory_setup_progress")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 11.2 / 11.7 — What their columns meant
+// ─────────────────────────────────────────────────────────────────────────────
+
+// A saved column mapping.
+//
+// The importer can guess (`matchColumns`, pure, with a confidence per column),
+// but a guess is worth confirming once and never again. A tenant who exports the
+// same report from the same system every Monday should confirm their headings
+// in week one and press one button in week two.
+//
+// `recipeKey` records which migration recipe seeded it. Recipes are CODE, not
+// rows — a preset that needed a seed stage to reach production would be a
+// deployment problem for what is really a list of aliases.
+
+model InventoryImportProfile {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name String @db.VarChar(120)
+
+  /// stock — the only kind today. Named so a supplier-price or a purchase-order
+  /// import can share the table rather than fork it.
+  kind String @default("stock") @db.VarChar(30)
+
+  /// `ColumnMapping` — the importer's field key → the heading in their file,
+  /// stored exactly as their file spells it so next month's export matches on
+  /// the same string.
+  mapping Json @default("{}")
+
+  /// `ImportProfileOptions` — the movement reason, the default location, the
+  /// decimal character, and whether an unknown code may create an item.
+  options Json @default("{}")
+
+  /// The recipe this started from, when it started from one.
+  recipeKey String? @map("recipe_key") @db.VarChar(60)
+
+  /// Evidence the profile is used, so a list of six can be ordered by what the
+  /// tenant actually reaches for. Null `lastUsedAt` means never used — which is
+  /// not the same as used long ago, and the list says so.
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz
+  useCount   Int       @default(0) @map("use_count")
+
+  createdBy String?  @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name], map: "inventory_import_profiles_tenant_name_unique")
+  @@index([tenantId, kind])
+  @@map("inventory_import_profiles")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 11.8 — The tenant's own columns
+// ─────────────────────────────────────────────────────────────────────────────
+
+// One custom field definition.
+//
+// `key` is derived from the label once and then frozen, because it is what
+// appears in the JSON on every record, in the CSV header, in the API response
+// and in the MCP tool. Renaming the label must not move the data.
+//
+// Deleting is a soft `isActive = false` by default, and even a hard delete
+// leaves the values in place on the records, unread. A field removed by mistake
+// is then recoverable by re-creating it under the same key — the cheapest
+// possible undo, and it costs nothing to have.
+
+model InventoryCustomField {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// variant | level | supplier | purchase_order. A CHECK pins the vocabulary:
+  /// unlike the free-text vocabularies elsewhere in this schema, a fifth entity
+  /// needs a `custom_fields` column added to a fifth table, so it cannot be
+  /// added by writing a row.
+  entity String @db.VarChar(20)
+
+  /// Frozen at creation. Lower snake case.
+  key String @db.VarChar(40)
+
+  label String @db.VarChar(80)
+
+  /// text | number | money | date | boolean | select | multi_select | url.
+  /// Free text at the DB level — a new type is code, and coercion already
+  /// refuses anything it does not recognise.
+  type String @db.VarChar(20)
+
+  /// The choices, for the two list types. Empty for everything else.
+  options String[] @default([]) @db.VarChar(80)
+
+  helpText String? @map("help_text") @db.Text
+
+  required Boolean @default(false)
+
+  /// Whether this appears as a column in lists and grids. Off by default: a
+  /// tenant with twelve custom fields does not want twelve more columns by
+  /// surprise.
+  showInList Boolean @default(false) @map("show_in_list")
+
+  position Int     @default(0)
+  isActive Boolean @default(true) @map("is_active")
+
+  createdBy String?  @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, entity, key], map: "inventory_custom_fields_tenant_entity_key_unique")
+  @@index([tenantId, entity, isActive, position])
+  @@map("inventory_custom_fields")
+}

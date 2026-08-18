@@ -19,7 +19,7 @@ can never be attributed retroactively.
 
 Related: [97-analytics-reporting-architecture.md](97-analytics-reporting-architecture.md)
 §6 (event-capture pipeline), [08-site-builder-prd.md](08-site-builder-prd.md),
-[packages/db/prisma/schema/76-site-analytics.prisma](../packages/db/prisma/schema/76-site-analytics.prisma).
+[wizeworks/packages/db/prisma/schema/76-site-analytics.prisma](../packages/db/prisma/schema/76-site-analytics.prisma).
 
 ---
 
@@ -183,7 +183,7 @@ data does not have.
 - [ ] Verify hash-input continuity between the collect beacon and checkout (§6.1).
       **Nothing else starts until this is confirmed.**
 - [ ] Migration: four additive nullable columns on `Order` (§4). Pipeline only —
-      the Cloud SQL instance is private-IP, per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
+      the Cloud SQL instance is private-IP, per [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
 - [ ] Extract the visitor-hash computation into a shared helper so ingestion and
       attribution cannot drift. Two copies of a hash definition is one bug.
 - [ ] Resolve attribution off the existing order event, not inline in the handler.

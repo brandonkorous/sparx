@@ -7,7 +7,7 @@ The killer footgun: a create overlay is wired in THREE places that must stay in 
 
 > **SUPERSEDED (2026-08-01).** This skill wires a form in `apps/dashboard`, which no longer
 > exists, using `SurfaceFrame` / the detail-view registries, which have been deleted from
-> `@sparx/ui`. Do not follow the procedure below. Building a surface in the flagship app is
+> `@wizeworks/ui`. Do not follow the procedure below. Building a surface in the flagship app is
 > the `workbench-surface` agent + [docs/123-workbench.md](<../../../docs/123-workbench.md>);
 > its pane-vs-modal rule replaces the drawer/modal/full-page choice described here. The
 > three-registries footgun is retained only as a lesson about keeping wiring in one place.
@@ -64,7 +64,7 @@ const summary = (
 
 It builds live from form state, holds **no inputs and no primary action**, and uses `strong` on the total row. The frame renders it as the full-height right column when wide and **stacks it as a card** when narrow (drawer) — automatically.
 
-The footer status pill is a **status** signal: color it via `statusTone()` (`draft`→warning, etc.) — **not** the module hue. Module color belongs to the record's own primary/tint; status is its own orthogonal axis (`DESIGN.md` §2). `statusTone` / `statusLabel` are exported from `@sparx/ui` — note there is **no workbench implementation yet**, so in `apps/workbench` the tone is being picked by hand at each call site, which is exactly how it drifts to neutral. Never ship a neutral status pill.
+The footer status pill is a **status** signal: color it via `statusTone()` (`draft`→warning, etc.) — **not** the module hue. Module color belongs to the record's own primary/tint; status is its own orthogonal axis (`DESIGN.md` §2). `statusTone` / `statusLabel` are exported from `@wizeworks/ui` — note there is **no workbench implementation yet**, so in `sparx/apps/workbench` the tone is being picked by hand at each call site, which is exactly how it drifts to neutral. Never ship a neutral status pill.
 
 ## 3. Wire it into the overlay system — THREE places, kept in sync
 
@@ -85,14 +85,14 @@ These three live next to each other and MUST agree. The footgun: a green typeche
 ## 5. Design rules (don't re-skin — apply the system)
 
 - **F layout, never a bespoke shell.** One header (title left, window controls right with Close last — supplied by the host chrome for `inline`). MiniProgress for multi-step.
-- **One bottom toolbar, Cancel-anchored.** **Cancel is ALWAYS the leftmost button** (same anchor on every surface so users never hunt for it), Back beside it, primary right (`color="module"`). An edit form's **Delete** goes in `SurfaceStep`'s **`destructive` slot** (left cluster, after Cancel/Back, danger-styled) — a real default-size `@sparx/ui` `<Button>`, never `size="sm"`, **never** in the summary aside.
+- **One bottom toolbar, Cancel-anchored.** **Cancel is ALWAYS the leftmost button** (same anchor on every surface so users never hunt for it), Back beside it, primary right (`color="module"`). An edit form's **Delete** goes in `SurfaceStep`'s **`destructive` slot** (left cluster, after Cancel/Back, danger-styled) — a real default-size `@wizeworks/ui` `<Button>`, never `size="sm"`, **never** in the summary aside.
 - **Lifecycle actions + status go in the frame HEADER, not the body or the toolbar.** The bottom toolbar is for the FORM (Save/Create + Cancel + Delete). A record's lifecycle (Publish / Unpublish / Archive / Restore) and its status badge + Preview/Revisions/Schedule teleport into the frame header via `<DetailHeaderSlot>{…}</DetailHeaderSlot>` — a children-based portal (`apps/dashboard/app/(dashboard)/_components/detail-header-slot.tsx`) the drawer/modal chrome and `DetailPageShell` host (docs/86 §5.1). **NEVER a bespoke in-body "Status" card.** In the header the **status badge + primary action keep text; secondary actions are icon-only with a `title`/`aria-label` tooltip** so it fits one row. And **identity appears once** — the name/slug is the editable field, never also a read-only heading (read-only/transaction details, which have no name field, keep their heading).
 - **Edit surfaces guard unsaved edits.** Compute `dirty` (live state vs. loaded record), build a `useConfirm` discard guard, and register it: `useRegisterLeaveGuard(guard)` (`apps/dashboard/app/(dashboard)/_components/unsaved-guard.tsx`). The form's own Cancel calls the same guard; the overlay host's Close/Switch/backdrop and the full-page presentation switch consult it automatically. Full-page detail routes wrap the body in `<UnsavedGuardProvider>` so the switch is guarded too. ~3 lines per surface.
 - **Full-page edit gets a presentation switch.** The overlay host supplies Close/Switch/Maximize; the `embedded` full page has none, so pass `headerActions={surface === 'page' ? <DetailPresentationSwitch typeId entityId /> : undefined}` to `SurfaceFrame` for drawer/modal parity (Close/Maximize stay off — breadcrumb+back close it, it's already maximized).
-- **Summary = read-only reference.** No inputs, no actions (no Delete), no primary — for an edit, the record's facts/context (e.g. derived counts, breadcrumb). Use a themed `@sparx/ui` control for every field (e.g. `Checkbox`), never a raw `<input>`.
-- **Status pills carry a tone.** Any status (active/draft/paid/failed…) renders as `<Badge color={statusTone(s)} variant="soft" size="sm">{statusLabel(s)}</Badge>` (helpers from `@sparx/ui`, [docs/35](<../../../docs/35-ui-variant-system.md>) §9) — never a bland `neutral`/`outline` pill, a hand-rolled `<span>`, or `className="text-xs"` for sizing.
+- **Summary = read-only reference.** No inputs, no actions (no Delete), no primary — for an edit, the record's facts/context (e.g. derived counts, breadcrumb). Use a themed `@wizeworks/ui` control for every field (e.g. `Checkbox`), never a raw `<input>`.
+- **Status pills carry a tone.** Any status (active/draft/paid/failed…) renders as `<Badge color={statusTone(s)} variant="soft" size="sm">{statusLabel(s)}</Badge>` (helpers from `@wizeworks/ui`, [docs/35](<../../../docs/35-ui-variant-system.md>) §9) — never a bland `neutral`/`outline` pill, a hand-rolled `<span>`, or `className="text-xs"` for sizing.
 - **SEO blocks use `<SeoMetaFields>`** (`apps/dashboard/components/seo/seo-meta-fields.tsx`) — a title + meta-description pair where the inherited name/description is the placeholder and a per-field "Use name/description" button materializes it (fill-empty, never clobber). The platform already falls back `seoTitle ?? name` on the live site + in the audit, so this just makes "blank = inherits" legible. Never render a bare SEO title/description pair (docs/50).
-- **No eyebrows** (incl. the summary heading); left-aligned heading + muted supporting line. **Tokens only** — module color via `--module-active`; no hardcoded colors. Use `@sparx/ui` components/variants, never a hand-built fill+foreground control. See [docs/23](<../../../docs/23-frontend-component-architecture.md>) §1/§15 and [docs/35](<../../../docs/35-ui-variant-system.md>).
+- **No eyebrows** (incl. the summary heading); left-aligned heading + muted supporting line. **Tokens only** — module color via `--module-active`; no hardcoded colors. Use `@wizeworks/ui` components/variants, never a hand-built fill+foreground control. See [docs/23](<../../../docs/23-frontend-component-architecture.md>) §1/§15 and [docs/35](<../../../docs/35-ui-variant-system.md>).
 - **Responsive is automatic** via the frame's container query (2-col → 1-col stack). Don't add viewport media queries for the columns.
 
 ## 6. Verify — in ALL THREE presentations
@@ -100,7 +100,7 @@ These three live next to each other and MUST agree. The footgun: a green typeche
 Typecheck + lint are necessary but not sufficient; layout regressions only show on screen.
 
 ```bash
-pnpm --filter @sparx/ui typecheck && pnpm --filter @sparx/dashboard typecheck
+pnpm --filter @wizeworks/ui typecheck && pnpm --filter @sparx/dashboard typecheck
 pnpm format && pnpm lint   # max-lines warnings never block; fix errors only
 ```
 

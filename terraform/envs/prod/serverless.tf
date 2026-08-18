@@ -632,7 +632,7 @@ module "channel_sync_worker_cloudrun" {
     # (the consent-URL app id) is api-rest-only. Same coming_soon-until-creds default.
     #
     # P5 sparx.market (docs/106 §4.7) — the FIRST-PARTY channel adds NO new Cloud Run
-    # worker + NO new secret: the apps/market storefront is a GKE Deployment
+    # worker + NO new secret: the sparx/apps/market storefront is a GKE Deployment
     # (k8s/apps/market.yaml), the weekly payout runs on a GKE CronJob
     # (k8s/cronjobs/market-settlement.yaml → POST /internal/market/settle), and the
     # MoR checkout reuses the platform STRIPE_SECRET_KEY (charge) + CHANNELS_TOKEN_KEY
@@ -1052,7 +1052,7 @@ module "platform_crm_worker_cloudrun" {
 # platform-crm-backfill — the one-off that puts tenants who signed up BEFORE the
 # worker existed onto the signup board (docs/140 §7).
 #
-# A Cloud Run JOB on the worker's OWN image rather than a packages/db backfill:
+# A Cloud Run JOB on the worker's OWN image rather than a wizeworks/packages/db backfill:
 # the mirror writes through the CRM service layer under RLS, so it has to run as
 # the same identity and in the same runtime the worker uses in production. The
 # db-migrate path runs as the migration owner doing raw data rewrites — a

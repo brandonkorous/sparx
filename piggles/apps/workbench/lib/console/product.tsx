@@ -45,7 +45,8 @@ import type { WorkbenchModule } from '@/components/module-scope';
 import { APPS } from '@piggles/config';
 import { Mark } from '@piggles/brand/react';
 import { PIGGLES_COPY } from './copy';
-import { PIGGLES_SECTIONS, PIGGLES_SURFACES } from './vocabulary';
+import { PIGGLES_SECTIONS } from './section-names';
+import { PIGGLES_SURFACES } from './vocabulary';
 import { PigglesStateArt } from './state-art';
 
 /**

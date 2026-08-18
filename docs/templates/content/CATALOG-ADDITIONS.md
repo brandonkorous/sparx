@@ -7,7 +7,7 @@
 The ten **content** studies (the WordPress set) independently converged on a set of
 **reusable, content-side catalog additions** — the article/feed/archive/author patterns
 the [commerce set](../CATALOG-ADDITIONS.md) never needed. Building these once (in
-`@sparx/silica-catalog` sections + `SPARX_CATALOG`, and where interactive,
+`@wizeworks/silica-catalog` sections + `SPARX_CATALOG`, and where interactive,
 `@wizeworks/silicaui-behaviors`) unlocks all ten content templates AND serves real CMS
 tenants — never inline an article header or a feed per bundle. This is the content-side
 Phase-2a work the ten blueprints build on.

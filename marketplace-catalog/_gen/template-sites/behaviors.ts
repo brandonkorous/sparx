@@ -7,7 +7,7 @@
 // page that never hydrates still degrades to a sensible design — the platform contract.
 //
 // These wrap the SAME `behave`/`part` primitives the shipped catalog section
-// `galleryShowcase` (packages/silica-catalog/src/sections/gallery.ts) already uses, so the
+// `galleryShowcase` (wizeworks/packages/silica-catalog/src/sections/gallery.ts) already uses, so the
 // marker contract lives in one reviewed place. The runtime finds the track / slides /
 // controls by their `part` MARKER, never by class, so the controls are styled with plain
 // `btn` + layout utilities (which resolve on every surface, including the flat preview
@@ -25,7 +25,7 @@ import {
   el,
   part,
   type Node,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
 /**
  * A full-bleed autoplaying hero VIDEO backdrop — the silica `Video` component sized to fill

@@ -34,7 +34,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Text,
   Textarea,
   useToast,
@@ -318,36 +317,36 @@ function ManageAsset({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="File actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!dirty}
-          loading={update.isPending}
-          onClick={save}
-        >
-          Save
-        </Button>
-
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="File actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!dirty}
+            loading={update.isPending}
+            onClick={save}
+          >
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold break-words">
-              {asset.filename}
-            </Heading>
-            <Text>
-              {KIND_NOUN[asset.kind]} · {formatBytes(asset.byteSize)}
-              {dimensions ? ` · ${dimensions}` : ''}
-            </Text>
-          </div>
+          <Text>
+            {KIND_NOUN[asset.kind]} · {formatBytes(asset.byteSize)}
+            {dimensions ? ` · ${dimensions}` : ''}
+          </Text>
 
           {asset.status === 'failed' ? (
             <Alert color="error" variant="soft">

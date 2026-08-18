@@ -14,13 +14,13 @@ This guide is the end-to-end path: anatomy → manifest → trees → theme → 
 content → media → validate → publish → install, plus how to turn a design mockup into
 a working template. Read it once and you can build and ship a template from scratch.
 
-> Source of truth for the schema is [`@sparx/blueprints`](../../packages/blueprints/src/manifest.ts)
+> Source of truth for the schema is [`@wizeworks/blueprints`](../../packages/blueprints/src/manifest.ts)
 > (`manifest.ts`, `validate.ts`). The complete worked example is
 > [`marketplace-catalog/blueprints/sparx/`](../../marketplace-catalog/blueprints/sparx/) —
 > the first-party reference bundle, captured from the live sparx Template site. The
-> bundle loader is [`services/api-rest/src/lib/marketplace/blueprint-bundles.ts`](../../services/api-rest/src/lib/marketplace/blueprint-bundles.ts),
+> bundle loader is [`wizeworks/services/api-rest/src/lib/marketplace/blueprint-bundles.ts`](../../services/api-rest/src/lib/marketplace/blueprint-bundles.ts),
 > the publisher is [`self-register.ts`](../../services/api-rest/src/lib/marketplace/self-register.ts),
-> and the installer is [`services/api-rest/src/lib/blueprint-installer.ts`](../../services/api-rest/src/lib/blueprint-installer.ts).
+> and the installer is [`wizeworks/services/api-rest/src/lib/blueprint-installer.ts`](../../services/api-rest/src/lib/blueprint-installer.ts).
 
 ---
 
@@ -58,7 +58,7 @@ marketplace-catalog/blueprints/<slug>/   ← you author this (the SOURCE, ships 
 - sparx is **a publisher, not a special case**. A collaborator's upload lands in the
   same rows and the same storage, and `resolveBlueprintManifest` cannot tell them apart.
 - To publish without waiting for a restart (or to work against docker Postgres):
-  `pnpm --filter @sparx/api-rest marketplace:self-register`.
+  `pnpm --filter @wizeworks/api-rest marketplace:self-register`.
 
 ---
 
@@ -188,17 +188,17 @@ checks. Top-level shape (full field reference:
 
 > **The committed `blueprint.ts` must be SELF-CONTAINED data — no `@sparx/*` imports.**
 > The loader dynamic-imports the payload from `marketplace-catalog/` (not a workspace
-> package), so a bare `import { seedNode } from '@sparx/builder-schemas'` in the
+> package), so a bare `import { seedNode } from '@wizeworks/builder-schemas'` in the
 > committed file fails to resolve (`ERR_MODULE_NOT_FOUND`). Author the trees with the
 > `node()` helper in a **generator** under `marketplace-catalog/_gen/` that imports the
-> helper by **relative path** (`../../packages/builder-schemas/src/index`) and
+> helper by **relative path** (`../../wizeworks/packages/builder-schemas/src/index`) and
 > serializes the compiled manifest to `blueprint.ts` as `export default { … }`. The
 > themed clones use exactly this generator mechanism — see
 > [`_gen/gen-sparx-themed.ts`](../../marketplace-catalog/_gen/gen-sparx-themed.ts).
 >
 > There were two more generators here, for theme and component bundles. Both are
 > **deleted**: those categories ship as CODE now (`FIRST_PARTY_THEMES` /
-> `FIRST_PARTY_COMPONENTS` in `@sparx/silica-catalog`) and the marketplace serves
+> `FIRST_PARTY_COMPONENTS` in `@wizeworks/silica-catalog`) and the marketplace serves
 > them from there, so there is no bundle to generate. Blueprints are the only bundle
 > category left, because their payload is too big for a row and they ship binary card
 > imagery — a difference in payload, not in process: all three are published by the
@@ -211,7 +211,7 @@ checks. Top-level shape (full field reference:
 ### Minimal manifest skeleton (authoring view)
 
 ```ts
-import { seedNode, type BuilderNode } from '@sparx/builder-schemas';
+import { seedNode, type BuilderNode } from '@wizeworks/builder-schemas';
 
 let n = 0;
 const node = (type: string, opts: Parameters<typeof seedNode>[2] = {}): BuilderNode =>
@@ -299,7 +299,7 @@ footer, and sidebars are author-composed around it.
 `physical_address` (plus the shared leaves above) for `emails[].tree`.
 
 The Add palette in the builder is the **data-driven catalog** of pre-composed blocks
-([`packages/builder-schemas/src/catalog/`](../../packages/builder-schemas/src/catalog/)) —
+([`wizeworks/packages/builder-schemas/src/catalog/`](../../packages/builder-schemas/src/catalog/)) —
 authoring a tree by hand uses the same primitives those compose from.
 
 ### `box` vocabulary (framing)
@@ -475,7 +475,7 @@ content: [
 ```
 
 An `asset`-typed field inside a body uses a `{ $asset: '<id>' }` ref (`assetRef('id')`
-from `@sparx/blueprints`) that names an entry in `assets`.
+from `@wizeworks/blueprints`) that names an entry in `assets`.
 
 ---
 
@@ -568,7 +568,7 @@ pods — there is no workflow to run and no cluster that can be left behind.
 restart:
 
 ```bash
-pnpm --filter @sparx/api-rest marketplace:self-register
+pnpm --filter @wizeworks/api-rest marketplace:self-register
 ```
 
 It reads every bundle under `marketplace-catalog/blueprints/`, validates, writes the
@@ -663,5 +663,5 @@ Recipe:
 - [ ] All references resolve by handle/assetId; one default variant + one primary image per product.
 - [ ] `layout` has exactly one `Outlet`; pages set `kind` correctly (singleton vs collection + recordType).
 - [ ] Static images hot-link URLs; record-bound images use `assets` + `*AssetId`.
-- [ ] `pnpm --filter @sparx/api-rest marketplace:self-register` succeeds locally and the template installs cleanly into a dev tenant.
+- [ ] `pnpm --filter @wizeworks/api-rest marketplace:self-register` succeeds locally and the template installs cleanly into a dev tenant.
 - [ ] `preview.png` reflects the actual home page.

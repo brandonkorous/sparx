@@ -43,11 +43,11 @@ import {
   Input,
   NativeSelect,
   Switch,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faColumns3, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
@@ -456,15 +456,18 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Custom column controls">
-        <RefreshButton
-          isFetching={fields.isFetching}
-          updatedAt={fields.data ? fields.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void fields.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Custom column controls"
+        refresh={
+          <RefreshButton
+            isFetching={fields.isFetching}
+            updatedAt={fields.data ? fields.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void fields.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">

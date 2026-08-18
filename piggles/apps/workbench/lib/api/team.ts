@@ -18,7 +18,7 @@
 // the authority; the UI just never offers what it knows will be refused.
 
 import { useMemo } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from './client';
 
 /** Someone with a login who is already in the account. */
@@ -99,6 +99,12 @@ export function useTeamRoster(): {
    *  team read as a complete one is how someone concludes a teammate was
    *  removed when in fact a request timed out. */
   isError: boolean;
+  /** True while EITHER list is re-reading, including in the background — what a
+   *  RefreshButton reads as "busy". */
+  isFetching: boolean;
+  /** When the roster last landed, for the RefreshButton's freshness tooltip.
+   *  Undefined until something has actually loaded. */
+  updatedAt: number | undefined;
   refetch: () => void;
 } {
   const members = useQuery({
@@ -132,6 +138,8 @@ export function useTeamRoster(): {
     invitations: invitationRows ?? [],
     ready: !members.isLoading && !invitations.isLoading,
     isError: members.isError || invitations.isError,
+    isFetching: members.isFetching || invitations.isFetching,
+    updatedAt: memberRows ? members.dataUpdatedAt : undefined,
     refetch: () => {
       void members.refetch();
       void invitations.refetch();
@@ -156,6 +164,10 @@ export function useTeamMember(memberId: string): {
   /** Loaded fine, but nobody in this account has that id — a removed teammate
    *  whose pane was still open, or a stale deep link. Distinct from an error. */
   missing: boolean;
+  /** True while the roster is re-reading, including in the background. */
+  isFetching: boolean;
+  /** When the roster this member was read out of last landed. */
+  updatedAt: number | undefined;
   refetch: () => void;
 } {
   const members = useQuery({
@@ -171,6 +183,8 @@ export function useTeamMember(memberId: string): {
     ready: !members.isLoading,
     isError: members.isError,
     missing: !members.isLoading && !members.isError && member === null,
+    isFetching: members.isFetching,
+    updatedAt: members.data ? members.dataUpdatedAt : undefined,
     refetch: () => {
       void members.refetch();
     },

@@ -39,7 +39,7 @@ the real `/builder`.
 
 **What we keep, and why it is not caution.** We keep the _engine_ — the
 `BuilderNode` model ([40](../40-sitebuilder-composition-model.md)), the registry,
-the binding resolver in `@sparx/builder-schemas`, the Token Model v2 compile
+the binding resolver in `@wizeworks/builder-schemas`, the Token Model v2 compile
 ([33](../33-token-model-v2.md)), and the class-first authoring model
 ([47](../47-class-first-authoring-model.md), [61](../61-utility-authoring-system.md)).
 Rewriting a correct foundation would destroy value and re-incur every
@@ -114,27 +114,27 @@ fully independent and can be built any time. Phase 7 is the final consolidation.
 
 ## 5. Where the code lives (orientation)
 
-| Area                                       | Path                                                                                                                                                |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Editor shell (page)                        | `apps/workbench/surfaces/builder/builder-app.tsx` _(historical; the shipped editor is `apps/workbench/surfaces/builder/studio/studio-surface.tsx`)_ |
-| Editor shell (site)                        | `…/_builder/site-builder-app.tsx`                                                                                                                   |
-| Editor shell (email)                       | `…/_builder/email-builder-app.tsx`                                                                                                                  |
-| Shared workspace (canvas/inspector/layers) | `…/_builder/builder-workspace.tsx`                                                                                                                  |
-| **Canvas render path (to be unified)**     | `…/_builder/canvas.tsx` + `…/_builder/registry.tsx`                                                                                                 |
-| Inspector                                  | `…/_builder/inspector.tsx` + `…/_builder/class-controls.ts`                                                                                         |
-| Layers tree (dnd-kit)                      | `…/_builder/layers-panel.tsx` + `layers-tree.ts`                                                                                                    |
-| Editor state + autosave                    | `…/_builder/use-builder-editor.ts`                                                                                                                  |
-| Brand / theme center                       | `…/_brand/components/theme-center.tsx`                                                                                                              |
-| **Live render path (the target)**          | `apps/site/components/builder-renderer.tsx`                                                                                                         |
-| Shared binding/runtime                     | `packages/builder-schemas/src/runtime.ts`                                                                                                           |
-| Publish service + verified-email guard     | `packages/sitebuilder/src/services/publish-service.ts`, `services/api-rest/src/lib/verified-email-guard.ts`                                         |
+| Area                                       | Path                                                                                                                                                            |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editor shell (page)                        | `sparx/apps/workbench/surfaces/builder/builder-app.tsx` _(historical; the shipped editor is `sparx/apps/workbench/surfaces/builder/studio/studio-surface.tsx`)_ |
+| Editor shell (site)                        | `…/_builder/site-builder-app.tsx`                                                                                                                               |
+| Editor shell (email)                       | `…/_builder/email-builder-app.tsx`                                                                                                                              |
+| Shared workspace (canvas/inspector/layers) | `…/_builder/builder-workspace.tsx`                                                                                                                              |
+| **Canvas render path (to be unified)**     | `…/_builder/canvas.tsx` + `…/_builder/registry.tsx`                                                                                                             |
+| Inspector                                  | `…/_builder/inspector.tsx` + `…/_builder/class-controls.ts`                                                                                                     |
+| Layers tree (dnd-kit)                      | `…/_builder/layers-panel.tsx` + `layers-tree.ts`                                                                                                                |
+| Editor state + autosave                    | `…/_builder/use-builder-editor.ts`                                                                                                                              |
+| Brand / theme center                       | `…/_brand/components/theme-center.tsx`                                                                                                                          |
+| **Live render path (the target)**          | `wizeworks/apps/site/components/builder-renderer.tsx`                                                                                                           |
+| Shared binding/runtime                     | `wizeworks/packages/builder-schemas/src/runtime.ts`                                                                                                             |
+| Publish service + verified-email guard     | `wizeworks/packages/sitebuilder/src/services/publish-service.ts`, `wizeworks/services/api-rest/src/lib/verified-email-guard.ts`                                 |
 
 ## 6. Glossary (so every phase doc uses the same words)
 
 - **Node / tree** — a `BuilderNode` `{ id, type, name?, class?, props, binding?, children? }` ([40](../40-sitebuilder-composition-model.md)). `class` is the only styling surface.
 - **Surface** — one editing target: `page`, `site` (layout/chrome), `email`. A node's registry entry declares which surfaces it's valid on.
 - **Outlet** — the single node in a site layout that marks where the routed page renders ([45 §2.1](../45-builder-site-layout.md)).
-- **Live renderer** — `apps/site/components/builder-renderer.tsx`, the production component path. The Phase 2 target for the canvas.
+- **Live renderer** — `wizeworks/apps/site/components/builder-renderer.tsx`, the production component path. The Phase 2 target for the canvas.
 - **Canvas registry** — `_builder/registry.tsx`'s per-type canvas render functions, including the _mocks_ for commerce atoms. Retired in Phase 2/7.
 - **Interaction shield** — the editor overlay that makes live, interactive components selectable/inert inside the canvas (Phase 2).
 - **Context (inspector)** — a style scope: base, a container-query breakpoint (`@sm`/`@md`/…), or a state (`hover`/`focus`/`active`/`dark`). Driven by `ContextSelect` ([61](../61-utility-authoring-system.md)).

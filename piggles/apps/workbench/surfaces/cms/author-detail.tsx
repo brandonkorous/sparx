@@ -29,7 +29,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Text,
   Textarea,
@@ -233,30 +232,28 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New author actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!nameFilled}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Add author
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New author actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!nameFilled}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Add author
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Add an author
-            </Heading>
-            <Text>
-              An author is a name that appears on what you publish. Once added, you can pick them on
-              any post.
-            </Text>
-          </div>
+          <Text>
+            An author is a name that appears on what you publish. Once added, you can pick them on
+            any post.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -439,19 +436,24 @@ function ManageBody({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Author actions">
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto"
-          disabled={!dirty || !nameFilled}
-          loading={update.isPending}
-          onClick={save}
-        >
-          Save
-        </Button>
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Author actions"
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto"
+            disabled={!dirty || !nameFilled}
+            loading={update.isPending}
+            onClick={save}
+          >
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

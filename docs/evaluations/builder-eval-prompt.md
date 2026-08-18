@@ -23,7 +23,7 @@ sparx is a modular content + commerce platform. The builder lets a tenant compos
 - **`class` is the only styling surface** — Tailwind-native utility strings, compiled per-tenant and scoped to `.bx-canvas` in the editor (class-first authoring, docs/47, docs/61). There is no separate box/layout object persisted.
 - Two component tiers: **Tier-1 primitives** (Section, Grid, Stack, Heading, Text, Button, Image, Divider, Icon, NavMenu, Outlet, …) and **Tier-2 data-aware** components that bind to data (PriceTag, ImageDisplay, ProductForm, Signup, FAQ, …). Plus **custom** tenant components (`custom:<key>`).
 - **Bindings** resolve paths (`cms.posts`, `item.title`, `commerce.products[0]`, `recipient.email`, `site.identity`, …) with cardinality: scalar (render once), object (scope children), array (repeat children per item).
-- **Canvas == production**: the editor canvas (`apps/dashboard/.../builder/_builder/canvas.tsx`) and the live storefront renderer (`apps/site/components/builder-renderer.tsx`) share binding-resolution logic and apply the same `class` strings. The canvas uses **mock/sample data**; the live site uses real records. A known risk area is **canvas↔live divergence** — explicitly test that what you build in the canvas looks the same when published.
+- **Canvas == production**: the editor canvas (`apps/dashboard/.../builder/_builder/canvas.tsx`) and the live storefront renderer (`wizeworks/apps/site/components/builder-renderer.tsx`) share binding-resolution logic and apply the same `class` strings. The canvas uses **mock/sample data**; the live site uses real records. A known risk area is **canvas↔live divergence** — explicitly test that what you build in the canvas looks the same when published.
 
 ### Route surface to cover (all under `apps/dashboard`, route group `(dashboard)/builder`)
 
@@ -111,7 +111,7 @@ Then assess the **two-tier model** the owner described: is there a clean separat
 
 ### 3. Design quality
 
-Visual hierarchy, spacing rhythm, alignment, token adherence (no hardcoded colors — should ride `--st-*`/role vars), consistency across the five surfaces, empty states, loading states, iconography, and overall craft. Flag anything that re-skins a control instead of using a `@sparx/ui` variant (house rule). Note where the editor chrome itself feels unpolished or inconsistent with the dashboard standard.
+Visual hierarchy, spacing rhythm, alignment, token adherence (no hardcoded colors — should ride `--st-*`/role vars), consistency across the five surfaces, empty states, loading states, iconography, and overall craft. Flag anything that re-skins a control instead of using a `@wizeworks/ui` variant (house rule). Note where the editor chrome itself feels unpolished or inconsistent with the dashboard standard.
 
 ### 4. Missing / lacking functionality
 

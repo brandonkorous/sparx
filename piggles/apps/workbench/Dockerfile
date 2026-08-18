@@ -5,12 +5,12 @@
 #
 #   docker build -f piggles/apps/workbench/Dockerfile -t piggles/console:tag .
 #
-# ── WHY THIS IS NOT apps/workbench/Dockerfile WITH A PATH CHANGED ────────────
+# ── WHY THIS IS NOT sparx/apps/workbench/Dockerfile WITH A PATH CHANGED ────────────
 #
 # It looks nearly identical to sparx's and it is a separate file on purpose.
 # piggles/CLAUDE.md RULE #0: either product must be deletable tomorrow without
 # affecting the other, and a shared Dockerfile is a shared build — deleting
-# apps/workbench would delete this image's recipe.
+# sparx/apps/workbench would delete this image's recipe.
 #
 # The two lists are also already different (this one carries the four
 # `@piggles/*` packages and sparx's does not) and they will drift further as
@@ -20,7 +20,7 @@
 # re-running it is the one way to break this image.
 #
 # The image name is `piggles-console`, not `piggles-workbench`: the directory is
-# `apps/workbench` because the console is a workbench-shaped app, but nothing a
+# `sparx/apps/workbench` because the console is a workbench-shaped app, but nothing a
 # person or an ops runbook sees should use a word this product does not have
 # (RULE #3 — the lexicon calls it the console, and the package is
 # `@piggles/console`).
@@ -52,63 +52,63 @@ COPY piggles/packages/ui/package.json piggles/packages/ui/
 # none of them may state a sparx value, and the scope rename to @wizeworks/*
 # (piggles/docs/migration, phase A3) is what will make that legible in the name.
 #
-# NEITHER `packages/brand` NOR `packages/ui` IS IN THIS LIST ANY MORE, and that
+# NEITHER `sparx/packages/brand` NOR `sparx/packages/ui` IS IN THIS LIST ANY MORE, and that
 # took two edits rather than one. Dropping them as direct dependencies was easy —
 # the console imported neither. The image still pulled them in regardless, via:
 #
-#     @piggles/console → @sparx/cms-editor → @sparx/ui → @sparx/brand
+#     @piggles/console → @wizeworks/cms-editor → @wizeworks/ui → @sparx/brand
 #
 # So sparx's actual brand package was inside the Piggles image by way of the CMS
 # editor, and "nothing renders from it" is not the test the migration has to
 # pass. The chain turned out to be held up by exactly two things: `cn`, a
 # 26-line tailwind-merge wrapper with no brand in it, and a type from a module
 # manifest written for the removed dashboard that nothing consumed. `cn` moved to
-# @wizeworks/silica-corrections (re-exported from @sparx/ui, so admin was
+# @wizeworks/silica-corrections (re-exported from @wizeworks/ui, so admin was
 # untouched) and the four dead manifests were deleted. Broken 2026-08-16.
 #
 # If either package reappears below, something re-coupled — find the new edge
 # rather than adding the COPY line back.
-COPY packages/api-client/package.json packages/api-client/
-COPY packages/api-core/package.json packages/api-core/
-COPY packages/app-kit/package.json packages/app-kit/
-COPY packages/attribution/package.json packages/attribution/
-COPY packages/auth/package.json packages/auth/
-COPY packages/brand-core/package.json packages/brand-core/
-COPY packages/automation-schemas/package.json packages/automation-schemas/
-COPY packages/blueprints/package.json packages/blueprints/
-COPY packages/builder-schemas/package.json packages/builder-schemas/
-COPY packages/cms-editor/package.json packages/cms-editor/
-COPY packages/cms-schemas/package.json packages/cms-schemas/
-COPY packages/commerce-schemas/package.json packages/commerce-schemas/
-COPY packages/crm-schemas/package.json packages/crm-schemas/
-COPY packages/db/package.json packages/db/
-COPY packages/email/package.json packages/email/
-COPY packages/email-sends/package.json packages/email-sends/
-COPY packages/email-sequences/package.json packages/email-sequences/
-COPY packages/events/package.json packages/events/
-COPY packages/field-schema/package.json packages/field-schema/
-COPY packages/integrations/package.json packages/integrations/
-COPY packages/legal/package.json packages/legal/
-COPY packages/legal-seed/package.json packages/legal-seed/
-COPY packages/legal-templates/package.json packages/legal-templates/
+COPY wizeworks/packages/api-client/package.json wizeworks/packages/api-client/
+COPY wizeworks/packages/api-core/package.json wizeworks/packages/api-core/
+COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
+COPY wizeworks/packages/attribution/package.json wizeworks/packages/attribution/
+COPY wizeworks/packages/auth/package.json wizeworks/packages/auth/
+COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
+COPY wizeworks/packages/automation-schemas/package.json wizeworks/packages/automation-schemas/
+COPY wizeworks/packages/blueprints/package.json wizeworks/packages/blueprints/
+COPY wizeworks/packages/builder-schemas/package.json wizeworks/packages/builder-schemas/
+COPY wizeworks/packages/cms-editor/package.json wizeworks/packages/cms-editor/
+COPY wizeworks/packages/cms-schemas/package.json wizeworks/packages/cms-schemas/
+COPY wizeworks/packages/commerce-schemas/package.json wizeworks/packages/commerce-schemas/
+COPY wizeworks/packages/crm-schemas/package.json wizeworks/packages/crm-schemas/
+COPY wizeworks/packages/db/package.json wizeworks/packages/db/
+COPY wizeworks/packages/email/package.json wizeworks/packages/email/
+COPY wizeworks/packages/email-sends/package.json wizeworks/packages/email-sends/
+COPY wizeworks/packages/email-sequences/package.json wizeworks/packages/email-sequences/
+COPY wizeworks/packages/events/package.json wizeworks/packages/events/
+COPY wizeworks/packages/field-schema/package.json wizeworks/packages/field-schema/
+COPY wizeworks/packages/integrations/package.json wizeworks/packages/integrations/
+COPY wizeworks/packages/legal/package.json wizeworks/packages/legal/
+COPY wizeworks/packages/legal-seed/package.json wizeworks/packages/legal-seed/
+COPY wizeworks/packages/legal-templates/package.json wizeworks/packages/legal-templates/
 # The address table. Pure data — but the catch-all route resolves paths through
 # it during the SERVER render, so a missing copy fails at boot, not lazily.
-COPY packages/links/package.json packages/links/
-COPY packages/marketplace-schemas/package.json packages/marketplace-schemas/
-COPY packages/migration/package.json packages/migration/
-COPY packages/modules/package.json packages/modules/
-COPY packages/query/package.json packages/query/
-COPY packages/silica-catalog/package.json packages/silica-catalog/
-COPY packages/silica-corrections/package.json packages/silica-corrections/
-COPY packages/site-themes/package.json packages/site-themes/
-COPY packages/studio/package.json packages/studio/
-COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
-COPY packages/social/package.json packages/social/
-COPY packages/story-schemas/package.json packages/story-schemas/
+COPY wizeworks/packages/links/package.json wizeworks/packages/links/
+COPY wizeworks/packages/marketplace-schemas/package.json wizeworks/packages/marketplace-schemas/
+COPY wizeworks/packages/migration/package.json wizeworks/packages/migration/
+COPY wizeworks/packages/modules/package.json wizeworks/packages/modules/
+COPY wizeworks/packages/query/package.json wizeworks/packages/query/
+COPY wizeworks/packages/silica-catalog/package.json wizeworks/packages/silica-catalog/
+COPY wizeworks/packages/silica-corrections/package.json wizeworks/packages/silica-corrections/
+COPY wizeworks/packages/site-themes/package.json wizeworks/packages/site-themes/
+COPY wizeworks/packages/studio/package.json wizeworks/packages/studio/
+COPY wizeworks/packages/sitebuilder-schemas/package.json wizeworks/packages/sitebuilder-schemas/
+COPY wizeworks/packages/social/package.json wizeworks/packages/social/
+COPY wizeworks/packages/story-schemas/package.json wizeworks/packages/story-schemas/
 
-# Root postinstall runs `pnpm --filter @sparx/db db:generate`.
-COPY packages/db/prisma packages/db/prisma
-COPY packages/db/prisma.config.ts packages/db/prisma.config.ts
+# Root postinstall runs `pnpm --filter @wizeworks/db db:generate`.
+COPY wizeworks/packages/db/prisma wizeworks/packages/db/prisma
+COPY wizeworks/packages/db/prisma.config.ts wizeworks/packages/db/prisma.config.ts
 
 # The Font Awesome Pro token reaches pnpm as an env var for one command, read
 # from a BuildKit secret mount. It is never COPYed and never lands in a layer.
@@ -123,44 +123,44 @@ COPY piggles/packages/brand piggles/packages/brand
 COPY piggles/packages/config piggles/packages/config
 COPY piggles/packages/mascot piggles/packages/mascot
 COPY piggles/packages/ui piggles/packages/ui
-COPY packages/api-client packages/api-client
-COPY packages/api-core packages/api-core
-COPY packages/app-kit packages/app-kit
-COPY packages/attribution packages/attribution
-COPY packages/auth packages/auth
-COPY packages/brand-core packages/brand-core
-COPY packages/automation-schemas packages/automation-schemas
-COPY packages/blueprints packages/blueprints
-COPY packages/builder-schemas packages/builder-schemas
-COPY packages/cms-editor packages/cms-editor
-COPY packages/cms-schemas packages/cms-schemas
-COPY packages/commerce-schemas packages/commerce-schemas
-COPY packages/crm-schemas packages/crm-schemas
-COPY packages/db packages/db
-COPY packages/email packages/email
-COPY packages/email-sends packages/email-sends
-COPY packages/email-sequences packages/email-sequences
-COPY packages/events packages/events
-COPY packages/field-schema packages/field-schema
-COPY packages/integrations packages/integrations
-COPY packages/legal packages/legal
-COPY packages/legal-seed packages/legal-seed
-COPY packages/legal-templates packages/legal-templates
-COPY packages/links packages/links
-COPY packages/marketplace-schemas packages/marketplace-schemas
-COPY packages/migration packages/migration
-COPY packages/modules packages/modules
-COPY packages/query packages/query
-COPY packages/silica-catalog packages/silica-catalog
-COPY packages/silica-corrections packages/silica-corrections
-COPY packages/site-themes packages/site-themes
-COPY packages/studio packages/studio
-COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
-COPY packages/social packages/social
-COPY packages/story-schemas packages/story-schemas
+COPY wizeworks/packages/api-client wizeworks/packages/api-client
+COPY wizeworks/packages/api-core wizeworks/packages/api-core
+COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
+COPY wizeworks/packages/attribution wizeworks/packages/attribution
+COPY wizeworks/packages/auth wizeworks/packages/auth
+COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
+COPY wizeworks/packages/automation-schemas wizeworks/packages/automation-schemas
+COPY wizeworks/packages/blueprints wizeworks/packages/blueprints
+COPY wizeworks/packages/builder-schemas wizeworks/packages/builder-schemas
+COPY wizeworks/packages/cms-editor wizeworks/packages/cms-editor
+COPY wizeworks/packages/cms-schemas wizeworks/packages/cms-schemas
+COPY wizeworks/packages/commerce-schemas wizeworks/packages/commerce-schemas
+COPY wizeworks/packages/crm-schemas wizeworks/packages/crm-schemas
+COPY wizeworks/packages/db wizeworks/packages/db
+COPY wizeworks/packages/email wizeworks/packages/email
+COPY wizeworks/packages/email-sends wizeworks/packages/email-sends
+COPY wizeworks/packages/email-sequences wizeworks/packages/email-sequences
+COPY wizeworks/packages/events wizeworks/packages/events
+COPY wizeworks/packages/field-schema wizeworks/packages/field-schema
+COPY wizeworks/packages/integrations wizeworks/packages/integrations
+COPY wizeworks/packages/legal wizeworks/packages/legal
+COPY wizeworks/packages/legal-seed wizeworks/packages/legal-seed
+COPY wizeworks/packages/legal-templates wizeworks/packages/legal-templates
+COPY wizeworks/packages/links wizeworks/packages/links
+COPY wizeworks/packages/marketplace-schemas wizeworks/packages/marketplace-schemas
+COPY wizeworks/packages/migration wizeworks/packages/migration
+COPY wizeworks/packages/modules wizeworks/packages/modules
+COPY wizeworks/packages/query wizeworks/packages/query
+COPY wizeworks/packages/silica-catalog wizeworks/packages/silica-catalog
+COPY wizeworks/packages/silica-corrections wizeworks/packages/silica-corrections
+COPY wizeworks/packages/site-themes wizeworks/packages/site-themes
+COPY wizeworks/packages/studio wizeworks/packages/studio
+COPY wizeworks/packages/sitebuilder-schemas wizeworks/packages/sitebuilder-schemas
+COPY wizeworks/packages/social wizeworks/packages/social
+COPY wizeworks/packages/story-schemas wizeworks/packages/story-schemas
 COPY piggles/apps/workbench piggles/apps/workbench
 
-RUN pnpm --filter @sparx/db db:generate
+RUN pnpm --filter @wizeworks/db db:generate
 
 ARG APP_VERSION=dev
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION

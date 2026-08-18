@@ -13,7 +13,7 @@
 // research project.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { productCopy } from '../../lib/product';
 

@@ -13,10 +13,15 @@
 // Commissions surface.
 
 import { useState } from 'react';
-import { Badge, Button, EmptyState, Heading, Input, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Heading, Input, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCheck, faCopy, faShareNodes } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneEmpty } from '../../components/pane-empty';
+/** Registry module for this pane, so the brand draws one consistent picture
+ *  across every partner state. */
+const MODULE = 'partner';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useReferrals, type PartnerReferral } from './data';
@@ -111,19 +116,23 @@ export function ReferralsListSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Referrals list controls">
-        <Text className="text-sm whitespace-nowrap">
-          {referrals.length === 1 ? '1 referral' : `${String(referrals.length)} referrals`}
-        </Text>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Referrals list controls"
+        status={
+          <Text className="text-sm whitespace-nowrap">
+            {referrals.length === 1 ? '1 referral' : `${String(referrals.length)} referrals`}
+          </Text>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {isError ? (
         <PartnerLoadError
@@ -140,12 +149,17 @@ export function ReferralsListSurface(_props: { ctx: SurfaceContext }) {
           <div className={COLUMN}>
             <ReferralLink code={data.referralCode} />
 
+            {/* Carded like the table beside it, so the pane keeps its shape when
+                the first referral arrives. */}
             {referrals.length === 0 ? (
-              <EmptyState
-                icon={<Icon glyph={faShareNodes} className="size-6" aria-hidden />}
-                title="No referrals yet"
-                description="Share your link above. New businesses that sign up through it appear here, with how far they’ve got and the commission rate you’ll earn."
-              />
+              <Card>
+                <PaneEmpty
+                  module={MODULE}
+                  icon={<Icon glyph={faShareNodes} className="size-6" aria-hidden />}
+                  title="No referrals yet"
+                  description="Share your link above. New businesses that sign up through it appear here, with how far they’ve got and the commission rate you’ll earn."
+                />
+              </Card>
             ) : (
               <section className="card bg-base-100 overflow-hidden">
                 <header className="border-base-300 border-b px-4 py-3">

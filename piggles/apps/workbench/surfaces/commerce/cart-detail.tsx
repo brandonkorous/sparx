@@ -3,10 +3,10 @@
 // One cart — what a shopper put together, and whether they went through with it.
 //
 // A cart is a TRANSACTION-in-waiting, not a draft you author, so this reads like
-// the order pane: an identity heading (whose cart, from where), the state it is
-// in, what is in it, and what it comes to. Nothing here is editable — a cart
-// belongs to the shopper. The one staff move is recovering an abandoned cart,
-// and it is offered only when the cart was actually abandoned.
+// the order pane: whose cart it is rides the TAB, then the state it is in, what
+// is in it, and what it comes to. Nothing here is editable — a cart belongs to
+// the shopper. The one staff move is recovering an abandoned cart, and it is
+// offered only when the cart was actually abandoned.
 
 import { useEffect } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -20,7 +20,6 @@ import {
   Button,
   Card,
   EmptyState,
-  Heading,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -81,9 +80,12 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, refetch } = useCart(id);
   const recover = useRecoverCart(id);
 
+  // The tab is where a cart says whose it is — a basket has no name of its own,
+  // so the shopper plus the noun is the only label that reads on its own.
+  const shopperName = data ? cartShopperName(null, data.customerName) : null;
   useEffect(() => {
-    ctx.setTitle('Basket');
-  }, [ctx]);
+    if (shopperName) ctx.setTitle(`${shopperName} · basket`);
+  }, [ctx, shopperName]);
 
   if (isError) {
     return (
@@ -157,22 +159,24 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Cart actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        <div className="flex-1" />
-        <Text className="text-sm tabular-nums">{money(cart.totals.totalCents, cart.currency)}</Text>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Cart actions"
+        status={
+          <>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            <div className="flex-1" />
+            <Text className="text-sm tabular-nums">
+              {money(cart.totals.totalCents, cart.currency)}
+            </Text>
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {shopper}’s basket
-            </Heading>
-            <Text className="text-sm">{facts.join(' · ')}</Text>
-          </div>
+          <Text className="text-sm">{facts.join(' · ')}</Text>
 
           <Alert color={state.tone} variant="soft">
             <AlertContent>

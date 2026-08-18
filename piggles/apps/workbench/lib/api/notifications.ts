@@ -7,11 +7,11 @@
 //
 // Rows are written by the automation engine's `platform.notify` action, so what
 // appears here is governed by tenant-editable rules rather than hardcoded in a
-// worker — see packages/automation/src/actions/notify.ts.
+// worker — see wizeworks/packages/automation/src/actions/notify.ts.
 
 import { useMemo } from 'react';
 import { useToast } from '@wizeworks/silicaui-react';
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from './client';
 
 export type NotificationSeverity = 'info' | 'success' | 'warning' | 'danger';
@@ -164,6 +164,11 @@ export function useNotificationInbox(options: InboxOptions): {
   /** Older rows almost certainly exist — inferred from a FULL window, the same
    *  cheap-and-self-correcting call the feed makes rather than a count(). */
   hasMore: boolean;
+  /** The read failed. Without this a caller cannot tell "you are all caught up"
+   *  from "the server could not be reached", and both arrive as empty `items`. */
+  failed: boolean;
+  /** Re-runs the window, for the failure state's retry. */
+  retry: () => void;
 } {
   const { state, module, before, limit } = options;
 
@@ -186,6 +191,7 @@ export function useNotificationInbox(options: InboxOptions): {
   });
 
   const items = query.data?.items;
+  const { refetch } = query;
 
   return useMemo(
     () => ({
@@ -193,7 +199,11 @@ export function useNotificationInbox(options: InboxOptions): {
       ready: !query.isLoading,
       busy: query.isFetching,
       hasMore: (items?.length ?? 0) >= limit,
+      failed: query.isError,
+      retry: () => {
+        void refetch();
+      },
     }),
-    [items, query.isLoading, query.isFetching, limit]
+    [items, query.isLoading, query.isFetching, query.isError, refetch, limit]
   );
 }

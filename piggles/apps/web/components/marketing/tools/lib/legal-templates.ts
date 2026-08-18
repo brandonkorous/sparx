@@ -17,11 +17,6 @@
  *
  * ── WHAT THIS IS NOT ────────────────────────────────────────────────────────
  *
- * It is not legal advice, it says so on the page, and it says so in the document
- * itself rather than only in the small print of the tool. Anybody doing anything
- * unusual with personal information — health data, children, several countries
- * at once — needs a lawyer, and telling them so plainly is more useful than
- * generating another eight paragraphs.
  */
 
 export interface LegalInput {

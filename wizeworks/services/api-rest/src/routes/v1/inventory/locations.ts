@@ -1,0 +1,108 @@
+// Stock locations = warehouses. The inventory module's stock-holding places are
+// Warehouses (the unified model — docs/100 P1c); "location" is just the module's
+// user-facing word for one. These endpoints delegate to the one warehouse
+// service (@wizeworks/inventory), inventory-module-gated so a tenant running
+// Inventory standalone (no commerce) manages locations here.
+//
+//   GET    /v1/inventory/locations
+//   POST   /v1/inventory/locations
+//   GET    /v1/inventory/locations/:id
+//   PATCH  /v1/inventory/locations/:id
+//   DELETE /v1/inventory/locations/:id            → archive
+//   GET    /v1/inventory/locations/:id/levels     → inventory levels at this warehouse
+
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import { queryBool } from '@wizeworks/api-core/query';
+import { inventoryService } from '@wizeworks/inventory';
+import { ok, paged } from '@wizeworks/api-core/envelope';
+import { requireRole } from '@wizeworks/api-core/auth';
+import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
+
+const PathId = z.object({ id: z.string().uuid() });
+
+const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  // Narrow to one kind of location. The operator Locations surface offers this
+  // as a filter, so it resolves server-side rather than sieving a loaded page.
+  type: z.enum(['owned', '3pl', 'dropship', 'virtual']).optional(),
+  include_archived: queryBool.optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const LevelsQuery = z.object({
+  take: z.coerce.number().int().min(1).max(500).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+  low_stock_only: queryBool.optional(),
+});
+
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
+const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
+  app.get('/v1/inventory/locations', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const q = ListQuery.parse(request.query);
+    const { items, total } = await inventoryService.listWarehouses(toInventoryContext(request), {
+      q: q.q,
+      ...(q.type !== undefined ? { type: q.type } : {}),
+      includeInactive: q.include_archived === true,
+      ...(q.take !== undefined ? { take: q.take } : {}),
+      ...(q.skip !== undefined ? { skip: q.skip } : {}),
+    });
+    return reply.send(paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 50 }));
+  });
+
+  app.post('/v1/inventory/locations', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const created = await inventoryService.createWarehouse(
+      toInventoryContext(request),
+      request.body
+    );
+    return reply.status(201).send(ok(created));
+  });
+
+  app.get('/v1/inventory/locations/:id', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const { id } = PathId.parse(request.params);
+    return reply.send(ok(await inventoryService.getWarehouse(toInventoryContext(request), id)));
+  });
+
+  app.patch('/v1/inventory/locations/:id', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    return reply.send(
+      ok(await inventoryService.updateWarehouse(toInventoryContext(request), id, request.body))
+    );
+  });
+
+  app.delete('/v1/inventory/locations/:id', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    await inventoryService.archiveWarehouse(toInventoryContext(request), id);
+    return reply.status(204).send();
+  });
+
+  app.get('/v1/inventory/locations/:id/levels', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const { id } = PathId.parse(request.params);
+    const q = LevelsQuery.parse(request.query);
+    const { items, total } = await inventoryService.levelsForWarehouse(
+      toInventoryContext(request),
+      id,
+      {
+        ...(q.take !== undefined ? { take: q.take } : {}),
+        ...(q.skip !== undefined ? { skip: q.skip } : {}),
+        ...(q.low_stock_only === true ? { lowStockOnly: true } : {}),
+      }
+    );
+    return reply.send(paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 100 }));
+  });
+};
+
+export default inventoryLocationRoutes;

@@ -3,7 +3,7 @@
 Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24**
 Severity: **Critical** — a merchant takes real money and Finance → Payments reads "No payments yet"
 Found: 2026-07-24, production payments E2E (order `O-000002`, tenant `keen-cedar-6433`)
-Surfaces: `services/api-rest/src/routes/v1/public/cart.ts`, `packages/commerce/src/services/checkout-service.ts`
+Surfaces: `wizeworks/services/api-rest/src/routes/v1/public/cart.ts`, `wizeworks/packages/commerce/src/services/checkout-service.ts`
 
 ## Symptom
 
@@ -27,7 +27,7 @@ The workbench always has a site active, so `scope` is that site's id, and a null
 order can never match. Proof: the identical request with `?property=all` returns the
 payment immediately.
 
-Why the order had no site: apps/site's `resolveActivePropertySlug()` returns **null for
+Why the order had no site: wizeworks/apps/site's `resolveActivePropertySlug()` returns **null for
 the PRIMARY site by design** — the storefront identifies the primary site by the
 _absence_ of `?property=`. So `POST /v1/public/commerce/cart` received no property slug
 and deliberately stored `propertyId: null` ("we never default to primary so a multi-site

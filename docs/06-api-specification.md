@@ -298,7 +298,7 @@ DELETE /v1/carts/:id/discounts    Remove discount
 ### Inventory
 
 The documented, contract-stable inventory surface (implemented in
-`services/api-rest/src/routes/v1/inventory/api.ts`, backed by `@sparx/inventory`).
+`wizeworks/services/api-rest/src/routes/v1/inventory/api.ts`, backed by `@wizeworks/inventory`).
 Part of the **Inventory module** — gated on the `inventory` flag (a disabled
 module returns `404 MODULE_DISABLED`), so it is reachable whether the tenant runs
 Inventory standalone (WMS-lite) or alongside commerce. Every write routes through

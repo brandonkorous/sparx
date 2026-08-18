@@ -33,13 +33,8 @@
 // because an unlabelled MRR figure on a product page will be read as the product's
 // and quoted at someone.
 
-import { Badge, Button, EmptyState, Heading, Text, Timestamp } from '@wizeworks/silicaui-react';
-import {
-  faBagShopping,
-  faCalendarClock,
-  faRepeat,
-  faServer,
-} from '@fortawesome/pro-solid-svg-icons';
+import { Badge, Card, EmptyState, Text, Timestamp } from '@wizeworks/silicaui-react';
+import { faBagShopping, faCalendarClock, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -55,9 +50,13 @@ import {
   type ProductSubscriber,
   type ProductSubscriptions,
 } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const LABEL = 'Subscriptions';
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 
 /** A headline number with the sentence that stops it being misread. Not a Stat
  *  block: three of those side by side in a pane docked at 320px collapse into an
@@ -119,16 +118,11 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          {product.title}
-        </Heading>
-        <Text className="text-sm">
-          {everSubscribed
-            ? 'People who have this delivered again and again, rather than buying it once.'
-            : 'Whether anyone has this delivered on a repeating schedule.'}
-        </Text>
-      </div>
+      <Text className="text-sm">
+        {everSubscribed
+          ? 'People who have this delivered again and again, rather than buying it once.'
+          : 'Whether anyone has this delivered on a repeating schedule.'}
+      </Text>
 
       {/* NOT set up for repeat and nobody subscribes — the ordinary case. It
           gets a real answer, not an empty list. */}
@@ -232,7 +226,7 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
   const subscriptions = useProductSubscriptions(productId);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
 
   const data = subscriptions.data;
@@ -240,57 +234,58 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${LABEL} actions`}>
-        <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {scope.product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-        {active > 0 ? (
-          <Badge color="success" variant="soft" size="sm">
-            {active === 1 ? '1 on repeat' : `${String(active)} on repeat`}
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={subscriptions.isFetching}
-          updatedAt={subscriptions.dataUpdatedAt}
-          onRefresh={() => {
-            void subscriptions.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label={`${LABEL} actions`}
+        status={
+          <>
+            {scope.isFollowing ? (
+              <Badge color="info" variant="soft" size="sm">
+                Following
+              </Badge>
+            ) : null}
+            {active > 0 ? (
+              <Badge color="success" variant="soft" size="sm">
+                {active === 1 ? '1 on repeat' : `${String(active)} on repeat`}
+              </Badge>
+            ) : null}
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={subscriptions.isFetching}
+            updatedAt={subscriptions.dataUpdatedAt}
+            onRefresh={() => {
+              void subscriptions.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <FollowingNotice scope={scope} />
 
+          {/* Both non-ready states are carded, because the ready one is a stack
+              of FormSections — each already a card. */}
           {subscriptions.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load repeat orders"
-              description={productErrorMessage(
-                subscriptions.error,
-                'This is a problem reaching the server. Nobody’s repeat order has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void subscriptions.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load repeat orders"
+                description={productErrorMessage(
+                  subscriptions.error,
+                  'This is a problem reaching the server. Nobody’s repeat order has changed.'
+                )}
+                onRetry={() => {
+                  void subscriptions.refetch();
+                }}
+              />
+            </Card>
           ) : data === undefined ? (
-            <InlineWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : (
             <SubscriptionsBody product={scope.product} data={data} />
           )}

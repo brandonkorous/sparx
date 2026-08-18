@@ -4,8 +4,8 @@ node: architecture
 type: rule
 status: active
 sources:
-  - packages/events/src/publisher.ts
-  - packages/events/src/types.ts
+  - wizeworks/packages/events/src/publisher.ts
+  - wizeworks/packages/events/src/types.ts
 ---
 
 Business side effects go through **Google Pub/Sub**, not inline in request handlers. **Topic name == event type** (per-topic Terraform `for_each`), so a typed `EventType` can't publish to an unprovisioned topic.

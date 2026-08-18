@@ -1,7 +1,7 @@
 // The bundle MEDIA step — the fourth build oracle, and the one that was missing.
 //
 // Every shipped blueprint bundle MUST carry `media/icon.png` + `media/preview.png`; the loader
-// (`services/api-rest/src/lib/marketplace/blueprint-bundles.ts`) refuses the bundle without them,
+// (`wizeworks/services/api-rest/src/lib/marketplace/blueprint-bundles.ts`) refuses the bundle without them,
 // and `blueprint-bundles.test.ts` refuses the whole catalog. Those two files are hand-maintained
 // (they survive a regen — see CLAUDE.md), which is exactly why a second batch of ten templates
 // shipped with empty `media/` dirs: generate → validate → preview → screenshot had a documented

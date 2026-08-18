@@ -3,8 +3,8 @@ Returning 6 messages for level "error"
 
 [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/builder/page:0
 [ERROR] ./packages/auth/src/sign-up.ts:1:1
-Module not found: Can't resolve '@sparx/legal'
-> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+Module not found: Can't resolve '@wizeworks/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@wizeworks/legal';
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   2 | import { authPrisma } from './prisma';
   3 | import { auth } from './server';
@@ -18,8 +18,8 @@ Import trace:
 
 https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
 [ERROR] ./packages/auth/src/sign-up.ts:1:1
-Module not found: Can't resolve '@sparx/legal'
-> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+Module not found: Can't resolve '@wizeworks/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@wizeworks/legal';
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   2 | import { authPrisma } from './prisma';
   3 | import { auth } from './server';
@@ -33,8 +33,8 @@ Import trace:
 
 https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
 [ERROR] ./packages/auth/src/sign-up.ts:1:1
-Module not found: Can't resolve '@sparx/legal'
-> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+Module not found: Can't resolve '@wizeworks/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@wizeworks/legal';
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   2 | import { authPrisma } from './prisma';
   3 | import { auth } from './server';
@@ -48,8 +48,8 @@ Import trace:
 
 https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
 [ERROR] ./packages/auth/src/sign-up.ts:1:1
-Module not found: Can't resolve '@sparx/legal'
-> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+Module not found: Can't resolve '@wizeworks/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@wizeworks/legal';
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   2 | import { authPrisma } from './prisma';
   3 | import { auth } from './server';
@@ -63,8 +63,8 @@ Import trace:
 
 https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
 Error: ./packages/auth/src/sign-up.ts:1:1
-Module not found: Can't resolve '@sparx/legal'
-> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+Module not found: Can't resolve '@wizeworks/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@wizeworks/legal';
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   2 | import { authPrisma } from './prisma';
   3 | import { auth } from './server';

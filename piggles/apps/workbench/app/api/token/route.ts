@@ -21,7 +21,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { SignJWT } from 'jose';
-import { requireSession } from '@sparx/auth';
+import { requireSession } from '@wizeworks/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,7 +101,7 @@ export async function GET(): Promise<NextResponse> {
   // lookup under RLS, so a stale or spoofed value can only ever name one of this
   // same tenant's properties. Forwarding it is a convenience, not a control.
   const cookieStore = await cookies();
-  const propertyId = cookieStore.get('sparx_active_property')?.value ?? null;
+  const propertyId = cookieStore.get('piggles_active_property')?.value ?? null;
 
   const body: WorkbenchTokenResponse = {
     token,

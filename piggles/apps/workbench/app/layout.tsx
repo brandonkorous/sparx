@@ -52,19 +52,22 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // NO `data-theme` on <html>, and that is load-bearing rather than an omission.
+  // React owns every attribute it renders and re-asserts it whenever the element
+  // is created, so a hardcoded value here is a second writer racing the pre-paint
+  // script — which is exactly how the console ended up showing light while the
+  // stored choice, and the toggle's own label, both said dark. The script below
+  // is the only thing that puts an appearance on this document at load;
+  // lib/use-theme.ts is the only thing that changes it afterwards.
+  // `suppressHydrationWarning` is its counterpart: the attribute the client sees
+  // was never in the server's markup. See lib/theme.ts.
   return (
-    <html
-      lang="en"
-      data-theme="light"
-      className={`${inter.variable} ${fredoka.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={`${inter.variable} ${fredoka.variable}`} suppressHydrationWarning>
       <body>
-        {/* Applies the persisted theme to <html> before paint. `beforeInteractive`
+        {/* Resolves the persisted choice — including `system`, against this
+            machine — and applies it to <html> before paint. `beforeInteractive`
             puts it in the server HTML ahead of hydration, so React never
-            reconciles a content-bearing <script> (React 19 warns on that).
-            `suppressHydrationWarning` above is its counterpart: this script has
-            already changed the attribute the server rendered. */}
+            reconciles a content-bearing <script> (React 19 warns on that). */}
         <Script id="piggles-theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>

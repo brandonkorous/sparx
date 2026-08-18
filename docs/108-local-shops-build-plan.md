@@ -23,7 +23,7 @@ re-litigate):
 - **Buyer location is a typed ZIP first**, geolocation is an optional primed enhancement, every feature
   works from a typed ZIP, coarse-only persistence (D3).
 - **Hard radius** (D4); **list-first, map is a later toggle** (D5).
-- **Fulfillment primitives live in `@sparx/commerce`** (reusable by the tenant storefront _and_
+- **Fulfillment primitives live in `@wizeworks/commerce`** (reusable by the tenant storefront _and_
   sparx.market); discovery/directory/events live in the market layer (D6).
 - **No new billing module** — local is a capability of sparx.market participation + the Commerce module
   (D7).
@@ -36,24 +36,24 @@ re-litigate):
 
 The P5 sparx.market spine is **built and deployed**; this completes it, it doesn't invent it.
 
-| Already exists                                            | Location                                                                                                                                                                                                             |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Market data model (listings/merchants/profile/settlement) | `packages/db/prisma/schema/80-market.prisma`                                                                                                                                                                         |
-| Freeform merchant `location` string                       | `MarketMerchantProfile.location` + projected `MarketMerchant.location` (80-market.prisma)                                                                                                                            |
-| **Address + `latitude`/`longitude` + `hoursOfOperation`** | `Warehouse` — `schema/34-commerce-inventory.prisma` (the geo + pickup-hours seam)                                                                                                                                    |
-| Generated-column FTS precedent                            | `market_listings.search_tsv` (`GENERATED ALWAYS AS … STORED` + GIN) — the exact pattern `geo` will follow                                                                                                            |
-| Faceted browse (`Prisma.sql`+`$queryRaw`+`withSystem`)    | `packages/commerce/src/services/market/browse.ts`                                                                                                                                                                    |
-| Projection writer (assembles merchant identity)           | `packages/commerce/src/services/market/projection.ts` (`resolveMerchantIdentity`, `refreshMarketMerchant`)                                                                                                           |
-| Merchant-of-record checkout branch                        | `packages/commerce/src/services/checkout-service.ts` (`channel='sparx_market'`)                                                                                                                                      |
-| Order fulfillment (ship-only)                             | `schema/27-crm-order-fulfillments.prisma` (`carrier`/`trackingNumber`)                                                                                                                                               |
-| Shipping zones/rates (ship-to-address)                    | `schema/44-commerce-shipping.prisma`                                                                                                                                                                                 |
-| Market storefront (`mx-*`)                                | `apps/market/` (home/[category]/products/merchants/cart/checkout/orders/search)                                                                                                                                      |
-| Public + authed market routes                             | `services/api-rest/src/routes/v1/public/market.ts`, `…/v1/market/index.ts`                                                                                                                                           |
-| Tenant customer accounts (Layer-2 shopper auth)           | `packages/customer-auth` (Argon2id) + `apps/site/app/account/*` — **reusable, marketplace-scoped, for the committed sparx.market buyer account** ([107 §11 #5](107-local-shops.md#11-decisions-resolved-2026-06-26)) |
-| Global cross-tenant projection RLS pattern                | `channel_shop_links` (ENABLE + `USING(true)` read + tenant-scoped write) — the template for `market_events`                                                                                                          |
+| Already exists                                            | Location                                                                                                                                                                                                                                 |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Market data model (listings/merchants/profile/settlement) | `wizeworks/packages/db/prisma/schema/80-market.prisma`                                                                                                                                                                                   |
+| Freeform merchant `location` string                       | `MarketMerchantProfile.location` + projected `MarketMerchant.location` (80-market.prisma)                                                                                                                                                |
+| **Address + `latitude`/`longitude` + `hoursOfOperation`** | `Warehouse` — `schema/34-commerce-inventory.prisma` (the geo + pickup-hours seam)                                                                                                                                                        |
+| Generated-column FTS precedent                            | `market_listings.search_tsv` (`GENERATED ALWAYS AS … STORED` + GIN) — the exact pattern `geo` will follow                                                                                                                                |
+| Faceted browse (`Prisma.sql`+`$queryRaw`+`withSystem`)    | `wizeworks/packages/commerce/src/services/market/browse.ts`                                                                                                                                                                              |
+| Projection writer (assembles merchant identity)           | `wizeworks/packages/commerce/src/services/market/projection.ts` (`resolveMerchantIdentity`, `refreshMarketMerchant`)                                                                                                                     |
+| Merchant-of-record checkout branch                        | `wizeworks/packages/commerce/src/services/checkout-service.ts` (`channel='sparx_market'`)                                                                                                                                                |
+| Order fulfillment (ship-only)                             | `schema/27-crm-order-fulfillments.prisma` (`carrier`/`trackingNumber`)                                                                                                                                                                   |
+| Shipping zones/rates (ship-to-address)                    | `schema/44-commerce-shipping.prisma`                                                                                                                                                                                                     |
+| Market storefront (`mx-*`)                                | `sparx/apps/market/` (home/[category]/products/merchants/cart/checkout/orders/search)                                                                                                                                                    |
+| Public + authed market routes                             | `wizeworks/services/api-rest/src/routes/v1/public/market.ts`, `…/v1/market/index.ts`                                                                                                                                                     |
+| Tenant customer accounts (Layer-2 shopper auth)           | `wizeworks/packages/customer-auth` (Argon2id) + `wizeworks/apps/site/app/account/*` — **reusable, marketplace-scoped, for the committed sparx.market buyer account** ([107 §11 #5](107-local-shops.md#11-decisions-resolved-2026-06-26)) |
+| Global cross-tenant projection RLS pattern                | `channel_shop_links` (ENABLE + `USING(true)` read + tenant-scoped write) — the template for `market_events`                                                                                                                              |
 
 **Postgres geo capability today:** only `pgcrypto` + `btree_gist` are enabled (grep of
-`packages/db/prisma/migrations`). **No PostGIS** — P0 adds it.
+`wizeworks/packages/db/prisma/migrations`). **No PostGIS** — P0 adds it.
 
 ---
 
@@ -64,26 +64,26 @@ The P5 sparx.market spine is **built and deployed**; this completes it, it doesn
 ```
 @sparx/geo                NEW — geocoding provider seam + ZCTA centroid table + distance/units helpers.
    ├─ depends on: nothing heavy (fetch + a bundled ZCTA dataset); server-safe, acyclic.
-   └─ consumed by: @sparx/commerce (projection geocode-on-save), api-rest (address validation).
-@sparx/commerce           EXTENDED — local-fulfillment primitives (pickup locations, delivery zones,
+   └─ consumed by: @wizeworks/commerce (projection geocode-on-save), api-rest (address validation).
+@wizeworks/commerce           EXTENDED — local-fulfillment primitives (pickup locations, delivery zones,
                           fulfillment-method) in the COMMERCE layer (reusable by storefront + market);
                           market services gain geo browse + events.
-@sparx/commerce-schemas   EXTENDED — Zod for location, pickup, delivery-zone, fulfillment-method, events.
-@sparx/db                 EXTENDED — schema + the hand-SQL PostGIS/RLS migrations.
-apps/market               EXTENDED — location chip, local browse, checkout fork, event surfaces.
-apps/site                 EXTENDED (P2) — reuse the commerce pickup/delivery primitives at storefront checkout.
+@wizeworks/commerce-schemas   EXTENDED — Zod for location, pickup, delivery-zone, fulfillment-method, events.
+@wizeworks/db                 EXTENDED — schema + the hand-SQL PostGIS/RLS migrations.
+sparx/apps/market               EXTENDED — location chip, local browse, checkout fork, event surfaces.
+wizeworks/apps/site                 EXTENDED (P2) — reuse the commerce pickup/delivery primitives at storefront checkout.
 apps/dashboard            EXTENDED — Settings → Market: location, pickup, delivery zones, appearances.
 ```
 
 `@sparx/geo` is a **new workspace package** → it must be wired into the Dockerfile transitive closure of
 **every** consumer (api-rest, commerce-indexer, dashboard, api-mcp, import-worker — anything that pulls
-`@sparx/commerce`). See [§5 footgun #4](#5-footguns).
+`@wizeworks/commerce`). See [§5 footgun #4](#5-footguns).
 
 ### 2.2 The two layers (D6)
 
-- **Commerce primitives** (`@sparx/commerce` + `schema/27`,`44`-adjacent + Order): `fulfillmentMethod`,
+- **Commerce primitives** (`@wizeworks/commerce` + `schema/27`,`44`-adjacent + Order): `fulfillmentMethod`,
   `MarketPickupLocation`, `MarketDeliveryZone`, zone-matching, slot computation. Channel-agnostic.
-- **Marketplace geo** (`market/*` services + `apps/market`): the global `MarketMerchant.geo` projection,
+- **Marketplace geo** (`market/*` services + `sparx/apps/market`): the global `MarketMerchant.geo` projection,
   cross-tenant radius browse, `MarketEvent` directory, "near me"/city surfaces. sparx.market-specific.
 
 ---
@@ -160,13 +160,13 @@ _Goal: coordinates exist, are indexed, and refresh on save. No buyer-visible cha
 
 _Goal: a buyer can browse "shops/products near me"._
 
-- **S1.1** `@sparx/commerce-schemas`: extend `MarketBrowseQuery` with `nearLat`,`nearLng`,`radiusMeters`
+- **S1.1** `@wizeworks/commerce-schemas`: extend `MarketBrowseQuery` with `nearLat`,`nearLng`,`radiusMeters`
   (+ a `near` ZIP that resolves server-side via `@sparx/geo`). Hard-radius semantics.
 - **S1.2** `browse.ts`: compose `ST_DWithin(geo, :pt, :radius)` into the existing `$queryRaw` WHERE and
   add a `nearest` sort (`ORDER BY ST_Distance(...)`), returning `meters` for the card. `listMerchants`
   gains the same. Cross-tenant `withSystem` unchanged.
 - **S1.3** api-rest `public/market.ts`: thread the geo params through `BrowseQuery` + `MerchantsQuery`.
-- **S1.4** `apps/market`: header **location chip** (typed ZIP source of truth + primed "use my
+- **S1.4** `sparx/apps/market`: header **location chip** (typed ZIP source of truth + primed "use my
   location" gesture, coarse-only persistence in local storage); radius preset chips (5/10/25/50 mi);
   nearest-first sort; **"X mi away"** on cards; conditional **capability badges** (pickup/delivery near
   you, gated on computed distance) via `<Badge color={statusTone()} variant="soft">`.
@@ -183,7 +183,7 @@ _Goal: a nearby order can be picked up or locally delivered, in market AND on th
   `market_pickup_locations` + `market_delivery_zones` (FORCE RLS) with generated `geo` on pickup
   locations. (Naming note: these live in the commerce/market layer but are reusable primitives — see
   D6; keep the table prefix consistent with the migration.)
-- **S2.2** `@sparx/commerce` primitives: pickup-location CRUD + slot computation (`hours` +
+- **S2.2** `@wizeworks/commerce` primitives: pickup-location CRUD + slot computation (`hours` +
   `prep_lead_minutes`); delivery-zone CRUD + **`resolveDeliveryZone(address)`** (radius via `ST_DWithin`
   or postal-list match → fee/minimum/tier). Channel-agnostic service functions.
 - **S2.3** **Checkout fork** ([checkout-service.ts](../packages/commerce/src/services/checkout-service.ts)):
@@ -192,9 +192,9 @@ _Goal: a nearby order can be picked up or locally delivered, in market AND on th
   fee + window). MoR charge + `MarketSettlement` accrual unchanged (only the shipping/fee line differs).
 - **S2.4** api-rest `public/market.ts`: checkout endpoints accept `fulfillmentMethod` + the
   method-specific payloads; pickup/zone read endpoints for the storefront.
-- **S2.5** `apps/market` checkout: method selector + pickup-slot picker + delivery-address in-zone
+- **S2.5** `sparx/apps/market` checkout: method selector + pickup-slot picker + delivery-address in-zone
   validation + fee display.
-- **S2.6** **Reuse in `apps/site`:** wire the same commerce primitives into the tenant storefront
+- **S2.6** **Reuse in `wizeworks/apps/site`:** wire the same commerce primitives into the tenant storefront
   checkout (the standalone payoff for small shops on their own site).
 - **S2.7** Dashboard: pickup-location + delivery-zone management in Settings → Market (and the storefront
   fulfillment settings).
@@ -209,12 +209,12 @@ _Goal: discover markets near me, see which shops attend, pre-order for pickup-at
 - **S3.1** Schema: **NEW** global `market_events` + `market_event_occurrences` (admin/system write,
   cross-tenant read; generated `geo` on events) + tenant `market_merchant_appearances` (FORCE RLS) +
   its global projected read row.
-- **S3.2** `@sparx/commerce` market services: event directory reads (events near me + occurrences),
+- **S3.2** `@wizeworks/commerce` market services: event directory reads (events near me + occurrences),
   appearance CRUD, projection of appearances to the global read row.
 - **S3.3** `market_pickup` fulfillment method: at checkout, reserve for pickup at an occurrence (ties
   `OrderFulfillment.event_occurrence_id`); MoR charge/hold.
 - **S3.4** api-rest: public event-discovery endpoints + authed appearance management.
-- **S3.5** `apps/market`: "markets near me" surface, per-event "who's here", "this shop will be at
+- **S3.5** `sparx/apps/market`: "markets near me" surface, per-event "who's here", "this shop will be at
   \<market\> on \<date\>" on merchant/product pages, market-pickup checkout, event SEO pages.
 - **S3.6** Dashboard: declare appearances (pick from the curated directory, toggle pre-orders).
 - **Verify:** a curated market shows nearby; a shop's declared appearance surfaces on its page; a
@@ -234,7 +234,7 @@ _Goal: discover markets near me, see which shops attend, pre-order for pickup-at
 
 Decided in [107 §11 #5](107-local-shops.md#11-decisions-resolved-2026-06-26): sparx.market gets a
 **marketplace-scoped buyer account** (saved default location + pickup preferences + cross-seller order
-history), built by **reusing `packages/customer-auth` scoped to the marketplace** — not a third auth
+history), built by **reusing `wizeworks/packages/customer-auth` scoped to the marketplace** — not a third auth
 system — linking to the per-seller `Customer` records checkout already ensures on purchase. It's a
 sparx.market foundation broader than Local Shops, surfaced here because **local discovery is its first
 consumer** (the saved location): it lands **alongside P1** so the location chip persists for signed-in
@@ -259,7 +259,7 @@ stays first-class.
    `@sparx/geo` seam must make the provider choice explicit, not incidental.
 4. **`@sparx/geo` Dockerfile transitive closure.** New workspace package → add its `COPY` to **every**
    consumer Dockerfile, direct and transitive (api-rest, commerce-indexer, dashboard, api-mcp,
-   import-worker — anything pulling `@sparx/commerce`). A missing COPY is an ESM boot crash that
+   import-worker — anything pulling `@wizeworks/commerce`). A missing COPY is an ESM boot crash that
    typecheck/lint won't catch ([new-workspace-package skill](../.claude/skills/new-workspace-package/SKILL.md)).
 5. **RLS on the new tables.** Tenant-truth tables (`market_pickup_locations`, `market_delivery_zones`,
    `market_merchant_appearances`) get `ENABLE`+`FORCE`+`tenant_isolation` (hand-SQL). Global directory

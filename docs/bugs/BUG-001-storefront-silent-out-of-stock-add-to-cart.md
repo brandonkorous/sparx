@@ -24,11 +24,11 @@ three buy-box paths now surface the specific message AND keep the drawer shut.
 Severity: High (a shopper believes an item is in their cart when it is not)
 Found: 2026-07-24, during the production Stripe/payments E2E run
 Reporter: Brandon Korous
-Surface: `apps/site` — product detail page (PDP) add-to-cart
+Surface: `wizeworks/apps/site` — product detail page (PDP) add-to-cart
 
 ## Root cause + fix (2026-07-24)
 
-The real defect was in `apps/site/components/cart-provider.tsx` → `addItem`: on a non-OK
+The real defect was in `wizeworks/apps/site/components/cart-provider.tsx` → `addItem`: on a non-OK
 response it skipped `applyApi` but **did not throw, and opened the cart drawer anyway**.
 So the silica buy-box form behavior (`silica-behaviors.tsx`, which settles its visible
 state from the awaited promise) saw a _resolved_ promise → showed its success state
@@ -45,10 +45,10 @@ Fixed at every render path:
 - **`product-detail.tsx`** (legacy PDP) — `handleAdd` catches the throw and renders an
   inline `.st-buybox__error` message. Its disabled/"Sold out" button already covered the
   KNOWN-out-of-stock case; this covers the load→click race.
-- **`packages/builder-render/src/commerce.tsx`** (builder buy box) — `addToCart`/`buyNow`
+- **`wizeworks/packages/builder-render/src/commerce.tsx`** (builder buy box) — `addToCart`/`buyNow`
   now catch (no unhandled rejection from the fire-and-forget `void f.addToCart()`), expose
   `addError` on the form context, and the cohesive `BuyBox` renders it.
-- **`apps/site/app/site.css`** — new `.st-buybox__error` (real `--st-danger` ink, not faded).
+- **`wizeworks/apps/site/app/site.css`** — new `.st-buybox__error` (real `--st-danger` ink, not faded).
 
 Verify after deploy: on a `deny`-policy sold-out variant, the storefront shows a real error
 (not "Submitted.") and the cart stays empty with the shopper informed. (Original report below.)
@@ -103,7 +103,7 @@ Two independent fixes, both wanted:
 
 ## Suggested code entry points (unverified — for whoever picks this up)
 
-- PDP add-to-cart component in `apps/site/components/` (the `product-detail` / buy-box /
+- PDP add-to-cart component in `wizeworks/apps/site/components/` (the `product-detail` / buy-box /
   add-to-cart island that posts to the public cart items route).
 - The button's disabled/label state should read the same availability signal the public
   products API already returns (`inStock`) combined with the variant's out-of-stock

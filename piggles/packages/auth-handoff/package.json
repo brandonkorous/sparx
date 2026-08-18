@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@piggles/config": "workspace:*",
-    "@sparx/auth": "workspace:*",
-    "@sparx/db": "workspace:*",
+    "@wizeworks/auth": "workspace:*",
+    "@wizeworks/db": "workspace:*",
     "better-auth": "^1.6.11"
   },
   "devDependencies": {

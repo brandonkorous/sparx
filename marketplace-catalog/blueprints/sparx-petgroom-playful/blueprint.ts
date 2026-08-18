@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-petgroom-playful',
-    version: '1.3.0',
-    name: 'sparx — Pet Grooming (Playful)',
-    summary:
-        'A bright, friendly dog-grooming site — a sky-teal primary, a sunny-yellow accent and a warm off-white ground on rounded, cheerful faces. Installs a working booking flow: a real menu priced by dog size (bath & brush, full groom, puppy intro, de-shed, nail trim), three groomers you book by name plus three grooming stations as bookable resources, and a $15 full-groom deposit policy. Ships as "Scrub & Wag".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-petgroom-playful',
+  version: '1.3.0',
+  name: 'sparx — Pet Grooming (Playful)',
+  summary:
+    'A bright, friendly dog-grooming site — a sky-teal primary, a sunny-yellow accent and a warm off-white ground on rounded, cheerful faces. Installs a working booking flow: a real menu priced by dog size (bath & brush, full groom, puppy intro, de-shed, nail trim), three groomers you book by name plus three grooming stations as bookable resources, and a $15 full-groom deposit policy. Ships as "Scrub & Wag".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Scrub & Wag',
+    tagline: 'Gentle hands, happy tails.',
+    colors: {
+      primary: '#00bad1',
+      primaryForeground: '#020d10',
+      accent: '#f0cf4c',
+      secondary: '#395a6d',
+    },
+    fonts: {
+      heading: 'Quicksand',
+      body: 'Nunito',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'scrubwag',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Scrub & Wag',
-        tagline: 'Gentle hands, happy tails.',
-        colors: {
-            primary: '#00bad1',
-            primaryForeground: '#020d10',
-            accent: '#f0cf4c',
-            secondary: '#395a6d',
-        },
-        fonts: {
-            heading: 'Quicksand',
-            body: 'Nunito',
-        },
+      colorPrimary: '#00bad1',
+      colorAccent: '#f0cf4c',
+      colorSecondary: '#395a6d',
+      fontHeading: 'Quicksand',
+      fontBody: 'Nunito',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'scrubwag',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#00bad1',
-            colorAccent: '#f0cf4c',
-            colorSecondary: '#395a6d',
-            fontHeading: 'Quicksand',
-            fontBody: 'Nunito',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

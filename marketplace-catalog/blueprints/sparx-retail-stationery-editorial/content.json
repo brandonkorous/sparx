@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "why-we-still-write-things-down",
-        "status": "published",
-        "body": {
-            "title": "Why we still write things down",
-            "excerpt": "A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Here’s the case for keeping one within reach — and what happens when you do.",
-            "featuredImage": {
-                "$asset": "post-handwriting"
+  {
+    "typeKey": "blog_post",
+    "slug": "why-we-still-write-things-down",
+    "status": "published",
+    "body": {
+      "title": "Why we still write things down",
+      "excerpt": "A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Here’s the case for keeping one within reach — and what happens when you do.",
+      "featuredImage": {
+        "$asset": "post-handwriting"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every note you’ve ever lost was lost in an app. It got typed into a box, autocorrected into nonsense, and buried under a hundred others you also can’t find. Paper doesn’t do that. A notebook holds exactly what you put in it, in the order you put it, and it’s still there next year without a password."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Every note you’ve ever lost was lost in an app. It got typed into a box, autocorrected into nonsense, and buried under a hundred others you also can’t find. Paper doesn’t do that. A notebook holds exactly what you put in it, in the order you put it, and it’s still there next year without a password."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Slower on purpose"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Writing by hand is slower than typing, and that’s the point — the lag is where a thought gets caught before it slips. You can’t transcribe a meeting word for word by hand, so you listen for what matters and write that instead. The friction does the filtering for you, and what’s left on the page is the part worth keeping."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "One on the desk, one in the bag"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The habit sticks when the notebook is closer than the phone. Keep a hardcover open on the desk for the day’s thinking and a pocket book in the bag for everything else, and you stop trusting your memory to hold what a pen could. Start small: one page a day, no rules about neatness. The blank page is patient, and it never runs out of battery."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "how-to-choose-a-notebook",
-        "status": "published",
-        "body": {
-            "title": "How to choose a notebook (that you’ll actually use)",
-            "excerpt": "Ruling, paper weight, binding, size. Four decisions stand between you and a notebook you’ll finish — here’s how we’d make each one.",
-            "featuredImage": {
-                "$asset": "post-choosing-paper"
+            "content": [
+              {
+                "type": "text",
+                "text": "Slower on purpose"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Writing by hand is slower than typing, and that’s the point — the lag is where a thought gets caught before it slips. You can’t transcribe a meeting word for word by hand, so you listen for what matters and write that instead. The friction does the filtering for you, and what’s left on the page is the part worth keeping."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A notebook you don’t finish is the wrong notebook, and it’s usually wrong for a reason you can name. Get four things right and the rest is taste."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Ruling and paper"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Dotted is the quiet all-rounder — structure when you want it, invisible when you don’t. Lined suits long prose; blank suits sketches and mind-maps. More important than the lines is the stock: reach for 90gsm and up if you write with anything wet, or the ink will ghost through and you’ll only ever use one side of the page. Thick, smooth paper is the single upgrade you’ll feel every day."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Binding and size"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A stitched or lay-flat binding is worth holding out for — a notebook that won’t stay open is a notebook you fight. For size, match it to where it lives: A5 is the desk workhorse, a pocket book rides in a jacket, and an A4 is for the person who really spreads out. Buy the one that fits the habit you already have, not the one you wish you had, and you’ll fill it."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "a-stationery-gift-guide",
-        "status": "published",
-        "body": {
-            "title": "A gift guide for the person who loves their desk",
-            "excerpt": "They already have a nice pen — so what do you get them? A short, tested list for the stationery lover who’s hard to shop for.",
-            "featuredImage": {
-                "$asset": "post-gift-guide"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The stationery lover is the easiest person to buy for and the easiest to get wrong — they have opinions, and a bad notebook is worse than no notebook. The trick is to give them something better than what they’d begrudgingly buy themselves, or something they’d never think to."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If they’re just starting"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Give the whole beginning in one box. A good hardcover, a pen that starts on the first stroke, and a bottle of ink to make it theirs — that’s a habit handed over, not just an object. It’s the gift for the friend who keeps saying they “should write more,” with nothing left for them to figure out."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If they already have everything"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Go consumable and go colorful. A trio of washi tape, a fresh ink in a color they’d never pick, a box of blank letterpress cards for the notes they mean to send — small, used-up things that don’t compete with the nice pen they already love. And leave the price off: we’ll wrap it, write your note, and post it straight to them."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "One on the desk, one in the bag"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The habit sticks when the notebook is closer than the phone. Keep a hardcover open on the desk for the day’s thinking and a pocket book in the bag for everything else, and you stop trusting your memory to hold what a pen could. Start small: one page a day, no rules about neatness. The blank page is patient, and it never runs out of battery."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-choose-a-notebook",
+    "status": "published",
+    "body": {
+      "title": "How to choose a notebook (that you’ll actually use)",
+      "excerpt": "Ruling, paper weight, binding, size. Four decisions stand between you and a notebook you’ll finish — here’s how we’d make each one.",
+      "featuredImage": {
+        "$asset": "post-choosing-paper"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A notebook you don’t finish is the wrong notebook, and it’s usually wrong for a reason you can name. Get four things right and the rest is taste."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Ruling and paper"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Dotted is the quiet all-rounder — structure when you want it, invisible when you don’t. Lined suits long prose; blank suits sketches and mind-maps. More important than the lines is the stock: reach for 90gsm and up if you write with anything wet, or the ink will ghost through and you’ll only ever use one side of the page. Thick, smooth paper is the single upgrade you’ll feel every day."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Binding and size"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A stitched or lay-flat binding is worth holding out for — a notebook that won’t stay open is a notebook you fight. For size, match it to where it lives: A5 is the desk workhorse, a pocket book rides in a jacket, and an A4 is for the person who really spreads out. Buy the one that fits the habit you already have, not the one you wish you had, and you’ll fill it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "a-stationery-gift-guide",
+    "status": "published",
+    "body": {
+      "title": "A gift guide for the person who loves their desk",
+      "excerpt": "They already have a nice pen — so what do you get them? A short, tested list for the stationery lover who’s hard to shop for.",
+      "featuredImage": {
+        "$asset": "post-gift-guide"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The stationery lover is the easiest person to buy for and the easiest to get wrong — they have opinions, and a bad notebook is worse than no notebook. The trick is to give them something better than what they’d begrudgingly buy themselves, or something they’d never think to."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "If they’re just starting"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Give the whole beginning in one box. A good hardcover, a pen that starts on the first stroke, and a bottle of ink to make it theirs — that’s a habit handed over, not just an object. It’s the gift for the friend who keeps saying they “should write more,” with nothing left for them to figure out."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "If they already have everything"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Go consumable and go colorful. A trio of washi tape, a fresh ink in a color they’d never pick, a box of blank letterpress cards for the notes they mean to send — small, used-up things that don’t compete with the nice pen they already love. And leave the price off: we’ll wrap it, write your note, and post it straight to them."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

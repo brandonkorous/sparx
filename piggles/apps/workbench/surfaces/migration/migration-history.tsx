@@ -11,15 +11,21 @@
 // ran three practices and no real import needs to see exactly that, rather than a
 // list that looks like the work was done.
 
-import { Badge, Button, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Heading, Text } from '@wizeworks/silicaui-react';
 import { faArrowRight, faBoxOpen } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { entityLabel, runTone, useMigrationRuns, type RunSummary } from './data';
-import type { CanonicalEntity } from '@sparx/migration';
+import type { CanonicalEntity } from '@wizeworks/migration';
+
+/** Registry module for this pane, so the brand draws the right picture in the
+ *  empty and waiting states rather than the generic one. */
+const MODULE = 'platform';
 
 function when(iso: string): string {
   const date = new Date(iso);
@@ -37,7 +43,10 @@ function when(iso: string): string {
 function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
   const landed = run.importedCount + run.updatedCount;
   return (
-    <div className="border-base-300 bg-base-100 flex flex-wrap items-center gap-3 rounded-xl border p-4">
+    // A silica Card rather than a hand-rolled base-100 box: on Piggles' warm
+    // surfaces a hairline barely separates anything, and Card carries the
+    // resting shadow that does (DESIGN.md §4).
+    <Card className="flex flex-wrap items-center gap-3 p-4">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Heading level={3} className="text-base">
@@ -77,59 +86,90 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
         See what happened
         <Icon glyph={faArrowRight} className="size-4" aria-hidden />
       </Button>
-    </div>
+    </Card>
   );
 }
 
 export function MigrationHistorySurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data, isPending, isFetching, dataUpdatedAt, refetch } = useMigrationRuns();
+  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMigrationRuns();
   const runs = data?.runs ?? [];
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Past moves controls">
-        <Button
-          color="primary"
-          size="sm"
-          onClick={() => ctx.open('platform.migrate', {}, { target: 'tab' })}
-        >
-          <Icon glyph={faBoxOpen} className="size-4" aria-hidden />
-          Move something in
-        </Button>
-        <div className="ml-auto flex items-center gap-2">
-          <RefreshButton
-            onRefresh={() => void refetch()}
-            isFetching={isFetching}
-            updatedAt={dataUpdatedAt}
-          />
-        </div>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Past moves controls"
+        primary={
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => ctx.open('platform.migrate', {}, { target: 'tab' })}
+          >
+            <Icon glyph={faBoxOpen} className="size-4" aria-hidden />
+            Move something in
+          </Button>
+        }
+        refresh={
+          <div className="ml-auto flex items-center gap-2">
+            <RefreshButton
+              onRefresh={() => void refetch()}
+              isFetching={isFetching}
+              updatedAt={dataUpdatedAt}
+            />
+          </div>
+        }
+      />
 
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 overflow-y-auto">
-        {isPending ? <Text>Loading…</Text> : null}
+        {/* Carded like the runs themselves, so the pane keeps its shape between
+            waiting, empty and a list. */}
+        {isPending ? (
+          <Card>
+            <PaneWaiting module={MODULE} />
+          </Card>
+        ) : null}
 
-        {!isPending && runs.length === 0 ? (
-          <ListEmptyState
-            filtered={false}
-            noResults={{
-              icon: <Icon glyph={faBoxOpen} className="size-6" aria-hidden />,
-              title: 'No moves match',
-            }}
-            firstRun={{
-              icon: <Icon glyph={faBoxOpen} className="size-6" aria-hidden />,
-              title: 'Nothing has been moved in yet',
-              description:
-                'When you bring a catalogue, a contact list or a blog over from another platform, each move is recorded here with exactly what landed.',
-              actions: (
-                <Button
-                  color="module"
-                  onClick={() => ctx.open('platform.migrate', {}, { target: 'tab' })}
-                >
-                  Move something in
-                </Button>
-              ),
-            }}
-          />
+        {isError && runs.length === 0 ? (
+          // Split out of the empty branch: a failed read left `runs` empty, and
+          // "nothing has been moved in yet" is the one sentence someone who HAS
+          // moved something in must never be shown. Only when there is nothing
+          // to show — a failed poll over runs still on screen leaves them be.
+          <Card>
+            <PaneLoadError
+              icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+              title="Could not load your past moves"
+              description="This is a problem reaching the server. Everything you have already moved in is unaffected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
+        ) : null}
+
+        {!isError && !isPending && runs.length === 0 ? (
+          <Card>
+            <ListEmptyState
+              module={MODULE}
+              filtered={false}
+              noResults={{
+                icon: <Icon glyph={faBoxOpen} className="size-6" aria-hidden />,
+                title: 'No moves match',
+              }}
+              firstRun={{
+                icon: <Icon glyph={faBoxOpen} className="size-6" aria-hidden />,
+                title: 'Nothing has been moved in yet',
+                description:
+                  'When you bring a catalogue, a contact list or a blog over from another platform, each move is recorded here with exactly what landed.',
+                actions: (
+                  <Button
+                    color="module"
+                    onClick={() => ctx.open('platform.migrate', {}, { target: 'tab' })}
+                  >
+                    Move something in
+                  </Button>
+                ),
+              }}
+            />
+          </Card>
         ) : null}
 
         {runs.map((run) => (

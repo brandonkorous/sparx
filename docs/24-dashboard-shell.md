@@ -42,12 +42,12 @@ Every module exports a single static manifest from its package barrel. The shell
 ### 3.1 Shape
 
 ```ts
-// packages/commerce/src/manifest.ts
-import type { ModuleManifest } from '@sparx/ui/shell';
+// wizeworks/packages/commerce/src/manifest.ts
+import type { ModuleManifest } from '@wizeworks/ui/shell';
 import { Package, Tag, Percent, ShoppingCart, PackagePlus } from 'lucide-react';
 
 export const commerceManifest: ModuleManifest = {
-  // Matches the SparxModule union from @sparx/ui; drives the accent color
+  // Matches the SparxModule union from @wizeworks/ui; drives the accent color
   // automatically via ModuleProvider — no separate `color` field needed.
   id: 'commerce',
   label: 'Commerce',
@@ -87,9 +87,9 @@ The shell composes manifests in `apps/dashboard/app/(dashboard)/_shell/registry.
 
 ```ts
 // Modules with their own packages (Commerce, CRM, CMS) export from there.
-import { commerceManifest } from '@sparx/commerce';
-import { crmManifest } from '@sparx/crm';
-import { cmsManifest } from '@sparx/cms-editor';
+import { commerceManifest } from '@wizeworks/commerce';
+import { crmManifest } from '@wizeworks/crm';
+import { cmsManifest } from '@wizeworks/cms-editor';
 
 // Modules without packages yet stub their manifest co-located with their
 // dashboard pages. When the module's package exists, the manifest migrates
@@ -155,7 +155,7 @@ _switchers_, not just links.
 
 Only **enabled** modules appear in the Module switcher (and the sidebar Modules
 section) — filtered against the tenant's active-module set via
-`listEnabledModules()` in `@sparx/auth`.
+`listEnabledModules()` in `@wizeworks/auth`.
 
 Each non-current segment shows a chevron divider on its right.
 
@@ -182,7 +182,7 @@ The breadcrumb uses a `ResizeObserver` on its container. When total rendered wid
 3. Clicking `…` opens a popover that lists every hidden segment, each navigable.
 4. First (Tenant) and last (Page) segments **never** collapse.
 
-Implementation lives in `<Breadcrumb>` inside `@sparx/ui`; feature code never measures.
+Implementation lives in `<Breadcrumb>` inside `@wizeworks/ui`; feature code never measures.
 
 ### 4.5 The Controls
 
@@ -227,7 +227,7 @@ It is a **searchable, grouped command list** — not a dropdown. The button reve
 └────────────────────────────────────────────────┘
 ```
 
-Universal actions are baked into `<ActionsMenu>` inside `@sparx/ui`. Entity-specific actions come from the entity's manifest entry. Footer (last-edited + help link) reads from the page's `<EntityShell>` context.
+Universal actions are baked into `<ActionsMenu>` inside `@wizeworks/ui`. Entity-specific actions come from the entity's manifest entry. Footer (last-edited + help link) reads from the page's `<EntityShell>` context.
 
 Supported affordances:
 
@@ -242,7 +242,7 @@ Supported affordances:
 
 ### 5.1 Layout — rail + contextual panel
 
-The sidebar is two columns: a constant **icon rail** and a **contextual panel** whose contents follow where you are. The rail answers "which module"; the panel answers "which section" (inside a module, or in Settings). When there's no section context the panel **collapses** and the rail stands alone — one mechanism, present when it has something to say, scaling to modules with 10+ sections where a horizontal tab strip cannot. It is implemented as the `SidebarAppShell` + `BrandRail` compositions in `@sparx/ui`, built on silicaui's `Sidebar` primitive.
+The sidebar is two columns: a constant **icon rail** and a **contextual panel** whose contents follow where you are. The rail answers "which module"; the panel answers "which section" (inside a module, or in Settings). When there's no section context the panel **collapses** and the rail stands alone — one mechanism, present when it has something to say, scaling to modules with 10+ sections where a horizontal tab strip cannot. It is implemented as the `SidebarAppShell` + `BrandRail` compositions in `@wizeworks/ui`, built on silicaui's `Sidebar` primitive.
 
 ```
 ┌────┬───────────────────────┐
@@ -355,13 +355,13 @@ Deferred to Phase 2. Until MCP-integrated answering is ready, the combobox is a 
 
 ## 7. Theme
 
-| Property       | Value                                                                                                                                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Modes          | `light` (default), `dark`                                                                                                                                                                                    |
-| Storage        | `localStorage['sparx:theme']`                                                                                                                                                                                |
-| Initial seed   | First login on a device: server preference (`user.preferred_theme`). Subsequent loads: device value.                                                                                                         |
-| Implementation | Toggles `data-theme="dark"` on `<html>`; color custom properties in `@sparx/brand/theme.css` are scoped on `:root[data-theme="dark"]` (defined once — non-color tokens stay in `packages/ui/src/tokens.css`) |
-| Module colors  | `--color-module-<name>` light/dark pairs defined in `@sparx/brand/theme.css`; module accent shifts intensity, not hue                                                                                        |
+| Property       | Value                                                                                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Modes          | `light` (default), `dark`                                                                                                                                                                                          |
+| Storage        | `localStorage['sparx:theme']`                                                                                                                                                                                      |
+| Initial seed   | First login on a device: server preference (`user.preferred_theme`). Subsequent loads: device value.                                                                                                               |
+| Implementation | Toggles `data-theme="dark"` on `<html>`; color custom properties in `@sparx/brand/theme.css` are scoped on `:root[data-theme="dark"]` (defined once — non-color tokens stay in `sparx/packages/ui/src/tokens.css`) |
+| Module colors  | `--color-module-<name>` light/dark pairs defined in `@sparx/brand/theme.css`; module accent shifts intensity, not hue                                                                                              |
 
 No system-pref auto-follow. Rationale: explicit, predictable, and avoids the "phone-in-sun unreadable dark theme" failure mode that motivated per-device persistence.
 
@@ -467,8 +467,8 @@ All endpoints are tenant-scoped via Better Auth org context + RLS. The shell con
 Tracked for Phase 2+:
 
 - **Drag-to-reorder favorites** across module boundaries (Phase 1 supports reorder within Favorites; cross-section drag is out of scope).
-- **⌘K Deep Mode** — entity full-text search via the existing `@sparx/search` `palette()` function (Typesense-backed). Quick Mode ships in Phase 1; Deep Mode lands when Typesense is reachable from the dashboard runtime.
-- **Sidebar drag-to-resize** — persisted per-device width with a drag handle on the sidebar's right edge. Defers until a `<ResizableSidebar>` primitive lands in `@sparx/ui` (avoiding shell-side className hacks).
+- **⌘K Deep Mode** — entity full-text search via the existing `@wizeworks/search` `palette()` function (Typesense-backed). Quick Mode ships in Phase 1; Deep Mode lands when Typesense is reachable from the dashboard runtime.
+- **Sidebar drag-to-resize** — persisted per-device width with a drag handle on the sidebar's right edge. Defers until a `<ResizableSidebar>` primitive lands in `@wizeworks/ui` (avoiding shell-side className hacks).
 - **Side peek** — an `Alt+Click` modifier to open an entity in a right-hand pane without leaving the current page. Useful for browsing related entities; not Phase 1.
 - **Custom favorite labels** — currently the label is the manifest action label; eventually let users rename their own favorites ("Create order" → "New PO").
 - **Folder grouping in favorites** — nested hierarchies inside the Favorites section; Phase 1 keeps it flat.
@@ -483,7 +483,7 @@ Tracked for Phase 2+:
 
 Suggested build slices, each independently shippable:
 
-1. **Manifest types + an empty `<DashboardShell>`** — type defs in `@sparx/ui/shell`, an empty shell in `apps/dashboard` that renders a hardcoded breadcrumb and a placeholder sidebar. Verifies the manifest contract compiles.
+1. **Manifest types + an empty `<DashboardShell>`** — type defs in `@wizeworks/ui/shell`, an empty shell in `apps/dashboard` that renders a hardcoded breadcrumb and a placeholder sidebar. Verifies the manifest contract compiles.
 2. **Static header** — breadcrumb (no popovers yet), star (no persistence), theme toggle (working).
 3. **Static sidebar** — tenant switcher button, modules list from manifest, no favorites/recents yet.
 4. **Tables + API** — `user_favorites`, `user_recents`, the 7 endpoints, RLS migration.

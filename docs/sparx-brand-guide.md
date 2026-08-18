@@ -50,7 +50,7 @@ use the lowercase **"sx" monogram** from `images/SVG/icon.svg`:
   dark surfaces; the "x" is always sparx Indigo (`#6366F1`), matching the wordmark
 - One-color variants ship alongside it (`icon-black.svg` / `icon-white.svg`, "x" at
   50% opacity) plus a reversed `icon-light.svg` (white "s" + indigo "x") for dark fills
-- In product UI, render it via `<SparxMark>` from `@sparx/ui` (s = `currentColor`,
+- In product UI, render it via `<SparxMark>` from `@wizeworks/ui` (s = `currentColor`,
   x = `--color-primary`). For the icon + wordmark lockup, use `<Wordmark icon />`
 - As a browser favicon (where CSS variables can't resolve), each app ships a
   static `app/icon.svg` that inlines the hex plus a `prefers-color-scheme` rule
@@ -238,7 +238,7 @@ Supporting lines (use one at a time, never stacked):
 
 ### 7.2 Homepage hero concept (sparx.works)
 
-The current hero — the rotating _"[Offering], ignited."_ wordline plus the 5-minute / one-bill / MCP metric row ([apps/web/components/marketing/hero.tsx](../apps/web/components/marketing/hero.tsx)) — **stays as the primary.** Add permanence as the **section immediately below it**, not as a replacement:
+The current hero — the rotating _"[Offering], ignited."_ wordline plus the 5-minute / one-bill / MCP metric row ([sparx/apps/web/components/marketing/hero.tsx](../apps/web/components/marketing/hero.tsx)) — **stays as the primary.** Add permanence as the **section immediately below it**, not as a replacement:
 
 - **Eyebrow:** AI builds it. sparx keeps it.
 - **Headline:** The website that's still yours next year.
@@ -246,7 +246,7 @@ The current hero — the rotating _"[Offering], ignited."_ wordline plus the 5-m
 - **Proof row (four chips):** No-code editor · Own your data · Headless API · MCP-native
 - **CTA:** Launch your site / See how it lasts
 
-Implementation note: this is a **new content section** in `apps/web` (a sibling of `hero.tsx`), not an edit to the indigo hero. Same voice — short sentences, second person, no "revolutionary."
+Implementation note: this is a **new content section** in `sparx/apps/web` (a sibling of `hero.tsx`), not an edit to the indigo hero. Same voice — short sentences, second person, no "revolutionary."
 
 ---
 

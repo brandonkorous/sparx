@@ -11,7 +11,7 @@ import {
   Input,
   PasswordInput,
 } from '@wizeworks/silicaui-react';
-import { authClient } from '@sparx/auth/client';
+import { authClient } from '@wizeworks/auth/client';
 import { normalizeEmail } from '@piggles/config';
 
 // The two halves of a password reset.
@@ -36,7 +36,7 @@ export function ForgotPasswordForm() {
     // `requestPasswordReset`, NOT `forgetPassword`. Both names exist on this
     // client and they are not the same thing: the emailOTP plugin claims
     // `forgetPassword` as a NAMESPACE (`forgetPassword.emailOtp`), so calling it
-    // directly is not even callable. This is the call apps/workbench uses.
+    // directly is not even callable. This is the call sparx/apps/workbench uses.
     //
     // The result is deliberately ignored: success and "no such user" must be
     // indistinguishable, and a transient failure is better swallowed than turned

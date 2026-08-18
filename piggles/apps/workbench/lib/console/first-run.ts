@@ -28,7 +28,7 @@
 // check" into a tick — an unknown step renders as a step with no answer yet,
 // which is the truth.
 
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from '@/lib/api/client';
 import { useReachableModules } from '@/lib/surfaces/use-visible-nav';
 

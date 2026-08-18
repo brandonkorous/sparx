@@ -11,7 +11,8 @@ import { useState } from 'react';
 import { Badge, Button, Dialog, DialogContent, DialogTitle } from '@wizeworks/silicaui-react';
 import { faCheck, faPalette } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { buildSilicaThemeCssFromTheme } from '@sparx/site-themes';
+import { buildSilicaThemeCssFromTheme } from '@wizeworks/site-themes';
+import type { Theme } from '@wizeworks/silicaui-html';
 import {
   useApplyTheme,
   useCreateTheme,
@@ -19,6 +20,8 @@ import {
   useThemes,
   type ThemeRow,
 } from '../../lib/studio/data';
+import { ThemeActions } from './theme-actions';
+import { ThemeMarket } from './theme-market';
 
 /** A slug safe to put in a CSS attribute selector. */
 function swatchKey(groupKey: string, name: string): string {
@@ -38,9 +41,13 @@ export function ThemeLibrary({
   const themes = useThemes();
   const presets = useThemePresets();
   const applyTheme = useApplyTheme();
-  const createTheme = useCreateTheme();
+  const choose = useChooseReadyMade();
 
   const current = themes.data?.find((row) => row.id === openId);
+  const pick = (id: string) => {
+    onOpen(id);
+    setOpen(false);
+  };
 
   return (
     <>
@@ -52,85 +59,131 @@ export function ThemeLibrary({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
           <DialogTitle>Your look</DialogTitle>
-
-          <section className="mt-4">
-            <h3 className="text-base-content mb-2 text-sm font-medium">Yours</h3>
-            {themes.data?.length ? (
-              <ul className="flex flex-col gap-1">
-                {themes.data.map((row) => (
-                  <OwnRow
-                    key={row.id}
-                    row={row}
-                    applied={row.id === appliedId}
-                    onOpen={() => {
-                      onOpen(row.id);
-                      setOpen(false);
-                    }}
-                    onApply={() => void applyTheme.mutateAsync(row.id)}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <p className="text-base-content text-sm">
-                Nothing saved yet. Start from one of the ready-made looks below.
-              </p>
-            )}
-          </section>
-
-          <section className="mt-6">
-            <h3 className="text-base-content text-sm font-medium">Ready-made</h3>
-            <p className="text-base-content mb-2 text-sm">
-              Pick one and it becomes yours — a copy you can change however you like.
-            </p>
-            {/* One real stylesheet for the whole shelf, scoped per look. That is
-                what lets each swatch below wear `bg-primary` and mean THAT look's
-                primary — no inline style, and no class name computed at runtime
-                (which Tailwind would never generate). */}
-            <style>
-              {(presets.data ?? [])
-                .flatMap((group) =>
-                  group.themes.map((theme) =>
-                    buildSilicaThemeCssFromTheme(theme, {
-                      rootSelector: `[data-look="${swatchKey(group.key, theme.name)}"]`,
-                    })
-                  )
-                )
-                .join('')}
-            </style>
-            <div className="flex max-h-72 flex-col gap-4 overflow-auto">
-              {presets.data?.map((group) => (
-                <div key={group.key}>
-                  <h4 className="text-base-content mb-1 text-sm">{group.label}</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {group.themes.map((theme) => (
-                      <Button
-                        key={theme.name}
-                        size="sm"
-                        data-look={swatchKey(group.key, theme.name)}
-                        onClick={async () => {
-                          const made = await createTheme.mutateAsync({
-                            name: theme.name,
-                            theme,
-                            origin: 'preset',
-                            sourceKey: theme.name,
-                          });
-                          await applyTheme.mutateAsync(made.id);
-                          onOpen(made.id);
-                          setOpen(false);
-                        }}
-                      >
-                        <Swatch />
-                        {theme.name}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          <YourLooks
+            rows={themes.data ?? []}
+            appliedId={appliedId}
+            onOpen={pick}
+            onApply={(id) => void applyTheme.mutateAsync(id)}
+          />
+          <ReadyMade
+            groups={presets.data ?? []}
+            onChoose={async (theme) => pick(await choose(theme))}
+          />
+          <ThemeMarket onInstalled={pick} />
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/** Copy a ready-made look into the business's own, apply it, and hand back its id.
+ *  A copy rather than a pointer: it is editable, and it cannot change under a live
+ *  site because someone upstream revised it. */
+function useChooseReadyMade(): (theme: Theme) => Promise<string> {
+  const createTheme = useCreateTheme();
+  const applyTheme = useApplyTheme();
+  return async (theme) => {
+    const made = await createTheme.mutateAsync({
+      name: theme.name,
+      theme,
+      origin: 'preset',
+      sourceKey: theme.name,
+    });
+    await applyTheme.mutateAsync(made.id);
+    return made.id;
+  };
+}
+
+function YourLooks({
+  rows,
+  appliedId,
+  onOpen,
+  onApply,
+}: {
+  rows: ThemeRow[];
+  appliedId: string | null;
+  onOpen: (id: string) => void;
+  onApply: (id: string) => void;
+}) {
+  return (
+    <section className="mt-4">
+      <h3 className="text-base-content mb-2 text-sm font-medium">Yours</h3>
+      {rows.length ? (
+        <ul className="flex flex-col gap-1">
+          {rows.map((row) => (
+            <OwnRow
+              key={row.id}
+              row={row}
+              applied={row.id === appliedId}
+              onOpen={() => onOpen(row.id)}
+              onApply={() => onApply(row.id)}
+              onOpenId={onOpen}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p className="text-base-content text-sm">
+          Nothing saved yet. Start from one of the ready-made looks below.
+        </p>
+      )}
+    </section>
+  );
+}
+
+interface PresetGroup {
+  key: string;
+  label: string;
+  themes: Theme[];
+}
+
+function ReadyMade({
+  groups,
+  onChoose,
+}: {
+  groups: PresetGroup[];
+  onChoose: (theme: Theme) => Promise<void>;
+}) {
+  return (
+    <section className="mt-6">
+      <h3 className="text-base-content text-sm font-medium">Ready-made</h3>
+      <p className="text-base-content mb-2 text-sm">
+        Pick one and it becomes yours — a copy you can change however you like.
+      </p>
+      {/* One real stylesheet for the whole shelf, scoped per look. That is what lets
+          each swatch wear `bg-primary` and mean THAT look's primary — no inline
+          style, and no class name computed at runtime (which Tailwind never emits). */}
+      <style>
+        {groups
+          .flatMap((group) =>
+            group.themes.map((theme) =>
+              buildSilicaThemeCssFromTheme(theme, {
+                rootSelector: `[data-look="${swatchKey(group.key, theme.name)}"]`,
+              })
+            )
+          )
+          .join('')}
+      </style>
+      <div className="flex max-h-72 flex-col gap-4 overflow-auto">
+        {groups.map((group) => (
+          <div key={group.key}>
+            <h4 className="text-base-content mb-1 text-sm">{group.label}</h4>
+            <div className="flex flex-wrap gap-1">
+              {group.themes.map((theme) => (
+                <Button
+                  key={theme.name}
+                  size="sm"
+                  data-look={swatchKey(group.key, theme.name)}
+                  onClick={() => void onChoose(theme)}
+                >
+                  <Swatch />
+                  {theme.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -139,11 +192,13 @@ function OwnRow({
   applied,
   onOpen,
   onApply,
+  onOpenId,
 }: {
   row: ThemeRow;
   applied: boolean;
   onOpen: () => void;
   onApply: () => void;
+  onOpenId: (id: string) => void;
 }) {
   return (
     <li className="hover:bg-base-200 flex items-center gap-2 rounded px-2 py-1.5">
@@ -164,6 +219,7 @@ function OwnRow({
           Not live yet
         </Badge>
       ) : null}
+      <ThemeActions row={row} onOpen={onOpenId} />
     </li>
   );
 }

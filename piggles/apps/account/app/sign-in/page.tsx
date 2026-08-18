@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getSession } from '@sparx/auth';
+import { getSession } from '@wizeworks/auth';
 import { safeInternalPath } from '@piggles/config';
 import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';

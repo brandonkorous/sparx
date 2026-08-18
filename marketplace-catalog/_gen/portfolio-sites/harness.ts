@@ -40,14 +40,14 @@ import {
     el,
     type Node,
     type Theme,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { starterFrame } from '../../../packages/silica-catalog/src/site';
-import type { FooterVariant, NavbarVariant } from '../../../packages/silica-catalog/src/site-chrome';
-import { blogPostGrid } from '../../../packages/silica-catalog/src/cms';
-import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
-import { PORTFOLIO_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/portfolio-themes';
-import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+import { starterFrame } from '../../../wizeworks/packages/silica-catalog/src/site';
+import type { FooterVariant, NavbarVariant } from '../../../wizeworks/packages/silica-catalog/src/site-chrome';
+import { blogPostGrid } from '../../../wizeworks/packages/silica-catalog/src/cms';
+import { resolveSparxTheme } from '../../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
+import { PORTFOLIO_THEME_BY_SLUG } from '../../../wizeworks/packages/silica-catalog/src/portfolio-themes';
+import { colorToHex } from '../../../wizeworks/packages/site-themes/src/v2/color';
 import { blueprintEmailDoc } from '../shared/blueprint-email';
 
 const here = dirname(fileURLToPath(import.meta.url));

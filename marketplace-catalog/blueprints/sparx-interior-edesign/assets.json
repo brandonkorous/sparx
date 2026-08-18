@@ -1,42 +1,42 @@
 [
-    {
-        "id": "interior-edesign-hero",
-        "url": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwc3R5bGVkJTIwbGl2aW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2MzkzMTg3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A bright, freshly styled living room with plants and warm textiles"
-    },
-    {
-        "id": "interior-edesign-approach",
-        "url": "https://images.unsplash.com/photo-1664638413302-d1ca29ac885b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ24lMjBzd2F0Y2hlc3xlbnwwfDB8fHwxNzg2MzkzMTkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A color-and-fabric moodboard laid out on a sunny table"
-    },
-    {
-        "id": "interior-edesign-rae",
-        "url": "https://images.unsplash.com/photo-1779405949264-a44d50a14315?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBpbnRlcmlvciUyMGRlc2lnbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzE5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "Rae Whitfield, interior designer"
-    },
-    {
-        "id": "interior-edesign-devon",
-        "url": "https://images.unsplash.com/photo-1730991568704-7456621bb75a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMxOTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "Devon Ellis, interior designer"
-    },
-    {
-        "id": "interior-edesign-priya",
-        "url": "https://images.unsplash.com/photo-1654762701727-de6ccd172eb9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkZXNpZ25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMxOTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "Priya Nair, interior designer"
-    },
-    {
-        "id": "interior-edesign-room1",
-        "url": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y296eSUyMGxpdmluZyUyMHJvb20lMjBkZWNvcnxlbnwwfDB8fHwxNzg2MzkzMjAyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A cosy reading nook in soft neutrals and coral accents"
-    },
-    {
-        "id": "interior-edesign-room2",
-        "url": "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwYmVkcm9vbSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMyMDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A cheerful home office with a green desk and gallery wall"
-    },
-    {
-        "id": "interior-edesign-room3",
-        "url": "https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG9tZSUyMG9mZmljZSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMyMDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A light-filled dining corner with rattan chairs"
-    }
+  {
+    "id": "interior-edesign-hero",
+    "url": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwc3R5bGVkJTIwbGl2aW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2MzkzMTg3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, freshly styled living room with plants and warm textiles"
+  },
+  {
+    "id": "interior-edesign-approach",
+    "url": "https://images.unsplash.com/photo-1664638413302-d1ca29ac885b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ24lMjBzd2F0Y2hlc3xlbnwwfDB8fHwxNzg2MzkzMTkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A color-and-fabric moodboard laid out on a sunny table"
+  },
+  {
+    "id": "interior-edesign-rae",
+    "url": "https://images.unsplash.com/photo-1779405949264-a44d50a14315?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBpbnRlcmlvciUyMGRlc2lnbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzE5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rae Whitfield, interior designer"
+  },
+  {
+    "id": "interior-edesign-devon",
+    "url": "https://images.unsplash.com/photo-1730991568704-7456621bb75a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMxOTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Devon Ellis, interior designer"
+  },
+  {
+    "id": "interior-edesign-priya",
+    "url": "https://images.unsplash.com/photo-1654762701727-de6ccd172eb9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkZXNpZ25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMxOTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, interior designer"
+  },
+  {
+    "id": "interior-edesign-room1",
+    "url": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y296eSUyMGxpdmluZyUyMHJvb20lMjBkZWNvcnxlbnwwfDB8fHwxNzg2MzkzMjAyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cosy reading nook in soft neutrals and coral accents"
+  },
+  {
+    "id": "interior-edesign-room2",
+    "url": "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwYmVkcm9vbSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMyMDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cheerful home office with a green desk and gallery wall"
+  },
+  {
+    "id": "interior-edesign-room3",
+    "url": "https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG9tZSUyMG9mZmljZSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMyMDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A light-filled dining corner with rattan chairs"
+  }
 ]

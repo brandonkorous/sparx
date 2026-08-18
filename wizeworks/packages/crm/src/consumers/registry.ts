@@ -1,0 +1,116 @@
+// CRM consumer registry — the bootstrap that wires every consumer's handler
+// against the platform bus, with the per-tenant module gate baked in.
+//
+// Locked decision #6: "Disabled tenants get zero consumer cycles and zero
+// rows written." We implement that by wrapping each handler in a gate check
+// before the consumer's body runs. The gate is cheap (LRU + 60s TTL); the
+// alternative — physically un-subscribing per-tenant — would require one
+// subscription per (tenant, topic) pair, which Pub/Sub doesn't bill cheaply.
+// One subscription, gated dispatch, same net effect.
+//
+// Each consumer module exports a `register(opts)` function. The bootstrap
+// calls them all. Order matters only for the test "drain everything" path;
+// at runtime handlers fan out concurrently.
+
+import { isModuleEnabled, invalidateModuleCache } from '@wizeworks/modules';
+
+import { getDedupeStore } from './dedupe';
+import { getPlatformBus, type PlatformEvent, type PlatformEventHandler } from './platform-bus';
+import { installPlatformBusFanout } from './platform-fanout';
+
+import { registerOrderEventConsumers } from './order-events';
+import { registerEmailEventConsumers } from './email-events';
+import { registerAuthEventConsumers } from './auth-events';
+import { registerSegmentEvaluatorConsumers } from './segment-evaluator';
+import { registerScoringConsumers } from './scoring-evaluator';
+import { registerModuleActivationConsumers } from './module-activation';
+
+export interface RegisterOptions {
+  /** Override the active bus — tests pass a fresh in-memory bus. */
+  bus?: ReturnType<typeof getPlatformBus>;
+}
+
+export interface ConsumerRegistration {
+  /** Drops every subscription this bootstrap registered. */
+  unregister(): void;
+}
+
+/** Wire every CRM consumer against the platform bus. Returns an object that
+ *  can tear down all subscriptions (used by tests for clean shutdown). */
+export function registerCrmConsumers(opts: RegisterOptions = {}): ConsumerRegistration {
+  const bus = opts.bus ?? getPlatformBus();
+  const teardowns: (() => void)[] = [];
+
+  // Bridge allowlisted crm.* domain events onto this bus so the consumers below
+  // (the segment evaluator) actually receive them — without it, a service's
+  // `publishCrmEvent('crm.customer.updated')` reaches webhooks + Pub/Sub but never
+  // the in-process evaluator subscribed to that topic. Teardown restores the
+  // prior publisher, so test suites stay isolated.
+  teardowns.push(installPlatformBusFanout(bus));
+
+  // Each consumer registers its own subscriptions. The gate wrapper is shared.
+  const ctx = { bus, gate: gateHandler };
+  teardowns.push(...registerOrderEventConsumers(ctx));
+  teardowns.push(...registerEmailEventConsumers(ctx));
+  teardowns.push(...registerAuthEventConsumers(ctx));
+  teardowns.push(...registerSegmentEvaluatorConsumers(ctx));
+  // Scoring watches the same events as the segment evaluator plus the deal-side
+  // ones, and no-ops entirely for a tenant that has written no scoring model —
+  // which is every tenant until someone asks for one (docs/144 §10).
+  teardowns.push(...registerScoringConsumers(ctx));
+  // Site-form lead capture (docs/115) is no longer an in-process consumer: it moved
+  // to the platform automation engine (the seeded "Handle form submissions"
+  // automation → crm.capture_lead action), so a form.submitted lead flows through
+  // the same durable, tenant-visible path as every other automation.
+  // Activation runs the per-tenant bootstrap (default pipeline + built-in
+  // segments) AND invalidates the module-gate cache. Deactivation only
+  // needs to drop the cache so downstream consumers see the change.
+  teardowns.push(...registerModuleActivationConsumers(ctx));
+  teardowns.push(
+    bus.subscribe('module.deactivated', (event) => {
+      const slug = (event.payload as { module?: string } | null)?.module;
+      if (slug === 'crm') invalidateModuleCache(event.tenantId, 'crm');
+      return Promise.resolve();
+    })
+  );
+
+  return {
+    unregister() {
+      while (teardowns.length > 0) {
+        const fn = teardowns.shift();
+        try {
+          fn?.();
+        } catch {
+          // Best-effort teardown — don't let one subscription's cleanup
+          // block the others.
+        }
+      }
+    },
+  };
+}
+
+export interface ConsumerContext {
+  bus: ReturnType<typeof getPlatformBus>;
+  gate: typeof gateHandler;
+}
+
+/** Wraps a consumer handler with module-gate + dedupe. Returns the wrapped
+ *  handler. Use from consumer registration functions:
+ *
+ *    bus.subscribe('order.created', gateHandler(async (event) => { ... }))
+ */
+export function gateHandler<T = unknown>(
+  handler: PlatformEventHandler<T>
+): PlatformEventHandler<T> {
+  return async (event: PlatformEvent<T>) => {
+    // Gate first — disabled tenants don't even consult dedupe.
+    const enabled = await isModuleEnabled(event.tenantId, 'crm');
+    if (!enabled) return;
+
+    const dedupe = getDedupeStore();
+    const novel = await dedupe.shouldProcess(`crm:${event.topic}:${event.id}`);
+    if (!novel) return;
+
+    await handler(event);
+  };
+}

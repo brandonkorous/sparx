@@ -24,9 +24,9 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBoxOpen, faGauge, faTurtle } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -77,7 +77,10 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    // See planning.tsx: `h-full` against PlanningShell's scroll container (a
+    // block with a definite height) turns this into a flex column with free
+    // space to give, so the table card can fill down to the foot of the pane.
+    <div className="flex h-full flex-col gap-3">
       <Stats className="w-full">
         <Stat>
           <StatTitle>Cash tied up</StatTitle>
@@ -132,7 +135,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
           />
         )
       ) : (
-        <Card className="overflow-x-auto">
+        <Card className="min-h-0 flex-1 overflow-auto">
           <Table size="sm" hover>
             <thead>
               <tr>

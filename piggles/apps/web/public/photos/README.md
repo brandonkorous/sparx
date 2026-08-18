@@ -12,7 +12,7 @@ a gap. A visitor scanning a page takes in the pictures long before the prose; a
 page with none asks them to read their way to the point, and most will not.
 
 sparx learned the same thing and wrote it down in
-[apps/web/public/scenes/README.md](../../../../../apps/web/public/scenes/README.md).
+[sparx/apps/web/public/scenes/README.md](../../../../../apps/web/public/scenes/README.md).
 Worth reading before adding to this folder.
 
 ## What they show

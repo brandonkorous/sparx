@@ -3,8 +3,8 @@
 Status: **CORRECTED 2026-07-25 — original diagnosis was wrong; real fix is the derived fallback**
 Severity: **Low** (was filed High on a mistaken premise)
 Found: 2026-07-25, prod Finance → Payouts verification on `keen-cedar-6433` (v1.167.0)
-Surfaces: `services/api-rest/src/routes/v1/finance/payouts.ts`,
-`services/api-rest/src/lib/stripe-payouts.ts`
+Surfaces: `wizeworks/services/api-rest/src/routes/v1/finance/payouts.ts`,
+`wizeworks/services/api-rest/src/lib/stripe-payouts.ts`
 
 ## What actually happened (corrected)
 

@@ -1,102 +1,102 @@
 [
-    {
-        "id": "vol-hero",
-        "url": "https://images.unsplash.com/photo-1744693660970-3517f524fb28?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwbW9kZXJuJTIwYm9va3Nob3AlMjBpbnRlcmlvciUyMGNvdmVyLWZvcndhcmQlMjBkaXNwbGF5JTIwdGFibGVzfGVufDB8MHx8fDE3ODY0MDYwMjh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A bright modern bookshop interior with cover-forward display tables"
-    },
-    {
-        "id": "vol-tile-new",
-        "url": "https://images.unsplash.com/photo-1543682817-5bfcc2be85b5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZnJvbnQlMjB0YWJsZSUyMG5ldy1yZWxlYXNlJTIwY292ZXJzJTIwZmFjZS1vdXQlMjB1bmRlciUyMGNsZWFufGVufDB8MHx8fDE3ODY0MDYwMzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A front table of new-release covers face-out under clean light"
-    },
-    {
-        "id": "vol-tile-fiction",
-        "url": "https://images.unsplash.com/photo-1542713504-03db5fb21c66?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGlkeSUyMHNoZWxmJTIwZmljdGlvbnxlbnwwfDB8fHwxNzg2NDA2NDEwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A tidy shelf of fiction with colorful modern spines"
-    },
-    {
-        "id": "vol-tile-nonfiction",
-        "url": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBub25maWN0aW9uJTIwaGFyZGNvdmVycyUyMHBhbGUlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA2MDM3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A stack of nonfiction hardcovers on a pale table"
-    },
-    {
-        "id": "vol-tile-kids",
-        "url": "https://images.unsplash.com/photo-1549737221-bef65e2604a6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG93JTIwYnJpZ2h0JTIwc2hlbGYlMjBwaWN0dXJlJTIwYm9va3MlMjBraWRzJTIwcmVhZGluZ3xlbnwwfDB8fHwxNzg2NDA2MDQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A low, bright shelf of picture books in a kids reading corner"
-    },
-    {
-        "id": "vol-band-picks",
-        "url": "https://images.unsplash.com/photo-1643250048998-7ffa83ae2c63?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym9va3NlbGxlciUyMGFycmFuZ2luZyUyMGNvdmVyLWZvcndhcmQlMjBzdGFmZi1waWNrcyUyMGRpc3BsYXl8ZW58MHwwfHx8MTc4NjQwNjA0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A bookseller arranging a cover-forward staff-picks display"
-    },
-    {
-        "id": "vol-band-sub",
-        "url": "https://images.unsplash.com/photo-1577138230503-0a95a59234a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JhcHBlZCUyMGJvb2slMjBjYXJkJTIwcmVhZHklMjBwb3N0JTIwc3Vic2NyaWJlcnxlbnwwfDB8fHwxNzg2NDA2MDQ2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A wrapped book and a card ready to post to a subscriber"
-    },
-    {
-        "id": "prod-glass-orchard",
-        "url": "https://images.unsplash.com/photo-1609636850937-0939e94eee78?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBnbGFzcyUyMG9yY2hhcmQlMjBtb2Rlcm4lMjBwYXBlcmJhY2t8ZW58MHwwfHx8MTc4NjQwNjA0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of The Glass Orchard, a modern paperback"
-    },
-    {
-        "id": "prod-northbound",
-        "url": "https://images.unsplash.com/photo-1660523729154-db6395e7d938?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Y292ZXIlMjBub3J0aGJvdW5kJTIwbW9kZXJuJTIwcGFwZXJiYWNrfGVufDB8MHx8fDE3ODY0MDYwNTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of Northbound, a modern paperback"
-    },
-    {
-        "id": "prod-static-signal",
-        "url": "https://images.unsplash.com/photo-1765408217792-94cbe94998ed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBzdGF0aWMlMjBzaWduYWwlMjBzaG9ydC1zdG9yeSUyMGNvbGxlY3Rpb258ZW58MHwwfHx8MTc4NjQwNjA1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of Static & Signal, a short-story collection"
-    },
-    {
-        "id": "prod-attention-diet",
-        "url": "https://images.unsplash.com/photo-1759480305194-69c0fb00207b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBhdHRlbnRpb24lMjBkaWV0JTIwbm9uZmljdGlvbiUyMGhhcmRjb3ZlcnxlbnwwfDB8fHwxNzg2NDA2MDU5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of The Attention Diet, a nonfiction hardcover"
-    },
-    {
-        "id": "prod-deep-time",
-        "url": "https://images.unsplash.com/photo-1506452819137-0422416856b8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBkZWVwJTIwdGltZXxlbnwwfDB8fHwxNzg2NDA2NDE0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of Deep Time, Bright Water, a nonfiction hardcover"
-    },
-    {
-        "id": "prod-otto",
-        "url": "https://images.unsplash.com/photo-1771998872950-4bf206f43513?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBvdHRvJTIwbWlkbmlnaHQlMjBsaWJyYXJ5JTIwcGljdHVyZSUyMGJvb2t8ZW58MHwwfHx8MTc4NjQwNjA2NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of Otto and the Midnight Library, a picture book"
-    },
-    {
-        "id": "prod-sock-robbers",
-        "url": "https://images.unsplash.com/photo-1605627082049-2e77d4d16716?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBzb2NrJTIwcm9iYmVycyUyMGtpZHMlMjBjaGFwdGVyJTIwYm9va3xlbnwwfDB8fHwxNzg2NDA2MDY4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "The cover of The Sock Robbers, a kids chapter book"
-    },
-    {
-        "id": "prod-pins",
-        "url": "https://images.unsplash.com/photo-1562216958-0831919933e7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwdGhyZWUlMjBlbmFtZWwlMjByZWFkaW5nJTIwcGlucyUyMGNhcmR8ZW58MHwwfHx8MTc4NjQwNjA3MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A set of three enamel reading pins on a card"
-    },
-    {
-        "id": "prod-light",
-        "url": "https://images.unsplash.com/photo-1727721055020-937beb1c362b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2xpbSUyMGNsaXAtb24lMjByZWFkaW5nJTIwbGlnaHQlMjBvcGVuJTIwYm9va3xlbnwwfDB8fHwxNzg2NDA2MDc0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A slim clip-on reading light on an open book"
-    },
-    {
-        "id": "prod-subscription",
-        "url": "https://images.unsplash.com/photo-1630343710506-89f8b9f21d31?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9udGhseSUyMHJlYWRpbmclMjBzdWJzY3JpcHRpb258ZW58MHwwfHx8MTc4NjQwNjQxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A monthly reading subscription parcel with a wrapped book"
-    },
-    {
-        "id": "post-new-releases",
-        "url": "https://images.unsplash.com/photo-1647485894914-539cd6430260?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmFuJTIwbmV3LXJlbGVhc2UlMjBjb3ZlcnMlMjBicmlnaHQlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA2MDgwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A fan of new-release covers on a bright table"
-    },
-    {
-        "id": "post-reading-year",
-        "url": "https://images.unsplash.com/photo-1578589335615-9e804277a5af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3BlbiUyMG5vdGVib29rJTIwc3RhY2slMjBib29rcyUyMGJlc2lkZSUyMGNvZmZlZXxlbnwwfDB8fHwxNzg2NDA2MDgzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "An open notebook and a stack of books beside a coffee"
-    },
-    {
-        "id": "post-modern-bookshop",
-        "url": "https://images.unsplash.com/photo-1648405898502-c07cdf83d1af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwbWluaW1hbCUyMG1vZGVybiUyMGJvb2tzaG9wJTIwc3RvcmVmcm9udCUyMGJ5JTIwZGF5fGVufDB8MHx8fDE3ODY0MDYwODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A bright, minimal modern bookshop storefront by day"
-    }
+  {
+    "id": "vol-hero",
+    "url": "https://images.unsplash.com/photo-1744693660970-3517f524fb28?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwbW9kZXJuJTIwYm9va3Nob3AlMjBpbnRlcmlvciUyMGNvdmVyLWZvcndhcmQlMjBkaXNwbGF5JTIwdGFibGVzfGVufDB8MHx8fDE3ODY0MDYwMjh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright modern bookshop interior with cover-forward display tables"
+  },
+  {
+    "id": "vol-tile-new",
+    "url": "https://images.unsplash.com/photo-1543682817-5bfcc2be85b5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZnJvbnQlMjB0YWJsZSUyMG5ldy1yZWxlYXNlJTIwY292ZXJzJTIwZmFjZS1vdXQlMjB1bmRlciUyMGNsZWFufGVufDB8MHx8fDE3ODY0MDYwMzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A front table of new-release covers face-out under clean light"
+  },
+  {
+    "id": "vol-tile-fiction",
+    "url": "https://images.unsplash.com/photo-1542713504-03db5fb21c66?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGlkeSUyMHNoZWxmJTIwZmljdGlvbnxlbnwwfDB8fHwxNzg2NDA2NDEwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tidy shelf of fiction with colorful modern spines"
+  },
+  {
+    "id": "vol-tile-nonfiction",
+    "url": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBub25maWN0aW9uJTIwaGFyZGNvdmVycyUyMHBhbGUlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA2MDM3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stack of nonfiction hardcovers on a pale table"
+  },
+  {
+    "id": "vol-tile-kids",
+    "url": "https://images.unsplash.com/photo-1549737221-bef65e2604a6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG93JTIwYnJpZ2h0JTIwc2hlbGYlMjBwaWN0dXJlJTIwYm9va3MlMjBraWRzJTIwcmVhZGluZ3xlbnwwfDB8fHwxNzg2NDA2MDQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A low, bright shelf of picture books in a kids reading corner"
+  },
+  {
+    "id": "vol-band-picks",
+    "url": "https://images.unsplash.com/photo-1643250048998-7ffa83ae2c63?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym9va3NlbGxlciUyMGFycmFuZ2luZyUyMGNvdmVyLWZvcndhcmQlMjBzdGFmZi1waWNrcyUyMGRpc3BsYXl8ZW58MHwwfHx8MTc4NjQwNjA0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bookseller arranging a cover-forward staff-picks display"
+  },
+  {
+    "id": "vol-band-sub",
+    "url": "https://images.unsplash.com/photo-1577138230503-0a95a59234a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JhcHBlZCUyMGJvb2slMjBjYXJkJTIwcmVhZHklMjBwb3N0JTIwc3Vic2NyaWJlcnxlbnwwfDB8fHwxNzg2NDA2MDQ2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wrapped book and a card ready to post to a subscriber"
+  },
+  {
+    "id": "prod-glass-orchard",
+    "url": "https://images.unsplash.com/photo-1609636850937-0939e94eee78?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBnbGFzcyUyMG9yY2hhcmQlMjBtb2Rlcm4lMjBwYXBlcmJhY2t8ZW58MHwwfHx8MTc4NjQwNjA0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of The Glass Orchard, a modern paperback"
+  },
+  {
+    "id": "prod-northbound",
+    "url": "https://images.unsplash.com/photo-1660523729154-db6395e7d938?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Y292ZXIlMjBub3J0aGJvdW5kJTIwbW9kZXJuJTIwcGFwZXJiYWNrfGVufDB8MHx8fDE3ODY0MDYwNTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of Northbound, a modern paperback"
+  },
+  {
+    "id": "prod-static-signal",
+    "url": "https://images.unsplash.com/photo-1765408217792-94cbe94998ed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBzdGF0aWMlMjBzaWduYWwlMjBzaG9ydC1zdG9yeSUyMGNvbGxlY3Rpb258ZW58MHwwfHx8MTc4NjQwNjA1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of Static & Signal, a short-story collection"
+  },
+  {
+    "id": "prod-attention-diet",
+    "url": "https://images.unsplash.com/photo-1759480305194-69c0fb00207b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBhdHRlbnRpb24lMjBkaWV0JTIwbm9uZmljdGlvbiUyMGhhcmRjb3ZlcnxlbnwwfDB8fHwxNzg2NDA2MDU5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of The Attention Diet, a nonfiction hardcover"
+  },
+  {
+    "id": "prod-deep-time",
+    "url": "https://images.unsplash.com/photo-1506452819137-0422416856b8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBkZWVwJTIwdGltZXxlbnwwfDB8fHwxNzg2NDA2NDE0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of Deep Time, Bright Water, a nonfiction hardcover"
+  },
+  {
+    "id": "prod-otto",
+    "url": "https://images.unsplash.com/photo-1771998872950-4bf206f43513?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBvdHRvJTIwbWlkbmlnaHQlMjBsaWJyYXJ5JTIwcGljdHVyZSUyMGJvb2t8ZW58MHwwfHx8MTc4NjQwNjA2NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of Otto and the Midnight Library, a picture book"
+  },
+  {
+    "id": "prod-sock-robbers",
+    "url": "https://images.unsplash.com/photo-1605627082049-2e77d4d16716?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y292ZXIlMjBzb2NrJTIwcm9iYmVycyUyMGtpZHMlMjBjaGFwdGVyJTIwYm9va3xlbnwwfDB8fHwxNzg2NDA2MDY4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The cover of The Sock Robbers, a kids chapter book"
+  },
+  {
+    "id": "prod-pins",
+    "url": "https://images.unsplash.com/photo-1562216958-0831919933e7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwdGhyZWUlMjBlbmFtZWwlMjByZWFkaW5nJTIwcGlucyUyMGNhcmR8ZW58MHwwfHx8MTc4NjQwNjA3MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A set of three enamel reading pins on a card"
+  },
+  {
+    "id": "prod-light",
+    "url": "https://images.unsplash.com/photo-1727721055020-937beb1c362b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2xpbSUyMGNsaXAtb24lMjByZWFkaW5nJTIwbGlnaHQlMjBvcGVuJTIwYm9va3xlbnwwfDB8fHwxNzg2NDA2MDc0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A slim clip-on reading light on an open book"
+  },
+  {
+    "id": "prod-subscription",
+    "url": "https://images.unsplash.com/photo-1630343710506-89f8b9f21d31?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9udGhseSUyMHJlYWRpbmclMjBzdWJzY3JpcHRpb258ZW58MHwwfHx8MTc4NjQwNjQxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A monthly reading subscription parcel with a wrapped book"
+  },
+  {
+    "id": "post-new-releases",
+    "url": "https://images.unsplash.com/photo-1647485894914-539cd6430260?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmFuJTIwbmV3LXJlbGVhc2UlMjBjb3ZlcnMlMjBicmlnaHQlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA2MDgwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A fan of new-release covers on a bright table"
+  },
+  {
+    "id": "post-reading-year",
+    "url": "https://images.unsplash.com/photo-1578589335615-9e804277a5af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3BlbiUyMG5vdGVib29rJTIwc3RhY2slMjBib29rcyUyMGJlc2lkZSUyMGNvZmZlZXxlbnwwfDB8fHwxNzg2NDA2MDgzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An open notebook and a stack of books beside a coffee"
+  },
+  {
+    "id": "post-modern-bookshop",
+    "url": "https://images.unsplash.com/photo-1648405898502-c07cdf83d1af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwbWluaW1hbCUyMG1vZGVybiUyMGJvb2tzaG9wJTIwc3RvcmVmcm9udCUyMGJ5JTIwZGF5fGVufDB8MHx8fDE3ODY0MDYwODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, minimal modern bookshop storefront by day"
+  }
 ]

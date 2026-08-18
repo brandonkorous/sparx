@@ -1,317 +1,280 @@
 {
-    "policies": [
+  "policies": [
+    {
+      "handle": "petalpost-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "workshop-hold",
+      "name": "Workshop seat hold",
+      "depositType": "deposit",
+      "depositAmountCents": 2000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Workshop seats hold a $20 deposit that comes off your total. Give us 48 hours’ notice to reschedule and it carries over to the next class."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rosa",
+      "name": "Rosa Mendez",
+      "kind": "staff",
+      "skillTags": ["arrangements", "subscription", "general"],
+      "windows": [
         {
-            "handle": "petalpost-standard",
-            "name": "Standard booking",
-            "depositType": "none",
-            "cancellationWindowHours": 24,
-            "reminderOffsetsMin": [
-                1440,
-                120
-            ],
-            "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1050
         },
         {
-            "handle": "workshop-hold",
-            "name": "Workshop seat hold",
-            "depositType": "deposit",
-            "depositAmountCents": 2000,
-            "cancellationWindowHours": 48,
-            "reminderOffsetsMin": [
-                2880,
-                1440,
-                120
-            ],
-            "policyText": "Workshop seats hold a $20 deposit that comes off your total. Give us 48 hours’ notice to reschedule and it carries over to the next class."
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1050
         }
-    ],
-    "resources": [
+      ]
+    },
+    {
+      "handle": "iris",
+      "name": "Iris Lundqvist",
+      "kind": "staff",
+      "skillTags": ["workshop", "arrangements", "general"],
+      "windows": [
         {
-            "handle": "rosa",
-            "name": "Rosa Mendez",
-            "kind": "staff",
-            "skillTags": [
-                "arrangements",
-                "subscription",
-                "general"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 540,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 540,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 540,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 540,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 1050
-                }
-            ]
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
         },
         {
-            "handle": "iris",
-            "name": "Iris Lundqvist",
-            "kind": "staff",
-            "skillTags": [
-                "workshop",
-                "arrangements",
-                "general"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 0,
-                    "startMinute": 600,
-                    "endMinute": 1080
-                }
-            ]
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
         },
         {
-            "handle": "dahlia",
-            "name": "Dahlia Okafor",
-            "kind": "staff",
-            "skillTags": [
-                "delivery",
-                "arrangements",
-                "general"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                }
-            ]
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
         },
         {
-            "handle": "workshop-room",
-            "name": "The Potting Table",
-            "kind": "space",
-            "skillTags": [
-                "workshop-room"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 600,
-                    "endMinute": 1140
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 600,
-                    "endMinute": 1140
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 600,
-                    "endMinute": 1140
-                }
-            ]
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1080
         }
-    ],
-    "services": [
+      ]
+    },
+    {
+      "handle": "dahlia",
+      "name": "Dahlia Okafor",
+      "kind": "staff",
+      "skillTags": ["delivery", "arrangements", "general"],
+      "windows": [
         {
-            "handle": "consult-call",
-            "name": "Free flower consult",
-            "description": "A quick, no-pressure chat about what you need — an occasion, a budget, a favourite color — and we’ll point you the right way.",
-            "durationMinutes": 20,
-            "priceCents": 0,
-            "assignmentStrategy": "any_available",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "petalpost-standard"
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "custom-arrangement-consult",
-            "name": "Custom arrangement consult",
-            "description": "Sit down with a florist to design a one-off bouquet or arrangement — flowers, palette, vessel and size, all your call.",
-            "durationMinutes": 45,
-            "priceCents": 2500,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "petalpost-standard"
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "subscription-setup",
-            "name": "Flower subscription setup",
-            "description": "Set up a weekly, fortnightly or monthly bunch — pick your palette and delivery day and we’ll keep the fresh flowers coming.",
-            "durationMinutes": 30,
-            "priceCents": 1500,
-            "assignmentStrategy": "any_available",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "petalpost-standard"
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "sympathy-consult",
-            "name": "Sympathy flowers consult",
-            "description": "A gentle, unhurried conversation to arrange sympathy or funeral flowers — we’ll handle the details with care.",
-            "durationMinutes": 30,
-            "priceCents": 2000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "petalpost-standard"
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "celebration-consult",
-            "name": "Celebration flowers consult",
-            "description": "Birthdays, anniversaries, new babies, big wins — plan flowers for the happy days, delivered or picked up.",
-            "durationMinutes": 45,
-            "priceCents": 3000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "petalpost-standard"
-        },
-        {
-            "handle": "flower-workshop",
-            "name": "Hands-on flower workshop",
-            "description": "A cheerful ninety minutes at the potting table — you’ll build a seasonal arrangement to take home, flowers and coffee included.",
-            "durationMinutes": 90,
-            "priceCents": 6500,
-            "bufferAfterMin": 15,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "workshop"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "workshop-room"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "workshop-hold"
-        },
-        {
-            "handle": "corporate-flowers-consult",
-            "name": "Office & corporate flowers consult",
-            "description": "Set up a standing order for your lobby, front desk or event — fresh flowers on a schedule that suits the space.",
-            "durationMinutes": 45,
-            "priceCents": 3500,
-            "assignmentStrategy": "any_available",
-            "resourceRequirements": [
-                {
-                    "role": "florist",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "petalpost-standard"
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
         }
-    ],
-    "locations": [
+      ]
+    },
+    {
+      "handle": "workshop-room",
+      "name": "The Potting Table",
+      "kind": "space",
+      "skillTags": ["workshop-room"],
+      "windows": [
         {
-            "handle": "premises",
-            "name": "Petal & Post",
-            "timezone": "UTC"
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
         }
-    ]
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consult-call",
+      "name": "Free flower consult",
+      "description": "A quick, no-pressure chat about what you need — an occasion, a budget, a favourite color — and we’ll point you the right way.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "petalpost-standard"
+    },
+    {
+      "handle": "custom-arrangement-consult",
+      "name": "Custom arrangement consult",
+      "description": "Sit down with a florist to design a one-off bouquet or arrangement — flowers, palette, vessel and size, all your call.",
+      "durationMinutes": 45,
+      "priceCents": 2500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "petalpost-standard"
+    },
+    {
+      "handle": "subscription-setup",
+      "name": "Flower subscription setup",
+      "description": "Set up a weekly, fortnightly or monthly bunch — pick your palette and delivery day and we’ll keep the fresh flowers coming.",
+      "durationMinutes": 30,
+      "priceCents": 1500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "petalpost-standard"
+    },
+    {
+      "handle": "sympathy-consult",
+      "name": "Sympathy flowers consult",
+      "description": "A gentle, unhurried conversation to arrange sympathy or funeral flowers — we’ll handle the details with care.",
+      "durationMinutes": 30,
+      "priceCents": 2000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "petalpost-standard"
+    },
+    {
+      "handle": "celebration-consult",
+      "name": "Celebration flowers consult",
+      "description": "Birthdays, anniversaries, new babies, big wins — plan flowers for the happy days, delivered or picked up.",
+      "durationMinutes": 45,
+      "priceCents": 3000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "petalpost-standard"
+    },
+    {
+      "handle": "flower-workshop",
+      "name": "Hands-on flower workshop",
+      "description": "A cheerful ninety minutes at the potting table — you’ll build a seasonal arrangement to take home, flowers and coffee included.",
+      "durationMinutes": 90,
+      "priceCents": 6500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["workshop"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["workshop-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "workshop-hold"
+    },
+    {
+      "handle": "corporate-flowers-consult",
+      "name": "Office & corporate flowers consult",
+      "description": "Set up a standing order for your lobby, front desk or event — fresh flowers on a schedule that suits the space.",
+      "durationMinutes": 45,
+      "priceCents": 3500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "florist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "petalpost-standard"
+    }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Petal & Post",
+      "timezone": "UTC"
+    }
+  ]
 }

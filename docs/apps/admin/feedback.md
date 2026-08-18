@@ -206,7 +206,7 @@ access (§2).
 
 ## 10. Implementation checklist
 
-Gated behind the `apps/admin` scaffold (76 §6). Build this section after the app shell + auth exist.
+Gated behind the `wizeworks/apps/admin` scaffold (76 §6). Build this section after the app shell + auth exist.
 
 - [ ] sparx → Feedback route in the admin app shell
 - [ ] Cross-tenant read role / connection (reuse the support-tooling DB access, 76 §5)

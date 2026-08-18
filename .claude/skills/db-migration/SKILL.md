@@ -1,6 +1,6 @@
 ---
 name: db-migration
-description: Author and ship a Prisma schema migration for Sparx end-to-end — local authoring against docker Postgres, hand-edited RLS SQL, and the Cloud SQL pipeline. Use whenever adding/altering a table, column, index, or enum in packages/db, or when a task needs `prisma migrate`. Encodes the private-IP pipeline and the FORCE-RLS backfill footgun that fails only in prod.
+description: Author and ship a Prisma schema migration for Sparx end-to-end — local authoring against docker Postgres, hand-edited RLS SQL, and the Cloud SQL pipeline. Use whenever adding/altering a table, column, index, or enum in wizeworks/packages/db, or when a task needs `prisma migrate`. Encodes the private-IP pipeline and the FORCE-RLS backfill footgun that fails only in prod.
 ---
 
 # Ship a Sparx DB migration
@@ -11,10 +11,10 @@ The Cloud SQL instance is **private-IP only** — you cannot `prisma migrate dep
 
 ```bash
 pnpm db:up                      # docker Postgres
-pnpm --filter @sparx/db exec prisma migrate dev --name <change>
+pnpm --filter @wizeworks/db exec prisma migrate dev --name <change>
 ```
 
-Edit `packages/db/prisma/schema.prisma`, then re-run `migrate dev`. This writes `packages/db/prisma/migrations/<ts>_<change>/migration.sql`.
+Edit `wizeworks/packages/db/prisma/schema.prisma`, then re-run `migrate dev`. This writes `wizeworks/packages/db/prisma/migrations/<ts>_<change>/migration.sql`.
 
 ## 2. Hand-edit the SQL for RLS — Prisma does NOT generate it
 
@@ -44,8 +44,8 @@ END $$;
 ## 3. Verify no Prisma drift
 
 ```bash
-pnpm --filter @sparx/db exec prisma migrate status
-pnpm --filter @sparx/db exec prisma validate
+pnpm --filter @wizeworks/db exec prisma migrate status
+pnpm --filter @wizeworks/db exec prisma validate
 ```
 
 Partial/conditional unique indexes (e.g. `WHERE is_active`) are hand-SQL too — confirm `prisma migrate diff` shows no drift after adding them.

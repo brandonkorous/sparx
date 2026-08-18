@@ -11,7 +11,7 @@
 // `portfolio-sites/harness.ts`; the case-study page's DATA plumbing lives in the shared
 // `template-sites/article.ts` kit (a project is a `cms.blog_post` record — see the harness
 // header for why). Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-portfolio-designer.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-portfolio-designer.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-portfolio-designer/**" \
 //     "marketplace-catalog/_gen/gen-portfolio-designer.ts"
 //
@@ -28,8 +28,8 @@ import { pathToFileURL } from 'node:url';
 import {
     el,
     type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import { contactSection } from './shared/contact-section';
 import { emitPortfolioBundle, type PortfolioSiteSpec } from './portfolio-sites/harness';

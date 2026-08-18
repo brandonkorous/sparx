@@ -42,21 +42,16 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   NativeSelect,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import {
-  faBoxArchive,
-  faFloppyDisk,
-  faLocationDot,
-  faWarehouse,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faBoxArchive, faFloppyDisk, faLocationDot } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -179,6 +174,9 @@ function LocationEditor({
   id,
   initial,
   existing,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   /** 'new' or a real id. */
@@ -187,6 +185,11 @@ function LocationEditor({
   initial: Draft;
   /** The loaded row, when editing — drives the identity header and archive. */
   existing: Location | null;
+  /** The owning query's state, threaded down so the toolbar can offer a refresh.
+   *  Absent on a new location — there is nothing loaded to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number | undefined;
+  onRefresh?: (() => void) | undefined;
 }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -343,50 +346,54 @@ function LocationEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={isNew ? 'New location actions' : 'Location actions'}>
-        {existing ? (
-          <Badge color={locationState(existing).tone} variant="soft" size="sm">
-            {locationState(existing).label}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={busy}
-          onClick={submit}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {isNew ? 'Create location' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label={isNew ? 'New location actions' : 'Location actions'}
+        refresh={
+          onRefresh ? (
+            <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+          ) : undefined
+        }
+        status={
+          existing ? (
+            <Badge color={locationState(existing).tone} variant="soft" size="sm">
+              {locationState(existing).label}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={busy}
+            onClick={submit}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {isNew ? 'Create location' : 'Save'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* On an existing location the pane opens by saying WHAT it is — its
-              name, the code on its shelf labels, and where it is. A new one is
-              introduced by the form section below instead. */}
+          {/* The name is the pane's TAB and its editable field below, so the body
+              opens with the rest of it — the code on its shelf labels, and where
+              it is. A new location is introduced by the form section instead. */}
           {existing ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Icon glyph={faWarehouse} className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span className="font-mono text-sm">{existing.code}</span>
-                {place ? (
-                  <>
-                    <span aria-hidden>·</span>
-                    <span className="inline-flex items-center gap-1">
-                      <Icon glyph={faLocationDot} className="size-3.5 shrink-0" aria-hidden />
-                      <Text as="span" className="text-sm">
-                        {place}
-                      </Text>
-                    </span>
-                  </>
-                ) : null}
-              </div>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="font-mono text-sm">{existing.code}</span>
+              {place ? (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Icon glyph={faLocationDot} className="size-3.5 shrink-0" aria-hidden />
+                    <Text as="span" className="text-sm">
+                      {place}
+                    </Text>
+                  </span>
+                </>
+              ) : null}
             </div>
           ) : null}
 
@@ -718,6 +725,11 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       id={id}
       initial={draftFrom(location.data)}
       existing={location.data}
+      isFetching={location.isFetching}
+      updatedAt={location.data ? location.dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void location.refetch();
+      }}
     />
   );
 }

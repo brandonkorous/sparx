@@ -1,0 +1,415 @@
+/* ──────────────────────────────────────────────────────────────
+   sparx Storefront — residual functional layer.
+
+   The storefront renders on silica (silicaui plugin classes + Tailwind
+   utilities), themed by the ONE per-tenant `--color-*` theme the root layout
+   injects. What remains in this file is only functional, JS-driven CSS with no
+   silica equivalent: the scroll-reveal entrance (`[data-bx-reveal]`), per-section
+   height (`[data-section-height]`), the editor preview rings
+   (`[data-sparx-preview]`), and the builder canvas (`bx-*`) responsive/carousel
+   primitives.
+
+   What used to be here — and must not come back:
+     · a ~100-line `:root` block of `--st-*` token fallbacks, and
+     · a `--color-*: var(--st-*)` bridge remapping the whole storefront palette
+       onto them.
+   Together they made `--st-*` a SECOND source of truth for tenant color, and the
+   bridge pointed the opposite way from the one in globals.css, so which vocabulary
+   won was decided by stylesheet source order. An applied theme could silently keep
+   the previous palette, and site fonts could never change at all. Color and type
+   now have exactly one source: the injected theme.
+   See docs/implementation/st-token-retirement.md.
+
+   The `.st-h1/2/3`, `.st-eyebrow` and `.st-muted` type utilities went with them —
+   they read `--st-font-heading` / `--st-text-muted`, which nothing emits now. Their
+   call sites moved to the silica scale (`text-4xl font-semibold text-base-content`).
+   `.st-eyebrow` was already unused and is a RULE #2 violation; `.st-muted` faded
+   readable text, which RULE #3 forbids.
+   ────────────────────────────────────────────────────────────── */
+
+/* These rules live in the LOWEST cascade layer so silicaui's component classes
+   (`@layer components`) authoritatively own the shared component vocabulary. The
+   order statement pins `bx-legacy` beneath them regardless of import order, and
+   above `base` so it beats Tailwind preflight. */
+@layer theme, base, bx-legacy, components, utilities;
+@layer bx-legacy {
+  /* ── Site Builder preview chrome ─────────────────────────────────
+   Only present when the storefront is embedded in the editor iframe (the
+   preview bridge sets data-sparx-preview on <html>). Editor-only affordances:
+   sections become clickable and show a hover / selection ring. The ring color
+   is fixed (sparx Indigo) so it stays legible on any tenant theme, and uses
+   `outline` (not border) so selecting never shifts layout. */
+  [data-sparx-preview] {
+    --preview-ring: #6366f1;
+    --preview-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-sparx-preview] [data-section-id] {
+    cursor: pointer;
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+    transition: outline-color 0.12s var(--preview-ease);
+  }
+  [data-sparx-preview] [data-section-id]:hover {
+    outline-color: color-mix(in oklab, var(--preview-ring) 45%, transparent);
+  }
+  [data-sparx-preview] [data-section-id].sparx-section-selected {
+    outline-color: var(--preview-ring);
+  }
+  /* ─── Scroll reveal (docs/37 §6) ────────────────────────────────────────────
+   Each Site Builder section wrapper carries [data-bx-reveal]. RevealController
+   adds .is-visible as it enters the viewport. The hidden initial state is gated
+   on html.bx-reveal-ready (set before paint only when motion is allowed), so JS
+   off / reduced motion never hides content. */
+  html.bx-reveal-ready [data-bx-reveal] {
+    --reveal-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--reveal-ease) 700ms,
+      transform var(--reveal-ease) 700ms;
+    will-change: opacity, transform;
+  }
+  html.bx-reveal-ready [data-bx-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html.bx-reveal-ready [data-bx-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+  /* Print / non-scrolling renderers never fire the reveal observer, so force every
+     below-fold section visible — otherwise "Save as PDF" (and headless snapshots)
+     capture blank bands where the reveal never triggered. */
+  @media print {
+    html.bx-reveal-ready [data-bx-reveal],
+    html.bx-reveal-ready [data-bx-reveal].is-visible {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* ─── Universal per-section height ───────────────────────────────────────────
+   Any section wrapper can carry data-section-height (¼/½/¾/full of the viewport,
+   set per-section by the tenant). The wrapper becomes a flex column that
+   vertically centres the section, so a section taller than its content reads as
+   a deliberate full-bleed band rather than top-loaded with empty space below.
+   Hero/banner/carousel size themselves and never set this. */
+  [data-section-height] {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Fixed band — the chosen fraction is both the min AND max height, so the
+     section is exactly that tall and content beyond it is clipped (not pushed
+     into the next section). `auto` (no attr) keeps content-driven height. */
+    overflow: hidden;
+  }
+  [data-section-height] > * {
+    width: 100%;
+  }
+  [data-section-height='sm'] {
+    min-height: 25svh;
+    max-height: 25svh;
+  }
+  [data-section-height='md'] {
+    min-height: 50svh;
+    max-height: 50svh;
+  }
+  [data-section-height='lg'] {
+    min-height: 75svh;
+    max-height: 75svh;
+  }
+  [data-section-height='screen'] {
+    min-height: 100svh;
+    max-height: 100svh;
+  }
+  /* ──────────────────────────────────────────────────────────────
+   Builder Carousel (wizeworks/apps/site/components/builder-carousel.tsx)
+
+   The one builder primitive that needs runtime state, so it ships as a client
+   component with classes (the rest of the renderer is inline-styled). Slides
+   sit in a flex track that translates by -index * 100%; arrows + dots overlay.
+   ────────────────────────────────────────────────────────────── */
+  .bx-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  .bx-carousel__track {
+    display: flex;
+    width: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .bx-carousel__slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+  .bx-carousel__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #171a23;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s ease;
+  }
+  .bx-carousel__arrow:hover {
+    background: rgba(255, 255, 255, 0.95);
+  }
+  .bx-carousel__arrow--prev {
+    left: 16px;
+  }
+  .bx-carousel__arrow--next {
+    right: 16px;
+  }
+  /* On narrow viewports the fixed-position arrows sit on top of the slide content
+     (e.g. a stacked hero CTA). The carousel autoplays, so rotation still happens
+     without them — hide the manual arrows below the fold width rather than let one
+     cover a button. Dots (when enabled) remain the compact on-canvas control. */
+  @media (max-width: 639px) {
+    .bx-carousel__arrow {
+      display: none;
+    }
+  }
+  .bx-carousel__dots {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    gap: 8px;
+  }
+  .bx-carousel__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      width 0.15s ease;
+  }
+  .bx-carousel__dot[data-on='true'] {
+    width: 22px;
+    background: #ffffff;
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+   Builder responsive layout (docs/59-responsive-rendering.md)
+
+   The storefront renderer (builder-renderer.tsx) emits these classes instead
+   of baking grid columns / flex-direction / height / padding into inline
+   styles, so a single authored layout responds to the viewport. Mobile-first:
+   the base rule is the phone layout; min-width queries widen it. Properties
+   that DON'T swap (gap, surface, background, text color/align, contained
+   max-width) stay inline. The desktop row alignment that WOULD be wrong when
+   stacked rides --bx-ai / --bx-jc so the stacked rule can override it.
+
+   Tiers: mobile < 640px · tablet 640–1023px · desktop ≥ 1024px (grids);
+   rows stack < 768px. Kept in lockstep with the editor canvas, which derives
+   the same rules from its `device` prop (site.css @media can't reach the
+   editor's fixed-width canvas).
+   ────────────────────────────────────────────────────────────── */
+
+  /* The published Builder render root is the container-query context (docs/61 §7):
+   authored `@md:`-style utilities respond to the page width, matching the editor
+   canvas exactly (preview == production). */
+  .bx-render {
+    container-type: inline-size;
+    /* NAMED, so the nav's inline↔hamburger swap (`@3xl/bx-frame:` utilities in
+     @wizeworks/builder-render's atoms/nav.tsx) binds to the FRAME width and never to
+     some intervening unnamed container. The editor canvas declares the same name
+     on `.bx-canvas`, which is what makes the preview collapse at the simulated
+     device width rather than the real viewport. */
+    container-name: bx-frame;
+  }
+
+  /* Grid — 1 col (mobile) → 2 col (≥640) → N col (≥1024). N via --cN modifier. */
+  .bx-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 640px) {
+    .bx-grid--c2,
+    .bx-grid--c3,
+    .bx-grid--c4,
+    .bx-grid--c5,
+    .bx-grid--c6,
+    .bx-grid--c7,
+    .bx-grid--c8,
+    .bx-grid--c9,
+    .bx-grid--c10,
+    .bx-grid--c11,
+    .bx-grid--c12 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .bx-grid--c2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .bx-grid--c3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .bx-grid--c4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .bx-grid--c5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .bx-grid--c6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .bx-grid--c7 {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .bx-grid--c8 {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .bx-grid--c9 {
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .bx-grid--c10 {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .bx-grid--c11 {
+      grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .bx-grid--c12 {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+  }
+
+  /* Flex stack (column) — gap / align / justify stay inline. */
+  .bx-stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Inline row that holds at every width (leaf lockups: logo+name, button+icon). */
+  .bx-row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* Responsive row — stacked on mobile, becomes a row at ≥768px. The authored
+   desktop align/justify ride --bx-ai / --bx-jc (set inline) so the stacked
+   state can reset to stretch / flex-start without inline styles winning. */
+  .bx-row--resp {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  @media (min-width: 768px) {
+    .bx-row--resp {
+      flex-direction: row;
+      align-items: var(--bx-ai, stretch);
+      justify-content: var(--bx-jc, flex-start);
+    }
+  }
+
+  /* Fixed section heights — ease on small screens so heroes aren't overlong. */
+  .bx-h-sm {
+    min-height: 25vh;
+    max-height: 25vh;
+  }
+  .bx-h-md {
+    min-height: 50vh;
+    max-height: 50vh;
+  }
+  .bx-h-lg {
+    min-height: 75vh;
+    max-height: 75vh;
+  }
+  .bx-h-xl {
+    min-height: 90vh;
+    max-height: 90vh;
+  }
+  .bx-h-full {
+    min-height: 100vh;
+    max-height: 100vh;
+  }
+  @media (max-width: 767px) {
+    .bx-h-md {
+      min-height: 40vh;
+      max-height: 40vh;
+    }
+    .bx-h-lg {
+      min-height: 55vh;
+      max-height: 55vh;
+    }
+    .bx-h-xl {
+      min-height: 70vh;
+      max-height: 70vh;
+    }
+    .bx-h-full {
+      min-height: 85vh;
+      max-height: 85vh;
+    }
+  }
+
+  /* Padding scale — the large steps relax on small screens. */
+  .bx-p-none {
+    padding: 0;
+  }
+  .bx-p-sm {
+    padding: 0.75rem;
+  }
+  .bx-p-md {
+    padding: 1.5rem;
+  }
+  .bx-p-lg {
+    padding: 2.5rem;
+  }
+  .bx-p-xl {
+    padding: 4.5rem;
+  }
+  @media (max-width: 767px) {
+    .bx-p-lg {
+      padding: 1.5rem;
+    }
+    .bx-p-xl {
+      padding: 2rem;
+    }
+  }
+
+  /* Card-polish utilities (docs/47 class-first authoring) — opt-in chrome a node
+ * carries via its `class`: a floating card (radius + soft shadow + hairline
+ * border) or a plain rounded panel. Additive — nodes without the class are
+ * unaffected. `overflow: hidden` clips a node's background-image (and children)
+ * to the rounded corners. */
+  /* Radius, line and depth read silica's own tokens, so these track the injected
+     tenant theme (they read `--st-radius-box` / `--st-border` / `--st-shadow-md`
+     before, which nothing emits now). The shadow keeps its previous shape but
+     scales off silica's `--depth`, exactly as the retired `--st-shadow-md` scaled
+     off `--st-depth` — so a theme that flattens depth flattens this too. */
+  .bx-card {
+    border-radius: var(--radius-box, 16px);
+    box-shadow:
+      0 4px 12px -2px rgb(0 0 0 / calc(0.08 * var(--depth, 1))),
+      0 2px 6px -2px rgb(0 0 0 / calc(0.05 * var(--depth, 1)));
+    border: 1px solid var(--color-border, rgba(20, 18, 15, 0.08));
+    overflow: hidden;
+  }
+  .bx-panel {
+    border-radius: var(--radius-box, 16px);
+    overflow: hidden;
+  }
+} /* end @layer bx-legacy */

@@ -9,7 +9,7 @@
 ## 0. What changed in 2.0 (and why)
 
 Layer 2 (site shoppers) was originally a **purpose-built, tenant-scoped auth module**
-(`@sparx/customer-auth`, v1.x of this doc): Argon2id + opaque SHA-256 sessions, deliberately
+(`@wizeworks/customer-auth`, v1.x of this doc): Argon2id + opaque SHA-256 sessions, deliberately
 _not_ Better Auth because Better Auth keys credential sign-in on a **globally unique email**
 and shoppers must be able to register the same email at different tenants as separate accounts.
 
@@ -54,14 +54,14 @@ the surrounding model.
 [docs/16 §2](16-auth-security.md) still stands: five distinct principals, each with its own
 identity store and isolation boundary. Conflating tiers is a security bug. What changes is Layer
 2's row: identity store becomes **"Better Auth (customer instance, tenant-scoped)"** instead of
-`@sparx/customer-auth`'s bespoke tables. It is still **one tenant, RLS-isolated**, still a
+`@wizeworks/customer-auth`'s bespoke tables. It is still **one tenant, RLS-isolated**, still a
 first-party `sparx_customer_session` cookie, still completely separate from the staff instance.
 
 **Isolation between the two Better Auth instances is mandatory and total:**
 
 | Concern          | Staff instance (Layer 1)          | Customer instance (Layer 2)                            |
 | ---------------- | --------------------------------- | ------------------------------------------------------ |
-| Package          | `@sparx/auth`                     | `@sparx/customer-auth`                                 |
+| Package          | `@wizeworks/auth`                 | `@wizeworks/customer-auth`                             |
 | Secret           | `BETTER_AUTH_SECRET`              | `CUSTOMER_AUTH_SECRET` (distinct)                      |
 | Cookie           | `better-auth.session_token` (app) | `sparx_customer_session` (site origin)                 |
 | Email uniqueness | global (`users.email @unique`)    | **per-tenant** (`(tenant_id, email)` composite)        |
@@ -87,7 +87,7 @@ either alone cannot leak across tenants.
 For a shopper the tenant is known **before** authentication — it is the site host
 (`acme.sparx.zone`, or `?tenant=acme`), resolved exactly as the rest of the public surface
 already does. api-rest carries it to the adapter through a new **request-scoped
-`AsyncLocalStorage`** (`@sparx/db` → `tenantStore`): a Fastify `preHandler` on the customer-auth
+`AsyncLocalStorage`** (`@wizeworks/db` → `tenantStore`): a Fastify `preHandler` on the customer-auth
 routes resolves the tenant slug → id and runs the handler inside `tenantStore.run({ tenantId }, …)`.
 
 This is the one genuinely new primitive. Today `withTenant(tenantId, fn)` takes the tenant
@@ -97,8 +97,8 @@ op ever runs with no tenant in context, it throws rather than executing an unsco
 
 ### 3.2 The tenant-scoping adapter
 
-`@sparx/customer-auth` builds its Better Auth instance on the **stock `prismaAdapter`**, but hands
-it a **tenant-scoping Proxy** over the shared `@sparx/db` client instead of the raw client. The
+`@wizeworks/customer-auth` builds its Better Auth instance on the **stock `prismaAdapter`**, but hands
+it a **tenant-scoping Proxy** over the shared `@wizeworks/db` client instead of the raw client. The
 Proxy does two things and nothing else, so all of Better Auth's audited where/select/join logic is
 reused verbatim:
 
@@ -127,7 +127,7 @@ The result:
 
 This is the "custom database adapter injecting tenantId" pattern — realized as a **DB-enforced**
 scope (strictly stronger than app-tier filtering), reusing the stock adapter, and identical in
-spirit to `withTenant()`. The customer tables are ordinary `@sparx/db` Prisma models (schema 48),
+spirit to `withTenant()`. The customer tables are ordinary `@wizeworks/db` Prisma models (schema 48),
 so they flow through the one migration pipeline — no second Prisma client or schema.
 
 ### 3.3 The database backstop (RLS + composite unique)
@@ -170,7 +170,7 @@ for exactly this ("will FK to a customer-auth-layer table when that module lands
 canonical link to the Better Auth customer user. The old `identity_id` FK and the
 `customer_identities` table are retired.
 
-### 4.1 New Better-Auth-owned tables (`packages/db/prisma/schema/48-customer-auth.prisma`, rewritten)
+### 4.1 New Better-Auth-owned tables (`wizeworks/packages/db/prisma/schema/48-customer-auth.prisma`, rewritten)
 
 Better Auth's core schema (user / session / account / verification), mapped to `customer_*`
 tables, each with `tenant_id` + FORCE RLS. Names are chosen to not collide with the retired
@@ -195,7 +195,7 @@ semantics — guest checkout stays first-class).
 ### 4.2 Migration & cutover
 
 One hand-authored migration (authored against docker Postgres, applied **only** through the DB
-Migrate pipeline — [packages/db/CLAUDE.md](../packages/db/CLAUDE.md)):
+Migrate pipeline — [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)):
 
 1. Create `customer_users` / `customer_accounts` / `customer_sessions` (new) / `customer_verifications`
    / `customer_oauth_*`, each ENABLE + FORCE RLS + `tenant_isolation`, `tenant_id` default
@@ -213,7 +213,7 @@ Migrate pipeline — [packages/db/CLAUDE.md](../packages/db/CLAUDE.md)):
 
 The backfill runs **per-tenant** (loop `set_config('app.tenant_id', …)`) because `sparx_owner` is a
 non-superuser in prod and FORCE-RLS tables return zero rows otherwise — the standard
-FORCE-RLS-backfill footgun (packages/db/CLAUDE.md).
+FORCE-RLS-backfill footgun (wizeworks/packages/db/CLAUDE.md).
 
 **Cutover cost, stated plainly:** existing shopper **sessions and pending reset tokens are dropped**
 — every logged-in shopper is signed out once and re-logs-in with their existing password. This is
@@ -222,15 +222,15 @@ auth-engine swap is safer than trying to port opaque tokens into Better Auth's s
 
 ---
 
-## 5. `@sparx/customer-auth` — rewritten around Better Auth
+## 5. `@wizeworks/customer-auth` — rewritten around Better Auth
 
 The package keeps its name and its role ("the Layer-2 auth package; server-only; api-rest is the
 only caller"), and re-exports a compatible-enough surface so the blast radius on callers is small.
 Internally it becomes a Better Auth instance + helpers:
 
 ```
-packages/customer-auth/src/
-  tenant-adapter.ts // tenant-scoping Proxy over @sparx/db → prismaAdapter (§3.2): plugin-key
+wizeworks/packages/customer-auth/src/
+  tenant-adapter.ts // tenant-scoping Proxy over @wizeworks/db → prismaAdapter (§3.2): plugin-key
                     //   remap + per-op withTenant(tenantStore, …) on the sparx_app client
   server.ts        // betterAuth({ … emailAndPassword, mcp(), user/session/account/verification
                    //   modelName overrides, tenant-scoping adapter … }) — one instance, cached
@@ -263,23 +263,23 @@ runs entirely under RLS, strictly safer than the staff instance's owner connecti
 ## 6. api-rest surface + the MCP OAuth authorization server
 
 Keeping **"the site talks to api-rest only"** (API-first), the customer Better Auth handler is
-served by api-rest, not mounted in `apps/site`:
+served by api-rest, not mounted in `wizeworks/apps/site`:
 
 - A new `publicAuth` route group mounts the Better Auth handler under `/v1/public/auth/*`
   (Fastify → Web `Request`/`Response` adaptation), behind a **`preHandler` that resolves the tenant
   from `?tenant=` and enters `tenantStore.run({ tenantId }, …)`** so every BA op is scoped.
 - The existing `/v1/public/commerce/account/*` routes (register / login / logout / me / orders /
-  addresses / wishlist / password reset) are **rewired** to call the new `@sparx/customer-auth`
+  addresses / wishlist / password reset) are **rewired** to call the new `@wizeworks/customer-auth`
   service wrappers instead of the old bespoke functions. Their external contract (paths, request/
   response envelopes, the `sparx_customer_session` cookie, enumeration-safety, rate limits,
-  `recognized` signal, cart-claim) is **unchanged** — `apps/site` needs no change.
+  `recognized` signal, cart-claim) is **unchanged** — `wizeworks/apps/site` needs no change.
 - The **`mcp()` plugin** on the customer instance exposes the OAuth authorization server
   (`/.well-known/oauth-authorization-server`, `/authorize`, `/token`, `/register`) under the same
   `/v1/public/auth/*` mount, with the **same hardening as the operator flow** (docs/07 §5): a
   first-party consent page bound to the shopper's session, `requirePKCE` + S256 only, short TTLs,
   and a token-verify query that checks expiry + client-enabled (never a bare row lookup). The
   `loginPage` is the store's `/account/login` (a browser redirect across origins is fine).
-- The site MCP resource server (`services/mcp-site`, docs/113) advertises this AS via
+- The site MCP resource server (`wizeworks/services/mcp-site`, docs/113) advertises this AS via
   `WWW-Authenticate` + `/.well-known/oauth-protected-resource`, relays the shopper's bearer, and —
   because it holds **no DB** — bearer **verification happens in api-rest**: the `customer`-tier
   public routes accept an `Authorization: Bearer` credential (verified with
@@ -307,9 +307,9 @@ store's own origin**, not on a shared api-rest host:
   Auth's default only advertises the openid framing scopes, so we replace it) listing the real
   shopper scope vocabulary + the store-origin `/v1/public/auth/mcp/{authorize,token,register}`
   endpoints.
-- **Consent.** The `/mcp/authorize` guard (`@sparx/customer-auth` server.ts, mirroring the operator
+- **Consent.** The `/mcp/authorize` guard (`@wizeworks/customer-auth` server.ts, mirroring the operator
   `mcpAuthorizeGuard`) bounces any authorize without a valid grant to the **store-branded**
-  `<store>/account/authorize` page (`apps/site`). That page confirms the signed-in shopper (redirects
+  `<store>/account/authorize` page (`wizeworks/apps/site`). That page confirms the signed-in shopper (redirects
   to the store `/account/login` otherwise), shows the scope picker, and POSTs to
   `/v1/public/auth/consent`, which caps the selected scopes, mints a **signed, session-bound consent
   grant** (HMAC on the customer secret, `signCustomerConsentGrant`), and returns the store-origin
@@ -343,7 +343,7 @@ the engine swap must not quietly drop them:
   guest; cart-claim on auth is unchanged.
 - **Cookie scope & custom domains.** `sparx_customer_session` is httpOnly / SameSite=Lax / Path=/
   (`Secure` in prod), first-party per site origin, no `Domain=` — each origin isolates.
-- **No cross-package contamination.** Customer auth never imports or mutates `@sparx/auth` (the
+- **No cross-package contamination.** Customer auth never imports or mutates `@wizeworks/auth` (the
   staff instance) or its tables, and vice-versa.
 
 ---

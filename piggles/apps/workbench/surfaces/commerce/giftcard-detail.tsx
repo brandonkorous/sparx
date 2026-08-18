@@ -23,7 +23,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Text,
@@ -142,30 +141,28 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Gift card actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={issue.isPending}
-          disabled={Boolean(amountError)}
-          onClick={submit}
-        >
-          Issue gift card
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Gift card actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={issue.isPending}
+            disabled={Boolean(amountError)}
+            onClick={submit}
+          >
+            Issue gift card
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Issue a gift card
-            </Heading>
-            <Text>
-              Load an amount onto a new card and, if you like, say who it is for. A unique code is
-              created for you — share it with the recipient so they can spend it at checkout.
-            </Text>
-          </div>
+          <Text>
+            Load an amount onto a new card and, if you like, say who it is for. A unique code is
+            created for you — share it with the recipient so they can spend it at checkout.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -315,21 +312,25 @@ function ManageGiftCard({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Gift card actions">
-        {card ? (
-          <Badge color={giftCardState(card.status).tone} variant="soft" size="sm">
-            {giftCardState(card.status).label}
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={card ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Gift card actions"
+        status={
+          card ? (
+            <Badge color={giftCardState(card.status).tone} variant="soft" size="sm">
+              {giftCardState(card.status).label}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={card ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -417,12 +418,7 @@ function GiftCardBody({ card }: { card: GiftCardDetail }) {
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <Heading level={1} className="font-mono text-2xl font-semibold">
-          {card.code}
-        </Heading>
-        <Text>{state.detail}</Text>
-      </div>
+      <Text>{state.detail}</Text>
 
       <section className="card bg-base-100 flex flex-col gap-3 p-4">
         <div className="flex flex-wrap items-end justify-between gap-2">

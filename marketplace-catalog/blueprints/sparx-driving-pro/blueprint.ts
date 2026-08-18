@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-driving-pro',
-    version: '1.3.0',
-    name: 'sparx — Driving Academy (Pro)',
-    summary:
-        'A sharp, confident driving-academy site — a deep-navy primary, an electric-amber accent and a crisp near-white ground with modern-sans display. Installs online booking for lessons and assessments: adult, defensive, nervous-driver, senior-refresher, advanced/highway and license-transfer lessons, with three instructors booked by name and two dual-control training cars as bookable resources. Ships as "Apex Driving Academy" for adult and advanced drivers.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-driving-pro',
+  version: '1.3.0',
+  name: 'sparx — Driving Academy (Pro)',
+  summary:
+    'A sharp, confident driving-academy site — a deep-navy primary, an electric-amber accent and a crisp near-white ground with modern-sans display. Installs online booking for lessons and assessments: adult, defensive, nervous-driver, senior-refresher, advanced/highway and license-transfer lessons, with three instructors booked by name and two dual-control training cars as bookable resources. Ships as "Apex Driving Academy" for adult and advanced drivers.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Apex Driving Academy',
+    tagline: 'Drive like you own the road.',
+    colors: {
+      primary: '#1e3568',
+      primaryForeground: '#f5f9ff',
+      accent: '#ed9316',
+      secondary: '#3f4858',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'apexdrive',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Apex Driving Academy',
-        tagline: 'Drive like you own the road.',
-        colors: {
-            primary: '#1e3568',
-            primaryForeground: '#f5f9ff',
-            accent: '#ed9316',
-            secondary: '#3f4858',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#1e3568',
+      colorAccent: '#ed9316',
+      colorSecondary: '#3f4858',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'apexdrive',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#1e3568',
-            colorAccent: '#ed9316',
-            colorSecondary: '#3f4858',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

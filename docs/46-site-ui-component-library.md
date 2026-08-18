@@ -9,7 +9,7 @@ Last Updated: 2026-06-03
 > four-axis recipe is the styling contract for every component:
 > `st-c-{color}` (color role) × `st-v-{variant}` (treatment) × `st-{component}--sz-{size}` (size).
 > (The code types call the treatment axis `TreatmentKey` / `treatmentVariants`; the class + UI term is
-> `variant` — same axis.) **One recipe, two front doors:** hand-coded `apps/site` pages use the typed
+> `variant` — same axis.) **One recipe, two front doors:** hand-coded `wizeworks/apps/site` pages use the typed
 > component (`<Button color variant size>`); the builder carries the same recipe tokens on `node.class`
 > and lifts them back into props via `recipeFromClass`
 > ([102](102-builder-component-library-audit.md)). For the authoring + per-tenant compile model, read
@@ -34,7 +34,7 @@ A Builder primitive — say a CTA button or a photo panel — exists in two plac
 | Surface           | Where                                                                          | How it's styled                              |
 | ----------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
 | **Editor canvas** | `apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx` + `builder.css` | `.bx-btn`, `.bx-btn--primary`, … (`--bxc-*`) |
-| **Live site**     | `apps/site/components/builder-renderer.tsx`                                    | inline `style={buttonStyle(...)}` (`--st-*`) |
+| **Live site**     | `wizeworks/apps/site/components/builder-renderer.tsx`                          | inline `style={buttonStyle(...)}` (`--st-*`) |
 
 Two implementations of one thing. The canvas knows `primary | soft | link`; the site
 (after the Tesla work) knows `primary | soft | dark | glass | link`. They already disagree.
@@ -48,18 +48,18 @@ The preview cannot drift from production because they are the same code.
 
 ---
 
-## 2. The boundary: `@sparx/ui` vs `@sparx/site-ui`
+## 2. The boundary: `@wizeworks/ui` vs `@sparx/site-ui`
 
 Two component libraries, cleanly split by **whose brand they wear**:
 
-| Library                     | Theme tokens                                                                                 | Wears the brand of    | Consumers                                                   |
-| --------------------------- | -------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
-| `@sparx/ui` (`packages/ui`) | silicaui: `--color-base-*`, `--color-*` (semantic), `--color-module-*` (from `@sparx/brand`) | **sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
-| `@sparx/site-ui` (this doc) | `--st-*` (Token Model v2, [33](33-token-model-v2.md))                                        | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
+| Library                               | Theme tokens                                                                                 | Wears the brand of    | Consumers                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------- | --------------------------------------------------------------------- |
+| `@wizeworks/ui` (`sparx/packages/ui`) | silicaui: `--color-base-*`, `--color-*` (semantic), `--color-module-*` (from `@sparx/brand`) | **sparx** (the admin) | `apps/dashboard`, marketing `sparx/apps/web`                          |
+| `@sparx/site-ui` (this doc)           | `--st-*` (Token Model v2, [33](33-token-model-v2.md))                                        | **the tenant**        | `wizeworks/apps/site` chrome, the Builder renderer, the editor canvas |
 
-They never overlap. `@sparx/ui` is the operator's tools, in sparx Indigo. `@sparx/site-ui` is
+They never overlap. `@wizeworks/ui` is the operator's tools, in sparx Indigo. `@sparx/site-ui` is
 the tenant's published site, in the tenant's brand. The dashboard chrome around the Builder
-(toolbar, rail, inspector) stays `@sparx/ui`; only the **canvas content** — the tenant's site
+(toolbar, rail, inspector) stays `@wizeworks/ui`; only the **canvas content** — the tenant's site
 preview — is `@sparx/site-ui`.
 
 **What `site-ui` owns.** The renderer keeps its tree-walking engine (box → CSS, layout, binding,
@@ -72,7 +72,7 @@ components own the **treatment** (variants, surfaces, type scale).
 **The hard rule.** No component hardcodes a color. Every value resolves to a `--st-*` token, or
 to a **documented fallback** baked into the `var()` call (`var(--st-primary, #3f6b52)`) for the
 handful of cases where the producer doesn't emit the token yet (§4). This is the same discipline
-`@sparx/ui` follows with `--color-*`.
+`@wizeworks/ui` follows with `--color-*`.
 
 ---
 
@@ -82,8 +82,8 @@ handful of cases where the producer doesn't emit the token yet (§4). This is th
 
 This is the load-bearing decision. Three candidates were on the table:
 
-1. **Tailwind utility classes** (what `@sparx/ui` does). Rejected for `site-ui`: it would force
-   _every_ consumer's Tailwind build to scan `packages/site-ui/**` into its `content`, and the
+1. **Tailwind utility classes** (what `@wizeworks/ui` does). Rejected for `site-ui`: it would force
+   _every_ consumer's Tailwind build to scan `wizeworks/packages/site-ui/**` into its `content`, and the
    dashboard's Tailwind theme maps utilities like `bg-primary` to the **admin** palette
    (`--color-*`), not the tenant's. We'd be reduced to arbitrary-value classes
    (`bg-[var(--st-primary)]`) everywhere — Tailwind buying us nothing while adding a build
@@ -96,7 +96,7 @@ This is the load-bearing decision. Three candidates were on the table:
 
 `site-ui` components emit **semantic class names** (`st-btn st-btn--primary`) and ship a single
 token-driven stylesheet (`@sparx/site-ui/styles.css`). This is exactly the established pattern in
-this repo — `site.css` and `builder.css` are both plain token-driven CSS, and `@sparx/ui`
+this repo — `site.css` and `builder.css` are both plain token-driven CSS, and `@wizeworks/ui`
 already ships `tokens.css`. It gives us:
 
 - **One source of visual truth** consumed identically by site and canvas — no per-consumer
@@ -132,20 +132,20 @@ Only components that genuinely need browser state opt into `'use client'`:
 
 `'use client'` is a per-file boundary at the leaf, so importing `site-ui` from a server component
 (the site renderer) stays server-side except where a client island is actually used. This
-mirrors `@sparx/ui`'s selective-`'use client'` discipline ([23](23-frontend-component-architecture.md)).
+mirrors `@wizeworks/ui`'s selective-`'use client'` discipline ([23](23-frontend-component-architecture.md)).
 
 ### 3.3 No canonical token ownership — `site-ui` _consumes_, `site-themes` _produces_
 
-`@sparx/site-themes` is the single producer of `--st-*` (`buildThemeCssV2` /
+`@wizeworks/site-themes` is the single producer of `--st-*` (`buildThemeCssV2` /
 `compileThemeForTenant`, [33](33-token-model-v2.md)). `site-ui` never emits a canonical token
 file — that would create a competing source of truth. It only **reads** `--st-*`, with inline
 fallbacks for graceful degradation. The token contract `site-ui` depends on is enumerated in §4.
 
-### 3.4 Package shape mirrors `@sparx/ui`
+### 3.4 Package shape mirrors `@wizeworks/ui`
 
 `type: module`, `private`, `exports` map with subpath entries, `tsconfig` extends
 `tsconfig.base.json` with `declaration: false` / `declarationMap: false` (source-only workspace
-package, same as `@sparx/ui`). React/`react-dom`/`tailwindcss` are **peer** deps so the consuming
+package, same as `@wizeworks/ui`). React/`react-dom`/`tailwindcss` are **peer** deps so the consuming
 app owns the single React copy. The package ships **no Tailwind config** — it doesn't author
 utilities (§3.1).
 
@@ -153,15 +153,15 @@ utilities (§3.1).
 
 All `site-ui` classes are prefixed `st-` (e.g. `st-btn`, `st-c-primary`, `st-v-solid`,
 `st-carousel__slide`), matching the `--st-*` token namespace and clearly distinct from the editor
-chrome's `bx-*` and `@sparx/ui`'s Tailwind output. The legacy `.bx-*` canvas classes are retired
+chrome's `bx-*` and `@wizeworks/ui`'s Tailwind output. The legacy `.bx-*` canvas classes are retired
 during migration (§7).
 
 ### 3.6 The variant recipe is the foundation — four-axis `color × variant × size`, for ALL color-bearing elements
 
 **This is load-bearing and applies to every color-bearing component, not just Button** (docs/35).
 There is no flat `variant: primary | soft | …` enum anywhere — `primary` is a **color**, `soft` is a
-**treatment**. site-ui ships the `--st-*` analog of `@sparx/ui`'s `_recipes/variants.ts`
-([packages/site-ui/src/components/\_recipes/variants.ts](../packages/site-ui/src/components/_recipes/variants.ts)
+**treatment**. site-ui ships the `--st-*` analog of `@wizeworks/ui`'s `_recipes/variants.ts`
+([wizeworks/packages/site-ui/src/components/\_recipes/variants.ts](../packages/site-ui/src/components/_recipes/variants.ts)
 \+ [styles/recipes.css](../packages/site-ui/src/styles/recipes.css)):
 
 - **`color` axis** — a `.st-c-{color}` role-var class (the tenant-themed `--st-*` recipe; the
@@ -186,8 +186,8 @@ is imported **last** so a treatment's resets (e.g. `.st-v-link` → `padding:0`)
 
 ## 4. The token contract (`--st-*` `site-ui` consumes)
 
-These are produced by `@sparx/site-themes` (`colorVars` + `sharedVars` in
-`packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/site/app/site.css`.
+These are produced by `@wizeworks/site-themes` (`colorVars` + `sharedVars` in
+`wizeworks/packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `wizeworks/apps/site/app/site.css`.
 Every `site-ui` class reads from this set:
 
 **Color** — `--st-base-100/200/300`, `--st-base-content`, `--st-primary` (+ `-content`, `-hover`,
@@ -218,7 +218,7 @@ The `dark` and `glass` button variants the team-lead shipped are **legibility sc
 photos**, not tenant-brand colors — a tenant's `--st-primary` over a busy hero photo is often
 illegible, so these are deliberately a frosted near-black / near-white. To honor "no hardcoded
 color" while staying faithful to the shipped look, `site-ui` reads them through **dedicated tokens
-now emitted by the v2 producer** (`sharedVars` in `packages/site-themes/src/v2/css.ts`), with
+now emitted by the v2 producer** (`sharedVars` in `wizeworks/packages/site-themes/src/v2/css.ts`), with
 the team-lead's exact values; `site-ui` CSS also keeps them as `var()` fallbacks for graceful
 degradation:
 
@@ -245,7 +245,7 @@ The first wave harvests the proven implementations in `builder-renderer.tsx` and
 SSR-safe** — no event handlers in the base components (interactivity arrives via `href` links or a
 thin client wrapper), so they render in both the server site and the client canvas.
 
-> **Status: the full first wave is now BUILT** greenfield in `packages/site-ui` (gate green;
+> **Status: the full first wave is now BUILT** greenfield in `wizeworks/packages/site-ui` (gate green;
 > migration still on hold per §7). Each component below emits `st-*` classes against the §4 tokens
 > and ships a CSS partial aggregated into `styles.css`.
 
@@ -296,7 +296,7 @@ The old flat scrim CTAs are compositions: **Order Now = `glass` × `neutral`**, 
 team-lead: it returns the `CSSProperties` the renderer's box layer composes onto the box element, so
 the box→CSS engine keeps owning structure while the scrim/tone treatment lives in `site-ui` (a
 wrapping component would fight the tree-walker and duplicate the box spine, docs/40). `Overlay` /
-`TextTone` types come from `@sparx/builder-schemas` (`node.ts`), which `site-ui` depends on for the
+`TextTone` types come from `@wizeworks/builder-schemas` (`node.ts`), which `site-ui` depends on for the
 box/layout vocabulary — a one-way dependency (`builder-schemas` is zod-only and server-safe; it
 never imports `site-ui`). `Video`/`Map` render through `EmbedFrame`; `youtubeEmbed`/`mapEmbed` are
 exported so the renderer can dedupe onto them at migration.
@@ -363,7 +363,7 @@ Two boundary notes:
   class convention is adopted** — every part carries an `st-*` class and is themed by `--st-*` +
   the role-var recipe, with interaction styling keyed off Radix's `data-state`/`data-highlighted`
   attributes. This is a deliberate **dependency decision** (team-lead chose Radix over the
-  hand-authored approach `@sparx/ui` uses); the new runtime deps are `react-accordion`,
+  hand-authored approach `@wizeworks/ui` uses); the new runtime deps are `react-accordion`,
   `-collapsible`, `-tabs`, `-tooltip`, `-dialog`, `-dropdown-menu`, `-popover`. Each is a
   `'use client'` island.
 - **Expanded `'use client'` set (amends §3.2).** Beyond Carousel, the client components are now: all
@@ -390,9 +390,9 @@ token, not a selectable color axis — same judgment as Label).
 **`ThemeController`** (client) switches the site between **light / dark / system** by setting
 `data-theme` on the document root (or a target element). It persists to a **cookie** by default
 (`sparx_theme`, `light`/`dark`; `system` clears it) — the same contract the site's no-flash `<head>`
-script reads (`apps/site/app/layout.tsx`), so it's a drop-in for the hand-rolled `mode-toggle`;
+script reads (`wizeworks/apps/site/app/layout.tsx`), so it's a drop-in for the hand-rolled `mode-toggle`;
 `localStorage` and `none` are also available via `persist`. It drives the exact contract
-`@sparx/site-themes` emits — `:root` (light) + `:root[data-theme="dark"]` + a `prefers-color-scheme`
+`@wizeworks/site-themes` emits — `:root` (light) + `:root[data-theme="dark"]` + a `prefers-color-scheme`
 fallback an explicit `[data-theme="light"]` opts out of (`buildThemeCssV2`, docs/33). It is a **mode
 toggle within the tenant's one active brand**, _not_ a multi-named-theme picker: the brand designer
 (`/builder/brand`) manages many named themes (`SiteTheme` rows), but "Use this theme" applies one
@@ -430,7 +430,7 @@ Greenfield work (the doc, the scaffold, Button) touches nothing else. The migrat
 coordinated pass **after the team-lead's Tesla primitives land**, executed roughly in this order:
 
 1. **Land `styles.css` import points.** Add `import '@sparx/site-ui/styles.css'` to the site
-   root layout (after `@sparx/ui/tokens.css`/`site.css`) and to the `/builder` editor route.
+   root layout (after `@wizeworks/ui/tokens.css`/`site.css`) and to the `/builder` editor route.
    Static stylesheet → no FOUC.
 2. **Point the site renderer at `site-ui`.** Replace `buttonStyle`/leaf inline styles in
    `builder-renderer.tsx` with `site-ui` components, leaf by leaf. The box/layout engine and
@@ -448,11 +448,11 @@ no unstyled frame to flash.
 
 ### 7.1 New-package wiring checklist (migration-time, do NOT do during greenfield)
 
-- **Dockerfile COPY.** Each consumer image (`apps/site`, `apps/dashboard`) must add
-  `COPY packages/site-ui` lines (plus the transitive closure), or the image build fails even though
+- **Dockerfile COPY.** Each consumer image (`wizeworks/apps/site`, `apps/dashboard`) must add
+  `COPY wizeworks/packages/site-ui` lines (plus the transitive closure), or the image build fails even though
   `tsc`/`lint` pass locally — per the project's Dockerfile-package-wiring rule.
 - **Keep React out of backends.** `site-ui` is frontend-only; no `services/*` or backend package
-  may depend on it. Shared box/layout _types_ come from `@sparx/builder-schemas` (server-safe),
+  may depend on it. Shared box/layout _types_ come from `@wizeworks/builder-schemas` (server-safe),
   never from `site-ui`.
 - **`pnpm-lock.yaml`** gains the `@sparx/site-ui` entry on first `pnpm install`; ship it with the
   scaffold.
@@ -462,7 +462,7 @@ no unstyled frame to flash.
 ## 8. Package layout
 
 ```
-packages/site-ui/
+wizeworks/packages/site-ui/
   package.json            # @sparx/site-ui — type:module, exports ., ./styles.css
   tsconfig.json           # extends ../../tsconfig.base.json; declaration:false
   eslint.config.js        # extends root flat config (explicit, mirrors apps/*)
@@ -497,7 +497,7 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
    `variant` enum anywhere; every such component composes `color × variant (× size)` off the shared
    `.st-c-*` / `.st-v-*` recipe. Button is the first/reference consumer. (Corrected from an earlier
    flat-`variant` Button.) Audit of the built set: only Button is color-bearing; `Text`/`Heading`
-   variants are typographic roles (same split as `@sparx/ui`), the rest are structural — nothing
+   variants are typographic roles (same split as `@wizeworks/ui`), the rest are structural — nothing
    else needed conversion.
 2. **`PhotoPanel` (§5.2) — HELPER.** `photoPanelStyle()` returns `CSSProperties` for the box→CSS
    engine to compose; no wrapping component.
@@ -511,7 +511,7 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
 ## 10. Status
 
 - [x] §1–§9 decisions locked + approved by team-lead.
-- [x] Scaffold `packages/site-ui` (§8).
+- [x] Scaffold `wizeworks/packages/site-ui` (§8).
 - [x] **Variant recipe** (`_recipes/variants.ts` + `recipes.css`) — the four-axis foundation (§3.6).
 - [x] `Button` reworked to four-axis `color × variant × size` as the reference consumer (§5.1, §6).
 - [x] Full first-wave inventory built greenfield (§5); `--st-overlay-*` removed (§4.1, superseded).

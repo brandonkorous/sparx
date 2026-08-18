@@ -15,11 +15,12 @@
 
 import { useMemo } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
-  Heading,
   Text,
   Timestamp,
   useToast,
@@ -32,6 +33,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage } from './products-data';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import {
   connectionState,
   useChannels,
@@ -40,8 +45,6 @@ import {
   type ChannelConnection,
 } from './channels-data';
 import { productCopy } from '../../lib/product';
-
-const LABEL = 'Sales channels';
 
 const PHASE_LABEL: Record<ChannelCatalogEntry['phase'], string> = {
   P1: 'coming soon',
@@ -167,62 +170,57 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Sales channels controls">
-        <Icon glyph={faShop} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {LABEL}
-        </Heading>
-        {connections.length > 0 ? (
-          <Badge color="success" variant="soft" size="sm">
-            {connections.length === 1 ? '1 connected' : `${String(connections.length)} connected`}
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={channels.isFetching}
-          updatedAt={data ? channels.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void channels.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Sales channels controls"
+        status={
+          connections.length > 0 ? (
+            <Badge color="success" variant="soft" size="sm">
+              {connections.length === 1 ? '1 connected' : `${String(connections.length)} connected`}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={channels.isFetching}
+            updatedAt={data ? channels.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void channels.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Both non-ready states are carded, because the ready one is a stack
+              of FormSections — each already a card. Card one branch only and the
+              pane visibly jumps as the shops arrive. */}
           {channels.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load your sales channels"
-              description={productErrorMessage(
-                channels.error,
-                'This is a problem reaching the server. Nothing about your connected shops has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void channels.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load your sales channels"
+                description={productErrorMessage(
+                  channels.error,
+                  'This is a problem reaching the server. Nothing about your connected shops has changed.'
+                )}
+                onRetry={() => {
+                  void channels.refetch();
+                }}
+              />
+            </Card>
           ) : channels.isLoading ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Where else you sell
-                </Heading>
-                <Text className="text-sm">
-                  Outside shops like Etsy or TikTok Shop that you’ve connected, and the ones you’ll
-                  be able to connect. Connecting a shop syncs your products to it and brings its
-                  orders back to you.
-                </Text>
-              </div>
+              <Text className="text-sm">
+                Outside shops like Etsy or TikTok Shop that you’ve connected, and the ones you’ll be
+                able to connect. Connecting a shop syncs your products to it and brings its orders
+                back to you.
+              </Text>
 
               <FormSection title="Connected shops">
                 {connections.length === 0 ? (

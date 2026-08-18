@@ -141,39 +141,39 @@ Verified against the code on 2026-08-10, not against the docs.
 
 ### 3.1 Shipped and solid
 
-| Capability                                                                                                                                                           | Where                                                                                                                                                                                      |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Append-only movement ledger** — `onHand == Σ(delta)`, `balanceAfter` running balance, one writer (`applyMovement`)                                                 | [packages/inventory/src/services/ledger.ts](../packages/inventory/src/services/ledger.ts), `inventory_movements`                                                                           |
-| **Full attribution + idempotency** on every movement (`actorType` user/ai/system/integration, `source`, `idempotencyKey`)                                            | [34-commerce-inventory.prisma](../packages/db/prisma/schema/34-commerce-inventory.prisma)                                                                                                  |
-| Multi-warehouse, typed `owned / 3pl / dropship / virtual`, per-channel defaults, system in-transit location                                                          | `inventory_warehouses`                                                                                                                                                                     |
-| Levels with `onHand` / `allocated` / **`safetyBuffer`** / reorder point / reorder qty / lead time                                                                    | `inventory_levels`                                                                                                                                                                         |
-| **Reservation engine, fully wired** — cart soft-hold (TTL), order hard-hold, subscription renewal hold, reaper                                                       | [reservations.ts](../packages/inventory/src/services/reservations.ts), [sell-path.ts](../packages/inventory/src/services/sell-path.ts)                                                     |
-| Moving-average cost basis recomputed on every costed inbound                                                                                                         | `inventory_levels.avgCostCents`                                                                                                                                                            |
-| Suppliers + per-variant purchasing detail (supplier SKU, cost, MOQ, lead time, preferred)                                                                            | [36-inventory-supply.prisma](../packages/db/prisma/schema/36-inventory-supply.prisma)                                                                                                      |
-| Purchase orders with lifecycle, terms, currency, printable document                                                                                                  | [37-inventory-purchasing.prisma](../packages/db/prisma/schema/37-inventory-purchasing.prisma), [purchase-order-document.ts](../packages/inventory/src/services/purchase-order-document.ts) |
-| Goods receipts — atomic post, per-line cost override, damaged-on-arrival booked as a `receive`+`damage` pair                                                         | [goods-receipts.ts](../packages/inventory/src/services/goods-receipts.ts)                                                                                                                  |
-| **Counts** — cycle + full, expected-vs-counted, variance-value approval gate, absolute `setOnHand` post that survives a mid-count sale                               | [39-inventory-counts.prisma](../packages/db/prisma/schema/39-inventory-counts.prisma), [inventory-count-lifecycle.ts](../packages/inventory/src/services/inventory-count-lifecycle.ts)     |
-| Transfers with in-transit custody, ship/receive lifecycle                                                                                                            | [40-inventory-transfers.prisma](../packages/db/prisma/schema/40-inventory-transfers.prisma)                                                                                                |
-| **Lot/batch + expiry + hazmat + CoA + recall workflow**, and **serial units** pinned to order items                                                                  | [35-commerce-lot-serial.prisma](../packages/db/prisma/schema/35-commerce-lot-serial.prisma)                                                                                                |
-| B2B fleet holds + per-account availability                                                                                                                           | [b2b-holds.ts](../packages/inventory/src/services/b2b-holds.ts)                                                                                                                            |
-| Reorder suggestions + auto-draft POs grouped by supplier, net of open-PO quantity                                                                                    | [reorder.ts](../packages/inventory/src/services/reorder.ts)                                                                                                                                |
-| Reports: **valuation, turnover, aging, reorder analysis**                                                                                                            | [analytics.ts](../packages/inventory/src/services/analytics.ts)                                                                                                                            |
-| **External sync, three tiers** — CSV pull, API pull, on-prem agent push (paired via tenant API key, heartbeat + online/offline)                                      | [66-inventory.prisma](../packages/db/prisma/schema/66-inventory.prisma), [services/inventory-worker](../services/inventory-worker/)                                                        |
-| Sync hygiene: unmapped-SKU queue, **stale-link detection**, last-writer-wins by source timestamp, per-run bookkeeping                                                | `inventory_source_links`, `inventory_sync_runs`, `inventory_unmapped_skus`                                                                                                                 |
-| Feed **UoM conversion** on external links (`unitsPerExternal`)                                                                                                       | `inventory_source_links`                                                                                                                                                                   |
-| Outbound stock push to 11 channel adapters (Amazon, eBay, Walmart, Etsy, Faire, TikTok Shop, Google, Meta, Pinterest, sparx market)                                  | [packages/channels/src/adapters/](../packages/channels/src/adapters/)                                                                                                                      |
-| Events + automation: `inventory.low` / `.depleted` / `.adjusted` / `.count.completed` / `.transfer.*` / `.source.*`, with seeded automations (auto-draft PO, notify) | [packages/events/src/types.ts](../packages/events/src/types.ts), [packages/automation-actions/src/seeds/inventory.ts](../packages/automation-actions/src/seeds/inventory.ts)               |
-| **~48 MCP tools** covering read + write across the whole module                                                                                                      | [packages/inventory/src/mcp/](../packages/inventory/src/mcp/)                                                                                                                              |
-| **18 REST route modules** under the module namespace                                                                                                                 | [services/api-rest/src/routes/v1/inventory/](../services/api-rest/src/routes/v1/inventory/)                                                                                                |
-| **21 workbench surfaces** — stock, locations, transfers, counts, movements, lots, suppliers, POs, receiving, reorder, reports, sources                               | [apps/workbench/surfaces/inventory/](../apps/workbench/surfaces/inventory/)                                                                                                                |
-| RLS tenant isolation on every table; audit log on service writes                                                                                                     | [packages/db/CLAUDE.md](../packages/db/CLAUDE.md), [audit.ts](../packages/inventory/src/audit.ts)                                                                                          |
+| Capability                                                                                                                                                           | Where                                                                                                                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Append-only movement ledger** — `onHand == Σ(delta)`, `balanceAfter` running balance, one writer (`applyMovement`)                                                 | [wizeworks/packages/inventory/src/services/ledger.ts](../packages/inventory/src/services/ledger.ts), `inventory_movements`                                                                       |
+| **Full attribution + idempotency** on every movement (`actorType` user/ai/system/integration, `source`, `idempotencyKey`)                                            | [34-commerce-inventory.prisma](../packages/db/prisma/schema/34-commerce-inventory.prisma)                                                                                                        |
+| Multi-warehouse, typed `owned / 3pl / dropship / virtual`, per-channel defaults, system in-transit location                                                          | `inventory_warehouses`                                                                                                                                                                           |
+| Levels with `onHand` / `allocated` / **`safetyBuffer`** / reorder point / reorder qty / lead time                                                                    | `inventory_levels`                                                                                                                                                                               |
+| **Reservation engine, fully wired** — cart soft-hold (TTL), order hard-hold, subscription renewal hold, reaper                                                       | [reservations.ts](../packages/inventory/src/services/reservations.ts), [sell-path.ts](../packages/inventory/src/services/sell-path.ts)                                                           |
+| Moving-average cost basis recomputed on every costed inbound                                                                                                         | `inventory_levels.avgCostCents`                                                                                                                                                                  |
+| Suppliers + per-variant purchasing detail (supplier SKU, cost, MOQ, lead time, preferred)                                                                            | [36-inventory-supply.prisma](../packages/db/prisma/schema/36-inventory-supply.prisma)                                                                                                            |
+| Purchase orders with lifecycle, terms, currency, printable document                                                                                                  | [37-inventory-purchasing.prisma](../packages/db/prisma/schema/37-inventory-purchasing.prisma), [purchase-order-document.ts](../packages/inventory/src/services/purchase-order-document.ts)       |
+| Goods receipts — atomic post, per-line cost override, damaged-on-arrival booked as a `receive`+`damage` pair                                                         | [goods-receipts.ts](../packages/inventory/src/services/goods-receipts.ts)                                                                                                                        |
+| **Counts** — cycle + full, expected-vs-counted, variance-value approval gate, absolute `setOnHand` post that survives a mid-count sale                               | [39-inventory-counts.prisma](../packages/db/prisma/schema/39-inventory-counts.prisma), [inventory-count-lifecycle.ts](../packages/inventory/src/services/inventory-count-lifecycle.ts)           |
+| Transfers with in-transit custody, ship/receive lifecycle                                                                                                            | [40-inventory-transfers.prisma](../packages/db/prisma/schema/40-inventory-transfers.prisma)                                                                                                      |
+| **Lot/batch + expiry + hazmat + CoA + recall workflow**, and **serial units** pinned to order items                                                                  | [35-commerce-lot-serial.prisma](../packages/db/prisma/schema/35-commerce-lot-serial.prisma)                                                                                                      |
+| B2B fleet holds + per-account availability                                                                                                                           | [b2b-holds.ts](../packages/inventory/src/services/b2b-holds.ts)                                                                                                                                  |
+| Reorder suggestions + auto-draft POs grouped by supplier, net of open-PO quantity                                                                                    | [reorder.ts](../packages/inventory/src/services/reorder.ts)                                                                                                                                      |
+| Reports: **valuation, turnover, aging, reorder analysis**                                                                                                            | [analytics.ts](../packages/inventory/src/services/analytics.ts)                                                                                                                                  |
+| **External sync, three tiers** — CSV pull, API pull, on-prem agent push (paired via tenant API key, heartbeat + online/offline)                                      | [66-inventory.prisma](../packages/db/prisma/schema/66-inventory.prisma), [services/inventory-worker](../services/inventory-worker/)                                                              |
+| Sync hygiene: unmapped-SKU queue, **stale-link detection**, last-writer-wins by source timestamp, per-run bookkeeping                                                | `inventory_source_links`, `inventory_sync_runs`, `inventory_unmapped_skus`                                                                                                                       |
+| Feed **UoM conversion** on external links (`unitsPerExternal`)                                                                                                       | `inventory_source_links`                                                                                                                                                                         |
+| Outbound stock push to 11 channel adapters (Amazon, eBay, Walmart, Etsy, Faire, TikTok Shop, Google, Meta, Pinterest, sparx market)                                  | [wizeworks/packages/channels/src/adapters/](../packages/channels/src/adapters/)                                                                                                                  |
+| Events + automation: `inventory.low` / `.depleted` / `.adjusted` / `.count.completed` / `.transfer.*` / `.source.*`, with seeded automations (auto-draft PO, notify) | [wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts), [wizeworks/packages/automation-actions/src/seeds/inventory.ts](../packages/automation-actions/src/seeds/inventory.ts) |
+| **~48 MCP tools** covering read + write across the whole module                                                                                                      | [wizeworks/packages/inventory/src/mcp/](../packages/inventory/src/mcp/)                                                                                                                          |
+| **18 REST route modules** under the module namespace                                                                                                                 | [wizeworks/services/api-rest/src/routes/v1/inventory/](../services/api-rest/src/routes/v1/inventory/)                                                                                            |
+| **21 workbench surfaces** — stock, locations, transfers, counts, movements, lots, suppliers, POs, receiving, reorder, reports, sources                               | [sparx/apps/workbench/surfaces/inventory/](../apps/workbench/surfaces/inventory/)                                                                                                                |
+| RLS tenant isolation on every table; audit log on service writes                                                                                                     | [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md), [audit.ts](../packages/inventory/src/audit.ts)                                                                                      |
 
 **This is already a serious system.** The ledger design in particular is better than most of the
 market — very few competitors can tell you _why_ a number is what it is. We under-sell it.
 
 ### 3.2 Confirmed absent
 
-Grepped for, not found anywhere in `packages/inventory`, `packages/commerce`, the schema, `api-rest`,
+Grepped for, not found anywhere in `wizeworks/packages/inventory`, `wizeworks/packages/commerce`, the schema, `api-rest`,
 or the workbench surfaces:
 
 `bin` / `bin_location` · `unitOfMeasure` / `packSize` / `casePack` (internal) · `BOM` /
@@ -381,7 +381,7 @@ seat are listed on their own surface rather than silently dropped.
 
 **Also landed with it:**
 
-- **`@sparx/commerce-schemas` gained the symbology engine** — check digits, UPC-E expansion, scan
+- **`@wizeworks/commerce-schemas` gained the symbology engine** — check digits, UPC-E expansion, scan
   equivalence, and the bar patterns for Code 128 / the EAN-UPC family / ITF-14, all pure. One
   implementation, so a label printed in the browser carries the code the server validated. Written
   rather than installed: a symbology is a published table and a checksum, and owning it means label
@@ -445,7 +445,7 @@ believes were shipped.
 - [x] **4.3** Guided pick surface — shelf, then item, then quantity, in that order of size, because the first question in an aisle is always "am I in the right place". Scan-to-verify (wrong item refused, wrong shelf refused and told where to go), and a short-pick reason from a closed list that raises a blind count on the shelf **[P3] UI**
 - [x] **4.4** Pack verification — `ShipmentPackage` + `ShipmentPackageLine`, scan every item in, anything not on the order REFUSED, per-line scanned-vs-typed recorded, weight and dimensions captured for the rate quote. Splitting an order across boxes is assumed rather than treated as an exception **[P3] UI**
 - [x] **4.5** Packing slip on the PO document's build path — pure renderer plus tenant-scoped loader. No prices (the box may be a gift, a dropship, or one of four), a scanned-verified tick per line, and an "also in this order, sent separately" block that costs four lines of paper and prevents a support ticket every time **[P3]**
-- [x] **4.6** Sealed box → `OrderFulfillment`, one fulfillment PER BOX so a three-parcel order gets three tracking numbers, feeding the existing rate quote and label purchase unchanged. Lives in `@sparx/commerce` — the only package that can see both the warehouse and the order **[P3]**
+- [x] **4.6** Sealed box → `OrderFulfillment`, one fulfillment PER BOX so a three-parcel order gets three tracking numbers, feeding the existing rate quote and label purchase unchanged. Lives in `@wizeworks/commerce` — the only package that can see both the warehouse and the order **[P3]**
 - [x] **4.7** Throughput — units per hour measured against time actually spent picking, scan-verified rate, short-pick rate, per picker AND per shelf, with the reasons grouped **[P3][P21]**
 
 **Also landed with it:**
@@ -464,7 +464,7 @@ believes were shipped.
 - **`inventory_scan_events` gained a `pack` context**, so a bench scan is recorded on the same terms
   as every other trigger pull — same idempotency, same evidence trail.
 - 21 REST endpoints, 16 MCP tools (15 on inventory, plus `fulfill_package` on commerce, which is
-  there because it writes an order and inventory must not depend on `@sparx/crm`), five workbench
+  there because it writes an order and inventory must not depend on `@wizeworks/crm`), five workbench
   surfaces, and two new jobs in warehouse mode.
 
 **Outstanding, stated rather than hidden:**
@@ -712,7 +712,7 @@ the live quantity, every time.
    `setReorderPolicy` keys on the variant and carries the warehouse in the diff — and typecheck
    cannot see any of this, because the field is a `string`.
 2. **A duplicate route for one surface.** `inventory.packing.bench` had TWO entries in
-   `packages/links/src/routes.ts` (bare, and with an `:orderId`), which `check:routes` passes
+   `wizeworks/packages/links/src/routes.ts` (bare, and with an `:orderId`), which `check:routes` passes
    happily — it only checks that every surface HAS an address — while the links package's own
    `routes.test.ts` fails on it. Fixed by making the bare station canonical and the order-scoped path
    an alias. Shipped unnoticed in Phase 4: **`check:routes` is not a substitute for `pnpm test`.**
@@ -1062,7 +1062,7 @@ morning should find last night's answer rather than yesterday's.
 **Outstanding, stated rather than hidden:**
 
 - **The B2B portal shows the promise through the storefront, because
-  `apps/b2b-portal` is still an empty placeholder.** A signed-in B2B customer
+  `sparx/apps/b2b-portal` is still an empty placeholder.** A signed-in B2B customer
   reads the same PDP payload (`preorder`, `expectedBackAt`) with their own
   contract price beside it, so the commitment is visible to them today — but
   there is no separate portal surface for it, and 9.3's wording implies one.
@@ -1265,7 +1265,7 @@ the workbench interface listed nine safe fields while the server sent twenty.
 **`IntegrationCategory` deliberately did NOT gain `accounting`.** docs/148 §6 says to add
 it with the first adapter; the rule behind that instruction is that a category is added the
 day something DISPATCHES through it. These adapters are called directly by the finance and
-inventory services rather than through the `@sparx/integrations` registry, so adding the
+inventory services rather than through the `@wizeworks/integrations` registry, so adding the
 category would produce exactly the empty panel heading that file warns about.
 
 **Two things this phase deliberately did not do.** Group/pivot on lists (the third clause of
@@ -1440,7 +1440,7 @@ appearing in the grid → edited → persisted through a server reload.
   sites mark themselves and the flush is skipped on them, because a `setState` in a layout effect
   is already re-rendered synchronously before paint. The ResizeObserver and MutationObserver paths
   KEEP the flush — they run after paint, and dropping it there would let the toast stack visibly
-  jump. Guarded by `packages/ui/src/components/overlay/toast.test.tsx`, which was proved red against
+  jump. Guarded by `sparx/packages/ui/src/components/overlay/toast.test.tsx`, which was proved red against
   the unpatched module before it was accepted green. Delete both when the fix lands upstream.
 
 ### Phase 12 — Prove it ✅
@@ -1473,7 +1473,7 @@ without being able to place the next order with them. The exclusions are asserte
 adding one later means deleting a line that says why it was absent.
 
 **The registry guard found two real problems on its first run**
-([packages/inventory/test/mcp-registry.test.ts](../packages/inventory/test/mcp-registry.test.ts)):
+([wizeworks/packages/inventory/test/mcp-registry.test.ts](../packages/inventory/test/mcp-registry.test.ts)):
 
 1. **Thirteen write tools had descriptions under sixty characters**, several of them ambiguous in a
    way that costs data: "Cancel a purchase order" against "Delete a draft purchase order" gives a
@@ -1492,7 +1492,7 @@ are now, grouped in the picker as Stock, Warehouse, Supply and Stock feeds, each
 words a business owner would use.
 
 **The twenty-sixth is `inventory.levels.updated`, and it is deliberately absent.** It is declared in
-`@sparx/events` and published by nothing. It is also the single most tempting key on the list — the
+`@wizeworks/events` and published by nothing. It is also the single most tempting key on the list — the
 one an ERP integrator reaches for first — and subscribing to it would leave an endpoint silent
 forever while the box sat ticked, which reads to whoever set it up as their own server being broken.
 That is the same rule as everywhere else in this plan: **absence must never be presented as a
@@ -1534,7 +1534,7 @@ Twelve capability lines were added, the module-map headline rewritten, and the M
 including which writes are deliberately absent, since "we chose not to expose approving spend" is a
 different claim from "we have not built it".
 
-The worse half was downstream. docs/89 says the marketing site's `apps/web/lib/capabilities.ts` is
+The worse half was downstream. docs/89 says the marketing site's `sparx/apps/web/lib/capabilities.ts` is
 derived from it, and inventory there was eight Phase-0 bullets carrying
 **`planned('Sync with your warehouse system')`** — a capability live since the first build,
 advertised to every prospect as unbuilt. Now 29 lines, all accurate. **A wrong "live" is a broken
@@ -1545,7 +1545,7 @@ on its own.
 
 **12.5 — the page did not exist.** The brief said "rebuilt", which assumed there was something to
 rebuild; there wasn't. Inventory was one of three billable modules with no marketing page at all
-(`ModulePageSlug` in [apps/web/lib/modules.ts](../apps/web/lib/modules.ts) named twelve slugs and
+(`ModulePageSlug` in [sparx/apps/web/lib/modules.ts](../apps/web/lib/modules.ts) named twelve slugs and
 excluded it), so the deepest module on the platform — twelve phases, 337 endpoints, 145 MCP tools —
 was represented to the public by a one-line tile in the pricing switchboard with no link on it.
 
@@ -1598,7 +1598,7 @@ described in our own language. The single external reference is to the published
 citation rather than a competitive callout.
 
 **And 12.6 found a wrong "live" that 12.7 had introduced the day before.**
-`apps/web/lib/capabilities.ts` carried `live('Books that reconcile — QuickBooks & Xero')`. Both
+`sparx/apps/web/lib/capabilities.ts` carried `live('Books that reconcile — QuickBooks & Xero')`. Both
 adapters are complete, but a direct connection needs an OAuth app registered with each vendor, and
 `SPARX_QBO_CLIENT_ID` / `SPARX_XERO_CLIENT_ID` are unset in every deploy target — so
 `accountingProviderAvailability()` returns `coming_soon` and the product deliberately offers the
@@ -1619,7 +1619,7 @@ counts. `MODULE_ORDER` carries the sitemap, `llms.txt` and `llms-full.txt` for f
 
 New tables, grouped by the schema file they belong in. All tenant-scoped, all RLS-protected, all
 prefixed `inventory_*`. Migration names must sort **after** the newest existing migration
-([packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
+([wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
 
 | Schema file (new)                   | Models                                                                                                                            | Phase |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----- |
@@ -1657,7 +1657,7 @@ and backorder allocations are all written inside the same transaction as their `
 
 ## 8. API and MCP surface
 
-**REST** — new route modules under `services/api-rest/src/routes/v1/inventory/`:
+**REST** — new route modules under `wizeworks/services/api-rest/src/routes/v1/inventory/`:
 
 `bins.ts` · `barcodes.ts` · `labels.ts` · `picking.ts` · `assemblies.ts` · `boms.ts` ·
 `planning.ts` · `classifications.ts` · `schedules.ts` · `supplier-performance.ts` · `approvals.ts` ·
@@ -1665,7 +1665,7 @@ and backorder allocations are all written inside the same transaction as their `
 `reporting.ts` · `accounting.ts`
 
 Phase 10 added ONE report endpoint rather than one per report: `GET /v1/inventory/reports/:key`
-resolves through the registry in `@sparx/inventory`, so the API's coverage IS the registry's
+resolves through the registry in `@wizeworks/inventory`, so the API's coverage IS the registry's
 coverage permanently. The four named report URLs that shipped before it (`/reports/valuation`,
 `/reports/turnover`, `/reports/aging`, `/reports/reorder-analysis`, `/reports/shrinkage`) keep
 their own handlers — breaking a published URL to tidy a file is not a trade worth making.
@@ -1725,7 +1725,7 @@ rather than replaced — same surface, ordered by money and carrying its own rea
 | Receipt → supplier bill  | 10    | ✅ shipped as a panel on the delivery, below the landed cost                                   |
 | Import wizard            | 11    | Mapping + fuzzy column detection, on top of the Phase 10 importer                              |
 
-**Design constraints** (binding — [DESIGN.md](../DESIGN.md), [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md)):
+**Design constraints** (binding — [DESIGN.md](../DESIGN.md), [sparx/apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md)):
 inventory is amber `--color-module-inventory`; cross-module panels wear the other module's hue via a
 nested `<ModuleProvider>` (a supplier panel is CRM cyan, a COGS panel is finance's hue); status is
 `<Badge color={statusTone(s)}>`; warehouse mode must satisfy the responsive top-2 rule on a phone;

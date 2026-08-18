@@ -1,0 +1,128 @@
+// Scheduling services — the bookable things (appointment / class / reservation /
+// rental). Setup CRUD; the booking + availability engine reads these.
+//
+//   GET    /v1/scheduling/services          → list
+//   POST   /v1/scheduling/services          → create
+//   GET    /v1/scheduling/services/:id      → get one
+//   PATCH  /v1/scheduling/services/:id      → update
+//   DELETE /v1/scheduling/services/:id      → soft-delete
+
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import { queryBool } from '@wizeworks/api-core/query';
+import { ok, paged } from '@wizeworks/api-core/envelope';
+import { requireRole } from '@wizeworks/api-core/auth';
+import type { SchedulingService } from '@wizeworks/db';
+import { CreateServiceInput, UpdateServiceInput } from '@wizeworks/scheduling-schemas';
+import {
+  createService,
+  updateService,
+  getService,
+  listServicesPaged,
+  deleteService,
+} from '@wizeworks/scheduling';
+import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
+
+const PathId = z.object({ id: z.string().uuid() });
+const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  bookingType: z.enum(['appointment', 'class', 'reservation', 'rental']).optional(),
+  activeOnly: queryBool.optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
+const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
+  app.get('/v1/scheduling/services', async (request) => {
+    await requireSchedulingModule(request);
+    const auth = requireRole(request, 'viewer');
+    const { tenantId } = toSchedulingContext(request);
+    const query = ListQuery.parse(request.query);
+    // Bound to the member's reachable sites (docs/131 §3.3).
+    const { items, total } = await listServicesPaged(tenantId, {
+      ...query,
+      propertyIds: reachableSiteIds(auth),
+    });
+    return paged(items.map(serviceView), { total, per_page: query.take ?? 50 });
+  });
+
+  app.post('/v1/scheduling/services', async (request, reply) => {
+    await requireSchedulingModule(request);
+    const auth = requireRole(request, 'editor');
+    const { tenantId } = toSchedulingContext(request);
+    const input = CreateServiceInput.parse(request.body);
+    // Default the service to the site being worked in (docs/131 §4); an explicit
+    // null in the body still authors a tenant-wide service. Defaulting the other
+    // way would drop every new service onto every business's booking widget.
+    const propertyId =
+      input.propertyId === undefined
+        ? await resolvePropertyId(
+            auth,
+            request.headers['x-sparx-property-id'] as string | undefined
+          )
+        : input.propertyId;
+    const row = await createService(tenantId, { ...input, propertyId });
+    return reply.code(201).send(ok(serviceView(row)));
+  });
+
+  app.get('/v1/scheduling/services/:id', async (request) => {
+    await requireSchedulingModule(request);
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    return ok(serviceView(await getService(tenantId, id)));
+  });
+
+  app.patch('/v1/scheduling/services/:id', async (request) => {
+    await requireSchedulingModule(request);
+    requireRole(request, 'editor');
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    const input = UpdateServiceInput.parse({ ...(request.body as object), id });
+    return ok(serviceView(await updateService(tenantId, input)));
+  });
+
+  app.delete('/v1/scheduling/services/:id', async (request) => {
+    await requireSchedulingModule(request);
+    requireRole(request, 'admin');
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    await deleteService(tenantId, id);
+    return ok({ id, deleted: true });
+  });
+};
+
+function serviceView(s: SchedulingService) {
+  return {
+    id: s.id,
+    bookingType: s.bookingType,
+    name: s.name,
+    description: s.description,
+    durationMinutes: s.durationMinutes,
+    bufferBeforeMin: s.bufferBeforeMin,
+    bufferAfterMin: s.bufferAfterMin,
+    priceCents: s.priceCents,
+    currency: s.currency,
+    capacity: s.capacity,
+    assignmentStrategy: s.assignmentStrategy,
+    resourceRequirements: s.resourceRequirements,
+    policyId: s.policyId,
+    intakeFormId: s.intakeFormId,
+    locationId: s.locationId,
+    minLeadMinutes: s.minLeadMinutes,
+    maxAdvanceDays: s.maxAdvanceDays,
+    slotIntervalMin: s.slotIntervalMin,
+    color: s.color,
+    imageUrl: s.imageUrl,
+    bookableOnline: s.bookableOnline,
+    requiresApproval: s.requiresApproval,
+    isActive: s.isActive,
+    requiresAsset: s.requiresAsset,
+    settings: s.settings,
+    createdAt: s.createdAt.toISOString(),
+    updatedAt: s.updatedAt.toISOString(),
+  };
+}
+
+export default schedulingServiceRoutes;

@@ -1,4 +1,4 @@
-# apps/site — multi-tenant Next.js site. Resolves the tenant
+# wizeworks/apps/site — multi-tenant Next.js site. Resolves the tenant
 # from Host (e.g. acme.sparx.zone → tenant slug `acme`) and renders the
 # requested page from that tenant's CMS via api-rest's /v1/public/content.
 #
@@ -54,8 +54,17 @@ spec:
               value: '0.0.0.0'
             - name: SPARX_API_REST_URL
               value: 'http://api-rest.sparx-prod.svc.cluster.local:3000'
-            - name: SPARX_ZONE_DOMAIN
-              value: 'sparx.zone'
+            # SPARX_ZONE_DOMAIN is deliberately NOT set here.
+            #
+            # It used to be, pinned to 'sparx.zone', and a pod-spec `env` entry
+            # beats `envFrom` — so this one value overrode the shared
+            # ConfigMap's SPARX_ZONE_DOMAINS=sparx.zone,piggles.site and left the
+            # renderer recognising exactly one brand's zone structurally. Every
+            # Piggles tenant site then resolved the slow way, through the domains
+            # table, and had no fallback if that row were ever missing.
+            #
+            # The list now comes from sparx-app-env above, which is the only
+            # place that answers "which zones does this deployment serve".
           securityContext:
             runAsNonRoot: true
             runAsUser: 1001

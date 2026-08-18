@@ -80,6 +80,10 @@ import {
   type SerialRow,
 } from './lots-data';
 
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
+
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes facts pinned to the left edge with a badge a foot away. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -332,6 +336,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
             title="No batch was chosen"
             description="This pane traces one batch. Open it from the Lots & serials list by clicking a row."
@@ -418,53 +423,54 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Batch actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Open this item's stock"
-          onClick={(event) => {
-            ctx.open(
-              'inventory.stock.item',
-              { variantId: data.variantId },
-              { target: event.shiftKey ? 'beside' : 'tab' }
-            );
-          }}
-        >
-          <Icon glyph={faBoxes} className="size-4" aria-hidden />
-          <span className="hidden @xl:inline">Item stock</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={lot.isFetching}
-          updatedAt={lot.data ? lot.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void lot.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Batch actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            className="ml-auto shrink-0 whitespace-nowrap"
+            title="Open this item's stock"
+            onClick={(event) => {
+              ctx.open(
+                'inventory.stock.item',
+                { variantId: data.variantId },
+                { target: event.shiftKey ? 'beside' : 'tab' }
+              );
+            }}
+          >
+            <Icon glyph={faBoxes} className="size-4" aria-hidden />
+            <span className="hidden @xl:inline">Item stock</span>
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={lot.isFetching}
+            updatedAt={lot.data ? lot.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void lot.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* Identity first: the batch code, then the product it is a batch of. */}
+          {/* The batch code names the pane's TAB, so this says what it is a batch
+              OF rather than repeating the code. */}
           <section className="card bg-base-100 flex flex-col gap-3 p-4">
             <div className="flex min-w-0 items-start gap-3">
               <Icon glyph={faLayerGroup} className="text-module mt-1 size-6 shrink-0" aria-hidden />
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <Heading level={1} className="min-w-0 font-mono text-2xl font-semibold break-all">
-                  {data.lotNumber}
-                </Heading>
-                <Text className="min-w-0 text-base break-words">
-                  {data.productTitle ?? 'Untitled product'}
-                  {data.variantSku ? ` · ${data.variantSku}` : ''}
-                </Text>
-              </div>
+              <Text className="min-w-0 text-base break-words">
+                {data.productTitle ?? 'Untitled product'}
+                {data.variantSku ? ` · ${data.variantSku}` : ''}
+              </Text>
             </div>
           </section>
 

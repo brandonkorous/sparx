@@ -39,7 +39,7 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
@@ -93,9 +93,14 @@ import {
   type Tone,
   type Variant,
 } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const LABEL = 'Stock';
+/** Registry module for this pane, so the brand draws Stock's own picture in the
+ *  empty, waiting and failed states rather than the generic one. */
+const MODULE = 'inventory';
 
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes a line of numbers pinned to the left edge. */
@@ -401,7 +406,7 @@ function CountForm({
           <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save this count
         </Button>
-        <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
+        <Button size="sm" variant="ghost" onClick={onDone}>
           Cancel
         </Button>
       </div>
@@ -552,7 +557,7 @@ function ReorderForm({
           <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save this rule
         </Button>
-        <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
+        <Button size="sm" variant="ghost" onClick={onDone}>
           Cancel
         </Button>
       </div>
@@ -598,7 +603,6 @@ function LevelRow({
             <Button
               size="sm"
               variant="ghost"
-              color="neutral"
               aria-label="Where this number came from"
               onClick={onExplain}
             >
@@ -647,7 +651,6 @@ function LevelRow({
         <Button
           size="sm"
           variant="ghost"
-          color="neutral"
           onClick={() => {
             setEditingRule((open) => !open);
           }}
@@ -840,7 +843,6 @@ function HistorySection({ movements }: { movements: StockMovement[] }) {
         <Button
           size="sm"
           variant="ghost"
-          color="neutral"
           className="self-start"
           onClick={() => {
             setExpanded((open) => !open);
@@ -922,36 +924,37 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
   const failedToLoad = stock.isError || variantsQuery.isError;
   const stillLoading = stock.isPending || variantsQuery.isPending || locationsQuery.isPending;
 
+  // Every branch returns a CARD, because the populated one is a stack of them.
+  // A state that skipped it sat on the pane's recessed surface while the state
+  // either side of it sat lifted, so the pane jumped as the data arrived.
   const body = () => {
     // A failed load REPLACES the working UI. Rendering an empty stock list beside
     // live count buttons would invite someone to correct a count they cannot see.
+    // The empty-state shape, not an Alert: there is nothing behind the message
+    // for a banner to sit over. See components/pane-load-error.tsx.
     if (failedToLoad) {
       return (
-        <Alert color="danger" variant="soft">
-          <AlertContent>
-            <AlertTitle>Could not load stock for this product</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. Nothing about your stock has changed — it just
-              could not be read just now.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="danger"
-            variant="soft"
-            onClick={() => {
+        <Card>
+          <PaneLoadError
+            module={MODULE}
+            icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+            title="Could not load stock for this product"
+            description="This is a problem reaching the server. Nothing about your stock has changed — it just could not be read just now."
+            onRetry={() => {
               void stock.refetch();
               void variantsQuery.refetch();
             }}
-          >
-            Try again
-          </Button>
-        </Alert>
+          />
+        </Card>
       );
     }
 
     if (stillLoading) {
-      return <InlineWaiting />;
+      return (
+        <Card>
+          <PaneWaiting module={MODULE} />
+        </Card>
+      );
     }
 
     // Two different problems, two different answers. Sending someone to set up a
@@ -959,49 +962,55 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
     // wastes the trip.
     if (variants.length === 0) {
       return (
-        <EmptyState
-          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
-          title="There is nothing to count yet"
-          description="This product has no versions, so there is nothing that can be stocked or sold. Add one on the product itself and it will appear here."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={(event) => {
-                ctx.open(
-                  'commerce.product.detail',
-                  { id: productId },
-                  { target: event.shiftKey ? 'tab' : 'beside' }
-                );
-              }}
-            >
-              Open this product
-            </Button>
-          }
-        />
+        <Card>
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+            title="There is nothing to count yet"
+            description="This product has no versions, so there is nothing that can be stocked or sold. Add one on the product itself and it will appear here."
+            actions={
+              <Button
+                size="sm"
+                color="module"
+                onClick={(event) => {
+                  ctx.open(
+                    'commerce.product.detail',
+                    { id: productId },
+                    { target: event.shiftKey ? 'tab' : 'beside' }
+                  );
+                }}
+              >
+                Open this product
+              </Button>
+            }
+          />
+        </Card>
       );
     }
 
     if (locations.length === 0) {
       return (
-        <EmptyState
-          icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
-          title="You have nowhere to keep stock yet"
-          description="Counts are always kept per place — a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this product you have."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={(event) => {
-                ctx.open('inventory.warehouses.list', undefined, {
-                  target: event.shiftKey ? 'beside' : 'tab',
-                });
-              }}
-            >
-              Set up a location
-            </Button>
-          }
-        />
+        <Card>
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
+            title="You have nowhere to keep stock yet"
+            description="Counts are always kept per place — a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this product you have."
+            actions={
+              <Button
+                size="sm"
+                color="module"
+                onClick={(event) => {
+                  ctx.open('inventory.warehouses.list', undefined, {
+                    target: event.shiftKey ? 'beside' : 'tab',
+                  });
+                }}
+              >
+                Set up a location
+              </Button>
+            }
+          />
+        </Card>
       );
     }
 
@@ -1073,40 +1082,37 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Stock actions">
-        <Icon glyph={faWarehouse} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {scope.product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-        {/* Sheds its label first when the pane is narrow — the number is the
+      <PaneToolbar
+        label="Stock actions"
+        status={
+          <>
+            {scope.isFollowing ? (
+              <Badge color="info" variant="soft" size="sm">
+                Following
+              </Badge>
+            ) : null}
+            {/* Sheds its label first when the pane is narrow — the number is the
             point, and it is already carried by the summary card below. */}
-        {levels.length > 0 ? (
-          <Badge
-            color="neutral"
-            variant="outline"
-            size="sm"
-            className="ml-auto hidden @md:inline-flex"
-          >
-            <Icon glyph={faBoxes} className="size-3" aria-hidden />
-            {String(totals.available)} to sell
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className={levels.length > 0 ? undefined : 'ml-auto'}
-          isFetching={stock.isFetching}
-          updatedAt={stock.dataUpdatedAt}
-          onRefresh={() => {
-            void stock.refetch();
-            void reservations.refetch();
-            void movements.refetch();
-          }}
-        />
-      </PaneToolbar>
+            {levels.length > 0 ? (
+              <Badge variant="outline" size="sm" className="ml-auto hidden @md:inline-flex">
+                <Icon glyph={faBoxes} className="size-3" aria-hidden />
+                {String(totals.available)} to sell
+              </Badge>
+            ) : null}
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={stock.isFetching}
+            updatedAt={stock.dataUpdatedAt}
+            onRefresh={() => {
+              void stock.refetch();
+              void reservations.refetch();
+              void movements.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -1137,7 +1143,7 @@ export function ProductStockSurface({ ctx }: { ctx: SurfaceContext }) {
   const scope = useProductScope(ctx, { label: LABEL, hold: openEditors.length > 0 });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
   return (
     <EditorRegistry.Provider value={register}>

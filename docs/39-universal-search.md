@@ -7,7 +7,7 @@
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the universal-search projectors run
 > AHEAD of this doc — the CMS / site / media projectors it schedules for Phase 2/3
 > (§11) are already live in `commerce-indexer`. The global ⌘K host moved off the
-> deleted `apps/dashboard` into `apps/workbench` (`searchEntities()`, §10). Still
+> deleted `apps/dashboard` into `sparx/apps/workbench` (`searchEntities()`, §10). Still
 > deferred: per-tenant custom synonyms; the ⌘K palette rewire in workbench against
 > `/v1/search/all` is unverified against the current build.
 
@@ -132,7 +132,7 @@ token_separators: ['-', '_', '/', '.'],
 ```
 
 `query_by: title, keywords, subtitle, body` (in weight order). It joins `allSchemas()`
-in [packages/search/src/schemas/index.ts](../packages/search/src/schemas/index.ts) and
+in [wizeworks/packages/search/src/schemas/index.ts](../packages/search/src/schemas/index.ts) and
 `collectionStats()` so the existing ensure-on-boot + status plumbing covers it for free.
 
 ### 4.1 Do the rich entities also land here?
@@ -159,17 +159,17 @@ export interface EntityProjector<TId = string> {
 
 Projectors live in their **module package** (they need that module's Prisma reader +
 domain knowledge), exactly like `projectCustomer`/`projectOrder` live in
-`@sparx/commerce`. The `EntityProjector` interface + `UniversalSearchDocument` type +
-the registry assembler live in `@sparx/search`. The indexer imports each module's
+`@wizeworks/commerce`. The `EntityProjector` interface + `UniversalSearchDocument` type +
+the registry assembler live in `@wizeworks/search`. The indexer imports each module's
 projector bundle and registers them by `entityType`:
 
 ```ts
 const REGISTRY = buildRegistry([
-  ...commerceProjectors, // @sparx/commerce
-  ...crmProjectors, // @sparx/crm (re-exported via @sparx/commerce today)
+  ...commerceProjectors, // @wizeworks/commerce
+  ...crmProjectors, // @wizeworks/crm (re-exported via @wizeworks/commerce today)
   ...cmsProjectors, // @sparx/cms-*  ← new dep edge (see §11)
-  ...emailProjectors, // @sparx/email-platform
-  ...sitebuilderProjectors, // @sparx/sitebuilder
+  ...emailProjectors, // @wizeworks/email-platform
+  ...sitebuilderProjectors, // @wizeworks/sitebuilder
 ]);
 ```
 
@@ -177,8 +177,8 @@ Adding an entity to search becomes: **write one `EntityProjector`, register it, 
 the change event from its service.** No schema, no topic, no Terraform.
 
 > **Dependency note ([[feedback_dockerfile_package_wiring]]):** the indexer currently
-> depends on `@sparx/commerce` (+ `@sparx/crm`, `@sparx/db`). Pulling projectors from
-> `@sparx/cms-*`, `@sparx/email-platform`, and `@sparx/sitebuilder` adds dependency
+> depends on `@wizeworks/commerce` (+ `@wizeworks/crm`, `@wizeworks/db`). Pulling projectors from
+> `@sparx/cms-*`, `@wizeworks/email-platform`, and `@wizeworks/sitebuilder` adds dependency
 > edges → **every consumer Dockerfile needs the matching COPY lines and the transitive
 > closure**, or `tsc`/lint pass while the image build fails. Use server-safe subpaths so
 > no React/editor deps leak into the worker. Audited per phase.
@@ -296,7 +296,7 @@ A search hit must never leak across a boundary:
 
 ## 10. Dashboard integration
 
-- **Global ⌘K** — `searchEntities()` (in `apps/workbench` — the operator app formerly `apps/dashboard`)
+- **Global ⌘K** — `searchEntities()` (in `sparx/apps/workbench` — the operator app formerly `apps/dashboard`)
   re-points to `/v1/search/all`, grouping hits by module with the doc's `url` as the
   href. "Find anything" across the platform.
 - **List pages** — pages whose entity has a rich collection keep using it

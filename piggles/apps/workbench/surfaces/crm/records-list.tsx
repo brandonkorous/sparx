@@ -16,7 +16,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Button, Card, EmptyState, Input, Table, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, Input, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faTable } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -27,6 +28,10 @@ import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu
 import type { SavedView } from './workspace-data';
 import { useObjectType } from './object-types-data';
 import { cellText, recordErrorMessage, recordTitle, useRecords } from './records-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 /** Shift opens alongside, Alt pops out — the same modifier contract every other
  *  list in the workbench uses. */
@@ -83,47 +88,56 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${labelPlural} list controls`}>
-        <Icon glyph={faTable} className="size-4 shrink-0" aria-hidden />
-        <Input
-          color="module"
-          size="sm"
-          className="max-w-64"
-          aria-label={`Search ${labelPlural.toLowerCase()}`}
-          placeholder={`Search ${labelPlural.toLowerCase()}`}
-          value={q}
-          onChange={(event) => {
-            setQ(event.target.value);
-          }}
-        />
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title={`Add a ${label.toLowerCase()} — hold Shift to open alongside, Alt for a new window`}
-          onClick={(event) => {
-            ctx.open('crm.record.detail', { id: 'new', objectKey }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add {label.toLowerCase()}
-        </Button>
-        <SavedViewsMenu
-          objectKey={objectKey}
-          current={currentFilters}
-          baseline={viewFilters([])}
-          nameHint={`The ${labelPlural.toLowerCase()} I check`}
-          selectedId={viewId}
-          onApply={applyView}
-        />
-        <RefreshButton
-          isFetching={records.isFetching}
-          updatedAt={records.data ? records.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void records.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label={`${labelPlural} list controls`}
+        status={<Icon glyph={faTable} className="size-4 shrink-0" aria-hidden />}
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            title={`Add a ${label.toLowerCase()} — hold Shift to open alongside, Alt for a new window`}
+            onClick={(event) => {
+              ctx.open('crm.record.detail', { id: 'new', objectKey }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add {label.toLowerCase()}
+          </Button>
+        }
+        controls={
+          <>
+            <Input
+              color="module"
+              size="sm"
+              className="max-w-64"
+              aria-label={`Search ${labelPlural.toLowerCase()}`}
+              placeholder={`Search ${labelPlural.toLowerCase()}`}
+              value={q}
+              onChange={(event) => {
+                setQ(event.target.value);
+              }}
+            />
+            <SavedViewsMenu
+              objectKey={objectKey}
+              current={currentFilters}
+              baseline={viewFilters([])}
+              nameHint={`The ${labelPlural.toLowerCase()} I check`}
+              selectedId={viewId}
+              onApply={applyView}
+            />
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={records.isFetching}
+            updatedAt={records.data ? records.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void records.refetch();
+            }}
+          />
+        }
+      />
 
       {/* The same four branches, in the same order, as every other list in the
           workbench — error, loading, no rows, rows. A tenant's own record type
@@ -154,6 +168,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faTable} className="size-6" aria-hidden />,

@@ -8,7 +8,7 @@
 // by id. Each row wears its owning module's hue as a small signal — wayfinding,
 // not decoration, so the tint rides the icon rather than washing the whole card.
 
-import { Button, Card, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
 import { faGauge, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -69,19 +69,18 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Dashboards">
-        <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Dashboards
-        </Heading>
-        <div className="ml-auto">
-          <RefreshButton
-            isFetching={dashboards.isFetching}
-            updatedAt={dashboards.data ? dashboards.dataUpdatedAt : undefined}
-            onRefresh={() => void dashboards.refetch()}
-          />
-        </div>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Dashboards"
+        refresh={
+          <div className="ml-auto">
+            <RefreshButton
+              isFetching={dashboards.isFetching}
+              updatedAt={dashboards.data ? dashboards.dataUpdatedAt : undefined}
+              onRefresh={() => void dashboards.refetch()}
+            />
+          </div>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">

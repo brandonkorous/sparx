@@ -152,7 +152,7 @@ revisit `cms/media` (search-only toolbar).
 
 ## ✅ Resolution (2026-06-13)
 
-Built the shared **`SelectionList`** dual-view primitive in `@sparx/ui` (table + card + selection +
+Built the shared **`SelectionList`** dual-view primitive in `@wizeworks/ui` (table + card + selection +
 `BulkActionBar`, plus a `selectable={false}` read-only mode and a `card.render` escape hatch) and
 migrated **52 list pages** onto it (up from 6 with the toggle). Also added an optional **refresh
 button** to the shared `ListToolbar` (`onRefresh` → `router.refresh()`, default-on for all lists).
@@ -168,7 +168,7 @@ button** to the shared `ListToolbar` (`onRefresh` → `router.refresh()`, defaul
 - **Newly excluded by design (documented):** `markup-rules`, `surcharges`, `price-reviews` —
   inline rule/approval **editors**, not browse collections; `cms/media` — sanctioned library grid,
   server-side search is API-deferred so a toolbar would be a dead control.
-- Verified: `@sparx/ui` + dashboard typecheck clean, lint 0 errors, formatted. **Uncommitted.**
+- Verified: `@wizeworks/ui` + dashboard typecheck clean, lint 0 errors, formatted. **Uncommitted.**
 
 ---
 
@@ -177,12 +177,12 @@ button** to the shared `ListToolbar` (`onRefresh` → `router.refresh()`, defaul
 ### Pagination — none of the lists page today
 
 **Decision (2026-06-13):** offset **page-number** pagination via `?page=` / `?per_page=` (default
-**50**, with a 25/50/100 size selector). Build a shared **`<Pager>`** primitive in `@sparx/ui`
+**50**, with a 25/50/100 size selector). Build a shared **`<Pager>`** primitive in `@wizeworks/ui`
 (presentational: currentPage/pageCount/total + `onPageChange`/`onPageSizeChange`; lift styling from
 the existing `DataTablePager`), rendered below `<SelectionList>`. The `ListToolbar` wrapper already
 resets `?page=` on any filter/search/sort change.
 
-**Built:** shared `<Pager>` (`packages/ui/src/components/data/pager.tsx`), dashboard `ListPager`
+**Built:** shared `<Pager>` (`sparx/packages/ui/src/components/data/pager.tsx`), dashboard `ListPager`
 URL-sync wrapper (`_components/list-pager.tsx`), `parsePageParams` helper (`lib/pagination.ts`).
 
 - **✅ Phase 1 DONE (2026-06-14)** — routes already exposing `skip` + `total` were wired (browse:

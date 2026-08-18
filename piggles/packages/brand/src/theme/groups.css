@@ -1,0 +1,168 @@
+/* ── The five app groups ───────────────────────────────────────────────────────
+ *
+ * Part of @piggles/brand/theme.css — imported from it, never directly.
+ * UNLAYERED on purpose: that is what outranks silicaui's `base` layer.
+ * See ../layers.css.
+ *
+ * sparx gives each of its ~18 modules its own hue. Piggles colors the GROUP
+ * instead: five hues plus the brand, every app in a group wearing its group's
+ * hue, apps separated within a group by icon and label. It gives the nav a spine,
+ * which Piggles needs and sparx does not — every app ships enabled, so the rail
+ * is full on day one.
+ *
+ * **THESE ARE FILLS.** A group hue goes on a BACKGROUND with its `-content` on
+ * top — `bg-module` + `text-module-content` — never on a word. Anything that
+ * needs a hue as ink derives a darker value from it; see `.ink-module` in each
+ * app's globals.css.
+ *
+ * Adding a SIXTH group hue is Brandon's decision, not a token edit. */
+[data-theme='light'] {
+  --color-group-home: var(--color-primary);
+  --color-group-home-content: var(--color-primary-content);
+
+  --color-group-web: #9da7c7;
+  --color-group-web-content: #202631;
+
+  --color-group-sell: #d9a07f;
+  --color-group-sell-content: #202631;
+
+  --color-group-people: #83b9b7;
+  --color-group-people-content: #202631;
+
+  --color-group-money: #a8b07a;
+  --color-group-money-content: #202631;
+
+  --color-group-run: #b59abf;
+  --color-group-run-content: #202631;
+}
+
+/* ── The same five groups, lifted for the dark canvas ──────────────────────────
+ *
+ * Same families, a little brighter, so an app keeps its identity across a theme
+ * switch — Sell is warm in both, Money is olive in both. They are lifted because
+ * on a dark ground the hue is often the INK: every launcher glyph, every `soft`
+ * control.
+ *
+ * `-content` stays `#202631` on both canvases here — these hues are light enough
+ * either way to carry a near-black label. */
+[data-theme='dark'] {
+  --color-group-home: var(--color-primary);
+  --color-group-home-content: var(--color-primary-content);
+
+  /* Same identities as light mode, tuned slightly brighter/cleaner
+     for a dark canvas. */
+
+  --color-group-web: #a9b1d0;
+  --color-group-web-content: #202631;
+
+  --color-group-sell: #dda98b;
+  --color-group-sell-content: #202631;
+
+  --color-group-people: #8fc2c0;
+  --color-group-people-content: #202631;
+
+  --color-group-money: #b0b985;
+  --color-group-money-content: #202631;
+
+  --color-group-run: #bfa5c8;
+  --color-group-run-content: #202631;
+}
+
+/* Every app and every platform module resolves THROUGH the six above, so both
+   themes are covered by the one set of aliases below. */
+[data-theme='light'],
+[data-theme='dark'] {
+  /* ── Piggles app keys ───────────────────────────────────────────────────────
+   * The 15 apps in docs/initial/config/apps.yaml, each pointing at its group.
+   * Same value within a group ON PURPOSE — see the header. */
+  --color-app-home: var(--color-group-home);
+  --color-app-home-content: var(--color-group-home-content);
+  --color-app-site: var(--color-group-web);
+  --color-app-site-content: var(--color-group-web-content);
+  --color-app-content: var(--color-group-web);
+  --color-app-content-content: var(--color-group-web-content);
+  --color-app-get-found: var(--color-group-web);
+  --color-app-get-found-content: var(--color-group-web-content);
+  --color-app-sell: var(--color-group-sell);
+  --color-app-sell-content: var(--color-group-sell-content);
+  --color-app-stock: var(--color-group-sell);
+  --color-app-stock-content: var(--color-group-sell-content);
+  --color-app-customers: var(--color-group-people);
+  --color-app-customers-content: var(--color-group-people-content);
+  --color-app-messages: var(--color-group-people);
+  --color-app-messages-content: var(--color-group-people-content);
+  --color-app-bookings: var(--color-group-people);
+  --color-app-bookings-content: var(--color-group-people-content);
+  --color-app-invoices: var(--color-group-money);
+  --color-app-invoices-content: var(--color-group-money-content);
+  --color-app-money: var(--color-group-money);
+  --color-app-money-content: var(--color-group-money-content);
+  --color-app-team: var(--color-group-run);
+  --color-app-team-content: var(--color-group-run-content);
+  --color-app-automations: var(--color-group-run);
+  --color-app-automations-content: var(--color-group-run-content);
+  /* `sell`, not `run`. Partners is about buying the stock you sell, and the app
+     moved into the sell group with the registry (@piggles/config). This file
+     RESTATES that mapping because a stylesheet cannot import TypeScript, which
+     makes it the one place the two can drift — and they did: the rail rendered
+     a purple Partners icon between an orange Stock and an orange Sell for
+     exactly as long as this line said `run`. If an app changes group, change it
+     here in the same edit. */
+  --color-app-partners: var(--color-group-sell);
+  --color-app-partners-content: var(--color-group-sell-content);
+  --color-app-connections: var(--color-group-run);
+  --color-app-connections-content: var(--color-group-run-content);
+
+  /* ── sparx module keys, mapped onto the same groups ─────────────────────────
+   * NOT legacy, and not optional. The workbench SURFACES are shared platform code
+   * (piggles/CLAUDE.md: shell forks, surfaces do not), and they emit
+   * `data-module="commerce"` and friends. Without these pairs every shared surface
+   * rendered inside Piggles resolves `--color-module` to nothing at all — not to a
+   * fallback hue, to blank. Keep complete against sparx/packages/brand/src/theme.css; a
+   * module added there needs a group here. */
+  --color-module-builder: var(--color-group-web);
+  --color-module-builder-content: var(--color-group-web-content);
+  --color-module-storefront: var(--color-group-web);
+  --color-module-storefront-content: var(--color-group-web-content);
+  --color-module-cms: var(--color-group-web);
+  --color-module-cms-content: var(--color-group-web-content);
+  --color-module-seo: var(--color-group-web);
+  --color-module-seo-content: var(--color-group-web-content);
+  --color-module-social: var(--color-group-web);
+  --color-module-social-content: var(--color-group-web-content);
+
+  --color-module-commerce: var(--color-group-sell);
+  --color-module-commerce-content: var(--color-group-sell-content);
+  --color-module-inventory: var(--color-group-sell);
+  --color-module-inventory-content: var(--color-group-sell-content);
+  --color-module-dropship: var(--color-group-sell);
+  --color-module-dropship-content: var(--color-group-sell-content);
+  --color-module-b2b: var(--color-group-sell);
+  --color-module-b2b-content: var(--color-group-sell-content);
+
+  --color-module-crm: var(--color-group-people);
+  --color-module-crm-content: var(--color-group-people-content);
+  --color-module-chat: var(--color-group-people);
+  --color-module-chat-content: var(--color-group-people-content);
+  --color-module-scheduling: var(--color-group-people);
+  --color-module-scheduling-content: var(--color-group-people-content);
+  --color-module-email: var(--color-group-people);
+  --color-module-email-content: var(--color-group-people-content);
+
+  --color-module-invoicing: var(--color-group-money);
+  --color-module-invoicing-content: var(--color-group-money-content);
+  --color-module-finance: var(--color-group-money);
+  --color-module-finance-content: var(--color-group-money-content);
+
+  --color-module-staff: var(--color-group-run);
+  --color-module-staff-content: var(--color-group-run-content);
+  --color-module-partner: var(--color-group-run);
+  --color-module-partner-content: var(--color-group-run-content);
+  --color-module-ai: var(--color-group-run);
+  --color-module-ai-content: var(--color-group-run-content);
+  --color-module-automations: var(--color-group-run);
+  --color-module-automations-content: var(--color-group-run-content);
+
+  --color-module-platform: var(--color-group-home);
+  --color-module-platform-content: var(--color-group-home-content);
+}

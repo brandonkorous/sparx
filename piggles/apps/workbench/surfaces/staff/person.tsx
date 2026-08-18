@@ -46,11 +46,11 @@ import {
   FieldLabel,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faBoxArchive,
   faClock,
@@ -1334,7 +1334,20 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Person actions" wrap>
+      <PaneToolbar
+        label="Person actions"
+        refresh={
+          isNew ? undefined : (
+            <RefreshButton
+              isFetching={person.isFetching}
+              updatedAt={person.data ? person.dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void person.refetch();
+              }}
+            />
+          )
+        }
+      >
         {isNew ? (
           <span className="inline-flex items-center gap-1.5">
             <Icon glyph={faCoins} className="size-4" aria-hidden />
@@ -1458,13 +1471,6 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
             >
               <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
-            <RefreshButton
-              isFetching={person.isFetching}
-              updatedAt={person.data ? person.dataUpdatedAt : undefined}
-              onRefresh={() => {
-                void person.refetch();
-              }}
-            />
           </>
         )}
       </PaneToolbar>

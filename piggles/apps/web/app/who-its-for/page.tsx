@@ -7,6 +7,7 @@ import { accountUrl, APP_BY_ID, type PigglesAppId } from '@piggles/config';
 import type { MascotPoseId } from '@piggles/mascot';
 import { PigglesMascot } from '@piggles/mascot/react';
 import { PageHero } from '@/components/marketing/page-hero';
+import { TradesFigure } from '@/components/marketing/hero/trades-figure';
 import { CloseBand } from '@/components/marketing/close-band';
 
 // /who-its-for — the destination behind the home page's trade wall.
@@ -168,7 +169,7 @@ function TradeCard({ trade }: { trade: Trade }) {
       <PigglesMascot pose={trade.pose} size="md" className="self-center" />
 
       <div>
-        <h2 className="text-module font-heading text-2xl font-black">{trade.name}</h2>
+        <h2 className="ink-module font-heading text-2xl font-black">{trade.name}</h2>
         <p className="mt-2.5 text-base">{trade.shape}</p>
       </div>
 
@@ -197,6 +198,8 @@ export default function WhoItsForPage() {
       <PageHero
         heading="A bakery, a barber, a potter, and the person who makes things in a shed."
         lede="Every tool you have looked at was built for somebody else's trade, and you have been settling. Here is what is genuinely different about eleven kinds of business — and how little of it the software needs to care about."
+        figure={<TradesFigure />}
+        assurances={['Free for 14 days', 'No card needed']}
       >
         <a
           className={buttonClasses({ color: 'primary', size: 'lg' })}

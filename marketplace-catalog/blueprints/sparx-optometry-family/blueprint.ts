@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-optometry-family',
-    version: '1.3.0',
-    name: 'sparx — Optometry (Family)',
-    summary:
-        'A warm, family-friendly optometry site — a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as "Clearview Eye Care", a family eye-care practice.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-optometry-family',
+  version: '1.3.0',
+  name: 'sparx — Optometry (Family)',
+  summary:
+    'A warm, family-friendly optometry site — a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as "Clearview Eye Care", a family eye-care practice.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Clearview Eye Care',
+    tagline: 'Clear vision for the whole family.',
+    colors: {
+      primary: '#0094a2',
+      primaryForeground: '#020e0f',
+      accent: '#ea8b60',
+      secondary: '#33424f',
+    },
+    fonts: {
+      heading: 'Outfit',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'clearview',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Clearview Eye Care',
-        tagline: 'Clear vision for the whole family.',
-        colors: {
-            primary: '#0094a2',
-            primaryForeground: '#020e0f',
-            accent: '#ea8b60',
-            secondary: '#33424f',
-        },
-        fonts: {
-            heading: 'Outfit',
-            body: 'Inter',
-        },
+      colorPrimary: '#0094a2',
+      colorAccent: '#ea8b60',
+      colorSecondary: '#33424f',
+      fontHeading: 'Outfit',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'clearview',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#0094a2',
-            colorAccent: '#ea8b60',
-            colorSecondary: '#33424f',
-            fontHeading: 'Outfit',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

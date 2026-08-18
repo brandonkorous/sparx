@@ -7,9 +7,9 @@
 > **Reconciled 2026-07-22 (docs-vs-built audit):** two corrections to the specs below.
 >
 > **1. App path.** The operator app `apps/dashboard` (and its earlier `apps/app` name) was deleted
-> and rebuilt as **`apps/workbench`**, whose operator UIs live under `apps/workbench/surfaces/<module>/`
+> and rebuilt as **`sparx/apps/workbench`**, whose operator UIs live under `sparx/apps/workbench/surfaces/<module>/`
 > in a registry/pane architecture. Every `apps/app/src/app/(dashboard)/…` and `apps/dashboard/…` file
-> path in §7/§10 below is stale — read them as their `apps/workbench/surfaces/…` equivalents.
+> path in §7/§10 below is stale — read them as their `sparx/apps/workbench/surfaces/…` equivalents.
 >
 > **2. Multi-step creation wizards were NOT reproduced as specced (deliberate drift).** The Product,
 > B2B Account, Customer full-profile, and CMS Content **multi-step wizards** described in §4–§7 were
@@ -17,7 +17,7 @@
 > surface/pane model), not a stepper overlay. Treat §4–§7 as historical design intent, not current UI.
 >
 > **3. Import/export IS built.** The background import backend shipped:
-> [`services/import-worker/`](../services/import-worker) with processors for **products, customers,
+> [`wizeworks/services/import-worker/`](../services/import-worker) with processors for **products, customers,
 > B2B accounts, and discounts** (§8). Still open: **inventory-adjustment CSV import** (SKU + location)
 > and **Excel `.xlsx` upload** (§6/§8) — both remain unbuilt.
 
@@ -272,7 +272,7 @@ If the tenant has no content types defined yet, this step shows an empty state: 
 
 Renders only the fields from the selected content type's schema that are marked `required: true`. Optional fields are intentionally withheld — the goal is to get the record created with the minimum viable data and let the user fill the rest in the full entry editor.
 
-The fields are rendered by `<SchemaFieldRenderer>`, a dynamic component that maps field type → the appropriate `@sparx/ui` input:
+The fields are rendered by `<SchemaFieldRenderer>`, a dynamic component that maps field type → the appropriate `@wizeworks/ui` input:
 
 | Schema field type | Rendered as                                                                        |
 | ----------------- | ---------------------------------------------------------------------------------- |
@@ -474,8 +474,8 @@ No bulk action silently does nothing on error — row-level errors surface in a 
 ## 10. Implementation plan
 
 > **Reconciled 2026-07-22:** the `apps/app/src/app/(dashboard)/…` file paths in this section are
-> stale (see the note under the header) — the operator app is now `apps/workbench` with a
-> surface/pane architecture. Phase 2's **`services/import-worker`** shipped (products / customers /
+> stale (see the note under the header) — the operator app is now `sparx/apps/workbench` with a
+> surface/pane architecture. Phase 2's **`wizeworks/services/import-worker`** shipped (products / customers /
 > B2B accounts / discounts); the multi-step **wizards** in Phases 1/4/5 were superseded by pane-based
 > creation. `.xlsx` upload and inventory-adjustment import (Phase 6) remain open.
 
@@ -487,29 +487,29 @@ Files:
 
 - `apps/app/src/app/(dashboard)/commerce/products/_components/product-wizard.tsx`
 - `apps/app/src/app/(dashboard)/commerce/products/_components/product-wizard-steps/` (step-1.tsx through step-4.tsx)
-- Reuse the existing `Stepper` from `@sparx/ui`
+- Reuse the existing `Stepper` from `@wizeworks/ui`
 
 ### Phase 2 — Import/Export (Products + Customers)
 
 Start with the two highest-volume entities. Import as background job (Pub/Sub → Cloud Run worker); export as synchronous download for <5k rows, background + email for larger.
 
-New service: `services/import-worker/` (Cloud Run, Pub/Sub push, subscribes to `import.job.created`).
+New service: `wizeworks/services/import-worker/` (Cloud Run, Pub/Sub push, subscribes to `import.job.created`).
 
 Files:
 
 - `apps/app/src/app/(dashboard)/_components/import-dialog.tsx` — shared dialog shell
 - `apps/app/src/app/(dashboard)/_components/export-button.tsx` — shared export trigger
-- `services/api-rest/src/routes/v1/products/import.ts`
-- `services/api-rest/src/routes/v1/customers/import.ts`
-- `services/import-worker/` — new Cloud Run worker (TF module `cloud-run-worker`)
+- `wizeworks/services/api-rest/src/routes/v1/products/import.ts`
+- `wizeworks/services/api-rest/src/routes/v1/customers/import.ts`
+- `wizeworks/services/import-worker/` — new Cloud Run worker (TF module `cloud-run-worker`)
 
 ### Phase 3 — Bulk operations (Products + Customers)
 
-Bulk action bar as a shared `@sparx/ui` component, entity-specific action configs registered per list page.
+Bulk action bar as a shared `@wizeworks/ui` component, entity-specific action configs registered per list page.
 
 Files:
 
-- `packages/ui/src/components/data/bulk-action-bar.tsx`
+- `sparx/packages/ui/src/components/data/bulk-action-bar.tsx`
 - `apps/app/src/app/(dashboard)/commerce/products/_components/product-bulk-actions.tsx`
 - `apps/app/src/app/(dashboard)/crm/customers/_components/customer-bulk-actions.tsx`
 
@@ -521,7 +521,7 @@ Files:
 
 - `apps/app/src/app/(dashboard)/cms/_components/content-wizard.tsx`
 - `apps/app/src/app/(dashboard)/cms/_components/content-wizard-steps/` (type-select.tsx, required-fields.tsx, template-publish.tsx)
-- `packages/ui/src/components/form/schema-field-renderer.tsx` — shared dynamic field component
+- `sparx/packages/ui/src/components/form/schema-field-renderer.tsx` — shared dynamic field component
 
 ### Phase 5 — B2B Account + Customer full-profile wizards
 

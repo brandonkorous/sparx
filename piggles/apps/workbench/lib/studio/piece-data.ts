@@ -9,10 +9,10 @@
 // the only thing that tells them apart — so every write here routes on it rather
 // than asking the caller to remember which kind it is holding.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import type { Node } from '@wizeworks/silicaui-html';
 import { api } from '../api/client';
-import { pieceKeyOf, tenantSymbolId } from '../../surfaces/builder/studio/saved-pieces';
+import { pieceKeyOf, tenantSymbolId } from './saved-pieces';
 
 /** A site-owned saved piece as the server stores it. `saved-pieces.ts` types the
  *  same shape with an `unknown` root because it only ever re-emits them; a canvas

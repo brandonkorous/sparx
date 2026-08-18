@@ -13,7 +13,7 @@
 
 ### Top 5 strengths
 
-1. **Unified node-tree architecture across all five surfaces.** Page/site/email share one model, one registry, one inspector, one import/export. Binding resolution (`resolvePath`/`cardinalityOf`) is a shared pure function in `@sparx/builder-schemas` — no drift in the core.
+1. **Unified node-tree architecture across all five surfaces.** Page/site/email share one model, one registry, one inspector, one import/export. Binding resolution (`resolvePath`/`cardinalityOf`) is a shared pure function in `@wizeworks/builder-schemas` — no drift in the core.
 2. **The brand/theme surface is excellent and now fully per-site.** Live component showcase + the new **Components | Site** live-preview toggle (re-themes the real storefront on every keystroke), per-site identity/brand isolation (DB-verified), responsive editing.
 3. **Email editor is email-faithful and polished.** Full From/To envelope, merge tags (`{{…}}`), auto-applied branded header + legal footer, per-site customization, brand-correct rendering.
 4. **The Inspector's responsive + structured-control model is more sophisticated than it first looks.** Container-query per-breakpoint arrangement, a clean common/advanced split, arbitrary-value escape hatches in length fields, and a raw-class card as the ultimate hatch.
@@ -36,7 +36,7 @@
 | 1   | Publish email-gate (RLS)                      |   ✅   | Builder v2 — [01-publish-gate-fix](../builder/01-publish-gate-fix.md): the guard reads `emailVerified` from the JWT, not a base-client read                               |
 | 2   | Properties ≠ "full Tailwind"                  |   ✅   | Builder v2 — [04-inspector-full-design-surface](../builder/04-inspector-full-design-surface.md): Effects card + the missing controls + page-builder skin/state/breakpoint |
 | 3   | No undo/redo                                  |   ✅   | Builder v2 — [05-editor-affordances](../builder/05-editor-affordances.md): history stack + keymap                                                                         |
-| 4   | Canvas↔live divergence                        |   ✅   | Builder v2 — [02-canvas-live-renderer-unification](../builder/02-canvas-live-renderer-unification.md): one `@sparx/builder-render` path                                   |
+| 4   | Canvas↔live divergence                        |   ✅   | Builder v2 — [02-canvas-live-renderer-unification](../builder/02-canvas-live-renderer-unification.md): one `@wizeworks/builder-render` path                               |
 | 5   | No drag / multi-select / guides / copy-styles |   ✅   | Builder v2 (drag · multi-select · copy-styles) **+ this follow-up** — alignment guides during canvas drag (§2.4)                                                          |
 | 6   | Site Preview button dead                      |   ✅   | Builder v2 — unified-studio Preview with contextual tooltips                                                                                                              |
 | 7   | Canvas overflows on mobile                    |   ✅   | **This follow-up** — canvas zoom-to-fit + a manual zoom control                                                                                                           |
@@ -120,7 +120,7 @@ Severity: **Blocker** (stops a core flow) · **High** · **Medium** · **Low**.
 - **Category:** Bug · **Severity:** Blocker (dev/eval), High (product risk)
 - **Repro:** As `e2e-staff@sparx.test` (a tenant that has finished onboarding), open `/builder/brand` (or any builder surface) → **Publish** → confirm. Save state flips to **"Save failed"**; the toast/tooltip reads _"Confirm your email address to use this feature."_
 - **Expected:** Publish succeeds (the user's `email_verified` is `true` in the DB).
-- **Actual:** Blocked. `requireVerifiedEmail` ([services/api-rest/src/lib/verified-email-guard.ts:39](../../services/api-rest/src/lib/verified-email-guard.ts#L39)) calls `prisma.user.findUnique(...)` on the **base** client (no tenant context). The `users` table is `ENABLE`-RLS, and api-rest connects as **`sparx_app`** (non-owner) in local dev (`services/api-rest/.env` `DATABASE_URL`), so that read returns **null** → `user?.emailVerified` is falsy → onboarding is finished → `forbidden()` thrown.
+- **Actual:** Blocked. `requireVerifiedEmail` ([wizeworks/services/api-rest/src/lib/verified-email-guard.ts:39](../../services/api-rest/src/lib/verified-email-guard.ts#L39)) calls `prisma.user.findUnique(...)` on the **base** client (no tenant context). The `users` table is `ENABLE`-RLS, and api-rest connects as **`sparx_app`** (non-owner) in local dev (`wizeworks/services/api-rest/.env` `DATABASE_URL`), so that read returns **null** → `user?.emailVerified` is falsy → onboarding is finished → `forbidden()` thrown.
 - **Why it matters:** In local dev _no one_ can publish a post-onboarding tenant, which blocks the canvas↔live parity test and any developer trying to ship a draft. In prod api-rest connects as the table owner and bypasses `ENABLE`-only RLS, so it works there — but relying on that asymmetry is fragile and hides the bug from local testing.
 - **Evidence:** Save state `data-state="error"`, title = the verify-email message; DB shows `users.email_verified = t` for `e2e-staff@sparx.test`.
 - **Likely culprit:** [verified-email-guard.ts:39-44](../../services/api-rest/src/lib/verified-email-guard.ts#L39) — the `prisma.user` read needs to run in a context that can see the row.
@@ -152,13 +152,13 @@ Severity: **Blocker** (stops a core flow) · **High** · **Medium** · **Low**.
 ### Finding 4 — Canvas↔live divergence: commerce atoms and Button are mocked in the canvas
 
 - **Category:** Bug / Design · **Severity:** High
-- **Summary:** Several render paths differ between the editor canvas (`_builder/registry.tsx`) and the live renderer (`apps/site/components/builder-renderer.tsx`):
+- **Summary:** Several render paths differ between the editor canvas (`_builder/registry.tsx`) and the live renderer (`wizeworks/apps/site/components/builder-renderer.tsx`):
   - **BuyBox / VariantPicker / Quantity / AddToCart** — canvas renders static mock spans (`registry.tsx:1135–1198`); live wires real product state/variants/inventory (`builder-renderer.tsx:314–320`). A 3-option product shows the wrong control count in the canvas.
   - **PriceTag / ImageDisplay** — canvas hardcodes `amount={null}` / a "N images · gallery" badge (`registry.tsx:1041–1085`); live resolves the real bound value (`builder-renderer.tsx:342–352`). Confirmed visually: `04/05-inspector-*.png` show "$24.00" + "Add to cart" + "3 images · gallery" placeholders.
   - **Button** — canvas renders an inert `<span>` (selection-safe); live renders an interactive `<a>/<button>` (`builder-renderer.tsx:298–308`). CTAs/forms can't be exercised in the canvas.
   - **Carousel** — `CanvasCarousel` (centered dots, no autoplay) vs `BuilderCarousel` (arrows, pause-on-hover, autoplay). Authored autoplay has no visible effect in the canvas.
 - **Why it matters:** The product's premise is "canvas == production." For Tier-1 primitives and content components that holds (both render the same `@sparx/site-ui` components); for the _data-aware commerce_ tier and buttons it does not, so authors design against a baseline that won't match the published page.
-- **Recommended fix:** Where feasible, render the same live atom in the canvas fed by sample product data (the sample-data shape already exists in `apps/site/lib/sample-data.ts`); where a true interactive element would break canvas selection (Button), render the _real_ element but intercept clicks at the selection layer. At minimum, document the known-mock components in-UI so authors aren't surprised.
+- **Recommended fix:** Where feasible, render the same live atom in the canvas fed by sample product data (the sample-data shape already exists in `wizeworks/apps/site/lib/sample-data.ts`); where a true interactive element would break canvas selection (Button), render the _real_ element but intercept clicks at the selection layer. At minimum, document the known-mock components in-UI so authors aren't surprised.
 
 ---
 
@@ -291,7 +291,7 @@ The existing split (common cards open by default; Size/Spacing/Position/Typograp
 
 ## 6. Canvas↔live parity report
 
-**What's shared (no drift):** binding resolution (`resolvePath`/`cardinalityOf` in `@sparx/builder-schemas`), iteration/scope, class compilation + per-tenant token application, and the Tier-1 primitives + content components (Heading, Text, Image, Divider, Icon, NavMenu, FAQ, FeatureGrid, EditorialSection, Logo, Wordmark, SocialLinks) — both sides render the same `@sparx/site-ui` components.
+**What's shared (no drift):** binding resolution (`resolvePath`/`cardinalityOf` in `@wizeworks/builder-schemas`), iteration/scope, class compilation + per-tenant token application, and the Tier-1 primitives + content components (Heading, Text, Image, Divider, Icon, NavMenu, FAQ, FeatureGrid, EditorialSection, Logo, Wordmark, SocialLinks) — both sides render the same `@sparx/site-ui` components.
 
 **What diverges (ranked):**
 

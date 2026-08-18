@@ -1,269 +1,269 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "choosing-the-right-sign-vinyl",
-        "status": "published",
-        "body": {
-            "title": "Cast vs calendered: choosing the right sign vinyl",
-            "excerpt": "They both cut and weed the same, but a cast vinyl and a calendered vinyl are built for different jobs and lifespans. Pick wrong and a wrap lifts in a season.",
-            "featuredImage": {
-                "$asset": "post-vinyl-guide"
+  {
+    "typeKey": "blog_post",
+    "slug": "choosing-the-right-sign-vinyl",
+    "status": "published",
+    "body": {
+      "title": "Cast vs calendered: choosing the right sign vinyl",
+      "excerpt": "They both cut and weed the same, but a cast vinyl and a calendered vinyl are built for different jobs and lifespans. Pick wrong and a wrap lifts in a season.",
+      "featuredImage": {
+        "$asset": "post-vinyl-guide"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every sign shop keeps two families of vinyl on the shelf, and the fastest way to a callback is grabbing the wrong one. Cast and calendered vinyl look alike on the roll, cut alike on the plotter, and weed alike on the bench — but they are made differently, they cost differently, and they last differently. Match the film to the job and the graphic outlives the warranty; mismatch it and it shrinks, lifts or fades before the invoice is paid."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Every sign shop keeps two families of vinyl on the shelf, and the fastest way to a callback is grabbing the wrong one. Cast and calendered vinyl look alike on the roll, cut alike on the plotter, and weed alike on the bench — but they are made differently, they cost differently, and they last differently. Match the film to the job and the graphic outlives the warranty; mismatch it and it shrinks, lifts or fades before the invoice is paid."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Cast vinyl: thin, conformable, long-life"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Cast vinyl is poured as a liquid and cured thin — around 2 mil — with almost no memory, so it conforms into rivets and compound curves and stays put. That is why it is the film for vehicle wraps, long-term outdoor decals and anything with a 5-to-7-year life. It costs more per roll, and it is worth every cent on a job that has to survive the weather and the wash."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Calendered vinyl: thicker, cheaper, short-to-mid term"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Calendered vinyl is squeezed through rollers, which leaves it thicker — 3 to 4 mil — and gives it a memory that wants to shrink back over time. That is fine for flat, short-to-mid-term work: interior signage, banners of decals, event graphics, anything under a couple of years on a flat surface. Do not put it on a curve or leave it in the sun for five years and expect it to behave."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Laminate the ones that have to last"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Whichever film you cut, a printed graphic that faces weather or wash wants an overlaminate over it — matched cast-over-cast for a wrap, a value laminate for flat work. It is the cheapest insurance in the shop: a few dollars of film that turns a two-year print into a five-year one and keeps the callback off your calendar."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "clean-sublimation-transfers",
-        "status": "published",
-        "body": {
-            "title": "Getting clean sublimation transfers, every press",
-            "excerpt": "Ghosting, dull color and banding are almost never the blank — they are time, temperature and pressure. Here is how to dial a heat press so every transfer lands sharp.",
-            "featuredImage": {
-                "$asset": "post-sublimation"
+            "content": [
+              {
+                "type": "text",
+                "text": "Cast vinyl: thin, conformable, long-life"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Cast vinyl is poured as a liquid and cured thin — around 2 mil — with almost no memory, so it conforms into rivets and compound curves and stays put. That is why it is the film for vehicle wraps, long-term outdoor decals and anything with a 5-to-7-year life. It costs more per roll, and it is worth every cent on a job that has to survive the weather and the wash."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Dye-sublimation is unforgiving in a very specific way: when it goes right the color is brilliant and permanent, and when it goes wrong you get ghosting, washed-out tones or a scorched blank — and you rarely get a second try on the same piece. The good news is that the variables are few and they are all controllable. Get time, temperature and pressure repeatable and the press stops being a gamble."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Time and temperature: match the substrate"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Sublimation happens when the ink turns to gas and bonds into a polyester or a polymer coating, and that only happens in a window of heat and time. A ceramic mug wants a different dwell than a poly tee or a hard aluminium panel — follow the blank supplier’s numbers, not a single setting for everything. Too cool or too short and the color is muddy and under-developed; too hot or too long and you scorch the coating and yellow the whites."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Pressure and contact: even is everything"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The transfer only develops where the paper touches the blank under pressure. Uneven pressure — a warped platen, a lump under the shirt, a mug press out of adjustment — gives you sharp color in one spot and a fade in the next. Check that the press closes evenly, use a nomex pad or a pillow to level a garment, and make sure the paper is taped so it cannot shift and double-image."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Kill the ghost: no movement, manage the moisture"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Ghosting — a faint second image offset from the first — is the paper moving as the press opens and the gas still venting. Tape the transfer down, lift the press cleanly, and pre-press a garment for a few seconds to drive off moisture before you lay the paper. Sort those three things and your reject pile all but disappears, which is the difference between a profitable sublimation line and a frustrating one."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "stock-a-media-room",
-        "status": "published",
-        "body": {
-            "title": "How to stock a media room so a job never waits on a roll",
-            "excerpt": "A backordered roll of banner can cost you a Friday deadline. Here is a simple min/max system any print shop can run to keep the media on the shelf before the last roll is gone.",
-            "featuredImage": {
-                "$asset": "post-media-stock"
+            "content": [
+              {
+                "type": "text",
+                "text": "Calendered vinyl: thicker, cheaper, short-to-mid term"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Calendered vinyl is squeezed through rollers, which leaves it thicker — 3 to 4 mil — and gives it a memory that wants to shrink back over time. That is fine for flat, short-to-mid-term work: interior signage, banners of decals, event graphics, anything under a couple of years on a flat surface. Do not put it on a curve or leave it in the sun for five years and expect it to behave."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A print shop lives and dies on turnaround, and nothing kills turnaround like discovering the banner roll is empty with a job on the printer and a deadline at four. Media is the one thing you should never run out of, and keeping it stocked does not take software or a dedicated storekeeper — it takes a min/max system and the discipline to follow it."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Set a min and a max for every roll"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "For each line you print — banner, cast vinyl, HTV colors, laminate — decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover what you print over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full — enough to buy at a case or pallet price without turning the rack into dead capital. Drop to the min, order back up to the max. That is the whole system."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Label the rack, not your memory"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Write the line, the width, the min and the max on the rack itself. When anyone can see at a glance that the 54-inch banner is below its min, ordering stops depending on one person remembering on a busy day. A two-roll trick makes it simpler still: when the front roll runs out, that is the signal to reorder, and the back roll carries you until the case lands."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Put the fast movers on a standing order"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The media you burn on a predictable schedule — banner, application tape, your house HTV colors, CMYK ink — does not need re-deciding every month. Put it on a standing order with your supplier and it arrives before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable rolls take care of themselves."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Laminate the ones that have to last"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Whichever film you cut, a printed graphic that faces weather or wash wants an overlaminate over it — matched cast-over-cast for a wrap, a value laminate for flat work. It is the cheapest insurance in the shop: a few dollars of film that turns a two-year print into a five-year one and keeps the callback off your calendar."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "clean-sublimation-transfers",
+    "status": "published",
+    "body": {
+      "title": "Getting clean sublimation transfers, every press",
+      "excerpt": "Ghosting, dull color and banding are almost never the blank — they are time, temperature and pressure. Here is how to dial a heat press so every transfer lands sharp.",
+      "featuredImage": {
+        "$asset": "post-sublimation"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Dye-sublimation is unforgiving in a very specific way: when it goes right the color is brilliant and permanent, and when it goes wrong you get ghosting, washed-out tones or a scorched blank — and you rarely get a second try on the same piece. The good news is that the variables are few and they are all controllable. Get time, temperature and pressure repeatable and the press stops being a gamble."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Time and temperature: match the substrate"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sublimation happens when the ink turns to gas and bonds into a polyester or a polymer coating, and that only happens in a window of heat and time. A ceramic mug wants a different dwell than a poly tee or a hard aluminium panel — follow the blank supplier’s numbers, not a single setting for everything. Too cool or too short and the color is muddy and under-developed; too hot or too long and you scorch the coating and yellow the whites."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Pressure and contact: even is everything"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The transfer only develops where the paper touches the blank under pressure. Uneven pressure — a warped platen, a lump under the shirt, a mug press out of adjustment — gives you sharp color in one spot and a fade in the next. Check that the press closes evenly, use a nomex pad or a pillow to level a garment, and make sure the paper is taped so it cannot shift and double-image."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Kill the ghost: no movement, manage the moisture"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ghosting — a faint second image offset from the first — is the paper moving as the press opens and the gas still venting. Tape the transfer down, lift the press cleanly, and pre-press a garment for a few seconds to drive off moisture before you lay the paper. Sort those three things and your reject pile all but disappears, which is the difference between a profitable sublimation line and a frustrating one."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "stock-a-media-room",
+    "status": "published",
+    "body": {
+      "title": "How to stock a media room so a job never waits on a roll",
+      "excerpt": "A backordered roll of banner can cost you a Friday deadline. Here is a simple min/max system any print shop can run to keep the media on the shelf before the last roll is gone.",
+      "featuredImage": {
+        "$asset": "post-media-stock"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A print shop lives and dies on turnaround, and nothing kills turnaround like discovering the banner roll is empty with a job on the printer and a deadline at four. Media is the one thing you should never run out of, and keeping it stocked does not take software or a dedicated storekeeper — it takes a min/max system and the discipline to follow it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Set a min and a max for every roll"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For each line you print — banner, cast vinyl, HTV colors, laminate — decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover what you print over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full — enough to buy at a case or pallet price without turning the rack into dead capital. Drop to the min, order back up to the max. That is the whole system."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Label the rack, not your memory"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Write the line, the width, the min and the max on the rack itself. When anyone can see at a glance that the 54-inch banner is below its min, ordering stops depending on one person remembering on a busy day. A two-roll trick makes it simpler still: when the front roll runs out, that is the signal to reorder, and the back roll carries you until the case lands."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Put the fast movers on a standing order"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The media you burn on a predictable schedule — banner, application tape, your house HTV colors, CMYK ink — does not need re-deciding every month. Put it on a standing order with your supplier and it arrives before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable rolls take care of themselves."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

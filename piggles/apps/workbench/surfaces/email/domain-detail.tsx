@@ -33,7 +33,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Text,
@@ -46,6 +45,7 @@ import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -156,33 +156,31 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Add a sending address actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={provision.isPending}
-          disabled={trimmed === '' || !looksValid}
-          onClick={submit}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add address
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Add a sending address actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={provision.isPending}
+            disabled={trimmed === '' || !looksValid}
+            onClick={submit}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add address
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Add a sending address
-            </Heading>
-            <Text>
-              {productCopy(
-                'email.domain.addIntro',
-                'Use a domain you own so your email goes out from your own address — like hello@yourbusiness.com — instead of a generic Piggles one. After you add it, we give you a few records to put at your domain provider to prove it is yours.'
-              )}
-            </Text>
-          </div>
+          <Text>
+            {productCopy(
+              'email.domain.addIntro',
+              'Use a domain you own so your email goes out from your own address — like hello@yourbusiness.com — instead of a generic Piggles one. After you add it, we give you a few records to put at your domain provider to prove it is yours.'
+            )}
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -267,8 +265,16 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
 function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data: domain, isPending, isError, refetch } = useSendingDomain(id);
-  const { data: settings } = useEmailSettings();
+  const {
+    data: domain,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useSendingDomain(id);
+  const emailSettings = useEmailSettings();
+  const settings = emailSettings.data;
 
   const verify = useVerifySendingDomain(id);
   const setDefault = useSetDefaultSendingDomain(id);
@@ -402,72 +408,85 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
       {/* `wrap` because this bar carries a variable set of lifecycle actions —
           which appear depends on the address's state — so there is no fixed set
           to reduce to one line. */}
-      <PaneToolbar label="Sending address actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        {isDefault ? (
-          <Badge color="module" variant="soft" size="sm">
-            Default here
-          </Badge>
-        ) : null}
-
-        <div className="flex-1" />
-
-        {isVerified ? null : (
-          <Button size="sm" color="module" loading={verify.isPending} onClick={onCheck}>
-            <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-            Check now
-          </Button>
-        )}
-        {isVerified && !isDefault ? (
+      <PaneToolbar
+        label="Sending address actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching || emailSettings.isFetching}
+            updatedAt={domain ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+              void emailSettings.refetch();
+            }}
+          />
+        }
+        status={
+          <>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            {isDefault ? (
+              <Badge color="module" variant="soft" size="sm">
+                Default here
+              </Badge>
+            ) : null}
+            <div className="flex-1" />
+          </>
+        }
+        primary={
           <Button
             size="sm"
-            variant="outline"
-            color="neutral"
-            loading={setDefault.isPending}
-            onClick={onSetDefault}
+            variant="ghost"
+            color="danger"
+            shape="square"
+            aria-label="Remove this address"
+            title="Remove this address"
+            loading={remove.isPending}
+            onClick={() => {
+              void onDelete();
+            }}
           >
-            <Icon glyph={faStar} className="size-4" aria-hidden />
-            Use as default
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
-        ) : null}
-        <Button
-          size="sm"
-          variant="ghost"
-          color="danger"
-          shape="square"
-          aria-label="Remove this address"
-          title="Remove this address"
-          loading={remove.isPending}
-          onClick={() => {
-            void onDelete();
-          }}
-        >
-          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-        </Button>
-      </PaneToolbar>
+        }
+        controls={
+          <>
+            {isVerified ? null : (
+              <Button size="sm" color="module" loading={verify.isPending} onClick={onCheck}>
+                <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+                Check now
+              </Button>
+            )}
+            {isVerified && !isDefault ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                loading={setDefault.isPending}
+                onClick={onSetDefault}
+              >
+                <Icon glyph={faStar} className="size-4" aria-hidden />
+                Use as default
+              </Button>
+            ) : null}
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* The address IS the identity of this pane, and it is read-only — so
-              it gets a real heading, with the two facts about it on one quiet
-              line underneath. */}
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="font-mono text-2xl font-semibold break-all">
-              {domain.domain}
-            </Heading>
-            <Text className="text-sm">
-              {regionLabel(domain.region)} ·{' '}
-              {domain.verifiedAt
-                ? `Verified ${new Date(domain.verifiedAt).toLocaleDateString(undefined, {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}`
-                : `Added ${addedOn}`}
-            </Text>
-          </div>
+          {/* The address IS the identity of this pane, and the pane TAB carries
+              it — so the body opens with the two facts about it instead. */}
+          <Text className="text-sm">
+            {regionLabel(domain.region)} ·{' '}
+            {domain.verifiedAt
+              ? `Verified ${new Date(domain.verifiedAt).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}`
+              : `Added ${addedOn}`}
+          </Text>
 
           {/* ONE status message, carrying the most specific true thing known. A
               failed check names the exact problem, which beats the generic

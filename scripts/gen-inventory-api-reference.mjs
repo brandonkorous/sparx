@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-export const ROUTE_DIR = 'services/api-rest/src/routes/v1/inventory';
+export const ROUTE_DIR = 'wizeworks/services/api-rest/src/routes/v1/inventory';
 export const DOC = 'docs/150-inventory-api-reference.md';
 
 /** Route file → the capability it serves, in the words a person would use.

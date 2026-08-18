@@ -1,0 +1,684 @@
+// Tenant — the dispatch row every other table FKs back to. Better Auth's
+// `organization` plugin maps 1:1 onto this row (docs/16 §2 Layer 1) — the
+// org id will be stored alongside this tenant when Better Auth is wired in.
+//
+// This file is unavoidably the "relation hub" — every module that owns
+// tenant-scoped tables declares an inverse relation here. New modules add
+// their array to the matching section below; the field count is a quick
+// way to see how much surface the platform exposes per tenant.
+
+model Tenant {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                 String    @unique @db.VarChar(63)
+  // The tenant's LEGAL/ORG name (a business, or the individual if not a business).
+  // Billing/ownership only — it is NEVER rendered to a customer or sent in a customer
+  // email. The customer-facing name is the SITE's `Property.name` (docs/49); a new
+  // tenant's primary site is seeded FROM this name, but render/send paths read the
+  // site, never this. Edited in Settings → General ("Business name").
+  // A tenant is also conceptually the holder of a tax id (not captured yet — a future
+  // `taxId` column would live here, on the legal entity).
+  name                 String    @db.VarChar(255)
+  email                String    @db.VarChar(255)
+  plan                 String    @default("starter") @db.VarChar(50)
+  status               String    @default("active") @db.VarChar(20)
+  settings             Json      @default("{}")
+  // Site-wide social links — an ORDERED array of { platform, url } (the same
+  // shape the storefront `site.social` binding renders): `platform` is a known
+  // key (instagram, x, …) for icon mapping, or a free-text label for an "Other"
+  // link. A SITE setting (not brand identity, not theme): edited in
+  // /settings/general, theme-independent — switching the storefront theme never
+  // touches it. The public tenant payload carries it so the storefront chrome
+  // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
+  socials              Json      @default("[]")
+  // Better Auth organization plugin (docs/114 Part A) maps its `organization`
+  // model onto this row (org == tenant). `orgLogo` + `orgMetadata` are the two
+  // plugin-owned org fields (the adapter reads them on list/getFull/setActive);
+  // everything else the plugin needs (name, slug, createdAt) already exists here.
+  orgLogo              String?   @map("org_logo") @db.Text
+  orgMetadata          String?   @map("org_metadata") @db.Text
+  // Platform billing (docs/67) — the WizeWorks subscription that charges this
+  // tenant per active module. `stripeCustomerId` + `trialEndsAt` already existed;
+  // the rest complete the picture. Reconciled from Stripe webhooks (the source of
+  // truth for subscription state). `stripeCustomerId` is unique — one platform
+  // customer per tenant. Tenants is non-RLS (the dispatch row), so the webhook can
+  // resolve a tenant from a Stripe customer id before any tenant context is set.
+  stripeCustomerId     String?   @unique @map("stripe_customer_id") @db.VarChar(255)
+  // Sparx Pay (docs/94 ADR §6) — the tenant's Stripe Connect EXPRESS connected
+  // account (`acct_…`), the destination of every Sparx Pay charge. A non-secret
+  // identifier kept on this non-RLS root row (like `stripeCustomerId`) so the public
+  // payment webhook can resolve a tenant from the account id with no tenant context.
+  // Unique — one connected account per tenant, one tenant per account.
+  stripeAccountId      String?   @unique @map("stripe_account_id") @db.VarChar(255)
+  stripeSubscriptionId String?   @map("stripe_subscription_id") @db.VarChar(255)
+  // trialing | active | past_due | canceled | unpaid | paused
+  subscriptionStatus   String?   @map("subscription_status") @db.VarChar(20)
+  currentPeriodEnd     DateTime? @map("current_period_end") @db.Timestamptz
+  cancelAtPeriodEnd    Boolean   @default(false) @map("cancel_at_period_end")
+  billingInterval      String    @default("monthly") @map("billing_interval") @db.VarChar(10)
+  trialEndsAt          DateTime? @map("trial_ends_at") @db.Timestamptz
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Marketing attribution (docs/80 §8.3) — L-PLAT acquisition snapshot, written
+  // once at signup from the first-party attribution cookies. The tenants table is
+  // intentionally non-RLS (the dispatch row), so these are a pure additive ALTER —
+  // no policy SQL, no backfill.
+  acquisitionChannel    String?   @map("acquisition_channel") @db.VarChar(50)
+  acquisitionSource     String?   @map("acquisition_source") @db.VarChar(255)
+  acquisitionCampaign   String?   @map("acquisition_campaign") @db.VarChar(255)
+  acquisitionFirstTouch Json?     @map("acquisition_first_touch")
+  acquisitionLastTouch  Json?     @map("acquisition_last_touch")
+  acquiredAt            DateTime? @map("acquired_at") @db.Timestamptz
+
+  // ── Which WizeWorks product this account signed up under ────────────────────
+  // sparx and Piggles are two BRANDS on one platform, one database and one tenant
+  // pool (piggles/CLAUDE.md). The brand is recorded once at signup and never
+  // changes — a business does not migrate between them.
+  //
+  // It lives HERE, on the non-RLS dispatch row, because the readers that need it
+  // most have no tenant context to resolve it from: the `email.send` worker
+  // consuming a Pub/Sub event, an edge OG route, the Stripe webhook. Hostname
+  // resolution covers the request path; this covers everything asynchronous.
+  //
+  // NOT named `brand` — that is already this model's relation to `TenantBrand`,
+  // the tenant's OWN visual identity, which is a different thing entirely. And
+  // not `product`, which would sit two hundred lines above `products Product[]`
+  // and read as a commerce product.
+  //
+  // Values: `sparx` | `piggles`. Deliberately a VarChar rather than an enum —
+  // adding a brand should not require a migration, and the set is owned by
+  // product rather than by the schema.
+  platformBrand String @default("sparx") @map("platform_brand") @db.VarChar(20)
+
+  // Internal WizeWorks accounts — staff, demo, sales, seed, support. Never
+  // metered, never warned, never capacity-blocked
+  // (piggles/docs/initial/docs/commercial/BILLING_RULES.md).
+  //
+  // An EXPLICIT flag on purpose. Inferring "internal" from an email domain, a
+  // plan value or a name pattern is how a real customer eventually gets free
+  // capacity by accident. Never settable from a tenant-facing surface.
+  isSystem Boolean @default(false) @map("is_system")
+
+  // Platform core — brand identity (tenant-level source of truth, docs/30 §6)
+  brand    TenantBrand?
+  // The legal entity's own details — registered address, tax id, company
+  // number, business name (07-tenant-business.prisma). The documented home for
+  // the `taxId` this model's header anticipates.
+  business TenantBusiness?
+
+  // Multi-property (multi-site) — a tenant's web properties (docs/49). Phase 1
+  // seeds exactly one is_primary property per tenant; the Builder presentation
+  // layer re-keys onto property_id in a later slice.
+  properties        Property[]
+  // Tenant blueprint installs (docs/54) — one row per marketplace template
+  // installed into one of this tenant's properties.
+  blueprintInstalls TenantBlueprintInstall[]
+  // Custom + purchased hostnames across this tenant's sites (docs/49 §5, docs/24).
+  domains           Domain[]
+  // Billing + audit ledger for every domain registration/renewal/transfer (docs/24 §7).
+  domainPurchases   DomainPurchase[]
+
+  // Auth + audit
+  users             User[]
+  // Organizations & Teams (docs/114 Part A) — the tenant IS the Better Auth
+  // organization; its team memberships + pending invitations.
+  members           Member[]
+  invitations       Invitation[]
+  auditLogs         AuditLog[]
+  // Bulk-operation revert ledger (docs/69 B-3) — before-state for undoable
+  // bulk mutations (price adjustment, …) retained for a 30-minute window.
+  bulkOpReverts     BulkOpRevert[]
+  // Web Push subscriptions for staff browser notifications (docs/69 A-6).
+  pushSubscriptions PushSubscription[]
+  apiKeys           ApiKey[]
+
+  // Marketplace (docs/60 §6) — the publisher identities this tenant owns when it
+  // publishes blueprints/themes/components/integrations (Phase 5+). Sparx-core
+  // listings belong to the seeded `sparx` publisher, not a tenant.
+  marketplacePublishers MarketplacePublisher[]
+
+  // Channels module (docs/106) — external sales-channel + sparx.market links
+  channelConnections     ChannelConnection[]
+  channelProductMappings ChannelProductMapping[]
+
+  // Social posting module (docs/133) — connected accounts, their destinations, the
+  // composed posts, and the per-target fan-out rows.
+  socialConnections  SocialConnection[]
+  socialTargets      SocialTarget[]
+  socialPosts        SocialPost[]
+  socialPostTargets  SocialPostTarget[]
+  // …the saved hashtag blocks, the weekly posting cadence, and the engagement inbox.
+  socialHashtagSets  SocialHashtagSet[]
+  socialPostingSlots SocialPostingSlot[]
+  socialInboxItems   SocialInboxItem[]
+
+  // sparx.market (docs/106 §4.7) — the first-party marketplace. The two GLOBAL
+  // projections (MarketListing / MarketMerchant) are FK-less by design and do NOT
+  // relate here; only the tenant-scoped truth tables do.
+  marketMerchantProfile MarketMerchantProfile?
+  marketPayoutAccount   MarketPayoutAccount?
+  marketSettlements     MarketSettlement[]
+  marketSettlementRuns  MarketSettlementRun[]
+
+  // Dashboard shell — per-user pinned/recent navigation state
+  userFavorites UserFavorite[]
+  userRecents   UserRecent[]
+
+  // In-product feedback (docs/112) — submissions, the reply thread, and the
+  // per-user pulse frequency-cap state.
+  feedbackSubmissions FeedbackSubmission[]
+  feedbackMessages    FeedbackMessage[]
+  feedbackPulseStates FeedbackPulseState[]
+
+  // Site forms (docs/115) — public contact/lead submissions + the server-side
+  // routing config (recipient addresses kept out of the published tree).
+  formSubmissions FormSubmission[]
+  formDefinitions FormDefinition[]
+
+  // CMS module
+  pages                Page[]
+  contentTypes         ContentType[]
+  contentEntries       ContentEntry[]
+  contentRevisions     ContentRevision[]
+  contentReferences    ContentReference[]
+  taxonomies           Taxonomy[]
+  taxonomyTerms        TaxonomyTerm[]
+  entryTaxonomyTerms   EntryTaxonomyTerm[]
+  authors              Author[]
+  redirects            Redirect[]
+  navigationMenus      NavigationMenu[]
+  navigationItems      NavigationItem[]
+  previewTokens        PreviewToken[]
+  webhookSubscriptions WebhookSubscription[]
+  webhookDeliveries    WebhookDelivery[]
+  mediaAssets          MediaAsset[]
+  mediaVariants        MediaVariant[]
+
+  // CRM module — customer spine
+  customers         Customer[]
+  customerAddresses CustomerAddress[]
+  companies         Company[]
+
+  // CRM module — sales pipeline
+  pipelines            Pipeline[]
+  pipelineStages       PipelineStage[]
+  deals                Deal[]
+  // CRM module — service requests (docs/144 §7). The SLA policy and its targets
+  // are leaf config and reach the tenant through a database FK only, per the
+  // convention 33-crm-objects sets out.
+  tickets              Ticket[]
+  // CRM module — the report builder (docs/144 §8). Widgets reach the tenant
+  // directly as well as through their dashboard, so a tenant delete cascades
+  // cleanly regardless of which side is walked.
+  crmReports           CrmReport[]
+  crmDashboards        CrmDashboard[]
+  scoringModels        ScoringModel[]
+  scoreEvents          ScoreEvent[]
+  listHistory          SegmentMembershipEvent[]
+  crmSettings          CrmSettings[]
+  crmSavedViews        CrmSavedView[]
+  crmMeetingLinks      CrmMeetingLink[]
+  documentSignatures   BillingDocumentSignature[]
+  crmDashboardWidgets  CrmDashboardWidget[]
+  dealOrders           DealOrder[]
+  dealBillingDocuments DealBillingDocument[]
+
+  // CRM module — orders, payments, refunds, fulfillments
+  orders                Order[]
+  orderItems            OrderItem[]
+  orderPayments         OrderPayment[]
+  orderRefunds          OrderRefund[]
+  orderRefundItems      OrderRefundItem[]
+  orderFulfillments     OrderFulfillment[]
+  orderFulfillmentItems OrderFulfillmentItem[]
+  fulfillmentLabels     FulfillmentLabel[]
+
+  // CRM module — activity, tasks, segments, views
+  crmActivities  CrmActivity[]
+  tasks          Task[]
+  segments       Segment[]
+  segmentMembers SegmentMember[]
+  savedViews     SavedView[]
+
+  // Commerce module — catalog
+  products            Product[]
+  productTypes        ProductType[]
+  productTranslations ProductTranslation[]
+  productOptions      ProductOption[]
+  productOptionValues ProductOptionValue[]
+  productVariants     ProductVariant[]
+  variantImages       VariantImage[]
+  productCategories   ProductCategory[]
+  productCollections  ProductCollection[]
+
+  // Commerce module — fitment (generalized: vehicle, pet, device, ...)
+  fitmentDomains       FitmentDomain[]
+  fitmentNodes         FitmentNode[]
+  productFitments      ProductFitment[]
+  productFitmentRanges ProductFitmentRange[]
+
+  // Inventory module — warehouses, levels, movement ledger, lots, suppliers
+  warehouses             Warehouse[]
+  inventoryLevels        InventoryLevel[]
+  inventoryMovements     InventoryMovement[]
+  inventoryReservations  InventoryReservation[]
+  b2bFleetHolds          B2bFleetHold[]
+  lotBatches             LotBatch[]
+  serialUnits            SerialUnit[]
+  suppliers              Supplier[]
+  supplierVariants       SupplierVariant[]
+  purchaseOrders         PurchaseOrder[]
+  purchaseOrderLines     PurchaseOrderLine[]
+  goodsReceipts          GoodsReceipt[]
+  goodsReceiptLines      GoodsReceiptLine[]
+  inventoryCounts        InventoryCount[]
+  inventoryCountLines    InventoryCountLine[]
+  inventoryTransfers     InventoryTransfer[]
+  inventoryTransferLines InventoryTransferLine[]
+
+  // Inventory integrity (docs/146 Phase 1) — the evidence behind the numbers
+  inventoryReconciliationRuns   InventoryReconciliationRun[]
+  inventoryReconciliationDrifts InventoryReconciliationDrift[]
+  inventoryOversellIncidents    InventoryOversellIncident[]
+  inventoryChannelBuffers       InventoryChannelBuffer[]
+
+  // Inventory bins (docs/146 Phase 2) — where inside a location a thing is
+  inventoryBins         InventoryBin[]
+  inventoryBinLevels    InventoryBinLevel[]
+  inventoryBinMovements InventoryBinMovement[]
+
+  // Inventory barcodes (docs/146 Phase 3) — the scan registry
+  variantBarcodes          VariantBarcode[]
+  inventoryBarcodeSequence InventoryBarcodeSequence?
+  inventoryScanEvents      InventoryScanEvent[]
+
+  // Picking + packing (docs/146 Phase 4) — the warehouse work behind a shipment
+  pickLists            PickList[]
+  pickListOrders       PickListOrder[]
+  pickListLines        PickListLine[]
+  shipmentPackages     ShipmentPackage[]
+  shipmentPackageLines ShipmentPackageLine[]
+
+  // True cost (docs/146 Phase 5) — what a unit cost to get here, and to sell
+  purchaseOrderCharges     PurchaseOrderCharge[]
+  goodsReceiptCharges      GoodsReceiptCharge[]
+  inventoryCostLayers      InventoryCostLayer[]
+  inventoryCostConsumption InventoryCostConsumption[]
+  costingPolicy            CostingPolicy?
+
+  // Units of measure + assembly (docs/146 Phase 6) — buy a case, stock each,
+  // sell a pair; and make things out of other things
+  unitsOfMeasure        UnitOfMeasure[]
+  variantUomConversions VariantUomConversion[]
+  billsOfMaterials      BillOfMaterials[]
+  bomComponents         BomComponent[]
+  assemblyOrders        AssemblyOrder[]
+  assemblyOrderLines    AssemblyOrderLine[]
+
+  // Planning intelligence (docs/146 Phase 7) — how much to keep, when to buy
+  demandVelocity          DemandVelocity[]
+  inventoryClassification InventoryClassification[]
+  reorderPolicies         ReorderPolicy[]
+  supplierLeadTimes       SupplierLeadTime[]
+  cycleCountSchedules     CycleCountSchedule[]
+  planningPolicy          InventoryPlanningPolicy?
+
+  // Supplier performance + procurement discipline (docs/146 Phase 8) — how the
+  // people you buy from actually behave, and the controls over spending with them
+  supplierScorecards     SupplierScorecard[]
+  supplierPriceBreaks    SupplierPriceBreak[]
+  poApprovalRules        PurchaseOrderApprovalRule[]
+  poApprovals            PurchaseOrderApproval[]
+  advanceShipNotices     AdvanceShipNotice[]
+  advanceShipNoticeLines AdvanceShipNoticeLine[]
+  supplierReturns        SupplierReturn[]
+  supplierReturnLines    SupplierReturnLine[]
+  supplierBills          SupplierBill[]
+  supplierBillLines      SupplierBillLine[]
+
+  // Demand-side commitments (docs/146 Phase 9) — what has been promised against
+  // the stock, and which of the stock was never ours to begin with
+  backorders                 Backorder[]
+  backorderAllocations       BackorderAllocation[]
+  preorderWindows            PreorderWindow[]
+  consignmentSettlements     ConsignmentSettlement[]
+  consignmentSettlementLines ConsignmentSettlementLine[]
+
+  // Reporting, portability and the accounting handoff (docs/146 Phase 10) —
+  // standing report deliveries, what the accountant says the stock is worth, and
+  // what each uploaded file did to it
+  inventoryReportSchedules  InventoryReportSchedule[]
+  inventoryReportDeliveries InventoryReportDelivery[]
+  inventoryGlSnapshots      InventoryGlSnapshot[]
+  inventoryImportBatches    InventoryImportBatch[]
+
+  // Onboarding — beating the spreadsheet (docs/146 Phase 11): the guided setup
+  // and its clock, the saved column mappings that make a re-import one click,
+  // and the tenant's own columns on stock records
+  inventorySetupProgress  InventorySetupProgress?
+  inventoryImportProfiles InventoryImportProfile[]
+  inventoryCustomFields   InventoryCustomField[]
+
+  // Commerce module — pricing + discounts
+  priceLists             PriceList[]
+  priceListEntries       PriceListEntry[]
+  bulkPriceTiers         BulkPriceTier[]
+  contractPrices         ContractPrice[]
+  markupRules            MarkupRule[]
+  markupRecomputeReviews MarkupRecomputeReview[]
+  surchargeRules         SurchargeRule[]
+
+  // Invoicing module (docs/87) — authored billing documents
+  documentWorkflows         DocumentWorkflow[]
+  documentStages            DocumentStage[]
+  billingDocumentLineTypes  BillingDocumentLineType[]
+  billingDocuments          BillingDocument[]
+  billingDocumentLines      BillingDocumentLine[]
+  billingDocumentSnapshots  BillingDocumentSnapshot[]
+  billingDocumentPayments   BillingDocumentPayment[]
+  billingDocumentTemplates  BillingDocumentTemplate[]
+  discounts                 Discount[]
+  discountUsages            DiscountUsage[]
+  giftCards                 GiftCard[]
+  giftCardTransactions      GiftCardTransaction[]
+  accountCredits            AccountCredit[]
+  accountCreditTransactions AccountCreditTransaction[]
+
+  // Commerce module — bundles + configurator
+  bundles                Bundle[]
+  bundleComponents       BundleComponent[]
+  configurationTemplates ConfigurationTemplate[]
+  configurationOptions   ConfigurationOption[]
+  configurationRules     ConfigurationRule[]
+  configurationAddOns    ConfigurationAddOn[]
+
+  // Commerce module — cart + checkout
+  carts            Cart[]
+  cartItems        CartItem[]
+  cartDiscounts    CartDiscount[]
+  checkoutSessions CheckoutSession[]
+
+  // Commerce module — subscriptions
+  subscriptions          Subscription[]
+  subscriptionItems      SubscriptionItem[]
+  subscriptionEvents     SubscriptionEvent[]
+  dunningAttempts        DunningAttempt[]
+  customerPaymentMethods CustomerPaymentMethod[]
+
+  // Commerce module — reviews + Q&A + wishlists
+  productReviews       ProductReview[]
+  reviewMedia          ReviewMedia[]
+  reviewHelpfulVotes   ReviewHelpfulVote[]
+  reviewModerationLog  ReviewModerationLog[]
+  productQuestions     ProductQuestion[]
+  productAnswers       ProductAnswer[]
+  wishlists            Wishlist[]
+  productReviewRollups ProductReviewRollup[]
+  wishlistItems        WishlistItem[]
+
+  // Commerce module — returns
+  returnRequests    ReturnRequest[]
+  returnLineItems   ReturnLineItem[]
+  returnInspections ReturnInspection[]
+  returnLabels      ReturnLabel[]
+
+  // Commerce module — shipping
+  shippingZones    ShippingZone[]
+  shippingProfiles ShippingProfile[]
+  shippingRates    ShippingRate[]
+
+  // Commerce module — tax
+  taxZones      TaxZone[]
+  taxRates      TaxRate[]
+  taxExemptions TaxExemption[]
+
+  // Commerce module — provider marketplace
+  providerInstallations ProviderInstallation[]
+  providerWebhookEvents ProviderWebhookEvent[]
+
+  // Commerce module — storefront defaults + theme. Per web PROPERTY (docs/49
+  // Phase 6): a tenant's sites each keep their own applied theme + settings, so
+  // these are arrays, not one-per-tenant.
+  commerceSiteSettings CommerceSiteSettings[]
+  commerceSiteThemes   CommerceSiteTheme[]
+
+  // Customer-auth (Layer 2, docs/27 v2) — the dedicated Better Auth customer
+  // instance's tenant-scoped tables (shopper identity/session/credential + the
+  // shopper MCP OAuth authorization server).
+  customerUsers             CustomerUser[]
+  customerSessions          CustomerSession[]
+  customerAccounts          CustomerAccount[]
+  customerVerifications     CustomerVerification[]
+  customerOauthApplications CustomerOauthApplication[]
+  customerOauthAccessTokens CustomerOauthAccessToken[]
+  customerOauthConsents     CustomerOauthConsent[]
+
+  // Sitebuilder module — theme/layout/page composition + publish history (docs/29).
+  // The applied-theme trio (config/versions/schedules) is per web PROPERTY
+  // (docs/49 Phase 6): each of a tenant's sites publishes its own theme, so
+  // siteConfigs is an array. The legacy section tier + the saved-theme LIBRARY
+  // stay tenant-wide.
+  siteConfigs          SiteConfig[]
+  siteVersions         SiteVersion[]
+  pageLayouts          PageLayout[]
+  siteSections         SiteSection[]
+  siteLayoutBlocks     SiteLayoutBlock[]
+  sitePublishSchedules SitePublishSchedule[]
+  siteThemes           SiteTheme[]
+  siteLayoutDefaults   SiteLayoutDefault[]
+  siteLayoutAssign     SiteLayoutAssignment[]
+  sectionDefinitions   TenantSectionDefinition[]
+
+  // Builder module — composition-model page editor (docs/41)
+  builderPages             BuilderPage[]
+  builderNodeIndex         BuilderNodeIndex[]
+  builderPageArtifacts     BuilderPageArtifact[]
+  builderReleases          BuilderRelease[]
+  builderDraftVersions     BuilderDraftVersion[]
+  builderPageOps           BuilderPageOp[]
+  // Builder module — the site layout / chrome shell (docs/45)
+  builderLayouts           BuilderLayout[]
+  // Builder module — the per-property silica site record: theme + symbols (docs/118)
+  builderSites             BuilderSite[]
+  // Builder module — the tenant's own themes, reusable across its sites
+  builderThemes            BuilderTheme[]
+  builderThemeVersions     BuilderThemeVersion[]
+  // Builder module — per-record template overrides (docs/51 §6)
+  builderPageAssignments   BuilderPageAssignment[]
+  // Builder module — the Email Builder's emails (docs/52)
+  builderEmails            BuilderEmail[]
+  // Builder module — tenant-authored components + their versions (docs/53)
+  builderComponents        BuilderComponent[]
+  builderComponentVersions BuilderComponentVersion[]
+  // Builder module — tenant-wide governance singleton (allowlist, docs/61 §8)
+  builderGovernance        BuilderGovernance?
+  // Builder module — brand-governed section archetypes (docs/61 §6)
+  builderArchetypes        BuilderArchetype[]
+
+  // SEO — stored audit scorecard snapshots for the site-wide overview (docs/50 §7)
+  seoAudits                SeoAudit[]
+  // SEO — Google Search Console: per-(tenant, property) OAuth connection + the
+  // ingested organic-search rollup and top queries (docs/50 §7, docs/97 §4)
+  searchConsoleConnections SearchConsoleConnection[]
+  rollupSearchConsoleDaily RollupSearchConsoleDaily[]
+  searchConsoleQueries     SearchConsoleQuery[]
+
+  // Email platform — management surface (docs/13)
+  // One per SITE, not per tenant (docs/131 §3.4) — a tenant running two
+  // businesses has two sender identities.
+  emailSettings       EmailSettings[]
+  sendingDomains      SendingDomain[]
+  emailScheduledSends ScheduledSend[]
+  broadcasts          Broadcast[]
+  emailEvents         EmailEvent[]
+  emailSuppressions   EmailSuppression[]
+
+  // Legal & consent (docs/42)
+  siteDocPlacements SiteDocPlacement[]
+  // One per SITE (docs/131 §3.9) — each business runs its own banner, regime,
+  // and policy version.
+  consentSettings   ConsentSettings[]
+  consentRecords    ConsentRecord[]
+  legalAcceptances  PlatformLegalAcceptance[]
+
+  // Onboarding (docs/65 Ph2) — per-tip progress rows shown for 7 days post-signup
+  onboardingChecklist OnboardingChecklist[]
+
+  // Careers (first-party) — job applications submitted on sparx.works /careers.
+  // Only ever populated on the platform tenant (`wizeworks`); a normal product
+  // tenant has none.
+  jobApplications JobApplication[]
+
+  // Import jobs (docs/68 §8) — background CSV import processing
+  importJobs ImportJob[]
+
+  // In-app notifications (docs/124 Phase 3) — the awareness layer's inbox
+  notifications Notification[]
+
+  // Live Chat module (docs/56, docs/69 Track A)
+  chatConversations ChatConversation[]
+  chatMessages      ChatMessage[]
+  chatQuickReplies  ChatQuickReply[]
+
+  // AI module (docs/07) — the prompt-template library + the per-tenant MCP
+  // tool-exposure overrides (the rest of the AI surface lives in api_keys / audit_logs).
+  aiPromptTemplates AiPromptTemplate[]
+  aiToolPolicies    AiToolPolicy[]
+
+  // B2B pricing (docs/10, docs/64) — pricing tiers, per-product overrides, portal contacts, approval rules
+  // (net-terms AR converged onto BillingDocument in Phase 8 — docs/87 §15)
+  b2bPricingTiers            B2bPricingTier[]
+  b2bTierProductOverrides    B2bTierProductOverride[]
+  b2bAccountProductOverrides B2bAccountProductOverride[]
+  b2bAccountContacts         B2bAccountContact[]
+  purchaseApprovalRules      PurchaseApprovalRule[]
+
+  // Dropship (docs/14, docs/64 Ph1)
+  dropshipSuppliers    DropshipSupplier[]
+  dropshipProducts     DropshipProduct[]
+  dropshipProductLinks DropshipProductLink[]
+  dropshipOrders       DropshipOrder[]
+
+  // Inventory Sync (docs/64 Ph Inv-1) — folded onto the master stock model (docs/100 P1c)
+  inventorySources      InventorySource[]
+  inventorySourceLinks  InventorySourceLink[]
+  inventorySyncRuns     InventorySyncRun[]
+  inventoryUnmappedSkus InventoryUnmappedSku[]
+
+  // Automation module (docs/81) — the cross-module rule engine
+  automations        Automation[]
+  automationRuns     AutomationRun[]
+  automationRunSteps AutomationRunStep[]
+  automationVersions AutomationVersion[]
+
+  // Platform billing (docs/67) — one Stripe subscription item per active module
+  billingSubscriptionItems BillingSubscriptionItem[]
+
+  // Payment gateway abstraction (docs/94) — tenant→shopper payments
+  paymentConfig      TenantPaymentConfig?
+  paymentIntents     PaymentIntent[]
+  paymentEvents      PaymentEvent[]
+  gatewayCredentials TenantGatewayCredential[]
+
+  // Analytics rollups (docs/97) — pre-aggregated reporting summaries
+  rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
+  rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
+  rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
+  rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
+  rollupInventoryDailyValuation RollupInventoryDailyValuation[]
+  // Platform capacity usage — what this tenant consumes, per day. The evidence a
+  // usage-based price gets set from; see the model for why the columns are not
+  // all the same kind of number.
+  rollupTenantDailyUsage        RollupTenantDailyUsage[]
+
+  // First-party site analytics (docs/97 §5) — raw capture + daily rollup
+  siteAnalyticsEvents SiteAnalyticsEvent[]
+  rollupSiteDaily     RollupSiteDaily[]
+
+  // Scheduling module (docs/79) — appointments / classes / reservations / rentals.
+  // The legacy B2B fleet tables (service_types/service_appointments) were retired
+  // onto this engine 2026-07-14 (docs/79 §15.7); B2B fleet context now rides on
+  // Booking.companyId/assetRef/partsLinked/workOrderId.
+  schedulingResources    SchedulingResource[]
+  schedulingServices     SchedulingService[]
+  bookings               Booking[]
+  bookingResources       BookingResource[]
+  bookingAttendees       BookingAttendee[]
+  availabilityWindows    AvailabilityWindow[]
+  availabilityExceptions AvailabilityException[]
+  bookingSeries          BookingSeries[]
+  waitlistEntries        WaitlistEntry[]
+  bookingPolicies        BookingPolicy[]
+  intakeForms            IntakeForm[]
+  intakeSubmissions      IntakeSubmission[]
+  calendarConnections    CalendarConnection[]
+  externalBusyBlocks     ExternalBusyBlock[]
+  bookingNotifications   BookingNotification[]
+  businessLocations      BusinessLocation[]
+
+  // Partner Program (docs/114 Part B) — the partner capability row (1:1),
+  // WizeWorks' application queue (platform tenant), referral/commission/payout
+  // ledger (partner's own org), and hosted bootcamps + their registrations.
+  partner               Partner?
+  partnerApplications   PartnerApplication[]
+  partnerReferrals      PartnerReferral[]
+  partnerCommissions    PartnerCommission[]
+  partnerPayoutRuns     PartnerPayoutRun[]
+  bootcamps             Bootcamp[]
+  bootcampRegistrations BootcampRegistration[]
+
+  // Finance module (docs/148) — the spend ledger, its vendors + categories, the
+  // recurring templates, the accounting handoff, and the daily profit rollup.
+  // Deliberately NOT a general ledger: sparx records spend and nets it against
+  // revenue, and exports to QuickBooks / Xero / Sage 50 rather than replacing them.
+  financeExpenseCategories     FinanceExpenseCategory[]
+  financeVendors               FinanceVendor[]
+  financeExpenses              FinanceExpense[]
+  financeExpenseAllocations    FinanceExpenseAllocation[]
+  financeExpenseAttachments    FinanceExpenseAttachment[]
+  financeRecurringExpenses     FinanceRecurringExpense[]
+  financeAccountingConnections FinanceAccountingConnection[]
+  financeAccountingMappings    FinanceAccountingMapping[]
+  financeAccountingSyncRuns    FinanceAccountingSyncRun[]
+  rollupFinanceDailyProfit     RollupFinanceDailyProfit[]
+
+  // Staff module (docs/149) — the people who do the work, their effective-dated
+  // rates, the time they actually worked, the roster, and the paper. Deliberately
+  // NOT payroll: sparx records hours and rates and exports them; it never withholds,
+  // never files, and never pays anyone.
+  staffMembers          StaffMember[]
+  staffMemberSites      StaffMemberSite[]
+  staffPayRates         StaffPayRate[]
+  staffTimeEntries      StaffTimeEntry[]
+  staffShifts           StaffShift[]
+  staffTimeOffRequests  StaffTimeOffRequest[]
+  staffCertifications   StaffCertification[]
+  staffDocuments        StaffDocument[]
+  staffCommissions      StaffCommission[]
+  staffSaleAttributions StaffSaleAttribution[]
+
+  // The staff console lists and segments tenants by brand from the first day two
+  // brands exist, and every cross-brand metric groups by it.
+  @@index([platformBrand])
+  @@map("tenants")
+}
+
+// ─── OnboardingChecklist ─────────────────────────────────────────────────────
+// Per-tenant onboarding tip/task visibility state. Created eagerly at tenant
+// creation (or lazily on first dashboard open); dismissed_at stamps when the
+// tenant owner clicks the dismiss button on a tip card.
+model OnboardingChecklist {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  key         String    @db.VarChar(63)
+  shownAt     DateTime? @map("shown_at") @db.Timestamptz
+  dismissedAt DateTime? @map("dismissed_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key], map: "onboarding_checklist_tenant_key_unique")
+  @@index([tenantId], map: "onboarding_checklist_tenant_idx")
+  @@map("onboarding_checklist")
+}

@@ -5,12 +5,12 @@ Author: Brandon Korous
 Last Updated: 2026-07-22
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the SEO audit engine
-> (`@sparx/seo-audit` + `/v1/seo/audit`) and Search Console integration are built and
+> (`@wizeworks/seo-audit` + `/v1/seo/audit`) and Search Console integration are built and
 > live. The operator SEO surfaces moved off the deleted `apps/dashboard` into
-> `apps/workbench/surfaces/seo` (the `/seo` overview + report). **Caveat:** the two
+> `sparx/apps/workbench/surfaces/seo` (the `/seo` overview + report). **Caveat:** the two
 > in-editor authoring surfaces referenced below (the builder inspector's `PageSeoPanel`
 > and the reusable `<SeoMetaFields>` component) were part of the deleted `apps/dashboard`
-> and are **not yet rebuilt in `apps/workbench`** — the builder inspector is now
+> and are **not yet rebuilt in `sparx/apps/workbench`** — the builder inspector is now
 > silica-owned (`@wizeworks/silicaui-builder`), and no standalone `SeoMetaFields`
 > component currently exists in the code (a known open item per the 2026-07-22 gap audit).
 > Still deferred (as §5 records): cross-page content-quality signals (duplicate titles,
@@ -18,8 +18,8 @@ Last Updated: 2026-07-22
 
 > Discoverability is a **platform capability**, not a per-app chore. It spans two audiences —
 > traditional search crawlers and the new wave of answer/generative engines (AIO) — and two
-> surfaces — the sparx **marketing site** (`apps/web`) and every **tenant site**
-> (`apps/site`). For tenants, SEO/AIO is a _product feature they control_ through the Builder and
+> surfaces — the sparx **marketing site** (`sparx/apps/web`) and every **tenant site**
+> (`wizeworks/apps/site`). For tenants, SEO/AIO is a _product feature they control_ through the Builder and
 > CMS, the same way [auth](16-auth-security.md), [billing](17-billing-subscriptions.md), and
 > [consent](42-legal-and-consent.md) each became first-class. This doc records the model and the
 > decisions; it is the home for the `docs/50` references threaded through the code.
@@ -41,7 +41,7 @@ complete machinery by default.
 
 ## 2. What shipped (Phase 1)
 
-### 2.1 Sitemap completeness — `services/api-rest/src/routes/v1/sitemap.ts`
+### 2.1 Sitemap completeness — `wizeworks/services/api-rest/src/routes/v1/sitemap.ts`
 
 The per-tenant `sitemap.xml` previously listed only CMS `content_entries`. It now covers everything
 the site serves, all read in one RLS-scoped round-trip:
@@ -49,7 +49,7 @@ the site serves, all read in one RLS-scoped round-trip:
 - the home page (`/`);
 - published CMS entries — via the content type's `urlPattern`, which doubles as the CMS's
   "is this type routable" flag (the dashboard gates the slug field on `Boolean(urlPattern)`), so a
-  type without one is correctly absent. **Exception (2026-07-18):** `apps/site` ships a hardcoded
+  type without one is correctly absent. **Exception (2026-07-18):** `wizeworks/apps/site` ships a hardcoded
   `/blog/[slug]` route that resolves any published `blog_post` by slug regardless of `urlPattern`,
   so those posts were reachable and indexable while being silently missing from the sitemap.
   `IMPLICIT_URL_PATTERNS` in the route supplies `/blog/{slug}` as a fallback; a type's own
@@ -69,10 +69,10 @@ guard — a catalog past that needs a paginated sitemap index, which is future w
 Tenants could create 301/302 redirects in the dashboard, but **nothing applied them** — a renamed
 slug just 404'd, burning the link equity the redirect existed to preserve.
 
-- **`GET /v1/public/redirects/resolve?tenant=&path=`** (`services/api-rest/.../public/redirects.ts`)
+- **`GET /v1/public/redirects/resolve?tenant=&path=`** (`wizeworks/services/api-rest/.../public/redirects.ts`)
   flattens the chain (follows up to 8 hops to the final destination) and bumps the matched
   redirect's hit counter.
-- **`apps/site/lib/redirects.ts` → `applyRedirect()`** is called immediately **before every
+- **`wizeworks/apps/site/lib/redirects.ts` → `applyRedirect()`** is called immediately **before every
   `notFound()`** in the catch-all, PDP, and collection routes. Because a live page always renders
   first, the lookup only runs for a path that would otherwise be dead — redirects never shadow a
   real page.
@@ -91,15 +91,15 @@ only `name · tenant`. They now carry real SEO, end to end:
 - **Schema** (`51-builder.prisma`, migration `20260624000000_builder_page_seo`): five additive,
   nullable columns on `builder_pages` — `seo_title`, `seo_description`, `canonical`, `og_image`,
   `noindex`. Additive only; RLS already ENABLE+FORCE, so no policy change.
-- **Contract** (`@sparx/builder-schemas`): a shared `PageSeoShape` extends Create/Update inputs;
+- **Contract** (`@wizeworks/builder-schemas`): a shared `PageSeoShape` extends Create/Update inputs;
   `BuilderPageDto` and the public `PublishedPageDto` expose the fields.
-- **Service** (`@sparx/builder` `pageService`): reads/writes the columns; empty strings normalize to
+- **Service** (`@wizeworks/builder` `pageService`): reads/writes the columns; empty strings normalize to
   `null` so a blank field falls back to the page name rather than an empty `<title>`.
 - **UI** (_not yet rebuilt in workbench — the builder inspector is now silica-owned, `@wizeworks/silicaui-builder`_): a `PageSeoPanel` in the singleton's
   page settings — title, description, canonical, social image, and an "allow indexing" switch.
   Text fields commit on blur (like the slug field); the switch commits immediately; edits are
   optimistic via `updatePageSeo`.
-- **Render** (`apps/site/app/[...slug]/page.tsx`): `generateMetadata` consumes the fields — author
+- **Render** (`wizeworks/apps/site/app/[...slug]/page.tsx`): `generateMetadata` consumes the fields — author
   SEO wins, blanks fall back to the page name; `noindex` flips the robots directive; `canonical`
   and `og_image` flow into `alternates`/`openGraph`.
 
@@ -115,14 +115,14 @@ The platform now opts **into** answer/generative-engine discovery (consistent wi
 positioning) rather than the common default of blocking AI crawlers.
 
 - **`llms.txt`** ([llmstxt.org](https://llmstxt.org)): the marketing site serves a curated,
-  link-first Markdown index built from the canonical `MODULES` source (`apps/web/app/llms.txt`); each
+  link-first Markdown index built from the canonical `MODULES` source (`sparx/apps/web/app/llms.txt`); each
   tenant site serves a store-identity index pointing at its full sitemap
-  (`apps/site/app/llms.txt`).
+  (`wizeworks/apps/site/app/llms.txt`).
 - **AI-crawler policy**: both `robots` surfaces name the major AI agents (GPTBot, OAI-SearchBot,
   ClaudeBot, anthropic-ai, PerplexityBot, Google-Extended, Applebot-Extended, CCBot, Amazonbot,
   Meta-ExternalAgent, …) as explicitly welcome, and the site `robots.txt` points to `llms.txt`.
   The named groups are also the lever to _tighten_ later if ever needed.
-- **FAQPage JSON-LD**: the marketing FAQ (`apps/web/components/marketing/faq.tsx`) emits FAQPage
+- **FAQPage JSON-LD**: the marketing FAQ (`sparx/apps/web/components/marketing/faq.tsx`) emits FAQPage
   structured data built from the same items it renders, so markup and visible prose never diverge.
 
 ## 3. Per-tenant control surface
@@ -142,7 +142,7 @@ A second pass landed the lower-risk web-best-practice gaps:
 
 - **Structured-data breadth** — site layout now emits **Organization** (logo + social `sameAs`)
   and **WebSite + SearchAction** (`/search?q=`); the marketing layout emits **WebSite**; CMS blog
-  posts emit **BlogPosting / Article** (`apps/site/components/article-json-ld.tsx`, wired around both
+  posts emit **BlogPosting / Article** (`wizeworks/apps/site/components/article-json-ld.tsx`, wired around both
   the builder-collection and bare-`PageView` render paths). (FAQPage landed in §2.4; **BreadcrumbList**
   auto-emits from the shared `<Breadcrumbs>`.)
 - **Security headers** — a Caddy `(security_headers)` snippet adds **HSTS, X-Content-Type-Options,
@@ -156,11 +156,11 @@ A second pass landed the lower-risk web-best-practice gaps:
   skipped** for now (no DSN/dependency).
 - **Core Web Vitals** — `useReportWebVitals` → PostHog (`web_vitals` event) on marketing + dashboard.
   Site CWV waits on its consent-gated analytics path ([42](42-legal-and-consent.md)).
-- **Marketing sitemap completeness** — `apps/web/app/sitemap.ts` lists the substantial static
+- **Marketing sitemap completeness** — `sparx/apps/web/app/sitemap.ts` lists the substantial static
   routes (`/platform`, `/features`, `/pricing`, `/partners{,/directory}`, `/bootcamp`, `/customers`,
   `/security`, `/brand`, `/legal/{privacy,terms,dpa,aup}`) alongside the home + module pages, plus
   the registry-driven `/tools`, `/careers`, and published bootcamp slugs; legal `lastModified`
-  tracks the document revision from `@sparx/legal`. `ComingSoon` stubs stay excluded on purpose
+  tracks the document revision from `@wizeworks/legal`. `ComingSoon` stubs stay excluded on purpose
   (thin placeholders → soft-404 risk).
 - **Extension-catalog coverage (2026-07-18)** — the `/market` tree (the blueprints/themes/
   integrations/components catalog) was shipped in Phase 5 but never added to the sitemap, so the
@@ -170,11 +170,11 @@ A second pass landed the lower-risk web-best-practice gaps:
   category past one page is never silently dropped, and logs when it hits its bound). Only the
   UNFILTERED category URL is listed — faceted views are `noindex` and robots-disallowed.
   **Do not confuse `sparx.works/market` with `sparx.market`**: the former is the extension catalog,
-  the latter a separately deployed app (`apps/market`) where shoppers buy tenant products. An early
+  the latter a separately deployed app (`sparx/apps/market`) where shoppers buy tenant products. An early
   plan had `sparx.market` 301 into `sparx.works/market`; that was abandoned and the redirect no
   longer exists.
 - **Tenant social cards (dynamic OG fallback)** — a tenant-branded Satori card so every shareable
-  site URL has a real social image even with no asset of its own. `apps/site/app/api/og`
+  site URL has a real social image even with no asset of its own. `wizeworks/apps/site/app/api/og`
   is a pure renderer (title/eyebrow/brand/accent as query params — no tenant lookup, no data
   fetch); `lib/og.ts → ogImageUrl()` builds the URL. **Real images always win**: the precedence is
   product photo → collection hero → author-set `og_image` → generated card. Wired into the PDP,
@@ -190,7 +190,7 @@ remaining follow-ups live with the feature in §7.6.)
 
 - **Markdown content endpoints for LLM ingest** (`/<path>.md`) — serve a clean Markdown twin of every
   public page so AI crawlers ingest structure without HTML noise.
-  _Needs:_ a doc→Markdown serializer in `@sparx/cms-editor` (today only `renderDocToHtml` exists) + a
+  _Needs:_ a doc→Markdown serializer in `@wizeworks/cms-editor` (today only `renderDocToHtml` exists) + a
   `.md` route on the site. _Trigger:_ the largest remaining AIO lever — do next when AIO is
   prioritized.
 - **CSP + Permissions-Policy (Report-Only first)** — the deferred half of the security headers (§4).
@@ -226,12 +226,12 @@ remaining follow-ups live with the feature in §7.6.)
 - SEO controls belong in the authoring tool for the surface that owns the content; the render path
   only _consumes_ the stored fields.
 - **SEO title/description inherit, and the editor must SHOW it.** The render path falls back
-  `seoTitle ?? name` and `seoDescription ?? description` (e.g. `apps/site/app/collections/[handle]/page.tsx`
-  `generateMetadata`), and the audit gatherer (`services/api-rest/src/lib/seo-audit.ts`) mirrors that same
+  `seoTitle ?? name` and `seoDescription ?? description` (e.g. `wizeworks/apps/site/app/collections/[handle]/page.tsx`
+  `generateMetadata`), and the audit gatherer (`wizeworks/services/api-rest/src/lib/seo-audit.ts`) mirrors that same
   fallback — so a blank SEO field is **not** "missing", it inherits, and the score legitimately reads
   "present". That is correct on the live site but _confusing in the editor_ (blank field + green score reads
   like a bug). Every editable surface therefore renders its SEO pair through the reusable **`<SeoMetaFields>`**
-  (_not yet rebuilt in `apps/workbench` — a known open item per the gap audit_), which makes the inheritance legible: the inherited
+  (_not yet rebuilt in `sparx/apps/workbench` — a known open item per the gap audit_), which makes the inheritance legible: the inherited
   value is the field's **placeholder**, and a per-field **"Use name" / "Use description"** button materializes
   it for editing (fill-empty only — it never clobbers a custom value; the description fill is trimmed to the
   ~160-char meta budget the score grades). Never render a bare SEO title/description input pair, and never a
@@ -245,7 +245,7 @@ references threaded through the code.
 
 ### 7.1 Shape
 
-- **Engine** — `@sparx/seo-audit`, a dependency-free pure function `auditEntity(input) → Scorecard`.
+- **Engine** — `@wizeworks/seo-audit`, a dependency-free pure function `auditEntity(input) → Scorecard`.
   No I/O, no clock, no React; deterministic and unit-tested. It scores a normalized
   `AuditableEntity` (never raw rows), so every surface scores identically.
 - **Live API** — `GET /v1/seo/audit?type=&id=` gathers the signals under RLS — inspecting the
@@ -302,7 +302,7 @@ entity-aware (prose pages expect more than a product blurb).
 
 ### 7.4 Phased build
 
-- **A — engine** (`@sparx/seo-audit`) + unit tests. Pure, no infra. ✅ _(Foundation.)_
+- **A — engine** (`@wizeworks/seo-audit`) + unit tests. Pure, no infra. ✅ _(Foundation.)_
 - **B — live API** `GET /v1/seo/audit` + per-entity-type signal extractors. ✅
 - **C — chip + hover popover.** ✅ Builder inspector, overview rows, and the CMS / product /
   collection editor SEO panels.

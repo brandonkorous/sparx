@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-medspa-clinical',
-    version: '1.3.0',
-    name: 'sparx — Med Spa (Clinical)',
-    summary:
-        'A clean, clinical med-spa site — clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-medspa-clinical',
+  version: '1.3.0',
+  name: 'sparx — Med Spa (Clinical)',
+  summary:
+    'A clean, clinical med-spa site — clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Lumen',
+    tagline: 'Clearer skin, done properly.',
+    colors: {
+      primary: '#4a8878',
+      primaryForeground: '#030e0b',
+      accent: '#d2b18d',
+      secondary: '#48585e',
+    },
+    fonts: {
+      heading: 'Outfit',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'lumen',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Lumen',
-        tagline: 'Clearer skin, done properly.',
-        colors: {
-            primary: '#4a8878',
-            primaryForeground: '#030e0b',
-            accent: '#d2b18d',
-            secondary: '#48585e',
-        },
-        fonts: {
-            heading: 'Outfit',
-            body: 'Inter',
-        },
+      colorPrimary: '#4a8878',
+      colorAccent: '#d2b18d',
+      colorSecondary: '#48585e',
+      fontHeading: 'Outfit',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'lumen',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#4a8878',
-            colorAccent: '#d2b18d',
-            colorSecondary: '#48585e',
-            fontHeading: 'Outfit',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

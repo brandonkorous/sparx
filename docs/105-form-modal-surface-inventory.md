@@ -165,7 +165,7 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
 - ✅ Strong: textbook F-layout in all 3 presentations; create/edit symmetric; toolbar order (Cancel
   leftmost → Delete → Save) correct; single-home (summary read-only facts, form editable) — no
   duplication; commerce accent consistent everywhere; system fidelity clean.
-- ✅ FIXED (UI): Featured now a themed `@sparx/ui` `Checkbox` (`color="module"`); per-field help added
+- ✅ FIXED (UI): Featured now a themed `@wizeworks/ui` `Checkbox` (`color="module"`); per-field help added
   (Parent trail + sibling sort note, Featured purpose).
 - ✅ FIXED (UX): summary enriched — **breadcrumb ancestry** ("Nested under") + **subcategory count**,
   derived from the already-loaded tree (no extra fetch); fills the column. (No "View N products" link —
@@ -205,7 +205,7 @@ along. Two gaps the first pass missed:
 - ✅ Strong: correct tab-panel treatment (NOT a nested frame); SEO already loads a live health chip;
   type-not-editable guard rail explained in microcopy.
 - ✅ FIXED (UI): Metadata panel now a **`<Card variant="module">`** (commerce stripe; Products + Rules
-  tabs too, so the whole detail reads commerce); Featured is a themed **`@sparx/ui` `Checkbox`** (was a
+  tabs too, so the whole detail reads commerce); Featured is a themed **`@wizeworks/ui` `Checkbox`** (was a
   raw `<input type="checkbox">`); Save moved out of the bespoke `CardFooter` into the card body and is
   **dirty-aware** (disabled until something changes; clears the saved badge on edit).
 - ✅ FIXED (UI, platform): **status pills carry a tone** — membership product pills (active→success,
@@ -368,7 +368,7 @@ mostly the recurring platform nits:
 
 ### Seed wave 2 — fitment + orders/returns, and two bugs it exposed (2026-06-27)
 
-Seeded the surfaces that wave 1 left empty so they could be eyes-on verified (`packages/db/prisma/seed.ts`):
+Seeded the surfaces that wave 1 left empty so they could be eyes-on verified (`wizeworks/packages/db/prisma/seed.ts`):
 
 - **`seedDemoFitment`** — populates the platform-**global Vehicle** domain (Ford/RAM/Chevrolet → models → engines + Year) so it stops showing an empty tree, adds tenant **Device/Pet/Apparel** domains (exercises the 1/2/3-level generalized model), and links the diesel catalog via `ProductFitment`.
 - **`seedDemoOrders`** — retail customers + addresses → orders (full lifecycle: placed/fulfilled/delivered/cancelled/refunded) → line items → **returns** (requested→approved→received→inspecting→refunded, with inspections + shipping labels). Computes denormalized customer stats (no order-event consumer runs against a seed DB). Scoped to the coherent diesel inventory catalog so totals read like a real parts shop.
@@ -376,21 +376,21 @@ Seeded the surfaces that wave 1 left empty so they could be eyes-on verified (`p
 
 Two real bugs surfaced **because** the data finally existed (exactly the point of seeding) — both fixed:
 
-- 🐞 **Fitment was missing from the commerce sidebar.** `/commerce/fitment` is a full first-class surface but had no nav entry — reachable only by typing the URL. Added `{ id: 'fitment', label: 'Fitment', icon: Boxes }` to `packages/commerce/src/manifest.ts` (between Collections and Pricing).
-- 🐞 **Global Vehicle domain's categories 400'd — the tree was never browsable.** The seeded global domain uses a sentinel id `00000000-0000-0000-0000-000000000001` (set by the fitment migration) whose version/variant bits are zero: a valid Postgres `uuid` that **Zod 4's strict `.uuid()` (RFC-9562) rejects**. So `GET /v1/commerce/fitment/domains/:domainId/categories` failed request validation and the editor silently rendered an empty domain under a "3 makes" badge. Pre-existing latent bug — invisible only because the domain had no categories before. Fixed by accepting the UUID **shape** (`z.guid()`) for fitment reference ids in `services/api-rest/.../commerce/fitment.ts` (path params) + `packages/commerce-schemas/src/fitment.ts` (input ids); product / product-fitment ids stay strict `.uuid()`. Verified on screen: Vehicle → Ford → F-250 → 6.7L/6.0L Power Stroke now renders end to end.
+- 🐞 **Fitment was missing from the commerce sidebar.** `/commerce/fitment` is a full first-class surface but had no nav entry — reachable only by typing the URL. Added `{ id: 'fitment', label: 'Fitment', icon: Boxes }` to `wizeworks/packages/commerce/src/manifest.ts` (between Collections and Pricing).
+- 🐞 **Global Vehicle domain's categories 400'd — the tree was never browsable.** The seeded global domain uses a sentinel id `00000000-0000-0000-0000-000000000001` (set by the fitment migration) whose version/variant bits are zero: a valid Postgres `uuid` that **Zod 4's strict `.uuid()` (RFC-9562) rejects**. So `GET /v1/commerce/fitment/domains/:domainId/categories` failed request validation and the editor silently rendered an empty domain under a "3 makes" badge. Pre-existing latent bug — invisible only because the domain had no categories before. Fixed by accepting the UUID **shape** (`z.guid()`) for fitment reference ids in `wizeworks/services/api-rest/.../commerce/fitment.ts` (path params) + `wizeworks/packages/commerce-schemas/src/fitment.ts` (input ids); product / product-fitment ids stay strict `.uuid()`. Verified on screen: Vehicle → Ford → F-250 → 6.7L/6.0L Power Stroke now renders end to end.
 
 ### Fitment rebuild — global removed, then a dimension-driven model (2026-06-28)
 
 Two structural changes landed back-to-back, both eyes-on verified across the whole stack.
 
-**1. The platform-global Vehicle domain is gone.** Nothing fitment-shaped shows by default (a bakery/publisher never sees "Vehicle"). The four reference tables went `tenant_id NOT NULL` + strict FORCE RLS (migration `20260923000000`); the platform now ships a **library of 14 installable dictionaries** (`packages/commerce-schemas/src/fitment-dictionaries.ts`, industry-varied) a tenant stamps as its own tenant-scoped copy. New dashboard surfaces: a **dictionary picker** (3-col `ModalContent size="2xl"`, soft module badges, correct pluralization) + the install/“+ New domain” shell (`fitment-manager.tsx`). _(The bespoke `dictionary-picker.tsx` was later generalized into the shared cross-module `PresetPicker` — see the Wave 1 module-preset entry below.)_
+**1. The platform-global Vehicle domain is gone.** Nothing fitment-shaped shows by default (a bakery/publisher never sees "Vehicle"). The four reference tables went `tenant_id NOT NULL` + strict FORCE RLS (migration `20260923000000`); the platform now ships a **library of 14 installable dictionaries** (`wizeworks/packages/commerce-schemas/src/fitment-dictionaries.ts`, industry-varied) a tenant stamps as its own tenant-scoped copy. New dashboard surfaces: a **dictionary picker** (3-col `ModalContent size="2xl"`, soft module badges, correct pluralization) + the install/“+ New domain” shell (`fitment-manager.tsx`). _(The bespoke `dictionary-picker.tsx` was later generalized into the shared cross-module `PresetPicker` — see the Wave 1 module-preset entry below.)_
 
 **2. The rigid 3-level + 1-range model became fully dimension-driven (the real fix).** A merchant flagged that the old `labels.l1/l2/l3 + rangeUnit` baked a 3-tier cap and shoved year into one product-side range — "2026 Ford F-250 6.7L" or "2026 MacBook Pro M2" couldn't be expressed, and the tree was **add-only** (no rename/delete/uninstall — a typo was unfixable). Reworked to:
 
 - **Schema** (`33-commerce-fitment.prisma`, migration `20260924000000`, **data-preserving**, tenant-looped for FORCE-RLS): `fitment_domains.dimensions` JSON (`{key,label,kind:'level'|'range',unit?}[]`, unlimited depth); a single self-referential **`fitment_nodes`** table (replaces categories/items/variants) carrying materialized `path`/`pathNames`/`depth` for ancestor (storefront "fits my 2015 F-250") + descendant (collection "all Ford parts") filtering; `product_fitments.nodeId` (null = whole-domain) + a **`product_fitment_ranges`** child (unlimited numeric axes). Every existing row migrated (category/item/variant → node keeping its id; labels → dimensions; range_min/max → a range row).
 - **Service / API** (`fitment-service.ts`, `commerce/fitment.ts`): generic node CRUD (create/update/**delete**/reorder, with rename cascading `pathNames`), domain update + **uninstall** (returns products-affected), dimension-aware `lookup`.
 - **Dashboard** (all standardized: `useConfirm`, soft module badges, `Button shape="square"` icon buttons): **dimension-builder** dialog (`new-domain-dialog.tsx` — add arbitrary level/range dimensions, **no Vehicle default**), a generic **N-level tree editor** (`fitment-reference-editor.tsx` — lazy drill of ANY depth with inline **rename + delete + add-per-level + drag-reorder (whole-row, dnd-kit) + uninstall**), a shared **node drill** (`products/_components/fitment-node-drill.tsx`) reused by the product **Fitment panel** (node path + per-range-dimension from/to inputs) and the product **wizard** step.
-- **Consumers migrated** to nodes/ranges: storefront read-path + generic `FacetPanel` (`apps/site`), B2B **fleet** (vehicle = node + range values, ancestor-matched compatible-products), `collection-rules` (descendant-by-name via `node.pathNames`), `search-projection` (depth-bucketed denorm).
+- **Consumers migrated** to nodes/ranges: storefront read-path + generic `FacetPanel` (`wizeworks/apps/site`), B2B **fleet** (vehicle = node + range values, ancestor-matched compatible-products), `collection-rules` (descendant-by-name via `node.pathNames`), `search-projection` (depth-bucketed denorm).
 
 Verified: all 7 affected workspaces `tsc` clean; migration applied + re-seed (`4 makes / 8 models / 11 engines`, `nodes=23`, `ranges=8`) data-correct on docker; on screen — Vehicle tree drills 3 deep with rename/delete on every node + uninstall on the domain, the dimension builder opens with neutral placeholders, and a product rule shows `Ford / F-250 / 6.7L Power Stroke` + a `Year 2011–2022` narrowing badge with Year from/to inputs.
 
@@ -398,9 +398,9 @@ Verified: all 7 affected workspaces `tsc` clean; migration applied + re-seed (`4
 
 The fitment dictionary install was the first instance of a general pattern: **a per-module, data-as-code config pack a tenant installs into an enabled module.** Wave 1 generalized it into a reusable seam so later waves (tax zones, CRM pipelines, taxonomies, …) and industry starters all plug in the same way.
 
-- **Contract + registry** (`@sparx/modules/src/presets.ts`, re-exported via `@sparx/auth`): `ModulePreset` (`module, slug, kind, name, description, iconKey, tags, summary, isInstalled(ctx), install(ctx)`) + a pure `ModulePresetRegistry` (dedup, `forModules`, `get`) + `toModulePresetView`. `install`/`isInstalled` take a `TenantContext` that MAY carry an open `tx`, so an industry starter can stamp several presets atomically. Unit-tested (`presets.test.ts`).
-- **Commerce entry #1** (`@sparx/commerce/src/presets.ts`): the 14 fitment dictionaries register as `commerce` presets (`kind: 'fitment'`, slug `fitment-<dict>`), each delegating to the verified `installFitmentDictionary` / new `isFitmentDictionaryInstalled` — so picker-installed, starter-installed, and seeded trees are byte-identical.
-- **Seam at the composition root** (`services/api-rest/src/lib/preset-registry.ts`, sibling of `module-provisioning.ts` for the same acyclic-deps reason): `listInstallablePresets` self-filters to the tenant's **enabled modules** (one tx for all `isInstalled` checks); `installPreset` **gates on the owning module being enabled** (a disabled module stores no rows) and 404s unknown presets. Neither path ever writes `settings.modules`.
+- **Contract + registry** (`@wizeworks/modules/src/presets.ts`, re-exported via `@wizeworks/auth`): `ModulePreset` (`module, slug, kind, name, description, iconKey, tags, summary, isInstalled(ctx), install(ctx)`) + a pure `ModulePresetRegistry` (dedup, `forModules`, `get`) + `toModulePresetView`. `install`/`isInstalled` take a `TenantContext` that MAY carry an open `tx`, so an industry starter can stamp several presets atomically. Unit-tested (`presets.test.ts`).
+- **Commerce entry #1** (`@wizeworks/commerce/src/presets.ts`): the 14 fitment dictionaries register as `commerce` presets (`kind: 'fitment'`, slug `fitment-<dict>`), each delegating to the verified `installFitmentDictionary` / new `isFitmentDictionaryInstalled` — so picker-installed, starter-installed, and seeded trees are byte-identical.
+- **Seam at the composition root** (`wizeworks/services/api-rest/src/lib/preset-registry.ts`, sibling of `module-provisioning.ts` for the same acyclic-deps reason): `listInstallablePresets` self-filters to the tenant's **enabled modules** (one tx for all `isInstalled` checks); `installPreset` **gates on the owning module being enabled** (a disabled module stores no rows) and 404s unknown presets. Neither path ever writes `settings.modules`.
 - **Generic API** (`routes/v1/presets.ts`): `GET /v1/presets?module=&kind=` + `POST /v1/presets/:module/:slug/install`. The bespoke `/v1/commerce/fitment/dictionaries[/:slug/install]` endpoints were **retired** — one install path.
 - **Shared picker** (`(dashboard)/_components/preset-picker.tsx` + `preset-actions.ts`): the cross-module `PresetPicker` (per-card `<ModuleProvider>` so each pack wears its module hue; `summary` chips; server-resolved `installed` → "Installed" badge). The fitment page is its first consumer (`?module=commerce&kind=fitment`); the bespoke `DictionaryPicker` was deleted.
 
@@ -411,9 +411,9 @@ Verified: typecheck (5 workspaces) + lint (0 errors) + prettier clean; registry 
 A proactive sweep across **all of commerce + the CRM overlap**, after the user kept catching the same two fingerprints one page at a time on the Returns surface ("the customer id should be the customer name", "shouldn't this be the item name?", "those badges aren't conforming"). Grep-driven (`<Badge variant="outline">{rawEnum}</Badge>` ≈ 30 hits; `.slice(0, 8)` identity ≈ 22 files), then fixed at the source rather than waiting to be found.
 
 - **Class B — badges.** Every raw snake_case enum / bland uncolored outline badge → humanized + `variant="soft"` + `size="sm"` + an explicit color, per the `statusLabel`/`statusTone` convention (status → `statusTone`; primary classifier → `info`; secondary/metadata/code chip → `neutral`; quality/quantity → semantic). Surfaces: carts, checkout-sessions, bundles, discounts, tax, pricing (lists + details), configurator, providers, shipping (zones/profiles/list), products (variants-panel, wizard, tab counts, pricing panels, bulk-pricing), price-reviews, surcharges, markup-rules, qa; CRM duplicates, activity-timeline, customers header. Also caught **two `color="outline"` bugs** (outline passed where a tone belongs — a no-op that rendered greyscale) in checkout-sessions + providers + subscriptions detail. **Zero `<Badge variant="outline">` remain in commerce.**
-- **Class A — IDs resolve to names.** Where a table/detail showed a partial GUID for an entity that has a human label, the label is now resolved (id kept only as the fallback). Needed service joins: **carts** (`customerName` on `CartSnapshot`), **subscriptions** (`customerName` on summary + line `variantSku`/`productTitle` + `addonOfName`), **configurator** add-ons (batched variant→sku/title — the `ConfigurationAddOn` row has no relation), **wishlists** (variant column → `variantTitle`), **CRM reports** win/loss (`repId` → name via `/v1/users` map), **reviews** (media-asset ids → actual **thumbnails** through the public media redirect, mirroring product-media). Extracted the duplicated customer-label logic into a shared `packages/commerce/src/services/customer-name.ts` (`CUSTOMER_NAME_SELECT` + `customerDisplayName`); `return-service` now imports it instead of its local copy.
+- **Class A — IDs resolve to names.** Where a table/detail showed a partial GUID for an entity that has a human label, the label is now resolved (id kept only as the fallback). Needed service joins: **carts** (`customerName` on `CartSnapshot`), **subscriptions** (`customerName` on summary + line `variantSku`/`productTitle` + `addonOfName`), **configurator** add-ons (batched variant→sku/title — the `ConfigurationAddOn` row has no relation), **wishlists** (variant column → `variantTitle`), **CRM reports** win/loss (`repId` → name via `/v1/users` map), **reviews** (media-asset ids → actual **thumbnails** through the public media redirect, mirroring product-media). Extracted the duplicated customer-label logic into a shared `wizeworks/packages/commerce/src/services/customer-name.ts` (`CUSTOMER_NAME_SELECT` + `customerDisplayName`); `return-service` now imports it instead of its local copy.
 
-Verified: `@sparx/commerce` + `@sparx/dashboard` `tsc` clean; ESLint clean on all touched files (only pre-existing `max-lines` warnings); prettier clean. Left genuine count/label chips (`{items.length}`, "Default", "NOT") and own-id diagnostics (a cart/session/subscription's own handle, which have no friendlier number) as-is — not the defect class.
+Verified: `@wizeworks/commerce` + `@sparx/dashboard` `tsc` clean; ESLint clean on all touched files (only pre-existing `max-lines` warnings); prettier clean. Left genuine count/label chips (`{items.length}`, "Default", "NOT") and own-id diagnostics (a cart/session/subscription's own handle, which have no friendlier number) as-is — not the defect class.
 
 ### Same sweep, extended platform-wide (2026-06-28)
 
@@ -458,7 +458,7 @@ The shared shape every form now follows (one component, three presentations):
   step — one component handles both via a computed `steps`/`current`.
 - **Delete confirms normalized** while in these files: the source + supplier `AlertDialog`
   removes became `useConfirm` + toast (service-types already was). The catalog-color
-  `<input type="color">` (no `@sparx/ui` equivalent) and the `requiresVehicle` checkbox →
+  `<input type="color">` (no `@wizeworks/ui` equivalent) and the `requiresVehicle` checkbox →
   themed `Checkbox color="module"` were tidied in passing.
 
 **Decision (create=overlay / edit=modal):** these entities have no `@detail` detail view,
@@ -474,7 +474,7 @@ dev lifecycle.
 ### Platform gaps surfaced (fix once, on the primitive)
 
 - ✅ **BUILT — Status pills carry semantic color (`statusTone`).** A status pill is just a `<Badge>` with
-  a tone — no `StatusBadge` component. `statusTone(status)` + `statusLabel(status)` ship from `@sparx/ui`
+  a tone — no `StatusBadge` component. `statusTone(status)` + `statusLabel(status)` ship from `@wizeworks/ui`
   (in `primitives/badge.tsx`): a universal status→tone dictionary (success/warning/info/danger/neutral)
   so every list/detail/picker renders `<Badge color={statusTone(s)} variant="soft" size="sm">` instead of
   bland neutral/outline pills or hand-rolled `<span>`s. Domain code that reads a word differently passes
@@ -528,7 +528,7 @@ dev lifecycle.
     wizard shapes spot-verified on screen (pristine Cancel = no prompt; dirty Cancel = discard dialog;
     success = no false prompt).
   - **✅ `GuardedTabs` — the guard extends to TABBED details (2026-06-25).** `_components/guarded-tabs.tsx`
-    wraps the `@sparx/ui` `<Tabs>` and consults `useLeaveGuard()` before switching tab — a clean switch is
+    wraps the `@wizeworks/ui` `<Tabs>` and consults `useLeaveGuard()` before switching tab — a clean switch is
     instant, a dirty one prompts the discard confirm and only switches on accept. The editable tab panel
     registers via `useUnsavedGuard`; the detail route's `UnsavedGuardProvider` (already on `DetailPageShell`)
     is the shared channel. Adopted on the **collection** detail (Metadata tab) and the **product** detail
@@ -565,7 +565,7 @@ dev lifecycle.
   `UnsavedGuardProvider`. First adopter: Categories (2026-06-23).
 - **`SurfaceSummary` has no async/loading slot.** If summaries start loading related-record counts they
   need a skeleton/`loading` affordance. Not needed for Categories (derived client-side). _Surfaced: Categories (2026-06-23)._
-- ✅ **DONE — raw `<input type="checkbox"/"radio">` → themed `@sparx/ui` `Checkbox` /
+- ✅ **DONE — raw `<input type="checkbox"/"radio">` → themed `@wizeworks/ui` `Checkbox` /
   `RadioGroup`+`RadioGroupItem` (`color="module"`).** A system-fidelity gap (un-themed, no module accent)
   that recurred across ~26 dashboard forms. **Swept** (2026-06-25): commerce (collection create, discount,
   new-profile, new-variant, return-approval, new-tax-rate, price-list-entries, install-provider, bundle-editor),
@@ -573,10 +573,10 @@ dev lifecycle.
   (invoice-wizard, line-grid, workflows new/editor/stage-row/add-stage, pipelines), dropship, crm/pipelines,
   settings/ai-integrations. **FormData-native checkboxes stay submission-safe** — Radix `Checkbox` renders a
   hidden form input when given `name`, so `form.get(name) === 'on'` is unchanged. **Platform fix that rode
-  with it:** `eslint.config.js` now maps the `@sparx/ui` field components (`Checkbox`/`RadioGroupItem`/
+  with it:** `eslint.config.js` now maps the `@wizeworks/ui` field components (`Checkbox`/`RadioGroupItem`/
   `Input`/`NativeSelect`/`Textarea` → their DOM elements) under `settings['jsx-a11y'].components`, so
   `jsx-a11y/label-has-associated-control` resolves a `<Label>` wrapping a themed control (the native control
-  is nested at runtime) — same approach `apps/site` already uses for its `Sparx*` components. 0 lint errors
+  is nested at runtime) — same approach `wizeworks/apps/site` already uses for its `Sparx*` components. 0 lint errors
   across dashboard/site/web after the sweep. **Follow-up (2026-06-26):** `_components/site-scope-field` (the
   multi-site "Visible on sites" control on the page + entry editors) already used the themed `Checkbox` but
   without the module accent — now `color="module"`, so it reads in the active module hue like every other
@@ -628,7 +628,7 @@ dev lifecycle.
 - **2026-06-29 — WS4 audited COMPLETE: inline detail-page edit/record forms already standardized.** Audited the
   full WS4 list on a clean tree (after the card-tint sweep + prior "surface polish" commits landed). **Finding:
   WS4's "raw forms clobbering the chrome" was already remediated incrementally** — every form now uses the
-  `@sparx/ui` design system (no raw `<input>/<select>/<textarea>`, no `text-[var(--color-danger)]` spans, no
+  `@wizeworks/ui` design system (no raw `<input>/<select>/<textarea>`, no `text-[var(--color-danger)]` spans, no
   `AlertDialog`-for-data-entry, proper `<Card variant="default">` + `<Label>` + `color="module"` + error/saved
   states + `useUnsavedGuard`/`useConfirm` where relevant). **Verified compliant (read in full):** commerce
   returns approval/inspection/refund, reviews `respond-form`, qa `answer-form`, shipping `new-rate-form`, CMS
@@ -644,7 +644,7 @@ dev lifecycle.
   clean files would be churn). **WS4 done.**
 
 - **2026-06-29 — WS5 COMPLETE: substantive dialogs → standard `Modal` ✅ gate-clean.** Key finding: **most WS5
-  "substantive dialogs" were already on the standard `@sparx/ui` `Modal`/`useConfirm`** — the census's
+  "substantive dialogs" were already on the standard `@wizeworks/ui` `Modal`/`useConfirm`** — the census's
   "self-owned modal" just means each component owns its own `Modal` instance (there's no central dialog
   registry; that IS the target). Verified already-compliant: `b2b/invoices/[id]/invoice-actions` (mark-paid /
   write-off), `b2b/appointments/appointment-actions`, `b2b/approval-queue/approve-reject-actions`,
@@ -672,7 +672,7 @@ installs/.../update` is a parallel agent's diff-review surface (excluded, untouc
   SHARED `ContentEntryForm` in CONTROLLED (fields-only) mode so the schema editor stays untouched. It stays a
   **page surface** (no new overlay): the generic `content-entry` overlay (ContentEntryWizard) already covers
   the drawer/modal create-with-type-picker case. **Design-direction change applied (landed mid-session in
-  packages/ui/CLAUDE.md #26):** single-module working surfaces — create/edit forms, wizard steps — now use
+  sparx/packages/ui/CLAUDE.md #26):** single-module working surfaces — create/edit forms, wizard steps — now use
   NEUTRAL `<Card>` (`variant="default"`), NOT the module tint (tint reserved for cross-module overview
   surfaces; form identity comes from the frame chrome + `color="module"` primary + the module-tinted summary
   rail). All six WS2 forms aligned (dropped `variant="module"` on field cards). **A parallel agent is running
@@ -756,7 +756,7 @@ installs/.../update` is a parallel agent's diff-review surface (excluded, untouc
   - Renamed the primitive end-to-end: file `surface-frame.tsx`, exports `Surface*` (`SurfaceFrame` /
     `SurfaceStep` / `SurfaceStepDef` / `SurfaceSummary*`), barrel, 67 consumers, docs/86 →
     `86-surface-frame-pattern.md`, this doc + the `form-surface` skill. It is the ONE form-surface frame
-    — create AND edit, single-step by default, steps are an opt-in (wizard) feature. `@sparx/ui` +
+    — create AND edit, single-step by default, steps are an opt-in (wizard) feature. `@wizeworks/ui` +
     `@sparx/dashboard` typecheck + lint clean. (`ProductWizard`/`QuoteWizard`/etc. keep their names —
     they're genuinely multi-step wizards built on the frame.)
   - All commerce CREATE surfaces migrated + wired: discount, bundle, shipping zone/profile, tax zone,
@@ -764,7 +764,7 @@ installs/.../update` is a parallel agent's diff-review surface (excluded, untouc
     surfaces, worked **page-by-page in Playwright** (see the walk-through above).
 
 - **2026-06-21 — Wave 0 ✅ and Wave 1 ✅ complete.**
-  - Wave 0 (cross-cutting cleanups): the two `window.prompt` reason-captures (`return-status-bar`, `moderate-actions`) became proper `@sparx/ui` `Modal` + required `Textarea` dialogs; the raw `AlertDialog`/arm-confirm patterns in `email/domains/domain-actions`, `commerce/pricing/[id]/price-list-status-bar`, `inventory/sources/[id]/agent-panel` (unpair), `b2b/service-types/service-type-actions` (delete), and the CMS confirms (`cms/[id]/edit-form`, `author-edit-form`, `schema-editor`, `types/[typeKey]/[id]/edit-entry-form`, `navigation/menu-editor`, `revisions/restore-button`) now go through `useConfirm`. _Note:_ the CMS edit-form rows stay 🔲 because the **form→overlay** migration (Wave 4) is the real remaining work there — only their confirm sub-fix is done.
+  - Wave 0 (cross-cutting cleanups): the two `window.prompt` reason-captures (`return-status-bar`, `moderate-actions`) became proper `@wizeworks/ui` `Modal` + required `Textarea` dialogs; the raw `AlertDialog`/arm-confirm patterns in `email/domains/domain-actions`, `commerce/pricing/[id]/price-list-status-bar`, `inventory/sources/[id]/agent-panel` (unpair), `b2b/service-types/service-type-actions` (delete), and the CMS confirms (`cms/[id]/edit-form`, `author-edit-form`, `schema-editor`, `types/[typeKey]/[id]/edit-entry-form`, `navigation/menu-editor`, `revisions/restore-button`) now go through `useConfirm`. _Note:_ the CMS edit-form rows stay 🔲 because the **form→overlay** migration (Wave 4) is the real remaining work there — only their confirm sub-fix is done.
   - Wave 1 (wizard summaries): `customer-full-profile-wizard` and `b2b-account-wizard` gained live F-layout summary columns and joined `SUMMARY_CREATE_TYPES`. The whole record-builder + line-item wizard family now carries a summary.
   - Verified: `@sparx/dashboard` typecheck clean, lint 0 errors.
 
@@ -1057,7 +1057,7 @@ name prompt) are migrated under WS4/WS5; the editor body itself is excluded.
 
 1. Pick a row (or a whole wave). Read [`form-surface`](../.claude/skills/form-surface/SKILL.md) §0 to confirm wizard vs single-step and whether it gets a summary.
 2. Build/convert the component (skill §1–§2), wire the **three registries** (skill §3 — the footgun), wire launcher + `/new` route (skill §4).
-3. Apply the design rules (skill §5 — no eyebrows, tokens, `@sparx/ui` components).
+3. Apply the design rules (skill §5 — no eyebrows, tokens, `@wizeworks/ui` components).
 4. Verify in **all three presentations** (skill §6 — modal / full page / drawer).
 5. Update this doc: flip the row's Status and bump the version + date.
 

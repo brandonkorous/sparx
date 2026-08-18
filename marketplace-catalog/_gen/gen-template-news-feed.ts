@@ -14,10 +14,10 @@
 // `template-sites/harness.ts` (extended with content-theme resolution + the `article` slot
 // — the content analog of `pdp`). The article DATA plumbing lives in the shared
 // `template-sites/article.ts` kit. Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-news-feed.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-news-feed.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-news-feed/**" \
 //     "marketplace-catalog/_gen/**/*.ts"
-//   pnpm --filter @sparx/api-rest marketplace:self-register
+//   pnpm --filter @wizeworks/api-rest marketplace:self-register
 //
 // A CONTENT template still ships the full 9-page superset (the module-independent rule:
 // author complete, the installer writes the tenant's enabled slices) — so it carries a
@@ -32,10 +32,10 @@ import { pathToFileURL } from 'node:url';
 import {
   el,
   type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { productsBlock } from '../../packages/silica-catalog/src/commerce';
-import { blogPostGrid } from '../../packages/silica-catalog/src/cms';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { productsBlock } from '../../wizeworks/packages/silica-catalog/src/commerce';
+import { blogPostGrid } from '../../wizeworks/packages/silica-catalog/src/cms';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';

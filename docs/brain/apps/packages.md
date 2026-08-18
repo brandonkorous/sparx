@@ -9,20 +9,20 @@ sources:
 
 ~60 workspace packages, grouped by domain (one line each):
 
-**UI / design:** `@sparx/ui` (dashboard components) · `@sparx/site-ui` (site components, `--st-*`) · `@sparx/site-themes` (tenant theme presets + compiler) · `@sparx/surface-compile` (per-tenant CSS compile). → [[design]], [[components]].
+**UI / design:** `@wizeworks/ui` (dashboard components) · `@sparx/site-ui` (site components, `--st-*`) · `@wizeworks/site-themes` (tenant theme presets + compiler) · `@wizeworks/surface-compile` (per-tenant CSS compile). → [[design]], [[components]].
 
-**Builder / CMS:** `@sparx/builder-schemas` (BuilderNode schemas + the [[builder-catalog]]) · `@sparx/builder-render` (node→element map) · `@sparx/builder` · `@sparx/sitebuilder(-schemas)` · `@sparx/section-template-react` · `@sparx/cms-editor(-schemas)` · `@sparx/blueprints`.
+**Builder / CMS:** `@wizeworks/builder-schemas` (BuilderNode schemas + the [[builder-catalog]]) · `@wizeworks/builder-render` (node→element map) · `@wizeworks/builder` · `@wizeworks/sitebuilder(-schemas)` · `@wizeworks/section-template-react` · `@wizeworks/cms-editor(-schemas)` · `@wizeworks/blueprints`.
 
-**Commerce / inventory:** `@sparx/commerce(-schemas)` · `@sparx/inventory` · `@sparx/dropship` · `@sparx/channels`.
+**Commerce / inventory:** `@wizeworks/commerce(-schemas)` · `@wizeworks/inventory` · `@wizeworks/dropship` · `@wizeworks/channels`.
 
-**Payments / billing / providers:** `@sparx/payments` (multi-gateway) · `@sparx/billing` (platform subscription) · `@sparx/integration-framework` · `provider-{avalara,taxjar,shippo,easypost,paypal(stub)}`. → [[stripe]].
+**Payments / billing / providers:** `@wizeworks/payments` (multi-gateway) · `@wizeworks/billing` (platform subscription) · `@wizeworks/integration-framework` · `provider-{avalara,taxjar,shippo,easypost,paypal(stub)}`. → [[stripe]].
 
-**CRM / automation / scheduling:** `@sparx/crm(-schemas)` · `@sparx/automation(-schemas,-actions)` · `@sparx/scheduling(-schemas)` · `@sparx/attribution` · `@sparx/seo-audit`.
+**CRM / automation / scheduling:** `@wizeworks/crm(-schemas)` · `@wizeworks/automation(-schemas,-actions)` · `@wizeworks/scheduling(-schemas)` · `@wizeworks/attribution` · `@wizeworks/seo-audit`.
 
-**Email / SMS:** `@sparx/email` (React Email + provider) · `@sparx/email-platform` · `@sparx/email-sends` (worker-safe enqueue) · `@sparx/sms`. → [[email-pipeline]].
+**Email / SMS:** `@wizeworks/email` (React Email + provider) · `@wizeworks/email-platform` · `@wizeworks/email-sends` (worker-safe enqueue) · `@wizeworks/sms`. → [[email-pipeline]].
 
-**Auth / data / infra:** `@sparx/auth` (staff) · `@sparx/customer-auth` (shopper) · `@sparx/db` · `@sparx/events` · `@sparx/modules` · `@sparx/query` (TanStack) · `@sparx/api-core` · `@sparx/api-client`.
+**Auth / data / infra:** `@wizeworks/auth` (staff) · `@wizeworks/customer-auth` (shopper) · `@wizeworks/db` · `@wizeworks/events` · `@wizeworks/modules` · `@wizeworks/query` (TanStack) · `@wizeworks/api-core` · `@wizeworks/api-client`.
 
-**Domains / legal / search:** `@sparx/godaddy` + `@sparx/registrar` ([[godaddy]]) · `@sparx/legal(-templates,-seed)` · `@sparx/search` (Typesense) · `@sparx/chat-widget` · `@sparx/marketplace-schemas` · `@sparx/partner-schemas` · `@sparx/site-mcp`.
+**Domains / legal / search:** `@wizeworks/godaddy` + `@wizeworks/registrar` ([[godaddy]]) · `@wizeworks/legal(-templates,-seed)` · `@wizeworks/search` (Typesense) · `@wizeworks/chat-widget` · `@wizeworks/marketplace-schemas` · `@wizeworks/partner-schemas` · `@wizeworks/site-mcp`.
 
 Related: [[services]], [[architecture]]

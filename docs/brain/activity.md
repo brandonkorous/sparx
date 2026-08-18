@@ -5,9 +5,9 @@ type: map
 status: active
 sources:
   - docs/124-activity-jobs-notifications.md
-  - packages/db/prisma/schema/04-audit.prisma
-  - packages/db/prisma/schema/55-import-jobs.prisma
-  - packages/events/src/types.ts
+  - wizeworks/packages/db/prisma/schema/04-audit.prisma
+  - wizeworks/packages/db/prisma/schema/55-import-jobs.prisma
+  - wizeworks/packages/events/src/types.ts
 ---
 
 # Activity, Jobs & Notifications
@@ -77,7 +77,7 @@ still does, and retires with `apps/dashboard`
 "what happened" surface reads `/v1/activity`, never a list endpoint.
 
 **Surfaces are workbench-only.** Every UI target below is built in
-`apps/workbench`; `apps/dashboard` gets no new work. The read-spine stays
+`sparx/apps/workbench`; `apps/dashboard` gets no new work. The read-spine stays
 app-agnostic (no route/href in the DTO — the workbench maps `kind` → a surface
 key client-side, like the pulse) so admin/operator reuses it later.
 

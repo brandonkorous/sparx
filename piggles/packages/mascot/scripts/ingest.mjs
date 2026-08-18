@@ -8,6 +8,9 @@
 // TARGETS. Both outputs are GENERATED and committed — review the diff, never hand-
 // edit them. If a pose needs different metadata, fix the batch manifest and re-run.
 //
+// Each pose ships TWICE: `<id>.webp` for the browser, and `og/<id>.png` for the
+// social cards, because satori cannot decode WebP. See OG_EDGE below.
+//
 // ── WHY THIS EXISTS AT ALL ───────────────────────────────────────────────────
 //
 // A batch is not shippable as delivered, for three reasons that are invisible in
@@ -110,6 +113,28 @@ const ALPHA_FLOOR = 12;
 const PAD = 4;
 
 const WEBP = { quality: 82, effort: 6, alphaQuality: 100 };
+
+/** ── THE SECOND COPY, IN PNG, FOR SOCIAL CARDS ────────────────────────────────
+ *
+ *  Every OG card is rendered by satori, and **satori cannot decode WebP.** Its
+ *  allowed list is literally `[png, apng, jpeg, gif, svg]`; the WebP magic number
+ *  is recognised only so it can throw `Unsupported image type: image/webp`. So the
+ *  shipped `.webp` — right for every browser — is the one format the most-shared
+ *  artefact this brand has cannot use, and a card naming a pose would fail the
+ *  BUILD rather than degrade.
+ *
+ *  Hence a parallel PNG per pose. The alternatives were both worse: converting in
+ *  the OG route puts `sharp` in three apps' dependency trees to redo the same work
+ *  every build, and reading the batch masters straight from `piggles/images/`
+ *  breaks the rule that those folders are an INPUT nothing else may reference.
+ *
+ *  `OG_EDGE` is 480 because the card is 1200×630 and satori rasterises it at 1×:
+ *  the mascot column is ~420px wide and she is never taller than ~430px, so 480 on
+ *  the longest edge is 1:1 with headroom and anything larger is bytes nobody sees.
+ *  Palette-quantised — the artwork is smooth 3D shading, which quantises cleanly at
+ *  this size, and it is the difference between 3.4MB and 13MB per app. */
+const OG_EDGE = 480;
+const OG_PNG = { compressionLevel: 9, palette: true, quality: 90, effort: 10 };
 
 // ── batch manifest normalisation ─────────────────────────────────────────────
 
@@ -321,9 +346,20 @@ async function build(entry) {
         .webp(WEBP)
         .toBuffer();
 
+    // The social-card copy. Trimmed to the SAME bounding box, so `width`/`height`/
+    // `subject` describe it too and the card can use the component's arithmetic
+    // unchanged — a separately-cropped PNG would need its own geometry and would
+    // put the mascot at a different scale on the card than in the app.
+    const ogScale = Math.min(1, OG_EDGE / Math.max(box.width, box.height));
+    const og = await sharp(entry.source)
+        .extract({ left: box.left, top: box.top, width: box.width, height: box.height })
+        .resize(Math.round(box.width * ogScale), Math.round(box.height * ogScale), { fit: 'fill' })
+        .png(OG_PNG)
+        .toBuffer();
+
     const subject = await subjectSpan(entry.source, box, height);
 
-    return { ...entry, width, height, subject, buffer, canvas: box.canvas };
+    return { ...entry, width, height, subject, buffer, og, canvas: box.canvas };
 }
 
 // ── catalog emission ─────────────────────────────────────────────────────────
@@ -359,6 +395,7 @@ function emitCatalog(available, planned) {
     anchor: ${quote(pose.anchor)},
     intent: ${list(pose.intent)},
     src: '/mascot/${pose.id}.webp',
+    og: 'mascot/og/${pose.id}.png',
     width: ${pose.width},
     height: ${pose.height},
     subject: ${pose.subject.toFixed(4)},
@@ -413,6 +450,11 @@ export interface MascotPose {
   intent: readonly string[];
   /** Served from each app's own public/ directory. */
   src: string;
+  /** The social-card copy, as a path RELATIVE TO public/ — not a URL. satori
+   *  cannot decode WebP, so \`src\` is unusable on an OG card; this PNG is read off
+   *  disk at build time and embedded as base64, never fetched. Trimmed to the same
+   *  box as \`src\`, so \`width\`/\`height\`/\`subject\` describe both. */
+  og: string;
   /** TRUE intrinsic size of the trimmed artwork, not the delivery canvas. */
   width: number;
   height: number;
@@ -498,8 +540,16 @@ const planned = [...roadmap.values()].sort((a, b) => a.id.localeCompare(b.id));
 // serving forever with nothing referencing it.
 for (const dir of TARGETS) {
     await rm(dir, { recursive: true, force: true });
-    await mkdir(dir, { recursive: true });
-    for (const pose of available) await writeFile(join(dir, `${pose.id}.webp`), pose.buffer);
+    await mkdir(join(dir, 'og'), { recursive: true });
+    for (const pose of available) {
+        await writeFile(join(dir, `${pose.id}.webp`), pose.buffer);
+        // `og/` is READ FROM DISK at build time by @piggles/brand/og and embedded in
+        // the card as base64 — it is never fetched over HTTP. It lives under public/
+        // anyway because that is the one directory whose path an app can resolve
+        // from its own `process.cwd()` without knowing where in the monorepo it
+        // sits, and the one directory the Dockerfiles already copy.
+        await writeFile(join(dir, 'og', `${pose.id}.png`), pose.og);
+    }
 }
 
 // Formatted here rather than left to `pnpm format`, so that re-running the ingest
@@ -517,6 +567,7 @@ await writeFile(
 );
 
 const total = available.reduce((sum, pose) => sum + pose.buffer.length, 0);
+const ogTotal = available.reduce((sum, pose) => sum + pose.og.length, 0);
 for (const pose of available) {
     const digest = createHash('sha256').update(pose.buffer).digest('hex').slice(0, 8);
     console.log(
@@ -526,7 +577,8 @@ for (const pose of available) {
     );
 }
 console.log(
-    `\n${available.length} poses (${Math.round(total / 1024)}KB) → ${TARGETS.length} apps, ` +
+    `\n${available.length} poses (${Math.round(total / 1024)}KB webp + ` +
+    `${Math.round(ogTotal / 1024)}KB og png) → ${TARGETS.length} apps, ` +
     `${planned.length} planned. Batches: ${ACTIVE_BATCHES.join(', ')}.`
 );
 

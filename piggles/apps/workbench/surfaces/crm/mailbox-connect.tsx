@@ -160,14 +160,22 @@ export function MailboxConnectSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Mailbox connection actions">
-        <Button color="module" size="sm" disabled={!canSubmit} onClick={submit}>
-          {connect.isPending ? 'Checking…' : 'Connect mailbox'}
-        </Button>
-        <Text as="span" className="text-sm">
-          {productCopy('crm.mailbox.testSignIn', 'sparx signs in once now to make sure it works.')}
-        </Text>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Mailbox connection actions"
+        status={
+          <Text as="span" className="text-sm">
+            {productCopy(
+              'crm.mailbox.testSignIn',
+              'sparx signs in once now to make sure it works.'
+            )}
+          </Text>
+        }
+        primary={
+          <Button color="module" size="sm" disabled={!canSubmit} onClick={submit}>
+            {connect.isPending ? 'Checking…' : 'Connect mailbox'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <Card className="p-4">

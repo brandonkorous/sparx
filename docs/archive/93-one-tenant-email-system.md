@@ -44,8 +44,8 @@ tenant authors, and **keeps** the genuinely-different platform/auth emails coded
 
 There is **no synchronous blocker.** All of these — including password reset — are
 already published as async `email.send` events
-([packages/auth/src/email-events.ts](../../packages/auth/src/email-events.ts),
-[services/api-rest/src/routes/v1/public/account.ts](../../services/api-rest/src/routes/v1/public/account.ts#L314)).
+([wizeworks/packages/auth/src/email-events.ts](../../packages/auth/src/email-events.ts),
+[wizeworks/services/api-rest/src/routes/v1/public/account.ts](../../services/api-rest/src/routes/v1/public/account.ts#L314)).
 The only truly synchronous email would be OTP/2FA, which does not exist yet (§8).
 
 ---
@@ -78,8 +78,8 @@ the merchant doesn't edit **structure/copy**, not that it's unbranded.
 | `appointment-confirmation` | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-confirmation` key)        |
 | `appointment-reminder`     | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-reminder` key)            |
 | `appointment-cancelled`    | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-cancelled` key)           |
-| `welcome-merchant`         | sparx → merchant                     | Better Auth (`@sparx/auth`)                 | **Stays coded** (platform onboarding)                 |
-| `email-verification`       | sparx → dashboard user               | Better Auth (`@sparx/auth`)                 | **Stays coded** (auth)                                |
+| `welcome-merchant`         | sparx → merchant                     | Better Auth (`@wizeworks/auth`)             | **Stays coded** (platform onboarding)                 |
+| `email-verification`       | sparx → dashboard user               | Better Auth (`@wizeworks/auth`)             | **Stays coded** (auth)                                |
 | `password-reset`           | dashboard user **and** site customer | Better Auth + `public/account`              | **Stays coded** (auth infra — §1.2)                   |
 | `domain-renewal-reminder`  | sparx → merchant                     | `domain-worker` cron                        | **Stays coded** (platform/account)                    |
 | `chat-notification`        | sparx-system → owner/admin **staff** | `lib/chat/notify`                           | **Stays coded** (operational; links to the dashboard) |
@@ -106,7 +106,7 @@ beyond logo/colors, §8 sketches a gated path; we do **not** build it now.
 
 The Builder path already exists; the migration **generalizes it**. Today the
 automation dispatcher resolves a `BuilderEmail` by `key`, renders it, and emits a
-`kind:'raw'` send ([services/api-rest/src/lib/email-dispatch.ts](../../services/api-rest/src/lib/email-dispatch.ts),
+`kind:'raw'` send ([wizeworks/services/api-rest/src/lib/email-dispatch.ts](../../services/api-rest/src/lib/email-dispatch.ts),
 [email-data.ts](../../services/api-rest/src/lib/email-data.ts)). We lift that into one
 reusable primitive that **any** direct sender can call.
 
@@ -125,15 +125,15 @@ sendTenantEmailByKey(ctx, {
 ```
 
 Why api-rest, not the worker: api-rest is the composition root that already has
-`@sparx/builder` + the commerce-aware `resolveEmailData`; the worker stays lean
+`@wizeworks/builder` + the commerce-aware `resolveEmailData`; the worker stays lean
 (it only ever receives `kind:'raw'` for these, exactly as broadcasts + automations
 already do). This is the established split (docs/52 §6), not a new dependency.
 
 **Code-shipped fallback** (step 1) is the safety net that lets us delete the coded
 templates: if a tenant predates provisioning or dropped its row, the send still
-renders from the `DEFAULT_EMAIL_TEMPLATES` tree in `@sparx/builder-schemas`. The
+renders from the `DEFAULT_EMAIL_TEMPLATES` tree in `@wizeworks/builder-schemas`. The
 6-hour provisioning reconcile
-([services/api-rest/src/lib/email-provisioning.ts](../../services/api-rest/src/lib/email-provisioning.ts))
+([wizeworks/services/api-rest/src/lib/email-provisioning.ts](../../services/api-rest/src/lib/email-provisioning.ts))
 back-fills the row so the tenant can then edit it.
 
 ### 2.1 No new safety gate is needed for the moved emails
@@ -168,7 +168,7 @@ These follow the existing resolver idiom exactly: entity-scoped, selected by
 
 ## 4. The five new Builder default trees
 
-Authored in `packages/builder-schemas/src/default-emails.ts` exactly like the 13
+Authored in `wizeworks/packages/builder-schemas/src/default-emails.ts` exactly like the 13
 (the `node()`/`body()` helpers), appended to `DEFAULT_EMAIL_TEMPLATES`. Provisioning
 and the reconcile back-fill pick them up automatically (they iterate the array), and
 each is per-site overridable via the same `(tenant, property, key)` model. Count
@@ -194,11 +194,11 @@ Once the five senders route through `sendTenantEmailByKey`:
 
 **Remove the moved coded templates**
 
-- Delete the 5 components + exports from `@sparx/email`
-  ([packages/email/src/templates/index.ts](../../packages/email/src/templates/index.ts)).
+- Delete the 5 components + exports from `@wizeworks/email`
+  ([wizeworks/packages/email/src/templates/index.ts](../../packages/email/src/templates/index.ts)).
 - Delete their 5 arms from `TemplateSendSchema`
   ([handler.ts:43](../../services/email-worker/src/handler.ts#L43)) and the matching
-  `TemplateSend` union in `@sparx/email`. The worker keeps **`kind:'raw'`** + the
+  `TemplateSend` union in `@wizeworks/email`. The worker keeps **`kind:'raw'`** + the
   5 surviving coded templates (`password-reset`, `welcome-merchant`,
   `email-verification`, `domain-renewal-reminder`, `chat-notification`).
 
@@ -207,9 +207,9 @@ Once the five senders route through `sendTenantEmailByKey`:
 - Page + dashboard nav entry:
   [apps/dashboard/app/(dashboard)/email/templates/](<../%3C../apps/dashboard/app/(dashboard)/email/templates/%3E>).
 - Routes: `/v1/email/templates` (+ `/builtin/:key`, `/preview`, `/test-send`)
-  ([services/api-rest/src/routes/v1/email/templates.ts](../../services/api-rest/src/routes/v1/email/templates.ts)).
+  ([wizeworks/services/api-rest/src/routes/v1/email/templates.ts](../../services/api-rest/src/routes/v1/email/templates.ts)).
 - `templateService` builtin surface + `BUILTIN_TEMPLATES`
-  ([packages/email-platform/src/builtin-templates.ts](../../packages/email-platform/src/builtin-templates.ts),
+  ([wizeworks/packages/email-platform/src/builtin-templates.ts](../../packages/email-platform/src/builtin-templates.ts),
   [services/template-service.ts](../../packages/email-platform/src/services/template-service.ts)).
 - **Audit `EmailTemplate` (`source='builtin'`)** before dropping the model: confirm
   no other reader, then drop the override rows/table in a pipeline migration. Zero
@@ -249,7 +249,7 @@ already has the Builder + resolver — no service gains a new heavy dependency.
 | **S2** | Resolver: `order.shippingAddress`/`statusUrl`, `shipping.*`, `appointment.*` + `fulfillment/appointment` refs | ✅ [email-data.ts] + `shipping`/`appointment` added to `EMAIL_SOURCES` (binding.ts)                                                                                                                                                                                                                    |
 | **S3** | Author the 5 default trees; `DEFAULT_EMAIL_TEMPLATES` 13 → 18                                                 | ✅ unit asserts 18 keys + tree validity                                                                                                                                                                                                                                                                |
 | **S4** | Migrate the senders                                                                                           | ✅ — but only **3 live senders** existed: `order-confirmation` (stripe-payment-reconcile), `appointment-confirmation`/`-cancelled` (b2b/scheduling). `shipping-confirmation` + `appointment-reminder` had **no caller** (reminder cron unbuilt), so their trees ship ready but nothing sends them yet. |
-| **S5** | Retire the 5 coded templates + worker schema arms                                                             | ✅ removed from `@sparx/email` (5 components), `send.tsx` union, worker `TemplateSendSchema` (only order/shipping arms existed), `events` `EmailSendPayload` union                                                                                                                                     |
+| **S5** | Retire the 5 coded templates + worker schema arms                                                             | ✅ removed from `@wizeworks/email` (5 components), `send.tsx` union, worker `TemplateSendSchema` (only order/shipping arms existed), `events` `EmailSendPayload` union                                                                                                                                 |
 | **S6** | Delete `/email/templates` + drop `EmailTemplate`                                                              | ✅ page/routes/`templateService`/`BUILTIN_TEMPLATES`/manifest nav gone; model + the dead `Broadcast.template_id`/`ScheduledSend.template_id` FK columns dropped (migration `20260818000000_drop_email_templates`, applied to docker, drift-clean)                                                      |
 
 **Deviations from the plan:**

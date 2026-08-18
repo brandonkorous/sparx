@@ -31,21 +31,16 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import {
-  faCalendarRange,
-  faFloppyDisk,
-  faRepeat,
-  faSquare,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faCalendarRange, faFloppyDisk, faSquare } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -335,19 +330,22 @@ function SeriesCreate({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New repeating booking actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Set it up
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New repeating booking actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Set it up
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -470,7 +468,19 @@ function SeriesCreate({ ctx }: { ctx: SurfaceContext }) {
    MANAGE A RUNNING PATTERN
    ══════════════════════════════════════════════════════════════════════════ */
 
-function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSeriesDetail }) {
+function SeriesManage({
+  ctx,
+  series,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  series: BookingSeriesDetail;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const confirmDialog = useConfirm();
   const cancel = useCancelSeries(series.id);
@@ -531,19 +541,21 @@ function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSer
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Repeating booking actions">
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Repeating booking actions"
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+        status={
+          <Badge color={meta.tone} variant="soft" size="sm">
+            {meta.label}
+          </Badge>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
-            <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-              <Icon glyph={faRepeat} className="size-5 shrink-0" aria-hidden />
-              <span className="min-w-0 break-words">{series.serviceName ?? 'A service'}</span>
-            </Heading>
             <Text className="text-base">{humanizeRrule(series.rrule)}.</Text>
             <Text className="text-sm">
               {series.totalBookings} booking{series.totalBookings === 1 ? '' : 's'} in all ·{' '}
@@ -666,7 +678,18 @@ export function SeriesDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  return <SeriesManage key={series.data.id} ctx={ctx} series={series.data} />;
+  return (
+    <SeriesManage
+      key={series.data.id}
+      ctx={ctx}
+      series={series.data}
+      isFetching={series.isFetching}
+      updatedAt={series.dataUpdatedAt}
+      onRefresh={() => {
+        void series.refetch();
+      }}
+    />
+  );
 }
 
 export default SeriesDetailSurface;

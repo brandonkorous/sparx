@@ -26,11 +26,10 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faCableCar,
   faFileSpreadsheet,
@@ -56,6 +55,10 @@ import {
   type SourceType,
 } from './sources-data';
 import { productCopy } from '../../lib/product';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -143,6 +146,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faLink} className="size-6" aria-hidden />,
@@ -250,52 +254,64 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Stock source controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Stock source controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search stock sources"
+              placeholder="Source name…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Add a source',
+          icon: faPlus,
+          onClick: addSource,
+        }}
+        controls={
+          <NativeSelect
             size="sm"
-            aria-label="Search stock sources"
-            placeholder="Source name…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+            className="max-w-40 shrink"
+            aria-label="Show sources with status"
+            value={status}
+            onChange={(event) => {
+              setStatus(event.target.value as SourceStatus | '');
               resetWindow();
             }}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show sources with status"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value as SourceStatus | '');
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </NativeSelect>
+        }
+        views={{
+          target: '/inventory/sources',
+          params: { q: search.trim(), status },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus((next.status ?? '') as SourceStatus | '');
             resetWindow();
-          }}
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Button size="sm" color="module" className="ml-auto shrink-0" onClick={addSource}>
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @sm:inline">Add a source</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
 

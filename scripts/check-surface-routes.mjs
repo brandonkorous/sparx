@@ -2,8 +2,8 @@
 // that does not exist.
 //
 // WHY THIS IS A SCRIPT AND NOT A TEST. The invariant spans two things that
-// cannot meet at runtime: the route table in `@sparx/links` (pure data, imported
-// by Node services) and the surface registry in apps/workbench (which imports
+// cannot meet at runtime: the route table in `@wizeworks/links` (pure data, imported
+// by Node services) and the surface registry in sparx/apps/workbench (which imports
 // React, silicaui, and all 233 pane components). A vitest that imported the
 // registry would drag the entire UI into a data check. Both sides declare their
 // keys as string literals, so reading the literals is both sufficient and
@@ -35,10 +35,10 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 // so the bar goes blank when you focus it and a link to a page editor cannot be sent.
 // A check that covers one of two apps reads exactly like a check that covers both.
 const CATALOG_DIRS = [
-  'apps/workbench/lib/surfaces/catalog',
+  'sparx/apps/workbench/lib/surfaces/catalog',
   'piggles/apps/workbench/lib/surfaces/catalog',
 ];
-const ROUTES_FILE = 'packages/links/src/routes.ts';
+const ROUTES_FILE = 'wizeworks/packages/links/src/routes.ts';
 
 /** Strip `//` line comments so a key quoted inside prose is not read as a declaration. */
 function decomment(source) {

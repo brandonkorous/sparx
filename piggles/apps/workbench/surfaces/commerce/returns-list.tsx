@@ -15,7 +15,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -82,33 +83,33 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Returns list controls" wrap>
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter returns"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Returns list controls"
+        filters={[
+          {
+            label: 'Show',
+            // Each chip IS one stored status, so that is the name it persists under.
+            key: 'status',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
+              resetWindow();
+            },
+            options: FILTERS,
+          },
+        ]}
+        // The stage is the only thing narrowing this list, and the bar holds it.
+        views={{ target: '/commerce/returns' }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (

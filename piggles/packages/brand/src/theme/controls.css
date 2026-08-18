@@ -1,0 +1,118 @@
+/* ── Comfort-first, the part no token can reach ───────────────────────────────
+ *
+ * Part of @piggles/brand/theme.css — imported from it, never directly.
+ * UNLAYERED on purpose: that is what outranks silicaui's `base` layer.
+ * See ../layers.css.
+ *
+ * Everything above is a silica token. These two are not — silica hardcodes them
+ * — so they are overridden HERE, once, where the rest of the brand lives. The
+ * thing that must never happen instead is a `p-8` sprinkled onto card call
+ * sites: that cannot reach the shared workbench surfaces at all, and it turns
+ * one decision into a thousand.
+ *
+ * Unlayered, like the theme blocks above, so they outrank silica's base layer.
+ *
+ * CARD PADDING — 32px, from silica's 24. This is most of what "I can breathe
+ * here" actually is: the controls got bigger above, and 24px of padding around
+ * a 56px control reads as a box that is slightly too small for its contents.
+ * `.card-body` only — never `.card-clickable`, whose zero padding is structural
+ * (the body inside it carries the real padding, and giving the button padding
+ * too would double it). */
+.card-body {
+  padding: 2rem;
+  /* The gap BETWEEN things a card stacks — silica ships 8px, which is a
+   * form-control gap rather than a section gap. 16px is the "clear visual
+   * grouping" half of comfortable density: it is what stops a heading, a
+   * paragraph and a button reading as one undifferentiated block.
+   *
+   * The honest limit of this: it reaches what a CARD stacks and nothing else.
+   * The gaps between form groups and between major sections live as `gap-*`
+   * classes inside each surface's own JSX, and for the shared workbench
+   * surfaces there is no lever here short of Tailwind's `--spacing` — which
+   * also scales every width in the spacing scale, including the app panel's
+   * `w-64`. That one is deliberately NOT taken yet; look at a real screen with
+   * the changes above in place first. */
+  gap: 1rem;
+}
+
+/* ── The type ladder, re-hung on the size ladder ──────────────────────────────
+ *
+ * `--size-field` moves every control's HEIGHT and nothing else. silica bakes a
+ * font-size into each size step separately, and those two ladders were never
+ * meant to be moved apart — so raising the height alone produced the exact
+ * opposite of comfort:
+ *
+ *     default control   48px tall   14px text
+ *     size="sm"         38px tall   12px text
+ *     size="xs"         29px tall   11px text
+ *
+ * A 48px input with 14px text is not spacious, it is STRETCHED: seventeen
+ * pixels of padding above and below a small glyph, so the writing floats in the
+ * middle of a big empty box. That reads as a control that was resized by
+ * accident, and it is most of why the console felt cramped despite every
+ * measurement saying it was not.
+ *
+ * It also broke the type floor outright. `size="sm"` appears throughout the
+ * ~500 shared surfaces — filter rows, toolbar buttons, pane headers — and every
+ * one of them was rendering 12px, which DESIGN.md §3 allows for nothing at all.
+ *
+ * So the type ladder is re-hung here to match the heights the brand actually
+ * runs. One block, no call sites, and it reaches the shared surfaces:
+ *
+ *     xs  29px → 13px      the one genuine caption tier
+ *     sm  38px → 14px      the caption allowance, and no lower
+ *     md  48px → 16px      the body floor, on the control everything defaults to
+ *     lg  58px → 17px
+ *     xl  67px → 18px
+ *
+ * Specificity: `.btn.btn-sm` (two classes) over silica's `.btn-sm` (one), so
+ * these win without !important. The bare `.btn` rule is the md tier, which
+ * carries no modifier class of its own.
+ */
+.btn,
+.input,
+.select,
+.textarea,
+.file-input {
+  font-size: 1rem;
+}
+.btn.btn-xs,
+.input.input-xs,
+.select.select-xs,
+.textarea.textarea-xs {
+  font-size: 0.8125rem;
+}
+.btn.btn-sm,
+.input.input-sm,
+.select.select-sm,
+.textarea.textarea-sm {
+  font-size: 0.875rem;
+}
+.btn.btn-md,
+.input.input-md,
+.select.select-md,
+.textarea.textarea-md {
+  font-size: 1rem;
+}
+.btn.btn-lg,
+.input.input-lg,
+.select.select-lg,
+.textarea.textarea-lg {
+  font-size: 1.0625rem;
+}
+.btn.btn-xl,
+.input.input-xl,
+.select.select-xl,
+.textarea.textarea-xl {
+  font-size: 1.125rem;
+}
+
+/* Status pills sit in table rows and beside headings, so they are a tier below
+ * the fields rather than level with them — but 11px on the small one was a
+ * legibility problem rather than a density choice. */
+.badge {
+  font-size: 0.8125rem;
+}
+.badge.badge-sm {
+  font-size: 0.75rem;
+}

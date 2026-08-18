@@ -19,15 +19,15 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faWebhook } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -37,6 +37,10 @@ import {
   webhookState,
   type WebhookSubscription,
 } from './webhooks-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'cms';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -83,36 +87,42 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Webhooks list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search webhooks"
-            placeholder="Name or address…"
-            value={search}
-            onValueChange={setSearch}
+      <PaneToolbar
+        label="Webhooks list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search webhooks"
+              placeholder="Name or address…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New webhook',
+          icon: faPlus,
+          onClick: create,
+          title: 'Set up a new webhook — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/cms/webhooks',
+          params: { q: search },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Set up a new webhook — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @xl:inline">New webhook</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {staleAfterFailure ? (
@@ -138,26 +148,19 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
 
         {error && !staleAfterFailure ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faWebhook} className="size-6" aria-hidden />}
             title="Could not load your webhooks"
             description="This is a problem reaching the server. None of your webhooks have been changed or lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={term !== ''}
             noResults={{
               icon: <Icon glyph={faWebhook} className="size-6" aria-hidden />,

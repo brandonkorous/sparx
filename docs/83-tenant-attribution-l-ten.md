@@ -11,7 +11,7 @@
 > describes attribution at two altitudes: **L-PLAT** (WizeWorks acquisition — _which channel
 > produced a paying tenant_) and **L-TEN** (tenant commerce — _which channel produced an order_).
 >
-> **L-PLAT shipped** (2026-06-10): `@sparx/attribution`, the `apps/web` capture, `tenants.acquisition_*`,
+> **L-PLAT shipped** (2026-06-10): `@wizeworks/attribution`, the `sparx/apps/web` capture, `tenants.acquisition_*`,
 > the internal acquisition report, and a consent banner. **L-TEN has not been built.** This doc exists
 > so it isn't forgotten — it carries the concrete gap list, the reusable pieces, the sequencing
 > constraint, and a done-checklist. When L-TEN ships, fold the substance back into docs/80 §11 and
@@ -34,13 +34,13 @@ should ship soon after the tree is calm, capture-layer first.
 
 ## 2. Reuse — do NOT rebuild these
 
-| Asset                                                                                        | Where                                              | Use for L-TEN                                             |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------- |
-| `captureTouch` / `classify` / `resolveFirstTouch` / `resolveLastTouch` / `serializeSnapshot` | `@sparx/attribution` (`packages/attribution/src/`) | Pure, domain-agnostic — call directly from site capture   |
-| UTM taxonomy + `AttributionSnapshot` / `Channel` / `AttributionModel` types                  | `@sparx/attribution`                               | Universal                                                 |
-| `gateTracker({ category, load })`                                                            | `apps/site/lib/consent.ts`                         | Consent-gate the site capture (analytics category)        |
-| `getVisitorId()` (mints/returns `sparx_consent` UUID)                                        | `apps/site/lib/consent.ts`                         | Visitor identity for stitching touches → customer → order |
-| `ConsentRecord.visitorId → customerId` edges                                                 | `packages/db/prisma/schema/53-consent.prisma`      | Back-link anonymous touches once a customer is known      |
+| Asset                                                                                        | Where                                                            | Use for L-TEN                                             |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
+| `captureTouch` / `classify` / `resolveFirstTouch` / `resolveLastTouch` / `serializeSnapshot` | `@wizeworks/attribution` (`wizeworks/packages/attribution/src/`) | Pure, domain-agnostic — call directly from site capture   |
+| UTM taxonomy + `AttributionSnapshot` / `Channel` / `AttributionModel` types                  | `@wizeworks/attribution`                                         | Universal                                                 |
+| `gateTracker({ category, load })`                                                            | `wizeworks/apps/site/lib/consent.ts`                             | Consent-gate the site capture (analytics category)        |
+| `getVisitorId()` (mints/returns `sparx_consent` UUID)                                        | `wizeworks/apps/site/lib/consent.ts`                             | Visitor identity for stitching touches → customer → order |
+| `ConsentRecord.visitorId → customerId` edges                                                 | `wizeworks/packages/db/prisma/schema/53-consent.prisma`          | Back-link anonymous touches once a customer is known      |
 
 The L-TEN difference from L-PLAT is only: **tenant-scoped cookies** (not `.sparx.works`), **the
 site visitor id** (`sparx_consent`, not `sparx_attr_vid`), and persistence to an
@@ -48,16 +48,16 @@ site visitor id** (`sparx_consent`, not `sparx_attr_vid`), and persistence to an
 
 ## 3. Build checklist
 
-### 3.1 Capture layer (`apps/site`)
+### 3.1 Capture layer (`wizeworks/apps/site`)
 
-- [ ] Add `@sparx/attribution` (`workspace:*`) to `apps/site/package.json` (+ Dockerfile COPY closure).
-- [ ] Site capture component (mirror `apps/web/components/attribution-capture.tsx`): consent-gated
+- [ ] Add `@wizeworks/attribution` (`workspace:*`) to `wizeworks/apps/site/package.json` (+ Dockerfile COPY closure).
+- [ ] Site capture component (mirror `sparx/apps/web/components/attribution-capture.tsx`): consent-gated
       via the **site** `gateTracker`, tenant-scoped cookie domain, visitor id from `getVisitorId()`.
 - [ ] Edge proxy/middleware visitor seam if needed (the site already mints `sparx_consent`).
 - [ ] Cross-domain handoff for custom domains (docs/80 §6.2): signed `?_sx=` param to carry the visitor
       id across the eTLD+1 boundary (site ↔ checkout/account on a different registrable domain).
 
-### 3.2 Schema — one migration (docs/80 §8; RLS per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md))
+### 3.2 Schema — one migration (docs/80 §8; RLS per [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md))
 
 - [ ] `attribution_touches` — tenant-scoped, append-only. `id · tenant_id · visitor_id · session_id ·
 snapshot(jsonb) · channel · customer_id(FK,null) · order_id(FK,null) · occurred_at` + indexes.
@@ -73,7 +73,7 @@ medium · campaign · friendly_name · created_by · created_at`. RLS on tenant-
 
 ### 3.3 Ingestion API + events
 
-- [ ] `POST /v1/attribution/touch` (`services/api-rest/src/routes/v1/public/`) — validate snapshot,
+- [ ] `POST /v1/attribution/touch` (`wizeworks/services/api-rest/src/routes/v1/public/`) — validate snapshot,
       write `attribution_touches` (tenant-scoped), publish event. Consent already enforced client-side;
       re-validate server-side.
 - [ ] Event payloads (docs/80 §8.5): add an `attribution` block to `customer.created`,
@@ -96,7 +96,7 @@ medium · campaign · friendly_name · created_by · created_at`. RLS on tenant-
       `attribution_touches` ⨝ `orders`). Commerce module surface.
 - [ ] MCP tools: `get_channel_report`, `get_campaign_performance`, `get_customer_journey`,
       `get_attribution_for_order`. Register in the MCP tool registry; gate on the `ai` module.
-- [ ] In-product UTM link builder (docs/80 §11.3) using `@sparx/attribution`'s `buildLink`/`toCsv`.
+- [ ] In-product UTM link builder (docs/80 §11.3) using `@wizeworks/attribution`'s `buildLink`/`toCsv`.
 
 ## 4. Done when
 
@@ -111,4 +111,4 @@ medium · campaign · friendly_name · created_by · created_at`. RLS on tenant-
 - [docs/80 — Marketing Attribution & Analytics](80-marketing-attribution-analytics.md) — the spec.
 - [docs/16 §2.5 — System/Internal principals](16-auth-security.md) — pattern for the L-PLAT report (precedent).
 - [docs/42 — Legal & Consent](42-legal-and-consent.md) — the consent gate the capture rides on.
-- [packages/db/CLAUDE.md](../packages/db/CLAUDE.md) — RLS hand-edit + FORCE-RLS backfill footgun.
+- [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md) — RLS hand-edit + FORCE-RLS backfill footgun.

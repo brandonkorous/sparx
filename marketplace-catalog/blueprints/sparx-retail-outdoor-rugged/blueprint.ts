@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-outdoor-rugged',
-    version: '1.4.0',
-    name: 'sparx — Outdoor Gear (Rugged)',
-    summary:
-        'A complete, working shop for an outdoor & adventure gear outfitter: a real catalogue of hardshells, down insulation, merino base layers, packs, a roll-top dry bag, trail socks, an insulated bottle, a headlamp and trekking poles — with categories, collections, a spec-forward PDP and a fully merchandised home page. Rugged field theme — muted stone-khaki ground, deep forest-green, a blaze-orange accent. Shipped as Ridgeline Supply.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-outdoor-rugged',
+  version: '1.4.0',
+  name: 'sparx — Outdoor Gear (Rugged)',
+  summary:
+    'A complete, working shop for an outdoor & adventure gear outfitter: a real catalogue of hardshells, down insulation, merino base layers, packs, a roll-top dry bag, trail socks, an insulated bottle, a headlamp and trekking poles — with categories, collections, a spec-forward PDP and a fully merchandised home page. Rugged field theme — muted stone-khaki ground, deep forest-green, a blaze-orange accent. Shipped as Ridgeline Supply.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Ridgeline Supply',
+    tagline: 'Built to be used, not looked at.',
+    colors: {
+      primary: '#07502c',
+      primaryForeground: '#f3fbf5',
+      accent: '#9e2700',
+      secondary: '#284e55',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Archivo',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-outdoor-rugged',
+    basePresetKey: 'retail-outdoor-rugged',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Ridgeline Supply',
-        tagline: 'Built to be used, not looked at.',
-        colors: {
-            primary: '#07502c',
-            primaryForeground: '#f3fbf5',
-            accent: '#9e2700',
-            secondary: '#284e55',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Archivo',
-        },
+      colorPrimary: '#07502c',
+      colorAccent: '#9e2700',
+      colorSecondary: '#284e55',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Archivo',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-outdoor-rugged',
-        basePresetKey: 'retail-outdoor-rugged',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#07502c',
-            colorAccent: '#9e2700',
-            colorSecondary: '#284e55',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Archivo',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

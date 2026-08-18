@@ -8,7 +8,7 @@ Last Updated: 2026-07-28
 > someone outside asks us for data, who we hand data to in order to run the service, and what we
 > promise about handling it. It is deliberately separate from the rest of [docs/](../../), which
 > describes the sparx product, and from the tenant-facing legal documents at
-> [apps/web/app/legal/](../../../apps/web/app/legal/), which are contracts with customers.
+> [sparx/apps/web/app/legal/](../../../apps/web/app/legal/), which are contracts with customers.
 >
 > **These are adopted policies, not aspirations.** Everything written here is something we commit
 > to doing. If a policy stops matching reality, change the policy or change the practice — do not

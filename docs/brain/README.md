@@ -16,11 +16,11 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 |---|---|---|
 | Tokens | `--color-base-*` / semantic `--color-*` / `--color-module-*` (silicaui, from `@sparx/brand`) | `--st-*` |
 | Component classes | silicaui plugin classes (`btn-*`, `bg-<color>`, `bg-soft`) | `.st-c-*` |
-| Library | `@wizeworks/silicaui-react` primitives + `@sparx/ui` compositions + `ModuleProvider` | `@sparx/site-ui` + `@sparx/site-themes` |
-| Compiled by | silica plugin + brand theme per app | `packages/surface-compile` per tenant |
+| Library | `@wizeworks/silicaui-react` primitives + `@wizeworks/ui` compositions + `ModuleProvider` | `@sparx/site-ui` + `@wizeworks/site-themes` |
+| Compiled by | silica plugin + brand theme per app | `wizeworks/packages/surface-compile` per tenant |
 | Themeable | no (house system: silicaui + brand) | yes (per-tenant brand) |
 
-**Sources of truth:** dashboard color → `packages/brand/src/theme.css` (silicaui theme); dashboard non-color tokens → `packages/ui/src/tokens.css`; house rules → `DESIGN.md` (**read [[neutral-must-be-earned]] before any color decision**). Site → `docs/33-token-model-v2.md` + `packages/surface-compile/src/theme.ts`.
+**Sources of truth:** dashboard color → `sparx/packages/brand/src/theme.css` (silicaui theme); dashboard non-color tokens → `sparx/packages/ui/src/tokens.css`; house rules → `DESIGN.md` (**read [[neutral-must-be-earned]] before any color decision**). Site → `docs/33-token-model-v2.md` + `wizeworks/packages/surface-compile/src/theme.ts`.
 
 > The tenant-facing system is a **site** — never a "storefront" (retired 2026-06-13, kept only as a commerce sales-channel). Glossary: [[terminology]].
 
@@ -28,7 +28,7 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 
 **Design & build**
 - [[design]] ⚠️ — the visual *language*; applies down onto components, elements, and content. **The acute node.**
-- [[components]] — the silicaui primitives + `@sparx/ui` compositions, `SurfaceFrame`/`form-surface`, composition patterns, builder catalog.
+- [[components]] — the silicaui primitives + `@wizeworks/ui` compositions, `SurfaceFrame`/`form-surface`, composition patterns, builder catalog.
 
 **Product & business**
 - [[features]] — the master catalog of every capability, each classified **module | program | platform**. Not every feature is a module — *partner* is a program. Owns the module-vs-program taxonomy.

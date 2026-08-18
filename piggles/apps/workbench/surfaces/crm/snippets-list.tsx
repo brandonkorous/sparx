@@ -42,15 +42,16 @@ import {
   FieldLabel,
   Input,
   Switch,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPencil, faPlus, faQuoteLeft, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
@@ -62,6 +63,10 @@ import {
   useSalesSnippets,
   type SalesSnippet,
 } from './engagement-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -226,30 +231,59 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Saved paragraph actions">
-        <Icon glyph={faQuoteLeft} className="size-4 shrink-0" aria-hidden />
-        <Text as="span" className="text-sm">
-          {rows.length === 0
-            ? 'No saved paragraphs yet'
-            : rows.length === 1
-              ? '1 saved paragraph'
-              : `${String(rows.length)} saved paragraphs`}
-        </Text>
-        <Button color="module" size="sm" className="ml-auto shrink-0" onClick={startNew}>
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          New paragraph
-        </Button>
-        <RefreshButton
-          isFetching={snippets.isFetching}
-          updatedAt={snippets.dataUpdatedAt}
-          onRefresh={() => void snippets.refetch()}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Saved paragraph actions"
+        status={
+          <>
+            <Icon glyph={faQuoteLeft} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="text-sm">
+              {rows.length === 0
+                ? 'No saved paragraphs yet'
+                : rows.length === 1
+                  ? '1 saved paragraph'
+                  : `${String(rows.length)} saved paragraphs`}
+            </Text>
+          </>
+        }
+        primary={
+          <Button color="module" size="sm" className="ml-auto shrink-0" onClick={startNew}>
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            New paragraph
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={snippets.isFetching}
+            updatedAt={snippets.dataUpdatedAt}
+            onRefresh={() => void snippets.refetch()}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {rows.length === 0 ? (
+          {snippets.isError && rows.length === 0 ? (
+            // Split out of the empty branch below: a failed read left `rows`
+            // empty, so a connection blip was inviting somebody to write their
+            // first paragraph over paragraphs they had already written. Only
+            // when there is nothing to show — a failed poll over rows that are
+            // still on screen must not tear them down.
+            <Card className="min-h-0 flex-1 items-center justify-center">
+              <PaneLoadError
+                icon={<Icon glyph={faQuoteLeft} className="size-6" aria-hidden />}
+                title="Could not load your saved paragraphs"
+                description={engagementErrorMessage(
+                  snippets.error,
+                  'This is a problem reaching the server. Nothing you have saved is affected.'
+                )}
+                onRetry={() => {
+                  void snippets.refetch();
+                }}
+              />
+            </Card>
+          ) : rows.length === 0 ? (
             <ListEmptyState
+              module={MODULE}
               filtered={false}
               noResults={{ title: 'No paragraphs match' }}
               firstRun={{

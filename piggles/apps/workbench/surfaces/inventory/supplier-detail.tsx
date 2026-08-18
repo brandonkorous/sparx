@@ -685,42 +685,47 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier actions">
-        {state ? (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        ) : (
-          <span className="inline-flex items-center gap-1.5">
-            <Icon glyph={faTruck} className="size-4" aria-hidden />
-            <Text as="span" className="text-sm font-medium">
-              New supplier
-            </Text>
-          </span>
-        )}
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={saving}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {isNew ? 'Add supplier' : 'Save'}
-        </Button>
-
-        {isNew ? null : (
-          <RefreshButton
-            isFetching={supplier.isFetching}
-            updatedAt={supplier.data ? supplier.dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void supplier.refetch();
-            }}
-          />
-        )}
-      </PaneToolbar>
+      <PaneToolbar
+        label="Supplier actions"
+        status={
+          state ? (
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+          ) : (
+            <span className="inline-flex items-center gap-1.5">
+              <Icon glyph={faTruck} className="size-4" aria-hidden />
+              <Text as="span" className="text-sm font-medium">
+                New supplier
+              </Text>
+            </span>
+          )
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={saving}
+            onClick={save}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {isNew ? 'Add supplier' : 'Save'}
+          </Button>
+        }
+        refresh={
+          isNew ? null : (
+            <RefreshButton
+              isFetching={supplier.isFetching}
+              updatedAt={supplier.data ? supplier.dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void supplier.refetch();
+              }}
+            />
+          )
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

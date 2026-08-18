@@ -4,8 +4,8 @@ node: data
 type: rule
 status: active
 sources:
-  - packages/db/prisma/schema/20-crm-customers.prisma
-  - packages/db/prisma/schema/48-customer-auth.prisma
+  - wizeworks/packages/db/prisma/schema/20-crm-customers.prisma
+  - wizeworks/packages/db/prisma/schema/48-customer-auth.prisma
 ---
 
 There is **one** customer spine — the CRM `Customer` (`customers`) table. **One table, three types** (`prospect | retail | b2b`); promotion is a column update, not a row migration. Commerce and B2B **FK into this row** — orders, carts, subscriptions, reviews, quotes, deals, activities, tasks, appointments all hang off `Customer`.

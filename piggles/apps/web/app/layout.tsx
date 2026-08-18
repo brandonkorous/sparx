@@ -4,6 +4,8 @@ import { PRODUCT } from '@piggles/config';
 import { SiteHeader } from '@/components/marketing/site-header';
 import { SiteFooter } from '@/components/marketing/site-footer';
 import { THEME_SCRIPT } from '@/lib/theme';
+import { ConsentBar } from '@/components/consent-bar';
+import { AttributionCapture } from '@/components/attribution-capture';
 import './globals.css';
 
 // Self-hosted at build time by next/font — no request leaves the page, so there
@@ -45,21 +47,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // `light` is the BARE silicaui theme name, and it is the Piggles brand here
-    // because this app never loads @sparx/brand/theme.css. See globals.css.
+    // NO `data-theme` here. It carried a hardcoded `light` as "the SSR default,
+    // not the answer" — but React owns every attribute it renders and re-asserts
+    // it whenever the element is created, so the default was a SECOND writer
+    // racing THEME_SCRIPT, able to put a dark visitor back on white after the
+    // script had already decided otherwise. lib/theme.ts says it plainly: the
+    // script is the one place allowed to write this attribute, and one writer is
+    // the only arrangement that cannot disagree with itself.
     //
-    // It is also the SSR DEFAULT, not the answer: THEME_SCRIPT overwrites the
-    // attribute before the first paint from the visitor's choice, or from their
-    // operating system if they have not made one. `suppressHydrationWarning` is
-    // required and is scoped to this element — by the time React hydrates, the
-    // attribute legitimately differs from the markup it was sent, and that is
-    // the whole point rather than a bug to report.
-    <html
-      lang="en"
-      data-theme="light"
-      suppressHydrationWarning
-      className={`${inter.variable} ${fredoka.variable}`}
-    >
+    // `suppressHydrationWarning` is its counterpart and is scoped to this
+    // element: by the time React hydrates, the attribute the script added was
+    // never in the markup React was sent, and that is the whole point rather
+    // than a bug to report. (`light` and `dark` are the bare silicaui theme
+    // names, and they are the Piggles brand here because this app never loads
+    // @sparx/brand/theme.css. See globals.css.)
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${fredoka.variable}`}>
       <head>
         {/* In <head> and blocking, so it lands before anything is painted. An
             effect, a provider or a server-read cookie are all later than the
@@ -70,6 +72,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        {/* The one question this site asks. Renders nothing once answered. */}
+        <ConsentBar />
+        {/* Records where a visit came from — only with permission — and hands it
+            to getpiggles.com on the signup click. Renders nothing, ever. */}
+        <AttributionCapture />
       </body>
     </html>
   );

@@ -44,13 +44,13 @@ import {
   FieldLabel,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   Timestamp,
   ToolbarSeparator,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCalendarXmark, faPercent, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useState } from 'react';
@@ -216,7 +216,18 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Expiring stock controls">
+      <PaneToolbar
+        label="Expiring stock controls"
+        refresh={
+          <RefreshButton
+            isFetching={report.isFetching}
+            updatedAt={report.data ? report.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void report.refetch();
+            }}
+          />
+        }
+      >
         <NativeSelect
           size="sm"
           className="max-w-44 shrink"
@@ -246,15 +257,6 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
             </Badge>
           ))}
         </span>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={report.isFetching}
-          updatedAt={report.data ? report.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void report.refetch();
-          }}
-        />
       </PaneToolbar>
 
       {expired && expired.lots > 0 ? (

@@ -15,7 +15,7 @@
 > to JSON server-side and is never stored or executed live; the raw bundle is archived to
 > storage for re-scan/audit. Storage is the **existing** `MediaStorage` abstraction
 > (`getStorage()` → local filesystem in dev, GCS in prod —
-> [`services/api-rest/src/lib/storage.ts`](../services/api-rest/src/lib/storage.ts)), not a
+> [`wizeworks/services/api-rest/src/lib/storage.ts`](../services/api-rest/src/lib/storage.ts)), not a
 > new system. Full rationale and the storage vs. DB call are in **§6**.
 
 ## 1. Purpose & relationship to other docs
@@ -31,7 +31,7 @@ It builds directly on decisions already made:
 
 - **Blueprints** are a declarative manifest, "no code exec, marketplace-safe" ([docs/54](54-tenant-blueprints.md) D2).
 - **Components** are declarative node-trees rendered by expansion — "never code; tenants writing JS would be RCE" ([docs/53](53-builder-tenant-components.md)).
-- **Integrations** ride the typed provider framework (`@sparx/integration-framework`) and the external-data connectors of [docs/63](63-external-data-connections.md).
+- **Integrations** ride the typed provider framework (`@wizeworks/integration-framework`) and the external-data connectors of [docs/63](63-external-data-connections.md).
 - **Auth/publishers/RLS** per [docs/16](16-auth-security.md); **billing** per [docs/17](17-billing-subscriptions.md).
 
 This doc supersedes docs/60 §15 (public funnel) and §16 (publishing/monetization,
@@ -117,7 +117,7 @@ upload(.zip) → unpack → ALLOW-LIST → COMPILE → VALIDATE → INTEGRITY �
 2. **Allow-list** every path against §4. Any stray file → **deny**.
 3. **Compile** the single payload in an **isolated build** with an allow-listed
    import surface (only the authoring helpers: the `node()` vocabulary from
-   `@sparx/builder-schemas`, types from `@sparx/marketplace-schemas`). No Node APIs,
+   `@wizeworks/builder-schemas`, types from `@wizeworks/marketplace-schemas`). No Node APIs,
    no network, no filesystem. Output = the declarative artifact JSON. The build runs
    in the same isolation we will reuse for the integration sandbox (§9).
 4. **Validate** the artifact against its Zod schema (`DataThemePreset`,
@@ -140,7 +140,7 @@ runs as a Pub/Sub worker (`marketplace.submission.received` → a Cloud Run
 ## 6. Storage — where every artifact lives (locked)
 
 **"Storage" = the existing `MediaStorage` abstraction, not the repo and not SQL.**
-`getStorage()` ([`services/api-rest/src/lib/storage.ts`](../services/api-rest/src/lib/storage.ts))
+`getStorage()` ([`wizeworks/services/api-rest/src/lib/storage.ts`](../services/api-rest/src/lib/storage.ts))
 resolves to **`LocalStorage` (local filesystem, `MEDIA_LOCAL_DIR`) in dev** and
 **`GcsStorage` (Google Cloud Storage, `GCS_MEDIA_BUCKET`) in prod** — the same layer
 that already backs tenant media. We reuse it; we do not build a new storage system, and
@@ -200,7 +200,7 @@ services. No SQL payload, no code-registry lookup by slug, no deploy.
 - **Theme → Apply.** Load `DataThemePreset`; write it into the tenant's
   `SiteConfig.draftSettings.themePreset`; the compile engine compiles from the inline
   preset (the `compileTokensFromDefaults` / `compileThemeForTenant({preset})` seam
-  added in `@sparx/site-themes`). Publish snapshots it forward; the site renders
+  added in `@wizeworks/site-themes`). Publish snapshots it forward; the site renders
   from the snapshot. **No code preset, no closed enum.**
 - **Blueprint → Install.** `parseBlueprint(artifact)` → `installBlueprint(ctx, bp)`
   (the installer already takes a `Blueprint` object). Routes resolve the manifest from
@@ -232,7 +232,7 @@ _new_ runtime plumbing; the rest reuses existing services.
 ## 9. Integrations: the code tier (deferred)
 
 The open submission tier is declarative (§3.1). Real provider logic — a new payment,
-shipping, or tax provider implementing the `@sparx/integration-framework` interfaces —
+shipping, or tax provider implementing the `@wizeworks/integration-framework` interfaces —
 is a **sandboxed code tier**:
 
 - Reviewed manually, then run in **isolation** (a V8 isolate / WASM / isolated worker
@@ -306,7 +306,7 @@ resolver.
 
 **The one thing that IS special about sparx: its source ships in the image, so it can
 publish itself.** `selfRegisterFirstPartyCatalog()`
-([`services/api-rest/src/lib/marketplace/self-register.ts`](../services/api-rest/src/lib/marketplace/self-register.ts))
+([`wizeworks/services/api-rest/src/lib/marketplace/self-register.ts`](../services/api-rest/src/lib/marketplace/self-register.ts))
 runs on every api-rest **boot** and publishes all four categories:
 
 | category     | source                                                   | payload                                                                              |
@@ -351,4 +351,4 @@ and never run, which is how those 25 rows accumulated.
 **Idempotent by construction**, so every boot is safe: upsert by slug, retract by
 absence, artifacts immutable per version, and media rewritten only when its byte length
 differs. The steady state writes nothing. On-demand:
-`pnpm --filter @sparx/api-rest marketplace:self-register`.
+`pnpm --filter @wizeworks/api-rest marketplace:self-register`.

@@ -4,10 +4,10 @@ node: api-events
 type: reference
 status: active
 sources:
-  - packages/events/src/types.ts
+  - wizeworks/packages/events/src/types.ts
 ---
 
-The **single source of truth** for events is the `EventType` union in `packages/events/src/types.ts` — **topic name == event type**. Use the REAL names; several doc examples are wrong.
+The **single source of truth** for events is the `EventType` union in `wizeworks/packages/events/src/types.ts` — **topic name == event type**. Use the REAL names; several doc examples are wrong.
 
 ## ⚠️ Doc examples that don't exist
 

@@ -31,7 +31,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Text,
@@ -50,6 +49,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useSites } from '../sites/data';
@@ -224,7 +224,14 @@ function ConnectSupplier({ ctx }: { ctx: SurfaceContext }) {
 /* ── Manage (edit) ──────────────────────────────────────────────────────── */
 
 function ManageSupplier({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: supplier, isPending, isError, refetch } = useSupplier(id);
+  const {
+    data: supplier,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useSupplier(id);
 
   useEffect(() => {
     if (supplier) ctx.setTitle(supplier.name);
@@ -245,7 +252,19 @@ function ManageSupplier({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <SupplierEditor ctx={ctx} mode="edit" supplier={supplier} vendor={null} />;
+  return (
+    <SupplierEditor
+      ctx={ctx}
+      mode="edit"
+      supplier={supplier}
+      vendor={null}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 /* ── The shared editor ──────────────────────────────────────────────────── */
@@ -256,6 +275,9 @@ function SupplierEditor({
   supplier,
   vendor,
   vendorPicker,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   mode: 'new' | 'edit';
@@ -264,6 +286,11 @@ function SupplierEditor({
    *  its own credential-field spec). */
   vendor: Vendor | null;
   vendorPicker?: React.ReactNode;
+  /** The loader's query, threaded down. Absent while connecting — a supplier
+   *  that does not exist yet has nothing to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = mode === 'new';
   const toast = useToast();
@@ -466,82 +493,91 @@ function SupplierEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier actions" wrap>
-        {state ? (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        ) : null}
-
-        {supplier ? (
+      <PaneToolbar
+        label="Supplier actions"
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={Boolean(isFetching)}
+              updatedAt={supplier ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+        status={
+          state ? (
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+          ) : null
+        }
+        primary={
           <>
+            {supplier ? (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  color="neutral"
+                  className="ml-auto shrink-0"
+                  onClick={(event) => {
+                    ctx.open(
+                      'dropship.products.list',
+                      { supplierId: supplier.id },
+                      { target: targetFor(event) }
+                    );
+                  }}
+                >
+                  <Icon glyph={faBoxMagnifyingGlass} className="size-4" aria-hidden />
+                  Browse products
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  color="neutral"
+                  className="shrink-0"
+                  loading={sync.isPending}
+                  disabled={supplier.status === 'error'}
+                  title={
+                    supplier.status === 'error'
+                      ? 'Fix the connection before syncing'
+                      : 'Refresh this supplier’s catalog now'
+                  }
+                  onClick={onSync}
+                >
+                  <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+                  Sync now
+                </Button>
+              </>
+            ) : null}
             <Button
+              color="module"
               size="sm"
-              variant="outline"
-              color="neutral"
-              className="ml-auto shrink-0"
-              onClick={(event) => {
-                ctx.open(
-                  'dropship.products.list',
-                  { supplierId: supplier.id },
-                  { target: targetFor(event) }
-                );
-              }}
+              className={supplier ? 'shrink-0' : 'ml-auto shrink-0'}
+              loading={saving}
+              disabled={Boolean(blocked) || (!isNew && !dirty)}
+              onClick={submit}
             >
-              <Icon glyph={faBoxMagnifyingGlass} className="size-4" aria-hidden />
-              Browse products
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              className="shrink-0"
-              loading={sync.isPending}
-              disabled={supplier.status === 'error'}
-              title={
-                supplier.status === 'error'
-                  ? 'Fix the connection before syncing'
-                  : 'Refresh this supplier’s catalog now'
-              }
-              onClick={onSync}
-            >
-              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-              Sync now
+              {isNew ? (
+                <>
+                  <Icon glyph={faPlug} className="size-4" aria-hidden />
+                  Connect
+                </>
+              ) : (
+                'Save'
+              )}
             </Button>
           </>
-        ) : null}
-
-        <Button
-          color="module"
-          size="sm"
-          className={supplier ? 'shrink-0' : 'ml-auto shrink-0'}
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? (
-            <>
-              <Icon glyph={faPlug} className="size-4" aria-hidden />
-              Connect
-            </>
-          ) : (
-            'Save'
-          )}
-        </Button>
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Connect a supplier
-              </Heading>
-              <Text>
-                Link a business that holds stock and ships it to your customers. Once connected you
-                can import its products and route orders to it automatically.
-              </Text>
-            </div>
+            <Text>
+              Link a business that holds stock and ships it to your customers. Once connected you
+              can import its products and route orders to it automatically.
+            </Text>
           ) : null}
 
           {failure ? (

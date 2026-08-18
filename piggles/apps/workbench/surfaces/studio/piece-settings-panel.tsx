@@ -9,7 +9,7 @@
 import { Field, FieldDescription, FieldLabel, Input } from '@wizeworks/silicaui-react';
 import type { ComponentDoc } from '@wizeworks/studio';
 import { useApply, useDoc } from '@wizeworks/studio/react';
-import { pieceKeyOf } from '../builder/studio/saved-pieces';
+import { pieceKeyOf } from '../../lib/studio/saved-pieces';
 
 export function PieceSettingsPanel() {
   const doc = useDoc<ComponentDoc>();

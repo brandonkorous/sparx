@@ -1,0 +1,35 @@
+{
+  "name": "@wizeworks/app-kit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Framework glue every sparx Next.js app needs and no app should own a copy of — starting with stale-build (chunk-load) detection and recovery. Not a design library: nothing here renders anything a designer would style. @wizeworks/ui is the composition layer; this is the layer beneath it that keeps a tab alive across a deploy.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./chunk-error": {
+      "types": "./src/chunk-error.ts",
+      "default": "./src/chunk-error.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

@@ -1,12 +1,12 @@
 > **SUPERSEDED (2026-08-01).** This document describes `apps/dashboard`, which was
 > **deleted** in the workbench cutover (`b86797b0`), and the `SurfaceFrame` primitive it
-> specifies has now been deleted from `@sparx/ui` along with the rest of the dashboard-era
+> specifies has now been deleted from `@wizeworks/ui` along with the rest of the dashboard-era
 > composition set. Nothing in this file describes shipping code. It is kept as the design
 > rationale for the F layout — identity once, lifecycle in the frame header, Cancel leftmost,
-> explicit-save-only — which `apps/workbench` re-implements in its own idiom. For the
+> explicit-save-only — which `sparx/apps/workbench` re-implements in its own idiom. For the
 > workbench pattern read [docs/123-workbench.md](123-workbench.md) and
-> [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md); for what `@sparx/ui` still
-> contains read [packages/ui/CLAUDE.md](../packages/ui/CLAUDE.md).
+> [sparx/apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md); for what `@wizeworks/ui` still
+> contains read [sparx/packages/ui/CLAUDE.md](../packages/ui/CLAUDE.md).
 
 # sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
@@ -161,7 +161,7 @@ The full-bleed two-pane frame with a flat module-colored left rail (brand wordma
 - **Unsaved edits are guarded (edit surfaces).** A form that can hold unsaved changes registers ONE dirty-guard (its `dirty` check + a `useConfirm` discard dialog) via the dashboard's `UnsavedGuardProvider` / `useRegisterLeaveGuard`; **every** leave path consults it — the frame-owned Cancel, the overlay host's Close/Switch/backdrop-Esc, and the full-page presentation switch. Wired once on the platform, not per page (docs/105 platform gaps). Not covered: a hard browser nav (`beforeunload`).
 - **Motion:** the working-pane content does a small `fadeUp` on step change (~0.3s); the progress/rail is static. Respect `prefers-reduced-motion`.
 - **State is preserved on Back.** Going back never clears entered data.
-- **Tokens only.** Geist; module color via `--color-module` (set by `<ModuleProvider>`); neutrals from `@sparx/brand/theme.css`, radii/spacing from `@sparx/ui` tokens — no hardcoded colors. The summary tint is the `bg-module bg-soft` treatment (theme-aware `color-mix`).
+- **Tokens only.** Geist; module color via `--color-module` (set by `<ModuleProvider>`); neutrals from `@sparx/brand/theme.css`, radii/spacing from `@wizeworks/ui` tokens — no hardcoded colors. The summary tint is the `bg-module bg-soft` treatment (theme-aware `color-mix`).
 
 ### 5.1 The detail header slot (teleport)
 
@@ -186,7 +186,7 @@ Two more pieces complete the detail frame, both on the same teleport substrate a
 
 ## 6. Implementation shape
 
-A single `@sparx/ui` primitive — [`SurfaceFrame`](../packages/ui/src/components/navigation/surface-frame.tsx) — backs all presentations so they cannot drift:
+A single `@wizeworks/ui` primitive — [`SurfaceFrame`](../packages/ui/src/components/navigation/surface-frame.tsx) — backs all presentations so they cannot drift:
 
 ```tsx
 <SurfaceFrame
@@ -241,4 +241,4 @@ const summary = (
 
 ## 8. Status
 
-**Built.** `SurfaceFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired. The **detail header-slot** (§5.1) + `DetailPageShell` are built and applied to product, collection, and the CMS page/entry editors — their in-body Status cards / identity headings removed, lifecycle actions teleported to the header. **Settings → Sites** (docs/49) now runs on the list substrate + a per-site tabbed detail (General / Domains / Modules, on the builder manifest), and the **New-site wizard renders through the surface system** — `embedded` at `/settings/sites/new`, `inline` in the drawer/modal via `EntityCreateButton` (no longer a self-owned modal).
+**Built.** `SurfaceFrame` (`@wizeworks/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired. The **detail header-slot** (§5.1) + `DetailPageShell` are built and applied to product, collection, and the CMS page/entry editors — their in-body Status cards / identity headings removed, lifecycle actions teleported to the header. **Settings → Sites** (docs/49) now runs on the list substrate + a per-site tabbed detail (General / Domains / Modules, on the builder manifest), and the **New-site wizard renders through the surface system** — `embedded` at `/settings/sites/new`, `inline` in the drawer/modal via `EntityCreateButton` (no longer a self-owned modal).

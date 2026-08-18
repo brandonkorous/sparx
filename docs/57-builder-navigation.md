@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-22
 
-> **Drift note (2026-07-22):** The nav-as-site-chrome decision below is still valid, but the bespoke `_builder` inspector §4 references as the authoring surface has since been REPLACED — sparx now HOSTS silicaui's `<Builder>` engine (studio at `apps/workbench/surfaces/builder/studio/studio-surface.tsx`), which owns the inspector/property controls. See **docs/118-builder-silicaui-html-migration.md**.
+> **Drift note (2026-07-22):** The nav-as-site-chrome decision below is still valid, but the bespoke `_builder` inspector §4 references as the authoring surface has since been REPLACED — sparx now HOSTS silicaui's `<Builder>` engine (studio at `sparx/apps/workbench/surfaces/builder/studio/studio-surface.tsx`), which owns the inspector/property controls. See **docs/118-builder-silicaui-html-migration.md**.
 
 > **Status: BUILT — UNPUSHED, gate-green.** Site **navigation** now lives on the
 > Builder `NavMenu` node, not the CMS module: nav is site chrome, every site has
@@ -16,7 +16,7 @@
 > **What shipped (2026-06-05):**
 >
 > - **Authoring (P1):** a shared `coerceNavLinks` normalizer
->   (`packages/builder-schemas/src/nav.ts`); the site renderer + editor
+>   (`wizeworks/packages/builder-schemas/src/nav.ts`); the site renderer + editor
 >   preview read node-owned `props.links`; a `navlinks` inspector control (label /
 >   href / new-tab, add / remove / reorder); `site-ui` `NavMenu` honours
 >   `openInNewTab`; the starter site layout seeds default node-owned links;
@@ -35,7 +35,7 @@
 >   gone from `SITE_SOURCES`. The renderer's `coerceNavLinks` bound path stays only
 >   as defensive normalization.
 > - **CMS (P3, partial):** Navigation removed from the CMS module sidebar
->   (`@sparx/cms-editor` manifest); the `/cms/navigation` page is header-commented
+>   (`@wizeworks/cms-editor` manifest); the `/cms/navigation` page is header-commented
 >   DEPRECATED.
 >
 > **Still deferred (verified-in-prod teardown):** removing the dormant
@@ -298,11 +298,11 @@ a sensible editable nav out of the box, no CMS required.
 **Delete:**
 
 - `/cms/navigation` dashboard surface (page + per-location editor + menu actions).
-- `services/api-rest/src/routes/v1/navigation/menus.ts` (the authenticated CRUD) +
+- `wizeworks/services/api-rest/src/routes/v1/navigation/menus.ts` (the authenticated CRUD) +
   its app registration.
 - The public nav read routes in `public/content.ts`
   (`…/navigation/by-location/:location`, `…/navigation/:id`).
-- `getNavByLocation` / `getNavigationMenu` in `apps/site/lib/site.ts` and the
+- `getNavByLocation` / `getNavigationMenu` in `wizeworks/apps/site/lib/site.ts` and the
   `site.primaryNav`/`site.footerNav` resolution in `loadSiteData`.
 - `site.primaryNav` + `site.footerNav` from `SITE_SOURCES` (`binding.ts`).
 - The `navigation_menus` / `navigation_items` tables (final migration, once nothing
@@ -323,7 +323,7 @@ exists even though nothing reads it.
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **P1** | The `NavMenu` node owns structured links: `NavLink[]` prop shape, the `navlinks` inspector control (label/href/new-tab, add/remove/reorder), renderer reads `props.links` (legacy string/bound fallbacks kept). Starter layout seeds default links. | No migration yet; no retirement. New + manually-edited navs are Builder-owned. Gate-green, shippable on its own. |
 | **P2** | Site stops resolving `site.primaryNav`/`site.footerNav`; `loadSiteData` keeps identity/social. Data migration: CMS menus → `NavMenu` nodes on each tenant's primary active layout.                                                                  | DB Migrate pipeline (tenant-loop backfill). After this, the live site renders node-owned nav.                    |
-| **P3** | Retire `/cms/navigation`, the nav routes, the binding sources, the apps/site helpers; drop the tables in a final migration after a prod soak.                                                                                                       | Removal only — no behavior change if P2 verified.                                                                |
+| **P3** | Retire `/cms/navigation`, the nav routes, the binding sources, the wizeworks/apps/site helpers; drop the tables in a final migration after a prod soak.                                                                                             | Removal only — no behavior change if P2 verified.                                                                |
 
 ---
 

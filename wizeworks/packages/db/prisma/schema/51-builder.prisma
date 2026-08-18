@@ -1,0 +1,1091 @@
+// Builder — composition-model page editor persistence (docs/41-builder-page-model.md).
+//
+// One row per page a tenant has. A page TEMPLATE and a page INSTANCE are the
+// same row: Sparx ships a curated starter set (seeded on the tenant's first
+// list, at runtime by the service), the tenant edits them and creates more.
+// The node-tree JSON is validated by @wizeworks/builder-schemas, never by the DB.
+//
+// Distinct from the legacy `sitebuilder_*` tables — Builder is the successor
+// surface (docs/40), deliberately kept on its own clean storage so the eventual
+// Site Builder retirement is a deletion rather than a surgical extraction.
+//
+// Tenant-scoped + FORCE RLS so a callsite that forgets withTenant() returns
+// nothing rather than leaking cross-tenant pages.
+
+model BuilderPage {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this page belongs to (docs/49). Pages are per-property:
+  // each of a tenant's sites has its own page tree. NOT a security boundary —
+  // tenant_id (the RLS GUC) is; property_id is application-tier scoping.
+  propertyId String @map("property_id") @db.Uuid
+
+  name          String  @db.VarChar(255)
+  // singleton | collection (docs/40 page types)
+  kind          String  @default("singleton") @db.VarChar(20)
+  // collection only — the content type each record fills (e.g. "cms.post").
+  recordType    String? @map("record_type") @db.VarChar(63)
+  // collection only, and only meaningful for `recordType='commerce.product'` —
+  // the PRODUCT TYPE this page designs (docs/143 §4.4, Option B). `null` is the
+  // DEFAULT product page (renders any product with no more-specific page);
+  // `'apparel'` makes it the Apparel product page. Resolution is most-specific-
+  // wins: WHERE record_type='commerce.product' AND (record_subtype=<type> OR
+  // record_subtype IS NULL) ORDER BY (record_subtype IS NOT NULL) DESC. Nullable,
+  // backward compatible — every existing PDP is record_subtype=null.
+  recordSubtype String? @map("record_subtype") @db.VarChar(63)
+  // The URL a published SINGLETON page serves at on the storefront (docs/44).
+  // Null for collection templates (they render per-record) and unrouted pages.
+  // Unique per tenant; Postgres treats NULLs as distinct, so many stay null.
+  slug          String? @db.VarChar(160)
+
+  // The editable BuilderNode root. Shape validated by @wizeworks/builder-schemas.
+  draftTree           Json      @map("draft_tree")
+  // Last published snapshot; null until first publish. No storefront consumer
+  // yet (docs/41 §1) — publishing just snapshots draft → published.
+  publishedTree       Json?     @map("published_tree")
+  // The silica-native page body (`@wizeworks/silicaui-html` `Node`) — the
+  // engine-adoption store (docs/118). Runs in PARALLEL with the sparx
+  // `draft_tree`/`published_tree` during the cutover: the silica `<Builder>`
+  // reads/writes these, the legacy storefront keeps reading the sparx columns,
+  // and once `wizeworks/apps/site` renders silica the sparx columns are dropped. Nullable
+  // until a page is materialized silica-native (lazy re-seed on first load).
+  silicaDraftTree     Json?     @map("silica_draft_tree")
+  silicaPublishedTree Json?     @map("silica_published_tree")
+  publishedAt         DateTime? @map("published_at") @db.Timestamptz
+  // Catalog ordering.
+  position            Int       @default(0)
+
+  // The DEFAULT template for `recordType` — the per-type winner the storefront
+  // renders when a record has no per-record override (docs/51 §6). At most one
+  // per (tenant, recordType): a partial unique index hand-added in the migration
+  // (Prisma can't express the predicate — cf. BuilderLayout.isActive). Only
+  // meaningful on a `kind='collection'` page that has a recordType.
+  isDefault Boolean @default(false) @map("is_default")
+
+  // WHICH chrome wraps this page (docs/silicaui/01 §5). Three states in one column, and the
+  // difference between the two empty-looking ones is the whole point:
+  //   null   → the site default (the `is_active` BuilderLayout). What every page
+  //            does unless told otherwise.
+  //   'none' → NO frame; the page renders bare. The campaign/landing page, which
+  //            was unrepresentable while every page took the active layout.
+  //   a uuid → that BuilderLayout.
+  // Deliberately NOT a uuid + a `frameless` boolean: "which frame" and "whether a
+  // frame" are one decision, and two columns make a meaningless third state
+  // representable. Deliberately NOT a foreign key either — a dangling id resolves
+  // to NO frame and is REPORTED, because silently restoring the default would put
+  // back the header the author moved this page away from. A CHECK constraint in the
+  // migration keeps the sentinel from drifting into a typo.
+  frameId          String? @map("frame_id")
+  // The DRAFT/PUBLISHED pair for that choice, exactly like the tree columns beside
+  // it. Chrome is the most visible thing on a page, so the pointer at it has to obey
+  // the same publish lifecycle as everything else the editor shows: without this,
+  // saving "no header on this page" changed the LIVE site immediately, while the
+  // Publish button reported nothing to publish.
+  publishedFrameId String? @map("published_frame_id")
+
+  // SEO — applies to published SINGLETON pages (docs/50). The storefront's
+  // catch-all titles/describes the page from these; null falls back to the page
+  // `name`. Collection templates render per-record and inherit SEO from the
+  // bound record (product/entry), so these stay null there.
+  seoTitle       String? @map("seo_title") @db.VarChar(255)
+  seoDescription String? @map("seo_description") @db.VarChar(500)
+  canonical      String? @db.VarChar(2048)
+  // A full image URL (the Builder is URL-first for images, cf. box.backgroundImage)
+  // — the storefront passes it straight to openGraph.images.
+  ogImage        String? @map("og_image") @db.VarChar(2048)
+  noindex        Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property    Property                @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  assignments BuilderPageAssignment[]
+
+  // Slug is unique per (tenant, property) — two sibling sites can each have an
+  // `/about`. The per-(tenant, property, recordType) default-template partial
+  // unique lives in the migration (Prisma can't express the predicate).
+  @@unique([tenantId, propertyId, slug])
+  @@index([tenantId, propertyId, position])
+  @@map("builder_pages")
+}
+
+// Per-record template OVERRIDE (docs/51 §6) — pins ONE record (a content entry,
+// a product, …) to a specific collection template, beating that record type's
+// default. The builder-owned analogue of the legacy sections tier's
+// SiteLayoutAssignment: `itemRef` is the owning module's record id, referenced
+// WITHOUT a cross-module FK (the module owns its data). `recordType` is the same
+// source key the template targets (`cms.blog_post`, `commerce.product`).
+//
+// Resolution order (page-service): override → type default (BuilderPage.isDefault)
+// → lowest-position published fallback. Additive + no backfill — a record with no
+// row resolves to the type default, preserving prior behaviour.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every
+// other builder_* table.
+model BuilderPageAssignment {
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String @map("tenant_id") @db.Uuid
+  // Per-property (docs/49): a record can map to different templates on different
+  // sites. The owning BuilderPage is itself per-property, so this rides along.
+  propertyId    String @map("property_id") @db.Uuid
+  recordType    String @map("record_type") @db.VarChar(63)
+  itemRef       String @map("item_ref") @db.VarChar(255)
+  builderPageId String @map("builder_page_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property    Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  builderPage BuilderPage @relation(fields: [builderPageId], references: [id], onDelete: Cascade)
+
+  // Explicit name — the default (tenant_id+property_id+record_type+item_ref) would
+  // exceed Postgres's 63-char identifier limit and truncate (drift risk).
+  @@unique([tenantId, propertyId, recordType, itemRef], map: "builder_page_assignments_property_record_item_key")
+  @@index([tenantId, propertyId, recordType])
+  @@index([builderPageId])
+  @@map("builder_page_assignments")
+}
+
+// The silica SITE record (docs/118) — the per-property, site-GLOBAL half of a
+// silica `Site` that is neither a page nor the chrome: its `theme` and its saved-
+// component `symbols`.
+//
+// silica's `<Builder>` hands the host one `Site = { theme, frame, pages, symbols }`
+// on every edit. Each part is stored by its rightful owner: `pages` are BuilderPage
+// rows (each owns a slug/SEO/recordType/publish state), `frame` is the ACTIVE
+// BuilderLayout's tree — and `theme` + `symbols` are site-global, so they live here.
+// They deliberately do NOT ride on BuilderLayout: a tenant keeps MANY layouts and
+// flips which is active, and neither the theme nor a saved component should move or
+// vanish when the active chrome changes.
+//
+// `theme` is a silica `Theme` (`{ name, tokens, dark?, mode? }` — the `--*` custom
+// properties verbatim), so an author's saved theme renders on the storefront exactly
+// as it previewed on the canvas (`buildSilicaThemeCssFromTheme`). Null until an
+// author edits the theme, in which case the storefront falls back to the tenant's
+// brand-DERIVED theme. `symbols` is silica's `Record<id, SymbolDef>`.
+//
+// Draft/published mirrors BuilderPage + BuilderLayout: `sync` writes the draft,
+// `publish` snapshots draft → published, and the storefront only ever reads the
+// published columns.
+//
+// Tenant-scoped + FORCE RLS, like every other builder_* table. One row per property.
+model BuilderSite {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // One silica site record per web PROPERTY (docs/49). Not a security boundary
+  // (tenant_id is the RLS boundary).
+  propertyId String @unique @map("property_id") @db.Uuid
+
+  // The authored silica `Theme`. Null = never edited → brand-derived theme wins.
+  silicaDraftTheme     Json? @map("silica_draft_theme")
+  silicaPublishedTheme Json? @map("silica_published_theme")
+
+  // The site-global saved-component masters (silica `Site.symbols`).
+  silicaDraftSymbols     Json  @default("{}") @map("silica_draft_symbols")
+  silicaPublishedSymbols Json? @map("silica_published_symbols")
+
+  // The site's saved THEME LIBRARY (silica `Site.savedThemes`) — the "This site"
+  // presets the author snapshots in the Themes panel. Authoring state only: the
+  // storefront renders just the active `theme`, so there is no published copy.
+  // Null until the author saves their first theme (silica seeds it on load).
+  //
+  // SUPERSEDED by `builder_themes` (see BuilderTheme). Kept because sparx's own
+  // studio still round-trips it through the whole-`Site` blob; the per-document
+  // editor reads and writes the rows instead. Delete it when that blob goes.
+  silicaDraftSavedThemes Json? @map("silica_draft_saved_themes")
+
+  // WHICH theme this site wears — a `builder_themes` row, or null for the
+  // brand-derived one. The draft/published pair matches `BuilderPage.frameId`,
+  // and for the same reason: what a site LOOKS like is the most visible thing
+  // about it, so the pointer at it has to obey the publish lifecycle or "try a
+  // different look" would repaint the live site the moment it was clicked.
+  //
+  // Deliberately NOT a foreign key, also matching `frameId`. A dangling id falls
+  // back to the brand-derived theme and is REPORTED — the site still renders in
+  // its own colors, and the console says the look it was wearing is gone rather
+  // than quietly restoring one the author moved away from.
+  themeId          String? @map("theme_id") @db.Uuid
+  publishedThemeId String? @map("published_theme_id") @db.Uuid
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("builder_sites")
+}
+
+// The tenant's own THEME — a look, owned by the business rather than by a site.
+//
+// This is the tier that was missing. A theme used to be one JSON column on
+// `builder_sites` plus a JSON "saved themes" library beside it, which cannot
+// express the two things a theme actually is: reusable across a tenant's sites,
+// and publishable on its own schedule. A business with a shop and a blog wants
+// one look on both; changing it in one place is the entire point.
+//
+// THREE TIERS, AND ONLY ONE OF THEM IS A ROW:
+//   · SYSTEM presets ship in code (`@wizeworks/silica-catalog`'s theme groups) and
+//     are offered read-only. "Use this" COPIES one into a row here.
+//   · MARKETPLACE listings live in `marketplace_themes`, with their publisher,
+//     price and install count. Installing COPIES the payload into a row here.
+//   · A TENANT theme is this table.
+// Copy-on-use rather than a reference, so a preset or a listing changing under a
+// live site can never repaint it — and so an author can always edit what they
+// picked. `origin` + `sourceKey` / `marketplaceThemeId` keep the provenance.
+//
+// The draft/published pair matches BuilderPage and BuilderLayout exactly:
+// publishing a theme snapshots draft → published, and the storefront reads only
+// the published copy. Editing a look never changes a live site until it is
+// published, which is what makes trying one safe.
+//
+// Tenant-scoped + FORCE RLS, like every other builder_* table. There is no
+// null-tenant row here on purpose: a shared row would need a policy exception,
+// and the two tiers that ARE shared already have homes of their own.
+model BuilderTheme {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name String @db.VarChar(160)
+
+  // custom | preset | marketplace — where this look CAME from. Provenance, never
+  // ownership: every row here belongs to the tenant and is editable.
+  origin             String  @default("custom") @db.VarChar(20)
+  // The platform preset slug this was copied from, when origin = 'preset'.
+  sourceKey          String? @map("source_key") @db.VarChar(120)
+  // The listing this was installed from, and at what version, when origin =
+  // 'marketplace'. Not a foreign key — a listing can be retracted, and that must
+  // not delete a look somebody's live site is wearing.
+  marketplaceThemeId String? @map("marketplace_theme_id") @db.Uuid
+  marketplaceVersion String? @map("marketplace_version") @db.VarChar(20)
+
+  // The silica `Theme` — `{ name, tokens, dark?, mode? }`, the `--*` custom
+  // properties verbatim, so what previews on the canvas is what renders live.
+  draftTokens     Json  @map("draft_tokens")
+  publishedTokens Json? @map("published_tokens")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  versions BuilderThemeVersion[]
+
+  @@index([tenantId, name])
+  @@map("builder_themes")
+}
+
+// A restorable snapshot of ONE look, sealed on every save and every publish.
+//
+// Its own table, rather than an entry in the site-wide draft-version manifest, for
+// one reason that decides it: a look is TENANT-wide and the manifests are
+// PROPERTY-scoped. A business with a shop and a blog has one look on both, so a
+// history keyed by property could not say when it changed — only when one of the
+// sites wearing it happened to be saved.
+//
+// Append-only, like every other history here. A restore writes the old tokens
+// FORWARD as a new version rather than rewinding, so restoring is itself undoable
+// and no history ever loses the state someone restored away from.
+model BuilderThemeVersion {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  themeId  String @map("theme_id") @db.Uuid
+
+  // The silica `Theme` as it stood. Stored whole rather than as a diff: a look is
+  // a small bag of custom properties, and a diff would trade a few kilobytes for
+  // the one property that makes a history worth having — that any row in it can be
+  // read on its own.
+  tokens Json
+
+  // Content address of `tokens`. Two saves that changed nothing share a hash, which
+  // is how a no-op save is recognised and skipped instead of adding an opaque row.
+  hash String @db.Char(64)
+
+  // `save` — an author pressed Save; `publish` — it went live; `restore` — this
+  // version reinstated an earlier one (itself restorable).
+  source String @default("save") @db.VarChar(16)
+
+  // Null for a system path with no human actor. No FK — users live in the Better
+  // Auth instance and a deleted user must not take the edit history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  theme  BuilderTheme @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  // The history list, newest first, for one look.
+  @@index([tenantId, themeId, createdAt])
+  @@map("builder_theme_versions")
+}
+
+// The site LAYOUT — the chrome shell (header / outlet / footer) every page
+// renders inside (docs/45). Same draft/publish lifecycle as BuilderPage. A tenant
+// now keeps MANY layouts (a catalog, like BuilderPage), but exactly one is the
+// ACTIVE one — the live chrome the storefront serves. Publishing a layout just
+// snapshots its draft → published (a layout can be published-but-idle); a
+// separate "make active" flips which published layout is live. The tree carries
+// the special `Outlet` node marking where the routed page goes; chrome binds to
+// the `site` sources (nav / identity / social), which reference existing platform
+// data — the Builder stores no parallel nav or brand.
+//
+// Tenant-scoped + FORCE RLS, like BuilderPage.
+model BuilderLayout {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this chrome belongs to (docs/49). Each site keeps its
+  // own layout catalog with its own ACTIVE layout. Per-property, not a security
+  // boundary (tenant_id is the RLS boundary).
+  propertyId String @map("property_id") @db.Uuid
+
+  name String @db.VarChar(255)
+
+  // The editable BuilderNode root. Shape validated by @wizeworks/builder-schemas.
+  draftTree           Json      @map("draft_tree")
+  // Last published snapshot; null until first publish. The storefront renders
+  // the ACTIVE published layout as the chrome around every page (docs/45 §2.6).
+  publishedTree       Json?     @map("published_tree")
+  // The silica-native FRAME root (`@wizeworks/silicaui-html` `Node` with the one
+  // `Outlet`) — the engine-adoption store (docs/118), parallel-run with the sparx
+  // columns. The site-global `theme` + saved-component `symbols` deliberately do
+  // NOT live here: a tenant keeps many layouts and flips which is active, so they
+  // belong to the property, not the chrome — see BuilderSite.
+  silicaDraftTree     Json?     @map("silica_draft_tree")
+  silicaPublishedTree Json?     @map("silica_published_tree")
+  publishedAt         DateTime? @map("published_at") @db.Timestamptz
+  // The live layout — exactly one per PROPERTY. "At most one active" is enforced
+  // in the DB by a partial unique index on (tenant_id, property_id) WHERE is_active
+  // (hand-added in the migration; Prisma can't express the predicate). Activation
+  // requires a prior publish (the storefront reads the active layout's published tree).
+  isActive            Boolean   @default(false) @map("is_active")
+  // Catalog ordering (cf. BuilderPage.position).
+  position            Int       @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, propertyId, position])
+  @@map("builder_layouts")
+}
+
+// The Builder EMAIL — the Email Builder's persisted unit (docs/52). One row per
+// email a tenant has, with the SAME draft/publish lifecycle as BuilderPage. An
+// email is ONE self-contained body tree: no site/page split, no Outlet, no
+// layout tier. Two document-level fields the page model lacks — `subject` (the
+// email subject line) and `preheader` (inbox preview text); no slug, kind,
+// recordType, or SEO. The branded frame (wordmark header + legal footer) is fixed
+// chrome the email renderer supplies, so the tree is just the body.
+//
+// Supersedes the legacy section-list bodies (EmailTemplate.body / Broadcast.body
+// on @sparx/email-sections — docs/31), which are migrated off + retired (docs/52
+// §8). Tenant-scoped + FORCE RLS, like BuilderPage.
+model BuilderEmail {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // The site this email belongs to (docs/49 Phase 7b / docs/91 §6). NULL =
+  // tenant-wide: the 13 provisioned defaults and any tenant-level custom email. A
+  // non-null row is a per-SITE override (or per-site custom email). The override
+  // join is (tenant, property, key) → (tenant, key): a site fork wins, else the
+  // tenant-wide default. SetNull on delete so a removed site's overrides fall back
+  // to the tenant-wide row instead of vanishing mid-flight. NOT a security
+  // boundary (tenant_id is); property scoping is application-tier (docs/49 §2).
+  propertyId String? @map("property_id") @db.Uuid
+
+  // Built-in identity (docs/91). One of the provisioned default keys
+  // (welcome-customer, abandoned-cart, …) for a default or its per-site override;
+  // NULL for a tenant-authored custom email. Two PARTIAL UNIQUE indexes (hand-SQL
+  // in the migration, Prisma can't express the predicate) enforce one tenant-wide
+  // default per key and one per-site override per key; custom emails (key NULL)
+  // are unconstrained.
+  key String? @db.VarChar(63)
+
+  name      String  @db.VarChar(255)
+  // The email subject line. Stored '' when blank (not null) — always present.
+  subject   String  @default("") @db.VarChar(255)
+  // Inbox preview text shown after the subject; null when unset.
+  preheader String? @db.VarChar(255)
+
+  // ⚠️ RETIRED — the sparx BuilderNode trees (docs/120 slice 7). NOTHING renders these
+  // any more: `renderEmailTree` is deleted and every send goes through the silica
+  // documents below. They survive only as the CONVERSION SOURCE for rows authored before
+  // the cutover — `emailService` converts on read (`emailTreeToSilica`) and the repair
+  // pass in `provisionDefaultEmails` persists the result. Once that has run for every
+  // tenant, these two columns get dropped and `draftTree` stops being NOT NULL's problem.
+  // Do not write new features against them.
+  draftTree     Json      @map("draft_tree")
+  publishedTree Json?     @map("published_tree")
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+
+  // THE email (docs/120) — a silicaui `EmailDocument` (subject + preheader + the closed
+  // `body` tree). This is what the editor mounts and what every send renders. NULL only
+  // on a row that predates the cutover and hasn't been repaired yet; the read path fills
+  // that gap by converting the tree above, so no caller ever sees a null. The whole
+  // override + keyed-default machinery is unchanged — same row, silica-shaped.
+  silicaDraftDocument     Json? @map("silica_draft_document")
+  silicaPublishedDocument Json? @map("silica_published_document")
+  // Catalog ordering (cf. BuilderPage.position).
+  position                Int   @default(0)
+
+  // Link-click tracking campaign override (docs/impl transactional-email Slice 10).
+  // At send, every on-site link in this email is tagged so the tenant's analytics
+  // credit the click (and any order that follows) to the email. The campaign the
+  // clicks report under defaults to the email's `name`; setting this overrides it —
+  // e.g. grouping several sends under one "Spring Sale". Null = use the name.
+  trackingCampaign String? @map("tracking_campaign") @db.VarChar(64)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  // Published-version history (docs/impl transactional-email Slice 5) — one row per
+  // publish, restorable to the draft. Append-only.
+  versions BuilderEmailVersion[]
+
+  @@index([tenantId, position])
+  // The override-resolution reads — (tenant, key, property=null) and
+  // (tenant, key, property=X) — are served by the two PARTIAL UNIQUE indexes
+  // hand-added in the migration (Prisma can't express their WHERE predicate).
+  @@map("builder_emails")
+}
+
+// A restorable snapshot of a PUBLISHED email — one row per publish (docs/impl
+// transactional-email Slice 5). The email twin of BuilderRelease.
+//
+// publishSilica used to be a one-way overwrite: silica_published_document held exactly
+// the last publish, so there was no way back from a bad publish except re-authoring by
+// hand. For a non-technical owner who just published a mistake to a LIVE transactional
+// email, that's the worst moment to have no undo.
+//
+// Simpler than the site release/manifest machinery: an email is ONE self-contained
+// document, so there's no multi-tree manifest — the whole silica EmailDocument is the
+// unit, hashed directly (content-addressed by `hash`) so a no-op republish (draft
+// identical to the last published version) doesn't add a duplicate row.
+//
+// Restore is NON-DESTRUCTIVE and to the DRAFT (see emailVersionService): a chosen version
+// is loaded back into silica_draft_document for the author to review in the studio and
+// re-publish — never a silent republish, because an email goes to real inboxes.
+//
+// Append-only. Tenant-scoped + FORCE RLS. `tenant_id` is kept as a scalar (+ a hand-SQL
+// FK in the migration) rather than a Prisma relation, so no back-relation is forced onto
+// the Tenant model; cascade-on-tenant-delete rides the email FK transitively.
+model BuilderEmailVersion {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  emailId  String @map("email_id") @db.Uuid
+
+  // The published silica EmailDocument snapshot (subject + preheader + the closed body
+  // tree), verbatim. Never rewritten.
+  document Json
+  // SHA-256 hex of the canonical JSON of `document` — its content address, for no-op
+  // dedupe against the previous version. 64 chars, fixed → Char.
+  hash     String @db.Char(64)
+
+  // Denormalized subject for the history list, so it need not parse every document.
+  subject String @default("") @db.VarChar(255)
+
+  // Who published it. Null for a system path with no human actor. No FK — users live in
+  // the Better Auth instance and a deleted user must not take the history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  email BuilderEmail @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  // The history list, newest first, scoped to one email.
+  @@index([tenantId, emailId, createdAt])
+  @@map("builder_email_versions")
+}
+
+// A tenant's SAVED EMAIL BLOCKS (docs/impl transactional-email Slice 9) — the
+// account-level, server-backed library that silicaui's EmailBuilder renders via
+// its `savedBlocks` controlled prop. It replaces silica's browser-`localStorage`
+// default so a saved block follows the whole team across devices and is shared
+// tenant-wide, instead of being trapped in one person's browser.
+//
+// Each row is a named, self-contained EmailNode snapshot — a section / card / CTA
+// the author stamped "Save as block". Inserting one deep-clones + re-stamps ids
+// (silica's `stampIds`), so a block is a TEMPLATE, not a live master: editing an
+// inserted copy never touches the saved definition, matching silica's own
+// no-propagating-instances model for email (unlike a multi-page site's symbols).
+//
+// Tenant-scoped + FORCE RLS. `tenant_id` is a scalar (+ a hand-SQL FK in the
+// migration), matching BuilderEmailVersion — no back-relation forced onto Tenant;
+// cascade-on-tenant-delete rides that FK.
+model BuilderEmailBlock {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Author-given label shown in the palette's saved-blocks group.
+  name String @db.VarChar(255)
+
+  // The saved EmailNode subtree, verbatim silica shape. The builder stamps fresh
+  // ids on every insert, so this stored copy is a template snapshot, never a live
+  // instance and never mutated after save.
+  node Json
+
+  // Who saved it. Null for a system path. No FK — users live in the Better Auth
+  // instance and a deleted user must not take the shared library with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // The library list for a tenant, newest first.
+  @@index([tenantId, createdAt])
+  @@map("builder_email_blocks")
+}
+
+// A TENANT-AUTHORED component (docs/53) — the user's own reusable building block,
+// composed in the builder rather than shipped in code. Distinct from SYSTEM
+// components (the in-code registry, which carry a renderLeaf function): a tenant
+// component is purely DECLARATIVE — a saved node tree + a prop schema — so it can
+// be stored, validated, and rendered by EXPANSION through the same trusted
+// renderers, never as user code (no RCE on the multi-tenant SSR surface).
+//
+// Identity lives here; the editable content lives in versioned snapshots
+// (BuilderComponentVersion) so a placement can PIN a version and opt into
+// upgrades. `latestVersion` points at the newest version row.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every
+// other builder_* table.
+model BuilderComponent {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Stable key, unique per tenant (^[a-z][a-z0-9_]*$); the placement type is
+  // `custom:<key>`, so key ≤ 56 keeps the namespaced type ≤ VarChar(63).
+  key           String  @db.VarChar(56)
+  name          String  @db.VarChar(120)
+  // Palette group: layout | content | data (mirrors the registry PaletteGroup).
+  group         String  @default("content") @db.VarChar(20)
+  // Lucide icon name shown in the catalog + palette.
+  icon          String  @default("box") @db.VarChar(64)
+  description   String? @db.VarChar(500)
+  // Editor surfaces this component appears in (e.g. ["page","site"]).
+  surfaces      Json    @default("[\"page\"]")
+  // Points at the newest BuilderComponentVersion.version. Bumped on every edit.
+  latestVersion Int     @default(1) @map("latest_version")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  versions BuilderComponentVersion[]
+
+  @@unique([tenantId, key])
+  @@index([tenantId, group])
+  @@map("builder_components")
+}
+
+// One immutable version snapshot of a BuilderComponent (docs/53 §6). Editing a
+// component creates a NEW version and bumps the parent's latestVersion; old
+// versions persist so pages pinned to them keep rendering. The `tree` is a
+// BuilderNode (validated by @wizeworks/builder-schemas, never the DB); `propSpec` is
+// the instance-fillable slot schema (docs/53 §5).
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration).
+model BuilderComponentVersion {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  componentId String @map("component_id") @db.Uuid
+  version     Int
+
+  // The editable BuilderNode root for this version. Shape validated by @wizeworks/builder-schemas.
+  //
+  // NULLABLE as of the silica cutover. This column is the RETIRED `.bx-*` builder's
+  // node format (`{id, type, props, children}`), which the silica `<Builder>` cannot
+  // render or insert — so a piece holding only this is a legacy row, listed but not
+  // placeable. Every piece authored from the silica studio writes `silicaTree`
+  // instead and leaves this null. Kept (rather than converted) because legacy pages
+  // were RE-SEEDED at the cutover, not migrated: there is no BuilderNode→silica
+  // converter anywhere in the tree, and writing one would resurrect the format we
+  // are retiring. Drop this column once no row has a non-null value.
+  tree       Json?
+  // The silica `Node` root — the placeable master. This is what the studio
+  // materializes into `Site.symbols` as `tenant:<key>` so silica's own component
+  // system (Components board, instances, enterSymbol, live propagation) drives a
+  // TENANT-WIDE piece. Null on legacy rows only.
+  silicaTree Json? @map("silica_tree")
+  // PropSpec[] — the instance-fillable slots (docs/53 §5). [] = a fixed component.
+  propSpec   Json  @default("[]") @map("prop_spec")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  component BuilderComponent @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@unique([componentId, version])
+  @@index([tenantId, componentId])
+  @@map("builder_component_versions")
+}
+
+// Tenant-wide BUILDER GOVERNANCE (docs/61 §8, Phase 6b) — a singleton config row
+// per tenant for the brand-designer's safety/governance policy over the builder.
+// Deliberately NOT on TenantBrand: the allowlist is a governance policy, not brand
+// IDENTITY (which is drifting per-site via Property.brandOverride). Governance is
+// genuinely tenant-wide — it bounds what ANY author on the tenant can compile,
+// across all their sites — so it gets its own tenant-level home with room to grow.
+//
+// `utilityAllowlist` is the tenant's ADDITIONAL block rules (tighten-only). The
+// platform BASE denylist (fixed / url( / content-[ / arbitrary z-[ — clickjacking /
+// exfiltration / injection guards) is hardcoded in @wizeworks/surface-compile and is
+// NEVER relaxable; this column can only ADD blocks. Shape:
+//   { v: 1, blocks: [{ kind: 'prefix' | 'exact' | 'substring', value: string }] }
+// Null = no tenant additions → the platform base applies unchanged. Validated by
+// @wizeworks/surface-compile's parseAllowlistConfig, never by the DB.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every other
+// builder_* table. PK = tenantId (one governance row per tenant), upserted lazily
+// on first write — no row needed until a tenant tightens.
+model BuilderGovernance {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  utilityAllowlist Json? @map("utility_allowlist") @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("builder_governance")
+}
+
+// A brand-governed ARCHETYPE (docs/61 §6 Phase 6b) — a curated section/layout
+// STARTING POINT a user stamps onto a page. Stamping drops a FORKED, fully-
+// editable copy of `tree` (fresh ids) into the page — NOT a live reference. This
+// is the key difference from BuilderComponent (a `custom:<key>` $ref pinned to a
+// version): nothing ever references an archetype after the drop, so it needs no
+// versioning (a single mutable tree) and no where-used guard on delete.
+//
+// `source` distinguishes platform-seeded defaults ('platform', seeded lazily on
+// first list from PLATFORM_ARCHETYPES) from tenant-authored additions ('tenant').
+// `enabled=false` hides an archetype from the Add palette without deleting it —
+// the lever for curating the platform defaults. `tree` is a BuilderNode validated
+// by @wizeworks/builder-schemas, never the DB.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every other
+// builder_* table.
+model BuilderArchetype {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Stable key, unique per tenant. Platform defaults keep their PLATFORM_ARCHETYPES
+  // key so re-seed / enable / disable is idempotent.
+  key         String  @db.VarChar(64)
+  name        String  @db.VarChar(120)
+  // Layout family: hero | feature | cta | gallery | testimonial | header | footer |
+  // content … A VarChar (not an enum) so a new family needs no migration.
+  family      String  @default("content") @db.VarChar(32)
+  icon        String  @default("box") @db.VarChar(64)
+  description String? @db.VarChar(500)
+  // Editor surfaces this archetype appears in (e.g. ["page","site"]).
+  surfaces    Json    @default("[\"page\"]")
+  // The BuilderNode root stamped (forked) into the page. Validated by @wizeworks/builder-schemas.
+  tree        Json
+  // platform (a seeded default) | tenant (authored by this tenant).
+  source      String  @default("tenant") @db.VarChar(16)
+  // Disabled archetypes stay in the catalog but drop out of the Add palette.
+  enabled     Boolean @default(true)
+  // Optional preview image URL (URL-first, cf. BuilderPage.ogImage); null → the icon.
+  thumbnail   String? @db.VarChar(2048)
+  position    Int     @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@index([tenantId, family, position])
+  @@map("builder_archetypes")
+}
+
+// Platform-level COMPONENT CATALOG (docs/98 §5) — the DB-backed home for the
+// platform's component library. Unlike all other builder_* tables, this is GLOBAL
+// (no tenant_id): every tenant reads the published set; only platform admins write.
+// The API layer enforces the owner-role gate for writes / non-published reads.
+// RLS: sparx_app can SELECT published rows only; sparx_owner is unrestricted.
+// See wizeworks/packages/db/CLAUDE.md §Global tables.
+// A persisted catalog entry: key/name/category/kind/icon/description/surfaces/tags/
+// tree mirror the data-as-code `PlatformCatalogEntry` (so a published row is palette-
+// renderable, docs/98 §5), plus the lifecycle/governance columns. `category` and
+// `surfaces` are validated STRINGS (the shared CatalogCategory / ComponentSurface
+// vocabulary in @wizeworks/builder-schemas) rather than DB enums — category slugs are
+// hyphenated (`data-display`), invalid as Postgres enum identifiers, and this matches
+// the package's "validated by builder-schemas, never the DB" convention (cf. `tree`).
+model PlatformComponent {
+  id          String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // URL-safe, unique catalog identifier (e.g. "navbar_brand", "hero_split").
+  key         String                      @unique @db.VarChar(64)
+  name        String                      @db.VarChar(120)
+  // Palette grouping — the shared CatalogCategory set (layout | navigation | actions
+  // | data-display | data-input | feedback | marketing | mockup). VARCHAR, not an
+  // enum (hyphenated slugs); validated by @wizeworks/builder-schemas.
+  category    String                      @db.VarChar(32)
+  // common | comprehensive — the shared CatalogKind composite-size set (docs/98 §5).
+  kind        PlatformComponentKind
+  // Lucide icon name for the palette tile.
+  icon        String                      @db.VarChar(64)
+  // One-line palette description.
+  description String                      @db.VarChar(280)
+  // Editor surfaces this entry appears in — the shared ComponentSurface set
+  // (page | site | email). TEXT[], validated by @wizeworks/builder-schemas.
+  surfaces    String[]
+  // The BuilderNode root tree (same shape as any archetype/page tree, serialized
+  // JSON). Validated by @wizeworks/builder-schemas, never by the DB.
+  tree        Json
+  // Optional declarative behavior config (data-sx-* parameters, validated at
+  // the service layer). Null = no runtime behavior (pure composition).
+  behaviors   Json?
+  // Optional richer preview image URL (beyond the lucide icon; URL-first, cf.
+  // BuilderPage.ogImage).
+  thumbnail   String?                     @db.VarChar(2048)
+  // Free-form search tags (e.g. ["hero","fullscreen","cta"]).
+  tags        String[]
+  // Draft → submitted → in_review → approved → published → archived | rejected
+  status      PlatformComponentStatus     @default(draft)
+  // The platform user (Better Auth user id) who authored this entry.
+  authorId    String                      @map("author_id") @db.VarChar(255)
+  // The platform reviewer who last changed the status (null until first review).
+  reviewerId  String?                     @map("reviewer_id") @db.VarChar(255)
+  // Monotonically bumped on every identity/tree update (NOT a version history;
+  // the static catalog controls published history outside the DB).
+  version     Int                         @default(1)
+  // public: any tenant can stamp it; private: reserved for internal use.
+  visibility  PlatformComponentVisibility @default(public)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([status])
+  @@index([kind])
+  @@index([category])
+  @@map("platform_components")
+}
+
+enum PlatformComponentKind {
+  common
+  comprehensive
+
+  @@map("platform_component_kind")
+}
+
+enum PlatformComponentStatus {
+  draft
+  submitted
+  in_review
+  approved
+  published
+  archived
+  rejected
+
+  @@map("platform_component_status")
+}
+
+enum PlatformComponentVisibility {
+  public
+  private
+
+  @@map("platform_component_visibility")
+}
+
+// The append-only OP LOG — every semantic edit the silica engine emitted, in the
+// order it happened (docs/126 §2, Phase 2).
+//
+// silicaui 0.30's `<Builder onChange(site, ops, meta)>` now hands the host what the
+// author DID as causal-ordered operations, not just the resulting whole `Site`. This
+// table records them. It is what unblocks two things the whole-site blob could never
+// give: real per-edit history ("what changed, when, by whom") and — once the realtime
+// relay lands (Phase 4) — multi-editor reconnect, where a client that was at `seq=N`
+// is caught up by replaying ops `N+1…`.
+//
+// SEQ IS PER-PROPERTY, not per-page. The doc sketch keyed it `(page_id, seq)`, but the
+// engine's `meta.baseSeq` / `ackSeq` track ONE document-wide sequence per editing
+// session — a client is "at seq N" across its whole site, not per page. A per-page seq
+// could not answer the reconnect question the engine actually asks, so the sequence is
+// monotonic per property and `owner_kind`/`owner_id` merely say which tree inside the
+// property an op addressed (its `target`).
+//
+// ADDITIVE, deliberately. `silica_draft_tree` stays the authoritative snapshot the
+// editor loads and the storefront (via publish) serves; this log is written in the
+// SAME transaction as that snapshot, so the two cannot disagree. Event-sourced reads
+// (snapshot + replay) are a later cutover (docs/126 §5.1), not folded in here — the
+// same parallel-run discipline every stage of this migration has used.
+//
+// Retained, not pruned (§5.2): ops are the history, they are small, and retention is a
+// product decision rather than a storage necessity. Tenant-scoped + FORCE RLS.
+model BuilderPageOp {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Per-property monotonic ordering — the value a client acks and reconnects against.
+  // BigInt: an active site can accrue a lot of ops over its life, and this must never
+  // wrap or collide.
+  seq BigInt @db.BigInt
+
+  // Client-generated id for one flushed batch. Groups the ops of a single onChange
+  // burst so a retried flush is idempotent (the service refuses a batch_id already
+  // recorded for the property) rather than double-appending.
+  batchId String @map("batch_id") @db.VarChar(64)
+
+  // Who made the edit. Null for a system/automation path with no human actor; no FK —
+  // users live in the Better Auth instance and a deleted user must not take the edit
+  // history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  // Which tree inside the property the op addressed (from `op.target`). `frame` and
+  // `site` scopes have no id; `page` and `symbol` do.
+  ownerKind String  @map("owner_kind") @db.VarChar(16) // page | frame | symbol | site
+  ownerId   String? @map("owner_id") @db.VarChar(255)
+
+  // The op's `kind` (`node.insert`, `page.setSlug`, …), lifted out of the JSON so
+  // "every text edit" or "every structural op" is an index scan, not a JSONB filter.
+  opKind String @map("op_kind") @db.VarChar(32)
+  // The full op, verbatim as the engine emitted it. Shape validated by the service's
+  // Zod schema, never the DB.
+  op     Json
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The ordering key AND the concurrency guard: two clients that race to append the
+  // same seq collide here, and one retries — the backstop that keeps the log a total
+  // order. Named explicitly (the generated name would truncate past 63 chars).
+  @@unique([tenantId, propertyId, seq], map: "builder_page_ops_property_seq_key")
+  // Idempotent retry — a re-sent flush finds its batch already present.
+  @@index([tenantId, propertyId, batchId])
+  // "The history of this page/symbol", in order.
+  @@index([tenantId, propertyId, ownerKind, ownerId, seq])
+  @@map("builder_page_ops")
+}
+
+// An IMMUTABLE, content-addressed copy of one published silica tree (docs/126 §5.3).
+//
+// Every publish writes the exact bytes it published, keyed by the SHA-256 of their
+// canonical form. Rows are only ever INSERTED — never updated, never deleted except
+// by the property cascade. That is the whole point: a published artifact is what
+// visitors actually received, so it must not be reachable by any later edit.
+//
+// Content addressing makes republishing cheap and history honest. An unchanged page
+// in a ten-page publish hashes to the row that already exists, so the insert is
+// skipped and the release simply names the same hash again — storage grows with what
+// CHANGED, not with how often the author pressed Publish. It also means two pages
+// that happen to hold identical trees still get their own rows, because the hash is
+// scoped per owner: dedupe across owners would make "the history of this page" a join
+// against every other page's releases for no saving worth having.
+//
+// Parallel-run, deliberately. The storefront still reads `silica_published_tree`
+// (docs/126 §5.5); this table is the history + rollback source until Phase 6 flips
+// reads onto it and drops those columns. Tenant-scoped + FORCE RLS.
+model BuilderPageArtifact {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Which store the tree came from. `page`/`layout` mirror BuilderNodeIndex;
+  // `symbols` and `theme` are the two site-global parts of a silica `Site`, whose
+  // owner_id is the property id (there is exactly one of each per property).
+  ownerKind String @map("owner_kind") @db.VarChar(16) // page | layout | symbols | theme
+  ownerId   String @map("owner_id") @db.VarChar(255)
+
+  // SHA-256 hex of the canonical JSON encoding of `tree` — the address. 64 chars,
+  // fixed, so Char rather than VarChar.
+  hash String @db.Char(64)
+  // The published bytes themselves. Never rewritten.
+  tree Json
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The dedupe key AND the lookup key — a release resolves each manifest entry
+  // through exactly this index. Explicitly named: the default would exceed
+  // Postgres's 63-char identifier limit and truncate (cf. BuilderPageAssignment).
+  @@unique([tenantId, propertyId, ownerKind, ownerId, hash], map: "builder_page_artifacts_owner_hash_key")
+  // "The history of this page" — newest first.
+  @@index([tenantId, propertyId, ownerKind, ownerId])
+  @@map("builder_page_artifacts")
+}
+
+// One PUBLISH — the unit an author actually acts on, and therefore the unit they
+// roll back (docs/126 §5.3, resolving 125 §6's total absence of history).
+//
+// Why a release rather than a per-page pointer: `publish()` is atomic across the
+// whole site. It snapshots every page, the active chrome, the theme and the symbol
+// library in one transaction, and those parts are coupled — a page written against a
+// symbol that a later release deleted does not render correctly on its own. Rolling
+// back one page to "yesterday" while the symbols stay at "today" reproduces exactly
+// the corruption the artifact table exists to prevent. So the restorable unit is the
+// whole manifest, and the property points at a release.
+//
+// `manifest` is the list of {ownerKind, ownerId, hash} the release published, and
+// `hash` is the content address OF that manifest — the single hash identifying this
+// state of the site. Two publishes that changed nothing therefore share a hash. The
+// second one still gets its OWN ROW (the author pressed Publish; that happened, and
+// the audit trail should say so) — but a consumer comparing it to its predecessor can
+// tell it changed nothing, which is what lets a history UI collapse or annotate the
+// no-op rather than showing two entries that look like distinct versions.
+//
+// Append-only like the artifacts. Tenant-scoped + FORCE RLS.
+model BuilderRelease {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Content address of `manifest` — the release's identity.
+  hash     String @db.Char(64)
+  // [{ ownerKind, ownerId, hash }] — resolved against builder_page_artifacts.
+  manifest Json
+
+  // Denormalized for the history list, which otherwise has to parse every manifest
+  // just to render "12 pages".
+  pageCount Int @default(0) @map("page_count")
+
+  // What produced this release. `publish` is an author pressing Publish; `restore`
+  // is a rollback, which publishes a PRIOR manifest forward as a NEW release rather
+  // than deleting history — so the act of undoing is itself auditable.
+  source         String  @default("publish") @db.VarChar(16) // publish | restore
+  // When `source = 'restore'`, the release this one reinstated.
+  restoredFromId String? @map("restored_from_id") @db.Uuid
+
+  // Nullable: a publish can originate from a system path (MCP, automation) with no
+  // human actor. No FK — users live in the Better Auth instance and a deleted user
+  // must not take the release history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The history list, and the "what is live right now" read (newest row wins).
+  @@index([tenantId, propertyId, createdAt])
+  @@map("builder_releases")
+}
+
+// A restorable snapshot of the DRAFT site, sealed on every save (docs/126 §4.6).
+//
+// The publish releases above make any PUBLISHED state recoverable. This does the same for
+// the DRAFT — the state the studio actually edits — so a save that overwrote work (the
+// last-write-wins case that concurrent agent+operator editing makes routine) is no longer
+// permanent: the overwritten version is one row back, restorable in a click.
+//
+// It reuses `builder_page_artifacts` verbatim for the trees (content-addressed, so an
+// unchanged page dedupes and a draft tree identical to a published one shares the row) —
+// this table only names the manifest, exactly like a release. It is a SEPARATE table, not
+// a flag on `builder_releases`, because the two restore differently: a release rewrites the
+// PUBLISHED columns, a draft version rewrites the DRAFT columns, and they must never share a
+// history list or a "current" notion.
+//
+// Append-only like releases; a `restore` is a new save forward, never a rewind. Pruned by a
+// rolling window (the service keeps a recent floor + a time window) so rows stay bounded
+// under heavy agent authoring; the shared artifacts are GC'd separately (never here).
+model BuilderDraftVersion {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Content address of `manifest` — this draft state's identity. Two saves that changed
+  // nothing share a hash, so a no-op save is detectable rather than another opaque row.
+  hash     String @db.Char(64)
+  // [{ ownerKind, ownerId, hash }] — resolved against builder_page_artifacts, same shape a
+  // release carries. Covers every draft tree: page bodies, the layout (frame), symbols, theme.
+  manifest Json
+
+  // Denormalized for the history list (so it need not parse every manifest to say "12 pages").
+  pageCount Int @default(0) @map("page_count")
+
+  // What produced this version, so the history can group + label it for a non-technical
+  // owner. `save` = a human pressed Save; `agent` = an MCP write on an assistant's behalf;
+  // `restore` = this version reinstated an earlier one (itself restorable).
+  source         String  @default("save") @db.VarChar(16) // save | agent | restore
+  // When `source = 'restore'`, the version this one reinstated.
+  restoredFromId String? @map("restored_from_id") @db.Uuid
+
+  // Who saved it. Null for a system path with no human actor. No FK — users live in the
+  // Better Auth instance and a deleted user must not take the edit history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The history list, newest first, scoped to the property.
+  @@index([tenantId, propertyId, createdAt])
+  @@map("builder_draft_versions")
+}
+
+// A DERIVED index of the nodes inside every silica tree a property owns — page
+// bodies, the site chrome (layout), and symbol masters (docs/126 §5.4).
+//
+// Why it exists: the trees are JSONB blobs, so nothing about their CONTENTS is
+// queryable. That leaves three real questions unanswerable without loading and
+// walking every tree in the property:
+//   · "what breaks if I change or delete this saved component?" — a symbol master
+//     is referenced by `instanceOf` from any number of nodes on any number of pages,
+//     and until now deleting one was a blind write.
+//   · "what shows this product?" — the impact of deleting a bound record.
+//   · "which pages contain a node type this renderer can't draw?" — the queryable
+//     half of the unknown-type problem (docs/125 §2.2).
+//
+// It is a CACHE, not a source of truth: every row is derivable by re-walking the
+// owning tree, and it is rebuilt wholesale per owner on write (delete-then-insert),
+// so it can never drift into a half-updated state. A surrogate PK rather than
+// (owner, node_id) because a silica node id is OPTIONAL — template/block nodes carry
+// none, and those nodes still hold bindings worth indexing.
+model BuilderNodeIndex {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Which tree this node lives in. All three are node trees and all three can hold
+  // symbol instances and bindings, so all three are indexed the same way.
+  ownerKind String @map("owner_kind") @db.VarChar(16) // page | layout | symbol
+  // BuilderPage.id / BuilderLayout.id / the symbol key. A VarChar (not a Uuid + FK)
+  // because a symbol key is not a uuid; cleanup rides the delete-then-insert rebuild
+  // and the property cascade below.
+  ownerId   String @map("owner_id") @db.VarChar(255)
+
+  // Absent on template/block nodes — see the PK note above.
+  nodeId String? @map("node_id") @db.VarChar(255)
+  kind   String  @db.VarChar(16) // element | component | outlet | host
+  type   String  @db.VarChar(120) // the tag (element) or component name
+
+  // `NodeBase.instanceOf` — the symbol master this node is an instance of.
+  symbolId String? @map("symbol_id") @db.VarChar(255)
+
+  // The decoded `data.ref` binding, when it pins a specific record. Split into
+  // entity + id so "everything showing product X" is an index seek, not a LIKE.
+  bindingEntity String? @map("binding_entity") @db.VarChar(20)
+  bindingId     String? @map("binding_id") @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The rebuild key — every write deletes this owner's rows then re-inserts.
+  @@index([tenantId, ownerKind, ownerId])
+  // "Where is this symbol used?"
+  @@index([tenantId, symbolId])
+  // "What shows this record?"
+  @@index([tenantId, bindingEntity, bindingId])
+  // "Which pages contain type X?" — the unknown-type census.
+  @@index([tenantId, propertyId, type])
+  @@map("builder_node_index")
+}

@@ -22,7 +22,7 @@ events did not.
 ## Root cause
 
 The terraform `topics` map had drifted from the `EventType` union in
-`packages/events/src/types.ts`. Diffing the deployed topics against the code catalog:
+`wizeworks/packages/events/src/types.ts`. Diffing the deployed topics against the code catalog:
 
 - **134** event types declared in code
 - **83** topics provisioned
@@ -54,8 +54,8 @@ Right after the 66-topic apply, a live order still logged
 `crm-pubsub: publish failed … resource=crm.pipeline.created`. Cause: there are
 **two** parallel event catalogs, and the first fix only closed one of them:
 
-- `EventType` in `packages/events/src/types.ts` — 134 names (the 66-topic fix)
-- **`CrmTopic` in `packages/crm/src/events.ts`** — 31 names, its own bus
+- `EventType` in `wizeworks/packages/events/src/types.ts` — 134 names (the 66-topic fix)
+- **`CrmTopic` in `wizeworks/packages/crm/src/events.ts`** — 31 names, its own bus
   (`crm-pubsub`) bridged to the same Pub/Sub project. Only the 4 `crm.customer.*`
   topics had ever been provisioned; the other **22** (`crm.pipeline.*`,
   `crm.deal.*`, `crm.task.*`, `crm.segment.*`, `crm.activity.recorded`,
@@ -78,7 +78,7 @@ failed` lines in api-rest logs. **Confirmed 2026-07-24**: publish-failure count
 `scripts/check-event-topics.mjs` (run via `pnpm check:events`, wired as the
 **Event ↔ topic parity** CI job in `.github/workflows/ci.yml`) now fails the
 build when any event declared in code has no topic in terraform. It unions BOTH
-catalogs — `EventType` (`packages/events`) AND `CrmTopic` (`packages/crm`) — so
+catalogs — `EventType` (`wizeworks/packages/events`) AND `CrmTopic` (`wizeworks/packages/crm`) — so
 it catches exactly the gap that this session's first hand-diff missed. Pure
 Node, no install, so it runs fast and in parallel with the heavy jobs. Any PR
 adding an event without its topic now goes red before merge instead of failing

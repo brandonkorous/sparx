@@ -222,7 +222,7 @@ The engine's `Page` is deliberately flat — `{ id, name, slug, root }`. Everyth
 Home resolves by **empty normalized slug**, not position:
 
 ```ts
-// packages/builder/src/services/site-service.ts:221
+// wizeworks/packages/builder/src/services/site-service.ts:221
 const row = pages.filter(isSilicaPublished).find((r) => normalizeSlug(r.slug) === '');
 ```
 

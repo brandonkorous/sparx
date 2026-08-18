@@ -18,13 +18,9 @@ import {
   defaultSilicaFormat,
   type DataSource,
   type DataSources,
-} from '@sparx/builder-schemas';
-import {
-  useActiveProperty,
-  useBindingCatalog,
-  useSitePreview,
-} from '../../surfaces/builder/studio/data';
-import { buildPreviewRoot } from '../../surfaces/builder/studio/preview-data';
+} from '@wizeworks/builder-schemas';
+import { useActiveProperty, useBindingCatalog, useSitePreview } from './site-data';
+import { buildPreviewRoot } from './preview-data';
 import { useActiveSiteId, useTenant } from '../api/shell-data';
 
 export interface CanvasPreview {

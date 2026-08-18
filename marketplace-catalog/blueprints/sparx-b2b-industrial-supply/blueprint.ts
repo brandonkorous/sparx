@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-b2b-industrial-supply',
-    version: '1.4.0',
-    name: 'sparx — Industrial Supply (B2B / Wholesale)',
-    summary:
-        'A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case — fasteners, abrasives, safety & PPE and bulk consumables — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme — steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.',
-    vertical: 'b2b',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-b2b-industrial-supply',
+  version: '1.4.0',
+  name: 'sparx — Industrial Supply (B2B / Wholesale)',
+  summary:
+    'A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case — fasteners, abrasives, safety & PPE and bulk consumables — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme — steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.',
+  vertical: 'b2b',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Ironworks Supply Co.',
+    tagline: 'The parts your crew needs, in stock and out the door.',
+    colors: {
+      primary: '#274777',
+      primaryForeground: '#f4f9ff',
+      accent: '#a14400',
+      secondary: '#465161',
+    },
+    fonts: {
+      heading: 'Archivo',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'b2b-industrial-supply',
+    basePresetKey: 'b2b-industrial-supply',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Ironworks Supply Co.',
-        tagline: 'The parts your crew needs, in stock and out the door.',
-        colors: {
-            primary: '#274777',
-            primaryForeground: '#f4f9ff',
-            accent: '#a14400',
-            secondary: '#465161',
-        },
-        fonts: {
-            heading: 'Archivo',
-            body: 'Inter',
-        },
+      colorPrimary: '#274777',
+      colorAccent: '#a14400',
+      colorSecondary: '#465161',
+      fontHeading: 'Archivo',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'b2b-industrial-supply',
-        basePresetKey: 'b2b-industrial-supply',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#274777',
-            colorAccent: '#a14400',
-            colorSecondary: '#465161',
-            fontHeading: 'Archivo',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

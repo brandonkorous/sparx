@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-stationery-editorial',
-    version: '1.4.0',
-    name: 'sparx — Stationery & Paper Goods (Editorial)',
-    summary:
-        'A complete, working shop for a stationery & paper-goods store: a real catalogue of hardcover and pocket notebooks, a fountain pen, bottled inks, a weekly planner and desk pad, card sets, washi tape and a gift bundle, with categories, collections, a bespoke PDP and a full merchandised home page. Editorial paper theme — warm cream ground, a confident ink-blue, a warm-red accent, a characterful Fraunces display. Shipped as Margin & Co.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-stationery-editorial',
+  version: '1.4.0',
+  name: 'sparx — Stationery & Paper Goods (Editorial)',
+  summary:
+    'A complete, working shop for a stationery & paper-goods store: a real catalogue of hardcover and pocket notebooks, a fountain pen, bottled inks, a weekly planner and desk pad, card sets, washi tape and a gift bundle, with categories, collections, a bespoke PDP and a full merchandised home page. Editorial paper theme — warm cream ground, a confident ink-blue, a warm-red accent, a characterful Fraunces display. Shipped as Margin & Co.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Margin & Co.',
+    tagline: 'Made for people who still write things down.',
+    colors: {
+      primary: '#10427b',
+      primaryForeground: '#f4f9ff',
+      accent: '#ba2c25',
+      secondary: '#364e6d',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Karla',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-stationery-editorial',
+    basePresetKey: 'retail-stationery-editorial',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Margin & Co.',
-        tagline: 'Made for people who still write things down.',
-        colors: {
-            primary: '#10427b',
-            primaryForeground: '#f4f9ff',
-            accent: '#ba2c25',
-            secondary: '#364e6d',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Karla',
-        },
+      colorPrimary: '#10427b',
+      colorAccent: '#ba2c25',
+      colorSecondary: '#364e6d',
+      fontHeading: 'Fraunces',
+      fontBody: 'Karla',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-stationery-editorial',
-        basePresetKey: 'retail-stationery-editorial',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#10427b',
-            colorAccent: '#ba2c25',
-            colorSecondary: '#364e6d',
-            fontHeading: 'Fraunces',
-            fontBody: 'Karla',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

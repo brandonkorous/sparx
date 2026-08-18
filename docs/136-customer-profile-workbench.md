@@ -5,7 +5,7 @@ Author: Brandon Korous
 Last Updated: 2026-07-24
 
 > Living record of the CRM **customer detail → customer PROFILE** rebuild in
-> [apps/workbench](../apps/workbench). Captures what we're building, where we
+> [sparx/apps/workbench](../apps/workbench). Captures what we're building, where we
 > are, and why, so the work survives a context compaction and anyone can pick it
 > up. The surface is [surfaces/crm/customer-detail.tsx](../apps/workbench/surfaces/crm/customer-detail.tsx)
 > and its sibling files.
@@ -106,9 +106,9 @@ Legend: ✅ done (code) · ⏳ needs the handoff below to run · ❌ not built (
 I author DB + dependent code as **files only** and never run
 `prisma migrate`/`generate` against the shared stack, so:
 
-1. **Regenerate the Prisma client** — `pnpm --filter @sparx/db exec prisma generate`.
+1. **Regenerate the Prisma client** — `pnpm --filter @wizeworks/db exec prisma generate`.
    This alone clears the _only_ remaining typecheck/lint errors: 5 in
-   `@sparx/crm` (`CustomerDocument` not in the client yet) + 1 `no-unsafe-assignment`
+   `@wizeworks/crm` (`CustomerDocument` not in the client yet) + 1 `no-unsafe-assignment`
    in api-rest. They are expected regen artifacts, **not** logic errors.
 2. **Verify no drift on the two hand-authored migrations** — run
    `prisma migrate dev` (or `migrate status`) locally against docker before the
@@ -158,7 +158,7 @@ got there, since it happened on this surface:
 
 **Also removed (0.3):** an over-built per-tenant _audience noun_ rename system (a
 `tenants.settings.audienceNoun` key, `GET`/`PATCH /v1/tenant/audience`, an
-`apps/workbench/lib/audience.ts` resolver, a "Your audience" setting) — far more than the ask; the
+`sparx/apps/workbench/lib/audience.ts` resolver, a "Your audience" setting) — far more than the ask; the
 CRM says "Customers" everywhere.
 
 ## Open decisions / next

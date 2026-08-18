@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-30
 
-A research-backed playbook for the marketing site (`apps/web`). We have a number of
+A research-backed playbook for the marketing site (`sparx/apps/web`). We have a number of
 sections to rework; this is the shared rubric so every rework is grounded in what
 actually moves people, not taste alone. Read it before reshaping a section, and run a
 section through the [checklist](#13-the-pre-ship-section-checklist) before shipping.

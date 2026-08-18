@@ -39,7 +39,6 @@ export function FeedbackButton() {
     <Tooltip content={hasUnread ? `${label} — Shift-click to open alongside` : label}>
       <Button
         variant="ghost"
-        size="sm"
         shape="square"
         aria-label={label}
         // Relative so the dot can sit on the icon's corner — layout only; the

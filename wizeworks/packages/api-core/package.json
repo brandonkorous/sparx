@@ -1,0 +1,83 @@
+{
+  "name": "@wizeworks/api-core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared Fastify primitives for sparx API services (api-rest, api-graphql, api-mcp). Owns auth, error envelope, RLS-aware Prisma helpers, audit, and pubsub + webhook fan-out. Each consuming service composes from its own env.ts. (CMS content-type/entry/reference plumbing now lives in @wizeworks/cms.)",
+  "type": "module",
+  "exports": {
+    "./errors": {
+      "types": "./src/errors.ts",
+      "default": "./src/errors.ts"
+    },
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./src/auth.ts"
+    },
+    "./errors-plugin": {
+      "types": "./src/errors-plugin.ts",
+      "default": "./src/errors-plugin.ts"
+    },
+    "./db": {
+      "types": "./src/db.ts",
+      "default": "./src/db.ts"
+    },
+    "./audit": {
+      "types": "./src/audit.ts",
+      "default": "./src/audit.ts"
+    },
+    "./pubsub": {
+      "types": "./src/pubsub.ts",
+      "default": "./src/pubsub.ts"
+    },
+    "./webhook-delivery": {
+      "types": "./src/webhook-delivery.ts",
+      "default": "./src/webhook-delivery.ts"
+    },
+    "./webhook-secret-crypto": {
+      "types": "./src/webhook-secret-crypto.ts",
+      "default": "./src/webhook-secret-crypto.ts"
+    },
+    "./slug": {
+      "types": "./src/slug.ts",
+      "default": "./src/slug.ts"
+    },
+    "./etag": {
+      "types": "./src/etag.ts",
+      "default": "./src/etag.ts"
+    },
+    "./envelope": {
+      "types": "./src/envelope.ts",
+      "default": "./src/envelope.ts"
+    },
+    "./query": {
+      "types": "./src/query.ts",
+      "default": "./src/query.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fastify/jwt": "^9.0.4",
+    "@google-cloud/pubsub": "^5.3.0",
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/cms-schemas": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "fastify": "^5.6.1",
+    "fastify-plugin": "^5.0.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

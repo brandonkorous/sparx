@@ -17,10 +17,10 @@
 //
 // This file is JUST the SPEC; the composition + emission live in the shared
 // `template-sites/harness.ts`. Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-beauty-counter.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-beauty-counter.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-beauty-counter/**" \
 //     "marketplace-catalog/_gen/**/*.ts"
-//   pnpm --filter @sparx/api-rest marketplace:self-register
+//   pnpm --filter @wizeworks/api-rest marketplace:self-register
 //
 // WHY RELATIVE IMPORTS — see the harness header (marketplace-catalog has no node_modules).
 
@@ -30,10 +30,10 @@ import { pathToFileURL } from 'node:url';
 import {
     el,
     type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { productCarousel, productsBlock } from '../../packages/silica-catalog/src/commerce';
-import { newsletterSignup } from '../../packages/silica-catalog/src/sections/convert';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { productCarousel, productsBlock } from '../../wizeworks/packages/silica-catalog/src/commerce';
+import { newsletterSignup } from '../../wizeworks/packages/silica-catalog/src/sections/convert';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';

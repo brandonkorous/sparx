@@ -25,9 +25,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
-  Filter,
-  FilterItem,
   SearchInput,
   Text,
   useToast,
@@ -45,6 +42,7 @@ import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useUploadMedia } from './media';
@@ -57,6 +55,10 @@ import {
   type MediaKind,
   type MediaListQuery,
 } from './media-admin';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'cms';
 
 /** The chips ARE the questions people open the library to answer: "where are my
  *  videos", "what's still processing". */
@@ -190,8 +192,26 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
       {/* `wrap` after reducing what can reduce: below @xl the status filter is
           hidden (kind + search answer most questions) and the upload label sheds
           to its icon. At a normal width this is one line. */}
-      <PaneToolbar label="Media library controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
+      {/* The file input lives OUTSIDE the toolbar, deliberately.
+          It is a hidden `ref` target that Upload clicks, and `controls` relocates
+          into a popover that UNMOUNTS when closed — which would take the ref with
+          it and leave Upload doing nothing. Nothing about it needs to be in the
+          bar; only the button does. */}
+      <input
+        ref={fileRef}
+        type="file"
+        multiple
+        accept="image/*,video/*,audio/*,application/pdf"
+        className="hidden"
+        onChange={(event) => {
+          onFiles(event.target.files);
+          event.target.value = '';
+        }}
+      />
+
+      <PaneToolbar
+        label="Media library controls"
+        search={
           <SearchInput
             size="sm"
             aria-label="Search your files"
@@ -202,78 +222,56 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
               resetWindow();
             }}
           />
-        </div>
-
-        <Filter
-          color="module"
-          value={kind}
-          onValueChange={(next) => {
-            setKind((next as MediaKind | 'all' | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by kind of file"
-        >
-          {KIND_FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        {/* The least-used control here: search + kind answer most questions, so
-            it steps aside first on a narrow pane. */}
-        <Filter
-          color="module"
-          className="hidden @xl:flex"
-          value={status}
-          onValueChange={(next) => {
-            setStatus((next as StatusFilter | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by state"
-        >
-          {STATUS_FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <input
-          ref={fileRef}
-          type="file"
-          multiple
-          accept="image/*,video/*,audio/*,application/pdf"
-          className="hidden"
-          onChange={(event) => {
-            onFiles(event.target.files);
-            event.target.value = '';
-          }}
-        />
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          loading={upload.isPending}
-          title="Upload a file from your computer"
-          onClick={() => {
+        }
+        filters={[
+          {
+            label: 'Kind',
+            key: 'kind',
+            value: kind,
+            onValueChange: (next) => {
+              setKind(next as MediaKind | 'all');
+              resetWindow();
+            },
+            options: KIND_FILTERS,
+          },
+          {
+            label: 'State',
+            key: 'status',
+            value: status,
+            onValueChange: (next) => {
+              setStatus(next as StatusFilter);
+              resetWindow();
+            },
+            options: STATUS_FILTERS,
+          },
+        ]}
+        primaryAction={{
+          label: 'Upload',
+          icon: faUpload,
+          title: 'Upload a file from your computer',
+          loading: upload.isPending,
+          onClick: () => {
             fileRef.current?.click();
-          }}
-        >
-          <Icon glyph={faUpload} className="size-4" aria-hidden />
-          <span className="hidden @xl:inline">Upload</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        views={{
+          target: '/cms/media',
+          params: { q: search },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto p-3">
         {staleAfterFailure ? (
@@ -301,26 +299,19 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the grid — "no files yet" over a connection
           // failure is a lie about their library, and the worst one to tell.
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faImage} className="size-6" aria-hidden />}
             title="Could not load your library"
             description="This is a problem reaching the server. Nothing you have uploaded is affected — none of it has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading your files…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faImage} className="size-6" aria-hidden />,

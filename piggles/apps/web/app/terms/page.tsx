@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Section } from '@piggles/ui';
 import Link from 'next/link';
-import { Alert } from '@wizeworks/silicaui-react';
-import { PRODUCT } from '@piggles/config';
+import { brandLegal } from '@wizeworks/legal';
 import { PageHero } from '@/components/marketing/page-hero';
+import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 
 // /terms — the agreement, in the same plain speech as the rest of the site.
 //
@@ -15,22 +15,21 @@ import { PageHero } from '@/components/marketing/page-hero';
 // and where the two could disagree, the other page wins:
 //
 //   • $49/month · 1 business · 1 location · 1 site · 3 users · 14 days free
-//     with no card — piggles/CLAUDE.md RULE #2 and apps/web/app/pricing.
+//     with no card — piggles/CLAUDE.md RULE #2 and sparx/apps/web/app/pricing.
 //   • A capacity limit never stops work in progress and never degrades what
 //     exists — RULE #2 again, and BILLING_RULES.md.
-//   • Export anything, any time; deletion after a short window — apps/web/app/trust.
+//   • Export anything, any time; deletion after a short window — sparx/apps/web/app/trust.
 //   • No AI training on customer data; BYOK only — /trust and /privacy.
 //   • Cards never reach us — /trust.
 //   • The entity, its home and its year — docs/01-platform-vision.md:
 //     WizeWorks LLC, Visalia, California, incorporated 2026. That is also where
 //     the governing law comes from; it is recorded, not assumed.
 //
-// ── THE BANNER STAYS ────────────────────────────────────────────────────────
+// ── EVERY CLAUSE IS ONE PIGGLES ALREADY KEEPS ──────────────────────────────
 //
-// It is a statement of fact, not a placeholder: this has not been through legal
-// review. Removing it is a decision for whoever commissions that review. The
-// page is complete either way — there are no gaps in it, and nothing here is
-// waiting on a later pass.
+// Nothing here is aspirational and nothing is in it because other companies have
+// one. If a clause and the pricing, trust or privacy page could disagree, the
+// other page wins and this one is the mistake.
 
 export const metadata: Metadata = {
   title: 'Terms',
@@ -167,22 +166,14 @@ export default function TermsPage() {
       <PageHero
         heading="The agreement, in plain words."
         lede="What you get, what it costs, what you can and cannot do with it, and how either of us can end it. Written to be read rather than to be survived."
+        figure={
+          <DocumentFigure
+            sections={`${CLAUSES.length} clauses`}
+            covers="Your Piggles subscription"
+            effective={brandLegal('piggles').versions.terms?.effectiveDate}
+          />
+        }
       />
-
-      <section className="px-6 pt-10">
-        <div className="mx-auto max-w-7xl">
-          <Alert color="warning" variant="soft">
-            <div>
-              <p className="font-bold">These terms have not been through legal review.</p>
-              <p className="mt-1 text-base">
-                Everything here matches what {PRODUCT.name} already commits to on its pricing, trust
-                and privacy pages, and it is complete. It has not been checked by a lawyer, and the
-                reviewed version replaces this page before {PRODUCT.name} opens to the public.
-              </p>
-            </div>
-          </Alert>
-        </div>
-      </section>
 
       <Section>
         <div className="grid gap-10 lg:grid-cols-[16rem_1fr] lg:gap-16">

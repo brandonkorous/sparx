@@ -65,7 +65,7 @@ import {
   isConditionGroup,
   type ConditionGroup,
   type ConditionOperator,
-} from '@sparx/automation-schemas';
+} from '@wizeworks/automation-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useViewer } from '../../lib/api/shell-data';

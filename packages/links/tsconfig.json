@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    // Only `src/server.ts` touches `process` — the root barrel is deliberately
-    // free of it so the browser bundle can import the table without a Node shim.
-    "types": ["node"]
-  },
-  "include": ["src/**/*", "test/**/*"]
-}

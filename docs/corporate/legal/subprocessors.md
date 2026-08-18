@@ -8,7 +8,7 @@ Applies to: WizeWorks LLC and the sparx platform
 > Adopted 2026-07-28. Not reviewed by counsel — see [README](README.md).
 >
 > **This list already had to exist.** The customer DPA
-> ([apps/web/app/legal/dpa/page.tsx](../../../apps/web/app/legal/dpa/page.tsx) §6) states: "We
+> ([sparx/apps/web/app/legal/dpa/page.tsx](../../../apps/web/app/legal/dpa/page.tsx) §6) states: "We
 > maintain a current subprocessor list and will give notice of material changes so you can object
 > on reasonable grounds."
 >
@@ -42,7 +42,7 @@ Derived from what the code actually integrates with, as of 2026-07-28.
 | **Mailgun**               | Delivery of outbound email on `sparx.email` — transactional and tenant marketing sends.                                                                              | Recipient email addresses and message content.                                                                 |
 | **Twilio**                | Outbound SMS — booking confirmations and reminders. `TWILIO_ACCOUNT_SID` is a platform credential; with none set the provider registry falls back to a console stub. | Recipient phone numbers and message content.                                                                   |
 | **Stripe**                | Payment processing, subscription billing, and marketplace/partner payouts.                                                                                           | Payer name, billing contact, payment metadata. Card numbers go to Stripe directly and never reach our systems. |
-| **GoDaddy**               | Domain registration, transfer and DNS when a tenant buys a domain through sparx (`packages/godaddy`, `domain-worker`).                                               | Registrant contact details — name, postal address, email, phone — as ICANN requires be recorded.               |
+| **GoDaddy**               | Domain registration, transfer and DNS when a tenant buys a domain through sparx (`wizeworks/packages/godaddy`, `domain-worker`).                                     | Registrant contact details — name, postal address, email, phone — as ICANN requires be recorded.               |
 | **PostHog**               | Product analytics in the marketing site and the workbench.                                                                                                           | Staff-user usage events and identifiers. Not shopper data; consent-gated, never loaded on a tenant site.       |
 
 ## Deliberately not on this list
@@ -52,7 +52,7 @@ Derived from what the code actually integrates with, as of 2026-07-28.
   service. The data stays inside GCP and is covered by that entry.
 - **Better Auth** — self-hosted software, not a service. No data leaves our infrastructure.
 - **AI providers** — sparx runs no AI on a platform credential
-  ([services/api-rest/src/lib/ai/llm-router.ts](../../../services/api-rest/src/lib/ai/llm-router.ts)
+  ([wizeworks/services/api-rest/src/lib/ai/llm-router.ts](../../../services/api-rest/src/lib/ai/llm-router.ts)
   builds a router per-request from the tenant's own decrypted key). Every AI feature is either the
   tenant's own provider key or an MCP client the tenant brings. Where a tenant configures their
   own key, that provider is **the tenant's** subprocessor, not ours.

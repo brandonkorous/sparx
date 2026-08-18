@@ -61,7 +61,7 @@ Last Updated: 2026-07-28
 >   **booking confirmation, owner "new booking" alert, order confirmation, shipping.** Chat +
 >   automations + OTP were unaffected (they carry `to`) — which is why chat emails DID arrive.
 >   Fix: add `to: args.to` to the publish. Prevention: new **`RawEmailSendPayload`** type in
->   `@sparx/events` mirroring the worker schema, applied via `satisfies` at both raw publish
+>   `@wizeworks/events` mirroring the worker schema, applied via `satisfies` at both raw publish
 >   sites (tenant-email + email-dispatch) so a missing `to` is now a COMPILE error. Typecheck +
 >   lint clean. See [[bug_raw_email_send_needs_to]]. **After deploy: re-book → confirm the email.**
 >   (This CORRECTS session-5's wrong "delivery/spam, not a code bug" conclusion.)
@@ -103,7 +103,7 @@ will never turn those modules on.
 ## Hard constraints discovered
 
 1. **A blueprint's schema carries only** `brand`, `theme`, `contentTypes`, `content`,
-   `commerce`, `site`, `emails` (`packages/blueprints/src/manifest.ts`
+   `commerce`, `site`, `emails` (`wizeworks/packages/blueprints/src/manifest.ts`
    `BlueprintSchema`). **No `scheduling`, `b2b`, or `crm` field.** Those modules are
    represented by **site formatting** (Book/service-detail pages, a Wholesale page, the
    contact form) that render live data an installing tenant adds — not by seeded records
@@ -130,13 +130,13 @@ will never turn those modules on.
      HERE (a)/(b)).
 3. **Capture only does the SITE.** `captureBlueprintSite` → `SiteDecl` (pages + frame +
    theme + symbols) only. `brand` / `commerce` / `content` / `emails` are hand-authored
-   into the bundle. (`services/api-rest/src/lib/blueprint-capture.ts`.)
+   into the bundle. (`wizeworks/services/api-rest/src/lib/blueprint-capture.ts`.)
 4. **Capture runs against docker Postgres** (Cloud SQL is private-IP only) — the live
    Template site is prod. Workaround: assemble the `SiteDecl` from MCP reads
    (`get_silica_site` + `list_silica_pages` give every field `CapturedPageInput` needs)
    and validate through `captureSite` locally. No infra change needed.
 5. **Record types already render via code defaults** (`RECORD_TEMPLATES` in
-   `packages/silica-catalog/src/record-templates.ts`): product / collection / category /
+   `wizeworks/packages/silica-catalog/src/record-templates.ts`): product / collection / category /
    service / blog_post. Re-authoring a template that only equals the code default adds no
    value. Author on-site only what we ENRICH beyond the default (product detail, blog
    post); the pure host-core shells (collection/category/service) can stay code-default.
@@ -265,7 +265,7 @@ the BUG-006 api-mcp Typesense env. **`write:search`** still needs to be granted 
 
 ⚠ **`marketplace-templates/blueprint/blueprint.ts` is OUT OF DATE** — it uses the legacy
 `BuilderNode` format (`layout`, top-level `pages`, `emails:[{tree,subject}]`). The CURRENT
-`BlueprintSchema` (`packages/blueprints/src/manifest.ts`, already read) is **silica-native**.
+`BlueprintSchema` (`wizeworks/packages/blueprints/src/manifest.ts`, already read) is **silica-native**.
 Author against the schema below, not the skeleton.
 
 **Top-level manifest (current):** `key, version, name, summary, vertical, preview?,
@@ -297,11 +297,11 @@ fontHeading:'Space Grotesk', fontBody:'Inter', tokens:{} }, apply:true }`. (This
 symbols}`, drop runtime ids, home slug `''`→omit. Validate through `captureSite`/schema.
   Keep `site.theme` (ship the Ember tokens verbatim, per decision #2).
 
-**Validate:** `safeParseBlueprint(manifest)` (from `@sparx/blueprints`) — write a throwaway
+**Validate:** `safeParseBlueprint(manifest)` (from `@wizeworks/blueprints`) — write a throwaway
 node/vitest check, or lean on `marketplace:ingest`'s own validation locally.
 **Media:** `icon.png` 512×512 + `preview.png` ~1600×1000 — screenshot the live Home for
 preview; icon is a design asset (sparx spark mark from `@sparx/brand`).
-**Ingest:** `pnpm --filter @sparx/api-rest marketplace:ingest` (local docker) — the catalog
+**Ingest:** `pnpm --filter @wizeworks/api-rest marketplace:ingest` (local docker) — the catalog
 row + artifact appear immediately; prod uses `marketplace-ingest.yml`.
 
 ## Blueprint bundle plan (`marketplace-catalog/blueprints/sparx/`)
@@ -316,8 +316,8 @@ sparx/
 ```
 
 - `requiresModules`: `builder, commerce, cms, crm, email` (+ others as surfaces land).
-- Ingest: `pnpm --filter @sparx/api-rest marketplace:ingest` (local) / `marketplace-ingest.yml` (prod).
-- Capture: `pnpm --filter @sparx/api-rest blueprint:capture -- --tenant <id> --property c99e0e23…`
+- Ingest: `pnpm --filter @wizeworks/api-rest marketplace:ingest` (local) / `marketplace-ingest.yml` (prod).
+- Capture: `pnpm --filter @wizeworks/api-rest blueprint:capture -- --tenant <id> --property c99e0e23…`
   (local/docker only — use the MCP-read workaround for the prod site, constraint #4).
 
 ## Screenshot review fixes (2026-07-24, Brandon's Book-page screenshot)
@@ -382,7 +382,7 @@ dark`**, so `dark:` compiles to `prefers-color-scheme` — while the storefront'
     in api-rest logs. This breaks **every** faceted PLP + all product/⌘K search **and the
     commerce-indexer's writes** (so nothing is indexed either).
 
-- The BUG-003 fix (defensive port resolution in `packages/search/src/client.ts` +
+- The BUG-003 fix (defensive port resolution in `wizeworks/packages/search/src/client.ts` +
   `enableServiceLinks: false` in `k8s/apps/api-rest.yaml`) is **written but UNCOMMITTED
   and UNDEPLOYED** — verified: `enableServiceLinks` is absent from HEAD. That is why prod
   still 500s. **Committing + deploying it is what actually fixes shop/search.**
@@ -399,20 +399,20 @@ dark`**, so `dark:` compiles to `prefers-color-scheme` — while the storefront'
 `create_product`. Details in the two subsections below.
 
 **Batch 2 — written this session, gate-green, awaiting a deploy.** Full-workspace
-`pnpm typecheck` passes (exit 0); `@sparx/commerce`, `@sparx/scheduling`, and the api-mcp
+`pnpm typecheck` passes (exit 0); `@wizeworks/commerce`, `@wizeworks/scheduling`, and the api-mcp
 `tool-scopes` suite all pass; all touched files prettier-clean.
 
-| Tool                                                             | Where                                        | Why it had to exist                                                                                                                                                                                                                                          |
-| ---------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `update_product`, `update_variant`                               | `packages/commerce/src/mcp/write-tools.ts`   | `create_product` shipped with no partner — a typo or wrong price meant archiving and rebuilding, losing the handle and burning the SKU (tenant-unique even soft-deleted). Price lives on the VARIANT, hence two tools; each description points at the other. |
-| `create/update/delete_scheduling_resource`, `set_resource_hours` | `packages/scheduling/src/mcp/write-tools.ts` | A service alone offers **zero** slots — `availability.ts` computes per resource and defaults to needing a `staff` one with weekly hours. Without these, `create_scheduling_service` still left /book empty.                                                  |
-| `list_scheduling_resources`, `list_resource_hours`               | `packages/scheduling/src/mcp/read-tools.ts`  | "Availability is empty" is almost always one of these two; an agent needs to be able to see which.                                                                                                                                                           |
-| `rebuild_search_index`                                           | `services/api-mcp/src/search-admin-tools.ts` | BUG-004: no tenant-reachable reindex existed — only `POST /v1/search/reindex` (admin role) and the platform-operator endpoint. Publishes the same `search.reindex.requested` event.                                                                          |
+| Tool                                                             | Where                                                  | Why it had to exist                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `update_product`, `update_variant`                               | `wizeworks/packages/commerce/src/mcp/write-tools.ts`   | `create_product` shipped with no partner — a typo or wrong price meant archiving and rebuilding, losing the handle and burning the SKU (tenant-unique even soft-deleted). Price lives on the VARIANT, hence two tools; each description points at the other. |
+| `create/update/delete_scheduling_resource`, `set_resource_hours` | `wizeworks/packages/scheduling/src/mcp/write-tools.ts` | A service alone offers **zero** slots — `availability.ts` computes per resource and defaults to needing a `staff` one with weekly hours. Without these, `create_scheduling_service` still left /book empty.                                                  |
+| `list_scheduling_resources`, `list_resource_hours`               | `wizeworks/packages/scheduling/src/mcp/read-tools.ts`  | "Availability is empty" is almost always one of these two; an agent needs to be able to see which.                                                                                                                                                           |
+| `rebuild_search_index`                                           | `wizeworks/services/api-mcp/src/search-admin-tools.ts` | BUG-004: no tenant-reachable reindex existed — only `POST /v1/search/reindex` (admin role) and the platform-operator endpoint. Publishes the same `search.reindex.requested` event.                                                                          |
 
-`rebuild_search_index` lives in **api-mcp**, not `@sparx/search`, on purpose: publishing
-needs `@sparx/events` → `@google-cloud/pubsub`, and `@sparx/search` is imported by the Next
+`rebuild_search_index` lives in **api-mcp**, not `@wizeworks/search`, on purpose: publishing
+needs `@wizeworks/events` → `@google-cloud/pubsub`, and `@wizeworks/search` is imported by the Next
 apps for the ⌘K palette. Same precedent as `domain-tools.ts`. It introduces a new
-**`write:search`** scope (`packages/auth/src/mcp-scopes.ts`), `sensitive`, and — matching the
+**`write:search`** scope (`wizeworks/packages/auth/src/mcp-scopes.ts`), `sensitive`, and — matching the
 REST route it mirrors — **owner/admin only**, excluded from the editor grant. A new scope
 means the connector must **re-consent**, not just reconnect.
 
@@ -422,7 +422,7 @@ tenant-reachable + why the tool lives where it does), [79](../79-scheduling.md) 
 
 ### MCP capability gap closed — scheduling service setup
 
-`packages/scheduling/src/mcp/write-tools.ts` gained **`create_scheduling_service`**,
+`wizeworks/packages/scheduling/src/mcp/write-tools.ts` gained **`create_scheduling_service`**,
 `update_scheduling_service`, `delete_scheduling_service` (thin wrappers over the existing
 `createService`/`updateService`/`deleteService` + `CreateServiceInput`/`UpdateServiceInput`).
 api-mcp spreads `...schedulingMcpTools` and `write:scheduling` is already an allowed scope,
@@ -431,7 +431,7 @@ what is bookable** — the reason a fresh site's /book page renders empty.
 
 ### MCP capability gap closed — product creation
 
-`packages/commerce/src/mcp/write-tools.ts` gained **`create_product`**. NOT a thin wrapper:
+`wizeworks/packages/commerce/src/mcp/write-tools.ts` gained **`create_product`**. NOT a thin wrapper:
 `productService.create` deliberately mints **no variant** (variants belong to
 `variantService`), and a product with no variant has no price, a null `defaultVariantId`,
 and an add-to-cart that refuses to fire — so exposing the bare create would hand agents a
@@ -443,11 +443,11 @@ Auto-registers via the `commerceMcpTools` spread; `write:commerce` already allow
 ### Deploy dependency
 
 **Deploy 1 — DONE (v1.161.0, 2026-07-24 12:53 UTC).** All of it verified live:
-`apps/site/components/brand/site-brand.tsx` (logo swap) · `apps/site/app/layout.tsx` (chat
-accent) · `apps/site/lib/commerce.ts` (search degrades, no 500) ·
-`packages/search/src/client.ts` + `k8s/apps/api-rest.yaml` (**BUG-003**) ·
-`packages/scheduling/src/mcp/write-tools.ts` (service setup) ·
-`packages/commerce/src/mcp/write-tools.ts` (`create_product`).
+`wizeworks/apps/site/components/brand/site-brand.tsx` (logo swap) · `wizeworks/apps/site/app/layout.tsx` (chat
+accent) · `wizeworks/apps/site/lib/commerce.ts` (search degrades, no 500) ·
+`wizeworks/packages/search/src/client.ts` + `k8s/apps/api-rest.yaml` (**BUG-003**) ·
+`wizeworks/packages/scheduling/src/mcp/write-tools.ts` (service setup) ·
+`wizeworks/packages/commerce/src/mcp/write-tools.ts` (`create_product`).
 
 **Deploy 2 — DONE (v1.163.0, 2026-07-24 19:34 UTC).** `update_product`, `update_variant`,
 the scheduling resource + hours tools and their reads, `rebuild_search_index` + the
@@ -462,17 +462,17 @@ Typesense env — the bootstrap `apps` apply landed it: pod has `TYPESENSE_API_K
 **Deploy 4 — DONE + verified live (2026-07-24). BUG-009 recovery ran (all 6 variants
 re-synced); `/shop` shows no "Sold out", `/book` lists both services with real slots.**
 
-| File                                                | Fixes                                                                                  |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `apps/site/lib/scheduling.ts`                       | **BUG-008** — scope the storefront service list to the active site (pass `?property=`) |
-| `packages/inventory/src/services/internal.ts`       | **BUG-009** — `syncProductInStock` is module-aware (inventory off → always in stock)   |
-| `packages/inventory/src/index.ts`                   | BUG-009 — export `syncProductInStock`                                                  |
-| `packages/commerce/src/services/variant-service.ts` | BUG-009 — call it at variant create + on any policy-bearing update                     |
+| File                                                          | Fixes                                                                                  |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `wizeworks/apps/site/lib/scheduling.ts`                       | **BUG-008** — scope the storefront service list to the active site (pass `?property=`) |
+| `wizeworks/packages/inventory/src/services/internal.ts`       | **BUG-009** — `syncProductInStock` is module-aware (inventory off → always in stock)   |
+| `wizeworks/packages/inventory/src/index.ts`                   | BUG-009 — export `syncProductInStock`                                                  |
+| `wizeworks/packages/commerce/src/services/variant-service.ts` | BUG-009 — call it at variant create + on any policy-bearing update                     |
 
-Which images Deploy 4 rolls: **apps/site** (BUG-008 storefront read) + **api-mcp** and
+Which images Deploy 4 rolls: **wizeworks/apps/site** (BUG-008 storefront read) + **api-mcp** and
 **api-rest** (BUG-009 — they own variant create/update; the blueprint installer goes through
 `variantService.create` too, so it's covered). The storefront only READS `inStock`, so
-apps/site needs no BUG-009 change.
+wizeworks/apps/site needs no BUG-009 change.
 
 BUG-008: `lib/scheduling.ts` fetched `/v1/public/scheduling/services` with only `tenant=`, so
 a non-primary site fell back to the tenant's PRIMARY site and showed none of its own services —
@@ -517,11 +517,11 @@ self-indexes).
   SINGLE source of the look for storefront **and** transactional email (OKLCH→hex per send is a
   format conversion of one source, not a second source), the golden `sparx` template the default
   new site, and `brand` identity-only. **Foundation:** `colorToHex()` in
-  `packages/site-themes/src/v2/color.ts`; `resolveSparxTheme()` + `BASE_SILICA_THEME` in
-  `packages/silica-catalog/src/` (turn a raw silica `Theme` into the flat 34-light/25-dark
-  ship-ready bag). **Phase 1 (storefront):** `apps/site/app/layout.tsx` always resolves a concrete
+  `wizeworks/packages/site-themes/src/v2/color.ts`; `resolveSparxTheme()` + `BASE_SILICA_THEME` in
+  `wizeworks/packages/silica-catalog/src/` (turn a raw silica `Theme` into the flat 34-light/25-dark
+  ship-ready bag). **Phase 1 (storefront):** `wizeworks/apps/site/app/layout.tsx` always resolves a concrete
   silica theme (base-theme fallback for the previously-unthemed case); non-regressing. **Phase 2
-  (email):** `packages/email-platform/src/services/brand-service.ts` reads the send property's
+  (email):** `wizeworks/packages/email-platform/src/services/brand-service.ts` reads the send property's
   `builder_site.silicaPublishedTheme` → BrandTokens via `colorToHex`, identity still from brand.
   **Phase 3 (onboarding):** nothing default-on; the blueprint gallery no longer module-filters
   (template ⊥ modules); the default blueprint choice is golden. **Phase 4 (20 clones):** new
@@ -619,7 +619,7 @@ self-indexes).
     `archive_product`, …) emitted `{type:'text', text: undefined}` and failed the SDK's
     result schema. **The write had already committed and published its event** — the worst
     shape of failure, because the agent believes it failed and retries a completed mutation.
-    Fixed in `services/api-mcp/src/server.ts` (`serializeResult`: void → `{ok:true}`), with
+    Fixed in `wizeworks/services/api-mcp/src/server.ts` (`serializeResult`: void → `{ok:true}`), with
     a regression test in `src/serialize-result.test.ts`.
   - **BUG-006 — api-mcp's four search tools were dead in prod.** `search_products` threw
     `TYPESENSE_API_KEY env var is required`: `k8s/apps/api-mcp.yaml` never got the Typesense
@@ -656,9 +656,9 @@ self-indexes).
     status=active ×6 → `bulk_update_product_status` archived ×12 (10 smoothies + sticker +
     test). Verified: all 6 on the Template `/shop`, every card image `200 image/jpeg`,
     smoothies gone.
-  - **Found BUG-008:** `/book` still empty because `apps/site/lib/scheduling.ts` didn't pass
+  - **Found BUG-008:** `/book` still empty because `wizeworks/apps/site/lib/scheduling.ts` didn't pass
     `?property=` (unlike `lib/commerce.ts`), so a non-primary site read the primary site's
-    (empty) service list. Fixed + gate-green → **Deploy 4 (apps/site)**.
+    (empty) service list. Fixed + gate-green → **Deploy 4 (wizeworks/apps/site)**.
 - **2026-07-24 (session 3 cont. — Deploy 3 fully live, BUG-009 found + fixed)** — Brandon ran
   bootstrap `apps` + reconnected. Verified: BUG-006 done (`search_products` works via MCP),
   BUG-005/007 confirmed. Finished the shop, then hit two things:
@@ -690,16 +690,16 @@ self-indexes).
     `upsert_silica_page` + `publish_silica_site` on the Template site
     (`c99e0e23-…`), verified live with a cache-buster (edge cache served stale briefly; route
     headers are `no-cache`).
-  - **Card affordance (CODE — gate-green, needs an apps/site deploy).**
-    `apps/site/components/booking/booking-services.tsx`: each service card was a bare link that
+  - **Card affordance (CODE — gate-green, needs an wizeworks/apps/site deploy).**
+    `wizeworks/apps/site/components/booking/booking-services.tsx`: each service card was a bare link that
     read as a static info block. Added a clear **"See open times →"** primary CTA (a styled
     `st-btn` span inside the card link — no nested control), fixed the description from `st-muted`
     → real ink (RULE #3), made duration/price readable (muted → `--st-text`, +weight; price shows
-    "Free" at $0). `apps/site/app/site.css`: card → flex column so the CTA bottom-aligns across
+    "Free" at $0). `wizeworks/apps/site/app/site.css`: card → flex column so the CTA bottom-aligns across
     cards, removed the hover `box-shadow` (no-shadows rule) leaving the border-color hover.
     Typecheck + eslint + prettier clean.
 - **2026-07-25 (session 5 — st-\* → silica migration + storefront fixes, all deployed)** — Ran
-  the full `st-*` → silica migration of `apps/site` (114 files) via a worktree subagent
+  the full `st-*` → silica migration of `wizeworks/apps/site` (114 files) via a worktree subagent
   ([[project_storefront_silica_migration]]), reconciled the 3 booking conflicts (`-X theirs` +
   re-applied seededDate/CTA), Brandon merged + deployed. Also deployed: product-page width fix
   (silica-catalog `productDetailPage`), booking widget first-bookable-day, /book reorder, card
@@ -719,7 +719,7 @@ self-indexes).
 acking` — `sendTenantEmailByKey` published the raw payload **without `to`**, which the worker's
   `RawSendSchema` requires, so it dropped EVERY raw transactional send (booking, order, shipping).
   Chat/automations/OTP were fine (they carry `to`). Fixed (`to: args.to`) + added prevention type
-  **`RawEmailSendPayload`** in `@sparx/events` + `satisfies` guards at both raw publish sites so a
+  **`RawEmailSendPayload`** in `@wizeworks/events` + `satisfies` guards at both raw publish sites so a
   missing `to` is a compile error. Typecheck + lint clean. Left in working tree for Brandon to
   commit/deploy. See [[bug_raw_email_send_needs_to]].
 - **2026-07-25 (session 6b — `to` fix VERIFIED live + per-site email-logo bug fixed)** — Brandon
@@ -727,7 +727,7 @@ acking` — `sendTenantEmailByKey` published the raw payload **without `to`**, w
   Brandon Korous / bkorous@gmail.com). **Email arrived** — Cloud Run `email-worker` logged `message
 processed` (no schema-drop), confirming the `to` fix end-to-end. Brandon flagged the email carried
   the **WizeWorks (tenant) logo, not the Template site's**. Traced it: `renderBuilderEmailDoc` →
-  `brandService.resolveEmailBrand` (packages/email-platform) read the per-site logo from the LEGACY
+  `brandService.resolveEmailBrand` (wizeworks/packages/email-platform) read the per-site logo from the LEGACY
   `override.logoMediaId` only, but the Builder Brand page always writes `logoLightMediaId` now
   (site-identity-data.ts `computeOverride` drops the legacy key). So every NON-PRIMARY site's
   transactional email fell back to the tenant logo. The storefront public payload resolves the same
@@ -742,7 +742,7 @@ processed` (no schema-drop), confirming the `to` fix end-to-end. Brandon flagged
   `sparx.json` (category:blueprint, payload:blueprint.ts, requires builder/commerce/cms/crm/email,
   media entries, accent Ember), `blueprint.ts` (the manifest default-export), `README.md` (the
   capture + fill runbook), a placeholder `site.json` (1 page, schema-valid, marked REPLACE), and a
-  real `welcome-email.json` (generated from the `@sparx/builder-schemas` email kit —
+  real `welcome-email.json` (generated from the `@wizeworks/builder-schemas` email kit —
   `emailDoc`/`section`/`heading`/`text`/`button` — since a blueprint is imported as pure data).
   **Authored real:** `brand` (sparx Ember `#e04631`/accent `#c1652e`/secondary `#4c9a8e`, Space
   Grotesk/Inter), `theme` (ThemeDecl: base `apex` + Ember brand look + `{v:2,containerWidth:'1152px'}`,

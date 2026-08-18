@@ -7,8 +7,8 @@
 // a preview as distinct from a canvas.
 //
 // The width buttons resize the FRAME, so the page inside reflows exactly as it would
-// on a phone. That is a different act from the canvas's device switch, which resizes
-// a design surface; here nothing is being designed, only checked.
+// on a phone. A different act from the canvas's device switch, which resizes a design
+// surface; here nothing is being designed, only checked.
 
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
@@ -43,46 +43,77 @@ export function PreviewFrame({
   /** Anything the pane wants above the frame — an email's checks, for instance. */
   children?: ReactNode;
 }) {
-  const sized = WIDTHS.find((option) => option.value === width) ?? WIDTHS[2]!;
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="border-base-300 flex shrink-0 items-center gap-1 border-b px-2 py-1.5">
-        {WIDTHS.map((option) => (
-          <Button
-            key={option.value}
-            size="sm"
-            {...(width === option.value ? { color: 'primary' as const } : {})}
-            onClick={() => onWidth(option.value)}
-          >
-            {option.label}
-          </Button>
-        ))}
-      </div>
-
+      <WidthPicker width={width} onWidth={onWidth} />
       {children}
-
       <div className="min-h-0 flex-1 overflow-auto p-4">
         {url || srcDoc ? (
-          <iframe
-            // Keyed by what it is showing, so a refresh remounts the frame rather
-            // than relying on the browser to re-request an identical address.
-            key={url ?? 'inline'}
-            {...(srcDoc === undefined ? { src: url ?? undefined } : { srcDoc })}
-            title={label}
-            className={`bg-base-100 mx-auto block h-full min-h-[32rem] rounded-lg border-0 ${sized.className}`}
-          />
+          <Frame url={url} srcDoc={srcDoc} width={width} label={label} />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <p className="text-base-content">This preview could not be loaded.</p>
-            {onRetry ? (
-              <Button color="primary" variant="soft" onClick={onRetry}>
-                Try again
-              </Button>
-            ) : null}
-          </div>
+          <Unavailable onRetry={onRetry} />
         )}
       </div>
+    </div>
+  );
+}
+
+function WidthPicker({
+  width,
+  onWidth,
+}: {
+  width: PreviewWidth;
+  onWidth: (width: PreviewWidth) => void;
+}) {
+  return (
+    <div className="border-base-300 flex shrink-0 items-center gap-1 border-b px-2 py-1.5">
+      {WIDTHS.map((option) => (
+        <Button
+          key={option.value}
+          size="sm"
+          {...(width === option.value ? { color: 'primary' as const } : {})}
+          onClick={() => onWidth(option.value)}
+        >
+          {option.label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+function Frame({
+  url,
+  srcDoc,
+  width,
+  label,
+}: {
+  url?: string | null;
+  srcDoc?: string;
+  width: PreviewWidth;
+  label: string;
+}) {
+  const sized = WIDTHS.find((option) => option.value === width) ?? WIDTHS[2]!;
+  return (
+    <iframe
+      // Keyed by what it is showing, so a refresh remounts the frame rather than
+      // relying on the browser to re-request an identical address.
+      key={url ?? 'inline'}
+      {...(srcDoc === undefined ? { src: url ?? undefined } : { srcDoc })}
+      title={label}
+      className={`bg-base-100 mx-auto block h-full min-h-[32rem] rounded-lg border-0 ${sized.className}`}
+    />
+  );
+}
+
+function Unavailable({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+      <p className="text-base-content">This preview could not be loaded.</p>
+      {onRetry ? (
+        <Button color="primary" variant="soft" onClick={onRetry}>
+          Try again
+        </Button>
+      ) : null}
     </div>
   );
 }

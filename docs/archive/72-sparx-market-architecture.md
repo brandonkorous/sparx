@@ -246,7 +246,7 @@ Merchant dashboard shows:
 
 - [ ] `public_listing`, `market_category` columns on products
 - [ ] Product opt-in UI in merchant dashboard
-- [ ] sparx.market Next.js app (apps/market in monorepo)
+- [ ] sparx.market Next.js app (sparx/apps/market in monorepo)
 - [ ] Homepage with featured products + category nav
 - [ ] Category landing pages (/auto, /beauty, /home, /fashion, /food, /tech)
 - [ ] Product listing page with Typesense search + faceted filters

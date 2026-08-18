@@ -1,0 +1,61 @@
+{
+  "name": "@wizeworks/auth",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx authentication — Better Auth server + client configured with the sparx Prisma adapter and tenant/organization plugin (docs/16-auth-security.md).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "default": "./src/server.ts"
+    },
+    "./client": {
+      "types": "./src/client.ts",
+      "default": "./src/client.ts"
+    },
+    "./org-roles": {
+      "types": "./src/org-roles.ts",
+      "default": "./src/org-roles.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "verify": "tsx scripts/verify-signup.ts",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@better-auth/passkey": "1.6.11",
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/attribution": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/email": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/legal": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
+    "@wizeworks/legal-seed": "workspace:*",
+    "@wizeworks/links": "workspace:*",
+    "@wizeworks/modules": "workspace:*",
+    "better-auth": "^1.6.11"
+  },
+  "peerDependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "dotenv": "^16.4.7",
+    "next": "^16.2.6",
+    "react": "^19.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3"
+  }
+}

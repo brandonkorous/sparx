@@ -16,10 +16,13 @@ import { Badge, Button } from '@wizeworks/silicaui-react';
 import type { HistoryEntry } from '../../lib/studio/history-data';
 
 /** What produced an entry, in words and in a colour that distinguishes it. */
-function describe(source: string): { label: string; tone: 'info' | 'module-ai' | 'warning' } {
+function describe(source: string): {
+  label: string;
+  tone: 'info' | 'module-ai' | 'warning' | 'success';
+} {
   if (source === 'agent') return { label: 'Assistant', tone: 'module-ai' };
   if (source === 'restore') return { label: 'Put back', tone: 'warning' };
-  if (source === 'publish') return { label: 'Went live', tone: 'info' };
+  if (source === 'publish') return { label: 'Published', tone: 'success' };
   return { label: 'You saved', tone: 'info' };
 }
 
@@ -48,40 +51,56 @@ export function HistoryRows({
   return (
     <ul className="flex flex-col gap-1">
       {entries.map((entry) => {
-        const at = new Date(entry.createdAt);
-        const day = DAY.format(at);
+        const day = DAY.format(new Date(entry.createdAt));
         const heading = day === lastDay ? null : day;
         lastDay = day;
-        const { label, tone } = describe(entry.source);
-
         return (
           <Fragment key={entry.id}>
             {heading ? (
               <li className="text-base-content px-1 pt-3 text-sm font-medium">{heading}</li>
             ) : null}
-            <li className="flex items-center gap-2 px-1 py-1">
-              <span className="text-base-content w-14 shrink-0 text-sm">{CLOCK.format(at)}</span>
-              <Badge color={tone} variant="soft">
-                {label}
-              </Badge>
-              <span className="ml-auto shrink-0">
-                {entry.current ? (
-                  <span className="text-base-content text-sm">This is what you have now</span>
-                ) : action && onAction ? (
-                  <Button
-                    size="sm"
-                    color="primary"
-                    disabled={pendingId === entry.id}
-                    onClick={() => onAction(entry)}
-                  >
-                    {pendingId === entry.id ? 'Putting back…' : action}
-                  </Button>
-                ) : null}
-              </span>
-            </li>
+            <Row
+              entry={entry}
+              action={action}
+              onAction={onAction}
+              pending={pendingId === entry.id}
+            />
           </Fragment>
         );
       })}
     </ul>
+  );
+}
+
+function Row({
+  entry,
+  action,
+  onAction,
+  pending,
+}: {
+  entry: HistoryEntry;
+  action: string | null;
+  onAction?: (entry: HistoryEntry) => void;
+  pending: boolean;
+}) {
+  const { label, tone } = describe(entry.source);
+  return (
+    <li className="flex items-center gap-2 px-1 py-1">
+      <span className="text-base-content w-14 shrink-0 text-sm">
+        {CLOCK.format(new Date(entry.createdAt))}
+      </span>
+      <Badge color={tone} variant="soft">
+        {label}
+      </Badge>
+      <span className="ml-auto shrink-0">
+        {entry.current ? (
+          <span className="text-base-content text-sm">This is what you have now</span>
+        ) : action && onAction ? (
+          <Button size="sm" color="primary" disabled={pending} onClick={() => onAction(entry)}>
+            {pending ? 'Putting back…' : action}
+          </Button>
+        ) : null}
+      </span>
+    </li>
   );
 }

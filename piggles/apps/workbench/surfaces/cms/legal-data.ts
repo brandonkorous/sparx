@@ -26,12 +26,12 @@
 // content data layer rather than re-spelled, so the two can never drift.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { type EntryStatus, type Tone } from './data';
 import { productCopy } from '../../lib/product';
 
-/* ── Shapes (camelCase, exactly as services/api-rest/src/routes/v1/legal.ts
+/* ── Shapes (camelCase, exactly as wizeworks/services/api-rest/src/routes/v1/legal.ts
  *    serialises them) ──────────────────────────────────────────────────────*/
 
 /** Where a checklist item sits, as the server computes it. Kept for callers that

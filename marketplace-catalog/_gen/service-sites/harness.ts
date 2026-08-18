@@ -33,17 +33,17 @@ import {
     stampTree,
     type Node,
     type Theme,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { starterFrame } from '../../../packages/silica-catalog/src/site';
+import { starterFrame } from '../../../wizeworks/packages/silica-catalog/src/site';
 import type {
     FooterVariant,
     NavbarVariant,
     SiteChromeOptions,
-} from '../../../packages/silica-catalog/src/site-chrome';
-import { HOST_KEYS, hostCore } from '../../../packages/silica-catalog/src/host-nodes';
-import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
-import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+} from '../../../wizeworks/packages/silica-catalog/src/site-chrome';
+import { HOST_KEYS, hostCore } from '../../../wizeworks/packages/silica-catalog/src/host-nodes';
+import { resolveSparxTheme } from '../../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
+import { colorToHex } from '../../../wizeworks/packages/site-themes/src/v2/color';
 import { blueprintEmailDoc } from '../shared/blueprint-email';
 import { contactSection } from '../shared/contact-section';
 
@@ -55,7 +55,7 @@ export {
     STATUS_ON_DARK,
     STATUS_ON_LIGHT,
     type Face,
-} from '../../../packages/silica-catalog/src/themes';
+} from '../../../wizeworks/packages/silica-catalog/src/themes';
 // `faces()` (theme → heading/body Google families) is the commerce harness's, reused
 // verbatim so both harnesses derive fonts identically. Re-exported so the service preview
 // (and any consumer) can derive the same Google-Font families the bundle ships.

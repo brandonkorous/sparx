@@ -1,92 +1,92 @@
 [
-    {
-        "id": "home-hero",
-        "url": "https://images.unsplash.com/photo-1772112334842-ef9917ac915e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbGlzdCUyMG1vZGVybiUyMGxpdmluZyUyMHJvb20lMjBhcmMlMjBmbG9vciUyMGxhbXB8ZW58MHwwfHx8MTc4NjQwNzY1M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A minimalist modern living room with an arc floor lamp and a low sofa"
-    },
-    {
-        "id": "home-tile-lighting",
-        "url": "https://images.unsplash.com/photo-1776362658611-2067c9ded1d1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2N1bHB0dXJhbCUyMGZsb29yJTIwbGFtcHxlbnwwfDB8fHwxNzg2NDA4OTg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A sculptural floor lamp against a bare plaster wall"
-    },
-    {
-        "id": "home-tile-living",
-        "url": "https://images.unsplash.com/photo-1749703977772-4008c36ba7c9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29vbCUyMHJ1ZyUyMGdlb21ldHJpYyUyMGN1c2hpb25zJTIwYnJpZ2h0JTIwbW9kZXJuJTIwcm9vbXxlbnwwfDB8fHwxNzg2NDA3NjU5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A wool rug and geometric cushions in a bright modern room"
-    },
-    {
-        "id": "home-tile-table",
-        "url": "https://images.unsplash.com/photo-1588157549725-abce1cac3c93?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBtb2Rlcm4lMjB0YWJsZSUyMHNldCUyMGdsYXNzJTIwY2FyYWZlJTIwdHVtYmxlcnN8ZW58MHwwfHx8MTc4NjQwNzY2M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A clean modern table set with a glass carafe and tumblers"
-    },
-    {
-        "id": "home-tile-decor",
-        "url": "https://images.unsplash.com/photo-1613424777445-f93a2a48e285?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9ub2xpdGhpYyUyMGNlcmFtaWMlMjB2YXNlfGVufDB8MHx8fDE3ODY0MDg5OTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A monolithic ceramic vase and a wall clock on a concrete shelf"
-    },
-    {
-        "id": "home-band-design",
-        "url": "https://images.unsplash.com/photo-1695712551846-4dc15433fbd4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzaWduZXIlMjBza2V0Y2hpbmclMjBvYmplY3QlMjBicmlnaHQlMjBzdHVkaW8lMjBiZW5jaHxlbnwwfDB8fHwxNzg2NDA3NjY5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A designer sketching an object at a bright studio bench"
-    },
-    {
-        "id": "home-band-materials",
-        "url": "https://images.unsplash.com/photo-1671022442106-c787685d9fed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmF3JTIwbWF0ZXJpYWxzJTIwbGFpZCUyMG91dCUyMHBvd2Rlci1jb2F0ZWQlMjBzdGVlbCUyMG9ha3xlbnwwfDB8fHwxNzg2NDA3NjcyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "Raw materials laid out — powder-coated steel, oak and wool felt"
-    },
-    {
-        "id": "prod-floor-lamp",
-        "url": "https://images.unsplash.com/photo-1738161022829-fdddbbcfc1ad?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2xpbSUyMGFyYyUyMGZsb29yfGVufDB8MHx8fDE3ODY0MDg5OTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A slim arc floor lamp with a spun-metal shade"
-    },
-    {
-        "id": "prod-vase",
-        "url": "https://images.unsplash.com/photo-1600529782623-5d3cb98476c9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFsbCUyMG1vbm9saXRoaWMlMjBtYXR0ZSUyMGNlcmFtaWMlMjB2YXNlfGVufDB8MHx8fDE3ODY0MDc2Nzh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A tall monolithic matte ceramic vase"
-    },
-    {
-        "id": "prod-rug",
-        "url": "https://images.unsplash.com/photo-1594922234647-4ade6282c369?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmxhdC13b3ZlbiUyMHdvb2wtYmxlbmQlMjBydWclMjBncmFwaGljJTIwYmxvY2slMjBwYXR0ZXJufGVufDB8MHx8fDE3ODY0MDc2ODF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A flat-woven wool-blend rug with a graphic block pattern"
-    },
-    {
-        "id": "prod-tray",
-        "url": "https://images.unsplash.com/photo-1532368946481-86c4303674ea?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFjcXVlcmVkJTIwcmVjdGFuZ3VsYXIlMjBzZXJ2aW5nJTIwdHJheXxlbnwwfDB8fHwxNzg2NDA3Njg1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A lacquered rectangular serving tray"
-    },
-    {
-        "id": "prod-shelf",
-        "url": "https://images.unsplash.com/photo-1619217843419-4d60e0872e1f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kdWxhciUyMHBvd2Rlci1jb2F0ZWQlMjBzdGVlbCUyMG9hayUyMHNoZWx2aW5nJTIwdW5pdHxlbnwwfDB8fHwxNzg2NDA3Njg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A modular powder-coated steel and oak shelving unit"
-    },
-    {
-        "id": "prod-cushions",
-        "url": "https://images.unsplash.com/photo-1689952896845-366dfdcb4d88?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMGdlb21ldHJpYyUyMGNvbG91ci1ibG9ja2VkJTIwY3VzaGlvbnMlMjBiZW5jaHxlbnwwfDB8fHwxNzg2NDA3NjkzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A pair of geometric color-blocked cushions on a bench"
-    },
-    {
-        "id": "prod-carafe",
-        "url": "https://images.unsplash.com/photo-1660303438028-b59af33c618c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhc3MlMjBjYXJhZmUlMjB0d28lMjBtYXRjaGluZyUyMHR1bWJsZXJzfGVufDB8MHx8fDE3ODY0MDc2OTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A glass carafe with two matching tumblers"
-    },
-    {
-        "id": "prod-clock",
-        "url": "https://images.unsplash.com/photo-1573665703669-2b696af53b86?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbGlzdCUyMHdhbGwlMjBjbG9jayUyMGJhcmUlMjBtZXRhbCUyMGZhY2V8ZW58MHwwfHx8MTc4NjQwNzcwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A minimalist wall clock with a bare metal face"
-    },
-    {
-        "id": "post-lighting",
-        "url": "https://images.unsplash.com/photo-1606170033648-5d55a3edf314?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2FybSUyMGxhbXBsaWdodCUyMGxheWVyZWR8ZW58MHwwfHx8MTc4NjQwODk5OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "Warm lamplight layered across a dim modern room at dusk"
-    },
-    {
-        "id": "post-materials",
-        "url": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvc2UtdXAlMjBwb3dkZXItY29hdGVkJTIwc3RlZWwlMjBtZWV0aW5nJTIwc29saWQlMjBvYWt8ZW58MHwwfHx8MTc4NjQwNzcwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "Close-up of powder-coated steel meeting solid oak"
-    },
-    {
-        "id": "post-palette",
-        "url": "https://images.unsplash.com/photo-1675783453128-cdb7ffad8595?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVzdHJhaW5lZCUyMHBhbGV0dGUlMjBncmV5JTIwb2FrJTIwb25lJTIwYm9sZCUyMGFjY2VudHxlbnwwfDB8fHwxNzg2NDA3NzA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-        "alt": "A restrained palette of grey, oak and one bold accent"
-    }
+  {
+    "id": "home-hero",
+    "url": "https://images.unsplash.com/photo-1772112334842-ef9917ac915e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbGlzdCUyMG1vZGVybiUyMGxpdmluZyUyMHJvb20lMjBhcmMlMjBmbG9vciUyMGxhbXB8ZW58MHwwfHx8MTc4NjQwNzY1M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A minimalist modern living room with an arc floor lamp and a low sofa"
+  },
+  {
+    "id": "home-tile-lighting",
+    "url": "https://images.unsplash.com/photo-1776362658611-2067c9ded1d1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2N1bHB0dXJhbCUyMGZsb29yJTIwbGFtcHxlbnwwfDB8fHwxNzg2NDA4OTg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A sculptural floor lamp against a bare plaster wall"
+  },
+  {
+    "id": "home-tile-living",
+    "url": "https://images.unsplash.com/photo-1749703977772-4008c36ba7c9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29vbCUyMHJ1ZyUyMGdlb21ldHJpYyUyMGN1c2hpb25zJTIwYnJpZ2h0JTIwbW9kZXJuJTIwcm9vbXxlbnwwfDB8fHwxNzg2NDA3NjU5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wool rug and geometric cushions in a bright modern room"
+  },
+  {
+    "id": "home-tile-table",
+    "url": "https://images.unsplash.com/photo-1588157549725-abce1cac3c93?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBtb2Rlcm4lMjB0YWJsZSUyMHNldCUyMGdsYXNzJTIwY2FyYWZlJTIwdHVtYmxlcnN8ZW58MHwwfHx8MTc4NjQwNzY2M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A clean modern table set with a glass carafe and tumblers"
+  },
+  {
+    "id": "home-tile-decor",
+    "url": "https://images.unsplash.com/photo-1613424777445-f93a2a48e285?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9ub2xpdGhpYyUyMGNlcmFtaWMlMjB2YXNlfGVufDB8MHx8fDE3ODY0MDg5OTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A monolithic ceramic vase and a wall clock on a concrete shelf"
+  },
+  {
+    "id": "home-band-design",
+    "url": "https://images.unsplash.com/photo-1695712551846-4dc15433fbd4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzaWduZXIlMjBza2V0Y2hpbmclMjBvYmplY3QlMjBicmlnaHQlMjBzdHVkaW8lMjBiZW5jaHxlbnwwfDB8fHwxNzg2NDA3NjY5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A designer sketching an object at a bright studio bench"
+  },
+  {
+    "id": "home-band-materials",
+    "url": "https://images.unsplash.com/photo-1671022442106-c787685d9fed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmF3JTIwbWF0ZXJpYWxzJTIwbGFpZCUyMG91dCUyMHBvd2Rlci1jb2F0ZWQlMjBzdGVlbCUyMG9ha3xlbnwwfDB8fHwxNzg2NDA3NjcyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Raw materials laid out — powder-coated steel, oak and wool felt"
+  },
+  {
+    "id": "prod-floor-lamp",
+    "url": "https://images.unsplash.com/photo-1738161022829-fdddbbcfc1ad?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2xpbSUyMGFyYyUyMGZsb29yfGVufDB8MHx8fDE3ODY0MDg5OTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A slim arc floor lamp with a spun-metal shade"
+  },
+  {
+    "id": "prod-vase",
+    "url": "https://images.unsplash.com/photo-1600529782623-5d3cb98476c9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFsbCUyMG1vbm9saXRoaWMlMjBtYXR0ZSUyMGNlcmFtaWMlMjB2YXNlfGVufDB8MHx8fDE3ODY0MDc2Nzh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tall monolithic matte ceramic vase"
+  },
+  {
+    "id": "prod-rug",
+    "url": "https://images.unsplash.com/photo-1594922234647-4ade6282c369?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmxhdC13b3ZlbiUyMHdvb2wtYmxlbmQlMjBydWclMjBncmFwaGljJTIwYmxvY2slMjBwYXR0ZXJufGVufDB8MHx8fDE3ODY0MDc2ODF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A flat-woven wool-blend rug with a graphic block pattern"
+  },
+  {
+    "id": "prod-tray",
+    "url": "https://images.unsplash.com/photo-1532368946481-86c4303674ea?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFjcXVlcmVkJTIwcmVjdGFuZ3VsYXIlMjBzZXJ2aW5nJTIwdHJheXxlbnwwfDB8fHwxNzg2NDA3Njg1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A lacquered rectangular serving tray"
+  },
+  {
+    "id": "prod-shelf",
+    "url": "https://images.unsplash.com/photo-1619217843419-4d60e0872e1f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kdWxhciUyMHBvd2Rlci1jb2F0ZWQlMjBzdGVlbCUyMG9hayUyMHNoZWx2aW5nJTIwdW5pdHxlbnwwfDB8fHwxNzg2NDA3Njg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A modular powder-coated steel and oak shelving unit"
+  },
+  {
+    "id": "prod-cushions",
+    "url": "https://images.unsplash.com/photo-1689952896845-366dfdcb4d88?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMGdlb21ldHJpYyUyMGNvbG91ci1ibG9ja2VkJTIwY3VzaGlvbnMlMjBiZW5jaHxlbnwwfDB8fHwxNzg2NDA3NjkzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of geometric color-blocked cushions on a bench"
+  },
+  {
+    "id": "prod-carafe",
+    "url": "https://images.unsplash.com/photo-1660303438028-b59af33c618c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhc3MlMjBjYXJhZmUlMjB0d28lMjBtYXRjaGluZyUyMHR1bWJsZXJzfGVufDB8MHx8fDE3ODY0MDc2OTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A glass carafe with two matching tumblers"
+  },
+  {
+    "id": "prod-clock",
+    "url": "https://images.unsplash.com/photo-1573665703669-2b696af53b86?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbGlzdCUyMHdhbGwlMjBjbG9jayUyMGJhcmUlMjBtZXRhbCUyMGZhY2V8ZW58MHwwfHx8MTc4NjQwNzcwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A minimalist wall clock with a bare metal face"
+  },
+  {
+    "id": "post-lighting",
+    "url": "https://images.unsplash.com/photo-1606170033648-5d55a3edf314?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2FybSUyMGxhbXBsaWdodCUyMGxheWVyZWR8ZW58MHwwfHx8MTc4NjQwODk5OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Warm lamplight layered across a dim modern room at dusk"
+  },
+  {
+    "id": "post-materials",
+    "url": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvc2UtdXAlMjBwb3dkZXItY29hdGVkJTIwc3RlZWwlMjBtZWV0aW5nJTIwc29saWQlMjBvYWt8ZW58MHwwfHx8MTc4NjQwNzcwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Close-up of powder-coated steel meeting solid oak"
+  },
+  {
+    "id": "post-palette",
+    "url": "https://images.unsplash.com/photo-1675783453128-cdb7ffad8595?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVzdHJhaW5lZCUyMHBhbGV0dGUlMjBncmV5JTIwb2FrJTIwb25lJTIwYm9sZCUyMGFjY2VudHxlbnwwfDB8fHwxNzg2NDA3NzA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A restrained palette of grey, oak and one bold accent"
+  }
 ]

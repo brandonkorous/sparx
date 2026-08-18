@@ -1,0 +1,304 @@
+// Inventory reporting, portability and the accounting handoff (docs/146 Phase 10).
+//
+// Four tables, and none of them holds a report. Reports are computed from the
+// ledger every time they are asked for — a stored report is a number that was
+// true once, and the whole argument for computing valuation from movements
+// rather than snapshotting it applies just as hard here.
+//
+// What IS stored is the things a computation cannot recover:
+//
+//   report schedules   the standing instruction to send one
+//   report deliveries  the evidence that it went, or did not
+//   GL snapshots       what the tenant's ACCOUNTANT says the stock is worth,
+//                      which sparx cannot derive because sparx keeps no ledger
+//   import batches     what a file did to the stock, so it can be traced and
+//                      undone
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10.4 — Scheduled report delivery
+// ─────────────────────────────────────────────────────────────────────────────
+
+// A standing instruction to email a report.
+//
+// The reason this is worth a table rather than a cron entry per tenant: the
+// owner who wants Monday's dead-stock list is not the person who reads the
+// stock-out report, and neither of them logs in daily. A report nobody opens is
+// a report that does not exist, and the only reliable way to be read is to
+// arrive.
+//
+// `nextRunAt` is DERIVED and stored. Stored because the sweep must find due
+// schedules with an index rather than by evaluating a cadence for every row in
+// the platform; derived by `nextRunAt()` in @wizeworks/commerce-schemas, which is
+// pure and tested, so the date the screen shows and the date the sweep fires on
+// are computed by one function.
+
+model InventoryReportSchedule {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// A `ReportKey` from @wizeworks/commerce-schemas. Free text rather than an enum
+  /// for the same reason every other vocabulary column here is: adding a report
+  /// must not need a migration.
+  reportKey String @map("report_key") @db.VarChar(40)
+
+  /// What the owner called it. Shown in the list and used as the email subject,
+  /// so "Monday morning stock check" beats "dead_stock weekly".
+  name String @db.VarChar(120)
+
+  /// daily | weekly | monthly.
+  cadence    String @db.VarChar(20)
+  /// 0=Sunday … 6=Saturday. Weekly only.
+  dayOfWeek  Int?   @map("day_of_week")
+  /// 1–28. Capped in the input schema, not merely by convention: a monthly
+  /// report set to the 31st skips February, and a schedule that silently misses
+  /// a month is the exact failure a schedule exists to prevent.
+  dayOfMonth Int?   @map("day_of_month")
+  /// Hour of day in `timezone`.
+  hour       Int    @default(7)
+  timezone   String @default("UTC") @db.VarChar(64)
+
+  /// Where it goes. Plain addresses rather than user ids because the accountant
+  /// who wants the month-end valuation does not have a login and should not need
+  /// one to receive a CSV.
+  recipients String[] @default([]) @db.VarChar(320)
+
+  /// csv | summary. A CSV attachment for the person who will open it in a
+  /// spreadsheet; a summary for the owner who wants the three numbers in the
+  /// body of the email and nothing to download.
+  format String @default("csv") @db.VarChar(20)
+
+  /// A `ReportFilters` object — warehouse, window, supplier, row cap. The same
+  /// shape the API takes, so a schedule is exactly "this screen, on Mondays".
+  filters Json @default("{}")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  /// When it should next fire. Indexed; the sweep reads only rows due.
+  nextRunAt     DateTime? @map("next_run_at") @db.Timestamptz
+  lastRunAt     DateTime? @map("last_run_at") @db.Timestamptz
+  /// success | partial | failed — of the LAST run. Null until it has run once,
+  /// which is not the same as "fine".
+  lastRunStatus String?   @map("last_run_status") @db.VarChar(20)
+
+  /// How many times in a row it has failed. A schedule that cannot deliver is
+  /// paused rather than retrying forever into a mailbox that no longer exists;
+  /// the count is what the surface shows to explain why.
+  consecutiveFailures Int @default(0) @map("consecutive_failures")
+
+  createdBy String?  @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  deliveries InventoryReportDelivery[]
+
+  @@index([tenantId, isActive, nextRunAt])
+  @@index([tenantId, reportKey])
+  @@map("inventory_report_schedules")
+}
+
+// One attempt to deliver one report.
+//
+// Kept as rows because "did the Monday report go out" is a question with a
+// factual answer and no way to reconstruct it. A counter on the schedule would
+// say how many times, never which time failed or why — and the failure that
+// matters is one bounced address out of five, which is invisible to any counter.
+
+model InventoryReportDelivery {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  scheduleId String @map("schedule_id") @db.Uuid
+
+  /// success | partial | failed | skipped. `skipped` is real and not a failure:
+  /// a report with nothing in it does not have to be sent, and a weekly email
+  /// saying "nothing has expired" every week for a year is how people learn to
+  /// filter the sender.
+  status String @db.VarChar(20)
+
+  /// scheduled | manual — somebody pressing "send it now" is a delivery too, and
+  /// mixing the two in one table is what lets the history read as a history.
+  trigger String @default("scheduled") @db.VarChar(20)
+
+  /// Addresses this attempt went to. Snapshot, not a join: the recipient list
+  /// changes, and the record of who got March's figures must not.
+  recipients String[] @default([]) @db.VarChar(320)
+
+  /// Rows in the attached report. Null when the run failed before the report
+  /// could be produced — zero and "we never got that far" are different.
+  rowCount Int? @map("row_count")
+
+  /// The window the report actually covered, resolved at send time.
+  periodStart DateTime? @map("period_start") @db.Timestamptz
+  periodEnd   DateTime? @map("period_end") @db.Timestamptz
+
+  /// Why it failed, in the operator's language.
+  error String? @db.Text
+
+  sentAt    DateTime @default(now()) @map("sent_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  schedule InventoryReportSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, scheduleId, sentAt(sort: Desc)])
+  @@map("inventory_report_deliveries")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10.9 — What the accountant says the stock is worth
+// ─────────────────────────────────────────────────────────────────────────────
+
+// The balance of the inventory asset account in the tenant's BOOKS, at a date.
+//
+// ── Why this has to be stored rather than derived ────────────────────────────
+//
+// sparx keeps no general ledger and never will (docs/148 §1). So the only two
+// ways to know what the accountant's inventory account says are to be told by a
+// person reading their trial balance, or to be told by their accounting system
+// through a connection. Both are recorded here, distinguished by `source`, and
+// there is deliberately no third way — sparx computing the figure itself would
+// be reconciling its own arithmetic against its own arithmetic.
+//
+// A snapshot is IMMUTABLE once written. The reconciliation for March has to keep
+// saying what it said in March even after April's numbers land, and a mutable
+// row is how a reconciliation quietly changes its answer after somebody signed
+// it off.
+
+model InventoryGlSnapshot {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// The date the balance is as at — a DATE, because a trial balance is drawn at
+  /// a day's close and pretending to know the minute would be false precision.
+  asOf DateTime @map("as_of") @db.Date
+
+  /// What the account is called in their books, as they call it. Free text: it
+  /// is "1200 Stock" for one business and "Inventory — Raw Materials" for
+  /// another, and normalising it would only make it match neither.
+  accountName String  @map("account_name") @db.VarChar(200)
+  accountCode String? @map("account_code") @db.VarChar(60)
+
+  /// The balance, in the tenant's reporting currency. Signed: an inventory
+  /// account can legitimately be negative mid-migration, and clamping it would
+  /// hide exactly the case somebody is reconciling to find.
+  balanceCents Int    @map("balance_cents")
+  currency     String @default("USD") @db.VarChar(3)
+
+  /// manual | quickbooks_online | xero — how this figure arrived. It decides
+  /// how much the reconciliation trusts it and whether the screen offers to
+  /// refresh it.
+  source String @default("manual") @db.VarChar(40)
+
+  /// The accounting connection it came from, when it was imported. Null for a
+  /// typed figure, and SET NULL on disconnect: unplugging QuickBooks must not
+  /// delete the evidence of what it once said.
+  connectionId String? @map("connection_id") @db.Uuid
+
+  /// Who typed or triggered it, and anything they wanted to record about the
+  /// figure — "before the year-end adjustments" is the sort of thing that makes
+  /// a reconciliation readable a year later.
+  capturedBy String? @map("captured_by") @db.Uuid
+  note       String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant     Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connection FinanceAccountingConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+
+  /// One figure per account per date. A second reading of the same account on
+  /// the same day is a correction, and a correction replaces rather than
+  /// accumulating into two contradictory truths.
+  @@unique([tenantId, asOf, accountName], map: "inventory_gl_snapshots_account_date_unique")
+  @@index([tenantId, asOf(sort: Desc)])
+  @@map("inventory_gl_snapshots")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10.5 — What a file did to the stock
+// ─────────────────────────────────────────────────────────────────────────────
+
+// One adjustment import.
+//
+// ── Why an import needs a record of its own ──────────────────────────────────
+//
+// A bad adjustment import is indistinguishable from theft in the ledger
+// afterwards: four hundred `manual` movements, all stamped the same second, all
+// attributed to whoever pressed the button, and no way to tell which file they
+// came from or what the file said. This row is what makes the difference — the
+// movements it wrote carry `reference_type = 'InventoryImportBatch'` and this
+// id, so an import can be listed, explained and reversed as a unit.
+//
+// The two-step is enforced by the STATUS, not by the UI: a batch is `planned`
+// until somebody applies it, and the plan it was approved from is stored, so
+// "the numbers changed between the preview and the apply" is a detectable
+// condition rather than a surprise.
+
+model InventoryImportBatch {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// adjustment — the only kind today. Named so the count import and the
+  /// supplier-price import can join it without a second table.
+  kind String @default("adjustment") @db.VarChar(30)
+
+  /// planned | applied | discarded | failed.
+  status String @default("planned") @db.VarChar(20)
+
+  /// What the operator uploaded, so the history reads as "prices-march.csv"
+  /// rather than as a uuid.
+  filename String? @db.VarChar(255)
+
+  /// The default warehouse for rows that name none. Stored because it is part of
+  /// what the operator approved: the same file applied to a different location
+  /// is a different import.
+  warehouseId String? @map("warehouse_id") @db.Uuid
+
+  /// The reason stamped on every movement this batch writes. Defaults to
+  /// `manual`; a stock-take import passes `recount`, and the difference decides
+  /// whether the units land in the shrinkage report.
+  reason String @default("manual") @db.VarChar(20)
+
+  /// Counts from the DRY RUN — what the operator was shown before approving.
+  rowsTotal    Int @default(0) @map("rows_total")
+  rowsToApply  Int @default(0) @map("rows_to_apply")
+  rowsNoChange Int @default(0) @map("rows_no_change")
+  rowsInvalid  Int @default(0) @map("rows_invalid")
+  unitsChanged Int @default(0) @map("units_changed")
+
+  /// The full per-row plan, as `ImportRowPlan[]`. Kept because the errors are
+  /// the point: "row 148: no item with code BRK-9920" is what lets a file be
+  /// fixed, and it has to survive the operator closing the tab.
+  plan Json @default("[]")
+
+  /// What a person decided about the rows that did not land (docs/146 Phase
+  /// 11.3), keyed by line number: skipped, pointed at an item that already
+  /// exists under a different code, or turned into a new item. Kept beside the
+  /// plan rather than folded into it, so "the file said this / we did that"
+  /// stays two facts — which is the difference between an import that can be
+  /// explained and one that can only be believed.
+  resolutions Json @default("{}")
+
+  /// Rows actually posted, after applying. Differs from `rowsToApply` when
+  /// something changed underneath — and that difference is the whole reason both
+  /// numbers are kept.
+  rowsApplied Int @default(0) @map("rows_applied")
+
+  /// Set when the batch's movements have been reversed. A reversal writes new
+  /// compensating movements rather than deleting the originals — the ledger is
+  /// append-only, and an import that can be erased is one nobody can audit.
+  reversedAt DateTime? @map("reversed_at") @db.Timestamptz
+  reversedBy String?   @map("reversed_by") @db.Uuid
+
+  error String? @db.Text
+
+  createdBy String?   @map("created_by") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  appliedAt DateTime? @map("applied_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse? @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@map("inventory_import_batches")
+}

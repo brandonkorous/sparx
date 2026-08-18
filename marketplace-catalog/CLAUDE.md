@@ -1,7 +1,7 @@
 # marketplace-catalog/ — first-party blueprints
 
 Scoped guidance for the bundles under here (`blueprints/`; themes + components ship as
-code in `@sparx/silica-catalog` — see [README.md](README.md)) and
+code in `@wizeworks/silica-catalog` — see [README.md](README.md)) and
 their `_gen/` generators. The full **authoring reference** is
 [docs/guides/building-a-template.md](../docs/guides/building-a-template.md) — this file is
 the **working rules + footguns** that aren't obvious from a single file. See root
@@ -23,7 +23,7 @@ because the only per-template code is the spec.
 **The three-oracle build loop — identical for template #1 and #100:**
 
 1. **Generate + validate + preview** — one command per template:
-   `pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-<slug>.ts"`
+   `pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-<slug>.ts"`
    It emits the bundle, prints `safeParseBlueprint → VALID` (oracle 1+2), and writes the full-site
    review HTML to the STANDARD dir **`marketplace-catalog/_gen/.preview/preview-<slug>.html`**
    (gitignored) — every page stacked under sticky labels, in the bundle's real theme, with bound
@@ -33,7 +33,7 @@ because the only per-template code is the spec.
    (or `all`). Full-page PNG per template → `.preview/site-<slug>.png`. Playwright + `file://` (no
    dev server, no DB, no install) so it never touches a running stack; the shared functional cores
    (faceted grid/cart/search) render as a labeled placeholder because they are server-computed live.
-3. **Grade every bundle** — `pnpm --filter @sparx/site-lint exec vitest run src/blueprint-sweep.test.ts`
+3. **Grade every bundle** — `pnpm --filter @wizeworks/site-lint exec vitest run src/blueprint-sweep.test.ts`
    walks every shipped bundle's every page (SEO, contrast, headings, links, `class-no-css`).
 
 **Named utilities ONLY in authored trees** — an arbitrary value (`aspect-[4/5]`) or off-step
@@ -64,7 +64,7 @@ bundles: 169 shared, 21 sparx's showcase family, 1 Piggles'.
 
 Only a SHOWCASE is ever restricted — a bundle whose `brand.businessName` is the
 platform's own name, which is the product demonstrating itself rather than a
-vertical template. Enforced in `services/api-rest/src/lib/marketplace/brand-scope.ts`
+vertical template. Enforced in `wizeworks/services/api-rest/src/lib/marketplace/brand-scope.ts`
 at three points (the listing's `notIn`, the v1 install route, and the internal
 furnish path), because a key posted from a browser form reaches install without
 passing the list.
@@ -77,7 +77,7 @@ generator copied in as a placeholder. Two steps produce real ones, both running
 Playwright over `file://` with no dev server, no DB and no install:
 
 ```
-pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/preview-showcase.ts" <slug>
+pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/preview-showcase.ts" <slug>
 node marketplace-catalog/_gen/card-media.mjs <slug> [--icon <mark.svg>]
 ```
 
@@ -108,7 +108,7 @@ generators each call it with their own words), but the SHAPE is one file.
 come from Site settings → _How customers reach you_ (`Property.settings.contact`, no schema
 column). Each row is wrapped in `visibleWhen`, so an un-filled field renders **nothing** —
 a starter never ships a plausible-looking phone number that is not a real line. `phoneHref`
-/ `emailHref` are composed host-side (`apps/site/lib/silica-data.ts`), because `bindAttr`
+/ `emailHref` are composed host-side (`wizeworks/apps/site/lib/silica-data.ts`), because `bindAttr`
 fills an attribute verbatim and cannot prefix `tel:`.
 
 **The form is unconditional and works on install.** A form with no `FormDefinition` row is
@@ -151,10 +151,10 @@ The general lesson: reconcile every reference, not just the convenient ones.)
    — the artifact is keyed by `(category, slug, version)`, so forgetting the bump keeps the
    OLD payload. The two spellings are now **cross-checked**: a disagreement fails the load
    with both values named, rather than silently pointing the row at the wrong artifact.
-3. `pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-<name>.ts"`
+3. `pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-<name>.ts"`
 4. prettier **BOTH** `blueprints/<name>/**/*.ts` AND `_gen/<name>/**/*.ts` (so the manifest
    stays repo-formatted — pre-push `format:check` fails otherwise)
-5. `pnpm --filter @sparx/api-rest marketplace:self-register` — or just restart api-rest,
+5. `pnpm --filter @wizeworks/api-rest marketplace:self-register` — or just restart api-rest,
    which does the same thing on boot. Publishing is not a deploy step: what sparx ships is
    what the running service publishes, and **deleting a bundle directory retracts its
    listing** (retract-by-absence, scoped to sparx's own rows).
@@ -173,7 +173,7 @@ to Update or Delete.
 ## Emails are marketing starters, not transactional
 
 The platform provisions **19 KEYED transactional defaults** (order/shipping/dunning/…) on
-email-module activation (`packages/builder-schemas/src/default-emails.ts`). A blueprint's
+email-module activation (`wizeworks/packages/builder-schemas/src/default-emails.ts`). A blueprint's
 `emails` are **UNKEYED brand-voiced MARKETING starters only** — never duplicate
 order-confirmation. Personalize with the canonical tokens (`{{site.name}}`,
 `{{customer.firstName}}`, `{{site.url}}`; vocabulary in `email-tokens.ts`) so a fork

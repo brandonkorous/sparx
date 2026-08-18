@@ -128,7 +128,12 @@ export function PlanningShell({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={label}>
+      <PaneToolbar
+        label={label}
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      >
         {filters}
 
         {scope === 'location' ? (
@@ -174,7 +179,6 @@ export function PlanningShell({
           <Icon glyph={faCalculator} className="size-4" aria-hidden />
           Work it out now
         </Button>
-        <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
       </PaneToolbar>
 
       {/* Worth more than any figure below it: with no run behind them, the

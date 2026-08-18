@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-couture-serif',
-    version: '1.4.0',
-    name: 'sparx — Couture Serif',
-    summary:
-        'A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-couture-serif',
+  version: '1.4.0',
+  name: 'sparx — Couture Serif',
+  summary:
+    'A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Vérane',
+    tagline: 'Cut and composed in small numbers.',
+    colors: {
+      primary: '#020202',
+      primaryForeground: '#f8f8f8',
+      accent: '#605d59',
+      secondary: '#47484a',
+    },
+    fonts: {
+      heading: 'Libre Baskerville',
+      body: 'Libre Baskerville',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'couture-serif',
+    basePresetKey: 'couture-serif',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Vérane',
-        tagline: 'Cut and composed in small numbers.',
-        colors: {
-            primary: '#020202',
-            primaryForeground: '#f8f8f8',
-            accent: '#605d59',
-            secondary: '#47484a',
-        },
-        fonts: {
-            heading: 'Libre Baskerville',
-            body: 'Libre Baskerville',
-        },
+      colorPrimary: '#020202',
+      colorAccent: '#605d59',
+      colorSecondary: '#47484a',
+      fontHeading: 'Libre Baskerville',
+      fontBody: 'Libre Baskerville',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'couture-serif',
-        basePresetKey: 'couture-serif',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#020202',
-            colorAccent: '#605d59',
-            colorSecondary: '#47484a',
-            fontHeading: 'Libre Baskerville',
-            fontBody: 'Libre Baskerville',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

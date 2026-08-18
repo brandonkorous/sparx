@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-yoga-studio',
-    version: '1.3.0',
-    name: 'sparx — Yoga Studio',
-    summary:
-        'A warm, grounded yoga-studio site — a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-yoga-studio',
+  version: '1.3.0',
+  name: 'sparx — Yoga Studio',
+  summary:
+    'A warm, grounded yoga-studio site — a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Prana',
+    tagline: 'You belong here, wherever you’re starting.',
+    colors: {
+      primary: '#b96746',
+      primaryForeground: '#120805',
+      accent: '#849a7c',
+      secondary: '#654d3e',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'prana',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Prana',
-        tagline: 'You belong here, wherever you’re starting.',
-        colors: {
-            primary: '#b96746',
-            primaryForeground: '#120805',
-            accent: '#849a7c',
-            secondary: '#654d3e',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Inter',
-        },
+      colorPrimary: '#b96746',
+      colorAccent: '#849a7c',
+      colorSecondary: '#654d3e',
+      fontHeading: 'Fraunces',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'prana',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#b96746',
-            colorAccent: '#849a7c',
-            colorSecondary: '#654d3e',
-            fontHeading: 'Fraunces',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

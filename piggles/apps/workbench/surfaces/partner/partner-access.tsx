@@ -457,34 +457,40 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Partner access controls">
-        <p className="shrink-0 text-sm whitespace-nowrap">
-          {partners.length === 0
-            ? 'No partners'
-            : partners.length === 1
-              ? '1 partner'
-              : `${String(partners.length)} partners`}
-        </p>
-        {canManage ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            onClick={() => {
-              setInviting(true);
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Invite a partner
-          </Button>
-        ) : null}
-        <RefreshButton
-          className={canManage ? undefined : 'ml-auto'}
-          isFetching={isFetching}
-          updatedAt={dataUpdatedAt || undefined}
-          onRefresh={refetch}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Partner access controls"
+        status={
+          <p className="shrink-0 text-sm whitespace-nowrap">
+            {partners.length === 0
+              ? 'No partners'
+              : partners.length === 1
+                ? '1 partner'
+                : `${String(partners.length)} partners`}
+          </p>
+        }
+        primary={
+          canManage ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              onClick={() => {
+                setInviting(true);
+              }}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              Invite a partner
+            </Button>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={dataUpdatedAt || undefined}
+            onRefresh={refetch}
+          />
+        }
+      />
 
       {canManage ? (
         <InviteModal

@@ -28,16 +28,16 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   NativeSelect,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { faFloppyDisk, faLocationDot, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { faFloppyDisk, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -135,7 +135,7 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function LocationLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data, isPending, isError, error, refetch } = useLocation(id);
+  const { data, isPending, isError, error, refetch, isFetching, dataUpdatedAt } = useLocation(id);
 
   if (isError) {
     const missing = isNotFound(error);
@@ -161,7 +161,19 @@ function LocationLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <LocationEditor ctx={ctx} id={id} initial={draftFrom(data)} existing={data} />;
+  return (
+    <LocationEditor
+      ctx={ctx}
+      id={id}
+      initial={draftFrom(data)}
+      existing={data}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function LocationEditor({
@@ -169,11 +181,18 @@ function LocationEditor({
   id,
   initial,
   existing,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   initial: Draft;
   existing: BusinessLocation | null;
+  /** Absent on a brand-new place — there is nothing loaded to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -297,38 +316,42 @@ function LocationEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={isNew ? 'New place actions' : 'Place actions'}>
-        {existing ? (
-          <Badge color={existing.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
-            {existing.isActive ? 'In use' : 'Off'}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={busy}
-          onClick={submit}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {isNew ? 'Create' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label={isNew ? 'New place actions' : 'Place actions'}
+        refresh={
+          onRefresh ? (
+            <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+          ) : undefined
+        }
+        status={
+          existing ? (
+            <Badge color={existing.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
+              {existing.isActive ? 'In use' : 'Off'}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={busy}
+            onClick={submit}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {isNew ? 'Create' : 'Save'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {existing ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Icon glyph={faLocationDot} className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
-              <Text className="text-sm">
-                {existing.counts.resources} people &amp; things · {existing.counts.services}{' '}
-                services · {existing.counts.bookings} bookings
-              </Text>
-            </div>
+            <Text className="text-sm">
+              {existing.counts.resources} people &amp; things · {existing.counts.services} services
+              · {existing.counts.bookings} bookings
+            </Text>
           ) : null}
 
           {saveError ? (

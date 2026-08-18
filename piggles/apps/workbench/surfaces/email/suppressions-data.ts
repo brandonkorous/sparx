@@ -38,8 +38,8 @@
 // page you happen to be standing on. Search + pages, both server-side. Honest.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
-import { ApiError } from '@sparx/api-client';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
 import { productCopy } from '../../lib/product';
 
@@ -48,19 +48,19 @@ export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
 /** One suppressed address, exactly as `GET /v1/email/suppressions` returns it. */
 export interface Suppression {
-    id: string;
-    email: string;
-    /** Which mail this blocks: `all` (everything — the default), `transactional`
-     *  (receipts/account mail) or `marketing` (newsletters/offers). */
-    scope: string;
-    /** Why it is here: `unsubscribe` | `complaint` | `bounce` | `manual`. */
-    reason: string;
-    /** Who put it here: `mailgun` (the email system flagged it), `manual` (added by
-     *  hand) or `import` (added in bulk). Null on older rows. */
-    source: string | null;
-    customerId: string | null;
-    note: string | null;
-    createdAt: string;
+  id: string;
+  email: string;
+  /** Which mail this blocks: `all` (everything — the default), `transactional`
+   *  (receipts/account mail) or `marketing` (newsletters/offers). */
+  scope: string;
+  /** Why it is here: `unsubscribe` | `complaint` | `bounce` | `manual`. */
+  reason: string;
+  /** Who put it here: `mailgun` (the email system flagged it), `manual` (added by
+   *  hand) or `import` (added in bulk). Null on older rows. */
+  source: string | null;
+  customerId: string | null;
+  note: string | null;
+  createdAt: string;
 }
 
 /** The reasons an owner can pick when adding an address by hand, in the order the
@@ -73,78 +73,78 @@ export type ManualReason = (typeof MANUAL_REASONS)[number];
 /* ── Query keys ─────────────────────────────────────────────────────────── */
 
 export interface SuppressionListParams {
-    q: string;
-    take: number;
-    skip: number;
+  q: string;
+  take: number;
+  skip: number;
 }
 
 export const emailKeys = {
-    /** The email ROOT. Every write invalidates this, so any email surface refreshes. */
-    all: ['email'] as const,
-    suppressions: ['email', 'suppressions'] as const,
-    suppressionList: (params: SuppressionListParams) =>
-        ['email', 'suppressions', 'list', params] as const,
+  /** The email ROOT. Every write invalidates this, so any email surface refreshes. */
+  all: ['email'] as const,
+  suppressions: ['email', 'suppressions'] as const,
+  suppressionList: (params: SuppressionListParams) =>
+    ['email', 'suppressions', 'list', params] as const,
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
 
 export function useSuppressions(params: SuppressionListParams) {
-    return useQuery({
-        queryKey: emailKeys.suppressionList(params),
-        queryFn: () =>
-            api.list<Suppression>('/v1/email/suppressions', {
-                ...(params.q.trim() ? { q: params.q.trim() } : {}),
-                take: params.take,
-                skip: params.skip,
-            }),
-        // Keep the previous window on screen while the next one loads, so paging and
-        // typing don't blink the list out to a spinner between every change.
-        placeholderData: (previous) => previous,
-    });
+  return useQuery({
+    queryKey: emailKeys.suppressionList(params),
+    queryFn: () =>
+      api.list<Suppression>('/v1/email/suppressions', {
+        ...(params.q.trim() ? { q: params.q.trim() } : {}),
+        take: params.take,
+        skip: params.skip,
+      }),
+    // Keep the previous window on screen while the next one loads, so paging and
+    // typing don't blink the list out to a spinner between every change.
+    placeholderData: (previous) => previous,
+  });
 }
 
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
 function useInvalidate() {
-    const queryClient = useQueryClient();
-    return () => void queryClient.invalidateQueries({ queryKey: emailKeys.all });
+  const queryClient = useQueryClient();
+  return () => void queryClient.invalidateQueries({ queryKey: emailKeys.all });
 }
 
 /* ── Writes ─────────────────────────────────────────────────────────────── */
 
 export interface AddSuppressionInput {
-    email: string;
-    reason: ManualReason;
-    /** Defaults to `all` — a hand-added "do not email" means never, not just the
-     *  newsletter. Kept as a parameter so a narrower add is possible later. */
-    scope?: 'all' | 'transactional' | 'marketing';
-    note?: string;
+  email: string;
+  reason: ManualReason;
+  /** Defaults to `all` — a hand-added "do not email" means never, not just the
+   *  newsletter. Kept as a parameter so a narrower add is possible later. */
+  scope?: 'all' | 'transactional' | 'marketing';
+  note?: string;
 }
 
 export function useAddSuppression() {
-    const invalidate = useInvalidate();
-    return useMutation({
-        mutationFn: (input: AddSuppressionInput) =>
-            api.post<Suppression>('/v1/email/suppressions', {
-                email: input.email,
-                reason: input.reason,
-                scope: input.scope ?? 'all',
-                ...(input.note?.trim() ? { note: input.note.trim() } : {}),
-            }),
-        onSuccess: () => {
-            invalidate();
-        },
-    });
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (input: AddSuppressionInput) =>
+      api.post<Suppression>('/v1/email/suppressions', {
+        email: input.email,
+        reason: input.reason,
+        scope: input.scope ?? 'all',
+        ...(input.note?.trim() ? { note: input.note.trim() } : {}),
+      }),
+    onSuccess: () => {
+      invalidate();
+    },
+  });
 }
 
 export function useRemoveSuppression() {
-    const invalidate = useInvalidate();
-    return useMutation({
-        mutationFn: (id: string) => api.delete(`/v1/email/suppressions/${id}`),
-        onSuccess: () => {
-            invalidate();
-        },
-    });
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/v1/email/suppressions/${id}`),
+    onSuccess: () => {
+      invalidate();
+    },
+  });
 }
 
 /* ── Presentation ───────────────────────────────────────────────────────── */
@@ -153,76 +153,76 @@ export function useRemoveSuppression() {
  *  State is its own color axis — this is not the module hue, it is the fact of
  *  what happened to this address. */
 export function reasonMeta(reason: string): { label: string; tone: Tone; detail: string } {
-    switch (reason) {
-        case 'unsubscribe':
-            return {
-                label: 'Unsubscribed',
-                tone: 'warning',
-                detail: 'They asked to stop hearing from you.',
-            };
-        case 'complaint':
-            return {
-                label: 'Marked as spam',
-                tone: 'error',
-                detail:
-                    'They reported one of your emails as spam. Emailing them again risks your delivery.',
-            };
-        case 'bounce':
-            return {
-                label: 'Address did not work',
-                tone: 'error',
-                detail: productCopy(
-                    'email.suppression.bounced',
-                    'Email to this address kept coming back undelivered, so Piggles stopped trying.'
-                ),
-            };
-        case 'manual':
-            return {
-                label: 'Added by you',
-                tone: 'info',
-                detail: 'Someone on your team added this address by hand.',
-            };
-        default:
-            // A reason the API grew that this build has not learned yet — shown as-is
-            // rather than hidden, and given a real tone so it is never a bland pill.
-            return { label: reason, tone: 'info', detail: '' };
-    }
+  switch (reason) {
+    case 'unsubscribe':
+      return {
+        label: 'Unsubscribed',
+        tone: 'warning',
+        detail: 'They asked to stop hearing from you.',
+      };
+    case 'complaint':
+      return {
+        label: 'Marked as spam',
+        tone: 'error',
+        detail:
+          'They reported one of your emails as spam. Emailing them again risks your delivery.',
+      };
+    case 'bounce':
+      return {
+        label: 'Address did not work',
+        tone: 'error',
+        detail: productCopy(
+          'email.suppression.bounced',
+          'Email to this address kept coming back undelivered, so Piggles stopped trying.'
+        ),
+      };
+    case 'manual':
+      return {
+        label: 'Added by you',
+        tone: 'info',
+        detail: 'Someone on your team added this address by hand.',
+      };
+    default:
+      // A reason the API grew that this build has not learned yet — shown as-is
+      // rather than hidden, and given a real tone so it is never a bland pill.
+      return { label: reason, tone: 'info', detail: '' };
+  }
 }
 
 /** Who put an address on the list, in plain words. */
 export function sourceLabel(source: string | null): string {
-    switch (source) {
-        case 'mailgun':
-            return 'Flagged by the email system';
-        case 'import':
-            return 'Imported by you';
-        case 'manual':
-            return 'Added by you';
-        default:
-            return 'Added by you';
-    }
+  switch (source) {
+    case 'mailgun':
+      return 'Flagged by the email system';
+    case 'import':
+      return 'Imported by you';
+    case 'manual':
+      return 'Added by you';
+    default:
+      return 'Added by you';
+  }
 }
 
 /** A plain-language note when a suppression is NARROWER than "everything" — the
  *  common `all` case needs no note, since blocking everything is what the whole
  *  list means. */
 export function scopeNote(scope: string): string | null {
-    if (scope === 'transactional') return 'Only receipts and account emails are held back';
-    if (scope === 'marketing') return 'Only newsletters and offers are held back';
-    return null;
+  if (scope === 'transactional') return 'Only receipts and account emails are held back';
+  if (scope === 'marketing') return 'Only newsletters and offers are held back';
+  return null;
 }
 
 /** When an address was added to the list. */
 export function formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
+  return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 /** The server's own sentence for a 4xx — it names the exact problem (a malformed
  *  address, a duplicate) far better than a status code — else the caller's
  *  fallback for a 5xx that carries no useful sentence. */
 export function suppressionErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-        return error.message;
-    }
-    return fallback;
+  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+    return error.message;
+  }
+  return fallback;
 }

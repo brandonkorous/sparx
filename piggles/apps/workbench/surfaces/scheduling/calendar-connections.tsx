@@ -16,6 +16,8 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -23,12 +25,11 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -62,6 +63,10 @@ import {
 } from './calendar-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
+
+/** Registry module for this pane, so the brand draws Bookings' own picture rather
+ *  than the generic one. */
+const MODULE = 'scheduling';
 
 export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
   const toast = useToast();
@@ -168,29 +173,26 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Linked calendars actions">
-        <RefreshButton
-          className="ml-auto"
-          isFetching={connections.isFetching}
-          updatedAt={connections.data ? connections.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void connections.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Linked calendars actions"
+        refresh={
+          <RefreshButton
+            isFetching={connections.isFetching}
+            updatedAt={connections.data ? connections.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void connections.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Linked calendars
-            </Heading>
-            <Text>
-              Link a member of staff&rsquo;s outside calendar — Google, Outlook, Apple — so the
-              times they are busy elsewhere are blocked here too. Nobody gets booked when they
-              already have something on.
-            </Text>
-          </div>
+          <Text>
+            Link a member of staff&rsquo;s outside calendar — Google, Outlook, Apple — so the times
+            they are busy elsewhere are blocked here too. Nobody gets booked when they already have
+            something on.
+          </Text>
 
           {cryptoOff ? (
             <Alert color="warning" variant="soft">
@@ -271,23 +273,35 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
             </FormSection>
           )}
 
+          {/* All three non-ready states are carded, matching the branch beside
+              them — a run of FormSections, each already a card. The failure takes
+              the empty-state shape rather than an Alert: an Alert is a banner over
+              content that is still there, and here there is none. */}
           {connections.isError ? (
-            <Alert color="error" variant="soft">
-              <AlertContent>
-                <AlertTitle>Could not load linked calendars</AlertTitle>
-                <AlertDescription>
-                  This is a problem reaching the server. Any calendars already linked keep working.
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
+                title="Could not load linked calendars"
+                description="This is a problem reaching the server. Any calendars already linked keep working."
+                onRetry={() => {
+                  void connections.refetch();
+                }}
+              />
+            </Card>
           ) : connections.isPending ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : grouped.length === 0 ? (
-            <EmptyState
-              icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
-              title="No calendars linked yet"
-              description="Once you link a calendar above, the times its owner is busy elsewhere will show as unavailable in your diary."
-            />
+            <Card>
+              <PaneEmpty
+                module={MODULE}
+                icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
+                title="No calendars linked yet"
+                description="Once you link a calendar above, the times its owner is busy elsewhere will show as unavailable in your diary."
+              />
+            </Card>
           ) : (
             grouped.map(([groupResourceId, groupConnections]) => (
               <FormSection key={groupResourceId} title={resourceName(groupResourceId)}>

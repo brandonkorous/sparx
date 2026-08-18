@@ -14,16 +14,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faPercent, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -39,6 +31,10 @@ import {
   type DiscountSort,
   type SortDir,
 } from './discounts-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -151,61 +147,73 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Discount list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search discounts"
-            placeholder="Search by name or code…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <div className="hidden w-40 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Show which discounts"
-            value={status}
-            items={{
-              all: 'All discounts',
-              active: 'Switched on',
-              draft: 'Switched off',
-              archived: 'Retired',
-            }}
-            onValueChange={(next) => {
-              setStatus(next as string);
-              resetWindow();
-            }}
-          />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a discount — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Discount list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search discounts"
+              placeholder="Search by name or code…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Add a discount',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open('commerce.discount.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add a discount</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'Add a discount — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <div className="w-40 shrink-0">
+            <Select
+              size="sm"
+              aria-label="Show which discounts"
+              value={status}
+              items={{
+                all: 'All discounts',
+                active: 'Switched on',
+                draft: 'Switched off',
+                archived: 'Retired',
+              }}
+              onValueChange={(next) => {
+                setStatus(next as string);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/commerce/discounts',
+          // `status` lives in `controls`, not `filters`, so the surface carries it.
+          params: { q: search.trim(), status, sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus(next.status ?? 'all');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as DiscountSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
@@ -218,6 +226,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading discounts…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={anyFilter}
             noResults={{
               icon: <Icon glyph={faPercent} className="size-6" aria-hidden />,

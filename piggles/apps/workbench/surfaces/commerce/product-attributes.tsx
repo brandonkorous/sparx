@@ -37,7 +37,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { faPlus, faShapes, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { ContentBlockEditor } from '@sparx/cms-editor/editor';
+import { ContentBlockEditor } from '@wizeworks/cms-editor/editor';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, AssetField, useMediaPicker } from '../cms/media-picker';

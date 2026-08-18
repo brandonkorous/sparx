@@ -1,0 +1,17 @@
+// B2B invoices — RETIRED (docs/87 §15).
+//
+// The `B2bInvoice` model / `b2b_invoices` table was a thin net-terms AR header
+// auto-created from a B2B order. It converged onto `BillingDocument` (the one
+// billing engine): migration 20260807000000 backfilled every legacy invoice into
+// `billing_documents` on the system `net-terms-ar` workflow and rewrote
+// `sync_b2b_credit_used()` to sum open billing-document balances. Migration
+// 20260929000000 drops the empty table (expand/contract "contract" step).
+//
+// A B2B receivable is now a BillingDocument scoped to a `companyId`; the
+// `/v1/b2b/invoices` routes project it. See:
+//   • wizeworks/packages/crm/src/services/b2b-ar-service.ts   (createOrderArDocument)
+//   • wizeworks/services/api-rest/src/routes/v1/b2b/invoices.ts
+//   • wizeworks/packages/crm-schemas/src/builtins/invoicing.ts (NET_TERMS_AR_WORKFLOW)
+//
+// This file intentionally defines no model — kept as a tombstone so the retirement
+// is discoverable where the model used to live.

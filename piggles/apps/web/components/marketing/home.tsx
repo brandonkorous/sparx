@@ -127,19 +127,19 @@ function Thursday() {
           </h2>
 
           <p className="mt-6 max-w-[46ch] text-lg sm:text-xl">
-            <b data-group="people" className="text-module font-bold">
+            <b data-group="people" className="ink-module font-bold">
               Bookings
             </b>{' '}
             in one app,{' '}
-            <b data-group="money" className="text-module font-bold">
+            <b data-group="money" className="ink-module font-bold">
               invoices
             </b>{' '}
             in another,{' '}
-            <b data-group="sell" className="text-module font-bold">
+            <b data-group="sell" className="ink-module font-bold">
               stock
             </b>{' '}
             in a spreadsheet,{' '}
-            <b data-group="people" className="text-module font-bold">
+            <b data-group="people" className="ink-module font-bold">
               customers
             </b>{' '}
             in your phone. None of them have ever spoken to each other.
@@ -312,7 +312,7 @@ function TradeCard({ trade }: { trade: Trade }) {
       data-group={trade.group}
       className="trade-card rounded-section flex w-[74vw] shrink-0 snap-center flex-col overflow-hidden shadow sm:w-[46vw] lg:w-auto lg:shrink"
     >
-      <figcaption className="text-module font-heading px-5 pt-5 text-xl font-black sm:text-2xl lg:px-6 lg:pt-6">
+      <figcaption className="ink-module font-heading px-5 pt-5 text-xl font-black sm:text-2xl lg:px-6 lg:pt-6">
         {trade.word}
       </figcaption>
       {/* No bottom padding, and the scene sits on the card's bottom edge: every

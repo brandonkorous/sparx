@@ -5,8 +5,8 @@ Severity: Medium — the workbench UI is unaffected (it always sends an amount);
 hole is any API/MCP/script caller that POSTs the documented "refund the whole order"
 shape (an empty body), which fails at the gateway with a cryptic error
 Found: 2026-07-24, production payments E2E — refunding `O-000002` via the API with `{}`
-Surfaces: `services/api-rest/src/lib/order-refund.ts`,
-`services/api-rest/src/routes/v1/orders.ts`
+Surfaces: `wizeworks/services/api-rest/src/lib/order-refund.ts`,
+`wizeworks/services/api-rest/src/routes/v1/orders.ts`
 
 ## Symptom
 

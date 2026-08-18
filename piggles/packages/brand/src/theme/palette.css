@@ -1,0 +1,94 @@
+/* Palette — the brand, semantic and base tokens, light and dark.
+ *
+ * Part of @piggles/brand/theme.css — imported from it, never directly.
+ * UNLAYERED on purpose: that is what outranks silicaui's `base` layer.
+ * See ../layers.css. */
+
+[data-theme='light'] {
+  /* Not decorative, and not symmetry with the dark block: this is what makes the
+     browser paint native scrollbars, form controls and autofill light. Dropped
+     once, and a visitor whose OS is dark got dark scrollbars on a white page. */
+  color-scheme: light;
+
+  /* Brand */
+  --color-primary: #ff6f86;
+  --color-primary-content: #ffffff;
+
+  --color-secondary: #2d3443;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #ffb3c0;
+  --color-accent-content: #202631;
+
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
+
+  /* Softer semantic colors */
+  --color-success: #5ecf8b;
+  --color-success-content: #202631;
+
+  --color-info: #6ea8fe;
+  --color-info-content: #202631;
+
+  --color-warning: #ffd166;
+  --color-warning-content: #202631;
+
+  --color-error: #f08080;
+  --color-error-content: #202631;
+
+  --color-danger: var(--color-error);
+  --color-danger-content: var(--color-error-content);
+
+  --color-neutral: #52454f;
+  --color-neutral-content: #ffffff;
+
+  /* Bases */
+  --color-base-100: #ffffff;
+  --color-base-200: #f7f8fa;
+  --color-base-300: #eef0f3;
+  --color-base-content: #202631;
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Brand */
+  --color-primary: #ff7c91;
+  --color-primary-content: #20151a;
+
+  --color-secondary: #d7dbe3;
+  --color-secondary-content: #1b1f28;
+
+  --color-accent: #8f4656;
+  --color-accent-content: #fff4f6;
+
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
+
+  /* Semantic colors
+     Brighter than light mode so they remain readable against dark surfaces,
+     but intentionally softened so they don't become "dashboard neon". */
+  --color-success: #62c98d;
+  --color-success-content: #102019;
+
+  --color-info: #7fa8e8;
+  --color-info-content: #111b2c;
+
+  --color-warning: #e8bd63;
+  --color-warning-content: #241a04;
+
+  --color-error: #e97979;
+  --color-error-content: #281012;
+
+  --color-danger: var(--color-error);
+  --color-danger-content: var(--color-error-content);
+
+  /* Neutral */
+  --color-neutral: #c2b1bc;
+  --color-neutral-content: #241d22;
+
+  /* Surface hierarchy */
+  --color-base-100: #272d39;
+  --color-base-200: #1c212c;
+  --color-base-300: #151922;
+  --color-base-content: #f4f5f7;
+}

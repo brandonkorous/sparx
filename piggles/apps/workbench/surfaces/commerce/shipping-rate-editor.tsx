@@ -34,7 +34,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { faPlus, faTrashCan, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { CreateShippingRateInput } from '@sparx/commerce-schemas';
+import type { CreateShippingRateInput } from '@wizeworks/commerce-schemas';
 import { MoneyInput } from '../invoicing/money-input';
 import {
   rateTypeLabel,

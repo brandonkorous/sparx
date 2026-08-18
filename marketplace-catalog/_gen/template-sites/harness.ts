@@ -26,21 +26,21 @@ import {
     stampTree,
     type Node,
     type Theme,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { starterFrame } from '../../../packages/silica-catalog/src/site';
+import { starterFrame } from '../../../wizeworks/packages/silica-catalog/src/site';
 import type {
     FooterVariant,
     NavbarVariant,
     SiteChromeOptions,
-} from '../../../packages/silica-catalog/src/site-chrome';
-import { shopHeader } from '../../../packages/silica-catalog/src/commerce';
-import { blogIndexPage, blogPostGrid } from '../../../packages/silica-catalog/src/cms';
-import { HOST_KEYS, functionalShell, hostCore } from '../../../packages/silica-catalog/src/host-nodes';
-import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
-import { TEMPLATE_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/template-themes';
-import { CONTENT_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/content-themes';
-import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+} from '../../../wizeworks/packages/silica-catalog/src/site-chrome';
+import { shopHeader } from '../../../wizeworks/packages/silica-catalog/src/commerce';
+import { blogIndexPage, blogPostGrid } from '../../../wizeworks/packages/silica-catalog/src/cms';
+import { HOST_KEYS, functionalShell, hostCore } from '../../../wizeworks/packages/silica-catalog/src/host-nodes';
+import { resolveSparxTheme } from '../../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
+import { TEMPLATE_THEME_BY_SLUG } from '../../../wizeworks/packages/silica-catalog/src/template-themes';
+import { CONTENT_THEME_BY_SLUG } from '../../../wizeworks/packages/silica-catalog/src/content-themes';
+import { colorToHex } from '../../../wizeworks/packages/site-themes/src/v2/color';
 import { blueprintEmailDoc } from '../shared/blueprint-email';
 import { contactSection } from '../shared/contact-section';
 
@@ -623,7 +623,7 @@ export async function emitBundle(spec: TemplateSiteSpec): Promise<{ dir: string;
 // Imported lazily to keep the shell helpers a private detail of the harness. These are
 // authored directly from the node primitive so a template that doesn't override them
 // still ships a real, editable About/Contact rather than an empty page.
-import { el } from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { el } from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
 function aboutBand(businessName: string): Node {
     return el('section', 'bg-base-100 @container px-6 py-20', {

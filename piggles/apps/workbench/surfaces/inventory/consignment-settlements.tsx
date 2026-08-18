@@ -27,22 +27,25 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
-  EmptyState,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faHandshake, faReceipt } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
 import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
+
+/** Registry module for this pane, so the brand draws Stock's own picture rather
+ *  than the generic one. */
+const MODULE = 'inventory';
 import { settlementTone, useConsignmentSettlements, useUnsettledConsignment } from './demand-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -69,41 +72,43 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Consignment controls">
-        <NativeSelect
-          size="sm"
-          className="max-w-44 shrink"
-          aria-label="Which settlements"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value);
-          }}
-        >
-          <option value="">All periods</option>
-          <option value="draft">Drafts</option>
-          <option value="closed">Closed, unbilled</option>
-          <option value="invoiced">Billed</option>
-          <option value="paid">Paid</option>
-        </NativeSelect>
-
-        <ToolbarSeparator />
-
-        <Text className="text-sm">
-          {owedCents > 0
-            ? `${formatCents(owedCents)} owed on closed periods`
-            : 'Nothing outstanding'}
-        </Text>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={list.isFetching || unsettled.isFetching}
-          updatedAt={list.data ? list.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void list.refetch();
-            void unsettled.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Consignment controls"
+        status={
+          <Text className="text-sm">
+            {owedCents > 0
+              ? `${formatCents(owedCents)} owed on closed periods`
+              : 'Nothing outstanding'}
+          </Text>
+        }
+        controls={
+          <NativeSelect
+            size="sm"
+            className="max-w-44 shrink"
+            aria-label="Which settlements"
+            value={status}
+            onChange={(event) => {
+              setStatus(event.target.value);
+            }}
+          >
+            <option value="">All periods</option>
+            <option value="draft">Drafts</option>
+            <option value="closed">Closed, unbilled</option>
+            <option value="invoiced">Billed</option>
+            <option value="paid">Paid</option>
+          </NativeSelect>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={list.isFetching || unsettled.isFetching}
+            updatedAt={list.data ? list.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void list.refetch();
+              void unsettled.refetch();
+            }}
+          />
+        }
+      />
 
       {unpricedTotal > 0 ? (
         <Alert color="warning" variant="soft">
@@ -127,7 +132,12 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
             {unsettled.isLoading ? (
               <PaneWaiting label="Working out what is owed…" />
             ) : behind.length === 0 ? (
-              <EmptyState
+              /* No extra card — the FormSection is one already. <PaneEmpty>
+                 because the loading branch beside it is <PaneWaiting>: leaving a
+                 grey glyph chip here made one region draw two different kinds of
+                 picture. */
+              <PaneEmpty
+                module={MODULE}
                 icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}
                 title="Nothing is outstanding"
                 description="Either you hold no consigned stock, or every sale from it has already been settled with its owner."
@@ -189,7 +199,8 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
             {list.isLoading ? (
               <PaneWaiting label="Loading settlements…" />
             ) : rows.length === 0 ? (
-              <EmptyState
+              <PaneEmpty
+                module={MODULE}
                 icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
                 title="No settlement periods yet"
                 description="A settlement closes a stretch of time against one owner: everything of theirs that sold, at the cost agreed when it arrived, with a document to pay against."

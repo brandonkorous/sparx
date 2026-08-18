@@ -14,7 +14,7 @@ later. It exists on **two surfaces** (§3):
 
 - **In-dashboard** (`apps/dashboard` → `/marketplace`) — the **authenticated** browse-and-acquire
   experience for a signed-in tenant, with per-tenant state (installed / applied / connected).
-- **On the marketing site** (`apps/web` → `/marketplace`) — the **public**, pre-auth gallery: the
+- **On the marketing site** (`sparx/apps/web` → `/marketplace`) — the **public**, pre-auth gallery: the
   top-of-funnel where a visitor browses the catalog, then signs up to install (docs/54 §15).
 
 Both surfaces render the **same catalog** from the **same API**; the only difference is that the
@@ -71,10 +71,10 @@ marketplace is a **browse-and-search product**, not a gallery:
 | Surface       | App              | Audience             | Routes                                                | Overlay                              |
 | ------------- | ---------------- | -------------------- | ----------------------------------------------------- | ------------------------------------ |
 | **Dashboard** | `apps/dashboard` | Authenticated tenant | `/marketplace`, `/marketplace/[category]`, `…/[slug]` | Per-tenant install/applied/connected |
-| **Public**    | `apps/web`       | Anonymous visitor    | `/marketplace`, `/marketplace/[category]`, `…/[slug]` | None — CTA is "Sign up to install"   |
+| **Public**    | `sparx/apps/web` | Anonymous visitor    | `/marketplace`, `/marketplace/[category]`, `…/[slug]` | None — CTA is "Sign up to install"   |
 
 Both call the catalog API (§6); the dashboard hits the authenticated endpoint (which joins per-tenant
-state), `apps/web` hits the public endpoint (catalog only). The page components are **registry-driven
+state), `sparx/apps/web` hits the public endpoint (catalog only). The page components are **registry-driven
 and shared in shape** across both apps (§4) so a listing looks the same browsing logged-out as it does
 logged-in — only the action panel's CTA differs (Install vs. Sign up to install).
 
@@ -178,7 +178,7 @@ The **catalog is data**; the **runtime that makes a thing _work_ is code**, link
 | Integration catalog entry                     | **Data** (keyed to a provider) | Metadata is data                              |
 | Integration **adapter** (provider impl)       | **Code** (provider package)    | It executes logic                             |
 
-The in-code registries (`@sparx/blueprints`, `@sparx/site-themes`, the `@sparx/components` primitives,
+The in-code registries (`@wizeworks/blueprints`, `@wizeworks/site-themes`, the `@sparx/components` primitives,
 the provider registry) become **seeders** for the catalog tables — not the catalog itself. sparx-core
 listings are seeded (idempotently) through the migration pipeline; everything else is authored as data.
 
@@ -246,11 +246,11 @@ need it** (the public marketplace renders component previews; the catalog API se
 from it), it moves to a shared **`@sparx/components`** package with a deliberate split:
 
 - **`@sparx/components`** (main) — the full registry, _including_ React render functions and
-  `@sparx/site-ui` imports. For the **canvases**: the dashboard builder + the `apps/web` renderer.
+  `@sparx/site-ui` imports. For the **canvases**: the dashboard builder + the `sparx/apps/web` renderer.
 - **`@sparx/components/catalog`** (server-safe subpath) — **metadata only**: type, label, group, kind,
   module, bindability, surfaces, descriptions. **No React.** For **`api-rest`** (seed the
   `MarketplaceComponent` table; serve the catalog) and any backend reader — keeping React out of the
-  service path (the `@sparx/cms-editor/serialize` pattern; see [packages/.../CLAUDE.md] + the
+  service path (the `@wizeworks/cms-editor/serialize` pattern; see [packages/.../CLAUDE.md] + the
   Dockerfile-wiring rule).
 
 This extraction is the single largest slice and is sequenced on its own (§11). The dashboard
@@ -292,7 +292,7 @@ GET /v1/marketplace/:category?q=&facet.<key>=<v>&sort=&cursor=&limit=
   → { items: Item[], total, facets: { <key>: { <value>: count } }, nextCursor: string|null }
 GET /v1/marketplace/:category/:slug → DetailItem  (with install/applied/connected state)
 
-# Public (apps/web) — catalog only, no overlay, published+public rows only
+# Public (sparx/apps/web) — catalog only, no overlay, published+public rows only
 GET /v1/public/marketplace/:category?…    → same shape, no per-tenant fields
 GET /v1/public/marketplace/:category/:slug → DetailItem (CTA = sign up to install)
 ```
@@ -383,7 +383,7 @@ on either surface.
 | D4  | Catalog storage                | **Per-category tables, uniform adapter contract**     | Clean typing + fast SQL + independent growth; consistency lives at the contract, not the table. |
 | D5  | Authorship                     | **Publisher-owned: sparx + tenant + partner**         | A third-party ecosystem is a core long-term goal; catalog is data, not curation-only.           |
 | D6  | Catalog RLS                    | **`status='published' OR own-draft`, not tenant-iso** | Published listings are cross-tenant; drafts are publisher-private. Deliberate deviation.        |
-| D7  | Surfaces                       | **Dashboard (authed) + apps/web (public)**            | Same catalog/API; public surface is the acquisition funnel.                                     |
+| D7  | Surfaces                       | **Dashboard (authed) + sparx/apps/web (public)**      | Same catalog/API; public surface is the acquisition funnel.                                     |
 | D8  | Component registry home        | **`@sparx/components` + server-safe `/catalog`**      | Both apps + api-rest need it; keep React out of the backend path.                               |
 | D9  | Publisher entity               | **`MarketplacePublisher` row (may link a tenant)**    | A partner needn't be a tenant; listings reference a publisher id, not a raw tenant.             |
 | D10 | Pagination style               | **Cursor "Load more"**                                | Least jarring at scale; numbered pages acceptable later if needed.                              |
@@ -399,11 +399,11 @@ on either surface.
 > M5). Phases 7–8 remain deferred by design.
 >
 > One deliberate deviation from the original plan: Themes/Integrations/Components went live via a
-> **curated inline seed** in `packages/db/prisma/seed.ts` (each row's `slug` = the in-code key — theme
+> **curated inline seed** in `wizeworks/packages/db/prisma/seed.ts` (each row's `slug` = the in-code key — theme
 > preset key / provider slug / builder component `type` — with the heavy payload column NULL, resolved
 > by slug), **not** via the `@sparx/components` package extraction (phase 3). The extraction (D8) is
 > still worthwhile to unify the registry across apps, but the catalog did not need it to go live, and
-> the inline seed avoided new `@sparx/db` dependencies. The public surface lives at **`/market`** (so
+> the inline seed avoided new `@wizeworks/db` dependencies. The public surface lives at **`/market`** (so
 > the `sparx.market` vanity domain lands on it), not `/marketplace`.
 
 1. **Catalog spine.** ✅ SHIPPED. Per-category tables + publisher columns + the §6.3 RLS; a catalog
@@ -416,12 +416,12 @@ on either surface.
    status note above). Fifteen marketplace-worthy system components; "Add to my components" hands off
    to `/builder/components/<type>` (the existing Copy-to-tenant flow, docs/53). The `@sparx/components`
    extraction + `/catalog` subpath remains a worthwhile refactor, but is no longer blocking.
-4. **Themes + Integrations.** ✅ SHIPPED. Themes (six `@sparx/site-themes` presets; "Apply" → active
+4. **Themes + Integrations.** ✅ SHIPPED. Themes (six `@wizeworks/site-themes` presets; "Apply" → active
    site `themeKey` via `PUT /v1/sitebuilder/config/theme`, D11) and Integrations (six providers;
    "Connect" → `/commerce/providers`). _Follow-up: only Stripe + Shippo are registered in api-rest's
    provider bootstrap; PayPal/EasyPost/TaxJar/Avalara bundles exist but need activating before their
    Connect fully completes._
-5. **Public marketplace on `apps/web`.** ✅ SHIPPED at `/market` over the public endpoints — the
+5. **Public marketplace on `sparx/apps/web`.** ✅ SHIPPED at `/market` over the public endpoints — the
    browse/detail gallery + the "sign up to install" funnel hand-off (docs/54 §15).
 6. **Typesense** marketplace collection (projectors, facet aggregation) — **remaining; scale-only.**
    Swap behind the adapter; the SQL adapter remains the dev/no-index fallback (M5).

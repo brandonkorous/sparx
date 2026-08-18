@@ -17,7 +17,7 @@ Each container node carries a single `layout` ({ direction, columns, gap,
 justify, alignItems, wrap }) with **no per-breakpoint values** — the author
 picks one arrangement. Two render paths walk that tree:
 
-- **Site** — `apps/site/components/builder-renderer.tsx` (the live site).
+- **Site** — `wizeworks/apps/site/components/builder-renderer.tsx` (the live site).
 - **Editor canvas** — `apps/dashboard/.../builder/_builder/canvas.tsx` (the
   in-dashboard preview, "what you see is what you ship").
 
@@ -84,7 +84,7 @@ single source of truth**; keep them in lockstep.
 
 - **Site** renders to a real viewport, so it emits **CSS classes** and
   lets `@media` do the work. Layout/height/padding move out of inline styles
-  into `bx-*` classes defined in `apps/site/app/site.css` (`.bx-grid` +
+  into `bx-*` classes defined in `wizeworks/apps/site/app/site.css` (`.bx-grid` +
   `.bx-grid--cN`, `.bx-row`, `.bx-row--resp`, `.bx-stack`, `.bx-h-*`,
   `.bx-p-*`). Non-swapping bits (gap, surface, background, text color/align,
   contained max-width) stay inline.

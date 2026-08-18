@@ -5,20 +5,20 @@ type: rule
 status: active
 applies-to: [dashboard]
 sources:
-  - packages/links/src/routes.ts
-  - packages/links/src/resolve.ts
-  - packages/links/src/server.ts
-  - apps/workbench/lib/workbench/deep-link.ts
-  - apps/workbench/lib/workbench/address.ts
-  - apps/workbench/components/deep-link-arrival.tsx
-  - apps/workbench/app/workbench-entry.tsx
-  - apps/workbench/app/[...path]/page.tsx
+  - wizeworks/packages/links/src/routes.ts
+  - wizeworks/packages/links/src/resolve.ts
+  - wizeworks/packages/links/src/server.ts
+  - sparx/apps/workbench/lib/workbench/deep-link.ts
+  - sparx/apps/workbench/lib/workbench/address.ts
+  - sparx/apps/workbench/components/deep-link-arrival.tsx
+  - sparx/apps/workbench/app/workbench-entry.tsx
+  - sparx/apps/workbench/app/[...path]/page.tsx
   - scripts/check-surface-routes.mjs
 ---
 
 The workbench is an MDI, so an address names **one destination that opens as a pane on top of the operator's existing layout** — never a page that replaces it, and never the layout itself. `https://app.sparx.works/commerce/orders/8f2…?site=savory-donuts` opens that order beside whatever was already arranged.
 
-**`@sparx/links` is the one address table.** Pure data, zero dependencies, no React — so a Node service, a Next server component and the browser bundle all read the same rows. Each row maps a readable `path` ⇄ a workbench `surface` key ⇄ (where the thing is indexed) an `entity` type, plus `aliases` for addresses already sitting in people's inboxes.
+**`@wizeworks/links` is the one address table.** Pure data, zero dependencies, no React — so a Node service, a Next server component and the browser bundle all read the same rows. Each row maps a readable `path` ⇄ a workbench `surface` key ⇄ (where the thing is indexed) an `entity` type, plus `aliases` for addresses already sitting in people's inboxes.
 
 - **Everything resolves through it**: universal search, the notification bell, every emailed link, the browser address bar, and both copy-link controls. Before it there were two partial entity tables that disagreed (search knew 24 types, notifications knew 1) and four hand-written redirect pages.
 - **`scripts/check-surface-routes.mjs` enforces the bijection** — every registered surface has exactly one address and every address names a real surface. CI-gated, so a new surface without an address fails the build rather than quietly being unlinkable.
@@ -37,6 +37,6 @@ The shell must take that address rather than read `window.location` for itself, 
 
 **Why:** deep linking was half-built and every gap was silent. Links never worked on compact at all (the resolver lived inside the dock's `onReady`), a signed-out click dropped the destination, social-worker emitted `?surface=` — a parameter the workbench has never read — and an unknown path, a disabled module or another business's record each opened nothing and said nothing. Nobody could produce a link either: the bar always read `/`.
 
-**How to apply:** add a surface → add its row in `packages/links/src/routes.ts` (CI fails otherwise). Writing a link from a service → `appLink()` from `@sparx/links/server`, never a hand-built string and never a surface key. Needing the origin → `appOrigin()`, which reads the five variables that have ever meant it in one fixed order. Needing an address in the browser → `addressForPane` / `shareableAddressForPane` in `lib/workbench/address.ts`.
+**How to apply:** add a surface → add its row in `wizeworks/packages/links/src/routes.ts` (CI fails otherwise). Writing a link from a service → `appLink()` from `@wizeworks/links/server`, never a hand-built string and never a surface key. Needing the origin → `appOrigin()`, which reads the five variables that have ever meant it in one fixed order. Needing an address in the browser → `addressForPane` / `shareableAddressForPane` in `lib/workbench/address.ts`.
 
 Related: [[modules-are-flags]], [[rls-multi-tenancy]]

@@ -93,7 +93,7 @@ PostgreSQL        — conversation and message storage
 Redis pub/sub     — route messages to correct merchant dashboard
                     already in stack
 
-React chat widget — @sparx/chat-widget package
+React chat widget — @wizeworks/chat-widget package
                     embeds on site via Next.js component
 
 AI layer          — Anthropic API (claude-haiku-4-5)
@@ -238,7 +238,7 @@ Right panel (conversation selected):
 - [ ] WebSocket server on API (socket.io)
 - [ ] Redis pub/sub for message routing to merchant dashboard
 - [ ] AI handler — Claude Haiku integration with product context
-- [ ] Site widget component (@sparx/chat-widget)
+- [ ] Site widget component (@wizeworks/chat-widget)
 - [ ] Widget configuration UI (Settings → Chat)
 - [ ] Dashboard inbox UI (conversation list + thread view)
 - [ ] Customer context sidebar (orders, LTV, history)

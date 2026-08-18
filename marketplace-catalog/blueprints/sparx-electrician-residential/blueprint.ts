@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-electrician-residential',
-    version: '1.3.0',
-    name: 'sparx — Electrician (Residential)',
-    summary:
-        'A trustworthy residential-electrician site — a warm-white ground, a charcoal primary and a safety-yellow accent, with photo-led, code-to-safety copy. Installs a working booking flow: free estimates, diagnostics, outlet & lighting installs, panel consults, safety inspections and an emergency callout, with three electricians you book by name and their own weekly hours. Ships as "Brightwire Electric".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-electrician-residential',
+  version: '1.3.0',
+  name: 'sparx — Electrician (Residential)',
+  summary:
+    'A trustworthy residential-electrician site — a warm-white ground, a charcoal primary and a safety-yellow accent, with photo-led, code-to-safety copy. Installs a working booking flow: free estimates, diagnostics, outlet & lighting installs, panel consults, safety inspections and an emergency callout, with three electricians you book by name and their own weekly hours. Ships as "Brightwire Electric".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Brightwire Electric',
+    tagline: 'Home electrical, done right and to code.',
+    colors: {
+      primary: '#2e333a',
+      primaryForeground: '#f4f9ff',
+      accent: '#eebd30',
+      secondary: '#414853',
+    },
+    fonts: {
+      heading: 'Archivo',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'brightwire',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Brightwire Electric',
-        tagline: 'Home electrical, done right and to code.',
-        colors: {
-            primary: '#2e333a',
-            primaryForeground: '#f4f9ff',
-            accent: '#eebd30',
-            secondary: '#414853',
-        },
-        fonts: {
-            heading: 'Archivo',
-            body: 'Inter',
-        },
+      colorPrimary: '#2e333a',
+      colorAccent: '#eebd30',
+      colorSecondary: '#414853',
+      fontHeading: 'Archivo',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'brightwire',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#2e333a',
-            colorAccent: '#eebd30',
-            colorSecondary: '#414853',
-            fontHeading: 'Archivo',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

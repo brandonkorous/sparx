@@ -26,7 +26,7 @@
 
 sparx is about to drive traffic from many channels (Product Hunt, Hacker News, the MCP registries,
 Reddit, paid search/social, the per-module marketing domains). Today the only instrumentation is
-PostHog on `apps/web` ([posthog-provider.tsx](../apps/web/components/posthog-provider.tsx)), configured
+PostHog on `sparx/apps/web` ([posthog-provider.tsx](../apps/web/components/posthog-provider.tsx)), configured
 `person_profiles: 'identified_only'`. That captures `utm_*` as **event** properties on `$pageview`
 — enough to see _traffic_ by channel — but it records no durable **first-touch** for the anonymous
 majority, and the conversion happens on a **different registrable surface** (`app.sparx.works`),
@@ -42,14 +42,14 @@ No commerce platform exposes that natively; sparx's MCP server can.
 Attribution in sparx is **two systems that share one engine**, mirroring the two-surface pattern in
 [doc 50 §1](50-seo-aio-discoverability.md):
 
-| Level                             | Subject              | Surface(s)                                                                                       | Conversion event                                  | Stored on                                          | Audience                     |
-| --------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- | -------------------------------------------------- | ---------------------------- |
-| **L-PLAT — Platform acquisition** | A WizeWorks prospect | `apps/web` (`sparx.works`) + per-module marketing domains → `apps/dashboard` (`app.sparx.works`) | Tenant signup → module activation → paid (Stripe) | `tenants` + platform attribution tables            | WizeWorks (internal)         |
-| **L-TEN — Tenant commerce**       | A tenant's shopper   | `apps/site` (`{tenant}.sparx.zone` + custom domains)                                             | Customer signup / order / RFQ                     | `customers` + `orders` + tenant attribution tables | The tenant (product feature) |
+| Level                             | Subject              | Surface(s)                                                                                             | Conversion event                                  | Stored on                                          | Audience                     |
+| --------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------- | -------------------------------------------------- | ---------------------------- |
+| **L-PLAT — Platform acquisition** | A WizeWorks prospect | `sparx/apps/web` (`sparx.works`) + per-module marketing domains → `apps/dashboard` (`app.sparx.works`) | Tenant signup → module activation → paid (Stripe) | `tenants` + platform attribution tables            | WizeWorks (internal)         |
+| **L-TEN — Tenant commerce**       | A tenant's shopper   | `wizeworks/apps/site` (`{tenant}.sparx.zone` + custom domains)                                         | Customer signup / order / RFQ                     | `customers` + `orders` + tenant attribution tables | The tenant (product feature) |
 
 Both levels use the **same capture library, the same attribution snapshot shape (§5.2), the same
 identity-stitch pattern (§6), and the same model math (§9).** They differ only in where the cookie
-lives, which identity system resolves the anonymous visitor (Better Auth vs `@sparx/customer-auth`),
+lives, which identity system resolves the anonymous visitor (Better Auth vs `@wizeworks/customer-auth`),
 and who reads the report. Build the engine once; instantiate it twice.
 
 > **Decision — one engine, two instantiations.** We do **not** build a separate "internal launch
@@ -99,7 +99,7 @@ across reports. It governs **both** WizeWorks links and the in-product link buil
 
 `product-hunt · hacker-news · reddit · indie-hackers · mcp-registry · x · linkedin · youtube ·
 google · bing · meta · tiktok · newsletter · partner-{name} · sparxcms · sparxcrm · sparxemail ·
-sparxb2b`. New sources are added to `packages/attribution/src/taxonomy.ts` (the single source of
+sparxb2b`. New sources are added to `wizeworks/packages/attribution/src/taxonomy.ts` (the single source of
 truth) — not invented ad hoc in a link.
 
 ### 4.3 `utm_medium` fixed enum (drives channel classification)
@@ -111,7 +111,7 @@ community · qr · mcp`. The classifier (§5.4) maps medium → channel; an unkn
 ### 4.4 Link builder
 
 - **Phase 0 (now):** a tracked spreadsheet/CSV checked in at `docs/launch/utm-links.csv`, generated
-  by a tiny `packages/attribution` CLI that validates against the vocabulary and emits the encoded
+  by a tiny `wizeworks/packages/attribution` CLI that validates against the vocabulary and emits the encoded
   URLs for every launch channel (ties directly to the [launch plan](#)).
 - **Phase 4:** an in-dashboard **Campaign Link Builder** for tenants — same validation, writes to a
   `utm_campaigns` registry (§8.4) so reports can show friendly campaign names and detect typo-drift.
@@ -120,9 +120,9 @@ community · qr · mcp`. The classifier (§5.4) maps medium → channel; an unkn
 
 ### 5.1 Where capture runs
 
-- **L-PLAT:** `apps/web` (all marketing routes) + the per-module marketing domains. Cookie scoped to
+- **L-PLAT:** `sparx/apps/web` (all marketing routes) + the per-module marketing domains. Cookie scoped to
   the registrable domain **`.sparx.works`** so `app.sparx.works` can read first-touch at signup.
-- **L-TEN:** `apps/site` sites. Cookie scoped to the site's registrable domain. For
+- **L-TEN:** `wizeworks/apps/site` sites. Cookie scoped to the site's registrable domain. For
   `*.sparx.zone` that's `.sparx.zone`; for a tenant **custom domain** it's that domain (handled in §6.2).
 
 ### 5.2 The attribution snapshot (the shared shape)
@@ -130,7 +130,7 @@ community · qr · mcp`. The classifier (§5.4) maps medium → channel; an unkn
 Every touch and every stored attribution column is a projection of one object:
 
 ```ts
-// packages/attribution/src/types.ts
+// wizeworks/packages/attribution/src/types.ts
 export interface AttributionSnapshot {
   source: string | null; // utm_source (normalized) or classifier-derived
   medium: string | null; // utm_medium or derived
@@ -167,14 +167,14 @@ ordered list lives in `attribution_touches` (§8).
 - **Visitor id** — on sites, **reuse `sparx_consent.visitorId`** (doc 42). On marketing,
   mint `sparx_attr_vid` (UUID) at the edge.
 - **localStorage mirror** for resilience against cookie eviction; cookie is source of truth.
-- **Edge-set, not just client JS.** A Next middleware (`apps/web/middleware.ts`,
-  `apps/site/middleware.ts`) stamps the visitor-id cookie and a server-trusted `capturedAt` on first
+- **Edge-set, not just client JS.** A Next middleware (`sparx/apps/web/middleware.ts`,
+  `wizeworks/apps/site/middleware.ts`) stamps the visitor-id cookie and a server-trusted `capturedAt` on first
   response, so capture survives a blocked client bundle (§7.2). Client JS enriches with
   `document.referrer` and UTM parsing.
 
 ### 5.4 Channel classification
 
-A pure function `classify(snapshot, referrerHost): Channel` in `packages/attribution`:
+A pure function `classify(snapshot, referrerHost): Channel` in `wizeworks/packages/attribution`:
 
 1. Explicit `utm_medium` wins (enum → channel map).
 2. Else a click id implies paid (`gclid → Paid Search`, `fbclid → Paid Social`, …).
@@ -193,7 +193,7 @@ Attribution is **not** strictly-necessary. It maps onto doc 42's four categories
 
 - **`analytics` consent** gates: first/last-touch snapshots, `attribution_touches`, PostHog person
   profiles, channel/campaign attribution. Use `gateTracker({ category: 'analytics', load })` from
-  `@sparx/legal` so capture only initializes when granted, and tears down on withdrawal.
+  `@wizeworks/legal` so capture only initializes when granted, and tears down on withdrawal.
 - **`marketing` consent** gates the **click-id capture** (`gclid`/`fbclid`/…) and the §13 ad-platform
   send-back. Without it, `clickIds` is empty and no conversion API fires.
 - **Cookieless essential fallback.** Under strictly-necessary only, we may keep an **aggregate,
@@ -210,7 +210,7 @@ Attribution is **not** strictly-necessary. It maps onto doc 42's four categories
   (Better Auth) reads `sparx_attr_first`/`_last`, attaches them to `tenant.created` (§8.5), writes
   `tenants.acquisition_*`, and calls `posthog.identify(userId, {}, { $set_once: firstTouch })` so the
   PostHog person inherits true first-touch.
-- **L-TEN:** at `@sparx/customer-auth` account creation or first authenticated checkout, resolve
+- **L-TEN:** at `@wizeworks/customer-auth` account creation or first authenticated checkout, resolve
   `sparx_consent.visitorId → customerId`. The CRM spine ([doc 11](11-crm-prd.md)) gets first/last-touch
   columns; the order gets an attribution snapshot at creation. The **append-only CRM activity**
   timeline records an `attribution.identified` activity, so the journey shows on the customer card.
@@ -235,9 +235,9 @@ probabilistic fingerprinting — see non-goals §18).
 
 ### 7.1 Capture endpoint + event bus
 
-A server endpoint `POST /v1/attribution/touch` (`services/api-rest`) accepts the snapshot, validates
+A server endpoint `POST /v1/attribution/touch` (`wizeworks/services/api-rest`) accepts the snapshot, validates
 it, writes `attribution_touches` (tenant-scoped) or the platform table, and publishes
-`attribution.touch.recorded` on the Pub/Sub bus (`@sparx/events`). Conversions **enrich existing
+`attribution.touch.recorded` on the Pub/Sub bus (`@wizeworks/events`). Conversions **enrich existing
 events rather than minting parallel ones**: `tenant.created`, `customer.created` /
 `customer.subscribed`, and `order.created` each carry an `attribution` block. Where a CRM consumer
 needs it, follow the **two-bus rule** (`publishCrmEvent` _and_ the platform bus — see the CRM
@@ -264,7 +264,7 @@ canonical for money, PostHog for behavior.
 ## 8. Data model
 
 All tenant-scoped tables are `ENABLE`+`FORCE` RLS with a `tenant_id` and the standard
-`tenant_isolation` policy (hand-edited SQL per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
+`tenant_isolation` policy (hand-edited SQL per [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
 Platform-acquisition tables are **system-scoped** (no `tenant_id`; read only by WizeWorks internal
 tooling), following the non-RLS auth-domain pattern used by `domains` / `billing_subscriptions`.
 
@@ -424,17 +424,17 @@ stored in plaintext for this purpose.
 Sequenced like the Tier/Billing plans. Each phase is production-complete, module-gated where it
 touches a module, RLS on every tenant table, event-driven, conventional commits.
 
-- **Phase 0 — Taxonomy (now, zero app code).** `packages/attribution` with `taxonomy.ts` +
+- **Phase 0 — Taxonomy (now, zero app code).** `wizeworks/packages/attribution` with `taxonomy.ts` +
   `classify()` + a validating link-builder CLI; `docs/launch/utm-links.csv` for every launch channel.
   Unblocks the launch immediately; nothing else depends on app changes.
-- **Phase 1 — Platform acquisition (launch-critical).** Edge + client capture on `apps/web`
+- **Phase 1 — Platform acquisition (launch-critical).** Edge + client capture on `sparx/apps/web`
   (`.sparx.works` cookie, set-once first-touch, last-non-direct last-touch, consent-gated);
   read-at-signup in `app.sparx.works`; `tenants.acquisition_*` migration; PostHog `identify`
   `$set_once`; an internal channel/funnel dashboard. **This is the slice that must precede the first
   paid/PH/HN push.**
 - **Phase 2 — Server pipeline & resilience.** `POST /v1/attribution/touch`,
   `attribution.touch.recorded`, PostHog reverse proxy (Caddy), Stripe paid-conversion → LTV-by-channel.
-- **Phase 3 — Tenant commerce capture.** `apps/site` capture reusing `sparx_consent.visitorId`, gated
+- **Phase 3 — Tenant commerce capture.** `wizeworks/apps/site` capture reusing `sparx_consent.visitorId`, gated
   via `gateTracker('analytics')`; `attribution_visitors` + `attribution_touches` (RLS); snapshot onto
   `customers` (at customer-auth) and `orders` (at checkout); custom-domain `?_sx=` handoff.
 - **Phase 4 — Tenant reporting + MCP.** Dashboard channel/campaign/revenue reports; customer-journey on

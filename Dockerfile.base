@@ -64,19 +64,41 @@ COPY --chown=node:node pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.
 # below dies with ENOENT on the patch — regardless of what is being built.
 COPY --chown=node:node patches ./patches
 
-# The Next.js apps are NOT built from this base — they ship standalone bundles
-# and are already small. Their manifests are still needed, because
-# pnpm-workspace.yaml globs `apps/*` and `--frozen-lockfile` refuses to run when
-# the workspace on disk does not match the importers in the lockfile. Manifests
+# ── THE IMAGE MIRRORS THE REPO, PATH FOR PATH ───────────────────────────────
+#
+# It did not, once: sources came from the new tree and landed flat at
+# `./apps`, `./packages`, `./services`. That was the pre-tree-move layout, and it
+# broke twice over — `COPY packages ./packages` failed outright because no such
+# directory exists any more, and even had it not, the `pnpm-workspace.yaml`
+# copied above globs `wizeworks/packages/*` and would have matched nothing inside
+# the image.
+#
+# Mirroring is what makes the copied workspace file TRUE rather than a second
+# thing to keep in step. It also means the destination is never worth thinking
+# about: whatever the repo calls a path, the image calls it the same.
+#
+# The apps are NOT built from this base — they ship standalone bundles and are
+# already small. Their MANIFESTS are still needed, because `--frozen-lockfile`
+# refuses to run when the workspace on disk does not match the lockfile's
+# importers, and every workspace glob has to resolve for that to hold. Manifests
 # only: no source, and nothing installs for them.
-COPY --chown=node:node apps/admin/package.json ./apps/admin/
-COPY --chown=node:node apps/market/package.json ./apps/market/
-COPY --chown=node:node apps/site/package.json ./apps/site/
-COPY --chown=node:node apps/web/package.json ./apps/web/
-COPY --chown=node:node apps/workbench/package.json ./apps/workbench/
+COPY --chown=node:node wizeworks/apps/admin/package.json ./wizeworks/apps/admin/
+COPY --chown=node:node wizeworks/apps/site/package.json ./wizeworks/apps/site/
+COPY --chown=node:node sparx/apps/market/package.json ./sparx/apps/market/
+COPY --chown=node:node sparx/apps/web/package.json ./sparx/apps/web/
+COPY --chown=node:node sparx/apps/workbench/package.json ./sparx/apps/workbench/
+COPY --chown=node:node sparx/packages/brand/package.json ./sparx/packages/brand/
+COPY --chown=node:node piggles/apps/account/package.json ./piggles/apps/account/
+COPY --chown=node:node piggles/apps/web/package.json ./piggles/apps/web/
+COPY --chown=node:node piggles/apps/workbench/package.json ./piggles/apps/workbench/
+COPY --chown=node:node piggles/packages/auth-handoff/package.json ./piggles/packages/auth-handoff/
+COPY --chown=node:node piggles/packages/brand/package.json ./piggles/packages/brand/
+COPY --chown=node:node piggles/packages/config/package.json ./piggles/packages/config/
+COPY --chown=node:node piggles/packages/mascot/package.json ./piggles/packages/mascot/
+COPY --chown=node:node piggles/packages/ui/package.json ./piggles/packages/ui/
 
-COPY --chown=node:node packages ./packages
-COPY --chown=node:node services ./services
+COPY --chown=node:node wizeworks/packages ./wizeworks/packages
+COPY --chown=node:node wizeworks/services ./wizeworks/services
 
 # The authored first-party blueprint bundles (docs/85). api-rest reads these at
 # BOOT and publishes them into the marketplace itself — writing each manifest and
@@ -93,16 +115,16 @@ COPY --chown=node:node marketplace-catalog ./marketplace-catalog
 # needs. `{...}` is pnpm's filter-by-DIRECTORY syntax and the trailing `...` is
 # its dependency-closure suffix, so this is the union of what all seventeen
 # images used to install separately — installed once. Verified to select 77
-# packages including @sparx/db and NONE of the Next.js apps.
+# packages including @wizeworks/db and NONE of the Next.js apps.
 #
-# @sparx/db is named explicitly as well: the migration runner image is built
+# @wizeworks/db is named explicitly as well: the migration runner image is built
 # from this base and needs it even though nothing under services/ would be
 # required to depend on it forever.
-RUN pnpm install --filter "{./services/*}..." --filter "@sparx/db..." \
+RUN pnpm install --filter "{./wizeworks/services/*}..." --filter "@wizeworks/db..." \
     --frozen-lockfile --prod=false
 
 # Pre-generate the Prisma client so no service pays for it on first request.
-RUN cd packages/db && pnpm exec prisma generate
+RUN cd wizeworks/packages/db && pnpm exec prisma generate
 
 # Each service image sets its own WORKDIR, EXPOSE and ENTRYPOINT. Nothing here
 # starts: this image is a base, and running it directly is a mistake worth

@@ -53,13 +53,13 @@ The financial backends are **built and consumed** today. This hub is a front doo
 
 | Already exists                                                        | Location                                                                                              |
 | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Gateway abstraction (`PaymentGateway`, registry, `PaymentService`)    | `packages/payments/src/{gateway,registry,service}.ts`                                                 |
-| sparx Pay (Connect destination charges) + Stripe-direct gateways      | `packages/payments/src/gateways/{sparx-pay,stripe-direct}.ts`                                         |
-| Connect onboarding + hosted dashboard links                           | `services/api-rest/src/lib/payments-onboarding.ts`, `/v1/commerce/payments/*`                         |
+| Gateway abstraction (`PaymentGateway`, registry, `PaymentService`)    | `wizeworks/packages/payments/src/{gateway,registry,service}.ts`                                       |
+| sparx Pay (Connect destination charges) + Stripe-direct gateways      | `wizeworks/packages/payments/src/gateways/{sparx-pay,stripe-direct}.ts`                               |
+| Connect onboarding + hosted dashboard links                           | `wizeworks/services/api-rest/src/lib/payments-onboarding.ts`, `/v1/commerce/payments/*`               |
 | Payment ledger + platform-fee record (`payment_intents.platform_fee`) | `PaymentService.createPaymentIntent`                                                                  |
 | Consumed by checkout / invoices / B2B / scheduling deposits           | `…/public/checkout.ts`, `…/invoicing/documents.ts`, `…/b2b/invoices.ts`, `lib/scheduling-payments.ts` |
-| Marketplace settlement (sparx as MoR, weekly ACH)                     | `packages/payments/src/market.ts`, `getMarketSettlement{Summary,Runs}`                                |
-| Platform subscription (one Stripe sub, item per module)               | `packages/billing/src/service.ts` (`getBillingState`, `createPortalSession`)                          |
+| Marketplace settlement (sparx as MoR, weekly ACH)                     | `wizeworks/packages/payments/src/market.ts`, `getMarketSettlement{Summary,Runs}`                      |
+| Platform subscription (one Stripe sub, item per module)               | `wizeworks/packages/billing/src/service.ts` (`getBillingState`, `createPortalSession`)                |
 | Provider registry (tax/shipping/dropship/**payment=PayPal**)          | `apps/dashboard/lib/providers-bootstrap.ts`, `/commerce/providers`                                    |
 | Channel revenue consolidation report                                  | `/v1/commerce/reports/channel-revenue`, `getChannelRevenue`                                           |
 
@@ -105,7 +105,7 @@ no module hue of its own). It registers in the shell like Settings does.
 - **D6 — IA first, go-live second.** Consolidate the surfaces against the existing backends; drive the
   Stripe go-live (live keys, end-to-end) after. Each ships independently (deploy-early).
 - **D7 — Finance owns a hue ("money green" `#16A34A`).** Added in v1.2 (2026-06-29). Finance stays
-  platform-level (no manifest fee), but it owns a module color in `@sparx/ui` (`MODULE_COLORS`) so its
+  platform-level (no manifest fee), but it owns a module color in `@wizeworks/ui` (`MODULE_COLORS`) so its
   hub pops and a finance signal reads as finance wherever it appears — the rail icon, the contextual
   panel, every `/finance/*` page, and an embedded finance panel in another module (e.g. the Payouts
   card on the Commerce overview, via a nested `<ModuleProvider module="finance">`). On the Overview the
@@ -141,7 +141,7 @@ earlier described neutral chrome with per-section commerce/invoicing hues — su
 | **Payouts**            | `/finance/payouts`      | Connect payouts + sparx.market settlement + ACH account | "Where your money lands" — consolidates the two payout stories into one.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **Channels**           | `/finance/channels`     | Channel-revenue report                                  | Revenue / fees / net by channel. Rows deep-link to Settings → Channels to connect/sync (D4).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **Receivables**        | `/finance/receivables`  | Invoicing + B2B AR                                      | AR aging + recent payments rollup; deep-links into the Invoicing module to author (D4).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **sparx subscription** | `/finance/subscription` | Settings → Billing (`@sparx/billing`)                   | "You pay sparx," visually separated from money-in. Plan, status, Stripe portal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **sparx subscription** | `/finance/subscription` | Settings → Billing (`@wizeworks/billing`)               | "You pay sparx," visually separated from money-in. Plan, status, Stripe portal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### 4.1 The money-flow split (the visual contract)
 
@@ -180,7 +180,7 @@ closes them, not hand-waves them.
 | Payment acceptance status                | `/v1/commerce/payments/config` (`getPaymentConfig`)                 | none                                                                                            |
 | sparx.market settlement owed / paid      | `getMarketSettlementSummary`                                        | none                                                                                            |
 | Revenue (30-day, by channel)             | `/v1/commerce/reports/channel-revenue`                              | none                                                                                            |
-| You pay sparx (plan, status, next bill)  | `getBillingState` (`@sparx/billing`)                                | none                                                                                            |
+| You pay sparx (plan, status, next bill)  | `getBillingState` (`@wizeworks/billing`)                            | none                                                                                            |
 | **Connect payout balance + next payout** | sparx Pay payouts currently only on the Stripe **hosted** dashboard | **GAP A ✅** — added `GET /v1/commerce/payments/sparx-pay/balance` (`balance.retrieve`)         |
 | **AR outstanding + aging**               | invoicing + B2B share one `BillingDocument` substrate (Phase 8)     | **GAP B ✅** — already closed: `GET /v1/invoicing/aging` (no scope) spans both; no new endpoint |
 

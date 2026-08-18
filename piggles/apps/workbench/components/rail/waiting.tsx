@@ -13,8 +13,8 @@
 // ── THE COUNT BELONGS TO A SCREEN, AND ROLLS UP FROM THERE ──────────────────
 //
 // Every count is really a fact about ONE screen — orders waiting to go out is a
-// fact about Orders, not about Sell. So the screen owns it, the app sums its
-// screens, and the group sums its apps. One number, three levels, and the levels
+// fact about Orders, not about Sell. So the screen owns it, the section sums
+// its screens, the app sums its sections, and the group sums its apps. One number, three levels, and the levels
 // cannot disagree because the two upper ones are derived rather than declared.
 //
 // The rollup is over the surfaces this person can actually REACH, which is what
@@ -33,6 +33,7 @@
 
 import { Badge } from '@wizeworks/silicaui-react';
 import { COUNT_SURFACE, type useAttention, type AttentionKey } from '@/lib/console/home-data';
+import type { SurfaceDefinition } from '@/lib/surfaces/registry';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 
 type Attention = ReturnType<typeof useAttention>;
@@ -56,15 +57,28 @@ export function surfaceWaiting(surfaceKey: string, attention: Attention): number
   return count.value;
 }
 
-/** What is waiting across one app — the sum of the screens this person can reach. */
+/** What is waiting inside one SECTION of a panel — the sum of its screens.
+ *
+ *  The level that was missing. A folded section hid its rows and had nothing to
+ *  say in their place, so it briefly wore how many rows it held — a list length,
+ *  in the slot this whole file exists to reserve for things that need doing. */
+export function sectionWaiting(
+  surfaces: readonly SurfaceDefinition[],
+  attention: Attention
+): number | null {
+  const total = surfaces.reduce(
+    (sum, surface) => sum + (surfaceWaiting(surface.key, attention) ?? 0),
+    0
+  );
+  return total > 0 ? total : null;
+}
+
+/** What is waiting across one app — the sum of its sections, which are the sum
+ *  of their screens. Composed rather than re-summed, so the two levels cannot
+ *  disagree. */
 export function appWaiting(entry: ConsoleNavApp, attention: Attention): number | null {
   const total = entry.sections.reduce(
-    (sum, section) =>
-      sum +
-      section.surfaces.reduce(
-        (inner, surface) => inner + (surfaceWaiting(surface.key, attention) ?? 0),
-        0
-      ),
+    (sum, section) => sum + (sectionWaiting(section.surfaces, attention) ?? 0),
     0
   );
   return total > 0 ? total : null;

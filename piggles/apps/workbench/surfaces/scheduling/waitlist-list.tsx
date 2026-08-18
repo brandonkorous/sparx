@@ -21,6 +21,8 @@
 
 import { useEffect, useId, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -28,11 +30,11 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Card,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -40,10 +42,10 @@ import {
   Input,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import {
   faCalendarPlus,
@@ -55,6 +57,10 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+
+/** Registry module for this pane, so the brand draws Bookings' own picture rather
+ *  than the generic one. */
+const MODULE = 'scheduling';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneScope } from '../../lib/dock/window-boundary';
@@ -150,91 +156,118 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Waiting list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Waiting list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search the waiting list"
+              placeholder="Search name, email or service…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
-            aria-label="Search the waiting list"
-            placeholder="Search name, email or service…"
-            value={search}
-            onValueChange={setSearch}
+            className="ml-auto"
+            onClick={() => {
+              setAdding(true);
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add someone
+          </Button>
+        }
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              aria-label="Filter by state"
+              className="w-auto"
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value as WaitlistStatus | '');
+              }}
+            >
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              aria-label="Filter by service"
+              className="w-auto max-w-44"
+              value={serviceId}
+              onChange={(event) => {
+                setServiceId(event.target.value);
+              }}
+            >
+              <option value="">Any service</option>
+              {serviceList.map((service) => (
+                <option key={service.id} value={service.id}>
+                  {service.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </>
+        }
+        // The raw box, not the debounced needle: a view saves what was typed,
+        // and applying one puts it back in the box for the debounce to pick up.
+        views={{
+          target: '/scheduling/waitlist',
+          params: { q: search.trim(), status, service: serviceId },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus((next.status ?? '') as WaitlistStatus | '');
+            setServiceId(next.service ?? '');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
+        }
+      />
 
-        <NativeSelect
-          size="sm"
-          aria-label="Filter by state"
-          className="w-auto"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value as WaitlistStatus | '');
-          }}
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          aria-label="Filter by service"
-          className="w-auto max-w-44"
-          value={serviceId}
-          onChange={(event) => {
-            setServiceId(event.target.value);
-          }}
-        >
-          <option value="">Any service</option>
-          {serviceList.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          onClick={() => {
-            setAdding(true);
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add someone
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
-
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      {/* ONE card around the whole conditional — loading, failure, empty and the
+          table all fill the same content region, so the pane never jumps. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            module={MODULE}
             icon={<Icon glyph={faHourglass} className="size-6" aria-hidden />}
             title="Could not load the waiting list"
-            description="Something went wrong reaching the server. Try refreshing in a moment."
+            description="Something went wrong reaching the server. Nobody has lost their place — the list just could not be read just now."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
-          <PaneWaiting />
+          <PaneWaiting module={MODULE} />
         ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faHourglass} className="size-6" aria-hidden />}
-            title={narrowed ? 'No one matches that' : 'No one is waiting'}
-            description={
-              narrowed
-                ? 'Try a different search, or widen the filters above.'
-                : 'When a time someone wants is already full, add them here. The moment a matching slot frees up, you can offer it to them before it goes to waste.'
-            }
-            actions={
-              narrowed ? undefined : (
+          <ListEmptyState
+            module={MODULE}
+            filtered={narrowed}
+            noResults={{
+              icon: <Icon glyph={faHourglass} className="size-6" aria-hidden />,
+              title: 'No one matches that',
+              description: 'Try a different search, or widen the filters above.',
+            }}
+            firstRun={{
+              title: 'No one is waiting',
+              description:
+                'When a time someone wants is already full, add them here. The moment a matching slot frees up, you can offer it to them before it goes to waste.',
+              actions: (
                 <Button
                   color="module"
                   size="sm"
@@ -245,8 +278,8 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add someone
                 </Button>
-              )
-            }
+              ),
+            }}
           />
         ) : (
           <Table size="sm" hover>
@@ -269,7 +302,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
             </tbody>
           </Table>
         )}
-      </div>
+      </Card>
 
       {rows.length > 0 ? (
         <div className="flex shrink-0 items-center justify-between gap-3 px-1">

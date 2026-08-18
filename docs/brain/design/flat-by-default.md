@@ -7,7 +7,7 @@ applies-to: [both]
 sources:
   - DESIGN.md
   - docs/sparx-brand-guide.md
-  - packages/ui/src/tokens.css
+  - sparx/packages/ui/src/tokens.css
 ---
 
 Depth comes from **tonal layering + border**, not drop shadows. Shadow is reserved for *true* elevation — things that float above the page (dropdown, popover, modal, toast), matched to the z-scale.

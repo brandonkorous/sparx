@@ -1,269 +1,269 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "how-to-pick-a-bottle",
-        "status": "published",
-        "body": {
-            "title": "How to pick a bottle when you know nothing about wine",
-            "excerpt": "You do not need to learn a hundred grapes or a wine map. Three easy questions get you to a bottle you will love — here they are.",
-            "featuredImage": {
-                "$asset": "post-choose"
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-pick-a-bottle",
+    "status": "published",
+    "body": {
+      "title": "How to pick a bottle when you know nothing about wine",
+      "excerpt": "You do not need to learn a hundred grapes or a wine map. Three easy questions get you to a bottle you will love — here they are.",
+      "featuredImage": {
+        "$asset": "post-choose"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Standing in front of a wall of wine with no idea where to start is a universal feeling, and it is not your fault — most shops are set up to reward people who already know the answer. You do not need to. You need three quick questions, and you can answer all of them without a single wine word."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Standing in front of a wall of wine with no idea where to start is a universal feeling, and it is not your fault — most shops are set up to reward people who already know the answer. You do not need to. You need three quick questions, and you can answer all of them without a single wine word."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "What are you eating?"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The single most useful thing to know is what will be on the plate, because good pairing is mostly matching weight to weight. A light dish wants a light wine; a hearty one wants something with more to it. Pizza and a juicy red, salad and a crisp white, anything spicy and a touch of bubbles — you already have instincts here, so trust them, and ask us if you are stuck."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "What did you like last time?"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "You do not need to remember a producer or a region — just a vibe. \"Something light and fresh,\" \"a big cosy red,\" \"the fizzy one,\" \"not too sweet.\" That is genuinely enough for us to point you at three bottles you will get on with. Wine is a memory game more than a knowledge one, and every bottle you try makes the next choice easier."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "What do you want to spend?"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "There is a great bottle at every price, and spending more does not automatically mean better — it usually means rarer. Tell us the budget without a shred of embarrassment; our job is to find the best thing in it. Under twenty buys you plenty of joy, and knowing your number makes the whole thing faster and more fun."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "what-to-pour-at-a-dinner-party",
-        "status": "published",
-        "body": {
-            "title": "What to pour at a dinner party",
-            "excerpt": "Hosting and not sure what to open? A simple plan that covers any table, plus how much to actually buy so nobody runs dry.",
-            "featuredImage": {
-                "$asset": "post-pairings"
+            "content": [
+              {
+                "type": "text",
+                "text": "What are you eating?"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single most useful thing to know is what will be on the plate, because good pairing is mostly matching weight to weight. A light dish wants a light wine; a hearty one wants something with more to it. Pizza and a juicy red, salad and a crisp white, anything spicy and a touch of bubbles — you already have instincts here, so trust them, and ask us if you are stuck."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The good news about pouring wine for a group is that you do not have to get it perfect — you have to get it generous and easygoing. Here is the plan we give friends when they are hosting and slightly panicking about the wine."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Open with bubbles"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Nothing gets a room going like a pop and a pour. A bright sparkling or a fun pét-nat the moment people arrive does two jobs at once: it feels celebratory, and it buys you time in the kitchen. It also flatters almost any nibble on the table — salty, fried and fizzy is a combination that never lets you down."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "One white, one red, and let people choose"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "You do not need a different wine for every course. A crisp white and a crowd-pleasing red on the table covers nearly everyone, and letting guests pour their own keeps the whole thing relaxed. If you want a single trick to look like you planned it, match the fuller wine to the main event — a bold red with the roast, a lighter white with the starters."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "How much to buy"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The rule of thumb is roughly half a bottle per person, and a little more if it is a long, lingering night. A mixed six is usually the sweet spot for a dinner of four to six, with a bottle spare so nobody watches the last glass being poured. Buy the spare — leftover wine is not a problem, it is next Tuesday."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "natural-wine-explained",
-        "status": "published",
-        "body": {
-            "title": "Natural wine, explained without the eye-roll",
-            "excerpt": "Cloudy, funky, fashionable — and a bit mystifying. Here is what natural wine actually is, in plain words, and how to know if you will like it.",
-            "featuredImage": {
-                "$asset": "post-natural"
+            "content": [
+              {
+                "type": "text",
+                "text": "What did you like last time?"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You do not need to remember a producer or a region — just a vibe. \"Something light and fresh,\" \"a big cosy red,\" \"the fizzy one,\" \"not too sweet.\" That is genuinely enough for us to point you at three bottles you will get on with. Wine is a memory game more than a knowledge one, and every bottle you try makes the next choice easier."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "You have seen the cloudy bottles and the crown caps, and maybe heard someone get intense about it. Natural wine has picked up a reputation for being complicated and a little smug, which is a shame, because the idea behind it is genuinely simple and worth knowing."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "What it actually means"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "At its heart, natural wine is wine made with as little added to it as possible — grapes farmed organically, fermented with the wild yeast that arrives on their skins rather than a lab packet, and bottled with little or no added sulphur. No added color, no added acid, no filtering the life out of it. It is not a legal term, so it lives on a spectrum, but that is the direction of travel."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Why it tastes a bit different"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "All that restraint means the wine tastes more of the specific place and year it came from, and sometimes a little wilder than you are used to. A natural white might be cloudy; a natural red might have a savoury, tangy edge; a pét-nat might throw a bit of sediment. None of that is a fault — it is the wine being alive, and it is the whole appeal once it clicks."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "How to know if it is for you"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The only way to find out is to open one, ideally with a light chill and low expectations of ceremony. If you like fresh, zippy, slightly unusual drinks, you will probably love it; if you want something polished and predictable, we will happily point you elsewhere. There is no right answer here — just the bottle you enjoy, which is the only test that has ever mattered."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "What do you want to spend?"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a great bottle at every price, and spending more does not automatically mean better — it usually means rarer. Tell us the budget without a shred of embarrassment; our job is to find the best thing in it. Under twenty buys you plenty of joy, and knowing your number makes the whole thing faster and more fun."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-to-pour-at-a-dinner-party",
+    "status": "published",
+    "body": {
+      "title": "What to pour at a dinner party",
+      "excerpt": "Hosting and not sure what to open? A simple plan that covers any table, plus how much to actually buy so nobody runs dry.",
+      "featuredImage": {
+        "$asset": "post-pairings"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The good news about pouring wine for a group is that you do not have to get it perfect — you have to get it generous and easygoing. Here is the plan we give friends when they are hosting and slightly panicking about the wine."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Open with bubbles"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Nothing gets a room going like a pop and a pour. A bright sparkling or a fun pét-nat the moment people arrive does two jobs at once: it feels celebratory, and it buys you time in the kitchen. It also flatters almost any nibble on the table — salty, fried and fizzy is a combination that never lets you down."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "One white, one red, and let people choose"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You do not need a different wine for every course. A crisp white and a crowd-pleasing red on the table covers nearly everyone, and letting guests pour their own keeps the whole thing relaxed. If you want a single trick to look like you planned it, match the fuller wine to the main event — a bold red with the roast, a lighter white with the starters."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How much to buy"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The rule of thumb is roughly half a bottle per person, and a little more if it is a long, lingering night. A mixed six is usually the sweet spot for a dinner of four to six, with a bottle spare so nobody watches the last glass being poured. Buy the spare — leftover wine is not a problem, it is next Tuesday."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "natural-wine-explained",
+    "status": "published",
+    "body": {
+      "title": "Natural wine, explained without the eye-roll",
+      "excerpt": "Cloudy, funky, fashionable — and a bit mystifying. Here is what natural wine actually is, in plain words, and how to know if you will like it.",
+      "featuredImage": {
+        "$asset": "post-natural"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You have seen the cloudy bottles and the crown caps, and maybe heard someone get intense about it. Natural wine has picked up a reputation for being complicated and a little smug, which is a shame, because the idea behind it is genuinely simple and worth knowing."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it actually means"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "At its heart, natural wine is wine made with as little added to it as possible — grapes farmed organically, fermented with the wild yeast that arrives on their skins rather than a lab packet, and bottled with little or no added sulphur. No added color, no added acid, no filtering the life out of it. It is not a legal term, so it lives on a spectrum, but that is the direction of travel."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why it tastes a bit different"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "All that restraint means the wine tastes more of the specific place and year it came from, and sometimes a little wilder than you are used to. A natural white might be cloudy; a natural red might have a savoury, tangy edge; a pét-nat might throw a bit of sediment. None of that is a fault — it is the wine being alive, and it is the whole appeal once it clicks."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How to know if it is for you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The only way to find out is to open one, ideally with a light chill and low expectations of ceremony. If you like fresh, zippy, slightly unusual drinks, you will probably love it; if you want something polished and predictable, we will happily point you elsewhere. There is no right answer here — just the bottle you enjoy, which is the only test that has ever mattered."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

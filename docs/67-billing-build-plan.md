@@ -6,9 +6,9 @@
 
 ---
 
-> **Reconciled 2026-07-22 (docs-vs-built audit):** The **Phase 7 metered transaction fee** described throughout this plan was **removed** — there are no plan tiers, only modules, so the tiered 0.5%/0.3%/0% metered fee (`recordTransactionFee`, `meterOrderFee`, the `transaction_fee` meter/price) no longer exists in code. The **only** platform-collected payment fee is **sparx Pay's flat 0.5%**, taken at charge time via Stripe `application_fee_amount` and recorded on `payment_intents.platform_fee` (see [docs/94 §8](94-ADR-payment-gateway.md) and [docs/92 §2](92-billing-stripe-go-live.md)). The transaction-fee subsections below (Phase 1 "Transaction fee metering", Phase 7, and the fee rows in the Build Status) are **historical**. Separately, `apps/dashboard` was deleted and rebuilt as `apps/workbench`; the standalone `/settings/billing` page never shipped in workbench — only the billing **chrome banner + trial chip** (`apps/workbench/components/billing/*`) plus the **`finance.subscription`** surface exist. Plan/status derive from active module flags; the Stripe Customer Portal covers self-serve management.
+> **Reconciled 2026-07-22 (docs-vs-built audit):** The **Phase 7 metered transaction fee** described throughout this plan was **removed** — there are no plan tiers, only modules, so the tiered 0.5%/0.3%/0% metered fee (`recordTransactionFee`, `meterOrderFee`, the `transaction_fee` meter/price) no longer exists in code. The **only** platform-collected payment fee is **sparx Pay's flat 0.5%**, taken at charge time via Stripe `application_fee_amount` and recorded on `payment_intents.platform_fee` (see [docs/94 §8](94-ADR-payment-gateway.md) and [docs/92 §2](92-billing-stripe-go-live.md)). The transaction-fee subsections below (Phase 1 "Transaction fee metering", Phase 7, and the fee rows in the Build Status) are **historical**. Separately, `apps/dashboard` was deleted and rebuilt as `sparx/apps/workbench`; the standalone `/settings/billing` page never shipped in workbench — only the billing **chrome banner + trial chip** (`sparx/apps/workbench/components/billing/*`) plus the **`finance.subscription`** surface exist. Plan/status derive from active module flags; the Stripe Customer Portal covers self-serve management.
 
-> **Updated 2026-07-25 (subscription born-at-checkout + discount codes):** The subscription is **no longer created eagerly** when a module is toggled during the trial. Eager creation is incompatible with tenant-redeemable discount codes — Stripe only offers its promotion-code redemption box on a **Checkout Session that itself creates the subscription**, never on a card-less subscription or the Customer Portal. So: during the trial `syncModuleItems` ensures only the Stripe **customer** (gating is column-driven via `resolveBillingPhase`, which never needs a subscription); the subscription is **born at checkout** via `createCheckoutSession` (`mode: 'subscription'`, `allow_promotion_codes: true`, `trial_end` pinned to the signup clock) — the `finance.subscription` surface's "Set up billing" button, `POST /v1/billing/checkout`. The Customer **Portal** remains the MANAGE surface once a subscription exists. Discount codes are **promotion codes** (typeable strings on a coupon), created operator-side in `apps/admin/.../sparx/billing` — public or locked to one tenant — via `createPromotionCode` (`@sparx/billing` operator.ts). The `customer.subscription.created` webhook already reconciles the checkout-created subscription; no new webhook code.
+> **Updated 2026-07-25 (subscription born-at-checkout + discount codes):** The subscription is **no longer created eagerly** when a module is toggled during the trial. Eager creation is incompatible with tenant-redeemable discount codes — Stripe only offers its promotion-code redemption box on a **Checkout Session that itself creates the subscription**, never on a card-less subscription or the Customer Portal. So: during the trial `syncModuleItems` ensures only the Stripe **customer** (gating is column-driven via `resolveBillingPhase`, which never needs a subscription); the subscription is **born at checkout** via `createCheckoutSession` (`mode: 'subscription'`, `allow_promotion_codes: true`, `trial_end` pinned to the signup clock) — the `finance.subscription` surface's "Set up billing" button, `POST /v1/billing/checkout`. The Customer **Portal** remains the MANAGE surface once a subscription exists. Discount codes are **promotion codes** (typeable strings on a coupon), created operator-side in `wizeworks/apps/admin/.../sparx/billing` — public or locked to one tenant — via `createPromotionCode` (`@wizeworks/billing` operator.ts). The `customer.subscription.created` webhook already reconciles the checkout-created subscription; no new webhook code.
 
 ## Overview
 
@@ -32,7 +32,7 @@ the manual ops are done.
 
 ### ✅ Built (validated: typecheck + lint + 8 unit tests)
 
-- **`@sparx/billing` package** — `price-catalog.ts` (module list prices in
+- **`@wizeworks/billing` package** — `price-catalog.ts` (module list prices in
   `MODULE_MONTHLY_CENTS`), `client.ts`
   (`isBillingConfigured()` over the single platform Stripe account), `service.ts`
   (`syncModuleItems`, `createPortalSession`, `getBillingState`,
@@ -53,7 +53,7 @@ the manual ops are done.
 - **API + UI** — `GET /v1/billing`, `POST /v1/billing/portal`; `/settings/billing`
   dashboard page (plan derived from active modules + status + Stripe portal door);
   settings-nav `billing` entry flipped `ready: true`.
-- **Wiring** — api-rest Dockerfile COPY for `@sparx/billing`;
+- **Wiring** — api-rest Dockerfile COPY for `@wizeworks/billing`;
   `STRIPE_WEBHOOK_SECRET_BILLING` added to env.
 - ~~**Phase 7 — transaction-fee metering** (§7)~~ — **REMOVED (2026-07-22).** The
   tiered `recordTransactionFee()` / `meterOrderFee` / `transaction_fee` meter path
@@ -67,7 +67,7 @@ the manual ops are done.
 - [ ] **Secret Manager:** set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET_BILLING`,
       and `STRIPE_PRICE_<MODULE>_MONTHLY` / `_ANNUAL` for every billable module.
       Billable modules + monthly prices (source of truth:
-      `packages/billing/src/price-catalog.ts`): builder 10, commerce 49, cms 49,
+      `wizeworks/packages/billing/src/price-catalog.ts`): builder 10, commerce 49, cms 49,
       crm 49, email 29, b2b 99, ai 49, dropship 29, invoicing 19, chat 19.
 - [ ] **Register the billing webhook** endpoint in Stripe
       (`…/v1/public/webhooks/stripe/billing`) for: `customer.subscription.created`,
@@ -122,7 +122,7 @@ Store Stripe Price IDs in Secret Manager (not `.env` — these are prod-only val
 - `STRIPE_PRICE_{MODULE}_MONTHLY` / `STRIPE_PRICE_{MODULE}_ANNUAL` for each module
 - `STRIPE_PRICE_MANAGED_HOSTING_MONTHLY`
 
-New config file `packages/billing/src/price-catalog.ts`:
+New config file `wizeworks/packages/billing/src/price-catalog.ts`:
 
 ```typescript
 export const PRICE_CATALOG = {
@@ -315,7 +315,7 @@ Retry logic: Stripe retries failed payments 3 times over 7 days. After 7 days un
 
 Transaction fee calculation runs at order completion time (`POST /v1/checkout/sessions/:id/complete`):
 
-`getActiveModulesTotal(tenantId)` lives in `packages/billing/src/active-total.ts`. It queries `billing_subscription_items` for the tenant, maps each `module_key` to its monthly-equivalent price from `PRICE_CATALOG` (annual prices divided by 12, rounded up), and returns the sum in cents. It does not call Stripe — it reads our own DB rows, which are the source of truth for what modules are active and at what price.
+`getActiveModulesTotal(tenantId)` lives in `wizeworks/packages/billing/src/active-total.ts`. It queries `billing_subscription_items` for the tenant, maps each `module_key` to its monthly-equivalent price from `PRICE_CATALOG` (annual prices divided by 12, rounded up), and returns the sum in cents. It does not call Stripe — it reads our own DB rows, which are the source of truth for what modules are active and at what price.
 
 ```typescript
 const modules = tenant.settings.modules;

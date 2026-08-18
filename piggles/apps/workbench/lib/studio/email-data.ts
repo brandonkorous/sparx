@@ -10,7 +10,7 @@
 // business always has the provisioned defaults. An empty result means the module
 // is off, never "make your first one".
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import type { EmailColorDefaults, EmailDocument } from '@wizeworks/silicaui-builder/email';
 import { api } from '../api/client';
 

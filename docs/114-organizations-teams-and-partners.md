@@ -27,7 +27,7 @@ two external specs `sparx-partners-page-spec.md` and `sparx-bootcamp-page-spec.m
 (staff tier, deferred), [80-marketing-attribution-analytics.md](80-marketing-attribution-analytics.md)
 
 - [83-tenant-attribution-l-ten.md](83-tenant-attribution-l-ten.md) (attribution the `?ref=`
-  capture extends), [94-ADR-payment-gateway.md](94-ADR-payment-gateway.md) + `@sparx/payments`
+  capture extends), [94-ADR-payment-gateway.md](94-ADR-payment-gateway.md) + `@wizeworks/payments`
   (Stripe Connect Express, the payout rail precedent).
 
 ---
@@ -55,7 +55,7 @@ two external specs `sparx-partners-page-spec.md` and `sparx-bootcamp-page-spec.m
 (`owner|admin|editor|viewer|api`). The session JWT is `{ sub, tid, role, ev }`;
 api-rest sets `SET LOCAL app.tenant_id = tid` per request; `current_tenant_id()` is
 the RLS anchor. There is **no** membership table and **no** `organization()` plugin
-(only the MCP-OAuth plugin is wired in `packages/auth/src/server.ts`).
+(only the MCP-OAuth plugin is wired in `wizeworks/packages/auth/src/server.ts`).
 
 **Target:** Better Auth `organization` plugin, with the org model mapped onto `tenants`:
 
@@ -139,7 +139,7 @@ The RLS mechanism is unchanged; the **selection + authorization of the active or
 2. Backfill: one `members` row per existing user (`role` = `users.role`, `member_type` =
    `owner` if `role='owner'` else `staff`, `organization_id` = `users.tenant_id`).
    _(Non-FORCE tables → the FORCE-RLS backfill footgun does not apply.)_
-3. Wire `organization()` in `packages/auth/src/server.ts` alongside the MCP-OAuth plugin;
+3. Wire `organization()` in `wizeworks/packages/auth/src/server.ts` alongside the MCP-OAuth plugin;
    set `active_organization_id` on session create (default = the user's sole/owner membership).
 4. Resolve JWT `tid`/`role` from `active_organization_id` (fallback to `users.tenant_id`).
 5. Ship the tenant switcher + Team UI + invitations (below).
@@ -187,7 +187,7 @@ recruit + list partners and bootcamps; the portal is where a partner runs its pr
 ## B.1 Data model (Part B)
 
 New FORCE-RLS, `organization_id`-scoped tables unless noted. Enums are
-`varchar` + inline comment (house convention), validated in Zod (`@sparx/partner-schemas`).
+`varchar` + inline comment (house convention), validated in Zod (`@wizeworks/partner-schemas`).
 
 ```
 partners                         (tenant truth; visibility policy for the public directory)
@@ -259,7 +259,7 @@ partner_payout_runs              (organization_id = partner's org)
       creation runs only where Better Auth lives, so api-rest delegates to the dashboard's
       token-gated `POST /api/internal/partner-provision` (authenticated with the shared
       `SPARX_INTERNAL_JWT_SECRET`; api-rest reaches it at `SPARX_DASHBOARD_INTERNAL_URL`). That
-      route runs `@sparx/auth`'s `provisionInvitedOwner`, which mints the tenant + owner login
+      route runs `@wizeworks/auth`'s `provisionInvitedOwner`, which mints the tenant + owner login
       (module-less, so $0 under modules-not-plans), skips platform-legal acceptance (the
       invitee never clicked the checkbox — the dashboard's legal banner prompts them at first
       sign-in), and emails a **set-password invite** (Better Auth's reset flow; the
@@ -275,14 +275,14 @@ partner_payout_runs              (organization_id = partner's org)
       status to a pre-existing tenant — keeps partner payouts separate from any store billing
       and avoids a "which tenant?" picker. `EMAIL_TAKEN` is now reachable only on a
       concurrent-signup race → retry.)
-    - Both branches send a branded **`partner-welcome`** email (`@sparx/email`); new accounts
+    - Both branches send a branded **`partner-welcome`** email (`@wizeworks/email`); new accounts
       additionally get the set-password invite.
 - **Self-serve "Become a partner"** (D7) — the same provisioning, reachable one-click from
   signup/onboarding and from the dashboard for an existing org.
 
-## B.3 Referral attribution (extends `@sparx/attribution`)
+## B.3 Referral attribution (extends `@wizeworks/attribution`)
 
-1. `?ref=CODE` on any `sparx.works` / `app.sparx.works` link → `@sparx/attribution`
+1. `?ref=CODE` on any `sparx.works` / `app.sparx.works` link → `@wizeworks/attribution`
    `capture.ts` writes a `sparx_ref` first-party cookie (30-day, set-once), mirroring the
    UTM capture it already does. localStorage mirror per the spec.
 2. At **signup** (`apps/dashboard/app/(auth)/actions.ts`), read `sparx_ref` and call the
@@ -302,7 +302,7 @@ partner_payout_runs              (organization_id = partner's org)
 - Rates by tier: **Informal 20%** first-payment · **Registered 30%** first-payment ·
   **Certified 30%** first-payment **+ 5% ongoing** on managed accounts. Snapshotted onto
   the referral at credit time (rate changes never rewrite history).
-- **Payout rail = Stripe Connect Express**, reusing the `@sparx/payments` /
+- **Payout rail = Stripe Connect Express**, reusing the `@wizeworks/payments` /
   `stripe-connect` onboarding precedent (the tenant already onboards a Connect account for
   Sparx Pay; partners onboard a _payout_ Express account → `partners.stripe_payout_account_id`).
 - **Monthly payout run** (cron worker): groups `approved` commissions per partner ≥
@@ -344,7 +344,7 @@ bootcamp_registrations           (organization_id = host partner's org)
 - **External mode**: `registration_url` → Eventbrite/Luma/Forms; Sparx lists + drives clicks.
 - Status changes publish `bootcamp.published` / `bootcamp.cancelled` (Bus A, provisioned in TF).
 
-## B.6 Public marketing pages (`apps/web`, `mkt-*` + bespoke component pattern)
+## B.6 Public marketing pages (`sparx/apps/web`, `mkt-*` + bespoke component pattern)
 
 | Route                 | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -354,7 +354,7 @@ bootcamp_registrations           (organization_id = host partner's org)
 | `/bootcamp`           | Hero ("Build your business. Launch on Sparx.") · What You'll Build · Who It's For · Format labels · **filterable directory** (format/location/date) · Partner CTA.                                                                                                                                                                                                                                                                                                                                                  |
 | `/bootcamp/:slug`     | Server-rendered detail · **auto OG image** · **schema.org `Event`** JSON-LD · internal RSVP form or external CTA · host partner + tier badge.                                                                                                                                                                                                                                                                                                                                                                       |
 
-- Data via a new `apps/web/lib/partners.ts` + `lib/bootcamp.ts` (the `lib/marketplace.ts`
+- Data via a new `sparx/apps/web/lib/partners.ts` + `lib/bootcamp.ts` (the `lib/marketplace.ts`
   `getPublic` + ISR `revalidate` scaffold).
 - **SEO (D7):** per-bootcamp `opengraph-image.tsx` + `Event` JSON-LD; async `sitemap.ts`
   awaits published bootcamps; header/footer nav gets `/partners` + `/bootcamp`.
@@ -404,7 +404,7 @@ POST  /internal/partners/referrals             signup hook
 GET   /internal/partners  · PATCH /:id/approve · PATCH /:id/tier · PATCH /:id/suspend
 ```
 
-## B.9 Events (Bus A — `@sparx/events`; provision topics in `terraform/envs/prod/main.tf`)
+## B.9 Events (Bus A — `@wizeworks/events`; provision topics in `terraform/envs/prod/main.tf`)
 
 `partner.application.submitted`, `partner.activated`, `partner.referral.created`,
 `partner.commission.accrued`, `partner.payout.paid`, `bootcamp.published`,
@@ -418,7 +418,7 @@ GET   /internal/partners  · PATCH /:id/approve · PATCH /:id/tier · PATCH /:id
    `organization()` plugin, JWT `tid`/`role` from active org, tenant switcher + Team UI + invites.
 1. **Partner data model** — `83-partners.prisma` + `84-bootcamps.prisma` (partners,
    applications, referrals, commissions, payout_runs, bootcamps, registrations) + migration +
-   RLS + `@sparx/partner-schemas`.
+   RLS + `@wizeworks/partner-schemas`.
 2. **Partner API + events** — public/partner/internal routes, services, TF topics.
 3. **Attribution + Stripe Connect payouts** — `?ref` capture, signup hook, commission
    accrual, monthly payout worker.

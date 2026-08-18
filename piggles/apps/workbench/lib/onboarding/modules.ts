@@ -228,7 +228,7 @@ export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntri
   SWITCHBOARD_MODULES.map((m) => [m.key, m])
 );
 
-// ── Module dependency rules (mirror the server @sparx/modules graph) ──────────
+// ── Module dependency rules (mirror the server @wizeworks/modules graph) ──────────
 //   REQUIRES — a key needs these providers; each is SEPARATELY BILLED and locks
 //     ON while the key is on. Only B2B requires Commerce.
 //   BUNDLED_FREE — a key is on free ($0, "Included") whenever a provider is on;

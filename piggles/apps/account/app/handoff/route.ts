@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getSession } from '@sparx/auth';
+import { auth, getSession } from '@wizeworks/auth';
+import { getCookies } from 'better-auth/cookies';
 import { mintHandoffUrl } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
 import { readConsent } from '@/lib/consent';
@@ -20,10 +21,16 @@ import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 // is the thing the console's cookie has to hold if both are to address ONE
 // session row. So we verify with `getSession()` and carry the raw cookie value.
 //
-// Better Auth's cookie is `better-auth.session_token`, prefixed `__Secure-` when
-// it is issued over HTTPS. Both names are checked because dev is plain HTTP and
-// production is not, and hardcoding either one breaks the other environment in a
-// way that only shows up after deploy.
+// The cookie's NAME is asked for rather than written down. It is
+// `<prefix>.session_token`, prefixed `__Secure-` over HTTPS — and the prefix is
+// a deployment parameter now (Piggles ships `piggles-account`, so a customer
+// never sees a library's name in their own browser). Both the plain and
+// `__Secure-` forms are checked because dev is HTTP and production is not.
+//
+// `getCookies(auth.options)` is the library's own answer read from the library's
+// own config, so a change to the prefix arrives here for free. The list used to
+// be two hardcoded strings, which would have kept looking correct and silently
+// stopped finding the session the moment the prefix moved.
 //
 // ── WHY THE CONSENT GATE IS HERE AND NOT IN THE CONSOLE ─────────────────────
 //
@@ -42,11 +49,50 @@ import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 // A missing answer is not a failure and is not treated as one: it is a question
 // nobody has put yet, so the door sends them to put it, carrying where they were
 // headed so the trip costs them nothing but the answer.
-const COOKIE_NAMES = ['__Secure-better-auth.session_token', 'better-auth.session_token'];
+const SESSION_COOKIE = getCookies(auth.options).sessionToken.name;
+const COOKIE_NAMES = [`__Secure-${SESSION_COOKIE}`, SESSION_COOKIE];
 
 export const dynamic = 'force-dynamic';
 
+// ── THE DOOR REFUSES TO OPEN FOR A PREFETCH ─────────────────────────────────
+//
+// Next's client router does not navigate to a URL — it fetches the RSC payload
+// for it first, and only then moves the browser. For an ordinary page that is
+// the whole point. For THIS route it is a bug with teeth, because a request here
+// MINTS A SINGLE-USE TOKEN: the fetch spends one, dies following the 303 to
+// another origin (CORS), and the router then does the real navigation, which
+// spends a second. The server log reads
+//
+//     GET /handoff?next=%2F 303      ← the prefetch, token minted and lost
+//     GET /handoff?next=%2F 307      ← the real one, arriving at a spent door
+//
+// and the customer lands back on the sign-in page they just used.
+//
+// Every call site is now a plain document navigation, which is the actual fix.
+// This is the guard that makes it STAY fixed: one `<Link href="/handoff">` added
+// in a year's time reintroduces the whole thing, and nothing about it looks
+// wrong in review. A single-use endpoint should not depend on every caller
+// remembering that it is one.
+//
+// 204 with no body is what makes the router give up and navigate for real — it
+// is a valid response that is not an RSC payload, so there is nothing to soft-
+// navigate INTO. Critically, nothing above it has run: no session read, no
+// consent read, and above all no mint.
+function isRouterPrefetch(request: NextRequest): boolean {
+  // `RSC` is set on every payload fetch the router makes; `Next-Router-Prefetch`
+  // only on speculative ones. Both are refused — a payload fetch of this route is
+  // never legitimate, prefetch or not.
+  return request.headers.has('RSC') || request.headers.has('Next-Router-Prefetch');
+}
+
 export async function GET(request: NextRequest) {
+  if (isRouterPrefetch(request)) {
+    return new NextResponse(null, {
+      status: 204,
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+    });
+  }
+
   const session = await getSession();
 
   // Not signed in: send them to sign in, and remember that they were trying to

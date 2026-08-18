@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-landscaping-lawncare',
-    version: '1.3.0',
-    name: 'sparx — Landscaping (Lawn Care)',
-    summary:
-        'A bright, friendly lawn-care & maintenance site — a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as "GreenBlade Lawn Care" — a lawn you’re proud of, handled.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-landscaping-lawncare',
+  version: '1.3.0',
+  name: 'sparx — Landscaping (Lawn Care)',
+  summary:
+    'A bright, friendly lawn-care & maintenance site — a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as "GreenBlade Lawn Care" — a lawn you’re proud of, handled.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'GreenBlade Lawn Care',
+    tagline: 'A lawn you’re proud of, handled.',
+    colors: {
+      primary: '#40bb53',
+      primaryForeground: '#060d06',
+      accent: '#edc32b',
+      secondary: '#2a3d2f',
+    },
+    fonts: {
+      heading: 'Outfit',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'greenblade',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'GreenBlade Lawn Care',
-        tagline: 'A lawn you’re proud of, handled.',
-        colors: {
-            primary: '#40bb53',
-            primaryForeground: '#060d06',
-            accent: '#edc32b',
-            secondary: '#2a3d2f',
-        },
-        fonts: {
-            heading: 'Outfit',
-            body: 'Inter',
-        },
+      colorPrimary: '#40bb53',
+      colorAccent: '#edc32b',
+      colorSecondary: '#2a3d2f',
+      fontHeading: 'Outfit',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'greenblade',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#40bb53',
-            colorAccent: '#edc32b',
-            colorSecondary: '#2a3d2f',
-            fontHeading: 'Outfit',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

@@ -18,19 +18,17 @@
 import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
   Card,
-  EmptyState,
-  Filter,
-  FilterItem,
   Heading,
   SearchInput,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faClock,
   faExclamationTriangle,
@@ -52,6 +50,10 @@ import {
 } from './data';
 import { employmentLabel, formatMinutes, formatTime, staffState } from './format';
 import { productCopy } from '../../lib/product';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'staff';
 
 const STATUS_FILTERS = [
   { value: 'active', label: 'Working' },
@@ -214,78 +216,68 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Roster controls" wrap>
-        <Filter
-          color="module"
-          value={status}
-          onValueChange={(next) => {
-            setStatus(typeof next === 'string' ? next : 'active');
-          }}
-          showReset={false}
-          aria-label="Filter by who is here"
-        >
-          {STATUS_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search the roster"
-            placeholder="Find someone…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto"
-          onClick={() => {
+      <PaneToolbar
+        label="Roster controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search the roster"
+              placeholder="Find someone…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Add someone',
+          icon: faPlus,
+          onClick: () => {
             ctx.open('staff.person', { id: 'new' });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add someone</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-            void open.refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        filters={[
+          {
+            label: 'Who is here',
+            value: status,
+            onValueChange: (next) => {
+              setStatus(typeof next === 'string' ? next : 'active');
+            },
+            options: STATUS_FILTERS,
+          },
+        ]}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+              void open.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
-            title="Could not load your team"
-            description="The server could not be reached. Nobody's record is affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
+              title="Could not load your team"
+              description="The server could not be reached. Nobody's record is affected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : people.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faUserPlus} className="size-6" aria-hidden />}
               title={search.trim() ? 'Nobody matches that' : 'No one on the roster yet'}
               description={

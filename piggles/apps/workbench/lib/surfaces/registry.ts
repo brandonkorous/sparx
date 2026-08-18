@@ -14,19 +14,19 @@ import { productSurfaceTitle } from '../product';
 
 /** Where a newly-opened pane should land. */
 export type OpenTarget =
-    /** New tab in the group that asked. The default — least disruptive. */
-    | 'tab'
-    /** Split the asking group and sit alongside it. What "open preview" wants. */
-    | 'beside'
-    /** Replace the asking pane's content, like following a link. */
-    | 'replace'
-    /** Straight into its own detached window. */
-    | 'window';
+  /** New tab in the group that asked. The default — least disruptive. */
+  | 'tab'
+  /** Split the asking group and sit alongside it. What "open preview" wants. */
+  | 'beside'
+  /** Replace the asking pane's content, like following a link. */
+  | 'replace'
+  /** Straight into its own detached window. */
+  | 'window';
 
 export interface OpenOptions {
-    target?: OpenTarget;
-    /** Focus the new pane. Default true; pass false for background loads. */
-    focus?: boolean;
+  target?: OpenTarget;
+  /** Focus the new pane. Default true; pass false for background loads. */
+  focus?: boolean;
 }
 
 /**
@@ -35,158 +35,158 @@ export interface OpenOptions {
  * pane directly, which is what stops surfaces from growing layout opinions.
  */
 export interface SurfaceContext {
-    readonly descriptor: PaneDescriptor;
-    readonly params: SurfaceParams;
-    /** Open another surface. Use `target: 'beside'` for the preview/companion pattern. */
-    open: (surface: string, params?: SurfaceParams, options?: OpenOptions) => void;
-    /** Retitle this pane's tab — e.g. once the entity's real name loads. */
-    setTitle: (title: string) => void;
-    /** Close this pane. Runs the dirty-guard first. */
-    close: () => void;
-    /**
-     * Register a guard so closing, replacing, or tearing off this pane confirms
-     * first. Returns a disposer. A detached window also wires this to
-     * `beforeunload`, which is the one leave path the dashboard never covered.
-     *
-     * PREFER `useDirtySource(dirty, message)` from lib/workbench/dirty.tsx inside
-     * a component: it needs no ctx, so a nested editor can protect its own
-     * uncommitted state, and it withdraws on unmount rather than relying on the
-     * caller to clear a flag. This imperative form registers under the single
-     * `surface` source id and exists for registration outside React's render
-     * cycle. Both feed the same per-pane set — a pane is dirty if ANY source is.
-     */
-    guard: (isDirty: () => boolean, message?: string) => () => void;
+  readonly descriptor: PaneDescriptor;
+  readonly params: SurfaceParams;
+  /** Open another surface. Use `target: 'beside'` for the preview/companion pattern. */
+  open: (surface: string, params?: SurfaceParams, options?: OpenOptions) => void;
+  /** Retitle this pane's tab — e.g. once the entity's real name loads. */
+  setTitle: (title: string) => void;
+  /** Close this pane. Runs the dirty-guard first. */
+  close: () => void;
+  /**
+   * Register a guard so closing, replacing, or tearing off this pane confirms
+   * first. Returns a disposer. A detached window also wires this to
+   * `beforeunload`, which is the one leave path the dashboard never covered.
+   *
+   * PREFER `useDirtySource(dirty, message)` from lib/workbench/dirty.tsx inside
+   * a component: it needs no ctx, so a nested editor can protect its own
+   * uncommitted state, and it withdraws on unmount rather than relying on the
+   * caller to clear a flag. This imperative form registers under the single
+   * `surface` source id and exists for registration outside React's render
+   * cycle. Both feed the same per-pane set — a pane is dirty if ANY source is.
+   */
+  guard: (isDirty: () => boolean, message?: string) => () => void;
 }
 
 export interface SurfaceDefinition {
-    /** Stable, namespaced, and PERSISTED in saved layouts — renaming one orphans panes. */
-    readonly key: string;
-    /** Tab label. A function so it can read params; the async real name arrives via setTitle. */
-    readonly title: string | ((params: SurfaceParams) => string);
-    /** Drives the pane's accent hue. A pane showing another module's data wears that module's color. */
-    readonly module: WorkbenchModule;
-    /**
-     * Which activated modules make this surface worth OFFERING — any one of them
-     * is enough. Absent means "gate on `module`", which is what almost every
-     * surface wants and is the behaviour that existed before this field.
-     *
-     * It exists because hue and entitlement are not always the same question.
-     * Finance is the case that forced it: the module group is one color and one
-     * place in the rail, but half of it (Payments, Payouts, Owed to you) is a free
-     * view of data the tenant already bought with commerce/invoicing/b2b, while
-     * the spend + profitability half is the billable `finance` module. Gating the
-     * whole group on one flag would either give the paid half away or take the
-     * free half hostage.
-     *
-     * An EMPTY array means never gated — for a surface that must stay reachable
-     * however the account is configured (Your sparx bill is where someone goes to
-     * BUY a module; hiding it behind one is a locked door with the key inside).
-     *
-     * This is about what is worth showing, never about enforcement: api-rest gates
-     * every module route independently.
-     */
-    readonly requiresModules?: readonly string[];
-    readonly icon: PigglesIcon;
-    readonly component: ComponentType<{ ctx: SurfaceContext }>;
-    /**
-     * At most one instance may be open across ALL windows. For surfaces where a
-     * second copy is meaningless rather than useful (settings, the activity feed).
-     * Entity surfaces are never singletons — comparing two orders side by side is
-     * a feature, not a mistake.
-     */
-    readonly singleton?: boolean;
-    /** Shown in the launcher AND the navigation panel. Off for surfaces only reachable from a parent. */
-    readonly listed?: boolean;
-    /**
-     * Group heading within the module's nav panel, e.g. 'Catalog', 'Orders'.
-     * Surfaces with no section sit at the top of the panel, above every group —
-     * that's the right place for a module's "everything" landing surface.
-     *
-     * Navigation is DERIVED from these, never hand-maintained. A surface cannot
-     * exist-but-be-unreachable, which is the exact bug class the dashboard's
-     * hand-synced registries produce.
-     */
-    readonly section?: string;
-    /**
-     * Sort order within the MODULE — not within the section. Lower sorts first;
-     * ties fall back to title.
-     *
-     * Section order is then the order each section first appears in that sorted
-     * list, so `order` controls BOTH item order and section order together.
-     * Number across the whole module with gaps (Catalog 10/11/12, Pricing 20/21,
-     * After the sale 30) rather than restarting per section — restarting makes
-     * two sections tie on 1, and the winner is then decided alphabetically by
-     * title, which is how "Pricing" ended up above "Catalog".
-     */
-    readonly order?: number;
-    /**
-     * Surface that CREATES one of these, e.g. `invoicing.invoice.edit`. When set,
-     * the nav panel renders a `+` beside this row so "make a new one" skips the
-     * trip through the list. Declared here rather than in the nav so the affordance
-     * can only appear where creating is genuinely possible — a `+` that opens
-     * nothing is worse than no `+`.
-     */
-    readonly createSurface?: string;
-    /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
-    readonly createLabel?: string;
-    // There is deliberately NO `useBadgeCount` here any more.
-    //
-    // It let a surface badge its own nav row from its own hook, which worked and
-    // stopped there: a per-row React hook cannot be summed by the rail above it,
-    // so Social's Inbox showed four waiting in the panel while Get Found and its
-    // group showed nothing — one question, two answers, on one screen.
-    //
-    // A waiting count is now declared ONCE in lib/console/home-data.ts, against
-    // the screen it describes, and every level derives from that. Adding a new one
-    // is a SOURCES entry plus a COUNT_SURFACE line. Reintroducing a per-surface
-    // hook reintroduces the split.
+  /** Stable, namespaced, and PERSISTED in saved layouts — renaming one orphans panes. */
+  readonly key: string;
+  /** Tab label. A function so it can read params; the async real name arrives via setTitle. */
+  readonly title: string | ((params: SurfaceParams) => string);
+  /** Drives the pane's accent hue. A pane showing another module's data wears that module's color. */
+  readonly module: WorkbenchModule;
+  /**
+   * Which activated modules make this surface worth OFFERING — any one of them
+   * is enough. Absent means "gate on `module`", which is what almost every
+   * surface wants and is the behaviour that existed before this field.
+   *
+   * It exists because hue and entitlement are not always the same question.
+   * Finance is the case that forced it: the module group is one color and one
+   * place in the rail, but half of it (Payments, Payouts, Owed to you) is a free
+   * view of data the tenant already bought with commerce/invoicing/b2b, while
+   * the spend + profitability half is the billable `finance` module. Gating the
+   * whole group on one flag would either give the paid half away or take the
+   * free half hostage.
+   *
+   * An EMPTY array means never gated — for a surface that must stay reachable
+   * however the account is configured (Your sparx bill is where someone goes to
+   * BUY a module; hiding it behind one is a locked door with the key inside).
+   *
+   * This is about what is worth showing, never about enforcement: api-rest gates
+   * every module route independently.
+   */
+  readonly requiresModules?: readonly string[];
+  readonly icon: PigglesIcon;
+  readonly component: ComponentType<{ ctx: SurfaceContext }>;
+  /**
+   * At most one instance may be open across ALL windows. For surfaces where a
+   * second copy is meaningless rather than useful (settings, the activity feed).
+   * Entity surfaces are never singletons — comparing two orders side by side is
+   * a feature, not a mistake.
+   */
+  readonly singleton?: boolean;
+  /** Shown in the launcher AND the navigation panel. Off for surfaces only reachable from a parent. */
+  readonly listed?: boolean;
+  /**
+   * Group heading within the module's nav panel, e.g. 'Catalog', 'Orders'.
+   * Surfaces with no section sit at the top of the panel, above every group —
+   * that's the right place for a module's "everything" landing surface.
+   *
+   * Navigation is DERIVED from these, never hand-maintained. A surface cannot
+   * exist-but-be-unreachable, which is the exact bug class the dashboard's
+   * hand-synced registries produce.
+   */
+  readonly section?: string;
+  /**
+   * Sort order within the MODULE — not within the section. Lower sorts first;
+   * ties fall back to title.
+   *
+   * Section order is then the order each section first appears in that sorted
+   * list, so `order` controls BOTH item order and section order together.
+   * Number across the whole module with gaps (Catalog 10/11/12, Pricing 20/21,
+   * After the sale 30) rather than restarting per section — restarting makes
+   * two sections tie on 1, and the winner is then decided alphabetically by
+   * title, which is how "Pricing" ended up above "Catalog".
+   */
+  readonly order?: number;
+  /**
+   * Surface that CREATES one of these, e.g. `invoicing.invoice.edit`. When set,
+   * the nav panel renders a `+` beside this row so "make a new one" skips the
+   * trip through the list. Declared here rather than in the nav so the affordance
+   * can only appear where creating is genuinely possible — a `+` that opens
+   * nothing is worse than no `+`.
+   */
+  readonly createSurface?: string;
+  /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
+  readonly createLabel?: string;
+  // There is deliberately NO `useBadgeCount` here any more.
+  //
+  // It let a surface badge its own nav row from its own hook, which worked and
+  // stopped there: a per-row React hook cannot be summed by the rail above it,
+  // so Social's Inbox showed four waiting in the panel while Get Found and its
+  // group showed nothing — one question, two answers, on one screen.
+  //
+  // A waiting count is now declared ONCE in lib/console/home-data.ts, against
+  // the screen it describes, and every level derives from that. Adding a new one
+  // is a SOURCES entry plus a COUNT_SURFACE line. Reintroducing a per-surface
+  // hook reintroduces the split.
 
-    /**
-     * Params to open this row with, when the row is not simply "the surface".
-     *
-     * ONE surface, MANY nav rows. A tenant that invents Projects, Venues and
-     * Contracts gets three rows in Customers, and all three are the same generic
-     * records surface told which record type it is looking at — the alternative
-     * is registering a surface per record type at runtime, and surface keys are
-     * persisted in saved layouts, so minting them from tenant data would put a
-     * tenant's vocabulary inside everyone's stored layout forever.
-     *
-     * Static surfaces leave this unset and open with no params, exactly as before.
-     */
-    readonly defaultParams?: SurfaceParams;
+  /**
+   * Params to open this row with, when the row is not simply "the surface".
+   *
+   * ONE surface, MANY nav rows. A tenant that invents Projects, Venues and
+   * Contracts gets three rows in Customers, and all three are the same generic
+   * records surface told which record type it is looking at — the alternative
+   * is registering a surface per record type at runtime, and surface keys are
+   * persisted in saved layouts, so minting them from tenant data would put a
+   * tenant's vocabulary inside everyone's stored layout forever.
+   *
+   * Static surfaces leave this unset and open with no params, exactly as before.
+   */
+  readonly defaultParams?: SurfaceParams;
 
-    /** Extra command-palette search terms beyond the title. */
-    readonly keywords?: readonly string[];
-    /** Preferred initial width as a fraction of the window, when opened `beside`. */
-    readonly besideWidth?: number;
+  /** Extra command-palette search terms beyond the title. */
+  readonly keywords?: readonly string[];
+  /** Preferred initial width as a fraction of the window, when opened `beside`. */
+  readonly besideWidth?: number;
 }
 
 const registry = new Map<string, SurfaceDefinition>();
 
 export function registerSurface(definition: SurfaceDefinition): void {
-    if (registry.has(definition.key)) {
-        throw new Error(
-            `Surface "${definition.key}" is already registered. Surface keys are persisted in saved layouts, so they must be unique and stable.`
-        );
-    }
-    registry.set(definition.key, definition);
+  if (registry.has(definition.key)) {
+    throw new Error(
+      `Surface "${definition.key}" is already registered. Surface keys are persisted in saved layouts, so they must be unique and stable.`
+    );
+  }
+  registry.set(definition.key, definition);
 }
 
 export function registerSurfaces(definitions: readonly SurfaceDefinition[]): void {
-    for (const definition of definitions) registerSurface(definition);
+  for (const definition of definitions) registerSurface(definition);
 }
 
 export function getSurface(key: string): SurfaceDefinition | undefined {
-    return registry.get(key);
+  return registry.get(key);
 }
 
 export function listSurfaces(): SurfaceDefinition[] {
-    return [...registry.values()];
+  return [...registry.values()];
 }
 
 /** Surfaces the launcher and command palette offer, grouped-friendly (module order preserved). */
 export function listedSurfaces(): SurfaceDefinition[] {
-    return listSurfaces().filter((surface) => surface.listed !== false);
+  return listSurfaces().filter((surface) => surface.listed !== false);
 }
 
 /**
@@ -203,14 +203,14 @@ export function listedSurfaces(): SurfaceDefinition[] {
  * the platform's vocabulary, and nothing a brand should be able to rewrite.
  */
 export function resolveTitle(definition: SurfaceDefinition, params: SurfaceParams): string {
-    if (typeof definition.title === 'function') return definition.title(params);
-    return productSurfaceTitle(definition.key) ?? definition.title;
+  if (typeof definition.title === 'function') return definition.title(params);
+  return productSurfaceTitle(definition.key) ?? definition.title;
 }
 
 /** Tab label for a descriptor, preferring an operator-set title. */
 export function titleFor(descriptor: PaneDescriptor): string {
-    if (descriptor.title) return descriptor.title;
-    const definition = registry.get(descriptor.surface);
-    if (!definition) return 'Unknown';
-    return resolveTitle(definition, descriptor.params ?? {});
+  if (descriptor.title) return descriptor.title;
+  const definition = registry.get(descriptor.surface);
+  if (!definition) return 'Unknown';
+  return resolveTitle(definition, descriptor.params ?? {});
 }

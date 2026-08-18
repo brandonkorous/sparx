@@ -14,8 +14,8 @@
 // on-screen range label and the figures agree.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useQuery } from '@sparx/query';
-import { ApiError } from '@sparx/api-client';
+import { useQuery } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes (mirror reporting-service.ts) ───────────────────────────────── */

@@ -30,7 +30,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Switch,
@@ -50,6 +49,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { providerKindIcon } from './kind-icon';
@@ -220,7 +220,14 @@ function ConnectIntegration({
   presetKind?: ProviderKind;
 }) {
   const toast = useToast();
-  const { data: metadata, isPending, isError, refetch } = useProviderMetadata(slug);
+  const {
+    data: metadata,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useProviderMetadata(slug);
   const install = useInstallProvider();
 
   const fields = useMemo(() => (metadata ? parseConfigFields(metadata) : []), [metadata]);
@@ -303,19 +310,34 @@ function ConnectIntegration({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Connect a service actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={install.isPending}
-          disabled={!canSubmit}
-          onClick={submit}
-        >
-          <Icon glyph={faLink} className="size-4" aria-hidden />
-          Connect
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Connect a service actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={install.isPending}
+            disabled={!canSubmit}
+            onClick={submit}
+          >
+            <Icon glyph={faLink} className="size-4" aria-hidden />
+            Connect
+          </Button>
+        }
+        // Not a bare create form: the fields on this screen ARE server data —
+        // whatever the provider says it needs — so there is something real to
+        // re-read when that changes underneath.
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={metadata ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -324,9 +346,6 @@ function ConnectIntegration({
               <Icon glyph={KindIcon} className="size-6" aria-hidden />
             </span>
             <div className="flex min-w-0 flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Connect {metadata.displayName}
-              </Heading>
               <Text>{metadata.description}</Text>
               <Text className="text-sm">
                 {kindLabel(kind)} · by {metadata.vendor}
@@ -403,7 +422,14 @@ function ManageIntegration({
 }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data: installation, isPending, isError, refetch } = useInstallation(id);
+  const {
+    data: installation,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useInstallation(id);
   const { data: metadata } = useProviderMetadata(slug ?? installation?.providerSlug);
 
   const test = useTestIntegration(id);
@@ -545,44 +571,60 @@ function ManageIntegration({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Connection actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        {!isLive ? (
-          <Badge color="warning" variant="soft" size="sm">
-            Test mode
-          </Badge>
-        ) : null}
-        <div className="flex-1" />
-        {canEdit ? (
+      <PaneToolbar
+        label="Connection actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={installation ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+        status={
           <>
-            <Button size="sm" color="module" loading={test.isPending} onClick={onTest}>
-              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-              Test connection
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              loading={setEnabled.isPending}
-              onClick={onToggleEnabled}
-            >
-              {installation.enabled ? (
-                <>
-                  <Icon glyph={faPause} className="size-4" aria-hidden />
-                  Pause
-                </>
-              ) : (
-                <>
-                  <Icon glyph={faPlay} className="size-4" aria-hidden />
-                  Switch on
-                </>
-              )}
-            </Button>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            {!isLive ? (
+              <Badge color="warning" variant="soft" size="sm">
+                Test mode
+              </Badge>
+            ) : null}
+            <div className="flex-1" />
           </>
-        ) : null}
-      </PaneToolbar>
+        }
+        controls={
+          canEdit ? (
+            <>
+              <Button size="sm" color="module" loading={test.isPending} onClick={onTest}>
+                <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+                Test connection
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                loading={setEnabled.isPending}
+                onClick={onToggleEnabled}
+              >
+                {installation.enabled ? (
+                  <>
+                    <Icon glyph={faPause} className="size-4" aria-hidden />
+                    Pause
+                  </>
+                ) : (
+                  <>
+                    <Icon glyph={faPlay} className="size-4" aria-hidden />
+                    Switch on
+                  </>
+                )}
+              </Button>
+            </>
+          ) : null
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -591,9 +633,6 @@ function ManageIntegration({
               <Icon glyph={KindIcon} className="size-6" aria-hidden />
             </span>
             <div className="flex min-w-0 flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {name}
-              </Heading>
               <Text className="text-sm">
                 {kindLabel(installation.kind)}
                 {metadata?.vendor ? ` · by ${metadata.vendor}` : ''} · Connected{' '}

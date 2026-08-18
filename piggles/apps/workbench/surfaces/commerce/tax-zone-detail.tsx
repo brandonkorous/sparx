@@ -28,7 +28,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Switch,
@@ -39,6 +38,7 @@ import { useConfirm } from '../../lib/confirm';
 import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -103,7 +103,7 @@ export function TaxZoneDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: zone, isPending, isError, refetch } = useTaxZone(id);
+  const { data: zone, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTaxZone(id);
 
   if (isError) {
     return (
@@ -125,10 +125,35 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <ZoneEditor ctx={ctx} id={id} zone={zone} />;
+  return (
+    <ZoneEditor
+      ctx={ctx}
+      id={id}
+      zone={zone}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
-function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?: TaxZone }) {
+function ZoneEditor({
+  ctx,
+  id,
+  zone,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  id: string;
+  zone?: TaxZone;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
+}) {
   const isNew = id === 'new';
   const toast = useToast();
   const confirm = useConfirm();
@@ -238,47 +263,51 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Tax place actions">
-        {!isNew && zone ? (
-          <Badge color={zone.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
-            {zone.isActive ? 'Collecting' : 'Off'}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={!isNew && !dirty}
-          onClick={submit}
-        >
-          {isNew ? 'Add this place' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Tax place actions"
+        status={
+          !isNew && zone ? (
+            <Badge color={zone.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
+              {zone.isActive ? 'Collecting' : 'Off'}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={!isNew && !dirty}
+            onClick={submit}
+          >
+            {isNew ? 'Add this place' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={zone ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a tax place
-              </Heading>
-              <Text>
-                Set up somewhere you have to collect tax. Choose the country (and a state or
-                province if the tax is set there), then add the rate. Nothing is charged until you
-                switch the place on.
-              </Text>
-            </div>
+            <Text>
+              Set up somewhere you have to collect tax. Choose the country (and a state or province
+              if the tax is set there), then add the rate. Nothing is charged until you switch the
+              place on.
+            </Text>
           ) : (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {placeTitle}
-              </Heading>
-              <Text className="text-sm">
-                {draft.region ? `${countryName(draft.country)} · ` : ''}
-                {nexusLabel(draft.nexusType)}
-              </Text>
-            </div>
+            <Text className="text-sm">
+              {draft.region ? `${countryName(draft.country)} · ` : ''}
+              {nexusLabel(draft.nexusType)}
+            </Text>
           )}
 
           {failure ? (

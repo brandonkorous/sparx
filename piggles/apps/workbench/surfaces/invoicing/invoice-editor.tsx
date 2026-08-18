@@ -16,7 +16,7 @@
 // reasons live in ./save.ts.
 
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
   Alert,
   Button,
@@ -31,6 +31,7 @@ import { faEye, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { EditorLayout } from '../../components/editor-layout';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { api } from '../../lib/api/client';
 import { clearDraft, draftKey, publishDraft } from '../../lib/drafts';
@@ -102,7 +103,12 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const key = draftKey('invoice', id);
   const queryClient = useQueryClient();
 
-  const { data: doc } = useQuery({
+  const {
+    data: doc,
+    refetch,
+    isFetching,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ['invoicing', 'document', id],
     queryFn: () =>
       api.get<BillingDocument>(`/v1/invoicing/documents/${id}`).then(normalizeDocument),
@@ -234,7 +240,18 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Editor actions" wrap>
+      <PaneToolbar
+        label="Editor actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={doc ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      >
         <Button
           color="neutral"
           variant="outline"

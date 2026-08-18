@@ -260,9 +260,9 @@ This is a significant activation moment — products showing up in Google search
 ## 10. Implementation Checklist
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the Channel Adapter architecture shipped. Eleven
-> adapters are live under [`packages/channels/src/adapters/`](../packages/channels/src/adapters)
+> adapters are live under [`wizeworks/packages/channels/src/adapters/`](../packages/channels/src/adapters)
 > (TikTok Shop, Google Shopping, Meta, Amazon, Walmart, Pinterest, eBay, Etsy, Faire, sparx.market),
-> registered via [`packages/channels/src/registry.ts`](../packages/channels/src/registry.ts), and the
+> registered via [`wizeworks/packages/channels/src/registry.ts`](../packages/channels/src/registry.ts), and the
 > [`services/channel-sync-worker/`](../services/channel-sync-worker) drains the sync/fulfillment/
 > inventory jobs. MCP channel-analytics tools (`get_channel_revenue`, `get_channel_comparison`,
 > `get_channel_top_products`) are exposed. The remaining unchecked items below are the real gaps:

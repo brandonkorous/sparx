@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-ceramics-studio',
-    version: '1.4.0',
-    name: 'sparx — Ceramics Studio (Handmade)',
-    summary:
-        'A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-ceramics-studio',
+  version: '1.4.0',
+  name: 'sparx — Ceramics Studio (Handmade)',
+  summary:
+    'A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Kiln & Clay',
+    tagline: 'Made by hand, one at a time.',
+    colors: {
+      primary: '#564434',
+      primaryForeground: '#fef7f2',
+      accent: '#507357',
+      secondary: '#4e5241',
+    },
+    fonts: {
+      heading: 'Cormorant Garamond',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-ceramics-studio',
+    basePresetKey: 'retail-ceramics-studio',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Kiln & Clay',
-        tagline: 'Made by hand, one at a time.',
-        colors: {
-            primary: '#564434',
-            primaryForeground: '#fef7f2',
-            accent: '#507357',
-            secondary: '#4e5241',
-        },
-        fonts: {
-            heading: 'Cormorant Garamond',
-            body: 'Inter',
-        },
+      colorPrimary: '#564434',
+      colorAccent: '#507357',
+      colorSecondary: '#4e5241',
+      fontHeading: 'Cormorant Garamond',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-ceramics-studio',
-        basePresetKey: 'retail-ceramics-studio',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#564434',
-            colorAccent: '#507357',
-            colorSecondary: '#4e5241',
-            fontHeading: 'Cormorant Garamond',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

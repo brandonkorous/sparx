@@ -33,7 +33,7 @@ lives in prod, so run this where that DB is reachable, or point it at a docker D
 seeded from the Template):
 
 ```
-pnpm --filter @sparx/api-rest blueprint:capture -- \
+pnpm --filter @wizeworks/api-rest blueprint:capture -- \
   --tenant 1bfef66a-a489-4e0f-99fd-f041adc7ffaa \
   --property c99e0e23-dae2-4814-b670-b73de5eec0f1 \
   --source published \
@@ -62,8 +62,8 @@ Live ids (products, posts, media, schedule) are catalogued in the perfect-templa
 
 ```
 # validate the manifest parses (safeParseBlueprint runs inside ingest):
-pnpm --filter @sparx/api-rest marketplace:ingest        # local docker — writes the catalog row + artifact
+pnpm --filter @wizeworks/api-rest marketplace:ingest        # local docker — writes the catalog row + artifact
 ```
 
 Prod ingest runs through `marketplace-ingest.yml`. Undo a local ingest with
-`pnpm --filter @sparx/api-rest marketplace:purge-blueprints`.
+`pnpm --filter @wizeworks/api-rest marketplace:purge-blueprints`.

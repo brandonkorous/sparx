@@ -1,269 +1,269 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "how-a-drop-comes-together",
-        "status": "published",
-        "body": {
-            "title": "How a drop comes together",
-            "excerpt": "From a sketch on the studio wall to a rack of finished gear — the whole run, start to finish, in plain terms.",
-            "featuredImage": {
-                "$asset": "cardinal-post-drop"
+  {
+    "typeKey": "blog_post",
+    "slug": "how-a-drop-comes-together",
+    "status": "published",
+    "body": {
+      "title": "How a drop comes together",
+      "excerpt": "From a sketch on the studio wall to a rack of finished gear — the whole run, start to finish, in plain terms.",
+      "featuredImage": {
+        "$asset": "cardinal-post-drop"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A drop looks like it appears out of nowhere on a Friday. It does not. Every run is weeks of work compressed into a few hundred pieces — and because we print small and never restock, there is no room to get it wrong. Here is what actually happens between the idea and the rack."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A drop looks like it appears out of nowhere on a Friday. It does not. Every run is weeks of work compressed into a few hundred pieces — and because we print small and never restock, there is no room to get it wrong. Here is what actually happens between the idea and the rack."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Design, then subtract"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Everything starts on the studio wall — rough marker sketches, screenshots, half a dozen bad ideas pinned up until one earns its place. We design loud on purpose, then pull it back: a graphic has to read from across the street and still look right up close. Most concepts die here, and that is the point. The ones that survive get separated into colors for the screens."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Printed by hand, on good blanks"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "We choose the blanks ourselves — 240gsm for tees, 400gsm for fleece, nothing thinner — because the best print in the world falls apart on a cheap shirt. Then every piece is screen-printed by hand with plastisol inks, cured hot so the graphic bonds to the cotton instead of sitting on top of it. It is slower than a factory and that is exactly why the prints last."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Small runs, gone for good"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "We print what we print, and when it sells through, that design is retired — no reruns, no “back in stock.” It keeps the gear rare and it keeps us honest: if a run does not sell, we felt it, and we make a better one next week. That is the whole engine behind the Friday drop."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "how-our-stuff-fits",
-        "status": "published",
-        "body": {
-            "title": "How our stuff fits",
-            "excerpt": "Boxy, dropped-shoulder, true to size — a plain-language guide to nailing your size the first time.",
-            "featuredImage": {
-                "$asset": "cardinal-post-fit"
+            "content": [
+              {
+                "type": "text",
+                "text": "Design, then subtract"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Everything starts on the studio wall — rough marker sketches, screenshots, half a dozen bad ideas pinned up until one earns its place. We design loud on purpose, then pull it back: a graphic has to read from across the street and still look right up close. Most concepts die here, and that is the point. The ones that survive get separated into colors for the screens."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Streetwear fit is half the look, and it trips people up more than anything else — mostly because “oversized” means something different on every brand. Here is exactly how ours is cut, so you can order once and get it right."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Cut boxy, worn relaxed"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Everything is cut boxy: a wider body, a dropped shoulder that sits below your actual shoulder, and a shorter, squarer length. On a true-to-size pick it wears relaxed, not baggy. If you want that clean, structured look, take your normal size. If you want it properly oversized and draped, size up one — a lot of people run their tees a size up on purpose."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "When to size down"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The only time to size down is if you like your fits close and tailored, or if you are between two sizes and want a cleaner line. Fleece is cut roomy to layer, so if you are wearing a hoodie on its own and want it fitted, the smaller size is the move. Bottoms run true with a tapered leg — take your waist and adjust the hem to stack or crop."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Still not sure? Grab two"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Sizing is personal and a chart only gets you so far. Returns are free within 30 days on anything unworn with tags, so if you are stuck between two sizes, order both, try them back to back, and send back the one that misses. It is the fastest way to learn how our stuff sits on you."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "drop-culture-explained",
-        "status": "published",
-        "body": {
-            "title": "Drop culture, explained",
-            "excerpt": "Why we release in small weekly batches and never restock — and how to actually cop the pieces you want.",
-            "featuredImage": {
-                "$asset": "cardinal-post-care"
+            "content": [
+              {
+                "type": "text",
+                "text": "Printed by hand, on good blanks"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We choose the blanks ourselves — 240gsm for tees, 400gsm for fleece, nothing thinner — because the best print in the world falls apart on a cheap shirt. Then every piece is screen-printed by hand with plastisol inks, cured hot so the graphic bonds to the cotton instead of sitting on top of it. It is slower than a factory and that is exactly why the prints last."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If you are new to how streetwear releases work, the “drop” model can feel deliberately frustrating — limited pieces, no restocks, gone in an hour. It is not a marketing trick bolted on afterward. It is the honest consequence of how we make things, and once you get it, shopping this way is easy."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Why small and why weekly"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "We print by hand in small runs, so there is a hard ceiling on how many of anything exists. Dropping weekly lets us keep the designs fresh, react to what sold and what did not, and never sit on a warehouse of dead stock. The scarcity is real — it is just how many we could actually make — not a fake counter ticking down."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "How to actually cop"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Get on the drop list. It is the only place the exact drop time goes out, and popular pieces — the logo tee, the red hoodie — routinely sell through their best sizes within the first day. Save your details before Friday so checkout is one tap, decide your size ahead of time using the fit guide, and do not overthink it in the cart. Hesitation is how a size sells out while it sits in your bag."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Missed it? It happens"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "No restocks means sometimes you miss, and that is part of the game — but a piece occasionally returns in a new colorway on a later drop, and the list always hears first. The best fix is simply to be ready for the next one. There is always a next one, seven days out."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Small runs, gone for good"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We print what we print, and when it sells through, that design is retired — no reruns, no “back in stock.” It keeps the gear rare and it keeps us honest: if a run does not sell, we felt it, and we make a better one next week. That is the whole engine behind the Friday drop."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-our-stuff-fits",
+    "status": "published",
+    "body": {
+      "title": "How our stuff fits",
+      "excerpt": "Boxy, dropped-shoulder, true to size — a plain-language guide to nailing your size the first time.",
+      "featuredImage": {
+        "$asset": "cardinal-post-fit"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Streetwear fit is half the look, and it trips people up more than anything else — mostly because “oversized” means something different on every brand. Here is exactly how ours is cut, so you can order once and get it right."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Cut boxy, worn relaxed"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Everything is cut boxy: a wider body, a dropped shoulder that sits below your actual shoulder, and a shorter, squarer length. On a true-to-size pick it wears relaxed, not baggy. If you want that clean, structured look, take your normal size. If you want it properly oversized and draped, size up one — a lot of people run their tees a size up on purpose."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "When to size down"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The only time to size down is if you like your fits close and tailored, or if you are between two sizes and want a cleaner line. Fleece is cut roomy to layer, so if you are wearing a hoodie on its own and want it fitted, the smaller size is the move. Bottoms run true with a tapered leg — take your waist and adjust the hem to stack or crop."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Still not sure? Grab two"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sizing is personal and a chart only gets you so far. Returns are free within 30 days on anything unworn with tags, so if you are stuck between two sizes, order both, try them back to back, and send back the one that misses. It is the fastest way to learn how our stuff sits on you."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "drop-culture-explained",
+    "status": "published",
+    "body": {
+      "title": "Drop culture, explained",
+      "excerpt": "Why we release in small weekly batches and never restock — and how to actually cop the pieces you want.",
+      "featuredImage": {
+        "$asset": "cardinal-post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you are new to how streetwear releases work, the “drop” model can feel deliberately frustrating — limited pieces, no restocks, gone in an hour. It is not a marketing trick bolted on afterward. It is the honest consequence of how we make things, and once you get it, shopping this way is easy."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why small and why weekly"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We print by hand in small runs, so there is a hard ceiling on how many of anything exists. Dropping weekly lets us keep the designs fresh, react to what sold and what did not, and never sit on a warehouse of dead stock. The scarcity is real — it is just how many we could actually make — not a fake counter ticking down."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How to actually cop"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Get on the drop list. It is the only place the exact drop time goes out, and popular pieces — the logo tee, the red hoodie — routinely sell through their best sizes within the first day. Save your details before Friday so checkout is one tap, decide your size ahead of time using the fit guide, and do not overthink it in the cart. Hesitation is how a size sells out while it sits in your bag."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Missed it? It happens"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "No restocks means sometimes you miss, and that is part of the game — but a piece occasionally returns in a new colorway on a later drop, and the list always hears first. The best fix is simply to be ready for the next one. There is always a next one, seven days out."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

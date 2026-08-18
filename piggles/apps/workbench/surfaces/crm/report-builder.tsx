@@ -28,15 +28,16 @@ import {
   FieldLabel,
   Input,
   Select,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
 
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useModuleColor } from '../analytics/charts';
@@ -347,8 +348,8 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
 
-  const { data: report } = useReport(id);
-  const { data: catalog } = useReportFields();
+  const { data: report, isFetching: reportFetching, refetch: refetchReport } = useReport(id);
+  const { data: catalog, isFetching: catalogFetching, refetch: refetchCatalog } = useReportFields();
   const create = useCreateReport();
   const update = useUpdateReport(id);
   const duplicate = useDuplicateReport();
@@ -437,9 +438,10 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL} ref={accentRef}>
-      <PaneToolbar label="Report builder controls">
-        <div className="ml-auto flex items-center gap-2">
-          {readOnly ? (
+      <PaneToolbar
+        label="Report builder controls"
+        primary={
+          readOnly ? (
             <Button color="module" onClick={() => void handleDuplicate()}>
               Make a copy to edit
             </Button>
@@ -451,9 +453,20 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
             >
               {create.isPending || update.isPending ? 'Saving…' : 'Save'}
             </Button>
-          )}
-        </div>
-      </PaneToolbar>
+          )
+        }
+        refresh={
+          <RefreshButton
+            isFetching={preview.isFetching || reportFetching || catalogFetching}
+            updatedAt={preview.data ? preview.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void preview.refetch();
+              void refetchReport();
+              void refetchCatalog();
+            }}
+          />
+        }
+      />
 
       <div className="grid grid-cols-[minmax(320px,380px)_minmax(0,1fr)] gap-6 overflow-auto p-6 max-[900px]:grid-cols-1">
         {/* The question, read top to bottom as a sentence. */}

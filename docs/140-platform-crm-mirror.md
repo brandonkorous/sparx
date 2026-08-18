@@ -57,7 +57,7 @@ Two lost stages, on purpose. "Never converted" and "converted then left" look th
 Closed Lost column and are completely different problems to fix.
 
 Stages are addressed by `sortOrder`, never by name, so renaming a stage on the board doesn't break
-the mirror. This pipeline is **not** a `@sparx/crm-schemas` built-in: built-ins are seeded into
+the mirror. This pipeline is **not** a `@wizeworks/crm-schemas` built-in: built-ins are seeded into
 every tenant on CRM activation, and no customer of ours wants a pipeline modelling sparx's trials.
 
 ## 4. How a signup gets there
@@ -107,7 +107,7 @@ The deal is not a write-once record. Four more topics keep it current:
 becomes the real business name during onboarding — which is exactly when a board that never
 refreshes stops being readable.
 
-**Stage rules** (`packages/platform-crm/src/lifecycle.ts`, unit-tested):
+**Stage rules** (`wizeworks/packages/platform-crm/src/lifecycle.ts`, unit-tested):
 
 - **Never move backwards.** Stripe re-sends `customer.subscription.updated` for unrelated field
   changes, so a late `trialing` status must not drag an activated or paying tenant back to Trial.
@@ -167,7 +167,7 @@ the dry-run-by-default stays in Terraform state and choosing `apply` never cause
 The job runs the `:latest` worker image — **ship the worker before backfilling**, or you are
 backfilling with stale code.
 
-**Why a job and not a `packages/db` backfill.** Cloud SQL is private-IP, so a backfill has to run
+**Why a job and not a `wizeworks/packages/db` backfill.** Cloud SQL is private-IP, so a backfill has to run
 inside the VPC — which is exactly why the db-migrate Job exists and why `RUN_BACKFILL=true` lives
 there. This one deliberately does not use that path: the db-migrate backfills run as the migration
 OWNER doing raw data rewrites, while the mirror writes **through the CRM service layer under RLS**.
@@ -193,21 +193,21 @@ deal rather than duplicating them.
 
 ## 9. Decisions
 
-| ID  | Decision                                                                        | Why                                                                                                                                                                                                 |
-| --- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Consume `tenant.created` instead of calling the CRM from signup                 | Covers all three signup paths at once, keeps a cross-tenant write out of the request path, gets retries for free                                                                                    |
-| D2  | A dedicated worker, not a second handler in `legal-seed-worker`                 | Independent retry and DLQ; a CRM failure must not re-run legal seeding. Scale-to-zero, so no meaningful cost                                                                                        |
-| D3  | Hydrate from the tenant row, not the event payload                              | No owner PII on the bus; redelivery reflects current state; the backfill is the same code path                                                                                                      |
-| D4  | `captureLead`, not `subscribe`                                                  | Signing up for a trial is not consent to marketing email                                                                                                                                            |
-| D5  | Contact per person, deal per tenant                                             | One owner can hold several tenants, and each is its own trial to win                                                                                                                                |
-| D6  | Two lost stages                                                                 | "Never converted" and "converted then left" are different problems; one Closed Lost column hides which                                                                                              |
-| D7  | Pipeline lives in `@sparx/platform-crm`, not in the CRM built-ins               | Built-ins seed into every tenant; no customer wants a pipeline modelling sparx's own trials                                                                                                         |
-| D8  | Dev parity via `SPARX_DEV_WORKER_ROUTES`, not an in-process twin                | Exercises the real HTTP entry point, and keeps the CRM service layer out of every app that can sign a tenant up                                                                                     |
-| D9  | Backfill as a Cloud Run job on the worker's image, not a `packages/db` backfill | The mirror writes through the CRM service layer under RLS, so it must run as the worker's identity in the worker's runtime — the db-migrate backfills run as the migration owner doing raw rewrites |
+| ID  | Decision                                                                                  | Why                                                                                                                                                                                                 |
+| --- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Consume `tenant.created` instead of calling the CRM from signup                           | Covers all three signup paths at once, keeps a cross-tenant write out of the request path, gets retries for free                                                                                    |
+| D2  | A dedicated worker, not a second handler in `legal-seed-worker`                           | Independent retry and DLQ; a CRM failure must not re-run legal seeding. Scale-to-zero, so no meaningful cost                                                                                        |
+| D3  | Hydrate from the tenant row, not the event payload                                        | No owner PII on the bus; redelivery reflects current state; the backfill is the same code path                                                                                                      |
+| D4  | `captureLead`, not `subscribe`                                                            | Signing up for a trial is not consent to marketing email                                                                                                                                            |
+| D5  | Contact per person, deal per tenant                                                       | One owner can hold several tenants, and each is its own trial to win                                                                                                                                |
+| D6  | Two lost stages                                                                           | "Never converted" and "converted then left" are different problems; one Closed Lost column hides which                                                                                              |
+| D7  | Pipeline lives in `@wizeworks/platform-crm`, not in the CRM built-ins                     | Built-ins seed into every tenant; no customer wants a pipeline modelling sparx's own trials                                                                                                         |
+| D8  | Dev parity via `SPARX_DEV_WORKER_ROUTES`, not an in-process twin                          | Exercises the real HTTP entry point, and keeps the CRM service layer out of every app that can sign a tenant up                                                                                     |
+| D9  | Backfill as a Cloud Run job on the worker's image, not a `wizeworks/packages/db` backfill | The mirror writes through the CRM service layer under RLS, so it must run as the worker's identity in the worker's runtime — the db-migrate backfills run as the migration owner doing raw rewrites |
 
 ## 10. Where the code lives
 
-- [packages/platform-crm/](../packages/platform-crm/) — the mirror; `mirror.ts` orchestrates,
+- [wizeworks/packages/platform-crm/](../packages/platform-crm/) — the mirror; `mirror.ts` orchestrates,
   `lifecycle.ts` holds the pure stage rules, `pipeline.ts` the board, `target.ts` resolves which
   tenant to write into.
 - [services/platform-crm-worker/](../services/platform-crm-worker/) — the Cloud Run push entry

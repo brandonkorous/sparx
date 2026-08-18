@@ -49,6 +49,7 @@ import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { useTeamRoster } from '../../lib/api/team';
 import { useViewer, useSites } from '../../lib/api/shell-data';
 import { describeAgo } from '../../lib/api/activity';
@@ -304,7 +305,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
   useChatLive(id);
   const otherTyping = useTypingIndicator(id === '' ? undefined : id);
 
-  const { data, isPending, isError, refetch } = useConversation(id);
+  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useConversation(id);
   const { data: sites } = useSites();
   const { members } = useTeamRoster();
   const { data: viewer } = useViewer();
@@ -456,7 +457,18 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Conversation actions" wrap>
+      <PaneToolbar
+        label="Conversation actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      >
         <Badge color={statusTone(data.status)} variant="soft" size="sm">
           {statusLabel(data.status)}
         </Badge>

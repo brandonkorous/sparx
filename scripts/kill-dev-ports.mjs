@@ -33,7 +33,10 @@ const FALLBACK_PORTS = [
 
 function discoverPorts() {
   const found = new Set(FALLBACK_PORTS);
-  const roots = ['apps', 'services'];
+  // Every tree's apps and services. This read `['apps', 'services']` until the
+  // A4 move — and the readdir below swallows a missing root, so it would have
+  // discovered NOTHING and quietly fallen back to the hard-coded port list.
+  const roots = ['wizeworks/apps', 'wizeworks/services', 'sparx/apps', 'piggles/apps'];
   for (const root of roots) {
     let entries = [];
     try {

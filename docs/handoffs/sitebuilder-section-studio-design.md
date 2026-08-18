@@ -27,7 +27,7 @@ only be _created_ via API/MCP. The Studio is the missing authoring UX.
 
 ## 2. Where it lives
 
-- A new Site Builder rail item **“Sections”** (`@sparx/sitebuilder/manifest`), after _Layouts_.
+- A new Site Builder rail item **“Sections”** (`@wizeworks/sitebuilder/manifest`), after _Layouts_.
 - `/sitebuilder/sections` — the **list** of the tenant's custom sections (label, slug, binding badge,
   version, “in N layouts”), plus a “New section” action.
 - `/sitebuilder/sections/[slug]` — the **Studio editor** (create uses a `new` sentinel route or a `?new`
@@ -57,19 +57,19 @@ Left column (authoring), right column (preview); stacks on small screens.
 
 ## 4. Architecture
 
-### 4.1 Shared render package — `@sparx/section-template-react`
+### 4.1 Shared render package — `@wizeworks/section-template-react`
 
 Extract the site interpreter into a framework-neutral package so site SSR and the dashboard
 preview render **identically**. Plain React (no `'use client'`, no server-only imports) with **injected
 adapters**, so the site uses it as an RSC and the dashboard wraps it in a client boundary.
 
 - **Exports:** `<TemplateRenderer node config ctx adapters />` (the AST walk → `st-tpl-*` markup, calling the
-  shared pure evaluator from `@sparx/sitebuilder-schemas`); the bundled `<TemplateIcon>` + `TEMPLATE_ICON_NAMES`;
-  and `section-template.css` (the `st-tpl-*` family, moved here from `apps/site/app/site-template.css`).
+  shared pure evaluator from `@wizeworks/sitebuilder-schemas`); the bundled `<TemplateIcon>` + `TEMPLATE_ICON_NAMES`;
+  and `section-template.css` (the `st-tpl-*` family, moved here from `wizeworks/apps/site/app/site-template.css`).
 - **Adapters (injected):** `Link` (site → `SbLink` / next; dashboard → plain `<a>`), `resolveMediaSrc`
   (site → `mediaUrl(ref, tenantSlug)`; dashboard → placeholder or media API), so the package owns no
   app-specific deps.
-- **Depends on** `@sparx/sitebuilder-schemas` (types + evaluator) + `react`. React package → only apps
+- **Depends on** `@wizeworks/sitebuilder-schemas` (types + evaluator) + `react`. React package → only apps
   COPY it; add the COPY lines to the site + dashboard Dockerfiles ([[feedback_dockerfile_package_wiring]]).
 - **Site rewire:** `custom-template.tsx` becomes a thin wrapper passing site adapters;
   `layout.tsx` imports the package CSS instead of the local `site-template.css` (deleted).
@@ -113,7 +113,7 @@ shape + semantics + the in-use delete guard.
 
 ## 5. Build plan (incremental, each verifiable)
 
-1. **Extract `@sparx/section-template-react`** (interpreter + icons + CSS, adapters); rewire site;
+1. **Extract `@wizeworks/section-template-react`** (interpreter + icons + CSS, adapters); rewire site;
    add Dockerfile COPY lines. _Refactor, no behavior change_ → site build stays green.
 2. **Plumbing:** “Sections” rail item, list page, create/edit routes, server actions + `getDefinition`.
 3. **Field-spec editor** component.
@@ -133,7 +133,7 @@ builder is additive.
 > but the AST keeps the last good tree so the preview never breaks), `template-tree-editor.tsx` (path-addressed
 > immutable tree ops, palette, per-node inspector, `scopeAtPath` mirrors the validator's binding scoping),
 > `value-expr-editor.tsx` (ValueExpr literal/`$bind`/`$concat` + Condition + scope-aware path picker), and
-> `section-preview.tsx` + `section-preview.css` (live render via the shared `@sparx/section-template-react`
+> `section-preview.tsx` + `section-preview.css` (live render via the shared `@wizeworks/section-template-react`
 > interpreter against synthesized sample config, scoped apex-default `--st-*` tokens, inert link adapter +
 > placeholder media). All green: dashboard typecheck + lint (0 errors) + repo `format:check`. A production
 > `next build` is the only check not yet run (deferred while a dev server holds the repo); the package + CSS

@@ -27,13 +27,13 @@ import {
   DialogFooter,
   DialogTitle,
   DropdownMenu,
+  Card,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  EmptyState,
   Field,
   FieldDescription,
   FieldLabel,
@@ -58,6 +58,8 @@ import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import {
@@ -73,6 +75,10 @@ import {
   type DashboardWidget,
 } from './report-builder-data';
 import { ReportWidget } from './report-widget';
+
+/** Registry module for this pane, so the brand draws Customers' own picture
+ *  rather than the generic one. */
+const MODULE = 'crm';
 
 /**
  * Column span → a Tailwind class. Quantised rather than computed, because a
@@ -119,7 +125,7 @@ type WidgetDraft =
 export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
   const paramId = typeof ctx.params.id === 'string' ? ctx.params.id : null;
   const landing = useLandingDashboard();
-  const { data: boards, isFetching, refetch } = useDashboards();
+  const { data: boards, isFetching, dataUpdatedAt, refetch } = useDashboards();
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -395,11 +401,35 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
     </PaneScope>
   );
 
+  // A failed read left `landing.data` undefined, which the branch below used to
+  // read as "you have no boards" — telling someone their dashboards do not exist
+  // because the server could not be reached. Two facts, two answers.
+  if (landing.isError && !landing.data && !activeId) {
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneLoadError
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
+            title="Could not load your dashboards"
+            description="This is a problem reaching the server. Every board you have built is unaffected."
+            onRetry={() => {
+              void landing.refetch();
+              void refetch();
+            }}
+          />
+        </Card>
+      </div>
+    );
+  }
+
   if (!landing.data && !activeId) {
     return (
       <div className={PANE_SHELL}>
-        <div className="flex flex-1 items-center justify-center p-6">
-          <EmptyState
+        {/* The card is the pane's content region — the same one a board of report
+            cards fills. */}
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="No dashboard yet"
             description="A dashboard puts the reports you check often on one screen, kept up to date automatically."
@@ -409,7 +439,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Button>
             }
           />
-        </div>
+        </Card>
         {boardDialog}
       </div>
     );
@@ -420,75 +450,16 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Dashboard controls">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button color="module" variant="soft" size="sm" className="min-w-0 gap-1.5">
-              <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{board?.name ?? 'Dashboards'}</span>
-              <Icon glyph={faChevronDown} className="size-3 shrink-0" aria-hidden />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="start">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>Boards</DropdownMenuLabel>
-              {all.map((option) => (
-                <DropdownMenuItem
-                  key={option.id}
-                  onClick={() => {
-                    setActiveId(option.id);
-                  }}
-                >
-                  <span className="flex w-full items-center gap-2">
-                    <span className="min-w-0 flex-1 truncate">{option.name}</span>
-                    {option.isDefault ? (
-                      <Icon glyph={faStar} className="size-3.5 shrink-0" aria-label="Opens first" />
-                    ) : null}
-                    {option.id === activeId ? (
-                      <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
-                    ) : null}
-                  </span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={startNewBoard}>
-                <span className="flex w-full items-center gap-2">
-                  <Icon glyph={faPlus} className="size-4 shrink-0" aria-hidden />
-                  <span className="flex-1">Another board</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={startEditBoard}>
-                <span className="flex w-full items-center gap-2">
-                  <Icon glyph={faPencil} className="size-4 shrink-0" aria-hidden />
-                  <span className="flex-1">Rename or share this one</span>
-                </span>
-              </DropdownMenuItem>
-              {board ? (
-                <DropdownMenuItem
-                  onClick={() => {
-                    void deleteBoard(board);
-                  }}
-                >
-                  <span className="flex w-full items-center gap-2">
-                    <Icon glyph={faTrashCan} className="size-4 shrink-0" aria-hidden />
-                    <span className="flex-1">Delete “{board.name}”</span>
-                  </span>
-                </DropdownMenuItem>
-              ) : null}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {board?.description ? (
-          <Text className="hidden min-w-0 truncate md:block">{board.description}</Text>
-        ) : null}
-
-        <div className="ml-auto flex items-center gap-2">
+      <PaneToolbar
+        label="Dashboard controls"
+        status={
+          board?.description ? (
+            <Text className="hidden min-w-0 truncate md:block">{board.description}</Text>
+          ) : null
+        }
+        // A commit action is always `primary`: `controls` relocates into the
+        // overflow popover under 672px. Enforced by scripts/check-toolbar-primary.mjs.
+        primary={
           <Button
             color="module"
             onClick={() => {
@@ -497,27 +468,111 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden /> Add a report
           </Button>
-          <RefreshButton isFetching={isFetching} onRefresh={() => void refetch()} />
-        </div>
-      </PaneToolbar>
+        }
+        controls={
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button color="module" variant="soft" size="sm" className="min-w-0 gap-1.5">
+                  <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{board?.name ?? 'Dashboards'}</span>
+                  <Icon glyph={faChevronDown} className="size-3 shrink-0" aria-hidden />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="start">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Boards</DropdownMenuLabel>
+                  {all.map((option) => (
+                    <DropdownMenuItem
+                      key={option.id}
+                      onClick={() => {
+                        setActiveId(option.id);
+                      }}
+                    >
+                      <span className="flex w-full items-center gap-2">
+                        <span className="min-w-0 flex-1 truncate">{option.name}</span>
+                        {option.isDefault ? (
+                          <Icon
+                            glyph={faStar}
+                            className="size-3.5 shrink-0"
+                            aria-label="Opens first"
+                          />
+                        ) : null}
+                        {option.id === activeId ? (
+                          <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
+                        ) : null}
+                      </span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={startNewBoard}>
+                    <span className="flex w-full items-center gap-2">
+                      <Icon glyph={faPlus} className="size-4 shrink-0" aria-hidden />
+                      <span className="flex-1">Another board</span>
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={startEditBoard}>
+                    <span className="flex w-full items-center gap-2">
+                      <Icon glyph={faPencil} className="size-4 shrink-0" aria-hidden />
+                      <span className="flex-1">Rename or share this one</span>
+                    </span>
+                  </DropdownMenuItem>
+                  {board ? (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        void deleteBoard(board);
+                      }}
+                    >
+                      <span className="flex w-full items-center gap-2">
+                        <Icon glyph={faTrashCan} className="size-4 shrink-0" aria-hidden />
+                        <span className="flex-1">Delete “{board.name}”</span>
+                      </span>
+                    </DropdownMenuItem>
+                  ) : null}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={boards ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="overflow-auto p-6">
         {widgets.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
-            title="Nothing on this board yet"
-            description="Add a report and it will appear here, running live every time you open it."
-            actions={
-              <Button
-                color="module"
-                onClick={() => {
-                  setWidgetDraft({ mode: 'add', reportId: '', title: '' });
-                }}
-              >
-                Add a report
-              </Button>
-            }
-          />
+          /* Carded, because the branch beside it is a grid of report CARDS — an
+             uncarded empty board sat on the recessed surface, and the pane
+             changed shape the moment the first widget landed. */
+          <Card>
+            <PaneEmpty
+              module={MODULE}
+              icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
+              title="Nothing on this board yet"
+              description="Add a report and it will appear here, running live every time you open it."
+              actions={
+                <Button
+                  color="module"
+                  onClick={() => {
+                    setWidgetDraft({ mode: 'add', reportId: '', title: '' });
+                  }}
+                >
+                  Add a report
+                </Button>
+              }
+            />
+          </Card>
         ) : (
           <div className="grid grid-cols-1 gap-4 @3xl:grid-cols-12">
             {widgets.map((widget) => (

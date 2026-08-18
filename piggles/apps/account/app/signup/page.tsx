@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getSession } from '@sparx/auth';
+import { getSession } from '@wizeworks/auth';
 import { PRODUCT } from '@piggles/config';
 import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';
@@ -21,7 +21,12 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
   // ever right.
   if (await getSession()) redirect('/');
 
-  const from = one((await searchParams).from);
+  const params = await searchParams;
+  const from = one(params.from);
+  // The full attribution payload the marketing site attached at click time, when
+  // the visitor allowed it to be recorded. Absent for anyone who declined, and
+  // the signup works identically either way.
+  const attribution = one(params.a);
 
   return (
     <AuthShell
@@ -83,7 +88,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
         </p>
       }
     >
-      <SignUpForm from={from} google={googleSignInAvailable()} />
+      <SignUpForm from={from} attribution={attribution} google={googleSignInAvailable()} />
     </AuthShell>
   );
 }

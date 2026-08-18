@@ -13,7 +13,7 @@
 // against the `DataThemePreset` schema and stores the resulting JSON. Nothing here
 // executes at runtime — it is read as data.
 
-import type { DataThemePreset } from '@sparx/marketplace-schemas';
+import type { DataThemePreset } from '@wizeworks/marketplace-schemas';
 
 const theme: DataThemePreset = {
   v: 1,

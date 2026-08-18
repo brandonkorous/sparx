@@ -1,6 +1,6 @@
 # DESIGN.md — Piggles
 
-**Version:** 1.6
+**Version:** 1.7
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-16
 
@@ -131,7 +131,7 @@ is `module`.
 
 The clause above is a **prohibition**, and a prohibition with no positive form is
 how `color="neutral" variant="outline"` became the house default for every second
-button on the site — 24 across `apps/web`, 553 across the repo. Nobody chose it. It
+button on the site — 24 across `sparx/apps/web`, 553 across the repo. Nobody chose it. It
 is what gets typed when the rule says what not to do and nothing says what to do.
 
 **This section is not about buttons.** It governs every component that takes a
@@ -160,7 +160,7 @@ Not of its position in the layout, not of how important it feels.
 | The second of a pair, beside a primary         | `variant="outline"`, **no `color`**     |
 | Chrome — nav ghost, a reset, a menu icon       | `neutral`                               |
 
-`accent` is not on that list on purpose: [theme.css](packages/brand/src/theme.css)
+`accent` is not on that list on purpose: [theme.css](sparx/packages/brand/src/theme.css)
 defines it as a low-emphasis supporting **surface**, not a second call to action.
 
 Four things this is load-bearing about:
@@ -176,7 +176,7 @@ Four things this is load-bearing about:
    `base-content`, which the surface has already resolved — including inside a
    `data-theme="dark"` island, where a pinned `neutral` measures 2.52:1 and is very
    nearly invisible. Measured and recorded at the top of
-   [close-band.tsx](apps/web/components/marketing/close-band.tsx); it holds on
+   [close-band.tsx](sparx/apps/web/components/marketing/close-band.tsx); it holds on
    every surface, not just that band.
 4. **A section's only action is solid, never outline.** RULE #4's positive form:
    the action a surface exists for is a filled shape. An outline button alone in a
@@ -185,7 +185,7 @@ Four things this is load-bearing about:
 Worked examples now in the tree: the home page's FAQ offers two links and they are
 `success` (the price) and `info` (how your data is handled) rather than two
 identical greys — the color tells you which is which before the label is read.
-[tool-ladder.tsx](apps/web/components/marketing/tools/tool-ladder.tsx) has done the
+[tool-ladder.tsx](sparx/apps/web/components/marketing/tools/tool-ladder.tsx) has done the
 `color="module"` version of this all along, which is the precedent that should have
 been followed everywhere.
 
@@ -338,6 +338,28 @@ class at a call site.
 does not lose rows to comfortable density. That is the right split: a person
 scanning 200 products needs rows, and a person filling in a form needs room.
 
+**But "not on the lever" was read as "leave it stock", and stock is sparx's
+table.** 13px type, 8px rows, a hairline under each one, a grey hover wash — the
+screen a person spends the whole day in, failing §1's test. Comfort in a LIST is
+a different currency from comfort in a form: **it is spent horizontally, not
+vertically.** The table block in `@piggles/brand/theme.css` is that own
+treatment —
+
+|               | silica stock `table-sm`  | Piggles                                     |
+| ------------- | ------------------------ | ------------------------------------------- |
+| type          | 13px                     | **15px** (`sm`; the ladder re-hangs xs→xl)  |
+| cell padding  | 12px × 8px               | **16px × 9px**                              |
+| header        | scrolls away             | **sticky, on `base-300`**                   |
+| row separator | `tr` hairline            | cell hairline (`border-collapse: separate`) |
+| hover / focus | grey `base-content` wash | **rounded 10px band in `--color-module`**   |
+
+A two-line row goes 58px → 63px: ten rows cost 55px, and the hover band tells
+you which app you are in. Going further — banded rows separated by a gap —
+measures 74px a row, 41% taller, and is where a list stops being a list. Don't.
+
+Focus takes the same band as hover, deliberately: list rows are
+`role="button" tabIndex={0}`, so the keyboard gets what the mouse gets.
+
 **Out of reach, honestly:** the gaps _between_ form groups (20–24px) and
 _between_ major sections (24–32px) live as `gap-*` classes inside each surface's
 own JSX. Piggles' own screens simply write them. For the shared surfaces there is
@@ -412,7 +434,7 @@ the same job. A friendly brand is not a licence for editorial furniture.
   only decides whether silica's own components carry theirs. Never hand-author a
   `box-shadow` — a tuned alpha ladder matches nothing and nothing points at it.
   The dock windows are the worked example: `shadow-sm` at rest, `shadow-lg` once
-  torn off ([apps/workbench/app/globals.css](apps/workbench/app/globals.css)).
+  torn off ([sparx/apps/workbench/app/globals.css](sparx/apps/workbench/app/globals.css)).
 
 ## 9. The ship gate
 

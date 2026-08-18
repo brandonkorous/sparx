@@ -201,7 +201,7 @@ resource "cloudflare_record" "sparx_works_media_direct" {
 #
 # FACEBOOK is fixed WITHOUT Cloudflare: the social-worker now downloads the image
 # and UPLOADS the bytes (multipart `source`) instead of handing Graph a url —
-# packages/social/src/adapters/facebook.ts. FB never fetches our CDN, so the 206
+# wizeworks/packages/social/src/adapters/facebook.ts. FB never fetches our CDN, so the 206
 # can't bite.
 #
 # INSTAGRAM / THREADS / PINTEREST — FIXED (2026-07-25) via a DNS-only origin host:
@@ -596,20 +596,20 @@ resource "cloudflare_record" "piggles_api" {
 # var is fixed per deployment and BOTH brands are served by the same processes,
 # so every Piggles signup would otherwise have been handed a sparx.zone address.
 #
-# ⚠ THESE RECORDS ARE NECESSARY AND NOT SUFFICIENT. Caddy issues a per-hostname
-# certificate on first request and asks api-rest's `/internal/domain-check`
-# whether the name is legitimate. That endpoint resolves against ONE zone —
-# `SPARX_ZONE = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone'` in
-# services/api-rest/src/lib/domain.ts — so a `*.piggles.site` host is not
-# recognised as ours, falls through to the custom-domain path, fails
-# verification, and NEVER GETS A CERTIFICATE. DNS resolves perfectly and the
-# handshake fails, which is the failure shape this file already warns about
-# twice.
+# These records are necessary and were, for a while, not sufficient. Caddy issues
+# a per-hostname certificate on first request and asks api-rest's
+# `/internal/domain-check` whether the name is legitimate; that endpoint used to
+# resolve against ONE zone, so a `*.piggles.site` host was not recognised as ours
+# and never got a certificate — DNS resolving perfectly while the handshake
+# failed. That is fixed: `OWNED_ZONES` in
+# wizeworks/services/api-rest/src/lib/domain.ts reads the LIST in
+# `SPARX_ZONE_DOMAINS` (sparx.zone,piggles.site in both ConfigMaps), and the site
+# renderer reads the same list.
 #
-# The fix is the same one signup already applied one layer up: api-rest has to
-# know about a LIST of owned zones rather than a single one. Tracked in
-# piggles/STATUS.md; these records land now because they are correct regardless
-# and nothing can be tested without them.
+# The warning is kept in past tense rather than deleted because the failure shape
+# is worth recognising: when a new zone is added, DNS is the half that looks
+# right first, and a certificate that never issues is the half that does not
+# announce itself.
 data "cloudflare_zone" "piggles_site" {
   count = var.cloudflare_enabled ? 1 : 0
   name  = "piggles.site"

@@ -11,19 +11,19 @@ Last Updated: 2026-08-06
 >
 > **What shipped beyond the original plan:**
 >
-> - **The field engine was extracted to `@sparx/field-schema` and adopted by THREE domains** —
+> - **The field engine was extracted to `@wizeworks/field-schema` and adopted by THREE domains** —
 >   a parallel CRM effort (docs/144) added `currency` / `user` / `calculated` field kinds + an
 >   eval-free calc engine to the same package, so CMS content types, commerce product types, and
 >   CRM object properties now share one field engine. The projection (§6.4) handles the new kinds.
 > - **The auto-render floor is in the SHARED PDP, not only the 10 templates.** `buyBox()` /
->   `productDetailPage()` in `@sparx/silica-catalog` (the code fallback every site without a
+>   `productDetailPage()` in `@wizeworks/silica-catalog` (the code fallback every site without a
 >   bespoke product page uses — the seeded default, a fresh tenant's starter) now renders
 >   `productAttributes()` + `productPolicyLinks()` + `productStockBadge()`. So a typed product
 >   shows its real detail sections on ANY site with zero authoring.
 > - **The demo seed** gives its diesel-parts catalog `auto_part` types + real fitment/specs/warranty.
 >
 > **User-owned steps before the DB-backed end-to-end test:** `pnpm install` (the new
-> `@sparx/field-schema` package + workspace deps), `prisma generate` + apply migration
+> `@wizeworks/field-schema` package + workspace deps), `prisma generate` + apply migration
 > `20270206000000`, and re-seed. The DB-free preview/screenshot oracle already verifies rendering.
 
 ---
@@ -95,16 +95,16 @@ long-term foundation: attributes become consistent within a type, bindable on th
 
 ## 3. The field-schema engine — reuse, don't rebuild
 
-`@sparx/cms-schemas` `src/types.ts` + `src/validate.ts` are **product-agnostic**: the 15 field
+`@wizeworks/cms-schemas` `src/types.ts` + `src/validate.ts` are **product-agnostic**: the 15 field
 kinds (`text`, `long_text`, `rich_text`, `slug`, `number`, `boolean`, `date`, `datetime`, `enum`,
 `url`, `email`, `reference`, `asset`, `object`, `repeater`) and `bodyValidatorFor(schema)` just
 validate "does this JSON bag match this field list." Zero CMS coupling.
 
-**Decision — extract to a neutral package `@sparx/field-schema`.** Move `FieldDef`,
+**Decision — extract to a neutral package `@wizeworks/field-schema`.** Move `FieldDef`,
 `FieldSchema` (today's `ContentTypeSchema` = `{ fields: FieldDef[] }`), `bodyValidatorFor`, and
-`validateBody` into `@sparx/field-schema`. `@sparx/cms-schemas` re-exports them unchanged
+`validateBody` into `@wizeworks/field-schema`. `@wizeworks/cms-schemas` re-exports them unchanged
 (`export { FieldSchema as ContentTypeSchema, ... }`) so **no CMS code changes behaviorally**.
-`@sparx/commerce-schemas` consumes the same engine for `ProductTypeSchema`. One engine, two
+`@wizeworks/commerce-schemas` consumes the same engine for `ProductTypeSchema`. One engine, two
 domains — the "single point of change" rule (root `CLAUDE.md` RULE #1) applied to the field
 system itself.
 
@@ -115,7 +115,7 @@ _Fallback if extraction proves risky:_ `commerce-schemas` imports the vocabulary
 
 ### 4.1 New model — `ProductType` (mirrors `ContentType`)
 
-`packages/db/prisma/schema/30-commerce-products.prisma`:
+`wizeworks/packages/db/prisma/schema/30-commerce-products.prisma`:
 
 ```prisma
 model ProductType {
@@ -161,17 +161,17 @@ Add to `model Product`:
 
 ### 4.3 Migration `20270206000000_product_types_attributes`
 
-Monotonic after the current newest `20270205000000_stored_credential_chain` (packages/db
+Monotonic after the current newest `20270205000000_stored_credential_chain` (wizeworks/packages/db
 `CLAUDE.md` — names are the sort key; must sort after the max). Contents:
 
 1. `CREATE TABLE commerce_product_types (...)` + indexes.
 2. `ALTER TABLE commerce_products ADD COLUMN product_type_key varchar(63), ADD COLUMN attributes jsonb NOT NULL DEFAULT '{}'`.
-3. **RLS** (hand-edited, not Prisma-generated — packages/db `CLAUDE.md`): `ENABLE` + `FORCE ROW
+3. **RLS** (hand-edited, not Prisma-generated — wizeworks/packages/db `CLAUDE.md`): `ENABLE` + `FORCE ROW
 LEVEL SECURITY` + `tenant_isolation` policy on `commerce_product_types` using
    `current_tenant_id()`. Built-ins live under the platform sentinel tenant and are RLS-visible
    to all tenants (same mechanism as content types — visible via the policy, forked on edit).
    `commerce_products` already has RLS; the two new columns need no backfill (defaults cover
-   every existing row, so no FORCE-RLS per-tenant loop — the footgun in packages/db `CLAUDE.md`
+   every existing row, so no FORCE-RLS per-tenant loop — the footgun in wizeworks/packages/db `CLAUDE.md`
    §RLS doesn't apply here).
 4. **Seed built-in product types** (§5) via `INSERT ... ON CONFLICT DO UPDATE`, mirroring
    `20260528100100_seed_builtin_content_types/migration.sql`.
@@ -179,7 +179,7 @@ LEVEL SECURITY` + `tenant_isolation` policy on `commerce_product_types` using
 ### 4.4 `builder_pages` targeting column (per-type product pages)
 
 A product PAGE (a `commerce.product` collection template) can target a specific product type.
-Add to the builder page model (`packages/db/prisma/schema/*builder*` — `builder_pages`):
+Add to the builder page model (`wizeworks/packages/db/prisma/schema/*builder*` — `builder_pages`):
 
 ```prisma
   recordSubtype String? @map("record_subtype") @db.VarChar(63)  // e.g. product type key "apparel"
@@ -194,7 +194,7 @@ Add to the builder page model (`packages/db/prisma/schema/*builder*` — `builde
 
 ## 5. Built-in product types (the starter set)
 
-Defined as `ProductTypeDefinition`s in `packages/commerce-schemas/src/product-types/builtins/`
+Defined as `ProductTypeDefinition`s in `wizeworks/packages/commerce-schemas/src/product-types/builtins/`
 (one file each), exported as `BUILT_IN_PRODUCT_TYPES`, seeded under the platform sentinel tenant
 (reuse `PLATFORM_TENANT_ID = '00000000-…-0000'`). Every attribute below is a real `FieldDef`.
 
@@ -213,12 +213,12 @@ starting vocabulary, not a ceiling.
 
 ## 6. Layer-by-layer changes
 
-### 6.1 `@sparx/field-schema` (new)
+### 6.1 `@wizeworks/field-schema` (new)
 
 Move `FieldDef` / `FieldSchema` / `bodyValidatorFor` / `validateBody` out of `cms-schemas`.
 `cms-schemas` re-exports for back-compat. (§3.)
 
-### 6.2 `@sparx/commerce-schemas`
+### 6.2 `@wizeworks/commerce-schemas`
 
 - `src/product-types/schema.ts` — `ProductTypeSchema` = `FieldSchema`; `ProductTypeDefinition`
   (key/name/pluralName/description/attributeSchema/icon).
@@ -227,19 +227,19 @@ Move `FieldDef` / `FieldSchema` / `bodyValidatorFor` / `validateBody` out of `cm
   the product create/update inputs (`products.ts:224,280`). Attribute validation happens in the
   service against the resolved type schema (not statically here).
 
-### 6.3 `@sparx/commerce` — product-types service
+### 6.3 `@wizeworks/commerce` — product-types service
 
-- `src/services/product-types-service.ts` — mirror `packages/cms/src/content-types-service.ts`:
+- `src/services/product-types-service.ts` — mirror `wizeworks/packages/cms/src/content-types-service.ts`:
   `list` (dedupe by key, tenant shadows built-in), `get`, `create`, `replaceSchema` (fork-on-edit
   of a built-in → tenant-owned copy), `delete` (custom only). Plus the trio from
   `content-types.ts`: `resolveType(tx, key)`, `parseProductTypeSchema(row)`,
-  `validateAndNormalizeAttributes(schema, attributes)` (reusing `@sparx/field-schema`
+  `validateAndNormalizeAttributes(schema, attributes)` (reusing `@wizeworks/field-schema`
   `bodyValidatorFor`).
 - `src/services/product-service.ts` `create` / `update` — when `productTypeKey` is set, resolve
   the type and `validateAndNormalizeAttributes` before persisting `attributes` (422 on mismatch,
   exactly like `entries-service.ts`).
 
-### 6.4 `services/api-rest`
+### 6.4 `wizeworks/services/api-rest`
 
 - `routes/v1/commerce/product-types.ts` (new) — `GET /v1/commerce/product-types`,
   `GET :key`, `POST` (role `editor`), `PUT :key/schema` (fork-on-edit), `DELETE :key`. Mirrors
@@ -261,14 +261,14 @@ Move `FieldDef` / `FieldSchema` / `bodyValidatorFor` / `validateBody` out of `cm
 
 ### 6.5 Storefront projection
 
-- `apps/site/lib/commerce.ts` — `PublicProduct` gains `attributes: Record<string, string>` +
+- `wizeworks/apps/site/lib/commerce.ts` — `PublicProduct` gains `attributes: Record<string, string>` +
   `attributeSections: { key; label; value }[]` (§6.4).
-- `apps/site/lib/silica-data.ts` `productToSilicaRecord` (`:147`) — add both `attributes` (keyed)
+- `wizeworks/apps/site/lib/silica-data.ts` `productToSilicaRecord` (`:147`) — add both `attributes` (keyed)
   and `attributeSections` (ordered) to the returned record so the PDP binds individual fields AND
   the auto-render repeat resolves (this is the single in-scope `product` record the silica PDP
   resolves against). List cards (`toSilicaProduct`, `:108`) don't need them.
-- `apps/site/lib/builder-commerce-data.ts` `productToBuilderRecord` (`:36`) +
-  `packages/builder-render/src/commerce-types.ts` `BuilderProduct` — add `attributes` for the
+- `wizeworks/apps/site/lib/builder-commerce-data.ts` `productToBuilderRecord` (`:36`) +
+  `wizeworks/packages/builder-render/src/commerce-types.ts` `BuilderProduct` — add `attributes` for the
   legacy builder-render path (parity so the editor canvas resolves the same keys).
 
 ### 6.6 Silica PDP kit — `marketplace-catalog/_gen/template-sites/pdp.ts`
@@ -280,7 +280,7 @@ Move `FieldDef` / `FieldSchema` / `bodyValidatorFor` / `validateBody` out of `cm
   an empty section list renders nothing. (This is the auto-render floor; per-type pages bind
   individual `attributes.<key>` — §6.10.)
 - `pdpPolicyLinks(opts)` — **new**. A short trust line linking to the store's real
-  `/shipping-policy` + `/returns-policy` legal pages (`packages/legal-templates` `LegalKind`
+  `/shipping-policy` + `/returns-policy` legal pages (`wizeworks/packages/legal-templates` `LegalKind`
   `shipping` / `returns`; slugs `shipping-policy` / `returns-policy`). No fabricated policy copy.
 - `pdpStockBadge(opts)` — **new**. A real low-stock signal bound to inventory
   (`variants[].inStock` / `available`; add `lowStock` to the product read cols exposed — §6.4),
@@ -289,27 +289,27 @@ Move `FieldDef` / `FieldSchema` / `bodyValidatorFor` / `validateBody` out of `cm
 
 ### 6.7 Workbench
 
-- `apps/workbench/surfaces/commerce/product-type-detail.tsx` (new) + `product-types-list.tsx` +
+- `sparx/apps/workbench/surfaces/commerce/product-type-detail.tsx` (new) + `product-types-list.tsx` +
   `product-types-data.ts` — the **field-builder editor**, adapted (rebuilt, per workbench
   `CLAUDE.md` "build it, don't port it") from `cms/content-type-detail.tsx` + its
   `content-types-data.ts` draft/wire mirror. Built-ins render view-only; editing forks.
-- `apps/workbench/surfaces/commerce/product-detail.tsx` — add a **product-type picker** and a
+- `sparx/apps/workbench/surfaces/commerce/product-detail.tsx` — add a **product-type picker** and a
   **schema-driven attribute form** (adapted from `cms/schema-form.tsx`) that renders one control
   per attribute field. Registry + nav wiring for the new surfaces.
-- `apps/workbench/surfaces/builder/studio/page-settings.tsx` — add the **product-type target** on
+- `sparx/apps/workbench/surfaces/builder/studio/page-settings.tsx` — add the **product-type target** on
   a `commerce.product` page (sets `recordSubtype`, narrows the field picker to that type). The
   binding-catalog wiring that feeds the picker (`mapProductType` → `dataSources()`) and the canvas
   preview data (`preview-data.ts`) are §6.10.
 
 ### 6.8 Blueprint plumbing
 
-- `packages/blueprints/src/manifest.ts` — the product decl gains `productTypeKey?` + `attributes?`;
+- `wizeworks/packages/blueprints/src/manifest.ts` — the product decl gains `productTypeKey?` + `attributes?`;
   a new top-level `productTypes?: ProductTypeDecl[]` (a blueprint can ship its own product
   type(s) with an attribute schema, exactly as it ships content).
-- `services/api-rest/src/lib/blueprint-installer.ts` — install `productTypes` (upsert by
+- `wizeworks/services/api-rest/src/lib/blueprint-installer.ts` — install `productTypes` (upsert by
   `(tenant, key)`) before products; on each product, set `productTypeKey` and
   `validateAndNormalizeAttributes` before persisting `attributes`.
-- `services/api-rest/src/lib/blueprint-updater.ts` — `productType` KindHandler (create/update on
+- `wizeworks/services/api-rest/src/lib/blueprint-updater.ts` — `productType` KindHandler (create/update on
   the three-way merge), so a blueprint update can add/adjust a type + attributes non-destructively.
 
 ### 6.9 The 10 templates
@@ -359,14 +359,14 @@ same as content.
 **(b) Per-type page routing.** A product page carries `recordSubtype = <productTypeKey>` (§4.4).
 Resolution, most-specific-wins:
 
-- Storefront PDP (`apps/site/app/products/[handle]/page.tsx:101`) already passes the product id to
+- Storefront PDP (`wizeworks/apps/site/app/products/[handle]/page.tsx:101`) already passes the product id to
   `getPublishedSilicaCollection(site, 'commerce.product', product.id)`. That resolver
   (`silica.ts:290`) + its api-rest endpoint (`/v1/public/builder/silica/collection`) gain the
   product's `productTypeKey` and pick the published page `WHERE recordType='commerce.product' AND
 (recordSubtype = <type> OR recordSubtype IS NULL) ORDER BY (recordSubtype IS NOT NULL) DESC` —
   the type-specific page if the tenant made one, else the default PDP. No change for tenants who
   never make a per-type page.
-- The builder studio (`apps/workbench/surfaces/builder/studio/page-settings.tsx`) gains a
+- The builder studio (`sparx/apps/workbench/surfaces/builder/studio/page-settings.tsx`) gains a
   **product-type target** on a `commerce.product` page ("this page designs: All products / Apparel
   / Beauty …"). Choosing a type sets `recordSubtype` AND narrows the field picker to that type's
   attributes (via the `mapProductType` source for that type). Preview data (`preview-data.ts`
@@ -417,7 +417,7 @@ whatever the product's type defines, which is the entire point.
 
 ## 9. Testing & validation
 
-- Unit: `@sparx/field-schema` validator round-trips (reuse existing cms-schemas validate tests as
+- Unit: `@wizeworks/field-schema` validator round-trips (reuse existing cms-schemas validate tests as
   the template); `validateAndNormalizeAttributes` 422s on a bad bag.
 - `safeParseBlueprint` + `blueprint-sweep.test.ts` green for all 10 regenerated bundles.
 - Storefront smoke: a product of type `apparel` renders its own fabric/care/fit; a different
@@ -426,12 +426,12 @@ whatever the product's type defines, which is the entire point.
   only when inventory is genuinely low.
 - `pnpm typecheck` + `pnpm lint` clean across touched packages **after the user regenerates the
   Prisma client** (new `ProductType` model + product columns don't typecheck until
-  `prisma generate` runs — that is the user's step; packages/db `CLAUDE.md` + the
+  `prisma generate` runs — that is the user's step; wizeworks/packages/db `CLAUDE.md` + the
   wait-for-DB-impact rule. New-model code not compiling until then is expected).
 
 ## 10. Build order (dependency-ordered phases)
 
-1. **Field-schema extraction** — `@sparx/field-schema`; cms-schemas re-exports. Verify CMS still
+1. **Field-schema extraction** — `@wizeworks/field-schema`; cms-schemas re-exports. Verify CMS still
    builds.
 2. **Schema + migration** — `ProductType` model, product columns, migration (RLS + built-in
    seed). _User regenerates Prisma._
@@ -468,7 +468,7 @@ templates once phase 7 lands.
   (user, 2026-08-06).
 - Fake "Selling fast" + countdown → **removed**; replaced with a **real inventory** low-stock
   badge.
-- Field-schema engine → **extracted to `@sparx/field-schema`**, reused by both content and
+- Field-schema engine → **extracted to `@wizeworks/field-schema`**, reused by both content and
   product types.
 - `productType` (free-text) kept; `productTypeKey` added as the typed link; `attributes` added as
   the validated bag; `metadata` untouched.

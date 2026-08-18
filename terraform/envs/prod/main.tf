@@ -60,7 +60,7 @@ module "pubsub" {
   # Topic -> subscribers. One google_pubsub_topic per key; each subscriber
   # in the list gets a subscription named "<topic>.<subscriber>".
   #
-  # Topic name == EventType in services/api-rest/src/lib/pubsub.ts. To add
+  # Topic name == EventType in wizeworks/services/api-rest/src/lib/pubsub.ts. To add
   # a new event type:
   #   1. Add the literal to the EventType union in pubsub.ts
   #   2. Add the same string here with [] (no consumers yet) or a list
@@ -122,7 +122,7 @@ module "pubsub" {
     "search.entity.changed" = []
 
     # Commerce / orders — lifecycle events teed from the CRM platform bus to
-    # Pub/Sub (packages/crm/src/pubsub-bridge.ts). commerce-indexer consumes
+    # Pub/Sub (wizeworks/packages/crm/src/pubsub-bridge.ts). commerce-indexer consumes
     # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only
     # here (empty list = no idle pull subscription).
     "order.created" = []
@@ -155,9 +155,9 @@ module "pubsub" {
     "crm.customer.deleted" = []
     "crm.customer.merged"  = []
 
-    # The REST of the CRM bus. `CrmTopic` in packages/crm/src/events.ts is a
+    # The REST of the CRM bus. `CrmTopic` in wizeworks/packages/crm/src/events.ts is a
     # SECOND event catalog, parallel to the `EventType` union in
-    # packages/events/src/types.ts — every name below is published for real, but
+    # wizeworks/packages/events/src/types.ts — every name below is published for real, but
     # only the four customer topics above had ever been provisioned. Found
     # 2026-07-24 when a live order logged
     # `publish failed … resource=crm.pipeline.created`, immediately after the
@@ -313,7 +313,7 @@ module "pubsub" {
     # re-splitting an expense dirties the day it sits on, and the finance-worker
     # recomputes that day's profit rollup. `finance.recurring.due` is an api-rest
     # tick that hands the write loop to the worker, the same split as
-    # social.post.due. The worker is a handler inside services/event-worker (a
+    # social.post.due. The worker is a handler inside wizeworks/services/event-worker (a
     # pull subscriber), so these carry no push subscription of their own.
     "finance.expense.recorded"  = []
     "finance.expense.allocated" = []
@@ -327,7 +327,7 @@ module "pubsub" {
 
     # Staff (docs/149 §6). `staff.time.approved` is the one that does work: it is
     # the labour deriver's trigger, and the deriver is a handler inside
-    # services/event-worker (a pull subscriber), so it carries no push
+    # wizeworks/services/event-worker (a pull subscriber), so it carries no push
     # subscription of its own. The rest are topic-only — the notification fan-out
     # rides the publish() tee, and they are the activity-feed hooks.
     "staff.member.created"         = []
@@ -410,7 +410,7 @@ module "pubsub" {
     # ── Catalog reconciliation, 2026-07-24 ──────────────────────────────────
     # The SAME failure as the dropship + order.placed notes above, found again
     # during the payments E2E: this map had drifted from the EventType union in
-    # packages/events/src/types.ts, so 66 of its 134 event types had no topic and
+    # wizeworks/packages/events/src/types.ts, so 66 of its 134 event types had no topic and
     # every publish to them failed with `5 NOT_FOUND: Resource not found`. It is
     # caught + logged (publishes are best-effort, so nothing breaks user-visibly)
     # which is exactly why it went unnoticed — the money still moved, but every
@@ -632,7 +632,7 @@ module "secrets" {
     #     account.updated), each with its own whsec_, and a rolled secret overlaps
     #     for 24h. Put both in one secret version, comma-separated.
     #   stripe-webhook-secret-billing → STRIPE_WEBHOOK_SECRET_BILLING, verifying the
-    #     platform module-billing endpoint (@sparx/billing). Same fail-silent shape.
+    #     platform module-billing endpoint (@wizeworks/billing). Same fail-silent shape.
     # Value comes from Stripe → Developers → Webhooks → <endpoint> → signing secret
     # (`whsec_…`), added out-of-band via `gcloud secrets versions add`.
     "stripe-webhook-secret-sparx-pay",
@@ -677,7 +677,7 @@ module "secrets" {
     # Better Auth (Layer 1 staff) — its own Postgres URL alongside the app DB.
     "auth-database-url",
     # Google OAuth (Better Auth social provider) — clientId/secret backing the
-    # "Continue with Google" button. @sparx/auth (server.ts) registers the
+    # "Continue with Google" button. @wizeworks/auth (server.ts) registers the
     # provider only when BOTH are present, so the button stays inert until these
     # land. Redirect URI: ${BETTER_AUTH_URL}/api/auth/callback/google.
     "google-client-id",
@@ -786,7 +786,7 @@ module "secrets" {
     # Provider-installation secret-encryption key (docs/09) — AES-256-GCM key
     # encrypting tenant-pasted provider credentials (e.g. a Shippo API token)
     # stored on provider_installations.configEncrypted. Bound by api-rest only
-    # (packages/commerce/src/lib/secret-reader.ts). NOT gated on any partner
+    # (wizeworks/packages/commerce/src/lib/secret-reader.ts). NOT gated on any partner
     # approval — generate + add a version now:
     #   gcloud secrets versions add provider-secret-key --data-file=- \
     #     <<< "$(openssl rand -base64 32)"
@@ -927,7 +927,7 @@ resource "google_service_account_iam_member" "app_self_sign" {
   member             = "serviceAccount:${google_service_account.app.email}"
 }
 
-# Workload Identity GSA for the WizeWorks operator console (apps/admin), bound to
+# Workload Identity GSA for the WizeWorks operator console (wizeworks/apps/admin), bound to
 # the `wize-admin` KSA in the `wize-admin` namespace (docs/apps/admin/build-plan.md
 # §2 D2). Deliberately minimal reach: its ONLY project role is Pub/Sub publisher
 # (the operator set-password email.send). NO Cloud SQL IAM — it reaches the
@@ -938,7 +938,7 @@ resource "google_service_account_iam_member" "app_self_sign" {
 resource "google_service_account" "wize_admin" {
   account_id   = "wize-admin"
   display_name = "WizeWorks operator console"
-  description  = "Used by apps/admin (wize-admin namespace) via Workload Identity. Pub/Sub publisher only."
+  description  = "Used by wizeworks/apps/admin (wize-admin namespace) via Workload Identity. Pub/Sub publisher only."
 }
 
 resource "google_project_iam_member" "wize_admin_pubsub" {

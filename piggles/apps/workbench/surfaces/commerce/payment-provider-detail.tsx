@@ -31,7 +31,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Text,
@@ -47,6 +46,7 @@ import { Icon } from '@piggles/ui';
 import { CopyValue } from '../../components/copy-value';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -142,17 +142,36 @@ export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const credential = (credentials.data ?? []).find((c) => c.gatewayId === gatewayId);
 
-  return <ProviderEditor descriptor={descriptor} config={config.data} credential={credential} />;
+  return (
+    <ProviderEditor
+      descriptor={descriptor}
+      config={config.data}
+      credential={credential}
+      isFetching={config.isFetching || catalog.isFetching || credentials.isFetching}
+      updatedAt={config.data ? config.dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void config.refetch();
+        void catalog.refetch();
+        void credentials.refetch();
+      }}
+    />
+  );
 }
 
 function ProviderEditor({
   descriptor,
   config,
   credential,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   descriptor: GatewayDescriptor;
   config: PaymentConfig | undefined;
   credential: MaskedGatewayCredential | undefined;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
 }) {
   const state = gatewayState(descriptor, config, credential);
   const isSelected = config?.gatewayId === descriptor.id;
@@ -160,20 +179,24 @@ function ProviderEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Payment provider actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Payment provider actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        refresh={
+          /* Three queries feed this pane — the site's payment settings, the
+            gateway catalog and the stored credentials — so one refresh reloads
+            all three. */
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {descriptor.name}
-            </Heading>
-            <Text className="text-sm">{descriptor.blurb}</Text>
-          </div>
+          <Text className="text-sm">{descriptor.blurb}</Text>
 
           {isActive ? (
             <Alert color="success" variant="soft">

@@ -269,9 +269,9 @@ Used in structured data, legal copy, and the footer. **These must be consistent 
 | Products       | sparx (`sparx.works`), kanNINJA (`kanninja.com`), AGCONN (`agconn.com`)                      |
 | Also held      | `stumbleable.com`, `agconn.com`                                                              |
 
-> ✅ **Fixed 2026-07-30.** `WizeWorks, Inc.` was shipping in 11 places across `apps/web` and
-> `apps/market` — `Organization` structured data, `creator`/`publisher` metadata, both footers, the
-> copyright line, and the trademark line — while `apps/web/app/careers/roles.ts` correctly said
+> ✅ **Fixed 2026-07-30.** `WizeWorks, Inc.` was shipping in 11 places across `sparx/apps/web` and
+> `sparx/apps/market` — `Organization` structured data, `creator`/`publisher` metadata, both footers, the
+> copyright line, and the trademark line — while `sparx/apps/web/app/careers/roles.ts` correctly said
 > `WizeWorks LLC`. All corrected to **WizeWorks LLC**.
 
 ---

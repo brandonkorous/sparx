@@ -3,11 +3,13 @@
 // Your tier — which level of the partner programme you are on, what it earns, and
 // what it takes to reach the next one.
 //
-// A read-only standing view: the current tier and status ride the pane header,
-// the ladder shows all three levels with the current one marked, and a small
-// earnings summary grounds it in real numbers. Applying to move up is a decision,
-// not a form — two facts and a confirm — so it is a confirm dialog, never a modal.
+// A read-only standing view: the current tier names the TAB and, with its status,
+// rides the pane header too; the ladder shows all three levels with the current
+// one marked, and a small earnings summary grounds it in real numbers. Applying
+// to move up is a decision, not a form — two facts and a confirm — so it is a
+// confirm dialog, never a modal.
 
+import { useEffect } from 'react';
 import { Badge, Button, Heading, Text, useToast } from '@wizeworks/silicaui-react';
 import { faAward, faCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -31,11 +33,17 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function TierSurface(_props: { ctx: SurfaceContext }) {
+export function TierSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
   const overview = usePartnerOverview();
   const applyTier = useApplyTier();
+
+  // WHICH tier is the whole identity of this pane, so it names the tab.
+  const tierLabel = overview.data ? TIERS[overview.data.partner.tier].label : null;
+  useEffect(() => {
+    if (tierLabel) ctx.setTitle(`${tierLabel} partner`);
+  }, [ctx, tierLabel]);
 
   if (overview.isError) {
     return (
@@ -94,33 +102,35 @@ export function TierSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Tier controls">
-        <Badge color="module" variant="soft" size="sm">
-          {TIERS[partner.tier].label} partner
-        </Badge>
-        <Badge color={status.tone} variant="soft" size="sm">
-          {status.label}
-        </Badge>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={overview.isFetching}
-          updatedAt={overview.data ? overview.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void overview.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Tier controls"
+        status={
+          <>
+            <Badge color="module" variant="soft" size="sm">
+              {TIERS[partner.tier].label} partner
+            </Badge>
+            <Badge color={status.tone} variant="soft" size="sm">
+              {status.label}
+            </Badge>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            className="ml-auto"
+            isFetching={overview.isFetching}
+            updatedAt={overview.data ? overview.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void overview.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              You’re a {TIERS[partner.tier].label} partner
-            </Heading>
-            <Text>
-              {TIERS[partner.tier].commission}. Here’s where you stand and what it takes to move up.
-            </Text>
-          </div>
+          <Text>
+            {TIERS[partner.tier].commission}. Here’s where you stand and what it takes to move up.
+          </Text>
 
           <div className="grid gap-3 @md:grid-cols-4">
             <Stat label="Referrals" value={String(referralCount)} />

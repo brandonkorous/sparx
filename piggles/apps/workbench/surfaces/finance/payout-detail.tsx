@@ -9,7 +9,9 @@
 
 import { useEffect } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, EmptyState, Heading, Table, Text } from '@wizeworks/silicaui-react';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -41,36 +43,32 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Payout controls">
-        <p className="text-sm">Deposit</p>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Payout controls"
+        status={<p className="text-sm">Deposit</p>}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
-            title="Could not load this deposit"
-            description="Something went wrong reaching the server. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
+              title="Could not load this deposit"
+              description="Something went wrong reaching the server. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending ? (
           <PaneWaiting label="Loading deposit…" />
         ) : (

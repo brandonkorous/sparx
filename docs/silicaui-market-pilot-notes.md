@@ -4,11 +4,11 @@ Version: 1.1
 Author: Brandon Korous
 Last Updated: 2026-07-27
 
-The `apps/market` migration off `@sparx/ui` and onto **silicaui** (`silicaui` CSS
+The `sparx/apps/market` migration off `@wizeworks/ui` and onto **silicaui** (`silicaui` CSS
 plugin + `silicaui-react`), run as the deliberate first/simplest pilot to surface
 the gotchas before the pre-launch big-bang across every surface (web, dashboard,
 site, admin, b2b-portal). market was chosen because it imports **only**
-`@sparx/ui` — no builder, no tenant theming, no CMS editor — so it isolates the
+`@wizeworks/ui` — no builder, no tenant theming, no CMS editor — so it isolates the
 _plumbing_ of consuming silicaui from the _hard_ theming/builder problems.
 
 Companion docs: [silicaui-site-ui-parity-spec.md](silicaui-site-ui-parity-spec.md)
@@ -38,14 +38,14 @@ Companion docs: [silicaui-site-ui-parity-spec.md](silicaui-site-ui-parity-spec.m
 
 ## 1. End-state architecture (what a silicaui-consuming app looks like)
 
-Four moving parts, replacing the single `@sparx/ui` dependency:
+Four moving parts, replacing the single `@wizeworks/ui` dependency:
 
 1. **`silicaui`** (npm) — the Tailwind v4 CSS plugin. Loaded in the app's Tailwind
    entry with `@plugin "silicaui" { colors: … }`. Emits every component class
    (`.btn`, `.badge`, `.alert`, …) + design tokens via `addBase`.
 2. **`silicaui-react`** (npm) — thin React components over those classes
    (`Button`, `Badge`, `Alert`, `Input`, …). Imported by feature code.
-3. **The sparx theme** — [`apps/market/app/sparx-theme.css`](../apps/market/app/sparx-theme.css):
+3. **The sparx theme** — [`sparx/apps/market/app/sparx-theme.css`](../apps/market/app/sparx-theme.css):
    a **named** silicaui theme `[data-theme="sparx"]` (+ `sparx-dark`) holding the
    standard `--color-{name}` / `--color-{name}-content` palette silicaui reads,
    plus derived `mx-*` chrome aliases. `<html data-theme="sparx">`.
@@ -54,33 +54,33 @@ Four moving parts, replacing the single `@sparx/ui` dependency:
    SparxMark), a local copy of the chunk-reload guard, and
    [`lib/status.ts`](../apps/market/lib/status.ts) (statusTone/statusLabel).
 
-   The chunk guard has since moved to [`@sparx/app-kit`](../packages/app-kit/) —
+   The chunk guard has since moved to [`@wizeworks/app-kit`](../packages/app-kit/) —
    see §5, and the cost of having kept it app-local, below.
 
-`@sparx/ui` is fully severed — no import, no `transpilePackages` entry, no
+`@wizeworks/ui` is fully severed — no import, no `transpilePackages` entry, no
 Dockerfile COPY.
 
 ## 2. The reusable playbook (every app repeats these)
 
-1. **Deps:** drop `@sparx/ui`; add `"silicaui": "^0.1.0"`, `"silicaui-react": "^0.1.0"`.
-2. **CSS entry:** replace `@import '@sparx/ui/tokens.css'` + the `@source` of
-   `@sparx/ui` src + the `@theme` color mapping with `@import './sparx-theme.css'`
+1. **Deps:** drop `@wizeworks/ui`; add `"silicaui": "^0.1.0"`, `"silicaui-react": "^0.1.0"`.
+2. **CSS entry:** replace `@import '@wizeworks/ui/tokens.css'` + the `@source` of
+   `@wizeworks/ui` src + the `@theme` color mapping with `@import './sparx-theme.css'`
    - `@plugin "silicaui" { colors: … }`. **No `@source` for silicaui-react.**
 3. **Theme:** import the shared sparx theme (see §5 — extract to `@sparx/brand`).
 4. **`<html data-theme="sparx">`** (was `data-theme="light"`).
 5. **Cascade layers:** silicaui lands in `@layer base` (via `addBase`), NOT
    `components`. Register app chrome above it; keep the theme block + `html,body`
    paint UNLAYERED so they win (see §4).
-6. **Components:** swap imports `@sparx/ui` → `silicaui-react`; apply the API
+6. **Components:** swap imports `@wizeworks/ui` → `silicaui-react`; apply the API
    deltas (§3).
-7. **Glue:** relocate the non-design residue app-local (→ `@sparx/app-kit` in §5).
+7. **Glue:** relocate the non-design residue app-local (→ `@wizeworks/app-kit` in §5).
 8. **Build wiring:** `transpilePackages: ['silicaui-react']`; remove the
-   `@sparx/ui` Dockerfile COPY lines (silicaui is an npm dep, not a workspace
+   `@wizeworks/ui` Dockerfile COPY lines (silicaui is an npm dep, not a workspace
    COPY).
 
-## 3. Component API deltas (`@sparx/ui` → `silicaui-react`)
+## 3. Component API deltas (`@wizeworks/ui` → `silicaui-react`)
 
-| `@sparx/ui`                         | `silicaui-react`                                                                              | Notes                                                                                                                                                                                                |
+| `@wizeworks/ui`                     | `silicaui-react`                                                                              | Notes                                                                                                                                                                                                |
 | ----------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `<Button asChild><Link/></Button>`  | `<Button render={<Link/>}>text</Button>`                                                      | Base-UI `render` composition, not Radix `Slot`. Children move onto the Button; the link's own children go away. **Most-repeated edit (~16 sites).**                                                  |
 | conditional `asChild={cond}`        | `{...(cond ? { render: <Link/> } : {})}`                                                      | Spread the `render` prop only when polymorphic; otherwise a plain disabled `<button>`.                                                                                                               |
@@ -114,7 +114,7 @@ Straight import-only swaps (identical API): `Badge`, `Input`, `NativeSelect`,
   name**. `danger` is the first instance. **Rollout:** the per-module colors
   (`commerce`, `cms`, `crm`, …) each become a **named silicaui color** in the
   `colors:` list — `.badge-commerce` generated dynamically, replacing the
-  `sx-c-*` recipe classes in `packages/ui/src/tokens.css`.
+  `sx-c-*` recipe classes in `sparx/packages/ui/src/tokens.css`.
 - **Custom brand = a NAMED theme, not an override.** `[data-theme="sparx"]` sits
   alongside silicaui's built-in `light`/`dark`; no specificity war. Nested
   `[data-theme]` islands still work (relevant for the builder canvas later).
@@ -126,7 +126,7 @@ Straight import-only swaps (identical API): `Badge`, `Input`, `NativeSelect`,
   silicaui's base-layer `:root`/`[data-theme]` defaults.
 - **No `@source` for silicaui-react** — its components emit only plugin-provided
   semantic classes, never internal Tailwind utilities, so there's nothing extra
-  to scan (unlike `@sparx/ui`, whose CVA source had to be scanned).
+  to scan (unlike `@wizeworks/ui`, whose CVA source had to be scanned).
 
 ## 5. Rollout — extract the shared packages FIRST
 
@@ -137,15 +137,15 @@ extract them so the brand is defined once:
   named silicaui colors + derived chrome aliases, light + dark). Every app imports
   it; tenant sites override the same standard token names per-tenant (the
   `[data-theme]` island model the parity spec relies on).
-- **`@sparx/app-kit`** — the framework/brand glue: `Wordmark`/`SparxMark`,
+- **`@wizeworks/app-kit`** — the framework/brand glue: `Wordmark`/`SparxMark`,
   `ChunkReloadGuard`, `statusTone`/`statusLabel`. This is the residue that proves
-  `@sparx/ui` doesn't fully dissolve into silicaui — every app has a little of it.
+  `@wizeworks/ui` doesn't fully dissolve into silicaui — every app has a little of it.
 
 **Outcome (2026-07-27).** Both landed, but split differently and — for app-kit —
 a release too late. `@sparx/brand` absorbed the theme AND `Wordmark`/`SparxMark`
 (brand marks belong with the brand, not with framework glue); `statusTone`/
-`statusLabel` stayed in `@sparx/ui`, being design vocabulary rather than glue.
-That left [`@sparx/app-kit`](../packages/app-kit/) holding the chunk-load guard
+`statusLabel` stayed in `@wizeworks/ui`, being design vocabulary rather than glue.
+That left [`@wizeworks/app-kit`](../packages/app-kit/) holding the chunk-load guard
 alone, extracted only after the delay had cost something real: the copies drifted
 into four apps, the Next 16 upgrade moved the default bundler to Turbopack, and
 the shared detector — written against webpack's wording — stopped matching. Every

@@ -32,18 +32,19 @@ import {
   Heading,
   Input,
   Select,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faClock } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { api } from '../../lib/api/client';
-import { useMutation, useQueryClient } from '@sparx/query';
+import { useMutation, useQueryClient } from '@wizeworks/query';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   describeHours,
@@ -124,7 +125,7 @@ function toDraft(policy: SlaPolicy): Draft {
 /* ── Surface ────────────────────────────────────────────────────────────── */
 
 export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data, isPending, isError, refetch } = useSlaPolicies();
+  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSlaPolicies();
   // Memoised because the `?? []` would otherwise mint a new array every render,
   // which is enough to re-run the lookup below on every keystroke elsewhere in
   // the pane.
@@ -181,7 +182,17 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   return (
-    <PolicyEditor key={policy.id} policy={policy} policies={policies} onSelect={setSelectedId} />
+    <PolicyEditor
+      key={policy.id}
+      policy={policy}
+      policies={policies}
+      onSelect={setSelectedId}
+      isFetching={isFetching}
+      updatedAt={data ? dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
   );
 }
 
@@ -189,10 +200,16 @@ function PolicyEditor({
   policy,
   policies,
   onSelect,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   policy: SlaPolicy;
   policies: SlaPolicy[];
   onSelect: (id: string) => void;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
 }) {
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -322,51 +339,56 @@ function PolicyEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Response time actions">
-        {policy.isDefault ? (
-          <Badge color="module" variant="soft" size="sm">
-            Used by default
-          </Badge>
-        ) : null}
-        {policies.length > 1 ? (
-          <div className="w-52">
-            <Select
-              color="module"
-              size="sm"
-              aria-label="Which set of response times"
-              value={policy.id}
-              items={policyItems}
-              onValueChange={(next) => {
-                onSelect(next as string);
-              }}
-            />
-          </div>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={save.isPending}
-          disabled={Boolean(blocked) || !dirty}
-          onClick={submit}
-        >
-          Save
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Response time actions"
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+        status={
+          policy.isDefault ? (
+            <Badge color="module" variant="soft" size="sm">
+              Used by default
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            loading={save.isPending}
+            disabled={Boolean(blocked) || !dirty}
+            onClick={submit}
+          >
+            Save
+          </Button>
+        }
+        controls={
+          policies.length > 1 ? (
+            <div className="w-52">
+              <Select
+                color="module"
+                size="sm"
+                aria-label="Which set of response times"
+                value={policy.id}
+                items={policyItems}
+                onValueChange={(next) => {
+                  onSelect(next as string);
+                }}
+              />
+            </div>
+          ) : null
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Response times
-            </Heading>
-            <Text>
-              How quickly you promise to get back to someone, and when you are open to do it. The
-              clock only runs during your opening hours — so if you promise a reply within four
-              hours and a message arrives at half past four in the afternoon, it is due at half past
-              nine the next morning, not overnight.
-            </Text>
-          </div>
+          <Text>
+            How quickly you promise to get back to someone, and when you are open to do it. The
+            clock only runs during your opening hours — so if you promise a reply within four hours
+            and a message arrives at half past four in the afternoon, it is due at half past nine
+            the next morning, not overnight.
+          </Text>
 
           <Alert color="info" variant="soft">
             <AlertContent>

@@ -53,24 +53,24 @@ Three existing properties of the platform carry the feature:
    service function that already validates input, writes an audit row, and publishes an
    event. The installer calls these — it owns no write logic of its own:
 
-   | Artifact                    | Reused create path                                                                                                                                                       |
-   | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-   | Brand identity              | `TenantBrand` upsert / `/v1/brand`                                                                                                                                       |
-   | Theme + presentation        | `themeService.selectTheme` + `themeService.updateSettings` ([packages/sitebuilder/src/services/theme-service.ts](../packages/sitebuilder/src/services/theme-service.ts)) |
-   | Content types               | `POST /v1/content/types` handler ([content/types.ts](../services/api-rest/src/routes/v1/content/types.ts))                                                               |
-   | Content entries             | `tx.contentEntry.create` + `recordRevision` + `syncReferences` ([packages/api-core/src/entries.ts](../packages/api-core/src/entries.ts))                                 |
-   | Categories                  | `categoryService.create` ([category-service.ts](../packages/commerce/src/services/category-service.ts))                                                                  |
-   | Products                    | `productService.create` ([product-service.ts](../packages/commerce/src/services/product-service.ts))                                                                     |
-   | Variants / options / images | `variantService.setOptions` / `create` / `addImage` / `setPrimaryImage` ([variant-service.ts](../packages/commerce/src/services/variant-service.ts))                     |
-   | Site layout                 | `layoutService.create` + `setActive` ([layout-service.ts](../packages/builder/src/services/layout-service.ts))                                                           |
-   | Pages + defaults            | `pageService.create` + `setDefault` ([page-service.ts](../packages/builder/src/services/page-service.ts))                                                                |
-   | Email templates             | `emailService.create` + `publish` ([email-service.ts](../packages/builder/src/services/email-service.ts))                                                                |
-   | Custom components           | `componentService.create` ([component-service.ts](../packages/builder/src/services/component-service.ts))                                                                |
+   | Artifact                    | Reused create path                                                                                                                                                                 |
+   | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | Brand identity              | `TenantBrand` upsert / `/v1/brand`                                                                                                                                                 |
+   | Theme + presentation        | `themeService.selectTheme` + `themeService.updateSettings` ([wizeworks/packages/sitebuilder/src/services/theme-service.ts](../packages/sitebuilder/src/services/theme-service.ts)) |
+   | Content types               | `POST /v1/content/types` handler ([content/types.ts](../services/api-rest/src/routes/v1/content/types.ts))                                                                         |
+   | Content entries             | `tx.contentEntry.create` + `recordRevision` + `syncReferences` ([wizeworks/packages/api-core/src/entries.ts](../packages/api-core/src/entries.ts))                                 |
+   | Categories                  | `categoryService.create` ([category-service.ts](../packages/commerce/src/services/category-service.ts))                                                                            |
+   | Products                    | `productService.create` ([product-service.ts](../packages/commerce/src/services/product-service.ts))                                                                               |
+   | Variants / options / images | `variantService.setOptions` / `create` / `addImage` / `setPrimaryImage` ([variant-service.ts](../packages/commerce/src/services/variant-service.ts))                               |
+   | Site layout                 | `layoutService.create` + `setActive` ([layout-service.ts](../packages/builder/src/services/layout-service.ts))                                                                     |
+   | Pages + defaults            | `pageService.create` + `setDefault` ([page-service.ts](../packages/builder/src/services/page-service.ts))                                                                          |
+   | Email templates             | `emailService.create` + `publish` ([email-service.ts](../packages/builder/src/services/email-service.ts))                                                                          |
+   | Custom components           | `componentService.create` ([component-service.ts](../packages/builder/src/services/component-service.ts))                                                                          |
 
 2. **Theming is centralized.** Every surface — site chrome, pages, **and** emails — reads
    brand identity _live_ from `TenantBrand` and overlays it at publish/render
    (`overlayBrand` in sitebuilder; `resolveEmailBrand` in
-   [packages/email-platform/src/services/brand-service.ts](../packages/email-platform/src/services/brand-service.ts)).
+   [wizeworks/packages/email-platform/src/services/brand-service.ts](../packages/email-platform/src/services/brand-service.ts)).
    So "consistently themed" is achieved by setting brand + `themeKey` **once**; nothing is
    baked per-artifact. This is the single most important enabler — it is why one Blueprint
    can theme the whole stack without per-page color decisions.
@@ -159,7 +159,7 @@ resolves references in dependency order. This is the only "new" logic in the ins
 it is mechanical.
 
 **Trees are authored, not generated.** `layout`, `pages[].tree`, `emails[].tree`, and
-`components[].tree` are real `@sparx/builder-schemas` node trees — the same JSON the visual
+`components[].tree` are real `@wizeworks/builder-schemas` node trees — the same JSON the visual
 editor produces. The fastest way to author the flagship is to build it in `/builder` against
 a scratch tenant, then export the published trees into the manifest. The trees reference
 brand via tokens (never hardcoded colors), so they re-theme automatically per installing
@@ -238,7 +238,7 @@ Two different consumers, two handling rules:
 - **Product images**: structurally bound through `VariantImage.mediaAssetId → MediaAsset`.
   There is no raw-URL path here. The installer creates a lightweight `MediaAsset` row
   (`status: 'ready'`) whose `key` holds the **absolute external URL**, and we make
-  `mediaPublicUrl()` ([packages/commerce/src/media-url.ts](../packages/commerce/src/media-url.ts))
+  `mediaPublicUrl()` ([wizeworks/packages/commerce/src/media-url.ts](../packages/commerce/src/media-url.ts))
   **pass through absolute `http(s)://` keys** instead of prefixing the CDN base. That is the
   only code change media requires for this phase (~a few lines + a test).
 
@@ -331,7 +331,7 @@ as docs/53/38's no-deploy goal.
 
 ## 10. Events
 
-Add to [packages/events/src/types.ts](../packages/events/src/types.ts):
+Add to [wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts):
 
 - `template.install` — `{ tenantId, blueprintKey, version, propertyId, actorId }` — published
   by the marketplace Install action, consumed by `template-installer`.
@@ -351,7 +351,7 @@ bootstrap endpoints; per-property scoping.
 
 **Net-new:**
 
-1. `Blueprint` manifest type + validator (`@sparx/blueprints`, a new package).
+1. `Blueprint` manifest type + validator (`@wizeworks/blueprints`, a new package).
 2. `template-installer` service (`services/template-installer/`) — orchestration + id map.
 3. The three events (§10).
 4. `mediaPublicUrl` absolute-URL pass-through + a `MediaAsset` "external" creation helper (§6).
@@ -393,10 +393,10 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 
 **Build order (each shippable):**
 
-1. ✅ **BUILT (2026-06-04)** — `@sparx/blueprints` manifest type + integrity validator + the
+1. ✅ **BUILT (2026-06-04)** — `@wizeworks/blueprints` manifest type + integrity validator + the
    `retail-store-blog` flagship (ships the Driftwood theme). Typecheck + lint + 15 tests green.
-   (`packages/blueprints/`).
-2. ✅ **BUILT (2026-06-05)** — the installer (`services/api-rest/src/lib/blueprint-installer.ts`):
+   (`wizeworks/packages/blueprints/`).
+2. ✅ **BUILT (2026-06-05)** — the installer (`wizeworks/services/api-rest/src/lib/blueprint-installer.ts`):
    `installBlueprint` (all slices: modules → assets → brand → theme → content → commerce →
    components → layout → pages → emails, draft) + `goLiveInstall` (publish all). Synchronous,
    called from the route; structured to lift into the async worker later. Reuses every existing
@@ -407,7 +407,7 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 4. ✅ **BUILT (2026-06-05)** — REST: `GET /v1/blueprints`, `GET /v1/blueprints/:key`,
    `POST /v1/blueprints/:key/install`, `GET /v1/blueprints/installs[/:id]`,
    `POST /v1/blueprints/installs/:id/go-live` (install/go-live admin-only, install into the
-   ACTIVE property). `@sparx/blueprints` wired into api-rest (dep + Dockerfile COPY).
+   ACTIVE property). `@wizeworks/blueprints` wired into api-rest (dep + Dockerfile COPY).
 5. ✅ **BUILT (2026-06-05)** — dashboard **Templates** marketplace (`/templates`): browse cards
    with contents breakdown, confirm-gated **Install**, draft → **Go live**, rail-nav entry.
 
@@ -494,7 +494,7 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 ## 15. Public marketplace & top-of-funnel (#4)
 
 Phase-1's marketplace is dashboard-only (post-auth, admin-gated). The high-leverage next step is a
-**public** template gallery on the marketing site (`apps/web`, pre-auth) that turns "browse a
+**public** template gallery on the marketing site (`sparx/apps/web`, pre-auth) that turns "browse a
 template" into "start a tenant" — aligned with the onboarding "live in under 5 minutes" goal
 ([docs/15](15-merchant-onboarding-prd.md)) and the "AI builds it, sparx keeps it" permanence
 positioning ([docs/01](01-platform-vision.md) §7).
@@ -502,7 +502,7 @@ positioning ([docs/01](01-platform-vision.md) §7).
 Funnel:
 
 ```
-public gallery (apps/web) ─▶ "Start with this template" ─▶ sign up
+public gallery (sparx/apps/web) ─▶ "Start with this template" ─▶ sign up
   ─▶ tenant created ─▶ blueprint auto-installed (async, draft) ─▶ Review & go live (§8)
 ```
 

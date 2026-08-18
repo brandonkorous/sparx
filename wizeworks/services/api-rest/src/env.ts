@@ -1,0 +1,506 @@
+// Boot-time env validation. Anything missing or malformed fails fast with a
+// readable error, before Fastify starts listening — better than a 500 on the
+// first request. Every env var the service reads must be declared here.
+//
+// Local dev reads `.env` (or `.env.local`) via dotenv; in prod the k8s
+// Deployment hydrates the env from the sparx-app-env ConfigMap and the
+// sparx-app-secrets Secret, so dotenv silently no-ops when neither file
+// exists.
+
+import 'dotenv/config';
+import { z } from 'zod';
+
+const EnvSchema = z
+  .object({
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+    PORT: z.coerce.number().int().min(0).max(65535).default(3100),
+    HOST: z.string().default('0.0.0.0'),
+    LOG_LEVEL: z
+      .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+      .default('info'),
+    DATABASE_URL: z.string().min(1),
+    // Shared with the dashboard (and any other internal sparx service) — used
+    // to sign + verify short-lived internal-trust JWTs that carry the staff
+    // session's {tenantId, userId, role} from the dashboard to api-rest.
+    SPARX_INTERNAL_JWT_SECRET: z.string().min(32),
+    // Shared secret for the CRM scheduled-job CronJobs. k8s CronJobs POST
+    // to /internal/crm/* with this in the X-sparx-Internal-Cron-Token
+    // header. Optional in dev so a fresh checkout boots; missing-in-prod
+    // is the operator's responsibility to provision via Secret Manager.
+    SPARX_INTERNAL_CRON_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the internal L-PLAT acquisition report
+    // (GET /internal/acquisition/summary, docs/80 §10). A SEPARATE secret from
+    // the cron token because it exposes cross-tenant business intelligence — a
+    // different blast radius than triggering a scheduler — so it rotates
+    // independently. Optional in dev; unset → the endpoint returns 401.
+    SPARX_INTERNAL_ACQUISITION_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the internal Partner Program endpoints (docs/114 §B.8):
+    // the signup referral-attribution hook (POST /internal/partners/referrals),
+    // the first-payment commission-accrual hook, and staff approve/tier/suspend.
+    // A SEPARATE secret (writes cross-org referral/commission rows) — its own
+    // blast radius, rotates independently. Optional in dev; unset → endpoints 401.
+    SPARX_INTERNAL_PARTNERS_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the tenant-furnishing hook (POST /internal/tenant/furnish).
+    // The app that runs signup calls this once, after it has a tenant + owner, to
+    // switch the modules on, stamp the trade's config, optionally install a site
+    // template and load sample records. A SEPARATE secret because it WRITES
+    // heavily into a named tenant — a different blast radius from triggering a
+    // scheduler or reading a report — so it rotates independently. Optional in
+    // dev; unset → the endpoint returns 401 (fail-closed, and loudly: a signup
+    // that arrives unfurnished should carry an error rather than look normal).
+    SPARX_INTERNAL_FURNISH_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the WizeWorks operator console's internal endpoints
+    // (GET/POST /internal/operator/*, docs/apps/admin/build-plan.md §2 D6). The
+    // admin app authenticates the operator (Better Auth + capabilities) then
+    // calls these with this token + an X-sparx-Operator-Id header. A SEPARATE
+    // secret from the cron/acquisition tokens — it exposes cross-tenant reads +
+    // operator writes, its own blast radius, rotates independently. Optional in
+    // dev; unset → the endpoints return 401 (fail-closed).
+    SPARX_INTERNAL_OPERATOR_TOKEN: z.string().min(16).optional(),
+    // The platform's OWN tenant (docs/80 §2 dogfooding) — sparx/WizeWorks running
+    // as a tenant-of-record. Its tenant ID is the ONE allowed to claim a reserved
+    // BRAND slug (e.g. `wizeworks`) via PATCH /v1/tenant/slug — the reservation
+    // stops OUTSIDE tenants from squatting sparx/WizeWorks subdomains, not the
+    // platform itself. Keyed on the immutable ID (not the slug) so the value stays
+    // valid across the very rename it authorizes. Ops-controlled, never
+    // user-settable. Unset → no carve-out (reserved slugs blocked for everyone).
+    SPARX_PLATFORM_TENANT_ID: z.string().optional(),
+    // Recipient for internal sparx-team notifications about first-party careers
+    // applications (POST /v1/public/careers/apply). Optional with a safe literal
+    // fallback (careers@sparx.works) so a fresh env still delivers — mirrors the
+    // DASHBOARD_URL-style "optional env, sane default" idiom used elsewhere.
+    CAREERS_NOTIFY_EMAIL: z.string().email().optional(),
+    // Where new partner-program applications are announced for staff review. Same
+    // "optional env, sane default" idiom as CAREERS_NOTIFY_EMAIL (partners@sparx.works).
+    PARTNER_NOTIFY_EMAIL: z.string().email().optional(),
+    // Optional: when set, the Pub/Sub publisher uses Google Cloud Pub/Sub;
+    // otherwise it logs to stdout and is a no-op (dev default). The publisher
+    // resolves a topic per `EventType` (topic name == event type) — there is
+    // no shared/fan-out topic to configure.
+    GCP_PROJECT_ID: z.string().optional(),
+    // Optional: when set (e.g. redis://redis:6379), the Live Chat WebSocket
+    // server uses the socket.io Redis adapter so a message delivered to one
+    // api-rest replica fans out to chat sockets on every other replica. Unset
+    // (dev / single-instance) → the default in-memory adapter, which is correct
+    // for one process. Mirrors the GCP_PROJECT_ID Pub/Sub stub philosophy.
+    REDIS_URL: z.string().optional(),
+    // Google Search Console connector (docs/50 §7, docs/97 §4). Per-tenant OAuth:
+    // each tenant authorizes THEIR Search Console; a nightly job ingests organic
+    // metrics. The whole connector is INERT until these are set — the connect
+    // endpoints return a clear "not configured" error and the SEO overview keeps
+    // showing representative data.
+    //   GOOGLE_OAUTH_CLIENT_ID / _SECRET  — the GCP OAuth 2.0 Web client.
+    //   SEARCH_CONSOLE_TOKEN_KEY          — 32-byte AES-256-GCM key (base64 or hex)
+    //     encrypting the stored OAuth tokens at rest. Rotating it invalidates every
+    //     stored grant (tenants re-authorize) — never log or expose it.
+    GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
+    GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
+    SEARCH_CONSOLE_TOKEN_KEY: z.string().optional(),
+    // 32-byte AES-256-GCM key (base64 or hex) encrypting outbound-webhook signing
+    // secrets (webhook_subscriptions.signing_secret) at rest — see
+    // @wizeworks/api-core/webhook-secret-crypto. When unset the secret is stored
+    // plaintext (dev/test); production MUST set it. Rotating it makes existing
+    // encrypted secrets undecryptable (subscriptions must be recreated).
+    WEBHOOK_SIGNING_SECRET_KEY: z.string().optional(),
+    // Active domain registrar (docs/24). The registrar is abstracted behind the
+    // @wizeworks/registrar `RegistrarClient` contract; this selects the provider.
+    // 'godaddy' today; 'namecom' lands once its @sparx/namecom client is wired.
+    REGISTRAR: z.enum(['godaddy', 'namecom']).default('godaddy'),
+    // GoDaddy Reseller API credentials (docs/24 §3, docs/24 §10).
+    // OTE (staging) credentials — used when the resolved env is OTE.
+    GODADDY_API_KEY_OTE: z.string().optional(),
+    GODADDY_API_SECRET_OTE: z.string().optional(),
+    // Production credentials — used when the resolved env is prod.
+    GODADDY_API_KEY_PROD: z.string().optional(),
+    GODADDY_API_SECRET_PROD: z.string().optional(),
+    // Optional override decoupling the GoDaddy environment from NODE_ENV
+    // ('prod'|'production' | 'ote'|'test'). Unset → follows NODE_ENV. Lets local
+    // dev hit GoDaddy's FREE production read endpoints (available/suggest; only
+    // purchase charges), since the OTE sandbox is chronically degraded.
+    GODADDY_ENV: z.enum(['prod', 'production', 'ote', 'test']).optional(),
+    // Domain-checkout kill-switch. A domain registration is a HARD pass-through
+    // cost — the instant we call GoDaddy `purchaseDomain`, ICANN/GoDaddy bills the
+    // sparx reseller account for real (no trial, no reversal). So buying a NEW
+    // domain (and renewing one) is gated OFF until tenant billing (Stripe
+    // card-on-file) is wired and we can charge the tenant BEFORE registering. Off
+    // → POST /v1/domains/purchase and /:id/renew return 403, and the dashboard
+    // shows "checkout opens soon". Free *.sparx.zone subdomains and connecting a
+    // domain you already own are unaffected — they cost nothing. Env is a string;
+    // only the literal "true"/"1" enables it (avoids the z.coerce.boolean footgun
+    // where the string "false" is truthy).
+    DOMAIN_PURCHASE_ENABLED: z
+      .string()
+      .optional()
+      .transform((v) => v === 'true' || v === '1'),
+    // Stripe platform-level keys. Used by the webhook handlers and Stripe
+    // Connect OAuth. Per-tenant keys live in ProviderInstallation configs.
+    // STRIPE_SECRET_KEY       — platform/connect account secret key
+    // STRIPE_PUBLISHABLE_KEY  — Stripe.js key; the storefront actually reads it as
+    //   the build-time NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in wizeworks/apps/site, so this
+    //   server-side copy is informational (kept for parity / future config endpoint).
+    // STRIPE_WEBHOOK_SECRET   — whsec_... legacy pre-gateway single-account commerce
+    //   secret (superseded by the per-gateway secrets below).
+    // STRIPE_WEBHOOK_SECRET_SPARX_PAY — whsec_... for the sparx Pay (Connect
+    //   destination-charge) payment webhook POST /v1/public/webhooks/sparx-pay.
+    //   COMMA-SEPARATED LIST: that ONE url is fed by TWO Stripe endpoints — the
+    //   account-scoped one (payment_intent.* / charge.*) and the connected-account
+    //   one (account.updated) — and Stripe issues each its own signing secret. A
+    //   rolled secret overlaps for 24h, which needs the same. Every configured
+    //   secret is tried; one value behaves exactly like a plain single secret.
+    //   Read by @wizeworks/payments' SparxPayGateway; declared here so boot validates it
+    //   and .env.example documents it. (Stripe Direct uses per-tenant secrets in GSM,
+    //   not an env var; the BYO gateways verify with their own stored secrets.)
+    // STRIPE_CLIENT_ID        — DEPRECATED / unused. Was the Connect OAuth client_id
+    //   (ca_...) for the old "connect an existing Standard account" onboarding flow,
+    //   which was removed in favour of the sparx Pay Express Account-Link flow (the
+    //   same one Settings → Payments uses) — Account Links need no client_id. Kept
+    //   optional so a still-provisioned `stripe-client-id` secret doesn't fail boot;
+    //   the secret can be de-provisioned from bootstrap.yml + terraform later.
+    // STRIPE_WEBHOOK_SECRET_BILLING — whsec_... for the PLATFORM billing webhook
+    //   (subscription/invoice events). Separate endpoint, separate signing secret
+    //   (docs/67 §6) so a commerce-webhook secret rotation can't break billing.
+    //   Also a comma-separated list, for rotation overlap.
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET_SPARX_PAY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET_BILLING: z.string().optional(),
+    STRIPE_CLIENT_ID: z.string().optional(),
+    // Media storage. When GCS_MEDIA_BUCKET is set we use Cloud Storage with
+    // presigned PUT URLs; otherwise we fall back to a local-disk backend at
+    // MEDIA_LOCAL_DIR (the dashboard PUTs through api-rest in that mode).
+    // The split: originals + tenant-sensitive objects → private bucket
+    // (GCS_MEDIA_BUCKET); derived variants → public bucket
+    // (GCS_MEDIA_PUBLIC_BUCKET, world-readable for storefront <img src>).
+    // GCS_MEDIA_PUBLIC_BUCKET defaults to "" so it's only required when GCS
+    // mode is active — boot validation surfaces a missing-but-required error
+    // via the superRefine below.
+    GCS_MEDIA_BUCKET: z.string().optional(),
+    GCS_MEDIA_PUBLIC_BUCKET: z.string().default(''),
+    // Azure Blob — the live backend, and the FIRST one `getStorage()` checks. Set both
+    // the account and the key or the selector falls through; the account key is what
+    // signs the SAS URLs the browser PUTs to, so there is no separate credential.
+    // Containers mirror the GCS private/public split (originals vs derived variants) so
+    // the object keys and their routing are unchanged; both are private, because
+    // variants are served by api-rest's own route rather than read anonymously.
+    AZURE_STORAGE_ACCOUNT: z.string().optional(),
+    AZURE_STORAGE_KEY: z.string().optional(),
+    AZURE_MEDIA_CONTAINER: z.string().default('media'),
+    AZURE_MEDIA_PUBLIC_CONTAINER: z.string().default('media-public'),
+    MEDIA_LOCAL_DIR: z.string().default('.media-tmp'),
+    // Public base URL for serving processed variants. In prod this is the
+    // Cloudflare-fronted CDN domain; in dev it's the api-rest origin so the
+    // dashboard can hit /v1/public/media/variants/<key>.
+    MEDIA_PUBLIC_URL: z.string().default(''),
+    // SMS provider (docs/79 §10) — the Scheduling booking-notification dispatch
+    // tick sends reminders/confirmations over SMS via @wizeworks/sms. Unset (or any
+    // value but 'twilio', or 'twilio' without creds) → the console provider, which
+    // logs instead of sending, so local + un-provisioned tenants still exercise the
+    // full path safely. Real SMS needs SMS_PROVIDER=twilio + the TWILIO_* creds
+    // (a From number OR a Messaging Service SID).
+    SMS_PROVIDER: z.string().optional(),
+    TWILIO_ACCOUNT_SID: z.string().optional(),
+    TWILIO_AUTH_TOKEN: z.string().optional(),
+    TWILIO_FROM: z.string().optional(),
+    TWILIO_MESSAGING_SERVICE_SID: z.string().optional(),
+    // Calendar sync (docs/79 §8) — AES-256-GCM key (32 bytes, base64 or hex)
+    // encrypting calendar credentials at rest (iCal feed URLs, OAuth tokens,
+    // CalDAV app-passwords) in scheduling_calendar_connections, mirroring
+    // SEARCH_CONSOLE_TOKEN_KEY. Unset → the calendar-connection endpoints return a
+    // clear "not configured" error and the inbound-sync tick is inert (the rest of
+    // Scheduling, incl. outbound iCal, is unaffected). Rotating it invalidates
+    // every stored calendar credential (tenants reconnect) — never log it.
+    SCHEDULING_CALENDAR_TOKEN_KEY: z.string().optional(),
+    // Layer-3 OAuth calendar sync (docs/79 §8.3, §8.5). Google reuses the shared
+    // GOOGLE_OAUTH_CLIENT_ID/_SECRET (the same OAuth web client, with the Calendar
+    // scopes added) — no separate key. Microsoft needs its own Azure app:
+    //   MICROSOFT_OAUTH_CLIENT_ID / _SECRET — the registered app (multitenant; the
+    //     per-org admin grants Calendars.ReadWrite consent on connect).
+    //   MICROSOFT_OAUTH_TENANT — the directory the authorize/token calls target
+    //     ('common' default = any work/school OR personal account; an org may pin
+    //     its own tenant id). A set CLIENT_ID requires the matching _SECRET +
+    //     SCHEDULING_CALENDAR_TOKEN_KEY (the OAuth tokens are encrypted at rest),
+    //     validated below. Until set, the Microsoft connect button reports
+    //     "not configured" and BYO/iCal remain the fallbacks.
+    MICROSOFT_OAUTH_CLIENT_ID: z.string().optional(),
+    MICROSOFT_OAUTH_CLIENT_SECRET: z.string().optional(),
+    MICROSOFT_OAUTH_TENANT: z.string().optional(),
+    // Connected mailboxes (docs/144 §5.2) — AES-256-GCM key (32 bytes, base64 or
+    // hex) encrypting the IMAP/SMTP app password at rest in
+    // crm_mailbox_connections.
+    //
+    // A SEPARATE key from SCHEDULING_CALENDAR_TOKEN_KEY on purpose. The blast
+    // radius of a compromised key should be one capability, not every connected
+    // account a tenant owns — and reading someone's mail is a strictly larger
+    // harm than reading their free/busy. Rotating it invalidates every stored
+    // mailbox credential (tenants reconnect); never log it. Unset → the mailbox
+    // connect endpoints report "not configured" and the sync tick is inert, with
+    // the rest of the engagement spine (send via the platform domain, calls,
+    // notes, templates) unaffected.
+    //
+    // There is deliberately NO Gmail/Graph OAuth counterpart here. Connecting a
+    // mailbox over those APIs needs Google's restricted-scope CASA assessment
+    // and Microsoft's publisher verification — an annual third-party security
+    // audit as the price of a mailbox connector. IMAP/SMTP reaches the same
+    // mailboxes (Gmail and 365 both speak it) with an app password the tenant
+    // issues themselves, and no vendor sitting in the middle of the decision.
+    CRM_MAILBOX_TOKEN_KEY: z.string().optional(),
+    // Calling (docs/144 §5.6) — AES-256-GCM key (32 bytes, base64 or hex)
+    // encrypting a tenant's own phone-system auth token at rest in
+    // crm_voice_connections. Its own key, following the house pattern of one
+    // key per capability (SEARCH_CONSOLE_TOKEN_KEY, SCHEDULING_CALENDAR_TOKEN_KEY,
+    // CHANNELS_TOKEN_KEY): a compromised key should cost one capability rather
+    // than every connected account a tenant owns, and a voice token can place
+    // calls on their bill. Unset → the connect endpoint reports "not
+    // configured" and click-to-call is unavailable; logging a call by hand,
+    // which is the rest of the feature, is unaffected.
+    CRM_VOICE_TOKEN_KEY: z.string().optional(),
+    // Public api-rest origin used as the push-notification target for Google
+    // watch-channels + Microsoft Graph subscriptions (docs/79 §8.3). Must be a
+    // public HTTPS URL the provider can POST to; unset (or localhost) → push
+    // channels are skipped and the connection falls back to the polling tick. Also
+    // the base the outbound `.ics` feed links use (lib/scheduling-ical.ts).
+    SPARX_PUBLIC_API_REST_URL: z.string().optional(),
+    // Channel integrations (docs/106) — connect external sales channels (Google
+    // Shopping, Meta, Pinterest, …) so catalog/inventory sync out. Per-tenant OAuth
+    // tokens are AES-256-GCM encrypted at rest in channel_connections, keyed by
+    // CHANNELS_TOKEN_KEY (32 bytes, base64 or hex; rotating it invalidates every
+    // stored channel grant — tenants reconnect — never log it). Each channel stays
+    // INERT until its platform app credentials are set: the connect endpoint reports
+    // it `coming_soon` and the dashboard disables Connect, with no code change when
+    // ops later provisions the approved app.
+    //   Google Shopping reuses GOOGLE_OAUTH_CLIENT_ID/_SECRET (the same Google OAuth
+    //   web client, with the Content API scope added) — no separate key.
+    //   META_APP_ID / _SECRET       — the Meta (Facebook/Instagram) app.
+    //   PINTEREST_APP_ID / _SECRET  — the Pinterest app.
+    //   TIKTOK_APP_KEY / _SECRET    — the TikTok Shop ISV app (signs every call).
+    //   TIKTOK_WEBHOOK_SECRET       — order-webhook signature key (defaults to the
+    //                                 app secret when unset; set it if TikTok issues
+    //                                 a distinct webhook secret).
+    //   ETSY_API_KEY / _SECRET      — the Etsy app keystring (= OAuth client_id +
+    //                                 x-api-key header) + shared secret. Order ingest
+    //                                 is poll-based (Etsy has no order webhooks).
+    //   WALMART_CLIENT_ID / _SECRET — the Walmart Marketplace API keys (client-creds
+    //                                 token; per-seller / Solution-Provider). Poll ingest.
+    //   EBAY_CLIENT_ID / _SECRET    — the eBay App ID / Cert ID. EBAY_RU_NAME is the
+    //                                 registered Redirect-URL name (sent as redirect_uri
+    //                                 on authorize/exchange when set). Poll ingest.
+    //   FAIRE_CLIENT_ID / _SECRET   — the Faire partner app. FAIRE_WEBHOOK_SECRET signs
+    //                                 the order webhook (Faire ingests by webhook + poll).
+    //   AMAZON_LWA_CLIENT_ID/_SECRET — the Login-with-Amazon app (SP-API token). AMAZON_SP_APP_ID
+    //                                 is the SP-API application id for the Seller Central consent
+    //                                 URL; AMAZON_MARKETPLACE_ID / AMAZON_REGION default the
+    //                                 marketplace + regional host. Order ingest is poll-based
+    //                                 (Orders API + a Restricted Data Token for buyer PII); gated
+    //                                 additionally on Amazon's restricted-PII security audit.
+    CHANNELS_TOKEN_KEY: z.string().optional(),
+    // Social-posting token-encryption key (docs/133, the `social` module) — AES-256-GCM
+    // key (32 bytes, base64 or hex) encrypting the per-tenant social OAuth grants stored
+    // on social_connections. DELIBERATELY SEPARATE from CHANNELS_TOKEN_KEY (blast-radius
+    // isolation). Optional: absent → the social connect flow reports `coming_soon` and
+    // refuses to store a grant, exactly like channels without its key. Rotating it
+    // invalidates every stored social grant (tenants reconnect).
+    SOCIAL_TOKEN_KEY: z.string().optional(),
+    // Social-posting platform OAuth apps (docs/133 §6, docs/134). Each adapter reads
+    // these directly via process.env; declared here as the canonical env inventory. A
+    // platform stays `coming_soon` until BOTH its id + secret are set (no code change).
+    // Google Business Profile + YouTube reuse GOOGLE_OAUTH_CLIENT_ID/_SECRET (above);
+    // Facebook Pages + Instagram + Threads share the ONE Meta app (META_APP_ID/_SECRET
+    // below) — Threads adds its own THREADS_APP_ID/_SECRET on the same verification;
+    // Pinterest reuses PINTEREST_APP_ID/_SECRET (below, shared with the channels catalog
+    // app). TikTok's CONTENT-POSTING app (TIKTOK_CLIENT_KEY/_SECRET) is distinct from the
+    // channels TikTok-Shop app (TIKTOK_APP_KEY/_SECRET). X is intentionally unshipped
+    // (paid-tier posting API — no adapter until it's committed).
+    LINKEDIN_CLIENT_ID: z.string().optional(),
+    LINKEDIN_CLIENT_SECRET: z.string().optional(),
+    THREADS_APP_ID: z.string().optional(),
+    THREADS_APP_SECRET: z.string().optional(),
+    TIKTOK_CLIENT_KEY: z.string().optional(),
+    TIKTOK_CLIENT_SECRET: z.string().optional(),
+    // Provider-installation secret-encryption key (docs/09 provider marketplace) —
+    // AES-256-GCM key encrypting tenant-pasted provider credentials (e.g. a Shippo
+    // API token) at rest, keyed by PROVIDER_SECRET_KEY (32 bytes, base64 or hex;
+    // rotating it invalidates every stored provider secret — tenants reconnect).
+    // Read directly via process.env in @wizeworks/integration-framework/secret-crypto.
+    PROVIDER_SECRET_KEY: z.string().optional(),
+    META_APP_ID: z.string().optional(),
+    META_APP_SECRET: z.string().optional(),
+    PINTEREST_APP_ID: z.string().optional(),
+    PINTEREST_APP_SECRET: z.string().optional(),
+    TIKTOK_APP_KEY: z.string().optional(),
+    TIKTOK_APP_SECRET: z.string().optional(),
+    TIKTOK_WEBHOOK_SECRET: z.string().optional(),
+    ETSY_API_KEY: z.string().optional(),
+    ETSY_API_SECRET: z.string().optional(),
+    WALMART_CLIENT_ID: z.string().optional(),
+    WALMART_CLIENT_SECRET: z.string().optional(),
+    EBAY_CLIENT_ID: z.string().optional(),
+    EBAY_CLIENT_SECRET: z.string().optional(),
+    EBAY_RU_NAME: z.string().optional(),
+    FAIRE_CLIENT_ID: z.string().optional(),
+    FAIRE_CLIENT_SECRET: z.string().optional(),
+    FAIRE_WEBHOOK_SECRET: z.string().optional(),
+    AMAZON_LWA_CLIENT_ID: z.string().optional(),
+    AMAZON_LWA_CLIENT_SECRET: z.string().optional(),
+    AMAZON_SP_APP_ID: z.string().optional(),
+    AMAZON_MARKETPLACE_ID: z.string().optional(),
+    AMAZON_REGION: z.string().optional(),
+    // sparx.market (docs/106 §4.7) — the first-party marketplace. MARKET_ENABLED
+    // ('true') flips the channel `available` at runtime (the sparx/apps/market storefront
+    // is deployed + the platform Stripe account is ready). MARKET_COMMISSION_BPS is
+    // the flat platform commission in basis points (default 200 = 2%); a per-tenant
+    // override on the merchant profile wins. MARKET_PAYOUTS_PROVIDER selects the ACH
+    // disbursement rail (defaults to manual / out-of-band). The MoR checkout
+    // reuses the platform STRIPE_SECRET_KEY (above) + CHANNELS_TOKEN_KEY (payout
+    // encryption).
+    //
+    // Where the workbench lives is deliberately NOT declared here. Four variables
+    // named that same URL and each emitter read one with its own fallback, so
+    // which host an email pointed at depended on which service sent it —
+    // `appOrigin()` in `@wizeworks/links/server` reads them all, in one fixed order.
+    MARKET_ENABLED: z.string().optional(),
+    MARKET_COMMISSION_BPS: z.string().optional(),
+    MARKET_PAYOUTS_PROVIDER: z.string().optional(),
+    // In-cluster origin of the dashboard Next.js service, used ONLY for the
+    // service-to-service partner account-provisioning call (POST
+    // /api/internal/partner-provision, docs/114 §B.2). Distinct from
+    // SPARX_DASHBOARD_URL (which is a browser-facing base for email links): this
+    // is the private ClusterIP address (e.g. http://dashboard:3000). Account
+    // creation runs only where Better Auth lives — the dashboard — so approving an
+    // accountless partner delegates here. The call authenticates with
+    // SPARX_INTERNAL_JWT_SECRET (already shared both ways). Defaults to the dev
+    // dashboard origin so a local checkout works without extra wiring.
+    SPARX_DASHBOARD_INTERNAL_URL: z.string().default('http://localhost:3001'),
+  })
+  .superRefine((data, ctx) => {
+    // GCS mode requires both buckets — the public one holds variants,
+    // the private one holds originals. Missing the public bucket would
+    // mean every storefront <img src> 404s.
+    if (data.GCS_MEDIA_BUCKET && !data.GCS_MEDIA_PUBLIC_BUCKET) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['GCS_MEDIA_PUBLIC_BUCKET'],
+        message: 'Required when GCS_MEDIA_BUCKET is set (split-bucket setup).',
+      });
+    }
+
+    // Azure needs BOTH halves or `getStorage()` skips it entirely and silently falls
+    // through to local disk. Half-configured is the dangerous state: the service boots,
+    // serves, and quietly writes production media to a container-local directory that
+    // no worker reads and the next rollout discards. Fail the boot instead.
+    if (Boolean(data.AZURE_STORAGE_ACCOUNT) !== Boolean(data.AZURE_STORAGE_KEY)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [data.AZURE_STORAGE_ACCOUNT ? 'AZURE_STORAGE_KEY' : 'AZURE_STORAGE_ACCOUNT'],
+        message:
+          'AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must be set together — one alone falls back to local disk.',
+      });
+    }
+
+    // Search Console: enabling the OAuth client means the token-encryption key +
+    // client secret are mandatory — a half-configured connector would store
+    // plaintext tokens or fail every exchange. Validate as a set, not piecemeal.
+    if (data.GOOGLE_OAUTH_CLIENT_ID) {
+      if (!data.GOOGLE_OAUTH_CLIENT_SECRET) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['GOOGLE_OAUTH_CLIENT_SECRET'],
+          message: 'Required when GOOGLE_OAUTH_CLIENT_ID is set.',
+        });
+      }
+      if (!data.SEARCH_CONSOLE_TOKEN_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['SEARCH_CONSOLE_TOKEN_KEY'],
+          message: 'Required when GOOGLE_OAUTH_CLIENT_ID is set (encrypts stored tokens).',
+        });
+      }
+    }
+    // A provided key must decode to exactly 32 bytes (AES-256), as base64 or hex.
+    if (data.SEARCH_CONSOLE_TOKEN_KEY && decodeKeyBytes(data.SEARCH_CONSOLE_TOKEN_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SEARCH_CONSOLE_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    if (
+      data.SCHEDULING_CALENDAR_TOKEN_KEY &&
+      decodeKeyBytes(data.SCHEDULING_CALENDAR_TOKEN_KEY) !== 32
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    if (data.CRM_MAILBOX_TOKEN_KEY && decodeKeyBytes(data.CRM_MAILBOX_TOKEN_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['CRM_MAILBOX_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    if (data.CRM_VOICE_TOKEN_KEY && decodeKeyBytes(data.CRM_VOICE_TOKEN_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['CRM_VOICE_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    // A provided webhook signing-secret key must decode to exactly 32 bytes.
+    if (data.WEBHOOK_SIGNING_SECRET_KEY && decodeKeyBytes(data.WEBHOOK_SIGNING_SECRET_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['WEBHOOK_SIGNING_SECRET_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    // Microsoft calendar OAuth: enabling the client means the secret + the
+    // token-encryption key are mandatory — a half-configured app would store
+    // plaintext tokens or fail every exchange. Validate as a set (mirrors Google
+    // above). Google calendar reuses GOOGLE_OAUTH_CLIENT_ID, already validated.
+    if (data.MICROSOFT_OAUTH_CLIENT_ID) {
+      if (!data.MICROSOFT_OAUTH_CLIENT_SECRET) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['MICROSOFT_OAUTH_CLIENT_SECRET'],
+          message: 'Required when MICROSOFT_OAUTH_CLIENT_ID is set.',
+        });
+      }
+      if (!data.SCHEDULING_CALENDAR_TOKEN_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
+          message: 'Required when MICROSOFT_OAUTH_CLIENT_ID is set (encrypts stored tokens).',
+        });
+      }
+    }
+  });
+
+/** Decode a base64- or hex-encoded key to its byte length (0 if unparseable),
+ *  so env validation can reject a wrong-sized AES key at boot. */
+function decodeKeyBytes(raw: string): number {
+  if (/^[0-9a-fA-F]{64}$/.test(raw)) return 32;
+  try {
+    return Buffer.from(raw, 'base64').length;
+  } catch {
+    return 0;
+  }
+}
+
+export type Env = z.infer<typeof EnvSchema>;
+
+function parseEnv(): Env {
+  const result = EnvSchema.safeParse(process.env);
+  if (!result.success) {
+    console.error('[api-rest] invalid environment:');
+    for (const issue of result.error.issues) {
+      console.error(`  - ${issue.path.join('.')}: ${issue.message}`);
+    }
+    process.exit(78); // EX_CONFIG
+  }
+  return result.data;
+}
+
+export const env: Env = parseEnv();

@@ -1,0 +1,49 @@
+# Local Postgres 18 for Sparx development.
+# Production runs on Cloud SQL Postgres 18 (docs/03-infrastructure-deployment.md).
+# Brought up via `pnpm --filter @wizeworks/db db:up`.
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: sparx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sparx_owner
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: sparx
+    ports:
+      - '5544:5432'
+    volumes:
+      # Postgres 18+ stores data under a major-version subdirectory inside
+      # /var/lib/postgresql; mounting the parent (not /data) keeps the image's
+      # pg_ctlcluster layout intact (https://github.com/docker-library/postgres/pull/1259).
+      - sparx-pg-data:/var/lib/postgresql
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sparx_owner -d sparx']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Local Typesense for search development. Production runs the same engine as
+  # a GKE StatefulSet (k8s/typesense/); this mirrors it so `pnpm db:up` brings
+  # search up alongside Postgres. The api-rest read path + commerce-indexer
+  # write path both point here via TYPESENSE_* env (see .env.example files).
+  typesense:
+    image: typesense/typesense:28.0
+    container_name: sparx-typesense
+    restart: unless-stopped
+    command: '--data-dir /data --api-key=dev-typesense-key --enable-cors'
+    ports:
+      - '8108:8108'
+    volumes:
+      - sparx-typesense-data:/data
+    # No healthcheck: the Typesense image doesn't reliably ship curl/wget, and
+    # an unhealthy check would stall `db:up:wait`. Production readiness is
+    # handled by k8s httpGet probes (k8s/typesense/statefulset.yaml); locally
+    # migrations only gate on Postgres. Hit http://localhost:8108/health to
+    # check by hand.
+
+volumes:
+  sparx-pg-data:
+  sparx-typesense-data:

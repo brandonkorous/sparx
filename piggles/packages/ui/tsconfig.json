@@ -2,7 +2,7 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     // `react-jsx`, overriding the base's `preserve` — same reason as
-    // packages/brand: these components do not import React at runtime, and the
+    // sparx/packages/brand: these components do not import React at runtime, and the
     // automatic runtime is what Next compiles them with anyway.
     "jsx": "react-jsx"
   },

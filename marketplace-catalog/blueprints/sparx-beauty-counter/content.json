@@ -1,310 +1,310 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "how-to-find-your-foundation-shade-match",
-        "status": "published",
-        "body": {
-            "title": "How to find your foundation shade match",
-            "excerpt": "The five-minute way to land the right shade the first time — undertone, depth, and where to actually swatch.",
-            "featuredImage": {
-                "$asset": "post-shade-match"
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-find-your-foundation-shade-match",
+    "status": "published",
+    "body": {
+      "title": "How to find your foundation shade match",
+      "excerpt": "The five-minute way to land the right shade the first time — undertone, depth, and where to actually swatch.",
+      "featuredImage": {
+        "$asset": "post-shade-match"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Buying foundation online feels like a gamble, and it does not have to. There are only two things to get right — how deep your skin is, and which way it leans warm or cool — and once you know both, the shade grid stops being a wall of names and starts being a map."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Buying foundation online feels like a gamble, and it does not have to. There are only two things to get right — how deep your skin is, and which way it leans warm or cool — and once you know both, the shade grid stops being a wall of names and starts being a map."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Read your undertone first"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Look at the veins on your inner wrist in daylight. Greenish leans warm, bluish-purple leans cool, and a mix of both is neutral. Gold jewellery tends to flatter warm skin, silver flatters cool. This one call narrows twenty-four shades down to a family of three or four."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Match depth along the jaw"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Skin on the back of your hand is rarely the same color as your face, so swatch two likely shades along the jaw, not the hand. The one that disappears is yours; the one you can still see is the wrong depth. Check it in daylight, near a window, not under a bathroom bulb."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Still between two? Size up, not down — a foundation that is a touch deep warms up on the skin, while one that is too light turns grey by lunch. And when the gift blush lands in your bag, that is the flush that ties the whole base together."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "the-5-minute-everyday-face",
-        "status": "published",
-        "body": {
-            "title": "The 5-minute everyday face",
-            "excerpt": "Five products, five minutes, one face you can do half-asleep — the routine for the days you have no time and still want to look like you.",
-            "featuredImage": {
-                "$asset": "post-everyday-face"
+            "content": [
+              {
+                "type": "text",
+                "text": "Read your undertone first"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Look at the veins on your inner wrist in daylight. Greenish leans warm, bluish-purple leans cool, and a mix of both is neutral. Gold jewellery tends to flatter warm skin, silver flatters cool. This one call narrows twenty-four shades down to a family of three or four."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "An everyday face is not a smaller version of a full glam — it is a different goal. You are not covering yourself up; you are turning the volume up a notch on what is already there, in the time it takes the coffee to brew."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Base, but barely"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A pump of the Second Skin foundation pressed in with a finger where you want it, a dot of concealer under the eye, and a dust of Cloud Set powder only where you shine. Skip the full-face coverage — the point is skin that looks like skin."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Color where it counts"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Tap the Sunlit Cream Blush high on the cheeks, sweep the Featherweight Mascara through the lashes, and press on a Glass Shine lip oil. Three touches of color do more for a tired face than any amount of base ever will."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "That is the whole thing — five products, five minutes, and a face that reads awake. Learn this one and you will reach for it more than any look you own."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "build-a-berry-lip-in-three-steps",
-        "status": "published",
-        "body": {
-            "title": "Build a berry lip in three steps",
-            "excerpt": "Liner, lipstick, a press of gloss — how to build a berry lip that reads rich, stays put, and never bleeds past the edge.",
-            "featuredImage": {
-                "$asset": "post-berry-lip"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A berry lip is the one that makes a whole face look finished, and the only reason it goes wrong is that most people do it in one step. Do it in three and it lasts through dinner without feathering, fading in the middle, or bleeding at the corners."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Step one: line the whole lip"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Take the Precision Lip Liner in Berry and draw your edge — then fill the entire lip in, not just the border. A fully lined lip gives the color something to grip, so when the lipstick wears down through the day it fades evenly instead of leaving a ring."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Step two: press, do not swipe"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Apply the Velvet Matte Liquid Lip in Berry from the centre out and press your lips together to set it. One coat is enough — it is full pigment, so piling it on only makes it slide. Blot once on a tissue if you want it truly locked."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Step three, if you want it juicy rather than flat: press a dab of Glass Shine lip oil in Berry Tint just onto the centre of the lower lip. It catches the light, gives the illusion of fullness, and turns a matte berry into something you cannot stop looking at."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "warm-vs-cool-reading-your-undertone",
-        "status": "published",
-        "body": {
-            "title": "Warm vs cool: reading your undertone",
-            "excerpt": "Undertone is the thing that decides whether a shade suits you — here is how to read yours, and why it matters for more than foundation.",
-            "featuredImage": {
-                "$asset": "post-shade-match"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Two people with the same skin depth can suit completely different shades, and undertone is why. It is the quiet color underneath the surface — warm (golden, peachy), cool (pink, bluish) or neutral (a balance of both) — and once you can read yours, every shade choice gets easier, not just your base."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The quick tests"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Veins: green leans warm, blue-purple leans cool. Jewellery: gold flatters warm, silver flatters cool. White paper held to the face: warm skin looks yellow beside it, cool skin looks pink. Any two agreeing is usually your answer; if they split, you are likely neutral and can wear both."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Why it matters past foundation"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Undertone is why a blush that glows on your friend can look muddy on you. Warm skin comes alive in peach, coral and terracotta; cool skin sings in rose, berry and plum. The same logic runs through lip and eye — the Bloom palette in Warm or Cool is that idea in a single pan."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "None of this is a rule you are stuck with — a bold lip can happily ignore your undertone. But for the shades meant to look like your own color, only better, matching your undertone is the difference between makeup that reads and makeup that disappears in the best way."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Match depth along the jaw"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Skin on the back of your hand is rarely the same color as your face, so swatch two likely shades along the jaw, not the hand. The one that disappears is yours; the one you can still see is the wrong depth. Check it in daylight, near a window, not under a bathroom bulb."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Still between two? Size up, not down — a foundation that is a touch deep warms up on the skin, while one that is too light turns grey by lunch. And when the gift blush lands in your bag, that is the flush that ties the whole base together."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-5-minute-everyday-face",
+    "status": "published",
+    "body": {
+      "title": "The 5-minute everyday face",
+      "excerpt": "Five products, five minutes, one face you can do half-asleep — the routine for the days you have no time and still want to look like you.",
+      "featuredImage": {
+        "$asset": "post-everyday-face"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An everyday face is not a smaller version of a full glam — it is a different goal. You are not covering yourself up; you are turning the volume up a notch on what is already there, in the time it takes the coffee to brew."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Base, but barely"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A pump of the Second Skin foundation pressed in with a finger where you want it, a dot of concealer under the eye, and a dust of Cloud Set powder only where you shine. Skip the full-face coverage — the point is skin that looks like skin."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Color where it counts"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Tap the Sunlit Cream Blush high on the cheeks, sweep the Featherweight Mascara through the lashes, and press on a Glass Shine lip oil. Three touches of color do more for a tired face than any amount of base ever will."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That is the whole thing — five products, five minutes, and a face that reads awake. Learn this one and you will reach for it more than any look you own."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "build-a-berry-lip-in-three-steps",
+    "status": "published",
+    "body": {
+      "title": "Build a berry lip in three steps",
+      "excerpt": "Liner, lipstick, a press of gloss — how to build a berry lip that reads rich, stays put, and never bleeds past the edge.",
+      "featuredImage": {
+        "$asset": "post-berry-lip"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A berry lip is the one that makes a whole face look finished, and the only reason it goes wrong is that most people do it in one step. Do it in three and it lasts through dinner without feathering, fading in the middle, or bleeding at the corners."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Step one: line the whole lip"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Take the Precision Lip Liner in Berry and draw your edge — then fill the entire lip in, not just the border. A fully lined lip gives the color something to grip, so when the lipstick wears down through the day it fades evenly instead of leaving a ring."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Step two: press, do not swipe"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Apply the Velvet Matte Liquid Lip in Berry from the centre out and press your lips together to set it. One coat is enough — it is full pigment, so piling it on only makes it slide. Blot once on a tissue if you want it truly locked."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Step three, if you want it juicy rather than flat: press a dab of Glass Shine lip oil in Berry Tint just onto the centre of the lower lip. It catches the light, gives the illusion of fullness, and turns a matte berry into something you cannot stop looking at."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "warm-vs-cool-reading-your-undertone",
+    "status": "published",
+    "body": {
+      "title": "Warm vs cool: reading your undertone",
+      "excerpt": "Undertone is the thing that decides whether a shade suits you — here is how to read yours, and why it matters for more than foundation.",
+      "featuredImage": {
+        "$asset": "post-shade-match"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Two people with the same skin depth can suit completely different shades, and undertone is why. It is the quiet color underneath the surface — warm (golden, peachy), cool (pink, bluish) or neutral (a balance of both) — and once you can read yours, every shade choice gets easier, not just your base."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The quick tests"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Veins: green leans warm, blue-purple leans cool. Jewellery: gold flatters warm, silver flatters cool. White paper held to the face: warm skin looks yellow beside it, cool skin looks pink. Any two agreeing is usually your answer; if they split, you are likely neutral and can wear both."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why it matters past foundation"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Undertone is why a blush that glows on your friend can look muddy on you. Warm skin comes alive in peach, coral and terracotta; cool skin sings in rose, berry and plum. The same logic runs through lip and eye — the Bloom palette in Warm or Cool is that idea in a single pan."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is a rule you are stuck with — a bold lip can happily ignore your undertone. But for the shades meant to look like your own color, only better, matching your undertone is the difference between makeup that reads and makeup that disappears in the best way."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

@@ -10,7 +10,7 @@ Last Updated: 2026-07-22
 > there are **two** render paths: the editor canvas renders each node through
 > `_builder/registry.tsx` (with hand-written _mocks_ for commerce atoms and an
 > inert `<span>` for Button), while the live site renders through
-> `apps/site/components/builder-renderer.tsx` (the real, wired components). This
+> `wizeworks/apps/site/components/builder-renderer.tsx` (the real, wired components). This
 > fork is the canvas↔live divergence
 > ([evaluation Finding 4 + §6](../evaluations/builder-eval-findings-2026-06-14.md)).
 >
@@ -26,7 +26,7 @@ Last Updated: 2026-07-22
 From the parity map ([evaluation §6](../evaluations/builder-eval-findings-2026-06-14.md)):
 
 **Shared correctly today** (no drift): binding resolution + cardinality
-(`resolvePath`/`cardinalityOf` in `packages/builder-schemas/src/runtime.ts`),
+(`resolvePath`/`cardinalityOf` in `wizeworks/packages/builder-schemas/src/runtime.ts`),
 iteration/scope, class compilation, and the Tier-1 primitives + content
 components (Heading, Text, Image, Divider, Icon, NavMenu, FAQ, FeatureGrid,
 EditorialSection, Logo, Wordmark, SocialLinks) — both sides render the same
@@ -34,13 +34,13 @@ EditorialSection, Logo, Wordmark, SocialLinks) — both sides render the same
 
 **Diverges** (two code paths):
 
-| Component                                     | Canvas (`registry.tsx`)                              | Live (`builder-renderer.tsx`)           |
-| --------------------------------------------- | ---------------------------------------------------- | --------------------------------------- |
-| BuyBox / VariantPicker / Quantity / AddToCart | static mock spans (`~1135–1198`)                     | real wired atoms (`~314–320`)           |
-| PriceTag / ImageDisplay                       | `amount={null}` / "N images" badge (`~1041–1085`)    | real bound value (`~342–352`)           |
-| Button                                        | inert `<span>` (`~666–682`)                          | interactive `<a>/<button>` (`~298–308`) |
-| Carousel                                      | `CanvasCarousel` (no autoplay)                       | `BuilderCarousel` (autoplay/pause)      |
-| Email leaves                                  | `email-leaf.tsx` at email scale, site-theme fallback | `@sparx/email` via email-platform brand |
+| Component                                     | Canvas (`registry.tsx`)                              | Live (`builder-renderer.tsx`)               |
+| --------------------------------------------- | ---------------------------------------------------- | ------------------------------------------- |
+| BuyBox / VariantPicker / Quantity / AddToCart | static mock spans (`~1135–1198`)                     | real wired atoms (`~314–320`)               |
+| PriceTag / ImageDisplay                       | `amount={null}` / "N images" badge (`~1041–1085`)    | real bound value (`~342–352`)               |
+| Button                                        | inert `<span>` (`~666–682`)                          | interactive `<a>/<button>` (`~298–308`)     |
+| Carousel                                      | `CanvasCarousel` (no autoplay)                       | `BuilderCarousel` (autoplay/pause)          |
+| Email leaves                                  | `email-leaf.tsx` at email scale, site-theme fallback | `@wizeworks/email` via email-platform brand |
 
 The root cause is **structural**: per-type render lives in two files. Any new
 component must be written twice and can silently drift. The mocks exist because
@@ -51,17 +51,17 @@ interaction layer — not a parallel render tree.
 ## 2. Decisions
 
 **2.1 One render path, in a shared package.** Extract the per-type node render
-into a new server-safe package — working name **`@sparx/builder-render`** — that
-both `apps/site` (live) and the dashboard canvas (edit) import. The package owns
+into a new server-safe package — working name **`@wizeworks/builder-render`** — that
+both `wizeworks/apps/site` (live) and the dashboard canvas (edit) import. The package owns
 the `type → React element` mapping for every node, calling the _same_
-`@sparx/site-ui` / commerce / `@sparx/email` components both surfaces ship.
+`@sparx/site-ui` / commerce / `@wizeworks/email` components both surfaces ship.
 `registry.tsx` keeps **metadata only** (palette grouping, `accepts`/cardinality,
 `defaults`, `props`, `bindable`, icons); its `renderLeaf` functions are deleted.
 
 **2.2 Parameterize by a data resolver, not by app.** The renderer takes a
 `DataResolver` (the binding source). Live passes real `DataSources`
 (commerce/cms/site records); the canvas passes **sample data** — and the commerce
-sample is a _realistic_ product (`apps/site/lib/sample-data.ts` `SAMPLE_PRODUCT`
+sample is a _realistic_ product (`wizeworks/apps/site/lib/sample-data.ts` `SAMPLE_PRODUCT`
 already exists), so BuyBox/VariantPicker/PriceTag render the **real component with
 sample values** — no more mocks. Sample data moves into (or is re-exported from)
 the shared package so both sides agree on its shape.
@@ -74,7 +74,7 @@ pointer and `preventDefault()`/`stopPropagation()` so links don't navigate and
 forms don't submit; (b) leaves hover/pointer-events intact so `:hover` styles and
 the inspector's live class changes still show. This is the same technique the
 storefront `PreviewBridge` already uses for the iframe preview
-(`apps/site/components/preview-bridge.tsx` capture-phase `onClick` → select) —
+(`wizeworks/apps/site/components/preview-bridge.tsx` capture-phase `onClick` → select) —
 generalized to the in-DOM canvas. Components may read an `editMode` context to
 disable internal side effects (e.g. an `AddToCart` that no-ops its mutation in
 edit mode) where a click-shield alone isn't enough.
@@ -90,11 +90,11 @@ wrapper/host, not the shared renderer, so the renderer is scope-agnostic.
 tree; the canvas is a client tree. The shared package must run in both: render
 functions are presentational and synchronous, data is **injected** (no server-only
 fetches inside), and the genuinely-interactive atoms stay `'use client'` islands
-(they already are). No `@sparx/db`, no server-only imports in the package — keep
+(they already are). No `@wizeworks/db`, no server-only imports in the package — keep
 it the same dependency weight the storefront image already tolerates.
 
 **2.6 Email converges too.** The email leaf render (`email-leaf.tsx`) and the live
-email render unify on the `@sparx/email` components in the shared package, so the
+email render unify on the `@wizeworks/email` components in the shared package, so the
 canvas email preview uses the _same_ brand resolution as a real send (closes the
 email-scale/brand caveat). If full brand-service parity is heavy, the minimum bar
 is: same components, same scale; brand source documented.
@@ -102,12 +102,12 @@ is: same components, same scale; brand source documented.
 ## 3. Target architecture
 
 ```
-packages/builder-render/                ← NEW, server-safe
+wizeworks/packages/builder-render/                ← NEW, server-safe
   renderNode(node, { resolver, mode })  ← the single type→element map
   sampleData                            ← re-exported / owned sample records
   EditModeContext                       ← read by interactive atoms in 'edit'
 
-apps/site/components/builder-renderer.tsx
+wizeworks/apps/site/components/builder-renderer.tsx
   → thin wrapper: renderNode(node, { resolver: realDataSources, mode: 'live' })
 
 apps/dashboard/.../_builder/canvas.tsx
@@ -121,17 +121,17 @@ apps/dashboard/.../_builder/registry.tsx
 
 ## 4. Work breakdown
 
-| Step | Area                          | Change                                                                                                                                                            |
-| ---- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | new `packages/builder-render` | Scaffold the package ([new-workspace-package] skill); server-safe; depends on `@sparx/site-ui`, `@sparx/builder-schemas`, commerce/email component libs.          |
-| 2    | move render                   | Port each `type → element` mapping out of `registry.tsx` and `builder-renderer.tsx` into `renderNode`, calling the **real** components for every type (no mocks). |
-| 3    | data resolver                 | Define `DataResolver`; live = `DataSources`, edit = `sampleData`. Move/own the sample records; ensure the commerce sample is a realistic multi-variant product.   |
-| 4    | edit mode                     | `EditModeContext`; interactive atoms (Button, AddToCart, Signup, forms, Carousel) honor it (inert internal effects).                                              |
-| 5    | interaction shield            | Generalize the `PreviewBridge` capture-phase select into a reusable canvas shield; wire selection to `use-builder-editor`.                                        |
-| 6    | rewire live                   | `apps/site/components/builder-renderer.tsx` becomes a thin `mode:'live'` wrapper; delete its per-type render.                                                     |
-| 7    | rewire canvas                 | `canvas.tsx` renders `renderNode(mode:'edit')` inside its wrapper; delete `CanvasCarousel` + the commerce/Button mock branches.                                   |
-| 8    | trim registry                 | `registry.tsx` keeps metadata; remove `renderLeaf`. (Full deletion of the dead path is finalized in [07](07-cutover-route-consolidation.md).)                     |
-| 9    | verify                        | Build a page with a product grid + buttons; **publish** (needs [01](01-publish-gate-fix.md)); diff canvas vs the live route — they must match.                    |
+| Step | Area                                    | Change                                                                                                                                                            |
+| ---- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | new `wizeworks/packages/builder-render` | Scaffold the package ([new-workspace-package] skill); server-safe; depends on `@sparx/site-ui`, `@wizeworks/builder-schemas`, commerce/email component libs.      |
+| 2    | move render                             | Port each `type → element` mapping out of `registry.tsx` and `builder-renderer.tsx` into `renderNode`, calling the **real** components for every type (no mocks). |
+| 3    | data resolver                           | Define `DataResolver`; live = `DataSources`, edit = `sampleData`. Move/own the sample records; ensure the commerce sample is a realistic multi-variant product.   |
+| 4    | edit mode                               | `EditModeContext`; interactive atoms (Button, AddToCart, Signup, forms, Carousel) honor it (inert internal effects).                                              |
+| 5    | interaction shield                      | Generalize the `PreviewBridge` capture-phase select into a reusable canvas shield; wire selection to `use-builder-editor`.                                        |
+| 6    | rewire live                             | `wizeworks/apps/site/components/builder-renderer.tsx` becomes a thin `mode:'live'` wrapper; delete its per-type render.                                           |
+| 7    | rewire canvas                           | `canvas.tsx` renders `renderNode(mode:'edit')` inside its wrapper; delete `CanvasCarousel` + the commerce/Button mock branches.                                   |
+| 8    | trim registry                           | `registry.tsx` keeps metadata; remove `renderLeaf`. (Full deletion of the dead path is finalized in [07](07-cutover-route-consolidation.md).)                     |
+| 9    | verify                                  | Build a page with a product grid + buttons; **publish** (needs [01](01-publish-gate-fix.md)); diff canvas vs the live route — they must match.                    |
 
 ## 5. Acceptance criteria
 
@@ -145,7 +145,7 @@ apps/dashboard/.../_builder/registry.tsx
 - There is exactly **one** per-type render map in the codebase; `registry.tsx` no
   longer renders nodes.
 - Storefront image size/deps are not regressed (no server-only deps leaked into
-  `@sparx/builder-render`).
+  `@wizeworks/builder-render`).
 
 ## 6. Risks & notes
 
@@ -163,5 +163,5 @@ apps/dashboard/.../_builder/registry.tsx
 - **This is the highest-leverage phase.** It is also the one most worth a careful
   design pass before coding — extracting the package and the resolver boundary is
   the part that, done right, makes Phases 3–7 straightforward.
-- **Largest blast radius:** touches both `apps/site` render and the dashboard
+- **Largest blast radius:** touches both `wizeworks/apps/site` render and the dashboard
   canvas. Land it behind a thorough publish-diff before moving on.

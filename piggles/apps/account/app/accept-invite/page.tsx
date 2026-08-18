@@ -3,7 +3,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Alert, Badge, Button, Text } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
-import { getInvitationDetail, getSession, type InvitationDetail } from '@sparx/auth';
+import { getInvitationDetail, getSession, type InvitationDetail } from '@wizeworks/auth';
 import { AuthShell } from '@/components/auth-shell';
 import {
   AcceptInviteButton,

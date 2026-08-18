@@ -34,7 +34,7 @@ spec:
 # Postgres 18 — replaces Cloud SQL.
 #
 # Same image and same bootstrap role as the dev compose stack
-# (packages/db/docker-compose.yml) so local k8s and `pnpm db:up` cannot drift.
+# (wizeworks/packages/db/docker-compose.yml) so local k8s and `pnpm db:up` cannot drift.
 #
 # The data volume mounts the PARENT directory, not /data: Postgres 18 stores
 # its cluster under a major-version subdirectory inside /var/lib/postgresql, and
@@ -179,7 +179,7 @@ spec:
 ---
 # ---------------------------------------------------------------------------
 # Typesense — same engine and major version as the GKE StatefulSet and the dev
-# compose stack (28.0). Service name `typesense` matches the @sparx/search
+# compose stack (28.0). Service name `typesense` matches the @wizeworks/search
 # default host and the TYPESENSE_HOST in app-env-configmap.env.
 #
 # The index is DERIVED state, not a source of truth. Nothing needs migrating

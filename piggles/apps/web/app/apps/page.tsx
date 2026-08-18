@@ -5,6 +5,7 @@ import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
 import { accountUrl, appsInGroup } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
+import { AppsFigure } from '@/components/marketing/hero/apps-figure';
 import { GROUP_COPY } from '@/components/marketing/groups';
 import { CloseBand } from '@/components/marketing/close-band';
 
@@ -22,71 +23,77 @@ import { CloseBand } from '@/components/marketing/close-band';
 // selling — which is the same thing the rail will teach them on day one.
 
 export const metadata: Metadata = {
-    title: 'All fifteen apps',
-    description:
-        'Everything Piggles includes, grouped the way a business actually works: your website, selling, people, money, and running the place. Every app is in the $49 plan.',
+  title: 'All fifteen apps',
+  description:
+    'Everything Piggles includes, grouped the way a business actually works: your website, selling, people, money, and running the place. Every app is in the $49 plan.',
 };
 
 export default function AppsIndexPage() {
-    return (
-        <>
-            <PageHero
-                heading="Fifteen apps. One subscription. No upgrade buttons."
-                lede="Every app below is included from your first day, whether you use one of them or all fifteen. Turning one on changes your workspace, not your bill."
-            >
-                <a
-                    className={buttonClasses({ color: 'primary', size: 'lg' })}
-                    href={accountUrl('signup', 'apps-index')}
-                >
-                    Get Piggles — $49/month
-                </a>
-                <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
-                    See what changes the price
-                </Link>
-            </PageHero>
+  return (
+    <>
+      <PageHero
+        heading="Fifteen apps. One subscription. No upgrade buttons."
+        lede="Every app below is included from your first day, whether you use one of them or all fifteen. Turning one on changes your workspace, not your bill."
+        figure={<AppsFigure />}
+        assurances={['Free for 14 days', 'No card needed']}
+      >
+        <a
+          className={buttonClasses({ color: 'primary', size: 'lg' })}
+          href={accountUrl('signup', 'apps-index')}
+        >
+          Get Piggles — $49/month
+        </a>
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
+          See what changes the price
+        </Link>
+      </PageHero>
 
-            {PIGGLES_GROUPS.map((group, i) => (
-                <section
-                    key={group}
-                    data-group={group}
-                    className={`px-6 py-16 sm:py-20 ${i % 2 === 1 ? 'bg-base-100' : ''}`}
-                >
-                    <div className="mx-auto max-w-7xl">
-                        <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
-                            <div>
-                                <h2 className="text-module text-3xl font-extrabold sm:text-4xl">
-                                    {GROUP_COPY[group].title}
-                                </h2>
-                                <p className="mt-4 text-lg">{GROUP_COPY[group].long}</p>
-                            </div>
+      {PIGGLES_GROUPS.map((group, i) => (
+        <section
+          key={group}
+          data-group={group}
+          className={`px-6 py-16 sm:py-20 ${i % 2 === 1 ? 'bg-base-100' : ''}`}
+        >
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
+              <div>
+                {/* `ink-module`, not `text-module`. The group hues are fills —
+                    `web` measures 2.3:1 as a word — so painting one onto a
+                    heading is what made every group title on this page read as
+                    faded. See globals.css. */}
+                <h2 className="ink-module text-3xl font-extrabold sm:text-4xl">
+                  {GROUP_COPY[group].title}
+                </h2>
+                <p className="mt-4 text-lg">{GROUP_COPY[group].long}</p>
+              </div>
 
-                            {/* Cards stay on the plain surface and the HUE rides the type.
+              {/* Cards stay on the plain surface and the HUE rides the type.
                   Every card in a section shares one group color, so tinting
                   them all would render the section as a single colored block
                   and stop distinguishing anything within it — the tint is a
                   signal, and a signal every element carries is a background. */}
-                            <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
-                                {appsInGroup(group).map((app) => (
-                                    <Card key={app.id}>
-                                        <CardBody>
-                                            <h3 className="text-module text-xl font-bold">
-                                                <Link href={`/apps/${app.id}`}>{app.label}</Link>
-                                            </h3>
-                                            <p className="mt-1 text-base">{app.purpose}</p>
-                                        </CardBody>
-                                    </Card>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            ))}
+              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+                {appsInGroup(group).map((app) => (
+                  <Card key={app.id}>
+                    <CardBody>
+                      <h3 className="ink-module text-xl font-bold">
+                        <Link href={`/apps/${app.id}`}>{app.label}</Link>
+                      </h3>
+                      <p className="mt-1 text-base">{app.purpose}</p>
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      ))}
 
-            <CloseBand
-                heading="All fifteen, from the first day, for $49 a month."
-                primary={{ label: 'Start free for 14 days', href: accountUrl('signup', 'apps-close') }}
-                secondary={{ label: 'See what it costs', href: '/pricing' }}
-            />
-        </>
-    );
+      <CloseBand
+        heading="All fifteen, from the first day, for $49 a month."
+        primary={{ label: 'Start free for 14 days', href: accountUrl('signup', 'apps-close') }}
+        secondary={{ label: 'See what it costs', href: '/pricing' }}
+      />
+    </>
+  );
 }

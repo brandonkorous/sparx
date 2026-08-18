@@ -10,7 +10,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, SearchInput, Select, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -34,6 +35,10 @@ import {
   type CustomerType,
   type LifecycleStage,
 } from './customers-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -152,85 +157,94 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Customer list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            color="module"
-            size="sm"
-            aria-label="Search customers"
-            placeholder="Search name, company or email…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-        {/* Filters hide as the pane narrows — search is used constantly, these
-            occasionally; lifecycle stage (the primary signal) outlives the rest. */}
-        <div className="hidden w-40 shrink-0 @md:block">
-          <Select
-            color="module"
-            size="sm"
-            aria-label="Filter by lifecycle stage"
-            value={stage}
-            items={stageItems}
-            onValueChange={(next) => {
-              setStage(next as 'all' | LifecycleStage);
-            }}
-          />
-        </div>
-        <div className="hidden w-36 shrink-0 @lg:block">
-          <Select
-            color="module"
-            size="sm"
-            aria-label="Filter by relationship type"
-            value={type}
-            items={typeItems}
-            onValueChange={(next) => {
-              setType(next as 'all' | CustomerType);
-            }}
-          />
-        </div>
-        <div className="hidden w-40 shrink-0 @xl:block">
-          <Select
-            color="module"
-            size="sm"
-            aria-label="Sort customers by"
-            value={sortBy}
-            items={sortItems}
-            onValueChange={(next) => {
-              setSortBy(next as CustomerSort);
-            }}
-          />
-        </div>
-        <Button
-          data-tour="crm-add-customer"
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="Add a customer — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Customer list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              color="module"
+              size="sm"
+              aria-label="Search customers"
+              placeholder="Search name, company or email…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        // `primaryAction`, not `primary`: `+` in a pane already titled "Customers"
+        // says what it adds, so the bar drops the label on a narrow pane. A Save
+        // could not make that claim. See ToolbarPrimaryAction.
+        primaryAction={{
+          label: 'Add a customer',
+          icon: faPlus,
+          title: 'Add a customer — hold Shift to open alongside, Alt for a new window',
+          onClick: (event) => {
             ctx.open('crm.customer.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a customer
-        </Button>
-        <SavedViewsMenu
-          objectKey="contact"
-          current={currentFilters}
-          baseline={viewFilters([])}
-          sort={{ field: sortBy, direction: 'desc' }}
-          nameHint="New enquiries"
-          selectedId={viewId}
-          onApply={applyView}
-        />
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        // Selects, not chips: a lifecycle stage list is open-ended, and twenty
+        // chips is a toolbar taller than the table. Declared as values so the
+        // popover renders them full-width and labelled rather than at the fixed
+        // widths the BAR needs.
+        filters={[
+          {
+            label: 'Stage',
+            present: 'select',
+            value: stage,
+            onValueChange: (next) => {
+              setStage(next as 'all' | LifecycleStage);
+            },
+            options: Object.entries(stageItems).map(([value, label]) => ({
+              value,
+              label: String(label),
+            })),
+          },
+          {
+            label: 'Relationship',
+            present: 'select',
+            value: type,
+            onValueChange: (next) => {
+              setType(next as 'all' | CustomerType);
+            },
+            options: Object.entries(typeItems).map(([value, label]) => ({
+              value,
+              label: String(label),
+            })),
+          },
+          {
+            label: 'Sort by',
+            present: 'select',
+            value: sortBy,
+            onValueChange: (next) => {
+              setSortBy(next as CustomerSort);
+            },
+            options: Object.entries(sortItems).map(([value, label]) => ({
+              value,
+              label: String(label),
+            })),
+          },
+        ]}
+        controls={
+          <SavedViewsMenu
+            objectKey="contact"
+            current={currentFilters}
+            baseline={viewFilters([])}
+            sort={{ field: sortBy, direction: 'desc' }}
+            nameHint="New enquiries"
+            selectedId={viewId}
+            onApply={applyView}
+          />
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -246,6 +260,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,

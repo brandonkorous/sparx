@@ -42,7 +42,7 @@ resource "google_storage_bucket" "media" {
   # files live under a different prefix and are never matched by this rule. This is
   # the orphan-GC mechanism (no worker, no ongoing compute — lifecycle deletes are
   # free). The discriminator is the FIRST key segment so this one rule covers every
-  # tenant (see services/api-rest/src/lib/storage.ts formUploadStagingKey).
+  # tenant (see wizeworks/services/api-rest/src/lib/storage.ts formUploadStagingKey).
   lifecycle_rule {
     condition {
       age            = 1

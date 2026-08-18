@@ -19,7 +19,7 @@
 > wrong once the code was written, and are corrected below rather than left to mislead:
 >
 > 1. **The dunning policy already existed.** `DunningPolicy` was specified in
->    `@sparx/commerce-schemas` and `commerce_site_settings.default_dunning_policy` was already its
+>    `@wizeworks/commerce-schemas` and `commerce_site_settings.default_dunning_policy` was already its
 >    per-tenant home — neither had a reader. §4.1's invented shape is replaced by the real one, and
 >    open question 1 is answered: the tenant-level setting needs a UI, not a schema.
 > 2. **`getVaultedMethod` became `completeVault`.** Stripe hands back a server-created SetupIntent
@@ -72,7 +72,7 @@ connected.** It does not delegate the schedule to a third-party billing provider
 
 ### 1.1 Why the schema said otherwise
 
-The header comment on `packages/db/prisma/schema/41-commerce-subscriptions.prisma` reads:
+The header comment on `wizeworks/packages/db/prisma/schema/41-commerce-subscriptions.prisma` reads:
 
 > _SubscriptionBilling provider (Stripe by default) drives the actual charge schedule; the
 > subscription-billing-worker advances Sparx state on the back of provider webhook events._
@@ -131,7 +131,7 @@ accepted; §12 keeps card-updater on the list as a per-adapter enhancement.
   hosted element and never transits sparx.
 
 - **D3 — The tick is a k8s CronJob hitting an internal route.** `POST /internal/commerce/subscription-tick`,
-  added to the existing `services/api-rest/src/routes/internal/commerce-cron.ts` and
+  added to the existing `wizeworks/services/api-rest/src/routes/internal/commerce-cron.ts` and
   `k8s/cronjobs/commerce-subscription-tick.yaml`. Same shared-secret auth
   (`X-sparx-Internal-Cron-Token`), same sequential per-tenant loop as the reservation reaper. **No new
   service.**
@@ -178,10 +178,10 @@ accepted; §12 keeps card-updater on the list as a per-adapter enhancement.
 
 ## 4. Data model
 
-One new model, in a new schema file `packages/db/prisma/schema/42-commerce-payment-methods.prisma`.
+One new model, in a new schema file `wizeworks/packages/db/prisma/schema/42-commerce-payment-methods.prisma`.
 Migration `20270204000000_commerce_subscription_billing` — which sorts after the current newest
 (`20270203000000_record_page_addresses`), per the monotonic-naming constraint in
-[packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
+[wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
 
 ```prisma
 model CustomerPaymentMethod {
@@ -239,7 +239,7 @@ subscription renews on must fail loudly, not silently break the next renewal.
 ### 4.1 Dunning policy shape
 
 **This already existed and had no reader.** `DunningPolicy` is defined in
-`packages/commerce-schemas/src/subscriptions.ts`, and `commerce_site_settings.default_dunning_policy`
+`wizeworks/packages/commerce-schemas/src/subscriptions.ts`, and `commerce_site_settings.default_dunning_policy`
 was already the per-tenant column for it. Nothing parsed either. Inventing a second policy shape in
 the billing module would have been the fork, so the real one is used as-is:
 
@@ -312,7 +312,7 @@ left alone. The section ends with the policy written out as a sentence
 `defaultDunningPolicy` is **optional** on `UpdateCommerceSiteSettingsInput`, unlike every other field
 on that whole-replace patch. Defaulted instead, every caller that predates it (the MCP
 `update_commerce_site_settings` tool, any script) would silently reset a tenant's policy as a side
-effect of changing the currency. `packages/commerce-schemas/src/site.test.ts` pins that — the generic
+effect of changing the currency. `wizeworks/packages/commerce-schemas/src/site.test.ts` pins that — the generic
 `patch-semantics.test.ts` guard cannot, because this schema is on its exemption list.
 
 ---
@@ -346,7 +346,7 @@ Per-gateway, with §2 D8's order in mind:
 | `custom`        | `false`         | Generic hosted redirect — no vault seam                |
 | `manual`        | `false`         | No processor at all                                    |
 
-`capabilityPhrases()` in `packages/payments/src/integration.ts` gains the owner-facing line —
+`capabilityPhrases()` in `wizeworks/packages/payments/src/integration.ts` gains the owner-facing line —
 **"Subscriptions and auto-ship"** — so the picker says which processors support recurring before a tenant
 commits to one.
 
@@ -488,7 +488,7 @@ Nothing above is reachable without these, so they are in scope, not follow-on:
 - **Managing the card later.** The storefront account area lists saved methods, sets a default, adds and
   removes. Removing the method behind an active subscription is blocked by `onDelete: Restrict` and must
   say why rather than surfacing a database error.
-- **Failure emails — NOT `@sparx/email` templates.** v1.0 was wrong here. Every tenant→customer email
+- **Failure emails — NOT `@wizeworks/email` templates.** v1.0 was wrong here. Every tenant→customer email
   in the platform is a **Builder-authored** template the merchant can edit, dispatched by a system
   automation listening on an event; the `EmailSendPayload.template` union is for sparx→tenant mail only.
   Six subscription emails already existed on that path (`subscription-confirmed` / `-renewed` /
@@ -582,16 +582,16 @@ two of the three cases the answer was not the one this section proposed.
    empty `originalNetworkTransId`, and a duplicate-transaction code that revoked working cards. The
    full table is in docs/111 §4.1; the stored-credential chain that came out of it is §4.2 above.
 
-   `packages/payments/src/vault-wire.test.ts` pins all of it — 72 assertions traced to documented
+   `wizeworks/packages/payments/src/vault-wire.test.ts` pins all of it — 72 assertions traced to documented
    requirements rather than to the implementation, and verified by mutation (reverting the Square
    nesting bug fails the test that names it). **A sandbox run is still worth doing** for what only it
    can prove — that the vendor accepts what we send — and the checklist is docs/111 §4.1.
 
-5. ~~**The inline "add a card" route.**~~ **Built** — `apps/site/app/checkout/save-card/`. It does not
+5. ~~**The inline "add a card" route.**~~ **Built** — `wizeworks/apps/site/app/checkout/save-card/`. It does not
    take the `?setup=…&secret=…` handoff this item described: that would have put a client secret in
    the browser's history and left two files knowing how to branch inline-vs-hosted. The page opens its
    own setup session instead, and the account page's "Add a card" is now a plain navigation that knows
    nothing about gateways. It handles the 3-D Secure return leg (Stripe appends `setup_intent` +
    `redirect_status` and the page finishes the save), and checkout's Stripe.js loader moved to
-   `apps/site/lib/stripe-loader.ts` so both card surfaces share one cache rather than loading Stripe
+   `wizeworks/apps/site/lib/stripe-loader.ts` so both card surfaces share one cache rather than loading Stripe
    twice per session.

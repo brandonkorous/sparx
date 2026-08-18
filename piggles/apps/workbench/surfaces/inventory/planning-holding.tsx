@@ -26,10 +26,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBoxOpen, faCoins } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { formatCents } from './data';

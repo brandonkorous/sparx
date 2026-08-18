@@ -29,10 +29,10 @@ import {
   Badge,
   Card,
   EmptyState,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBoxMagnifyingGlass, faCalendarClock } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -151,21 +151,25 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Overdue order controls">
-        <Text className="text-sm">
-          {rows.length === 0
-            ? 'Nothing overdue'
-            : `${formatCents(totalAtStake)} of stock is late across ${plural(rows.length, 'order', 'orders')}`}
-        </Text>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={report.isFetching}
-          updatedAt={report.data ? report.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void report.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Overdue order controls"
+        status={
+          <Text className="text-sm">
+            {rows.length === 0
+              ? 'Nothing overdue'
+              : `${formatCents(totalAtStake)} of stock is late across ${plural(rows.length, 'order', 'orders')}`}
+          </Text>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={report.isFetching}
+            updatedAt={report.data ? report.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void report.refetch();
+            }}
+          />
+        }
+      />
 
       {undated > 0 ? (
         <Alert color="warning" variant="soft">

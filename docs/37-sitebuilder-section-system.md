@@ -60,17 +60,17 @@ Session-level bugs that are not about composition are listed in §8.
 ### 2.1 The section model is a flat, registry-driven stack
 
 A PageLayout's content region is an **ordered, flat list** of sections. Each section type is declared
-once in [section-registry.ts](packages/sitebuilder-schemas/src/section-registry.ts) — the single
+once in [section-registry.ts](wizeworks/packages/sitebuilder-schemas/src/section-registry.ts) — the single
 source consulted by the editor (form generation + the scope-restricted library), the service (config
 validation + defaults), and the site (rendering). **Adding a section means:** write its Zod
 schema + `SectionField[]`, register it in `SECTION_REGISTRY`, add a site component, and add a
-`case` to [section-renderer.tsx](apps/site/components/section-renderer.tsx).
+`case` to [section-renderer.tsx](wizeworks/apps/site/components/section-renderer.tsx).
 
 The critical structural fact: **sections do not nest.** A page is a flat stack of full-width blocks.
 There is no container that holds child blocks side by side. This single constraint is the root of the
 biggest gap below.
 
-The editor's field system ([fields.ts](packages/sitebuilder-schemas/src/fields.ts)) is richer than
+The editor's field system ([fields.ts](wizeworks/packages/sitebuilder-schemas/src/fields.ts)) is richer than
 the current sections use. It already supports `list` with nested `itemFields` (testimonials prove
 it), plus `color`, `media`, `boolean`, `range`, `select`, `url`. **Multi-CTA and multi-panel configs
 are expressible with the existing field infra** — they need new _schemas_ and _renderers_, not new
@@ -90,7 +90,7 @@ editor primitives.
 
 Render path: `SectionRenderer` switches `sectionType` against a component map, themes purely via the
 `--st-*` token layer injected by the site layout (the site has its **own** token/CSS
-surface — it does **not** consume `@sparx/ui` components), and **skips unknown types** so an old
+surface — it does **not** consume `@wizeworks/ui` components), and **skips unknown types** so an old
 site tolerates a new section. Empty data-bound sections render nothing.
 
 ---
@@ -160,7 +160,7 @@ ctas: z.array(Cta).max(2).default([]);
 
 Editor: a `list` field with `itemFields` (`text` label, `url`, `select` style) — **no new field
 type**. Site: `solid` → existing `st-btn--primary`; `ghost` needs a new **`st-btn--ghost`**
-(outline-on-image) variant in [site.css](apps/site/app/site.css); `link` → text
+(outline-on-image) variant in [site.css](wizeworks/apps/site/app/site.css); `link` → text
 link. `SbLink` already discriminates internal vs external. A small `SbCtaRow` wraps `ctas.map`.
 
 **`MediaBlock` (closes #2, #8, #9, #10, #11).** The shared "framed media with overlaid content"
@@ -250,7 +250,7 @@ no hardcoded colors, consistent with the CLAUDE.md brand rule and [[feedback_spa
   feature/section code references the class, it does not hand-build hover/focus states.
 - The only inline style any section uses remains the background-image URL (the existing Hero/banner
   pattern); no new `style={{ color/background }}` fingerprints.
-- Site sections render on the site's own CSS surface (not `@sparx/ui`), so this is
+- Site sections render on the site's own CSS surface (not `@wizeworks/ui`), so this is
   additive CSS in `site.css` — the same place Hero/banner styles already live.
 
 ---

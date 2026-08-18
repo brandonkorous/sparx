@@ -1,422 +1,402 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "the-considered-wardrobe",
-        "status": "published",
-        "authorSlug": "elena-prevost",
-        "categories": [
-            "Fashion"
-        ],
-        "tags": [
-            "The Edit"
-        ],
-        "body": {
-            "title": "The Return of the Considered Wardrobe",
-            "excerpt": "A season away from the trend cycle, and the clothes that were left standing when it passed. On dressing with intention, and buying almost nothing.",
-            "featuredImage": {
-                "$asset": "post-wardrobe"
+  {
+    "typeKey": "blog_post",
+    "slug": "the-considered-wardrobe",
+    "status": "published",
+    "authorSlug": "elena-prevost",
+    "categories": ["Fashion"],
+    "tags": ["The Edit"],
+    "body": {
+      "title": "The Return of the Considered Wardrobe",
+      "excerpt": "A season away from the trend cycle, and the clothes that were left standing when it passed. On dressing with intention, and buying almost nothing.",
+      "featuredImage": {
+        "$asset": "post-wardrobe"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The most interesting wardrobes I saw this season did not belong to people chasing anything. They belonged to people who had stopped — who had, at some point, decided what they liked and then simply kept wearing it until it wore out and was replaced with the same thing, a little better made."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The most interesting wardrobes I saw this season did not belong to people chasing anything. They belonged to people who had stopped — who had, at some point, decided what they liked and then simply kept wearing it until it wore out and was replaced with the same thing, a little better made."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The end of the churn"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "For a decade the industry sold newness as a virtue in itself. What is quietly replacing it is not minimalism, exactly — the closets are not empty — but a kind of editing. Fewer things, chosen slowly, kept for years. A coat is a ten-year decision again, not a nine-week one."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "What survives the cull"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "When you strip a wardrobe back to what a person actually reaches for, the same shapes appear across every closet: a good coat, a real shirt, one pair of trousers that fit, a shoe that can be resoled. The trend was never the point. The point was the editing, and the editing is a skill."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If there is a look this season, it is the look of someone who has already decided. That is the hardest thing in fashion to fake, and the only thing worth photographing."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "skin-as-the-only-statement",
-        "status": "published",
-        "authorSlug": "nadia-okonkwo",
-        "categories": [
-            "Beauty"
-        ],
-        "tags": [
-            "The Beauty Edit"
-        ],
-        "body": {
-            "title": "Skin as the Only Statement",
-            "excerpt": "The most talked-about beauty look of the season is barely a look at all. On the long, expensive road back to doing almost nothing.",
-            "featuredImage": {
-                "$asset": "post-skin"
+            "content": [
+              {
+                "type": "text",
+                "text": "The end of the churn"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For a decade the industry sold newness as a virtue in itself. What is quietly replacing it is not minimalism, exactly — the closets are not empty — but a kind of editing. Fewer things, chosen slowly, kept for years. A coat is a ten-year decision again, not a nine-week one."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Backstage this season the instruction to the artists was the same everywhere, in three or four languages: less. Less product, less color, less of the face doing the work the clothes were supposed to do. The result reads, from the front row, as skin — and almost nothing else."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The paradox of the bare face"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "None of this is actually bare, of course. The undone face is one of the most worked-on effects in beauty, the product of skincare that starts weeks before the show and a hand light enough to be invisible. Doing nothing well is the most expensive kind of doing something."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Why now"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "There is a fatigue in it — a reaction against a decade of the sculpted, filtered, fully-built face. When everyone can look like anyone, looking like yourself becomes the statement. The skin you actually have, lit well, is the last thing a filter cannot sell you."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The kindest reading is that the industry is finally selling maintenance instead of transformation. The honest one is that maintenance, done properly, costs more than transformation ever did."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "resort-2027-collections-that-mattered",
-        "status": "published",
-        "authorSlug": "julian-hart",
-        "categories": [
-            "Runway"
-        ],
-        "tags": [
-            "Resort 2027"
-        ],
-        "body": {
-            "title": "Resort 2027: The Collections That Mattered",
-            "excerpt": "A resort season with less spectacle and more clothes. The shows that said something, and the ones that only made noise.",
-            "featuredImage": {
-                "$asset": "post-resort"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Resort is the season where fashion admits what it is for. There is no myth to sell, no theatre to build — just the clothes people will actually buy and wear, shown in a hotel courtyard to a room that has seen everything. It is the most honest week on the calendar, and this year it was unusually good."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Restraint as a position"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The best collections did not shout. They proposed a way of dressing and then argued it, look after look, without a single gimmick to distract from whether the argument held. When it did, you left wanting to wear it. When it did not, no amount of set design could hide the gap."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The debuts"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Three houses showed new hands this season, and the difference between a designer with a point of view and one with only a mood board was visible within five looks. Taste cannot be hired in for a season; it shows up in the hem, the button, the decision to leave something out."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If resort is where fashion tells the truth, this year the truth was encouraging: the clothes came first, and the ones that mattered will still look right in a decade."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "the-object-that-outlives-the-trend",
-        "status": "published",
-        "authorSlug": "elena-prevost",
-        "categories": [
-            "Culture"
-        ],
-        "tags": [
-            "Studio Visit"
-        ],
-        "body": {
-            "title": "The Object That Outlives the Trend",
-            "excerpt": "A studio visit with a ceramicist who has made the same carafe for twenty years. On design that refuses to be new, and is better for it.",
-            "featuredImage": {
-                "$asset": "post-object"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The carafe on the shelf has not changed since the studio opened. Same proportion, same matte glaze, same slightly heavy base that means it does not tip when it is full. The maker has been asked, more than once, to update it. She has, more than once, declined."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Against the new"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "\"A good object does not have a season,\" she tells me, turning one on the wheel while we talk. \"If I redesign it every year, I am telling you the old one was wrong. It was not wrong. It was right, and it is still right.\" The shelves behind her are proof — twenty years of the same shape, each one a little more assured."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The long life of a thing"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "There is a version of design culture that treats permanence as a failure of imagination. The studio argues the opposite: that making one thing well and then defending it against the pressure to change is the harder, rarer discipline. The trend is easy. The object that outlives it is the achievement."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "You can buy the carafe, still, for less than a season’s worth of the things it will outlast. That, she says, is the whole point."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "fragrance-and-the-memory-of-a-room",
-        "status": "published",
-        "authorSlug": "nadia-okonkwo",
-        "categories": [
-            "Beauty"
-        ],
-        "tags": [
-            "The Beauty Edit"
-        ],
-        "body": {
-            "title": "Fragrance, and the Memory of a Room",
-            "excerpt": "Why the scents that last are the ones that remember a place. A conversation with a perfumer about smell, memory and restraint.",
-            "featuredImage": {
-                "$asset": "post-fragrance"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Ask people about the perfumes they have loved and almost no one describes a smell. They describe a room — a grandmother’s coat, a hallway in summer, a person long gone. Fragrance is the one part of beauty that works on memory directly, and the perfumers who understand that build differently."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The trap of the loud scent"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The easiest fragrance to sell is the one you can smell across a room. It is also the one that empties fastest, because it announces itself and then has nothing else to say. The scents that stay in rotation for years tend to be quieter — a thing you notice on yourself at the end of the day and are glad to still be wearing."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Building for the long wear"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "\"I am not trying to be noticed,\" the perfumer says. \"I am trying to be remembered.\" The distinction sounds small until you live with a bottle for a year. Restraint, again — the same lesson the beauty desk keeps arriving at from every direction this season."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The best compliment a fragrance can earn is not that someone loved it, but that it reminded them, unaccountably, of somewhere they used to be."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "What survives the cull"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When you strip a wardrobe back to what a person actually reaches for, the same shapes appear across every closet: a good coat, a real shirt, one pair of trousers that fit, a shoe that can be resoled. The trend was never the point. The point was the editing, and the editing is a skill."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If there is a look this season, it is the look of someone who has already decided. That is the hardest thing in fashion to fake, and the only thing worth photographing."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "skin-as-the-only-statement",
+    "status": "published",
+    "authorSlug": "nadia-okonkwo",
+    "categories": ["Beauty"],
+    "tags": ["The Beauty Edit"],
+    "body": {
+      "title": "Skin as the Only Statement",
+      "excerpt": "The most talked-about beauty look of the season is barely a look at all. On the long, expensive road back to doing almost nothing.",
+      "featuredImage": {
+        "$asset": "post-skin"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Backstage this season the instruction to the artists was the same everywhere, in three or four languages: less. Less product, less color, less of the face doing the work the clothes were supposed to do. The result reads, from the front row, as skin — and almost nothing else."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The paradox of the bare face"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is actually bare, of course. The undone face is one of the most worked-on effects in beauty, the product of skincare that starts weeks before the show and a hand light enough to be invisible. Doing nothing well is the most expensive kind of doing something."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why now"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a fatigue in it — a reaction against a decade of the sculpted, filtered, fully-built face. When everyone can look like anyone, looking like yourself becomes the statement. The skin you actually have, lit well, is the last thing a filter cannot sell you."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The kindest reading is that the industry is finally selling maintenance instead of transformation. The honest one is that maintenance, done properly, costs more than transformation ever did."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "resort-2027-collections-that-mattered",
+    "status": "published",
+    "authorSlug": "julian-hart",
+    "categories": ["Runway"],
+    "tags": ["Resort 2027"],
+    "body": {
+      "title": "Resort 2027: The Collections That Mattered",
+      "excerpt": "A resort season with less spectacle and more clothes. The shows that said something, and the ones that only made noise.",
+      "featuredImage": {
+        "$asset": "post-resort"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Resort is the season where fashion admits what it is for. There is no myth to sell, no theatre to build — just the clothes people will actually buy and wear, shown in a hotel courtyard to a room that has seen everything. It is the most honest week on the calendar, and this year it was unusually good."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Restraint as a position"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best collections did not shout. They proposed a way of dressing and then argued it, look after look, without a single gimmick to distract from whether the argument held. When it did, you left wanting to wear it. When it did not, no amount of set design could hide the gap."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The debuts"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Three houses showed new hands this season, and the difference between a designer with a point of view and one with only a mood board was visible within five looks. Taste cannot be hired in for a season; it shows up in the hem, the button, the decision to leave something out."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If resort is where fashion tells the truth, this year the truth was encouraging: the clothes came first, and the ones that mattered will still look right in a decade."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-object-that-outlives-the-trend",
+    "status": "published",
+    "authorSlug": "elena-prevost",
+    "categories": ["Culture"],
+    "tags": ["Studio Visit"],
+    "body": {
+      "title": "The Object That Outlives the Trend",
+      "excerpt": "A studio visit with a ceramicist who has made the same carafe for twenty years. On design that refuses to be new, and is better for it.",
+      "featuredImage": {
+        "$asset": "post-object"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The carafe on the shelf has not changed since the studio opened. Same proportion, same matte glaze, same slightly heavy base that means it does not tip when it is full. The maker has been asked, more than once, to update it. She has, more than once, declined."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Against the new"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "\"A good object does not have a season,\" she tells me, turning one on the wheel while we talk. \"If I redesign it every year, I am telling you the old one was wrong. It was not wrong. It was right, and it is still right.\" The shelves behind her are proof — twenty years of the same shape, each one a little more assured."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The long life of a thing"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a version of design culture that treats permanence as a failure of imagination. The studio argues the opposite: that making one thing well and then defending it against the pressure to change is the harder, rarer discipline. The trend is easy. The object that outlives it is the achievement."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You can buy the carafe, still, for less than a season’s worth of the things it will outlast. That, she says, is the whole point."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "fragrance-and-the-memory-of-a-room",
+    "status": "published",
+    "authorSlug": "nadia-okonkwo",
+    "categories": ["Beauty"],
+    "tags": ["The Beauty Edit"],
+    "body": {
+      "title": "Fragrance, and the Memory of a Room",
+      "excerpt": "Why the scents that last are the ones that remember a place. A conversation with a perfumer about smell, memory and restraint.",
+      "featuredImage": {
+        "$asset": "post-fragrance"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ask people about the perfumes they have loved and almost no one describes a smell. They describe a room — a grandmother’s coat, a hallway in summer, a person long gone. Fragrance is the one part of beauty that works on memory directly, and the perfumers who understand that build differently."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The trap of the loud scent"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The easiest fragrance to sell is the one you can smell across a room. It is also the one that empties fastest, because it announces itself and then has nothing else to say. The scents that stay in rotation for years tend to be quieter — a thing you notice on yourself at the end of the day and are glad to still be wearing."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Building for the long wear"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "\"I am not trying to be noticed,\" the perfumer says. \"I am trying to be remembered.\" The distinction sounds small until you live with a bottle for a year. Restraint, again — the same lesson the beauty desk keeps arriving at from every direction this season."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best compliment a fragrance can earn is not that someone loved it, but that it reminded them, unaccountably, of somewhere they used to be."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

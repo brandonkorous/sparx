@@ -16,8 +16,8 @@ import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode }
 import { StudioSession, type SiteContext } from '@wizeworks/studio';
 import { StudioProvider, type StudioHost } from '@wizeworks/studio/react';
 import { MediaPickerProvider } from '../../surfaces/cms/media-picker';
-import { useSilicaPieces } from '../../surfaces/builder/studio/data';
-import { tenantSymbolId } from '../../surfaces/builder/studio/saved-pieces';
+import { useSilicaPieces } from './site-data';
+import { tenantSymbolId } from './saved-pieces';
 import { useActiveSiteId } from '../api/shell-data';
 import { useStudioHostConfig } from './host';
 import { toLayoutDoc, useLayout } from './layout-data';

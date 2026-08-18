@@ -64,7 +64,7 @@ import {
   faTrashCan,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useQueryClient } from '@sparx/query';
+import { useQueryClient } from '@wizeworks/query';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -1210,48 +1210,39 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="AI connection controls">
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={dataUpdatedAt}
-          onRefresh={refreshAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="AI connection controls"
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refreshAll} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              AI connections
-            </Heading>
-            {/* The two bold phrases are the whole point of this paragraph — the
-                sentence exists to make "for you" and "into your business" land
-                as opposites — so it cannot be one flat string. It splits at the
-                emphasis instead, and each fragment is a key of its own. A brand
-                rewriting this keeps the same shape or the emphasis stops
-                pointing at anything. */}
-            <Text>
-              {productCopy(
-                'ai.connections.introA',
-                'Two separate things live here. Above is the AI account Piggles uses to write and answer'
-              )}{' '}
-              <span className="font-semibold">
-                {productCopy('ai.connections.forYou', 'for you')}
-              </span>
-              {productCopy(
-                'ai.connections.introB',
-                '. Below are the outside AI apps you let reach'
-              )}{' '}
-              <span className="font-semibold">
-                {productCopy('ai.connections.intoBusiness', 'into your business')}
-              </span>{' '}
-              {productCopy(
-                'ai.connections.introC',
-                'to look things up and make changes. They point in opposite directions, so they are kept apart.'
-              )}
-            </Text>
-          </div>
+          {/* The two bold phrases are the whole point of this paragraph — the
+              sentence exists to make "for you" and "into your business" land
+              as opposites — so it cannot be one flat string. It splits at the
+              emphasis instead, and each fragment is a key of its own. A brand
+              rewriting this keeps the same shape or the emphasis stops
+              pointing at anything. */}
+          <Text>
+            {productCopy(
+              'ai.connections.introA',
+              'Two separate things live here. Above is the AI account Piggles uses to write and answer'
+            )}{' '}
+            <span className="font-semibold">{productCopy('ai.connections.forYou', 'for you')}</span>
+            {productCopy(
+              'ai.connections.introB',
+              '. Below are the outside AI apps you let reach'
+            )}{' '}
+            <span className="font-semibold">
+              {productCopy('ai.connections.intoBusiness', 'into your business')}
+            </span>{' '}
+            {productCopy(
+              'ai.connections.introC',
+              'to look things up and make changes. They point in opposite directions, so they are kept apart.'
+            )}
+          </Text>
 
           <AiAccountSection
             ctx={ctx}

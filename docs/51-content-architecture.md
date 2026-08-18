@@ -194,7 +194,7 @@ catalog already exposes ([docs/43](archive/43-builder-binding-schema.md)).
 - **`Page` model + `/cms/pages`** — deleted once confirmed nothing live reads `cms_pages` (the
   site already uses the `page` content type). Any rows migrate to `page` entries.
 - **`BuilderPage.record_type` string** — replaced by the §6 link.
-- **Widget-shaped builtin content types** — reclassified per §7 (a migration touching `apps/web`,
+- **Widget-shaped builtin content types** — reclassified per §7 (a migration touching `sparx/apps/web`,
   which currently renders its marketing pages from `feature`/`module` types).
 
 ---
@@ -213,7 +213,7 @@ Deploy small ([feedback]); each phase is independently shippable and testable.
   introspection pick it up automatically.
 - **Phase 3 — Retire the `Page` model + `/cms/pages` (§8).**
 - **Phase 4 — Reclassify marketing builtins (§7).** `feature`/`faq_item`/`module`/
-  `editorial_section` → components + nested fields; migrate `apps/web`.
+  `editorial_section` → components + nested fields; migrate `sparx/apps/web`.
 - **Phase 5+ — Component library.** FAQ / carousel / gallery / feature-grid as data-bound,
   tenant-extensible components ([docs/38](38-sitebuilder-extensible-sections.md)).
 

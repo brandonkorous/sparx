@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth, signUpMerchant, SignUpError } from '@sparx/auth';
+import { auth, signUpMerchant, SignUpError } from '@wizeworks/auth';
 import { normalizeEmail, PRODUCT } from '@piggles/config';
 import { acquisitionFrom } from '@/lib/attribution';
 import { writeConsent } from '@/lib/consent';
@@ -76,6 +76,7 @@ export async function signUpAction(_prev: SignUpState, formData: FormData): Prom
   const rawPassword = formData.get('password');
   const password = typeof rawPassword === 'string' ? rawPassword : '';
   const from = text(formData, 'from');
+  const attribution = text(formData, 'a');
 
   if (!name) return { error: 'Please tell us your name.' };
   if (!email.includes('@')) return { error: 'That does not look like an email address.' };
@@ -99,7 +100,7 @@ export async function signUpAction(_prev: SignUpState, formData: FormData): Prom
       name,
       ipAddress: h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
       userAgent: h.get('user-agent'),
-      acquisition: acquisitionFrom(from),
+      acquisition: acquisitionFrom(from, attribution),
       platformBrand: 'piggles',
       zoneDomain: PRODUCT.tenantSites.suffix,
     });

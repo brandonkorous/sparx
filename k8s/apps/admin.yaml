@@ -1,4 +1,4 @@
-# apps/admin — the WizeWorks staff console. Next.js standalone server on port 3000.
+# wizeworks/apps/admin — the WizeWorks staff console. Next.js standalone server on port 3000.
 #
 # Serves admin.wize.works. Caddy reverse-proxies that host here; access control is
 # enforced IN FRONT by Cloudflare Access (docs/16 §2.4), which is the load-bearing

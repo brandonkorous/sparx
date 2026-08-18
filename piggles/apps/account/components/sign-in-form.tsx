@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   Alert,
   AlertDescription,
@@ -13,7 +12,7 @@ import {
   Input,
   PasswordInput,
 } from '@wizeworks/silicaui-react';
-import { signIn, twoFactor } from '@sparx/auth/client';
+import { signIn, twoFactor } from '@wizeworks/auth/client';
 import { normalizeEmail, PRODUCT } from '@piggles/config';
 import { AuthDivider, GoogleButton } from './social-sign-in';
 
@@ -43,8 +42,41 @@ import { AuthDivider, GoogleButton } from './social-sign-in';
 
 type Step = 'credentials' | 'two-factor';
 
+/**
+ * Go to where sign-in was headed, with a REAL browser navigation.
+ *
+ * ── WHY NOT `router.push` ───────────────────────────────────────────────────
+ *
+ * `next` is usually `/handoff`, which is not a page — it is the one door out of
+ * getpiggles.com, and it answers 303 to an address on ANOTHER ORIGIN. Next's
+ * client router does not navigate to a string, it fetches the RSC payload for
+ * it first; that fetch follows the 303 cross-origin, CORS refuses it, and the
+ * router logs
+ *
+ *     Failed to fetch RSC payload for …/handoff?next=%2F.
+ *     Falling back to browser navigation. TypeError: Failed to fetch
+ *
+ * before doing the navigation it should have done in the first place.
+ *
+ * The log is the harmless half. The damage is that `/handoff` gets hit TWICE —
+ * once by the doomed fetch and once by the fallback — and it MINTS A SINGLE-USE
+ * TOKEN. The server log shows it exactly: `GET /handoff 303` then `GET /handoff
+ * 307`, the second landing back on /sign-in. A route that can only be called
+ * once must never be reachable by a mechanism that calls it twice.
+ *
+ * ── AND IT IS THE RIGHT THING EVEN WHEN `next` STAYS LOCAL ──────────────────
+ *
+ * A session was just created. Every cached RSC payload in the client router was
+ * built by a signed-OUT visitor, so a soft navigation carries that cache across
+ * the authentication boundary and `router.refresh()` is an attempt to patch it
+ * afterwards. A document load throws it away, which is what actually wanted to
+ * happen.
+ */
+function leaveFor(next: string): void {
+  window.location.assign(next);
+}
+
 export function SignInForm({ next, google }: { next: string; google: boolean }) {
-  const router = useRouter();
   const [step, setStep] = useState<Step>('credentials');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -119,8 +151,7 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
       setStep('two-factor');
       return;
     }
-    router.push(next);
-    router.refresh();
+    leaveFor(next);
   }
 
   async function submitCode(e: React.FormEvent) {
@@ -140,8 +171,7 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
       setError('That code was not right. Codes change every 30 seconds — try the current one.');
       return;
     }
-    router.push(next);
-    router.refresh();
+    leaveFor(next);
   }
 
   async function sendMagicLink() {

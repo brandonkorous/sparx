@@ -13,7 +13,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faRepeat } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -69,33 +70,34 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Subscriptions list controls" wrap>
-        <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter subscriptions"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Subscriptions list controls"
+        status={<Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />}
+        filters={[
+          {
+            label: 'Show',
+            // Each chip IS one stored status, so that is the name it persists under.
+            key: 'status',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
+              resetWindow();
+            },
+            options: FILTERS,
+          },
+        ]}
+        // The status is the only thing narrowing this list, and the bar holds it.
+        views={{ target: '/commerce/subscriptions' }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (

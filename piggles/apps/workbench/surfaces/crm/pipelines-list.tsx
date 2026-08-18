@@ -7,15 +7,8 @@
 // the default or archived in their own columns. Deal counts are not in the list
 // payload, so they are not shown here — they live where a pipeline's deals do.
 
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { faDiagramProject, faPlus } from '@fortawesome/pro-solid-svg-icons';
@@ -23,8 +16,13 @@ import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { usePipelines, type Pipeline } from './pipelines-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -55,72 +53,82 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Pipeline list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Pipeline list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              color="module"
+              size="sm"
+              aria-label="Search pipelines"
+              placeholder="Search pipelines…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          <Button
             color="module"
             size="sm"
-            aria-label="Search pipelines"
-            placeholder="Search pipelines…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-        <div className="hidden w-44 shrink-0 @lg:block">
-          <Select
-            color="module"
-            size="sm"
-            aria-label="Which pipelines to show"
-            value={scope}
-            items={{ active: 'Active pipelines', all: 'Including archived' }}
-            onValueChange={(next) => {
-              setScope(next as 'active' | 'all');
+            className="ml-auto shrink-0"
+            title="New pipeline — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            New pipeline
+          </Button>
+        }
+        controls={
+          <div className="w-44 shrink-0">
+            <Select
+              color="module"
+              size="sm"
+              aria-label="Which pipelines to show"
+              value={scope}
+              items={{ active: 'Active pipelines', all: 'Including archived' }}
+              onValueChange={(next) => {
+                setScope(next as 'active' | 'all');
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/crm/pipelines',
+          params: { q: search, scope },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setScope(next.scope === 'all' ? 'all' : 'active');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="New pipeline — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          New pipeline
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
             title="Could not load your pipelines"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faDiagramProject} className="size-6" aria-hidden />,

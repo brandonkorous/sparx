@@ -26,7 +26,7 @@ import {
   EMAIL_CONTENT_BLOCKS,
   SAMPLE_EMAIL_DATA,
   type MergeTag,
-} from '@sparx/builder-schemas';
+} from '@wizeworks/builder-schemas';
 import type { EmailPreviewHost } from '@wizeworks/studio/react';
 
 export { EMAIL_CONTENT_BLOCKS, emailMergeTags, groupMergeTags, type MergeTag };

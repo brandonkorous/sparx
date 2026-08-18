@@ -41,10 +41,8 @@ import {
   faGlobe,
   faGrid,
   faMagnifyingGlass,
-  faMoon,
   faPlus,
   faRightFromBracket,
-  faSun,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Logo } from '@piggles/brand/react';
@@ -53,16 +51,24 @@ import { switchSite, useSites, useTenant } from '@/lib/api/shell-data';
 import { useConfirm } from '@/lib/confirm';
 import { deferTick } from '@/lib/defer';
 import { useWorkbench } from '@/lib/workbench/context';
+import { AppearanceMenu } from '@/components/appearance-menu';
 import { NotificationCenter } from '@/components/notification-center';
 import { FeedbackButton } from '@/components/feedback/button';
 import { useViewer } from '@/lib/api/shell-data';
 import { switchBusiness, useBusinesses } from '@/lib/console/businesses';
-import type { Theme } from '@/lib/theme';
+import type { Theme, ThemeChoice } from '@/lib/theme';
 import type { WindowMode } from '@/lib/window-mode';
 
 interface TopbarProps {
   userName: string;
   userEmail: string;
+  /** The APPEARANCE the person picked, which is not the same as the one on
+   *  screen: `system` is a choice, and it resolves to one of the other two. The
+   *  control below shows both — the tick marks the choice, the glyph shows what
+   *  it currently means. */
+  themeChoice: ThemeChoice;
+  /** What that choice resolves to right now — read off the document by the
+   *  appearance hook, so the glyph can never disagree with the screen. */
   theme: Theme;
   /** Canonical layout key for the current site — see the shell's boot. */
   siteKey: string;
@@ -72,7 +78,7 @@ interface TopbarProps {
    * Threaded down from the server rather than computed here, and that is not
    * fussiness: the origin comes from `PIGGLES_ACCOUNT_ORIGIN`, a server-only
    * variable, and the helper that reads it lives in @piggles/auth-handoff —
-   * which imports @sparx/db. Reaching for it from a client component would pull
+   * which imports @wizeworks/db. Reaching for it from a client component would pull
    * Prisma into the browser bundle to answer a question the server already knew.
    */
   accountOrigin: string;
@@ -80,7 +86,7 @@ interface TopbarProps {
    *  no equivalent and is not offered one. */
   windowMode: WindowMode;
   onChangeWindowMode: (mode: WindowMode) => void;
-  onToggleTheme: () => void;
+  onSetTheme: (choice: ThemeChoice) => void;
   onOpenLauncher: () => void;
 }
 
@@ -121,12 +127,13 @@ function initials(name: string): string {
 export function Topbar({
   userName,
   userEmail,
+  themeChoice,
   theme,
   siteKey,
   accountOrigin,
   windowMode,
   onChangeWindowMode,
-  onToggleTheme,
+  onSetTheme,
   onOpenLauncher,
 }: TopbarProps) {
   const { controller } = useWorkbench();
@@ -166,7 +173,7 @@ export function Topbar({
             and the wordmark set side by side with a guessed gap. Their padded
             boxes overlap in the real artwork, so no positive gap can reproduce
             it. See @piggles/brand's marks.ts. */}
-        <span className="flex shrink-0 justify-center">
+        <span className="flex shrink-0 justify-center" data-guide="business">
           <Logo className="mx-3 h-7 w-auto" title={PRODUCT.name} />
         </span>
 
@@ -249,7 +256,7 @@ export function Topbar({
             shaped like one. The variant does the painting; nothing here sets a
             background or a border by hand — and no `color` either, so it wears
             the base ink the theme resolves rather than an assigned grey. */}
-        <div className="mx-auto flex w-full max-w-2xl">
+        <div className="mx-auto flex w-full max-w-2xl" data-guide="search">
           <Button
             // variant="outline"
             className="w-full justify-start gap-2.5 font-normal"
@@ -338,23 +345,7 @@ export function Topbar({
             also carry the unread dot; this was a second copy that could not. */}
         <FeedbackButton />
 
-        <Tooltip content={theme === 'light' ? 'Dark' : 'Light'}>
-          <Button
-            variant="ghost"
-            /*size="sm"*/
-            shape="square"
-            aria-label={
-              theme === 'light' ? 'Switch to the dark theme' : 'Switch to the light theme'
-            }
-            onClick={onToggleTheme}
-          >
-            {theme === 'light' ? (
-              <Icon glyph={faMoon} className="size-4" aria-hidden />
-            ) : (
-              <Icon glyph={faSun} className="size-4" aria-hidden />
-            )}
-          </Button>
-        </Tooltip>
+        <AppearanceMenu choice={themeChoice} theme={theme} onSetTheme={onSetTheme} />
 
         <DropdownMenu>
           <Tooltip content={userName}>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { requireSession } from '@sparx/auth';
-import { prisma } from '@sparx/db';
+import { requireSession } from '@wizeworks/auth';
+import { prisma } from '@wizeworks/db';
 import { listBlueprints } from '@/lib/furnish';
 import { Onboarding } from '@/components/onboarding';
 

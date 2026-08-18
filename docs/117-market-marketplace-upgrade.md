@@ -1,10 +1,10 @@
-# 117 — apps/market: Amazon/Etsy-grade marketplace upgrade
+# 117 — sparx/apps/market: Amazon/Etsy-grade marketplace upgrade
 
 Version: 1.0
 Author: Brandon Korous
 Last Updated: 2026-07-07
 
-**Goal.** Turn `apps/market` from a _skeleton_ multi-vendor marketplace into a
+**Goal.** Turn `sparx/apps/market` from a _skeleton_ multi-vendor marketplace into a
 genuine Amazon/Etsy-grade experience — depth, discovery, and social proof — while
 **retiring every bespoke `mx-*` layout class in favor of silicaui-native
 composition** (silicaui-react components + Tailwind utilities + small local React
@@ -31,7 +31,7 @@ decision:
 - **Global projection** (`market_listings` / `market_merchants`, cross-tenant
   SELECT): read straight onto grids with no tenant context. Powers browse/cards.
   Adding a field here = a **migration + projection-writer change** (in
-  `packages/commerce/src/services/market/projection.ts`) — heavier, but the field
+  `wizeworks/packages/commerce/src/services/market/projection.ts`) — heavier, but the field
   is then free to filter/sort/facet across all tenants.
 - **On-demand tenant resolve** (`getListingDetail` pattern): `withSystem` finds the
   listing → `withTenant({ tenantId })` reads the seller's private tables. **No
@@ -165,16 +165,16 @@ The frame every page wears; sets the silicaui-native visual language.
   projection change as files; DO NOT run `prisma migrate/generate/db push` (shared
   docker + the running stack). New-model code not typechecking until the user
   regenerates is expected. The DB Migrate workflow applies on `main`
-  ([packages/db/CLAUDE.md](../packages/db/CLAUDE.md)). Only **S3** needs a migration
+  ([wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)). Only **S3** needs a migration
   — keep the rest migration-free by design.
 - **Dockerfiles:** no new workspace package is planned; market already deps
-  `@sparx/commerce-schemas`. If a slice adds one, wire every consumer Dockerfile
+  `@wizeworks/commerce-schemas`. If a slice adds one, wire every consumer Dockerfile
   COPY (new-workspace-package skill).
 - **Cross-tenant safety:** every on-demand resolve goes `withSystem` (find listing,
   read the projection's `tenantId`) → `withTenant({ tenantId })`. Never expose one
   tenant's private data to another; reviews/Q&A/related read only the resolved
   seller. RLS is the backstop.
-- **Service boundaries:** market reads stay in `@sparx/commerce` market service +
+- **Service boundaries:** market reads stay in `@wizeworks/commerce` market service +
   the `api-rest` public market route. No new service.
 - **silicaui-native only:** no new `mx-*`. Controls via silicaui-react; layout via
   utilities/local components. Base font ≥16px; status via `statusTone()` +

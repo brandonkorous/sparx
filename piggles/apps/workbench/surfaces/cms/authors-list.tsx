@@ -12,7 +12,8 @@
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import Image from 'next/image';
-import { Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faUser, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -24,6 +25,10 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 // way the content editor's asset fields do.
 import { useMediaAssets, type MediaAsset } from './media';
 import { authorName, useAuthorsList, type Author } from './authors-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'cms';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -145,42 +150,52 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
       {/* Search, a count and the primary action fit one line; below @xl the count
           gives way first, since search is used constantly and the count is a
           glance. The bar does not wrap. */}
-      <PaneToolbar label="Author list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search authors"
-            placeholder="Search by name…"
-            value={search}
-            onValueChange={setSearch}
+      <PaneToolbar
+        label="Author list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search authors"
+              placeholder="Search by name…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        status={
+          <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
+            {needle
+              ? `${String(matches.length)} of ${String(authors.length)}`
+              : authors.length === 1
+                ? '1 author'
+                : `${String(authors.length)} authors`}
+          </p>
+        }
+        primaryAction={{
+          label: 'New author',
+          icon: faPlus,
+          onClick: create,
+          title: 'Add an author — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/cms/authors',
+          params: { q: search },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-        <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
-          {needle
-            ? `${String(matches.length)} of ${String(authors.length)}`
-            : authors.length === 1
-              ? '1 author'
-              : `${String(authors.length)} authors`}
-        </p>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add an author — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @sm:inline">New author</span>
-        </Button>
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {/* A failed load REPLACES the list — "no authors yet" over a connection
@@ -200,6 +215,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : matches.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(needle)}
             noResults={{
               icon: <Icon glyph={faUserPlus} className="size-6" aria-hidden />,

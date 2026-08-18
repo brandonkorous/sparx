@@ -10,13 +10,18 @@
 // Nothing offers a "Connect" that goes nowhere — every provider row opens a pane
 // that does the real thing, or says plainly what it needs.
 
-import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, Text } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { faCreditCard, faServer, faStar } from '@fortawesome/pro-solid-svg-icons';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { faServer, faStar } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   gatewayState,
@@ -114,57 +119,55 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Payment providers controls">
-        <Icon glyph={faCreditCard} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Payment providers
-        </Heading>
-        {active && config.data?.isActive ? (
-          <Badge color="success" variant="soft" size="sm">
-            Taking payments
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={config.data ? config.dataUpdatedAt : undefined}
-          onRefresh={refetchAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Payment providers controls"
+        status={
+          active && config.data?.isActive ? (
+            <Badge color="success" variant="soft" size="sm">
+              Taking payments
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={config.data ? config.dataUpdatedAt : undefined}
+            onRefresh={refetchAll}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Both non-ready states are carded, because the ready one is a
+              FormSection — already a card. */}
           {config.isError || catalog.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load your payment providers"
-              description={paymentsErrorMessage(
-                config.error ?? catalog.error,
-                'This is a problem reaching the server. Your payment setup is unaffected.'
-              )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load your payment providers"
+                description={paymentsErrorMessage(
+                  config.error ?? catalog.error,
+                  'This is a problem reaching the server. Your payment setup is unaffected.'
+                )}
+                onRetry={refetchAll}
+              />
+            </Card>
           ) : config.isPending || catalog.isPending ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  How you get paid
-                </Heading>
-                <Text className="text-sm">
-                  {active && config.data?.isActive
-                    ? `You're set up with ${active.name} and can take card payments now. Switch to another provider below at any time.`
-                    : productCopy(
-                        'commerce.payments.chooseIntro',
-                        'Choose the service that takes your customers’ payments. sparx Pay is the fastest to start; you can also connect your own processor if you already have one.'
-                      )}
-                </Text>
-              </div>
+              <Text className="text-sm">
+                {active && config.data?.isActive
+                  ? `You're set up with ${active.name} and can take card payments now. Switch to another provider below at any time.`
+                  : productCopy(
+                      'commerce.payments.chooseIntro',
+                      'Choose the service that takes your customers’ payments. sparx Pay is the fastest to start; you can also connect your own processor if you already have one.'
+                    )}
+              </Text>
 
               <FormSection
                 title="Choose how you get paid"

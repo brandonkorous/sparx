@@ -94,18 +94,18 @@ believes they are seeing last month's stock value.
 
 ### 1.4 The consumer audit changes the plan
 
-`apps/dashboard` is being **fully removed** when `apps/workbench` ships as its
+`apps/dashboard` is being **fully removed** when `sparx/apps/workbench` ships as its
 replacement. So the question is not how to migrate the reporting endpoints — it
 is whether they should exist at all. An audit of every caller:
 
-| Consumer                       | How it reads reports                                                                                                                                      |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/dashboard`               | The HTTP `/reports/*` endpoints — **and it is being deleted**                                                                                             |
-| `services/api-mcp`             | **Does not call them.** MCP read-tools call `reportingService` directly (`packages/commerce/src/mcp/read-tools.ts`, `packages/crm/src/mcp/read-tools.ts`) |
-| `services/api-graphql`         | Calls `reportingService` directly (`routes/crm/resolvers/reports.ts`)                                                                                     |
-| Rollup schedulers              | Call `reportingService` directly (`packages/commerce/src/schedulers/*`)                                                                                   |
-| `apps/site` / `market` / `web` | No consumers                                                                                                                                              |
-| `apps/workbench`               | Two call sites, both builder analytics, both trivially movable                                                                                            |
+| Consumer                                 | How it reads reports                                                                                                                                                          |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/dashboard`                         | The HTTP `/reports/*` endpoints — **and it is being deleted**                                                                                                                 |
+| `wizeworks/services/api-mcp`             | **Does not call them.** MCP read-tools call `reportingService` directly (`wizeworks/packages/commerce/src/mcp/read-tools.ts`, `wizeworks/packages/crm/src/mcp/read-tools.ts`) |
+| `wizeworks/services/api-graphql`         | Calls `reportingService` directly (`routes/crm/resolvers/reports.ts`)                                                                                                         |
+| Rollup schedulers                        | Call `reportingService` directly (`wizeworks/packages/commerce/src/schedulers/*`)                                                                                             |
+| `wizeworks/apps/site` / `market` / `web` | No consumers                                                                                                                                                                  |
+| `sparx/apps/workbench`                   | Two call sites, both builder analytics, both trivially movable                                                                                                                |
 
 **The ~60 reporting HTTP endpoints have effectively one consumer, and it is being
 deleted.** Every other integration already reads through the **service layer** —
@@ -297,7 +297,7 @@ the letterhead on every historical invoice it ever issued. The same snapshot
 discipline must apply to the issuer: freeze name, address, tax id and mark onto
 the document when it is finalized.
 
-**c) The legal entity still belongs on the invoice.** `packages/db/CLAUDE.md`
+**c) The legal entity still belongs on the invoice.** `wizeworks/packages/db/CLAUDE.md`
 states `Tenant.name` is "never rendered to a customer or sent in a customer
 email." An invoice is the **documented exception** — tax and company-law
 requirements generally oblige the legal entity to appear. The rendering is
@@ -356,7 +356,7 @@ Backfill runs through the DB Migrate pipeline, never a laptop — the Cloud SQL
 instance is private-IP only. Any backfill touching a FORCE-RLS table must loop
 tenants and `set_config('app.tenant_id', …)` per tenant; `sparx_owner` is a
 non-superuser in prod and sees zero rows otherwise. This passes locally on a
-superuser and fails in prod. See [packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
+superuser and fails in prod. See [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
 
 ### 2.5 Cross-site aggregates are not always sums
 

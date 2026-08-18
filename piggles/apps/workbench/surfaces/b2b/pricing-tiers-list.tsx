@@ -18,6 +18,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { discountSummary, formatCents, useTiers, type TierRow } from './pricing-tiers-data';
 
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'b2b';
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -42,36 +46,50 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Price tier controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Price tier controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search price tiers"
+              placeholder="Search price tiers…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
-            aria-label="Search price tiers"
-            placeholder="Search price tiers…"
-            value={search}
-            onValueChange={setSearch}
+            className="ml-auto"
+            title="Add a price tier — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add a price tier
+          </Button>
+        }
+        views={{
+          target: '/b2b/pricing-tiers',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a price tier — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a price tier
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto p-2">
         {isError ? (
@@ -84,6 +102,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faDollarSign} className="size-6" aria-hidden />,

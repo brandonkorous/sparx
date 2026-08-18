@@ -37,7 +37,7 @@ resolved items stops being read.
 
 **Kind:** defect · **Bites when:** the first Piggles tenant enters a card
 
-`syncModuleItems` (`packages/billing`) keeps a tenant's Stripe subscription in
+`syncModuleItems` (`wizeworks/packages/billing`) keeps a tenant's Stripe subscription in
 lockstep with their EXPLICIT module flags — one line item per active module.
 That is exactly right for sparx, which sells modules. **Piggles sells one flat
 plan with every app included**, so the same code would add up to fifteen
@@ -55,7 +55,7 @@ weighing:
 - Bill from the PLAN, not from the module set — `syncModuleItems` becomes a
   no-op for a tenant whose plan is flat-rate, decided from the tenant's own
   billing configuration rather than from `platformBrand` (a brand check in
-  `packages/billing` is the fork this repo works to avoid — piggles/CLAUDE.md
+  `wizeworks/packages/billing` is the fork this repo works to avoid — piggles/CLAUDE.md
   RULE #0).
 - Or: module items exist but are priced at zero for a flat plan. Simpler to
   reason about in Stripe; noisier on an invoice a customer actually reads.
@@ -97,7 +97,7 @@ building a countdown for a trial nobody decided on is the wrong order.
 
 **Kind:** defect · **Bites when:** a module is added to the platform
 
-`ALL_MODULES` in `packages/modules` is now THE list, and `api-rest`'s
+`ALL_MODULES` in `wizeworks/packages/modules` is now THE list, and `api-rest`'s
 `MODULE_SLUGS` derives from it rather than repeating it. That fixed one copy —
 the one whose own comment recorded that `inventory` and `finance` had each
 fallen out of sync, with the symptom that the module typechecks everywhere and
@@ -143,7 +143,7 @@ moved.
 
 **Kind:** decision · **Bites when:** the first Piggles Dockerfile is written
 
-`piggles/apps/workbench/package.json` mirrors `apps/workbench`'s dependency
+`piggles/apps/workbench/package.json` mirrors `sparx/apps/workbench`'s dependency
 list — `dockview`, `@dnd-kit/*`, `driver.js`, `qrcode`, `socket.io-client`,
 `geist` and the schema packages — even though the console's own 24 files import
 almost none of them directly. They arrive through the shared surfaces it mounts.
@@ -165,7 +165,7 @@ STATUS). Whatever is decided here has to be what that checker enforces.
 **Kind:** defect · **Bites when:** a second social provider is added, or the env
 changes on one deployment and not another
 
-`packages/auth/src/server.ts` registers the Google provider only when
+`wizeworks/packages/auth/src/server.ts` registers the Google provider only when
 `GOOGLE_CLIENT_ID` **and** `GOOGLE_CLIENT_SECRET` are both set, and adds the One
 Tap plugin under the same condition. The account app now renders its "Continue
 with Google" button only under that same condition, which it re-states in
@@ -211,7 +211,7 @@ machine, and neither says so.**
 
 The chain: both call into `publishAuthEmail`, which publishes `email.send`. In
 dev the publisher is built by `localDispatchFromEnv`
-(`packages/events/src/publisher.ts`), which reads `SPARX_DEV_WORKER_ROUTES` and
+(`wizeworks/packages/events/src/publisher.ts`), which reads `SPARX_DEV_WORKER_ROUTES` and
 returns **null when it is unset** — and it is unset in this repo. So the publish
 is a no-op. The only trace is a log line reading
 `[pubsub:dev-dispatch] no local worker — skipping`, in a terminal nobody is

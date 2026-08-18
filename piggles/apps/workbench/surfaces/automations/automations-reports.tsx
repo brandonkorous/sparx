@@ -12,7 +12,7 @@
 import { useMemo, useState } from 'react';
 import {
   Badge,
-  Button,
+  Card,
   EmptyState,
   Heading,
   Select,
@@ -24,13 +24,19 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { faChartColumn, faChartLine, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { faChartLine } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { automationState, summarizeTrigger } from './automations-presentation';
+
+/** Registry module for this pane, so the brand draws Automations' own picture
+ *  rather than the generic one. */
+const MODULE = 'automations';
 import {
   automationErrorMessage,
   presetRange,
@@ -172,58 +178,62 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Automations report controls" wrap>
-        <Icon glyph={faChartColumn} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Activity &amp; reports
-        </Heading>
-        <div className="ml-auto w-32 shrink-0">
-          <Select
-            size="sm"
-            color="module"
-            aria-label="Which businesses"
-            value={scope}
-            items={{ this: 'This business', all: 'All businesses' }}
-            onValueChange={(next) => {
-              setScope((next as 'this' | 'all') || 'this');
-            }}
+      <PaneToolbar
+        label="Automations report controls"
+        controls={
+          <>
+            <div className="ml-auto w-32 shrink-0">
+              <Select
+                size="sm"
+                color="module"
+                aria-label="Which businesses"
+                value={scope}
+                items={{ this: 'This business', all: 'All businesses' }}
+                onValueChange={(next) => {
+                  setScope((next as 'this' | 'all') || 'this');
+                }}
+              />
+            </div>
+            <div className="w-36 shrink-0">
+              <Select
+                size="sm"
+                color="module"
+                aria-label="Time period"
+                value={preset}
+                items={{ '7': RANGE_LABEL['7'], '30': RANGE_LABEL['30'], '90': RANGE_LABEL['90'] }}
+                onValueChange={(next) => {
+                  setPreset((next as RangePreset) || '30');
+                }}
+              />
+            </div>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={series.data ? series.dataUpdatedAt : undefined}
+            onRefresh={refetchAll}
           />
-        </div>
-        <div className="w-36 shrink-0">
-          <Select
-            size="sm"
-            color="module"
-            aria-label="Time period"
-            value={preset}
-            items={{ '7': RANGE_LABEL['7'], '30': RANGE_LABEL['30'], '90': RANGE_LABEL['90'] }}
-            onValueChange={(next) => {
-              setPreset((next as RangePreset) || '30');
-            }}
-          />
-        </div>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={series.data ? series.dataUpdatedAt : undefined}
-          onRefresh={refetchAll}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Carded, because the branch beside it is a stack of FormSections —
+              each already a card. */}
           {series.isError && summary.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load the report"
-              description={automationErrorMessage(
-                series.error ?? summary.error,
-                'This is a problem reaching the server. Try again in a moment.'
-              )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
+                title="Could not load the report"
+                description={automationErrorMessage(
+                  series.error ?? summary.error,
+                  'This is a problem reaching the server. Try again in a moment.'
+                )}
+                onRetry={refetchAll}
+              />
+            </Card>
           ) : (
             <>
               <div className="flex flex-col gap-1">
@@ -277,11 +287,13 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 description="Every rule you have, busiest first. Click one to open it."
               >
                 {summary.isPending ? (
-                  <Text className="text-sm" role="status">
-                    Loading…
-                  </Text>
+                  <InlineWaiting />
                 ) : rows.length === 0 ? (
+                  /* Inside a FormSection, which is already a card — so no Card
+                     here, and the compact EmptyState stays: this is one section
+                     of the report, not the pane's content region. */
                   <EmptyState
+                    size="sm"
                     icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
                     title="No automations yet"
                     description="Once you create rules, they show up here with how much they run and how reliably."

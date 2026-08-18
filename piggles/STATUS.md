@@ -1,6 +1,6 @@
 # Piggles — build status
 
-**Last updated:** 2026-08-15
+**Last updated:** 2026-08-17
 
 Where the Piggles build actually is, what is decided, and what is known-broken.
 Read [CLAUDE.md](CLAUDE.md) for the rules and [DESIGN.md](DESIGN.md) for the
@@ -8,24 +8,24 @@ design contract — this file is only state.
 
 ## Built and verified
 
-| Thing                        | Where                                       | State                                                      |
-| ---------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| Rules + design contract      | `CLAUDE.md`, `DESIGN.md`                    | Done                                                       |
-| Brand tokens + theme         | `packages/brand`                            | Done. Compiles; every value measured                       |
-| Marks (mark/wordmark/logo)   | `packages/brand/src/marks.ts` + `src/react` | Done, traced from the delivered SVGs                       |
-| Product adapters             | `packages/config`                           | App registry, lexicon, product identity, `accountUrl()`    |
-| `platform_brand`/`is_system` | `packages/db` migration `20270323000000`    | **Applied** to local docker; 96 tenants backfilled `sparx` |
-| Site chrome                  | `components/marketing/site-{header,footer}` | Nav, mobile drawer, full 15-app footer index               |
-| Homepage                     | `components/marketing/home.tsx`             | Video hero, six beats, 9 photographs                       |
-| `/apps` + 15 `/apps/[app]`   | `app/apps/**` + `content/apps.ts`           | Built. **These are the satellite-domain landing pages**    |
-| `/pricing`                   | `app/pricing`                               | One plan, allowance table, "never charge you for", FAQ     |
-| `/trust`                     | `app/trust`                                 | Seven pillars, operations, FAQ                             |
-| 404                          | `app/not-found.tsx`                         | Real page — offers the whole product, not an apology       |
-| Social cards                 | `lib/og.tsx` + 20 `opengraph-image` routes  | Real vector lockup; app cards wear their group hue         |
-| `sitemap.xml` / `robots.txt` | `app/sitemap.ts`, `app/robots.ts`           | App pages derived from the registry; AI crawlers welcomed  |
-| Media                        | `apps/web/public/{video,photos}`            | 36 MB video, 2.3 MB photos, licences documented            |
+| Thing                        | Where                                              | State                                                      |
+| ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
+| Rules + design contract      | `CLAUDE.md`, `DESIGN.md`                           | Done                                                       |
+| Brand tokens + theme         | `sparx/packages/brand`                             | Done. Compiles; every value measured                       |
+| Marks (mark/wordmark/logo)   | `sparx/packages/brand/src/marks.ts` + `src/react`  | Done, traced from the delivered SVGs                       |
+| Product adapters             | `packages/config`                                  | App registry, lexicon, product identity, `accountUrl()`    |
+| `platform_brand`/`is_system` | `wizeworks/packages/db` migration `20270323000000` | **Applied** to local docker; 96 tenants backfilled `sparx` |
+| Site chrome                  | `components/marketing/site-{header,footer}`        | Nav, mobile drawer, full 15-app footer index               |
+| Homepage                     | `components/marketing/home.tsx`                    | Video hero, six beats, 9 photographs                       |
+| `/apps` + 15 `/apps/[app]`   | `app/apps/**` + `content/apps.ts`                  | Built. **These are the satellite-domain landing pages**    |
+| `/pricing`                   | `app/pricing`                                      | One plan, allowance table, "never charge you for", FAQ     |
+| `/trust`                     | `app/trust`                                        | Seven pillars, operations, FAQ                             |
+| 404                          | `app/not-found.tsx`                                | Real page — offers the whole product, not an apology       |
+| Social cards                 | `lib/og.tsx` + 20 `opengraph-image` routes         | Real vector lockup; app cards wear their group hue         |
+| `sitemap.xml` / `robots.txt` | `app/sitemap.ts`, `app/robots.ts`                  | App pages derived from the registry; AI crawlers welcomed  |
+| Media                        | `sparx/apps/web/public/{video,photos}`             | 36 MB video, 2.3 MB photos, licences documented            |
 
-44 static routes build clean. Typecheck, lint and prettier pass on `apps/web`.
+44 static routes build clean. Typecheck, lint and prettier pass on `sparx/apps/web`.
 Verified in a browser at desktop AND at 390px (in an iframe, so nobody's window
 gets resized): every page stacks, the mobile drawer opens and closes, and the
 console is clean.
@@ -98,7 +98,7 @@ buried in a defect list is a decision nobody makes.
 1. **`pnpm install` is needed once.** `@piggles/brand` was missing `@types/react`,
    so it has never typechecked standalone — five bogus "unsafe return" lint errors
    on `wordmark.tsx` that are really "JSX has no types here". The devDependency is
-   now in its `package.json`, matching `packages/brand`; it needs an install to
+   now in its `package.json`, matching `sparx/packages/brand`; it needs an install to
    take effect. The apps were always fine, which is why this hid.
 2. **The video clips are sparx's.** License-clean (Pexels + Mixkit) but identical
    footage across two brands competing for the same customer is a tell. Piggles
@@ -131,7 +131,7 @@ buried in a defect list is a decision nobody makes.
   **Anything that ships className strings from a package needs a scan line.**
 - **Never write a `display` utility onto a silica control.** `hidden sm:inline-flex`
   on a `.btn` overrides `.btn`'s own display and shifts the label off vertical
-  centre. Hide with `max-sm:hidden` only. `apps/market/components/site-header.tsx`
+  centre. Hide with `max-sm:hidden` only. `sparx/apps/market/components/site-header.tsx`
   already carried a comment saying so; it got repeated here anyway.
 - **`metadataBase` is required or social cards silently do not exist.** Without
   it `opengraph-image` resolves to a relative URL, every scraper rejects it, and
@@ -204,7 +204,7 @@ declares two things and reimplements none of it.
 `zoneDomain`. The second is the load-bearing one — the subdomain zone used to
 come from `SPARX_ZONE_DOMAIN`, and an env var is fixed per deployment while both
 brands are served by the SAME processes, so every Piggles signup would have been
-handed a `sparx.zone` address. `packages/auth` typechecks clean.
+handed a `sparx.zone` address. `wizeworks/packages/auth` typechecks clean.
 
 **The handoff** lives in `piggles/packages/auth-handoff` and holds BOTH halves,
 so the console side is a five-line call when it is built. It mints a one-time,
@@ -224,8 +224,8 @@ There is more than one onboarding here and they are not the same job:
 | Per-module setup       | e.g. inventory's guided setup (`InventorySetupProgress`) | Platform-owned; Piggles inherits it   |
 
 **The in-console one is substantial**, not a form: it is
-`apps/workbench/surfaces/onboarding/` — a **story composer** backed by
-`@sparx/story-schemas` (a clause grammar with industry, audience and tense, where
+`sparx/apps/workbench/surfaces/onboarding/` — a **story composer** backed by
+`@wizeworks/story-schemas` (a clause grammar with industry, audience and tense, where
 the owner literally writes a sentence describing their business), a six-step
 wizard (`step-workspace`, `step-modules`, `step-blueprint`, `step-domain`,
 `step-payments`, `step-launch`), a welcome banner + checklist, then `FirstRunTour`
@@ -283,7 +283,7 @@ quietly becomes a paywall nobody can find the far side of.
 
 `tenants.settings.onboarding.story` has been collecting the story since
 onboarding shipped — text, industry, audience, customers, implied modules,
-composed-at. **It was never reaching `packages/platform-crm`**, the mirror that
+composed-at. **It was never reaching `wizeworks/packages/platform-crm`**, the mirror that
 puts one contact per person and one deal per tenant on WizeWorks' own signups
 pipeline. So the board could show WHEN tenants arrived and never WHAT KIND, which
 is the half that matters for growth. Now on the deal:
@@ -299,7 +299,7 @@ Two more things landed in the mirror at the same time:
 - **`railGroups`**, Piggles' own shorter onboarding answer, under its own key
   rather than pretending to be the same answer as the story.
 
-`packages/platform-crm` typechecks clean and its 18 tests pass.
+`wizeworks/packages/platform-crm` typechecks clean and its 18 tests pass.
 
 ## Capacity metering — the meters now exist
 
@@ -309,11 +309,11 @@ backfilled** — nobody can reconstruct last March's storage figure — so every
 without meters was pricing evidence permanently lost. Built now, ahead of the
 billing surfaces that will read it:
 
-| Piece     | Where                                                                        |
-| --------- | ---------------------------------------------------------------------------- |
-| Model     | `RollupTenantDailyUsage` in `75-analytics-rollups.prisma`                    |
-| Migration | `20270325000000_tenant_usage_rollup` (RLS included)                          |
-| Measuring | `packages/usage` — `measureTenant` / `snapshotTenant` / `snapshotAllTenants` |
+| Piece     | Where                                                                                  |
+| --------- | -------------------------------------------------------------------------------------- |
+| Model     | `RollupTenantDailyUsage` in `75-analytics-rollups.prisma`                              |
+| Migration | `20270325000000_tenant_usage_rollup` (RLS included)                                    |
+| Measuring | `wizeworks/packages/usage` — `measureTenant` / `snapshotTenant` / `snapshotAllTenants` |
 
 Platform-wide, not Piggles-only: sparx bills per module and still needs to know
 what a tenant costs to serve, and a meter that existed for one brand would be
@@ -337,12 +337,12 @@ the next run, where a missed increment stays wrong until somebody notices.
 
 **Not yet wired:** the `/internal/platform/usage-rollup` endpoint on api-rest and
 the k8s CronJob that curls it — the pattern is `k8s/cronjobs/automation-runs-rollup.yaml`.
-And `packages/usage` cannot typecheck until the Prisma client is regenerated,
+And `wizeworks/packages/usage` cannot typecheck until the Prisma client is regenerated,
 since `rollupTenantDailyUsage` does not exist on the client yet.
 
 ## After the first install — what typechecks, and four things it caught
 
-`@piggles/brand`, `@piggles/auth-handoff` and `@sparx/usage` all typecheck clean.
+`@piggles/brand`, `@piggles/auth-handoff` and `@wizeworks/usage` all typecheck clean.
 Four defects only became visible once the packages could actually resolve:
 
 1. **The handoff's single-use guard could not compile.** `verifications.identifier`
@@ -352,13 +352,13 @@ Four defects only became visible once the packages could actually resolve:
    read a live session token into memory before the delete count rejects it.
 2. **`forgetPassword` is not callable on this client.** The emailOTP plugin
    claims the name as a NAMESPACE (`forgetPassword.emailOtp`). The call is
-   `requestPasswordReset`, which is what `apps/workbench` uses.
-3. **A package that imports `@sparx/db` needs `"types": ["node"]` in its own
+   `requestPasswordReset`, which is what `sparx/apps/workbench` uses.
+3. **A package that imports `@wizeworks/db` needs `"types": ["node"]` in its own
    tsconfig.** Type roots are per-compilation, so the dependency having
    `@types/node` does not help the consumer typecheck its source.
 4. **`@piggles/brand` needs `"jsx": "react-jsx"`.** Under the base config's
    `preserve`, JSX resolves against the GLOBAL `JSX` namespace, which only exists
-   once something has pulled in `@types/react` — `packages/brand` (sparx) gets
+   once something has pulled in `@types/react` — `sparx/packages/brand` (sparx) gets
    that from `import * as React from 'react'`, and the Piggles marks deliberately
    import nothing. Matching sparx's tsconfig was the wrong instinct: the configs
    differ because the code differs.
@@ -369,7 +369,7 @@ at 05:00 UTC, before the reporting rollups — those recompute closed data and c
 catch up whenever, this one takes a point-in-time reading and wants a clean day
 boundary. `check:events`, `check:routes` and `check:docker` all pass.
 
-## apps/workbench (mypiggles.com) — BUILT, NEVER SIGNED INTO
+## sparx/apps/workbench (mypiggles.com) — BUILT, NEVER SIGNED INTO
 
 24 files, ~3,100 lines, on port **3022**. Typecheck, lint (`--max-warnings=0`)
 and prettier are clean, and the routes below were exercised against the running
@@ -396,12 +396,12 @@ Verified with curl against dev:
 
 **It mounts the shared surfaces and forks none of them.** The shell is Piggles'
 (chrome, nav, vocabulary, theme); everything inside it — dock, controller,
-launcher, status strip, deep links, update notifier — is `apps/workbench`,
+launcher, status strip, deep links, update notifier — is `sparx/apps/workbench`,
 imported through a `@workbench/*` tsconfig alias. That works because the shared
 tree has **zero `@/` imports**: every one of its internal imports is relative, so
 the whole thing is reachable from outside without touching a line of it.
 
-### The seam that made it possible: `apps/workbench/lib/product.ts`
+### The seam that made it possible: `sparx/apps/workbench/lib/product.ts`
 
 The platform-side vocabulary provider (item 4 on the old Next list, now done).
 Three things a surface says out loud that are not a color: the **product name**,
@@ -418,14 +418,14 @@ Building a second consumer found four defects that were invisible with one:
    recorded that `inventory` and `finance` had each fallen out of sync — the
    symptom being that the module typechecks everywhere and then CANNOT BE TURNED
    ON (the toggle refuses the slug as "Request validation failed"). Now derives
-   from `ALL_MODULES`, newly exported from `@sparx/modules`. **The same comment
+   from `ALL_MODULES`, newly exported from `@wizeworks/modules`. **The same comment
    says other copies exist** — see FOLLOW_UPS #3.
 3. **`.sparx-pulse-nudge` was defined in one app's stylesheet** for a shared
    component, so the other shell rendered a control that silently never moved.
    Moved to `surface-support.css` as `.pulse-nudge`.
 4. Four strings said "sparx" out loud from inside shared surfaces.
 
-### `apps/workbench/app/surface-support.css`
+### `sparx/apps/workbench/app/surface-support.css`
 
 The rules the SURFACES depend on — the site-canvas safelist, the
 field-description correction, the `[data-module]` field accents, the popover
@@ -476,7 +476,7 @@ imports — which is the exact failure it exists to prevent, one directory over.
 
 Fixed by extracting `WORKSPACE_GROUPS` (one list, used by all three loops) and
 teaching the COPY matcher both prefixes. **The two prefixes are kept apart on
-purpose:** `packages/brand` and `piggles/packages/brand` are different packages,
+purpose:** `sparx/packages/brand` and `piggles/packages/brand` are different packages,
 and a Piggles image needs BOTH — matching on the slug alone would let either
 satisfy the other and pass an image that cannot build.
 
@@ -490,7 +490,7 @@ Closures computed from the manifests rather than guessed:
 - **piggles-web** — 3 packages, all `@piggles/*`, and NOT ONE `@sparx/*`. No
   database, no auth, no api-rest. It is the only Piggles surface that can ship
   alone; the account app before the console is a live funnel with a dead end.
-- **piggles-account** — 27: the platform account spine (`@sparx/auth` → the whole
+- **piggles-account** — 27: the platform account spine (`@wizeworks/auth` → the whole
   `signUpMerchant` closure) plus the four Piggles packages.
 - **piggles-console** — 38, and it hits the same V8 heap wall sparx's workbench
   does (`--max-old-space-size=8192`), because it carries the same surface layer.
@@ -557,7 +557,7 @@ answer is a bigger node, not smaller requests.
   api-rest's `/internal/domain-check`, which knows tenant subdomains and custom
   domains and has never heard of meetpiggles.com. It would refuse, and the host
   would have no certificate at all. Same reasoning as the kanNINJA blocks.
-- **The image is `piggles-console`, the directory is `apps/workbench`.** The app
+- **The image is `piggles-console`, the directory is `sparx/apps/workbench`.** The app
   is workbench-shaped; "workbench" is a sparx word and nothing an operator reads
   should carry it (RULE #3).
 - **Probes hit `/api/health` on all three**, including the marketing site.
@@ -831,7 +831,7 @@ It hid for hours because every cheap check passes:
 - **The UI blamed the password**, because the error handler collapsed every
   failure into the credential message.
 
-`apps/workbench/.env` carries a comment predicting this exact symptom
+`sparx/apps/workbench/.env` carries a comment predicting this exact symptom
 ("looks exactly like a wrong password"). It was read and not connected.
 
 Fixed: `.env` + `.env.example` in the account app, and three error handlers that
@@ -851,7 +851,7 @@ silent no-op and both recovery paths do nothing while claiming success
 
 ### The console (mypiggles) — Piggles owns its dock chrome
 
-`apps/workbench` has **zero modifications**. The console has its own dock:
+`sparx/apps/workbench` has **zero modifications**. The console has its own dock:
 
 ```
 piggles/apps/workbench/lib/dock/console-dock.tsx    the dockview component
@@ -882,7 +882,7 @@ do?" search, quick-add, help and named avatar.
    `/_next/static/chunks/*globals_css*.single.css` and grep it before believing
    any CSS change landed.
 2. **There are two directories called `workbench`.** Clearing
-   `apps/workbench/.next` or `piggles/apps/account/.next` does nothing for the
+   `sparx/apps/workbench/.next` or `piggles/apps/account/.next` does nothing for the
    console. The console's cache is `piggles/apps/workbench/.next`, and a plain
    restart reuses it.
 3. **`<DockviewReact theme={…}>` typechecks and does nothing.** The props
@@ -914,7 +914,7 @@ warm here, cool in sparx — never what they MEAN.**
 - The reference's **settings gear** — deliberately not built, because no
   console-wide settings surface exists to open (the ones that exist are
   per-module).
-- One file outside `piggles/` is modified: `packages/auth/src/client.ts`
+- One file outside `piggles/` is modified: `wizeworks/packages/auth/src/client.ts`
   (`organizationClient()`). Shared auth, no sparx behaviour change — flagged, not
   yet blessed.
 
@@ -924,11 +924,11 @@ Four of six default-layout keys were guessed and wrong. A key that does not
 resolve opens nothing and reports nothing. Real ones: `workbench.home`,
 `builder.site`, `crm.customers.list`, `scheduling.calendar`, `chat.inbox`,
 `invoicing.invoices.list`. Grep `key: '` in
-`apps/workbench/lib/surfaces/catalog` first.
+`sparx/apps/workbench/lib/surfaces/catalog` first.
 
 ## 2026-08-14 (later) — the pane states, and Piggles stops speaking as sparx
 
-Two jobs, both in SHARED code (`apps/workbench`), both because a Piggles console
+Two jobs, both in SHARED code (`sparx/apps/workbench`), both because a Piggles console
 was mounting surfaces written for a different product and a different reader.
 
 ### 1. Every pane's states now have one shape each
@@ -941,7 +941,7 @@ own card. Plus `<p className="p-4 text-sm">Loading…</p>` in the top-left.
 Now: **waiting → `<PaneWaiting>` · nothing there → `<ListEmptyState>` /
 `<PaneEmpty>` · could not load → `<PaneLoadError>`**, all rendering INSIDE the
 surface's content card with the toolbar above still present and still enabled.
-Contract in [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md).
+Contract in [sparx/apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md).
 
 Swept: **92 error blocks · 43 empty blocks · 299 loading blocks**. Zero of the
 old idioms remain.
@@ -972,13 +972,13 @@ button.
 
 ### 2. Piggles speaks for itself inside shared surfaces
 
-**The product adapter was never wired for Piggles.** `apps/workbench/lib/product.ts`
+**The product adapter was never wired for Piggles.** `sparx/apps/workbench/lib/product.ts`
 is the one seam for what cannot ride a token, and the console never called it —
 so inside every shared pane Piggles was showing sparx's product name, sparx's
 module vocabulary ("CRM", "Commerce"), and **Sparky, sparx's mascot**. Nearly
 invisible until the loading sweep put the mark on every list's first load.
 
-Now wired in [lib/console/product.tsx](apps/workbench/lib/console/product.tsx),
+Now wired in [lib/console/product.tsx](sparx/apps/workbench/lib/console/product.tsx),
 with the module lexicon DERIVED from the APPS registry (each app already declares
 the modules it fronts — restating it would create a second source that drifts).
 
@@ -993,7 +993,7 @@ The adapter grew from 3 fields to 6:
 | `hiddenFeatures` | a BLOCK inside a shared pane          |
 | `copy`           | whole sentences, written by hand      |
 
-**108 strings written in Piggles' voice** — [lib/console/copy.ts](apps/workbench/lib/console/copy.ts).
+**108 strings written in Piggles' voice** — [lib/console/copy.ts](sparx/apps/workbench/lib/console/copy.ts).
 Not substituted. `productCopy(key, sparxFallback)` for quoted strings,
 `productCopyWith(key, fallback, values)` for template literals with `{placeholders}`.
 108 wired, 108 written, zero gaps in either direction (there is a reconcile script
@@ -1038,8 +1038,8 @@ capability."** Exclude, never rename, never ask. Excluded so far: `sparx.market`
 - **Dock elevation is unverified by eye** — `shadow-sm` at rest, `shadow-lg` torn
   off, via Tailwind's scale (silica ships no elevation utility because Tailwind
   already has one).
-- **`packages/auth/src/client.ts`** still carries the `organizationClient()` line
-  — the only file changed outside `piggles/` and `apps/workbench`.
+- **`wizeworks/packages/auth/src/client.ts`** still carries the `organizationClient()` line
+  — the only file changed outside `piggles/` and `sparx/apps/workbench`.
 
 ## 2026-08-14 (later still) — THE SEPARATION
 
@@ -1049,7 +1049,7 @@ is written above.
 
 ### What was true before
 
-`piggles/apps/workbench` MOUNTED `apps/workbench` through a `@workbench/*`
+`piggles/apps/workbench` MOUNTED `sparx/apps/workbench` through a `@workbench/*`
 tsconfig alias — 84 imports reaching into sparx's application for the surfaces,
 the dock plumbing, the controller, the registry and three API routes. The old
 RULE #0 called for it in as many words: _"mount them, never fork them."_
@@ -1063,11 +1063,11 @@ That test was failing in both directions. Making Piggles speak for itself meant
 editing sparx's tree — around 350 of sparx's files ended up carrying
 Piggles-shaped machinery — and a build error in one product surfaced in the
 other. (It did: a `Spinner` import that does not exist in silica broke the
-PIGGLES build, in a file under `apps/workbench`.)
+PIGGLES build, in a file under `sparx/apps/workbench`.)
 
 ### What was done
 
-1. Copied `apps/workbench/{components,lib,surfaces}` + `app/surface-support.css`
+1. Copied `sparx/apps/workbench/{components,lib,surfaces}` + `app/surface-support.css`
    into `piggles/apps/workbench`, from the WORKING TREE — so every Piggles-facing
    change made that day came along.
 2. Rewrote all 84 `@workbench/*` imports and 5 escaping relative paths to `@/`,
@@ -1078,7 +1078,7 @@ PIGGLES build, in a file under `apps/workbench`.)
 4. Gave the console its own `token` / `active-site` / `version` handlers. They
    used to re-export sparx's, which after the rewrite meant re-exporting
    themselves (`TS2303: Circular definition of import alias`).
-5. **Restored `apps/workbench` to HEAD.** `git status apps/` is now 0 files. The
+5. **Restored `sparx/apps/workbench` to HEAD.** `git status apps/` is now 0 files. The
    uncommitted diff is preserved at
    `scratchpad/apps-workbench-uncommitted.patch` (16k lines) if anything in it
    is ever wanted for sparx.
@@ -1101,7 +1101,7 @@ deliberate — deleting the sparx APPS does not delete them, so depending on one
 couples nothing." That defended the right boundary for the question it was asked
 and the wrong one for the question that matters. "Does Piggles import sparx's app
 code?" is not the same as "**can sparx be deleted without affecting Piggles?**",
-and under the second a package named `@sparx/db` that Piggles cannot boot without
+and under the second a package named `@wizeworks/db` that Piggles cannot boot without
 is an unanswered question rather than a pass.
 
 So the counts are recorded per package in a baseline file and may only fall. The
@@ -1383,6 +1383,55 @@ OAuth popup sends them back), and the `sparx_market` / `sparx_pay` wire enums.
 - **The money field carries no currency symbol.** Noticed while adding a product;
   shared-surface behaviour, not investigated.
 
+## 2026-08-17 — the builders are Piggles' own, and the old editor is gone
+
+The console had ONE editor that owned every document at once: the site's pages, its
+chrome, its look, its saved pieces and its emails, all held in one in-memory `Site`
+and written back through one whole-site save. It has been replaced by **eight panes,
+one document each** — page, header & footer, look, saved piece, email, plus history,
+preview and publish — over a new engine, `wizeworks/packages/studio`.
+
+**Why per-document, in one sentence:** two panes can now be open on two documents at
+once and neither is a copy of the other, so a look edits beside the page it repaints,
+and a footer typo ships without shipping every half-built page with it.
+
+| Thing                           | Where                                      | State                                                                                                      |
+| ------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| The engine                      | `wizeworks/packages/studio`                | Documents, ops with self-computed inverses, per-doc undo, the theme→layout→page resolution chain. 94 tests |
+| Page / layout / piece builders  | `piggles/apps/workbench/surfaces/studio/*` | Canvas, layers, insert, inspector; save + publish per document                                             |
+| Look builder                    | same                                       | Every silica token, live contrast warnings, own + ready-made + marketplace shelves                         |
+| Email builder                   | same                                       | Its own node vocabulary, own session, merge tags resolved against sample data                              |
+| History · Preview · Publish     | same                                       | Per-document history + restore; the real page in a pane; whole-site publish + rollback                     |
+| Piggles' copy of the old editor | `surfaces/builder/{studio,email}`          | **Deleted** — nine files, 4,810 lines                                                                      |
+
+**sparx's editor is untouched and is not going anywhere.** The fork on 2026-08-14
+gave Piggles its own copy of that tree; what was deleted is that copy.
+`check:deletability` confirms the two products still share nothing but the platform.
+
+### Three things this build found that no check could
+
+- **Six panes had no address.** `check:routes` only scanned sparx's catalog, so every
+  studio pane built across six phases was unlinkable and blanked the address bar when
+  focused. The script now scans both consoles.
+- **A page could lose its content to a concurrent save.** The per-document Save
+  spliced one document into a whole-site payload; `sync` upserts every page in that
+  roster, so two panes saving two different pages could put a stale copy of one back.
+  Deletion was never the exposure, which is why nothing caught it. Now one row, one
+  UPDATE (`writePageRoot` / `writeFrameRoot`).
+- **A saved piece had no way back.** Editing one wrote its JSON column directly and
+  skipped the snapshot, making it the one document with no history.
+
+### Not yet true
+
+**Nobody has opened any of it in a browser.** Typecheck, lint, prettier, 94 tests and
+every structural check pass; that is the same set that passed before each of the three
+defects above. Task 9.4 in
+[docs/features/builder/TASKS.md](docs/features/builder/TASKS.md) is the drive-through,
+and 8.5 (the session surviving a pane tear-off) rests on it.
+
+`builder_theme_versions` (migration `20270328000000`) is authored but **not applied** —
+it needs the pipeline, or a local `migrate dev`. A look's history is empty until it runs.
+
 ## Next
 
 1. **Sign up once, and watch what a new business actually gets.** The whole
@@ -1443,7 +1492,7 @@ whole class of problem.
 ## The reverted sparx work
 
 `apps-workbench-reverted-2026-08-14.patch` at the repo root (gitignored) is the
-16k-line diff that `apps/workbench` carried before it was restored to HEAD. It
+16k-line diff that `sparx/apps/workbench` carried before it was restored to HEAD. It
 holds today's Piggles-motivated edits AND the previous session's genuine sparx
 improvement — the unified pane states swept across 447 surfaces. **That sweep is
 no longer in sparx.** If sparx wants it back, it is in there; if not, delete the

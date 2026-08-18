@@ -5,7 +5,7 @@
 // wears.
 //
 // It is deliberately KEYED BY THE AUTOMATION NAME. The ~45 system automations are
-// seeded elsewhere (packages/automation-actions/src/seeds/*) and this file never
+// seeded elsewhere (wizeworks/packages/automation-actions/src/seeds/*) and this file never
 // creates or edits one — it only decides how an already-installed rule is
 // presented. A recipe whose automation is not installed on this tenant simply
 // never renders; a system automation with no recipe here falls into the "More"

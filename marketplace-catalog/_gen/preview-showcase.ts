@@ -10,7 +10,7 @@
 // of the template path below the compose step, which was always generic.
 //
 // Usage (from repo root):
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/preview-showcase.ts" <slug>...
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/preview-showcase.ts" <slug>...
 //
 // Output: marketplace-catalog/_gen/.preview/preview-<slug>.html (gitignored), which
 // `screenshot-template.mjs <slug>` then renders to a full-page PNG. Both steps are
@@ -20,7 +20,7 @@ import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import type { Node, Theme } from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import type { Node, Theme } from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
 import { writeSitePreview, PREVIEW_DIR } from './template-sites/preview';
 

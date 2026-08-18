@@ -1,5 +1,5 @@
 import 'server-only';
-import { SAMPLE_DATA_PACKS } from '@sparx/db';
+import { SAMPLE_DATA_PACKS } from '@wizeworks/db';
 
 // A "trade" is the line of work a business is in — the platform calls it
 // `settings.industry`, and one slug does two jobs downstream: it picks the

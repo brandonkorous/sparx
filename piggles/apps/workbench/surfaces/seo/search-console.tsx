@@ -27,7 +27,6 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -41,6 +40,7 @@ import {
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -334,28 +334,25 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Search Console actions">
-        {status.data ? (
-          <Badge color={configured ? badge.tone : 'info'} variant="soft" size="sm">
-            {configured ? badge.label : 'Not available'}
-          </Badge>
-        ) : null}
-        <div className="flex-1" />
-        <Button
-          size="sm"
-          variant="ghost"
-          color="neutral"
-          shape="square"
-          aria-label="Check the connection again"
-          title="Check the connection again"
-          loading={status.isFetching}
-          onClick={() => {
-            void status.refetch();
-          }}
-        >
-          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Search Console actions"
+        status={
+          status.data ? (
+            <Badge color={configured ? badge.tone : 'info'} variant="soft" size="sm">
+              {configured ? badge.label : 'Not available'}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={status.isFetching}
+            updatedAt={status.data ? status.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void status.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {status.isPending ? (
@@ -371,16 +368,11 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
           </div>
         ) : (
           <div className={COLUMN}>
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Search Console
-              </Heading>
-              <Text>
-                Search Console is a free tool from Google. Connecting it lets us show you the real
-                numbers Google records — how many people saw your site in search results, and how
-                many clicked through — instead of an estimate.
-              </Text>
-            </div>
+            <Text>
+              Search Console is a free tool from Google. Connecting it lets us show you the real
+              numbers Google records — how many people saw your site in search results, and how many
+              clicked through — instead of an estimate.
+            </Text>
 
             {!configured ? (
               <Alert color="info" variant="soft">

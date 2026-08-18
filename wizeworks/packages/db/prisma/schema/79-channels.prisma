@@ -1,0 +1,161 @@
+// Channels module (docs/106) — external sales-channel + first-party marketplace
+// integrations. A tenant one-click-connects an EXISTING seller account (TikTok
+// Shop, Etsy, Amazon, Meta, Google Shopping, Walmart, eBay, Faire, …) so
+// catalog/orders/inventory sync, OR publishes to sparx.market. sparx is the
+// back-office system of record; the marketplace stays the storefront.
+//
+//   ChannelConnection      — the per-tenant OAuth link to one external shop.
+//                            OAuth tokens are stored AES-256-GCM ENCRYPTED on the
+//                            row, never plaintext (docs/106 §4.6) — boxed via
+//                            @wizeworks/channels/crypto with CHANNELS_TOKEN_KEY. (Per-
+//                            tenant access tokens rotate hourly; a DB-row cipher
+//                            box rotates with a plain UPDATE, where a Secret-
+//                            Manager ref would churn a billed version per refresh.)
+//   ChannelProductMapping  — links a sparx variant ↔ its external listing; the
+//                            seam for catalog push + order-ingest SKU resolution.
+//   ChannelShopLink        — a GLOBAL shop_id → tenant routing directory. An
+//                            order channel's webhook URL is app-level (ONE URL for
+//                            every tenant), so the inbound webhook must resolve the
+//                            tenant from the payload's shop_id with no session. The
+//                            secret-bearing channel_connections table stays strictly
+//                            tenant-isolated; this minimal, secret-free directory
+//                            carries cross-tenant SELECT so the webhook can route
+//                            (mirrors how the Stripe webhook resolves the tenant via
+//                            the global tenants.stripe_account_id). docs/106 §4.4.
+//
+// channel_connections / channel_product_mappings are tenant-scoped (FORCE RLS,
+// canonical tenant_isolation). channel_shop_links is global-read / tenant-write.
+// Owned by @wizeworks/channels, driven by the channel-sync-worker + the api-rest
+// webhook. Part of the Commerce module (no separate fee) — gated with commerce.
+
+model ChannelConnection {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // The site whose products this channel sells (docs/131 §4). An Etsy or TikTok
+  // shop belongs to ONE business — Bob's Parts and Savory Donuts each have their
+  // own Etsy, under their own name and brand — and both can connect the SAME
+  // channel type. That is why the uniqueness below moves from (tenant, channel)
+  // to (tenant, property, channel): without it, connecting Etsy for the second
+  // business is a constraint violation against the first.
+  //
+  // Nullable so a single-site tenant's existing connection stays valid as-is
+  // (null = the tenant, i.e. its one site), and so a genuinely tenant-wide feed
+  // is expressible; the manage UI defaults new connections to the working site.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // The channel slug — tiktok_shop | etsy | amazon | walmart | ebay | faire |
+  // meta | google_shopping | pinterest | sparx_market (docs/106 §3).
+  channel String @db.VarChar(40)
+
+  // active | paused | error | disconnected (docs/106 §4.4).
+  status String @default("active") @db.VarChar(20)
+
+  // The channel's own shop/account id (e.g. the TikTok shop_id) + display name,
+  // captured after the OAuth handshake.
+  externalId String? @map("external_id") @db.VarChar(255)
+  shopName   String? @map("shop_name") @db.VarChar(255)
+
+  // OAuth tokens, AES-256-GCM ciphertext (`iv.tag.cipher` base64) — NEVER
+  // plaintext on the row (docs/106 §4.6). Encrypted/decrypted via
+  // @wizeworks/channels/crypto. Text, not VarChar: a boxed refresh token can exceed
+  // the old 512 ref budget. Null until the OAuth handshake completes.
+  accessTokenEnc  String?   @map("access_token_enc") @db.Text
+  refreshTokenEnc String?   @map("refresh_token_enc") @db.Text
+  tokenExpiresAt  DateTime? @map("token_expires_at") @db.Timestamptz
+
+  // Granted OAuth scopes — surfaces a re-auth prompt when the required set grows.
+  scopes String[] @default([]) @db.VarChar(80)
+
+  lastSyncedAt DateTime? @map("last_synced_at") @db.Timestamptz
+  // Rolling list of recent failures [{ at, code, message }] for the manage UI.
+  syncErrors   Json      @default("[]") @map("sync_errors")
+  metadata     Json      @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a channel connection is one business's link to its own external
+  // shop, holding that shop's OAuth tokens. It goes with the site.
+  property Property?               @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  mappings ChannelProductMapping[]
+
+  // One connection per channel per SITE (one shop per channel for now — multi-shop
+  // relaxes this to (tenant, property, channel, external_id) later, docs/106 §9).
+  // NULLS NOT DISTINCT in SQL so at most one tenant-wide connection per channel
+  // too — the plain compound unique would let unlimited (tenant, NULL, 'etsy')
+  // rows coexist, which is the ambiguity this constraint exists to stop.
+  @@unique([tenantId, propertyId, channel], map: "channel_connections_tenant_channel_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, propertyId])
+  @@map("channel_connections")
+}
+
+// NOTE: ChannelProductMapping carries NO property_id (docs/131 §4, §2 pattern 3).
+// A mapping exists only under a connection, and the connection is site-scoped, so
+// the mapping's site is its connection's — a column here would be a second source
+// of truth able to disagree with the first, which has no defined meaning. The
+// `(connection_id, variant_id)` unique already binds it to one connection.
+model ChannelProductMapping {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  connectionId String @map("connection_id") @db.Uuid
+  channel      String @db.VarChar(40)
+
+  // The sparx side — variant grain (a product maps via its variants). productId
+  // is carried for grouping + product-level operations.
+  productId String @map("product_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+
+  // External listing identifiers, populated on push/import. externalSku is the
+  // reverse-lookup key on order ingest (channel order line → sparx variant).
+  externalProductId String? @map("external_product_id") @db.VarChar(255)
+  externalVariantId String? @map("external_variant_id") @db.VarChar(255)
+  externalSku       String? @map("external_sku") @db.VarChar(255)
+
+  syncEnabled  Boolean   @default(true) @map("sync_enabled")
+  lastSyncedAt DateTime? @map("last_synced_at") @db.Timestamptz
+  syncError    String?   @map("sync_error") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connection ChannelConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  product    Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant    ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  // One mapping per variant per connection.
+  @@unique([connectionId, variantId], map: "channel_product_mappings_connection_variant_unique")
+  @@index([tenantId, channel, productId])
+  @@index([tenantId, channel, externalSku])
+  @@index([connectionId])
+  @@map("channel_product_mappings")
+}
+
+model ChannelShopLink {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  // The channel slug + the channel's own shop/account id (the TikTok shop_id, the
+  // Amazon seller id). Globally unique per channel: an app-level webhook URL
+  // carries this id and must resolve to exactly one tenant connection.
+  channel    String @db.VarChar(40)
+  externalId String @map("external_id") @db.VarChar(255)
+
+  // The routing answer — which tenant + connection owns this shop. tenantId is the
+  // RLS write-scope column (a tenant may only write its own rows); reads are global
+  // so the unauthenticated webhook can resolve the tenant.
+  tenantId     String @map("tenant_id") @db.Uuid
+  connectionId String @map("connection_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // No FK relations: this is a GLOBAL directory (cross-tenant readable) kept
+  // consistent explicitly by the connect/disconnect path, not by tenant-scoped
+  // cascade (which interacts awkwardly with FORCE RLS). A purged tenant's stale
+  // row routes to a tenant with no active connection → a graceful ingest no-op.
+  @@unique([channel, externalId], map: "channel_shop_links_channel_external_unique")
+  @@index([tenantId])
+  @@map("channel_shop_links")
+}

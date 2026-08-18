@@ -18,11 +18,11 @@ import {
   Button,
   Card,
   EmptyState,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faEyeSlash, faLocationDot, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -30,6 +30,10 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatAddress, useLocations, type BusinessLocation } from './setup-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'scheduling';
 
 const DETAIL_KEY = 'scheduling.locations.detail';
 
@@ -94,6 +98,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={activeOnly}
           noResults={{
             icon: <Icon glyph={faLocationDot} className="size-6" aria-hidden />,
@@ -181,45 +186,51 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Places list controls">
-        <ToggleGroup
-          size="sm"
-          color="module"
-          className="shrink-0"
-          value={activeOnly ? ['active'] : []}
-          onValueChange={(next: unknown[]) => {
-            setActiveOnly(next.includes('active'));
-          }}
-        >
-          <ToggleGroupItem
-            value="active"
-            aria-label="Hide switched-off ones"
-            title="Hide switched-off ones"
+      <PaneToolbar
+        label="Places list controls"
+        primaryAction={{
+          label: 'Add a place',
+          icon: faPlus,
+          onClick: openNew,
+          title: 'Add a place — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <ToggleGroup
+            size="sm"
+            color="module"
+            className="shrink-0"
+            value={activeOnly ? ['active'] : []}
+            onValueChange={(next: unknown[]) => {
+              setActiveOnly(next.includes('active'));
+            }}
           >
-            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">In use only</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add a place — hold Shift to open alongside, Alt for a new window"
-          onClick={openNew}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add a place</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+            <ToggleGroupItem
+              value="active"
+              aria-label="Hide switched-off ones"
+              title="Hide switched-off ones"
+            >
+              <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+              <span>In use only</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        }
+        views={{
+          target: '/scheduling/locations',
+          params: { active: activeOnly ? '1' : '' },
+          onApply: (next) => {
+            setActiveOnly(next.active === '1');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
 

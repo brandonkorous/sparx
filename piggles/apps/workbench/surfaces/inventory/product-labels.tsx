@@ -17,7 +17,7 @@
 // is previewed is exactly what comes out — the only way a label sheet is ever
 // trusted — and it works on a warehouse tablet with no connection.
 //
-// The bars are drawn from `@sparx/commerce-schemas`, the same encoder the server
+// The bars are drawn from `@wizeworks/commerce-schemas`, the same encoder the server
 // uses, so a label printed from this screen carries the code the registry
 // validated rather than a second implementation's opinion of it.
 //
@@ -30,27 +30,32 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { ListEmptyState } from '../../components/list-empty-state';
 import {
   Alert,
   Badge,
   Button,
+  Card,
   Checkbox,
-  EmptyState,
   NativeSelect,
   SearchInput,
   Text,
   ToggleGroup,
   ToggleGroupItem,
-  ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { barcodeSvg, encodeBarcode } from '@sparx/commerce-schemas';
+import { barcodeSvg, encodeBarcode } from '@wizeworks/commerce-schemas';
 import { faBarcode, faPrint, faSparkles } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
+
+/** Registry module for this pane, so the brand draws Stock's own picture rather
+ *  than the generic one. */
+const MODULE = 'inventory';
 import { useBarcodes, useGenerateBarcodes, type Barcode } from './scan-data';
 import { productCopy } from '../../lib/product';
 
@@ -215,7 +220,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [primaryOnly, setPrimaryOnly] = useState(true);
   const [copies, setCopies] = useState(1);
 
-  const { data, isLoading } = useBarcodes({
+  const { data, isLoading, isFetching, dataUpdatedAt, refetch } = useBarcodes({
     ...(presetVariant ? { variantId: presetVariant } : {}),
     q: search.trim(),
     limit: 200,
@@ -240,104 +245,123 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       {/* `print:hidden` — the controls are not part of the sheet. */}
-      <PaneToolbar label="Product label controls" className="print:hidden">
-        <Button
-          color="module-inventory"
-          size="sm"
-          disabled={rows.length === 0}
-          onClick={() => {
-            window.print();
-          }}
-        >
-          <Icon glyph={faPrint} className="size-4" aria-hidden />
-          Print {rows.length > 0 ? plural(rows.length, 'label', 'labels') : 'labels'}
-        </Button>
-
-        <ToolbarSeparator />
-
-        {!presetVariant ? (
-          <SearchInput
-            value={search}
-            placeholder="Code, SKU or product"
-            onValueChange={setSearch}
-          />
-        ) : null}
-
-        <ToggleGroup
-          value={[size]}
-          onValueChange={(value) => {
-            const next = (value as string[])[0];
-            if (next) setSize(next as SizeKey);
-          }}
-        >
-          {SIZES.map((s) => (
-            <ToggleGroupItem key={s.value} value={s.value} aria-label={`${s.label} — ${s.hint}`}>
-              {s.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="What goes on the label"
-          value={preset}
-          onChange={(event) => {
-            setPreset(event.target.value as PresetKey);
-          }}
-        >
-          {PRESETS.map((p) => (
-            <option key={p.value} value={p.value}>
-              {p.label} — {p.hint}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-28 shrink"
-          aria-label="Copies of each label"
-          value={String(copies)}
-          onChange={(event) => {
-            setCopies(Number(event.target.value));
-          }}
-        >
-          {[1, 2, 4, 8, 12, 24].map((n) => (
-            <option key={n} value={n}>
-              {n} each
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Tooltip content="Off prints every code an item has, including case and supplier codes">
-          <Checkbox
-            checked={primaryOnly}
-            onChange={(event) => {
-              setPrimaryOnly(event.target.checked);
+      <PaneToolbar
+        label="Product label controls"
+        className="print:hidden"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
-          >
-            Main code only
-          </Checkbox>
-        </Tooltip>
-      </PaneToolbar>
+          />
+        }
+        search={
+          !presetVariant ? (
+            <SearchInput
+              value={search}
+              placeholder="Code, SKU or product"
+              onValueChange={setSearch}
+            />
+          ) : null
+        }
+        controls={
+          <>
+            <Button
+              color="module-inventory"
+              size="sm"
+              disabled={rows.length === 0}
+              onClick={() => {
+                window.print();
+              }}
+            >
+              <Icon glyph={faPrint} className="size-4" aria-hidden />
+              Print {rows.length > 0 ? plural(rows.length, 'label', 'labels') : 'labels'}
+            </Button>
+            <ToggleGroup
+              value={[size]}
+              onValueChange={(value) => {
+                const next = (value as string[])[0];
+                if (next) setSize(next as SizeKey);
+              }}
+            >
+              {SIZES.map((s) => (
+                <ToggleGroupItem
+                  key={s.value}
+                  value={s.value}
+                  aria-label={`${s.label} — ${s.hint}`}
+                >
+                  {s.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="What goes on the label"
+              value={preset}
+              onChange={(event) => {
+                setPreset(event.target.value as PresetKey);
+              }}
+            >
+              {PRESETS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label} — {p.hint}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              className="max-w-28 shrink"
+              aria-label="Copies of each label"
+              value={String(copies)}
+              onChange={(event) => {
+                setCopies(Number(event.target.value));
+              }}
+            >
+              {[1, 2, 4, 8, 12, 24].map((n) => (
+                <option key={n} value={n}>
+                  {n} each
+                </option>
+              ))}
+            </NativeSelect>
+            <Tooltip content="Off prints every code an item has, including case and supplier codes">
+              <Checkbox
+                checked={primaryOnly}
+                onChange={(event) => {
+                  setPrimaryOnly(event.target.checked);
+                }}
+              >
+                Main code only
+              </Checkbox>
+            </Tooltip>
+          </>
+        }
+      />
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      {/* ONE card around the whole conditional — loading, empty and the sheet all
+          fill the same content region. The printed copy is portaled to <body>
+          (components/print-sheet.tsx), so the card never reaches the paper. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">
         {isLoading ? (
-          <PaneWaiting label="Loading codes…" />
+          <PaneWaiting module={MODULE} label="Loading codes…" />
         ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faBarcode} className="size-6" aria-hidden />}
-            title={search.trim() ? 'Nothing matches that' : 'No barcodes to print'}
-            description={
-              search.trim()
-                ? 'Try part of a code, a SKU, or a product name.'
-                : productCopy(
-                    'inventory.labels.needsBarcode',
-                    'Items need a barcode before a label can be printed. Piggles can create one for anything that arrived without a manufacturer code — a real UPC that any scanner reads, in the range reserved for in-house use.'
-                  )
-            }
-            actions={
-              search.trim() ? undefined : (
+          <ListEmptyState
+            module={MODULE}
+            filtered={search.trim() !== ''}
+            noResults={{
+              icon: <Icon glyph={faBarcode} className="size-6" aria-hidden />,
+              title: 'Nothing matches that',
+              description: 'Try part of a code, a SKU, or a product name.',
+            }}
+            firstRun={{
+              title: 'No barcodes to print',
+              description: productCopy(
+                'inventory.labels.needsBarcode',
+                'Items need a barcode before a label can be printed. Piggles can create one for anything that arrived without a manufacturer code — a real UPC that any scanner reads, in the range reserved for in-house use.'
+              ),
+              actions: (
                 <Button
                   color="module-inventory"
                   onClick={() => {
@@ -347,8 +371,8 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Icon glyph={faSparkles} className="size-4" aria-hidden />
                   Pick items to create codes for
                 </Button>
-              )
-            }
+              ),
+            }}
           />
         ) : (
           <div className="flex flex-col gap-3">
@@ -383,7 +407,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             </Text>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

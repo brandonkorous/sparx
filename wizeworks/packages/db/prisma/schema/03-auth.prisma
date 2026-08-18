@@ -1,0 +1,179 @@
+// Staff users + sessions + auth credentials (Layer 1 — tenant staff).
+//
+// Better Auth-compatible base columns + Sparx tenant/role extensions on
+// `User`. Customer-facing accounts (Layer 2) live in `customers` and share
+// zero rows with `users` per docs/16 §2.
+
+model User {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // Globally unique — Better Auth's sign-in flow keys on email alone, and
+  // signUpMerchant creates a fresh tenant per registration, so the older
+  // @@unique([tenantId, email]) compound never fired in practice. The
+  // CITEXT-equivalent normalisation lives at the app layer (signUpMerchant
+  // lowercases before insert); the migration adds a case-insensitive
+  // expression index as a backstop.
+  email         String  @unique @db.VarChar(255)
+  emailVerified Boolean @default(false) @map("email_verified")
+  name          String? @db.VarChar(255)
+  image         String? @db.Text
+
+  // Sparx-specific extensions
+  tenantId    String    @map("tenant_id") @db.Uuid
+  role        String    @default("editor") @db.VarChar(50) // owner | admin | editor | viewer | api
+  lastLoginAt DateTime? @map("last_login_at") @db.Timestamptz
+
+  // Whether authenticator-app two-step verification is ON for this user (Better
+  // Auth `twoFactor` plugin — the field name is the plugin's, don't rename).
+  // Owned by the enable/disable endpoints; only flips true AFTER the operator
+  // has proved a generated code, so it can be trusted as "this account really
+  // can complete a challenge". See 03-auth-twofactor.prisma.
+  twoFactorEnabled Boolean @default(false) @map("two_factor_enabled")
+
+  // Per-user preferences bag. Keep narrow — anything tenant-scoped goes
+  // on Tenant.settings; anything device-scoped goes in localStorage.
+  // Known keys (TypeScript-narrowed in apps/dashboard/_shell/preferences.ts):
+  //   defaultDetailView: 'drawer' | 'modal' | 'fullPage' | 'newTab'
+  preferences Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions          Session[]
+  accounts          Account[]
+  // WebAuthn passkeys registered from this user's devices (03-auth-passkey.prisma).
+  passkeys          Passkey[]
+  // Authenticator-app enrollment + backup codes (03-auth-twofactor.prisma).
+  twoFactors        TwoFactor[]
+  // Organizations & Teams (docs/114 Part A) — this user's memberships across
+  // orgs (the "client accounts" list) + the invitations they sent as an admin.
+  memberships       Member[]
+  sentInvitations   Invitation[]
+  // Web Push subscriptions registered from this user's browsers (docs/69 A-6).
+  pushSubscriptions PushSubscription[]
+  // In-app notifications addressed to this user (docs/124 Phase 3).
+  notifications     Notification[]
+
+  // MCP OAuth provider (docs/07 §5) — clients this user registered/connected,
+  // tokens issued to them, and recorded consents. See 03-auth-oauth.prisma.
+  oauthApplications OauthApplication[]
+  oauthAccessTokens OauthAccessToken[]
+  oauthConsents     OauthConsent[]
+
+  // CRM module — staff acting as sales rep / task owner / activity actor
+  assignedCustomers        Customer[]                 @relation("CustomerAssignedRep")
+  assignedCompanies        Company[]                  @relation("CompanyAssignedRep")
+  assignedDeals            Deal[]                     @relation("DealAssignedRep")
+  assignedTickets          Ticket[]                   @relation("TicketAssignedTo")
+  assignedTasks            Task[]                     @relation("TaskAssignedTo")
+  createdTasks             Task[]                     @relation("TaskCreatedBy")
+  completedTasks           Task[]                     @relation("TaskCompletedBy")
+  billingDocumentsCreated  BillingDocument[]          @relation("BillingDocumentCreatedBy")
+  billingDocumentsAssigned BillingDocument[]          @relation("BillingDocumentAssignee")
+  billingLinesAsTechnician BillingDocumentLine[]      @relation("BillingLineTechnician")
+  billingSnapshotsAuthored BillingDocumentSnapshot[]  @relation("BillingSnapshotAuthor")
+  crmSavedViews            CrmSavedView[]             @relation("CrmSavedViewAuthor")
+  crmMeetingLinks          CrmMeetingLink[]           @relation("CrmMeetingLinkOwner")
+  signatureRequests        BillingDocumentSignature[] @relation("BillingSignatureRequester")
+  billingPaymentsRecorded  BillingDocumentPayment[]   @relation("BillingPaymentRecordedBy")
+  approvalRulesAsApprover  PurchaseApprovalRule[]     @relation("ApprovalRuleApprover")
+
+  // Spending controls on the way OUT (docs/146 Phase 8.5) — the mirror of the
+  // B2B rule above, which gates a customer's order rather than staff's spend.
+  poApprovalRulesAsApprover     PurchaseOrderApprovalRule[] @relation("PoApprovalRuleApprover")
+  poApprovalsRequested          PurchaseOrderApproval[]     @relation("PoApprovalRequester")
+  poApprovalsToSign             PurchaseOrderApproval[]     @relation("PoApprovalRequiredApprover")
+  poApprovalsDecided            PurchaseOrderApproval[]     @relation("PoApprovalDecider")
+  supplierBillVariancesAccepted SupplierBill[]              @relation("SupplierBillVarianceAccepter")
+
+  // Live Chat module — conversations this staff user is assigned to (docs/56)
+  assignedChats ChatConversation[] @relation("ChatAssignedTo")
+
+  // Dashboard shell — per-user pinned/recent navigation state
+  favorites UserFavorite[]
+  recents   UserRecent[]
+
+  // In-product feedback (docs/112) — submissions this user filed + their pulse state
+  feedbackSubmissions FeedbackSubmission[]
+  feedbackPulseStates FeedbackPulseState[]
+
+  // Platform legal — Sparx ToS/Privacy/AUP/DPA acceptance (docs/42 §6)
+  legalAcceptances PlatformLegalAcceptance[]
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+// Refresh-token rows used by Better Auth (docs/16 §3). The access JWT is
+// stateless; this table backs the rotating refresh token + device tracking.
+
+model Session {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId               String   @map("user_id") @db.Uuid
+  token                String   @unique @db.VarChar(255) // SHA-256 of refresh token
+  // Which org the session is currently acting in (docs/114 Part A). NULL → the
+  // user's default membership (their own tenant). The JWT `tid` is minted from
+  // this (falling back to users.tenant_id during expand); switching org re-mints.
+  activeOrganizationId String?  @map("active_organization_id") @db.Uuid
+  expiresAt            DateTime @map("expires_at") @db.Timestamptz
+  ipAddress            String?  @map("ip_address") @db.Inet
+  userAgent            String?  @map("user_agent") @db.Text
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+// One row per (provider, userId). For email/password the providerId is
+// "credential" and `password` carries the Argon2 hash; for OAuth providers
+// it's "google" / "github" / etc. with access/refresh tokens.
+
+model Account {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String    @map("user_id") @db.Uuid
+  providerId            String    @map("provider_id") @db.VarChar(50)
+  accountId             String    @map("account_id") @db.VarChar(255)
+  password              String?   @db.Text
+  accessToken           String?   @map("access_token") @db.Text
+  refreshToken          String?   @map("refresh_token") @db.Text
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz
+  scope                 String?   @db.Text
+  idToken               String?   @map("id_token") @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// Short-lived single-use tokens for magic links / email verification /
+// password reset. `identifier` is typically the email; `value` is the
+// hashed token; `expiresAt` is enforced by the auth service.
+
+model Verification {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  identifier String   @db.VarChar(255)
+  // TEXT, not VARCHAR(255): Better Auth's email/reset tokens fit in 255, but the
+  // MCP OAuth provider (docs/07 §5) REUSES this table to stash the full
+  // authorization-code payload as JSON (client id, redirect URI, scope array,
+  // PKCE challenge, state, nonce, userId…). That serialization runs ~300–450
+  // chars for a real connector request, so a 255 cap made the authorize insert
+  // throw → the provider swallowed it as `server_error` and OAuth never
+  // completed. See migration 20260928000000_widen_verification_value.
+  value      String   @db.Text
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([identifier])
+  @@index([expiresAt])
+  @@map("verifications")
+}

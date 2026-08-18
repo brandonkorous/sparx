@@ -43,7 +43,7 @@ of twenty near-identical grids. It is a better basis than picking abstract desig
    apply — see [[feedback_design_restraints_are_sparx_only]]. Use whatever the
    reference design calls for.
 3. **silica-native.** Compose from the `SPARX_CATALOG` sections
-   ([packages/silica-catalog/src/sections/](../../packages/silica-catalog/src/sections/))
+   ([wizeworks/packages/silica-catalog/src/sections/](../../packages/silica-catalog/src/sections/))
    and the golden blueprint spine. New patterns a reference needs that the catalog
    lacks are added to the catalog (so they propagate), never hand-inlined per bundle.
 4. **Industry-agnostic.** Vary the example verticals — never default to one industry.

@@ -92,7 +92,7 @@ export function splitCaption(text: string, maxLength: number | undefined): Capti
 export type LinkTreatment = 'card' | 'inline' | 'cta' | 'destination';
 
 /** Mirrors what the ADAPTERS actually do with `link`, so the preview never promises a
- *  treatment the publish path won't deliver (packages/social/src/adapters/*). */
+ *  treatment the publish path won't deliver (wizeworks/packages/social/src/adapters/*). */
 export function linkTreatmentFor(platform: SocialPlatform, hasMedia: boolean): LinkTreatment {
   switch (platform) {
     case 'google_business':

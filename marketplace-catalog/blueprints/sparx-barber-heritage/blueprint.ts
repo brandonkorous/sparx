@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-barber-heritage',
-    version: '1.3.0',
-    name: 'sparx — Barbershop (Heritage)',
-    summary:
-        'A dark, masculine heritage-barbershop site — a warm charcoal-black palette, a brass-gold primary, an oxblood accent and a heritage serif over sharp, low-radius chrome. Installs a working booking flow: a real menu (cuts, skin fades, beard work, a hot-towel straight-razor shave), three barbers you book by name with their own hours, and walk-in-friendly no-deposit policies. Ships as "Copper & Cole", a shop running the old way since 2014.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-barber-heritage',
+  version: '1.3.0',
+  name: 'sparx — Barbershop (Heritage)',
+  summary:
+    'A dark, masculine heritage-barbershop site — a warm charcoal-black palette, a brass-gold primary, an oxblood accent and a heritage serif over sharp, low-radius chrome. Installs a working booking flow: a real menu (cuts, skin fades, beard work, a hot-towel straight-razor shave), three barbers you book by name with their own hours, and walk-in-friendly no-deposit policies. Ships as "Copper & Cole", a shop running the old way since 2014.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Copper & Cole',
+    tagline: 'A proper barbershop, run the old way.',
+    colors: {
+      primary: '#ca9c4e',
+      primaryForeground: '#100a03',
+      accent: '#a12f2f',
+      secondary: '#b5a18a',
+    },
+    fonts: {
+      heading: 'Libre Baskerville',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'copperandcole',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Copper & Cole',
-        tagline: 'A proper barbershop, run the old way.',
-        colors: {
-            primary: '#ca9c4e',
-            primaryForeground: '#100a03',
-            accent: '#a12f2f',
-            secondary: '#b5a18a',
-        },
-        fonts: {
-            heading: 'Libre Baskerville',
-            body: 'Inter',
-        },
+      colorPrimary: '#ca9c4e',
+      colorAccent: '#a12f2f',
+      colorSecondary: '#b5a18a',
+      fontHeading: 'Libre Baskerville',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'copperandcole',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#ca9c4e',
-            colorAccent: '#a12f2f',
-            colorSecondary: '#b5a18a',
-            fontHeading: 'Libre Baskerville',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

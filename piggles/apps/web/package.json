@@ -17,6 +17,8 @@
     "@piggles/config": "workspace:*",
     "@piggles/mascot": "workspace:*",
     "@piggles/ui": "workspace:*",
+    "@wizeworks/attribution": "workspace:*",
+    "@wizeworks/legal": "workspace:*",
     "@wizeworks/silicaui": "catalog:",
     "@wizeworks/silicaui-react": "catalog:",
     "next": "^16.2.6",

@@ -20,18 +20,17 @@
 import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
-  Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   Heading,
   NativeSelect,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowTrendUp, faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -40,6 +39,10 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useJobProfit, type JobProfit } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import { formatCents, formatCentsSigned, formatDate, formatRate } from './format';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'finance';
 
 const SORTS = [
   { value: 'margin_asc', label: 'Worst first' },
@@ -154,88 +157,88 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Job profitability controls" wrap>
-        <NativeSelect
-          size="sm"
-          color="module"
-          value={period}
-          aria-label="Period"
-          onChange={(event) => {
-            setPeriod(event.target.value as PeriodKey);
-          }}
-        >
-          {PERIOD_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          color="module"
-          value={sort}
-          aria-label="Order the list by"
-          onChange={(event) => {
-            setSort(event.target.value as (typeof SORTS)[number]['value']);
-          }}
-        >
-          {SORTS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Filter
-          color="module"
-          value={type}
-          onValueChange={(next) => {
-            setType(typeof next === 'string' ? next : 'all');
-          }}
-          showReset={false}
-          aria-label="Filter by kind of work"
-        >
-          {TYPE_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Job profitability controls"
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              color="module"
+              value={period}
+              aria-label="Period"
+              onChange={(event) => {
+                setPeriod(event.target.value as PeriodKey);
+              }}
+            >
+              {PERIOD_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              color="module"
+              value={sort}
+              aria-label="Order the list by"
+              onChange={(event) => {
+                setSort(event.target.value as (typeof SORTS)[number]['value']);
+              }}
+            >
+              {SORTS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <Filter
+              color="module"
+              value={type}
+              onValueChange={(next) => {
+                setType(typeof next === 'string' ? next : 'all');
+              }}
+              showReset={false}
+              aria-label="Filter by kind of work"
+            >
+              {TYPE_FILTERS.map((filter) => (
+                <FilterItem key={filter.value} value={filter.value}>
+                  {filter.label}
+                </FilterItem>
+              ))}
+            </Filter>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
-            title="Could not work out what each job made"
-            description="The server could not be reached. Nothing you have recorded is affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
+              title="Could not work out what each job made"
+              description="The server could not be reached. Nothing you have recorded is affected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : jobs.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
               title="No completed work in this period"
               description="Once orders are placed or appointments completed, each one appears here with what it made after the goods, the fees and any costs you charged to it. Try a wider period."

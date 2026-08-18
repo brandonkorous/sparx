@@ -4,9 +4,9 @@ node: architecture
 type: rule
 status: active
 sources:
-  - packages/auth/src/server.ts
-  - packages/auth/src/organizations.ts
-  - packages/auth/src/api-keys.ts
+  - wizeworks/packages/auth/src/server.ts
+  - wizeworks/packages/auth/src/organizations.ts
+  - wizeworks/packages/auth/src/api-keys.ts
 ---
 
 Auth is **Better Auth, self-hosted** — not Auth0/Clerk/any SaaS. The `organization` plugin is remapped so **the tenant Prisma model IS the Better Auth `organization`** (`modelName: 'tenant'`). sparx owns the tenant lifecycle (`allowUserToCreateOrganization: false`, `disableOrganizationDeletion: true`); the plugin manages membership/invitations/active-org. `session.activeOrganizationId` drives the JWT `tid`/`role` (falling back to the home membership `users.tenantId`).
@@ -17,6 +17,6 @@ Auth is **Better Auth, self-hosted** — not Auth0/Clerk/any SaaS. The `organiza
 
 ## ⚠️ Correction to root CLAUDE.md
 
-CLAUDE.md says "use Better Auth's primitives for org membership, API keys, and MFA." In code, **only org membership** uses the plugin. **API keys are custom** (`packages/auth/src/api-keys.ts` — `sk_live_*`, SHA-256-hashed, custom `apiKey` model in `05-api-keys.prisma`). **MFA/two-factor is not implemented** (no `twoFactor` plugin). Treat the API-key/MFA line as aspirational — see [[claude-md-drifted]].
+CLAUDE.md says "use Better Auth's primitives for org membership, API keys, and MFA." In code, **only org membership** uses the plugin. **API keys are custom** (`wizeworks/packages/auth/src/api-keys.ts` — `sk_live_*`, SHA-256-hashed, custom `apiKey` model in `05-api-keys.prisma`). **MFA/two-factor is not implemented** (no `twoFactor` plugin). Treat the API-key/MFA line as aspirational — see [[claude-md-drifted]].
 
 Related: [[rls-multi-tenancy]], [[mcp-server]], [[modules-are-flags]], [[claude-md-drifted]]

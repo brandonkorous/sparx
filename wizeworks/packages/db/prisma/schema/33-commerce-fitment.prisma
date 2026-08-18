@@ -1,0 +1,151 @@
+// Commerce — Fitment data. A fully generalized "this product fits that thing"
+// model. A FitmentDomain declares an ordered list of DIMENSIONS (its shape);
+// a single self-referential FitmentNode tree holds the values; a ProductFitment
+// names the deepest level a product fits plus a numeric window per range axis.
+//
+// Shape:
+//   FitmentDomain   — a fitment vocabulary (vehicle, pet, device, ...) +
+//                     `dimensions`: an ordered FitmentDimension[] where each is
+//                     a `level` (a tree tier — Make/Model/Engine) or a `range`
+//                     (a numeric narrowing axis — Year/Weight/Shoe size).
+//     ↳ FitmentNode — ONE table, self-referential (parentId). Arbitrary depth,
+//                     driven entirely by the domain's `level` dimensions. Each
+//                     node carries `dimensionKey` (which level), `path` /
+//                     `pathNames` (materialized ancestry for ancestor/descendant
+//                     filtering), and `depth`.
+//   ProductFitment      — one applicability rule: `nodeId` = deepest level it
+//                         targets (null = the whole domain, a universal part).
+//     ↳ ProductFitmentRange — a numeric window (min/max) per range dimension.
+//                             A child table (not one column) so a domain can
+//                             carry UNLIMITED range axes, each queryable.
+//
+// There is no fixed depth and no baked level cap: a domain can be one level
+// (Apparel → Size) or five (Make → Model → Trim → Engine, narrowed by Year).
+// The structure grows with the merchant — the schema never forces a worldview.
+//
+// Every fitment row is tenant-scoped — there is NO platform-global domain. The
+// platform ships a LIBRARY of installable "fitment dictionaries"
+// (wizeworks/packages/commerce-schemas/src/fitment-dictionaries.ts, a 🟣 starter-config
+// brick per docs/104); a tenant installs one as their own tenant-scoped copy.
+// Nothing fitment-shaped shows by default, so the platform never reads as
+// auto-parts software. All fitment tables are tenant_id NOT NULL + FORCE RLS.
+
+model FitmentDomain {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String  @map("tenant_id") @db.Uuid
+  slug        String  @db.VarChar(63)
+  displayName String  @map("display_name") @db.VarChar(127)
+  description String? @db.Text
+  iconKey     String? @map("icon_key") @db.VarChar(63)
+  // ^ lucide icon name the dashboard renders alongside the domain
+  //   ("car" for vehicle, "paw-print" for pet, "smartphone" for device)
+  dimensions  Json    @default("[]") @db.JsonB
+  // ^ ordered FitmentDimension[]: { key, label, kind: "level" | "range", unit? }
+  //   `level` dims define the node tree depth in order; `range` dims are numeric
+  //   axes applied per product application (ProductFitmentRange).
+  position    Int     @default(0)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nodes    FitmentNode[]
+  fitments ProductFitment[]
+
+  @@unique([tenantId, slug], map: "fitment_domains_tenant_slug_unique")
+  @@index([tenantId])
+  @@map("commerce_fitment_domains")
+}
+
+model FitmentNode {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  domainId     String   @map("domain_id") @db.Uuid
+  parentId     String?  @map("parent_id") @db.Uuid
+  // ^ null = a top-level node. Self-referential → arbitrary depth.
+  dimensionKey String   @map("dimension_key") @db.VarChar(40)
+  // ^ which `level` dimension (by key) this node represents.
+  name         String   @db.VarChar(127)
+  slug         String   @db.VarChar(127)
+  attributes   Json     @default("{}") @db.JsonB
+  // ^ free-form per node: { fuelType, cylinders } for an engine, { breedGroup }
+  //   for a breed, { screenSizeIn } for a phone model.
+  iconMediaId  String?  @map("icon_media_id") @db.Uuid
+  path         String[] @map("path") @db.Uuid
+  // ^ ancestor ids incl. self, root → self. Enables descendant queries
+  //   (node.path has X) + storefront ancestor resolution.
+  pathNames    String[] @map("path_names") @db.VarChar(127)
+  // ^ ancestor names incl. self, root → self. Powers name-based collection
+  //   rules ("all products fitting any Ford") without a join.
+  depth        Int      @default(0)
+  position     Int      @default(0)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  domain   FitmentDomain    @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  parent   FitmentNode?     @relation("FitmentNodeChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children FitmentNode[]    @relation("FitmentNodeChildren")
+  fitments ProductFitment[]
+
+  @@unique([domainId, parentId, slug], map: "fitment_nodes_domain_parent_slug_unique")
+  @@index([tenantId])
+  @@index([domainId])
+  @@index([domainId, parentId, position])
+  @@index([path], type: Gin)
+  @@map("commerce_fitment_nodes")
+}
+
+// One row = one applicability rule. A product can carry many: a brake pad fits
+// the 6.0L and 6.7L Power Stroke 2003-2010 + the 7.3L 1999-2003 — three rows.
+// `nodeId` names the deepest level the rule targets (a make-level node = "fits
+// any Ford"; null = "fits the entire domain", a universal part). Range windows
+// live in ProductFitmentRange (one per range dimension).
+
+model ProductFitment {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String  @map("tenant_id") @db.Uuid
+  productId String  @map("product_id") @db.Uuid
+  domainId  String  @map("domain_id") @db.Uuid
+  nodeId    String? @map("node_id") @db.Uuid
+  notes     String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  domain  FitmentDomain         @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  node    FitmentNode?          @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  ranges  ProductFitmentRange[]
+
+  @@index([tenantId, productId])
+  @@index([tenantId, domainId])
+  @@index([tenantId, nodeId])
+  @@map("commerce_product_fitments")
+}
+
+model ProductFitmentRange {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  fitmentId    String   @map("fitment_id") @db.Uuid
+  dimensionKey String   @map("dimension_key") @db.VarChar(40)
+  min          Decimal? @db.Decimal(12, 4)
+  max          Decimal? @db.Decimal(12, 4)
+  // ^ Decimal so years (2018), weights (12.5 lb), and shoe sizes (9.5) all fit.
+  //   Unit lives on the domain's matching range dimension.
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fitment ProductFitment @relation(fields: [fitmentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, fitmentId])
+  @@index([fitmentId, dimensionKey])
+  @@index([tenantId, dimensionKey, min, max])
+  @@map("commerce_product_fitment_ranges")
+}

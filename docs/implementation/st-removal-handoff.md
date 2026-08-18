@@ -1,6 +1,6 @@
-# Handoff: remove ALL `st-*` classes from the storefront (`apps/site`)
+# Handoff: remove ALL `st-*` classes from the storefront (`wizeworks/apps/site`)
 
-**Mission.** The tenant storefront (`apps/site`) currently renders through **two** design systems:
+**Mission.** The tenant storefront (`wizeworks/apps/site`) currently renders through **two** design systems:
 
 1. **Silica** — the builder-authored pages + the site chrome frame use silica plugin classes
    (`btn btn-primary`, `bg-base-100`, `text-base-content`, `card`, `badge`, …), themed per-tenant
@@ -13,9 +13,9 @@
 
 **Goal: eliminate the `st-*` system entirely.** Every storefront surface must render on silica —
 the same classes and `@wizeworks/silicaui-react` components the builder pages already use. When done,
-`rg "st-[a-z]" apps/site` returns **zero** hits, and the storefront looks and themes identically
+`rg "st-[a-z]" wizeworks/apps/site` returns **zero** hits, and the storefront looks and themes identically
 (both token sets are populated from the tenant theme today, so silica classes are already fully
-tenant-themeable — see `packages/site-themes/src/tokens.ts`).
+tenant-themeable — see `wizeworks/packages/site-themes/src/tokens.ts`).
 
 **Scale.** ~796 `st-*` occurrences across ~114 files. This is a re-platforming, not a cleanup — do
 it **surface by surface**, verify each, commit each. Do not attempt one giant find-replace.
@@ -99,10 +99,10 @@ it as the reference for the target style.
 
 ### E. App-specific composites (the hard part)
 
-`apps/site/app/site.css` defines bespoke composites: `st-booking__*`, `st-pdp*`, `st-card__media`,
+`wizeworks/apps/site/app/site.css` defines bespoke composites: `st-booking__*`, `st-pdp*`, `st-card__media`,
 `st-hero`, `st-sb-*`, `st-cta-row`, etc. For each: read its current CSS rule, then reproduce the same
 layout with **Tailwind utilities + silica classes inline** on the component, and **delete the rule
-from `site.css`**. The end state is that `apps/site/app/site.css`'s `st-*` blocks are gone. Keep any
+from `site.css`**. The end state is that `wizeworks/apps/site/app/site.css`'s `st-*` blocks are gone. Keep any
 truly non-`st` app CSS (if any) intact.
 
 ---
@@ -124,25 +124,25 @@ Work in this order — highest-traffic + already-touched first. Verify + commit 
    b2b, orders, invoices, quotes, estimates, addresses, wishlist, bookings).
 7. **Sections & misc** — remaining `components/sections/*`, `review-form`, `question-form`,
    `rating-stars`, `quantity-stepper`, `fitment-table`, `cms/article-body`, `consent/*`, etc.
-8. **Final** — delete every `st-*` rule from `apps/site/app/site.css`; if `@sparx/site-ui` is now
-   unused by `apps/site`, drop the dependency + any import. Confirm `rg "st-[a-z]" apps/site` = 0 hits.
+8. **Final** — delete every `st-*` rule from `wizeworks/apps/site/app/site.css`; if `@sparx/site-ui` is now
+   unused by `wizeworks/apps/site`, drop the dependency + any import. Confirm `rg "st-[a-z]" wizeworks/apps/site` = 0 hits.
 
 ---
 
 ## Verification (every surface, before commit)
 
-- `pnpm --filter @sparx/site run typecheck` — clean.
-- `pnpm --filter @sparx/site run lint` (or `npx eslint <files>`) — clean.
+- `pnpm --filter @wizeworks/site run typecheck` — clean.
+- `pnpm --filter @wizeworks/site run lint` (or `npx eslint <files>`) — clean.
 - `npx prettier --write <changed files>`.
 - **Visual parity**: the surface must look the same or better and stay tenant-themeable. Spot-check
   against the live site (`https://template.wizeworks.sparx.zone`) — especially that buttons, cards,
   inputs, badges, and width all render (no unstyled elements = a class that didn't map).
 - **Do not** run `prisma generate`/migrate, start/restart dev, or `git push`. Leave changes in the
-  working tree; the owner commits. Stage only files you changed (another agent may be in `apps/site`).
+  working tree; the owner commits. Stage only files you changed (another agent may be in `wizeworks/apps/site`).
 
 ## Coordination
 
-- Ideally run on a **fresh checkout / worktree** — a parallel agent is editing `apps/site`, and this
+- Ideally run on a **fresh checkout / worktree** — a parallel agent is editing `wizeworks/apps/site`, and this
   touches ~114 files. Rebase onto their committed work; never overwrite another agent's dirty files.
 - If you hit a component with no clear silica equivalent, check the silicaui MCP (`list_components`,
   `get_component`, `get_block`) and the existing silica builder catalog before inventing anything. If

@@ -12,9 +12,10 @@
 // notes about it, and the less-important of those give way on a narrow pane.
 
 import { useMemo, useState } from 'react';
-import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faTags } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -22,6 +23,10 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { taxonomyKind, useTaxonomies, type Taxonomy } from './taxonomy-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'cms';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -60,21 +65,13 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneEmpty
+        <PaneLoadError
           icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
           title="Could not load your tags and topics"
           description="This is a problem reaching the server. None of your labels are affected."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </Card>
     );
@@ -82,51 +79,62 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Tags and topics list controls">
-        {/* The width sits on a WRAPPER: SearchInput forwards className to its
+      <PaneToolbar
+        label="Tags and topics list controls"
+        search={
+          /* The width sits on a WRAPPER: SearchInput forwards className to its
             inner <input>, so a class aimed at the control never reaches the
-            element that lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search tags and topics"
-            placeholder="Search…"
-            value={search}
-            onValueChange={setSearch}
+            element that lays out. */
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search tags and topics"
+              placeholder="Search…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        status={
+          <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
+            {needle
+              ? `${String(matches.length)} of ${String(all.length)}`
+              : all.length === 1
+                ? '1 way to file'
+                : `${String(all.length)} ways to file`}
+          </p>
+        }
+        primaryAction={{
+          label: 'New',
+          icon: faPlus,
+          onClick: create,
+          title: 'Add a way to file content — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/cms/taxonomy',
+          params: { q: search },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-        <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
-          {needle
-            ? `${String(matches.length)} of ${String(all.length)}`
-            : all.length === 1
-              ? '1 way to file'
-              : `${String(all.length)} ways to file`}
-        </p>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add a way to file content — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @2xl:inline">New</span>
-        </Button>
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isPending ? (
           <PaneWaiting />
         ) : matches.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(needle)}
             noResults={{
               icon: <Icon glyph={faTags} className="size-6" aria-hidden />,

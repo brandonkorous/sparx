@@ -10,9 +10,9 @@
 // and which both brands rightly share.
 //
 // Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-piggles-showcase.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-piggles-showcase.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/piggles-starter/**"
-//   pnpm --filter @sparx/api-rest marketplace:self-register
+//   pnpm --filter @wizeworks/api-rest marketplace:self-register
 //
 // ── THE DEMO BUSINESS IS NEUTRAL, AND THAT IS THE POINT ─────────────────────
 //
@@ -41,7 +41,7 @@ import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const catalog = join(here, '..');

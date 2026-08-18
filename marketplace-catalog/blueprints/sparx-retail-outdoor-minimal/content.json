@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "fewer-better-things",
-        "status": "published",
-        "body": {
-            "title": "Fewer, better things: how we decide what to make",
-            "excerpt": "A short range is a series of decisions about what to leave out. Here’s the test a piece has to pass before it earns a place in the line.",
-            "featuredImage": {
-                "$asset": "post-fewer-better"
+  {
+    "typeKey": "blog_post",
+    "slug": "fewer-better-things",
+    "status": "published",
+    "body": {
+      "title": "Fewer, better things: how we decide what to make",
+      "excerpt": "A short range is a series of decisions about what to leave out. Here’s the test a piece has to pass before it earns a place in the line.",
+      "featuredImage": {
+        "$asset": "post-fewer-better"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The easiest thing in the world is to make more. Another colorway, a seasonal print, a slightly different pocket — every one is a small sale and a small piece of clutter, and enough of them turn a considered brand into a catalogue. We decided early that Tarn would be defined by what we don’t make, which means most ideas have to fail a test before the good ones can pass it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The easiest thing in the world is to make more. Another colorway, a seasonal print, a slightly different pocket — every one is a small sale and a small piece of clutter, and enough of them turn a considered brand into a catalogue. We decided early that Tarn would be defined by what we don’t make, which means most ideas have to fail a test before the good ones can pass it."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Does it earn its place?"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Before anything is designed we ask one question: is this genuinely better than what you already own, or just different? If a new trouser doesn’t beat the trouser in your drawer on fabric, fit or longevity, there’s no reason for it to exist and we don’t make it. That single filter kills most of what we sketch — and it’s why the pieces that survive tend to be the ones you keep reaching for."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Design around the fabric, then subtract"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "We start with the material, not the silhouette. Get the fabric right and half the design decisions make themselves; get it wrong and no amount of detailing rescues it. From there the work is mostly removal — every seam, tab and logo has to justify itself, and the ones that can’t come off. What’s left looks simple, which is the hardest thing to arrive at and the whole point of the exercise."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "city-to-trail",
-        "status": "published",
-        "body": {
-            "title": "One kit for the city and the trail",
-            "excerpt": "You don’t need two wardrobes for a day that starts on a train and ends on a ridge. Here’s how to pack one that does both.",
-            "featuredImage": {
-                "$asset": "post-city-to-trail"
+            "content": [
+              {
+                "type": "text",
+                "text": "Does it earn its place?"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Before anything is designed we ask one question: is this genuinely better than what you already own, or just different? If a new trouser doesn’t beat the trouser in your drawer on fabric, fit or longevity, there’s no reason for it to exist and we don’t make it. That single filter kills most of what we sketch — and it’s why the pieces that survive tend to be the ones you keep reaching for."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Most of us live in the overlap. The same day holds a commute, a desk, a walk that turns into more of a walk than planned, and weather that can’t make up its mind. Dressing for it usually means a compromise in one direction — gear that looks out of place indoors, or clothes that quit the moment the path tilts up. It doesn’t have to. A small, deliberate kit covers the whole range if each piece is chosen to cross over."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Layers that read both ways"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Start with a merino tee — it wicks and resists odour for the active half of the day and looks like a plain, good tee for the rest. Add a technical trouser cut clean enough for the office, and a packable shell that lives in your bag until the sky opens. Nothing here announces itself as outdoor gear, and nothing gives up when you actually use it that way. That’s the whole trick: performance you can’t see."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Carry light, decide less"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The bag matters as much as what’s in it. A pared-back daypack with a laptop sleeve and a weatherproof roll-top handles the commute and the trail without a second one, and a tote that folds to wallet-size covers the overflow on the way home. Pack it once and you stop thinking about it — which is really the point. The best kit is the one you never have to plan around."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "why-merino",
-        "status": "published",
-        "body": {
-            "title": "Why we keep coming back to merino",
-            "excerpt": "It’s the closest thing to a do-everything fabric — and once you understand why, most synthetics start to look like a compromise.",
-            "featuredImage": {
-                "$asset": "post-merino"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If you could only own one performance fabric, it would be merino wool. Not the itchy, heavy wool of an old jumper — the fine-gauge kind, spun from fibres a fraction the width, that feels like a soft cotton and behaves like nothing else. We keep coming back to it because it quietly solves problems other materials only trade between."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Warm, cool, and hard to smell"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Merino regulates temperature in both directions: the same tee that keeps you warm on a cold platform breathes and wicks when you’re moving, so you’re rarely the too-hot or too-cold one. And because of how the fibre handles moisture and bacteria, it resists odour for days — the reason a merino layer is the traveller’s secret for packing light and wearing the same thing far longer than seems decent."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Made to be kept"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Good merino also wears in rather than out. It holds its shape, resists wrinkles, and only needs a wash when it genuinely does, which is gentler on the fabric and on your time. Cared for simply — cool wash, dry flat — a fine merino piece stays good for years. That longevity is the whole reason it fits how we build: a material worth keeping, in things designed to be kept."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Design around the fabric, then subtract"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We start with the material, not the silhouette. Get the fabric right and half the design decisions make themselves; get it wrong and no amount of detailing rescues it. From there the work is mostly removal — every seam, tab and logo has to justify itself, and the ones that can’t come off. What’s left looks simple, which is the hardest thing to arrive at and the whole point of the exercise."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "city-to-trail",
+    "status": "published",
+    "body": {
+      "title": "One kit for the city and the trail",
+      "excerpt": "You don’t need two wardrobes for a day that starts on a train and ends on a ridge. Here’s how to pack one that does both.",
+      "featuredImage": {
+        "$asset": "post-city-to-trail"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most of us live in the overlap. The same day holds a commute, a desk, a walk that turns into more of a walk than planned, and weather that can’t make up its mind. Dressing for it usually means a compromise in one direction — gear that looks out of place indoors, or clothes that quit the moment the path tilts up. It doesn’t have to. A small, deliberate kit covers the whole range if each piece is chosen to cross over."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Layers that read both ways"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with a merino tee — it wicks and resists odour for the active half of the day and looks like a plain, good tee for the rest. Add a technical trouser cut clean enough for the office, and a packable shell that lives in your bag until the sky opens. Nothing here announces itself as outdoor gear, and nothing gives up when you actually use it that way. That’s the whole trick: performance you can’t see."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Carry light, decide less"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The bag matters as much as what’s in it. A pared-back daypack with a laptop sleeve and a weatherproof roll-top handles the commute and the trail without a second one, and a tote that folds to wallet-size covers the overflow on the way home. Pack it once and you stop thinking about it — which is really the point. The best kit is the one you never have to plan around."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "why-merino",
+    "status": "published",
+    "body": {
+      "title": "Why we keep coming back to merino",
+      "excerpt": "It’s the closest thing to a do-everything fabric — and once you understand why, most synthetics start to look like a compromise.",
+      "featuredImage": {
+        "$asset": "post-merino"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you could only own one performance fabric, it would be merino wool. Not the itchy, heavy wool of an old jumper — the fine-gauge kind, spun from fibres a fraction the width, that feels like a soft cotton and behaves like nothing else. We keep coming back to it because it quietly solves problems other materials only trade between."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Warm, cool, and hard to smell"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Merino regulates temperature in both directions: the same tee that keeps you warm on a cold platform breathes and wicks when you’re moving, so you’re rarely the too-hot or too-cold one. And because of how the fibre handles moisture and bacteria, it resists odour for days — the reason a merino layer is the traveller’s secret for packing light and wearing the same thing far longer than seems decent."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Made to be kept"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Good merino also wears in rather than out. It holds its shape, resists wrinkles, and only needs a wash when it genuinely does, which is gentler on the fabric and on your time. Cared for simply — cool wash, dry flat — a fine merino piece stays good for years. That longevity is the whole reason it fits how we build: a material worth keeping, in things designed to be kept."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

@@ -17,8 +17,8 @@
  * imports @sparx/brand/theme.css — only the four sparx apps do, and no shared
  * package pulls it in. Do not add a sparx stylesheet here.
  *
- * There is deliberately NO second token system. apps/web (sparx) still loads
- * @sparx/ui/tokens.css alongside brand during its silicaui migration; Piggles
+ * There is deliberately NO second token system. sparx/apps/web (sparx) still loads
+ * @wizeworks/ui/tokens.css alongside brand during its silicaui migration; Piggles
  * starts after that migration, so brand is the sole token authority from day
  * one and there is nothing to coexist with. */
 @import '@piggles/brand/layers.css';
@@ -68,7 +68,7 @@
 
 /* @piggles/ui ships className strings (Section's padding and max-width), so the
  * same rule applies: unscanned, the panel renders with no layout and nothing
- * reports it. See packages/ui/CLAUDE.md. */
+ * reports it. See sparx/packages/ui/CLAUDE.md. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
 /* Bridge the brand's font tokens into the Tailwind v4 theme, so `font-heading`

@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ComponentDoc, DocumentStore } from '@wizeworks/studio';
 import { useStudioBinding } from '../../lib/studio/provider';
 import { useSavePiece } from '../../lib/studio/piece-data';
-import { pieceKeyOf } from '../builder/studio/saved-pieces';
+import { pieceKeyOf } from '../../lib/studio/saved-pieces';
 
 export interface PieceDocumentState {
   store: DocumentStore<ComponentDoc> | null;
@@ -26,9 +26,9 @@ export interface PieceDocumentState {
   save: () => Promise<void>;
 }
 
-export function usePieceDocument(symbolId: string | null): PieceDocumentState {
+/** The one store this piece lives in, however many panes are looking at it. */
+function useOpenPiece(symbolId: string | null) {
   const { session } = useStudioBinding();
-  const savePiece = useSavePiece();
   const [store, setStore] = useState<DocumentStore<ComponentDoc> | null>(null);
   const [missing, setMissing] = useState(false);
 
@@ -64,6 +64,13 @@ export function usePieceDocument(symbolId: string | null): PieceDocumentState {
     );
     // `snapshot` is the signal that the library has changed under us.
   }, [session, symbolId, snapshot]);
+
+  return { store, missing };
+}
+
+export function usePieceDocument(symbolId: string | null): PieceDocumentState {
+  const savePiece = useSavePiece();
+  const { store, missing } = useOpenPiece(symbolId);
 
   const save = useCallback(async () => {
     if (!store) return;

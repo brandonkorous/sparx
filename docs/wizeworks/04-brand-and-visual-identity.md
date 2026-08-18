@@ -378,7 +378,7 @@ decision available — one family, used on roughly a dozen strings per page.
 construction, which enforces its own discipline. Fallback if it tests poorly at small display
 sizes: **Newsreader** (OFL, variable, real optical sizes).
 
-Geist Sans and Geist Mono are already wired in the monorepo (`apps/web/app/layout.tsx`), so only
+Geist Sans and Geist Mono are already wired in the monorepo (`sparx/apps/web/app/layout.tsx`), so only
 one new family ships.
 
 > **Budget amendment.** [Research §12](01-design-research-2026.md) set a ≤2-family budget. This is
@@ -591,14 +591,14 @@ The WizeWorks site is a **tenant on sparx**, so this palette ships as a **saved 
 edit to `@sparx/brand/theme.css`.
 
 A sparx theme is a `DataThemePreset`
-([packages/marketplace-schemas/src/theme-preset.ts](../../packages/marketplace-schemas/src/theme-preset.ts))
+([wizeworks/packages/marketplace-schemas/src/theme-preset.ts](../../packages/marketplace-schemas/src/theme-preset.ts))
 carrying **both** surfaces:
 
 - **`v2`** — the real theme. `shared` (type, radii, spacing, container) plus a **complete `light`
   and `dark`** color map: `base100/200/300`, `baseContent`, `primary`, `secondary`, `accent`,
   `neutral`, `info`, `success`, `warning`, `danger`, `border`, optional `highlight`, and an
   optional `*Content` ink for every one of them.
-- **`v1`** — the legacy `--st-*` storefront bridge (`packages/site-themes/src/tokens.ts`), a
+- **`v1`** — the legacy `--st-*` storefront bridge (`wizeworks/packages/site-themes/src/tokens.ts`), a
   narrower set with no secondary slot. It is a compatibility surface, **not** the theme model.
 
 **Author against v2.** Every color in §4 has a home there — including brass as `secondary` with
@@ -638,14 +638,14 @@ Create via `create_saved_theme` → `apply_saved_theme`, **scoped to the WizeWor
 >
 > **Why the arbitrary-value escape hatch doesn't save it.** Both theme emitters build a
 > **hardcoded, closed** variable list from typed fields — `colorVars()` (`--st-*`) and
-> `silicaColorVars()` (`--color-*`) in `packages/site-themes/src/v2/`. An extra key in an
+> `silicaColorVars()` (`--color-*`) in `wizeworks/packages/site-themes/src/v2/`. An extra key in an
 > open input map has no path into the emitted CSS through them, so `bg-[var(--color-industry-plum)]`
 > compiles to a rule referencing a variable that was never defined. (The newer silica path emits
 > `theme.tokens` verbatim, so a custom `--color-*` key _may_ survive there — unverified, and it
 > makes no difference to the point below.)
 >
-> **The asymmetry worth staring at:** silica takes an arbitrary-length color list. `apps/web` and
-> `apps/workbench` register **25** — 9 semantics plus `module` and 15 `module-*` hues. `apps/site`,
+> **The asymmetry worth staring at:** silica takes an arbitrary-length color list. `sparx/apps/web` and
+> `sparx/apps/workbench` register **25** — 9 semantics plus `module` and 15 `module-*` hues. `wizeworks/apps/site`,
 > the surface tenants actually get, registers **10**. The platform has the capability, uses it
 > freely for itself, and does not expose it to the people paying for it.
 >
@@ -654,7 +654,7 @@ Create via `create_saved_theme` → `apply_saved_theme`, **scoped to the WizeWor
 > 1. **A named-color primitive in the theme.** A tenant adds a color, names it, gives it a value
 >    per mode, and gets an AA-checked `-content` ink derived for it — the same treatment the ten
 >    roles get.
-> 2. **A generic registered namespace** (`hue-1 … hue-12`) in `apps/site/app/globals.css`, so each
+> 2. **A generic registered namespace** (`hue-1 … hue-12`) in `wizeworks/apps/site/app/globals.css`, so each
 >    named color lands on a real registered slot and inherits the full class family — `bg-*`,
 >    `text-*`, `btn-*`, `badge-*`, and the `bg-soft` tint.
 > 3. **Surfaced in the builder** as choices with the tenant's own labels, not raw tokens.

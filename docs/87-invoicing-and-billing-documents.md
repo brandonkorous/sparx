@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-22
 
-> **Reconciled 2026-07-22 (docs-vs-built audit):** Phases 1–8 are shipped and this remains accurate. The invoicing **operator UI** (document editor, line composer, stage bar, AR summary, workflow editor) lives at **`apps/workbench/surfaces/invoicing/*`** — the "Dashboard authoring UI" (§16 Phase 6) and "dashboard module settings" references predate the `apps/dashboard` → `apps/workbench` rebuild; read them as the workbench invoicing surface. **Still open** (both correctly deferred below): the **tokenized customer approve/pay public route** (§5 / §17 — Phase 5+ site customer-auth) and the **catalog/part-line stock decrement** (§17 — a line records without a stock move today).
+> **Reconciled 2026-07-22 (docs-vs-built audit):** Phases 1–8 are shipped and this remains accurate. The invoicing **operator UI** (document editor, line composer, stage bar, AR summary, workflow editor) lives at **`sparx/apps/workbench/surfaces/invoicing/*`** — the "Dashboard authoring UI" (§16 Phase 6) and "dashboard module settings" references predate the `apps/dashboard` → `sparx/apps/workbench` rebuild; read them as the workbench invoicing surface. **Still open** (both correctly deferred below): the **tokenized customer approve/pay public route** (§5 / §17 — Phase 5+ site customer-auth) and the **catalog/part-line stock decrement** (§17 — a line records without a stock move today).
 
 > **Status: design doc.** Captures the architecture for the **authored billing document** —
 > a human-built estimate / work order / invoice / ticket that moves through a tenant-configured
@@ -249,7 +249,7 @@ earns its keep; financial data is not.
 ## 11. Data model (sketch)
 
 New module, all tenant-scoped (UUID PK, `tenant_id`, **RLS ENABLE+FORCE**, `created_at`/`updated_at`
-per [05](05-data-model.md) + [packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
+per [05](05-data-model.md) + [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
 
 ```
 document_workflows        (≈ pipelines)        id, tenant_id, name, slug, is_default, sort_order, archived_at
@@ -300,7 +300,7 @@ RLS policies + any partial uniques are hand-SQL ([db CLAUDE.md](../packages/db/C
 
 ## 13. Events
 
-Publish on the platform bus ([@sparx/events](../packages/events), [03](03-infrastructure-deployment.md)):
+Publish on the platform bus ([@wizeworks/events](../packages/events), [03](03-infrastructure-deployment.md)):
 `billing_document.created`, `.stage_changed`, `.finalized`, `.paid`, `.voided`. These feed
 notifications (email/SMS to the customer when an estimate is ready), margin reporting, and — naturally
 — the **automation engine** ([81-automation.md](81-automation-module.md)): a stage transition is exactly the
@@ -328,7 +328,7 @@ into their own surfaces.
 
 - A tenant with **neither** Commerce nor B2B pays **$19/mo** for invoicing — the service-business
   case (contractor, repair shop, salon, consultant) that quotes and bills without a site.
-- **Commerce or B2B activates the full invoicing surface for $0.** This is the `@sparx/modules`
+- **Commerce or B2B activates the full invoicing surface for $0.** This is the `@wizeworks/modules`
   **`BUNDLED_FREE`** graph (`invoicing ⇐ [b2b, commerce]`): `isModuleEnabled('invoicing')` is derived
   true whenever a provider is on, so the existing `requireInvoicingModule` gate "just passes" for those
   tenants with no OR-checks. The standalone `invoicing` flag is only ever **written** on a real $19
@@ -339,7 +339,7 @@ into their own surfaces.
   _available_ so its seed consumer (default workflows + line-type registry) still runs. Idempotent;
   availability events are never billed.
 - The related **`b2b ⇒ commerce`** dependency (a _paid_ requirement, not a free bundle) is enforced
-  by the same machinery (`@sparx/modules` **`REQUIRES`**): enabling B2B writes + bills Commerce, and
+  by the same machinery (`@wizeworks/modules` **`REQUIRES`**): enabling B2B writes + bills Commerce, and
   disabling Commerce while B2B is on is blocked. See [17-billing-subscriptions.md](17-billing-subscriptions.md) §2.
 
 Naming for users: the **module** is "Invoicing"; the **document label** is the tenant's per workflow.

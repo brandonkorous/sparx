@@ -1,269 +1,269 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "a-restroom-cleaning-protocol-that-holds-up",
-        "status": "published",
-        "body": {
-            "title": "A restroom cleaning protocol that holds up to an audit",
-            "excerpt": "A repeatable, top-down order of operations for restrooms — the one that passes inspection and doesn’t waste chemical.",
-            "featuredImage": {
-                "$asset": "post-protocol"
+  {
+    "typeKey": "blog_post",
+    "slug": "a-restroom-cleaning-protocol-that-holds-up",
+    "status": "published",
+    "body": {
+      "title": "A restroom cleaning protocol that holds up to an audit",
+      "excerpt": "A repeatable, top-down order of operations for restrooms — the one that passes inspection and doesn’t waste chemical.",
+      "featuredImage": {
+        "$asset": "post-protocol"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A restroom is the room a building gets judged on, and the difference between one that passes an audit and one that doesn’t is rarely the products — it’s the order of operations. A protocol removes the guesswork so any member of the crew, on any shift, cleans it the same way."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A restroom is the room a building gets judged on, and the difference between one that passes an audit and one that doesn’t is rarely the products — it’s the order of operations. A protocol removes the guesswork so any member of the crew, on any shift, cleans it the same way."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Work top-down, dirty-to-clean"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Start high and finish low so nothing you’ve cleaned gets re-soiled: mirrors and dispensers first, then sinks and counters, then partitions and fixtures, and floors last. Apply disinfectant to toilets and urinals early and let it sit — dwell time is what actually kills germs, and spraying-and-immediately-wiping is the most common reason a surface tests dirty after it looks clean."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Color-code to stop cross-contamination"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Assign a microfibre color to each zone — one for toilets and urinals, another for sinks and counters, a third for mirrors and glass — and never cross them. It’s the simplest control there is against moving bacteria from a toilet to a sink, and it’s the first thing an inspector looks for. Launder the cloths after every shift and retire them at 200 washes."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Restock while you’re in there"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The last step of the protocol is a supply check: soap, tissue and towels topped up before you leave, and anything low written on the reorder list. A closet that’s restocked on a schedule never triggers the Friday-afternoon scramble — which is the whole point of a standing order."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "shelf-price-vs-cost-per-use",
-        "status": "published",
-        "body": {
-            "title": "Shelf price vs. cost-per-use: how to actually compare supplies",
-            "excerpt": "The cheapest case is rarely the cheapest to use. Here’s the small bit of math that changes what you buy.",
-            "featuredImage": {
-                "$asset": "post-cost-per-use"
+            "content": [
+              {
+                "type": "text",
+                "text": "Work top-down, dirty-to-clean"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start high and finish low so nothing you’ve cleaned gets re-soiled: mirrors and dispensers first, then sinks and counters, then partitions and fixtures, and floors last. Apply disinfectant to toilets and urinals early and let it sit — dwell time is what actually kills germs, and spraying-and-immediately-wiping is the most common reason a surface tests dirty after it looks clean."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The number on the case is the number that gets compared, because it’s the easy one. But a facility doesn’t spend per case — it spends per clean, per wash, per restroom visit. Cost-per-use is the honest comparison, and it routinely flips which product is actually cheaper."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Concentrate is the clearest example"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A gallon of ready-to-use cleaner and a gallon of 1:64 concentrate can sit on the shelf at similar prices, but the concentrate makes 64 gallons of working solution. Divide the case price by the gallons it yields and the concentrate isn’t a little cheaper per use — it’s an order of magnitude cheaper, before you count the freight and storage you save shipping water you already have."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Reusables beat disposables on a curve"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A microfibre cloth costs more than a paper wipe on day one and less than a paper wipe by the second week. Rated to 200 launderings, its cost-per-use falls every time it goes through the wash, while a disposable is spent the moment it’s used. The break-even is fast enough that most buildings switch their general wiping to microfibre and keep paper only where it’s required."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Do the math once, buy right for a year"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "You don’t need a spreadsheet per order — just run cost-per-use once per category when you set your standing order, and lock it in. Ask us for the dilution yields and pack counts; we’ll do the division with you, because a customer who buys the right case reorders the right case."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "where-sustainable-supply-saves-money",
-        "status": "published",
-        "body": {
-            "title": "Where sustainable supply actually saves money",
-            "excerpt": "Greener facility supply isn’t only a compliance line — done in the right places, it lowers cost and waste at the same time.",
-            "featuredImage": {
-                "$asset": "post-sustainability"
+            "content": [
+              {
+                "type": "text",
+                "text": "Color-code to stop cross-contamination"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Assign a microfibre color to each zone — one for toilets and urinals, another for sinks and counters, a third for mirrors and glass — and never cross them. It’s the simplest control there is against moving bacteria from a toilet to a sink, and it’s the first thing an inspector looks for. Launder the cloths after every shift and retire them at 200 washes."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Sustainability in facility supply gets talked about as a cost — a certification to chase, a premium to pay. In a few specific places it’s the opposite: the greener choice is also the cheaper one, because it removes waste you were paying to ship, store and throw away."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Concentrates cut packaging and freight"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Shipping ready-to-use cleaner means shipping mostly water in plastic jugs. Concentrates ship the active ingredient and dilute on site, which cuts packaging plastic, pallet count and freight weight dramatically — fewer trucks, fewer empty jugs in the dumpster, and a lower line on the invoice. It’s the rare change that a facilities budget and a sustainability report both like."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Right-sizing liners stops buying air"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Most buildings buy one liner size for every can, which means oversized bags on small bins — plastic that gets tied off half-empty. Matching liner size and mil to the actual can removes that waste at the source: less plastic bought, less plastic landfilled, and a smaller reorder. We’ll walk your bins and spec the sizes so you stop paying for bag you throw away."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Reusables and refills close the loop"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Launderable microfibre in place of disposable wipes, bulk refill soap in place of throwaway cartridges, and dispensers that take a refill rather than a replacement — each one trades a recurring disposable for a durable good and a smaller, cheaper reorder. Start where the volume is highest; that’s where both the savings and the waste reduction are biggest."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Restock while you’re in there"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The last step of the protocol is a supply check: soap, tissue and towels topped up before you leave, and anything low written on the reorder list. A closet that’s restocked on a schedule never triggers the Friday-afternoon scramble — which is the whole point of a standing order."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "shelf-price-vs-cost-per-use",
+    "status": "published",
+    "body": {
+      "title": "Shelf price vs. cost-per-use: how to actually compare supplies",
+      "excerpt": "The cheapest case is rarely the cheapest to use. Here’s the small bit of math that changes what you buy.",
+      "featuredImage": {
+        "$asset": "post-cost-per-use"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The number on the case is the number that gets compared, because it’s the easy one. But a facility doesn’t spend per case — it spends per clean, per wash, per restroom visit. Cost-per-use is the honest comparison, and it routinely flips which product is actually cheaper."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Concentrate is the clearest example"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A gallon of ready-to-use cleaner and a gallon of 1:64 concentrate can sit on the shelf at similar prices, but the concentrate makes 64 gallons of working solution. Divide the case price by the gallons it yields and the concentrate isn’t a little cheaper per use — it’s an order of magnitude cheaper, before you count the freight and storage you save shipping water you already have."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Reusables beat disposables on a curve"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A microfibre cloth costs more than a paper wipe on day one and less than a paper wipe by the second week. Rated to 200 launderings, its cost-per-use falls every time it goes through the wash, while a disposable is spent the moment it’s used. The break-even is fast enough that most buildings switch their general wiping to microfibre and keep paper only where it’s required."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Do the math once, buy right for a year"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You don’t need a spreadsheet per order — just run cost-per-use once per category when you set your standing order, and lock it in. Ask us for the dilution yields and pack counts; we’ll do the division with you, because a customer who buys the right case reorders the right case."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "where-sustainable-supply-saves-money",
+    "status": "published",
+    "body": {
+      "title": "Where sustainable supply actually saves money",
+      "excerpt": "Greener facility supply isn’t only a compliance line — done in the right places, it lowers cost and waste at the same time.",
+      "featuredImage": {
+        "$asset": "post-sustainability"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sustainability in facility supply gets talked about as a cost — a certification to chase, a premium to pay. In a few specific places it’s the opposite: the greener choice is also the cheaper one, because it removes waste you were paying to ship, store and throw away."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Concentrates cut packaging and freight"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Shipping ready-to-use cleaner means shipping mostly water in plastic jugs. Concentrates ship the active ingredient and dilute on site, which cuts packaging plastic, pallet count and freight weight dramatically — fewer trucks, fewer empty jugs in the dumpster, and a lower line on the invoice. It’s the rare change that a facilities budget and a sustainability report both like."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Right-sizing liners stops buying air"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most buildings buy one liner size for every can, which means oversized bags on small bins — plastic that gets tied off half-empty. Matching liner size and mil to the actual can removes that waste at the source: less plastic bought, less plastic landfilled, and a smaller reorder. We’ll walk your bins and spec the sizes so you stop paying for bag you throw away."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Reusables and refills close the loop"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Launderable microfibre in place of disposable wipes, bulk refill soap in place of throwaway cartridges, and dispensers that take a refill rather than a replacement — each one trades a recurring disposable for a durable good and a smaller, cheaper reorder. Start where the volume is highest; that’s where both the savings and the waste reduction are biggest."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

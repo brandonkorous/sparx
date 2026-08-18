@@ -100,7 +100,7 @@ export function SiteFooter() {
             <div key={column[0]} className="grid gap-10">
               {column.map((group) => (
                 <nav key={group} data-group={group}>
-                  <h2 className="text-module text-base font-bold">{GROUP_COPY[group].title}</h2>
+                  <h2 className="ink-module text-base font-bold">{GROUP_COPY[group].title}</h2>
                   <ul className="mt-4 space-y-3">
                     {appsInGroup(group).map((app) => {
                       const glyph = appIcon(app.id);
@@ -154,6 +154,12 @@ export function SiteFooter() {
             </Link>
             <Link href="/cookies" className="text-base font-semibold">
               Cookies
+            </Link>
+            {/* The addendum a business customer's own compliance asks for by
+                name. It is not buried under "legal" because the people who need
+                it are looking for it. */}
+            <Link href="/data-processing" className="text-base font-semibold">
+              Data processing
             </Link>
             <a href={accountUrl('contact', 'footer-utility')} className="text-base font-semibold">
               Contact

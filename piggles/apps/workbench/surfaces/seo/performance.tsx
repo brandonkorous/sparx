@@ -18,6 +18,7 @@
 
 import { useMemo } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Badge,
@@ -29,11 +30,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowsRotate,
   faChartLine,
@@ -66,6 +67,10 @@ import {
   type ActivityRun,
   type Tone,
 } from './data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'seo';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 
@@ -221,21 +226,13 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
     if (audits.isError) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
-          <PaneEmpty
+          <PaneLoadError
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Could not load your search performance"
             description="This is a problem reaching the server. Your site and its scores are unaffected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void audits.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void audits.refetch();
+            }}
           />
         </Card>
       );
@@ -249,6 +246,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Let’s see how findable your site is"
             description="Run a quick scan to score every page for how easily people can find it on a search engine. You’ll get a clear list of what to fix first — no jargon."
@@ -265,14 +263,9 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            Search performance
-          </Heading>
-          <Text>
-            How easily people find you on a search engine, and which of your pages they land on.
-          </Text>
-        </div>
+        <Text>
+          How easily people find you on a search engine, and which of your pages they land on.
+        </Text>
 
         {/* Headline figures. Organic ones read "—" until Google is connected —
             an honest blank, not a fabricated zero. */}
@@ -487,27 +480,35 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Search performance controls">
-        <Button
-          color="module"
-          size="sm"
-          variant="outline"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Score every page on the site again"
-          loading={reindex.isPending}
-          onClick={rescan}
-        >
-          <Icon glyph={faMagnifyingGlass} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Rescan the site</span>
-        </Button>
-        <RefreshButton
-          isFetching={
-            audits.isFetching || checklist.isFetching || activity.isFetching || scStatus.isFetching
-          }
-          updatedAt={audits.data ? audits.dataUpdatedAt : undefined}
-          onRefresh={refreshAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Search performance controls"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            variant="outline"
+            className="ml-auto shrink-0 whitespace-nowrap"
+            title="Score every page on the site again"
+            loading={reindex.isPending}
+            onClick={rescan}
+          >
+            <Icon glyph={faMagnifyingGlass} className="size-4" aria-hidden />
+            <span className="hidden @lg:inline">Rescan the site</span>
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={
+              audits.isFetching ||
+              checklist.isFetching ||
+              activity.isFetching ||
+              scStatus.isFetching
+            }
+            updatedAt={audits.data ? audits.dataUpdatedAt : undefined}
+            onRefresh={refreshAll}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>

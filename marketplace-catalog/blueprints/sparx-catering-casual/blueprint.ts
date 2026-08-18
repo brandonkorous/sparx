@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-catering-casual',
-    version: '1.3.0',
-    name: 'sparx — Catering (Casual BBQ)',
-    summary:
-        'A bold, smoky catering site for a casual BBQ & food-truck outfit — a kraft ground, a deep-rust primary and an ember-amber accent under a sturdy condensed display. Installs online booking for tastings and event consults: a real menu (free consults, BBQ and taco-bar tastings, corporate and game-day packages), three coordinators you book by name with their own hours, and a tasting-deposit policy. Ships as "Smoke & Barrel BBQ Catering".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-catering-casual',
+  version: '1.3.0',
+  name: 'sparx — Catering (Casual BBQ)',
+  summary:
+    'A bold, smoky catering site for a casual BBQ & food-truck outfit — a kraft ground, a deep-rust primary and an ember-amber accent under a sturdy condensed display. Installs online booking for tastings and event consults: a real menu (free consults, BBQ and taco-bar tastings, corporate and game-day packages), three coordinators you book by name with their own hours, and a tasting-deposit policy. Ships as "Smoke & Barrel BBQ Catering".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Smoke & Barrel BBQ Catering',
+    tagline: 'Real smoke, big spreads, zero fuss.',
+    colors: {
+      primary: '#a2311e',
+      primaryForeground: '#fff6f4',
+      accent: '#eb8911',
+      secondary: '#3d2f2a',
+    },
+    fonts: {
+      heading: 'Oswald',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'smoke',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Smoke & Barrel BBQ Catering',
-        tagline: 'Real smoke, big spreads, zero fuss.',
-        colors: {
-            primary: '#a2311e',
-            primaryForeground: '#fff6f4',
-            accent: '#eb8911',
-            secondary: '#3d2f2a',
-        },
-        fonts: {
-            heading: 'Oswald',
-            body: 'Inter',
-        },
+      colorPrimary: '#a2311e',
+      colorAccent: '#eb8911',
+      colorSecondary: '#3d2f2a',
+      fontHeading: 'Oswald',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'smoke',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#a2311e',
-            colorAccent: '#eb8911',
-            colorSecondary: '#3d2f2a',
-            fontHeading: 'Oswald',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

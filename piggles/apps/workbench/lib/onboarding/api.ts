@@ -14,7 +14,7 @@
 // pending/error state (a mutation, or local state around an action).
 
 import { useMemo } from 'react';
-import { useQuery, useQueryClient, type QueryClient } from '@sparx/query';
+import { useQuery, useQueryClient, type QueryClient } from '@wizeworks/query';
 import { api } from '../api/client';
 import { SWITCHBOARD_MODULES } from './modules';
 import type {

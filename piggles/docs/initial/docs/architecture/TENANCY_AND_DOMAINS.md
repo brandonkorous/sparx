@@ -106,7 +106,7 @@ custom-domain flow.
 
 The platform already owns every hard part: the `Domain` model handles custom hostnames with
 TXT verification at `_sparx-verify.<host>`, a `pending → verifying → verified → active`
-lifecycle, canonical/`www` handling and certificate automation; `apps/site` already serves
+lifecycle, canonical/`www` handling and certificate automation; `wizeworks/apps/site` already serves
 tenant sites by hostname; the CMS already edits them.
 
 So each satellite is a site on a WizeWorks-owned tenant with its domain attached the normal

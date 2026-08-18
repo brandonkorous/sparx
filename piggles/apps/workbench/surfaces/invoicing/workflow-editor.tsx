@@ -26,7 +26,7 @@
 
 import { useEffect, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { useMutation } from '@sparx/query';
+import { useMutation } from '@wizeworks/query';
 import { arrayMove } from '@dnd-kit/sortable';
 import {
   Alert,
@@ -45,6 +45,7 @@ import { faBoxArchive, faEllipsis, faFloppyDisk } from '@fortawesome/pro-solid-s
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { StageCanvas, SETTINGS_NODE } from './stage-canvas';
@@ -68,7 +69,14 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
 
-  const { data: workflow, isPending, isError } = useWorkflow(id);
+  const {
+    data: workflow,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useWorkflow(id);
   const invalidate = useInvalidateWorkflows();
   const archive = useArchiveWorkflow();
   const toast = useToast();
@@ -249,57 +257,74 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Workflow editor actions">
-        {original?.archivedAt ? (
-          <Badge color="neutral" variant="soft" size="sm">
-            Archived
-          </Badge>
-        ) : null}
-        {draft.isDefault ? (
-          <Badge color="module" variant="soft" size="sm">
-            Default
-          </Badge>
-        ) : null}
-
-        {original ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                className="ml-auto shrink-0"
-                aria-label="More actions"
-              >
-                <Icon glyph={faEllipsis} className="size-4" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() => {
-                  void onArchive();
-                }}
-              >
-                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-                Archive workflow
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className={original ? 'shrink-0' : 'ml-auto shrink-0'}
-          disabled={!dirty || save.isPending}
-          loading={save.isPending}
-          onClick={() => {
-            save.mutate();
-          }}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Workflow editor actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={workflow ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+        status={
+          <>
+            {original?.archivedAt ? (
+              <Badge color="neutral" variant="soft" size="sm">
+                Archived
+              </Badge>
+            ) : null}
+            {draft.isDefault ? (
+              <Badge color="module" variant="soft" size="sm">
+                Default
+              </Badge>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className={original ? 'shrink-0' : 'ml-auto shrink-0'}
+            disabled={!dirty || save.isPending}
+            loading={save.isPending}
+            onClick={() => {
+              save.mutate();
+            }}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save
+          </Button>
+        }
+        controls={
+          original ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="neutral"
+                  className="ml-auto shrink-0"
+                  aria-label="More actions"
+                >
+                  <Icon glyph={faEllipsis} className="size-4" aria-hidden />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    void onArchive();
+                  }}
+                >
+                  <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
+                  Archive workflow
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null
+        }
+      />
 
       {failure ? (
         <Alert color="danger" variant="soft" className="shrink-0">

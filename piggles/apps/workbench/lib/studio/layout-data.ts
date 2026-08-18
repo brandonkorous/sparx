@@ -6,7 +6,7 @@
 // but only by carrying every page body and the entire saved-piece library with it —
 // so opening the layout builder would get slower every time the author added a page.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import type { Node } from '@wizeworks/silicaui-html';
 import type { LayoutDoc } from '@wizeworks/studio';
 import { api } from '../api/client';

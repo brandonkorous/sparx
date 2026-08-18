@@ -1,0 +1,171 @@
+// Payment gateway abstraction (docs/94 ADR §11). The tenant→shopper payment surface:
+// which gateway a tenant uses, the intents it creates, and the normalized webhook
+// events it receives. Distinct from platform module billing (73-billing) which is
+// WizeWorks→tenant. All tenant-scoped + RLS.
+
+/// Which payment gateway a tenant uses + its onboarding state. One per tenant.
+/// Gateway credentials never live here — only a Secret Manager reference does.
+model TenantPaymentConfig {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @unique @map("tenant_id") @db.Uuid
+  gatewayId      String    @default("sparx_pay") @map("gateway_id") @db.VarChar(50)
+  // ^ sparx_pay | stripe_direct | paypal | square | custom
+  isActive       Boolean   @default(false) @map("is_active")
+  // ^ false until onboarding completes (charges enabled)
+  credentialsRef String?   @map("credentials_ref") @db.VarChar(255)
+  // ^ Secret Manager key: payments/{tenantId}/{gateway_id}/...
+  onboardedAt    DateTime? @map("onboarded_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_payment_configs")
+}
+
+/// A payment intent created through a gateway. `platformFee` records the Sparx cut
+/// (0 unless Sparx Pay); for Sparx Pay it's collected in Stripe via
+/// application_fee_amount — this row is our own ledger.
+model PaymentIntent {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String  @map("tenant_id") @db.Uuid
+  gatewayId    String  @map("gateway_id") @db.VarChar(50)
+  externalId   String  @map("external_id") @db.VarChar(255) // the gateway's own intent id
+  amount       Int // cents
+  currency     String  @default("usd") @db.Char(3)
+  platformFee  Int     @default(0) @map("platform_fee") // cents; 0 unless sparx_pay
+  status       String  @default("pending") @db.VarChar(50)
+  orderId      String? @map("order_id") @db.Uuid
+  billingDocId String? @map("billing_doc_id") @db.Uuid
+  customerId   String? @map("customer_id") @db.Uuid
+  // Scheduling deposits / holds / no-show fees (docs/79 §9) — plain ref, like orderId.
+  bookingId    String? @map("booking_id") @db.Uuid
+  metadata     Json    @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([gatewayId, externalId], map: "payment_intents_external_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, orderId])
+  @@index([tenantId, bookingId])
+  @@map("payment_intents")
+}
+
+/// Encrypted credentials for a tenant's bring-your-own gateway (docs/111 §2). The
+/// merchant pastes API keys in the dashboard; the secret bundle is AES-256-GCM
+/// ciphertext (@wizeworks/channels/crypto box), never plaintext — a DB leak alone yields
+/// no usable key. `publicMeta` holds the non-secret captured fields (public client
+/// key, location id, hosted URL) safe to render + hand the client SDK. One row per
+/// (tenant, gateway) so switching the active gateway keeps each one's keys.
+model TenantGatewayCredential {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String  @map("tenant_id") @db.Uuid
+  gatewayId   String  @map("gateway_id") @db.VarChar(50)
+  environment String  @default("production") @db.VarChar(20)
+  // ^ sandbox | production
+  secretEnc   String? @map("secret_enc") @db.Text
+  // ^ AES-256-GCM ciphertext (iv.tag.cipher base64) of the JSON secret-field object
+  publicMeta  Json    @default("{}") @map("public_meta")
+  status      String  @default("unverified") @db.VarChar(20)
+  // ^ unverified | active | disabled
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, gatewayId], map: "tenant_gateway_credentials_tenant_gateway")
+  @@map("tenant_gateway_credentials")
+}
+
+/// A normalized gateway webhook event (dedupe + audit). The unique on
+/// (gateway_id, external_id) makes redelivery idempotent.
+model PaymentEvent {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  gatewayId   String    @map("gateway_id") @db.VarChar(50)
+  externalId  String    @map("external_id") @db.VarChar(255) // the gateway's event id
+  eventType   String    @map("event_type") @db.VarChar(100) // normalized: payment.succeeded, etc.
+  payload     Json
+  processedAt DateTime? @map("processed_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([gatewayId, externalId], map: "payment_events_idempotency")
+  @@index([tenantId, eventType])
+  @@map("payment_events")
+}
+
+/// A shopper's saved payment method — what makes a charge possible when the
+/// customer is NOT on the site (subscription renewals, docs/142 §4).
+///
+/// sparx stores the GATEWAY'S TOKEN and nothing else. No card number ever
+/// reaches this platform: the card is captured by the gateway's own hosted
+/// element and exchanged for `methodRef`, which is meaningless to anyone but
+/// that gateway. This is what keeps docs/94's central decision intact — sparx
+/// does not build money-transmission infrastructure and does not pursue PCI DSS
+/// Level 1 — while still supporting recurring billing.
+///
+/// The brand/last4/expiry columns are DISPLAY ONLY. They exist so a person can
+/// tell which of their cards this is; they are not enough to reconstruct one.
+model CustomerPaymentMethod {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  customerId String @map("customer_id") @db.Uuid
+
+  /// Which gateway minted the token. A token is meaningless to any other
+  /// gateway, so a tenant who switches processors re-vaults rather than
+  /// migrates — hence the gateway id on the row, not just on the tenant config.
+  gatewayId String @map("gateway_id") @db.VarChar(50)
+
+  /// The gateway's own references. `methodRef` is what gets charged;
+  /// `customerRef` is the gateway-side customer it hangs off (Stripe needs both
+  /// — a PaymentMethod is only chargeable off-session when attached to the
+  /// Customer the mandate was captured against).
+  methodRef   String  @map("method_ref") @db.VarChar(255)
+  customerRef String? @map("customer_ref") @db.VarChar(255)
+
+  brand    String? @db.VarChar(20)
+  last4    String? @db.VarChar(4)
+  expMonth Int?    @map("exp_month")
+  expYear  Int?    @map("exp_year")
+
+  /// The card networks' stored-credential chain. A merchant-initiated charge
+  /// must reference the transaction that ESTABLISHED the mandate:
+  /// `originalNetworkTransId` is required outright for Discover / Diners / JCB /
+  /// China UnionPay, for Visa on every recurring MIT, and in the EEA for
+  /// Mastercard. Omitting it is a soft decline on a card that is perfectly good.
+  ///
+  /// Stripe and PayPal track the chain internally and never read these.
+  /// Authorize.net makes the merchant carry it, so the first charge against a
+  /// newly vaulted card declares itself the establishing transaction, returns a
+  /// networkTransId, and every renewal after that quotes it back.
+  networkTransId     String? @map("network_trans_id") @db.VarChar(64)
+  /// Amount (cents) authorised by that establishing transaction.
+  originalAuthAmount Int?    @map("original_auth_amount")
+
+  isDefault  Boolean   @default(false) @map("is_default")
+  status     String    @default("active") @db.VarChar(20)
+  /// ^ active | expired | revoked. `revoked` is set when the gateway tells us
+  ///   the method is permanently dead (card closed, mandate withdrawn) — that is
+  ///   what stops the dunning ladder retrying a card that can never work.
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  subscriptions Subscription[]
+
+  @@unique([tenantId, gatewayId, methodRef], map: "customer_payment_methods_token_unique")
+  @@index([tenantId, customerId, status])
+  @@map("commerce_customer_payment_methods")
+}

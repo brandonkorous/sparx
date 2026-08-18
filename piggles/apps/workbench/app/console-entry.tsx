@@ -32,7 +32,7 @@ export async function ConsoleEntry({ address }: { address: string }) {
   // and toolbar mount on the first paint instead of after a token round trip,
   // for everyone who has picked a site before (the common case).
   const cookieStore = await cookies();
-  const initialSiteKey = cookieStore.get('sparx_active_property')?.value ?? null;
+  const initialSiteKey = cookieStore.get('piggles_active_property')?.value ?? null;
 
   return (
     <ConsoleShell
@@ -42,7 +42,7 @@ export async function ConsoleEntry({ address }: { address: string }) {
       arrivalAddress={address}
       // Resolved on the SERVER and handed down. `PIGGLES_ACCOUNT_ORIGIN` is not
       // a `NEXT_PUBLIC_` variable and the helper that reads it imports
-      // @sparx/db, so a client component asking this question would pull Prisma
+      // @wizeworks/db, so a client component asking this question would pull Prisma
       // into the browser bundle to learn something the server already knew.
       accountOrigin={accountOrigin()}
     />

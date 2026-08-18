@@ -6,16 +6,16 @@
 
 ## Scope: one system
 
-This governs **every surface sparx owns** — `apps/workbench`, `apps/web`, `apps/market`, and
-`apps/admin` / `apps/b2b-portal` when they are built. Console and marketing are **not two systems.**
+This governs **every surface sparx owns** — `sparx/apps/workbench`, `sparx/apps/web`, `sparx/apps/market`, and
+`wizeworks/apps/admin` / `sparx/apps/b2b-portal` when they are built. Console and marketing are **not two systems.**
 They are one platform, one brand, one component library, one palette.
 
-All of them import the same [`@sparx/brand/theme.css`](packages/brand/src/theme.css) and register
+All of them import the same [`@sparx/brand/theme.css`](sparx/packages/brand/src/theme.css) and register
 the same colors through the same `@plugin '@wizeworks/silicaui'`. The **only** sanctioned variance is
 a **token override**, and there is currently exactly one in the whole platform:
 
 ```css
-/* apps/web/app/globals.css — softer corners on marketing surfaces. */
+/* sparx/apps/web/app/globals.css — softer corners on marketing surfaces. */
 @theme {
   --radius-box: 1.5rem; /* brand default is 0.5rem */
 }
@@ -25,7 +25,7 @@ That is the model. **Variance is a token, never a fork of the language.** If a s
 differ, it overrides a token in its own `globals.css` and everything downstream re-shapes from one
 edit. It does not get its own rules, its own doc, or its own palette.
 
-**The one real boundary is ownership, not app.** `apps/site` + `packages/surface-compile` render
+**The one real boundary is ownership, not app.** `wizeworks/apps/site` + `wizeworks/packages/surface-compile` render
 **tenant** sites: `--st-*` tokens, `.st-c-*` classes, `@sparx/site-ui`, per-tenant themeable. That is
 a different system because it wears **someone else's brand** — not because marketing and console are
 different. Rules here do not cross that line; see §7.2.
@@ -50,7 +50,7 @@ find later.
 | `@sparx/brand/theme.css`       | the **values**            | every hex, light + dark; `--radius-box/field/selector`; the 18 module hues                                      |
 | `@wizeworks/silicaui` (plugin) | the **appearance**        | fill, ink, border, radius, hover/focus/active/disabled, loading, `soft`/`outline`/`ghost`/`dash`, sizes, shapes |
 | `@wizeworks/silicaui-react`    | **behavior + a11y**       | Base UI selection state, roving focus, portals, moving indicators                                               |
-| `@sparx/ui`                    | sparx **compositions**    | the shell, `PageHeader`, `ListToolbar`, `Stat`, `statusTone`                                                    |
+| `@wizeworks/ui`                | sparx **compositions**    | the shell, `PageHeader`, `ListToolbar`, `Stat`, `statusTone`                                                    |
 | **your feature code**          | the **decision + layout** | which `color × variant × size × shape` — and Tailwind for layout, spacing, sizing, positioning                  |
 
 **Feature code owns no appearance at all.** Its entire color job is picking the right prop, which is
@@ -83,7 +83,7 @@ order:
 2. **Is it a value?** Change the token in `@sparx/brand/theme.css`. One edit, whole platform, light
    and dark together.
 3. **Is it a missing variant or component?** Add it to silicaui, or add a composition to
-   `@sparx/ui`. Now every future surface gets it for free.
+   `@wizeworks/ui`. Now every future surface gets it for free.
 4. **Only then** — with Brandon's approval — a local exception, documented as debt at the call site.
 
 **A local override is not a fix. It is a deferred fix, and everyone else pays the interest.** The
@@ -116,7 +116,7 @@ right, the explanation becomes redundant.** §5 is a real before/after of exactl
 
 > **Neutral is not the default, and it is not yours to choose. Ask Brandon, every time.**
 
-Same shape as the pane-vs-modal rule in [apps/workbench/CLAUDE.md](apps/workbench/CLAUDE.md) — the
+Same shape as the pane-vs-modal rule in [sparx/apps/workbench/CLAUDE.md](sparx/apps/workbench/CLAUDE.md) — the
 cheap option is not the free option. This used to say "neutral has to be earned" and §3 listed the
 four uses that earned it. The list became something to argue past rather than a bar to clear, so
 `color="neutral"` now needs **Brandon's explicit approval on the specific instance**. Asking is
@@ -174,7 +174,7 @@ entry that feels like it can't be wrong.
 
 ## 1. The palette
 
-Materialized from [packages/brand/src/theme.css](packages/brand/src/theme.css) so you never have to
+Materialized from [sparx/packages/brand/src/theme.css](sparx/packages/brand/src/theme.css) so you never have to
 open it to build on-system.
 
 ### 1.1 Semantic colors — 10
@@ -215,17 +215,17 @@ job is `error`. The button that would delete it is `danger`.
 class was never emitted — you get an **unstyled** element, which reads as grey. Silently. Current
 state:
 
-| App              | `module` bridge | Module hues registered | Notes                                     |
-| ---------------- | --------------- | ---------------------- | ----------------------------------------- |
-| `apps/workbench` | ✅              | 15                     |                                           |
-| `apps/web`       | ✅              | 15 (identical list)    | `--radius-box: 1.5rem`                    |
-| `apps/market`    | ❌ **missing**  | 6                      | `color="module"` renders **nothing** here |
+| App                    | `module` bridge | Module hues registered | Notes                                     |
+| ---------------------- | --------------- | ---------------------- | ----------------------------------------- |
+| `sparx/apps/workbench` | ✅              | 15                     |                                           |
+| `sparx/apps/web`       | ✅              | 15 (identical list)    | `--radius-box: 1.5rem`                    |
+| `sparx/apps/market`    | ❌ **missing**  | 6                      | `color="module"` renders **nothing** here |
 
 Two consequences to hold:
 
 - **`color="module-finance"`, `-partner`, `-platform`, `-storefront` never work anywhere.** They are
   valid `ModuleScope` identities but are in no app's `@plugin` list.
-- **`color="module"` would be dead in `apps/market`** — the bridge name itself is unregistered there.
+- **`color="module"` would be dead in `sparx/apps/market`** — the bridge name itself is unregistered there.
   Currently latent, not a live bug: market uses no module colors at all today. It becomes real the
   first time someone adds one, and it will fail silently, so register `module` there before you do.
 
@@ -241,7 +241,7 @@ Two consequences to hold:
 ```
 
 Reach for `color="module-x"` only for a one-off badge naming a _different_ module inside a scoped
-subtree, and only from the 15 — and never in `apps/market`.
+subtree, and only from the 15 — and never in `sparx/apps/market`.
 
 ### 1.4 Focus rings: use `focus-ring`, never a hand-built one
 
@@ -251,7 +251,7 @@ do **not** bridge colors into Tailwind's own `@theme` namespace — color is own
 silica plugin. So a branded ring could only be spelled `ring-[var(--color-primary)]`, and it was, at
 **43 call sites**.
 
-That is now one class, defined once in [packages/brand/src/theme.css](packages/brand/src/theme.css)
+That is now one class, defined once in [sparx/packages/brand/src/theme.css](sparx/packages/brand/src/theme.css)
 and inherited by every sparx app:
 
 ```tsx
@@ -455,7 +455,7 @@ the site without moving the page off grey.
 page's first band sits directly under the nav and insetting it opens a stripe of ground between the
 header and the content. The bottom has no such excuse: **a hero is a layer, and a layer has to end.**
 Square-bottomed it runs hard into the rounded section beneath it and reads as the one band nobody
-finished. `FLUSH_SHAPE` in [band.tsx](apps/web/components/marketing/band.tsx) is `rounded-b-4xl` and
+finished. `FLUSH_SHAPE` in [band.tsx](sparx/apps/web/components/marketing/band.tsx) is `rounded-b-4xl` and
 both section shells apply it.
 
 **The one exception — same layer below.** If the section immediately under the hero is the SAME
@@ -610,7 +610,7 @@ That last one is the summary of all of them.
 ## 5. Worked example — the builder History rail
 
 The real surface, at
-[apps/workbench/surfaces/builder/studio/version-history.tsx](apps/workbench/surfaces/builder/studio/version-history.tsx).
+[sparx/apps/workbench/surfaces/builder/studio/version-history.tsx](sparx/apps/workbench/surfaces/builder/studio/version-history.tsx).
 Its header comment is unusually clear about the design intent:
 
 > _"They are separate TABS rather than one merged list… the only thing distinguishing 'changes my
@@ -715,7 +715,7 @@ Use these names in review.
   neutral." The rule is about **card backgrounds**. Badges, tabs, buttons, icons and metrics on that
   surface are untouched by it — see §7.3.
 - **Silent registration miss** — `color="module-finance"` anywhere, or `color="module"` in
-  `apps/market`: typechecks, renders unstyled, reads grey. §1.3.
+  `sparx/apps/market`: typechecks, renders unstyled, reads grey. §1.3.
 - **Hand-painted ink** — writing `text-base-content` (or any text color) onto a silica component
   instead of setting its `color`. The component already resolved its foreground from
   `color × variant`; the override is a RULE #1 re-skin and breaks on fills, tints and dark islands.
@@ -750,10 +750,10 @@ and the 16px floor, and five brain nodes under `docs/brain/design/` listed it un
 **The design language has been a dead link.** This file replaces it, platform-wide.
 
 **7.2 — [[two-design-systems]] is split on the wrong axis.** It divides the world into
-_"Dashboard / admin"_ vs _"Site"_, which silently leaves `apps/web` and `apps/market` in neither —
+_"Dashboard / admin"_ vs _"Site"_, which silently leaves `sparx/apps/web` and `sparx/apps/market` in neither —
 and that gap is what licensed "marketing is a different system, give it its own doc." **The axis is
 ownership, not app type:** everything wearing the **sparx** brand (workbench, web, market, admin,
-b2b-portal) is one system; `apps/site` + `surface-compile` is the other because it wears the
+b2b-portal) is one system; `wizeworks/apps/site` + `surface-compile` is the other because it wears the
 **tenant's** brand. The node has been corrected.
 
 **7.3 — the "editor" clause is narrowed.** `docs/brain/design/color-follows-functionality.md` says a
@@ -769,7 +769,7 @@ which is making state legible without reading.
 
 **7.5 — tone resolvers are per-domain, and that is CORRECT.** An earlier draft of this section
 claimed `statusTone()` had no workbench implementation and that tones were being hand-picked. That
-was wrong. `apps/workbench` has **~25 domain-specific resolvers** — `quoteTone`, `refundTone`,
+was wrong. `sparx/apps/workbench` has **~25 domain-specific resolvers** — `quoteTone`, `refundTone`,
 `fulfillmentTone`, `varianceTone`, `agingBucketTone`, `marginTone`, `noShowTone`, `seoTone`,
 `bucketTone`, … — each mapping its own vocabulary to a tone, and each consumed as
 `<Badge color={tone(x)} variant="soft">`.
@@ -779,15 +779,15 @@ have genuinely different vocabularies; one shared mapping would either lose case
 every domain in the platform. The rule §2 actually asks for is "**state resolves through a helper,
 never a hue picked inline at the JSX site**" — and a per-domain helper satisfies it completely.
 
-The generic `statusTone()` in `@sparx/ui` remains the right default for ordinary
+The generic `statusTone()` in `@wizeworks/ui` remains the right default for ordinary
 draft/published/archived lifecycles. Reach for a local one when the domain has its own vocabulary.
 
 ---
 
 ## 8. Related
 
-[CLAUDE.md](CLAUDE.md) RULES #1–#4 · [apps/workbench/CLAUDE.md](apps/workbench/CLAUDE.md) (pane vs
+[CLAUDE.md](CLAUDE.md) RULES #1–#4 · [sparx/apps/workbench/CLAUDE.md](sparx/apps/workbench/CLAUDE.md) (pane vs
 modal) · [docs/brain/design.md](docs/brain/design.md) ·
 [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md) ·
-[packages/brand/src/theme.css](packages/brand/src/theme.css) ·
-[packages/ui/CLAUDE.md](packages/ui/CLAUDE.md)
+[sparx/packages/brand/src/theme.css](sparx/packages/brand/src/theme.css) ·
+[sparx/packages/ui/CLAUDE.md](sparx/packages/ui/CLAUDE.md)

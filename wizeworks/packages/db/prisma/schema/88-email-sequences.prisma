@@ -1,0 +1,110 @@
+// Email sequences (docs/81 §9, docs/implementation/transactional-email §19) — the
+// reusable multi-touch email JOURNEY the automation engine's single-nudge seeds
+// (abandoned-cart, welcome, win-back) grow up into. A sequence is an ORDERED list
+// of steps (a delay + an email); a customer is ENROLLED (by the email.sequence_add
+// action, or manually), and a background drain advances each enrollment on its own
+// clock — send the due step, schedule the next, exit on a goal.
+//
+// Two tenant-scoped tables, both ENABLE + FORCE RLS + tenant_isolation in the
+// migration (the enrollment carries its own tenant_id — a join can't satisfy FORCE
+// RLS). Steps live as validated JSON on the sequence row, exactly like
+// automations.actions, so a sequence is ONE editable document and an enrollment
+// indexes into it by position. The step + input shapes live in
+// @wizeworks/email-sequences/schemas (client-safe, no db); the server logic (enroll /
+// unenroll / drain) in @wizeworks/email-sequences.
+//
+// tenant_id / property_id are plain scalars here (FKs hand-added in the migration)
+// rather than Prisma relations, so the Tenant/Property models don't grow a
+// back-relation for a leaf table — the same choice the high-volume send/analytics
+// tables make.
+
+model EmailSequence {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // WHICH SITE this journey belongs to (docs/131 §3.1). Null = tenant-wide. Like
+  // an automation, the authoring UI defaults it to the working site — a welcome
+  // series written for the donut shop must not enrol the machine shop's buyers.
+  // CASCADE: deleting a site narrows reach, never widens it.
+  propertyId String? @map("property_id") @db.Uuid
+
+  name        String  @db.VarChar(255)
+  description String? @db.Text
+  status      String  @default("draft") @db.VarChar(20) // draft | active | archived
+
+  // Re-enrollment policy: `once` (ever), `after_completion` (again, but only once a
+  // prior run finished/exited), `always` (any time there is no ACTIVE enrollment).
+  // Enforced in the service; the partial-unique active_dedupe index is the DB
+  // backstop against a double ACTIVE enrollment.
+  reentryPolicy String @default("once") @map("reentry_policy") @db.VarChar(20)
+
+  // Built-in goal exit: drop a customer the moment they place an order after
+  // enrolling — stop nagging an abandoned cart once it's been bought. The
+  // everyday marketing default for a recovery/win-back series.
+  exitOnPurchase Boolean @default(false) @map("exit_on_purchase")
+
+  // The ordered steps (each: a delay + an email body source), validated by
+  // @wizeworks/email-sequences/schemas. JSON like automations.actions so the whole
+  // series edits + publishes as one document; enrollments index in by position.
+  steps Json @default("[]")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  enrollments EmailSequenceEnrollment[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, propertyId])
+  @@map("email_sequences")
+}
+
+model EmailSequenceEnrollment {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sequenceId String  @map("sequence_id") @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // Denormalized from the sequence at enrollment so "who is in a site's series"
+  // survives the sequence later being re-scoped. SetNull: a deleted site must not
+  // erase the record that a person was enrolled.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // The addressable recipient CAPTURED at enrollment (a later customer email change
+  // never misroutes an in-flight series). customerId is the soft CRM reference used
+  // for the goal-exit check + the designed email's DataSource resolution.
+  customerId     String? @map("customer_id") @db.Uuid
+  recipientEmail String  @map("recipient_email") @db.VarChar(320)
+
+  status      String @default("active") @db.VarChar(20) // active | completed | exited | cancelled
+  currentStep Int    @default(0) @map("current_step") // index of the NEXT step to send
+
+  // When the next step is due. The drain scans (status='active', next_run_at<=NOW()).
+  nextRunAt  DateTime  @map("next_run_at") @db.Timestamptz
+  lastStepAt DateTime? @map("last_step_at") @db.Timestamptz
+
+  enrolledAt  DateTime  @default(now()) @map("enrolled_at") @db.Timestamptz
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+  exitedAt    DateTime? @map("exited_at") @db.Timestamptz
+  exitReason  String?   @map("exit_reason") @db.VarChar(64)
+
+  // Provenance: which automation enrolled them (SetNull — evidence outlives the
+  // rule), and the entity-ref snapshot at enroll so each step's designed (Builder)
+  // email resolves its DataSources (cartId / orderId / …) the same way a
+  // one-shot email.send_campaign does.
+  sourceAutomationId String? @map("source_automation_id") @db.Uuid
+  sourceRefs         Json?   @map("source_refs")
+
+  // = customerId (or lower(recipientEmail) when there is no customer) while ACTIVE,
+  // null once completed/exited/cancelled. UNIQUE(sequence_id, active_dedupe) is the
+  // DB guarantee of at most ONE active enrollment per person per sequence — many
+  // historical rows still allowed, since NULL is distinct in a unique index.
+  activeDedupe String? @map("active_dedupe") @db.VarChar(320)
+
+  sequence EmailSequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+
+  @@unique([sequenceId, activeDedupe], map: "email_sequence_enrollments_active_unique")
+  @@index([tenantId, status])
+  // Owner-scoped drain scans due enrollments across tenants (find_due_sequence_enrollments).
+  @@index([status, nextRunAt])
+  @@index([sequenceId, status])
+  @@index([tenantId, customerId])
+  @@map("email_sequence_enrollments")
+}

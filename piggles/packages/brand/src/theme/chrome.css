@@ -1,0 +1,108 @@
+/* ── Motion: the soft settle ──────────────────────────────────────────────────
+ *
+ * Part of @piggles/brand/theme.css — imported from it, never directly.
+ * UNLAYERED on purpose: that is what outranks silicaui's `base` layer.
+ * See ../layers.css.
+ *
+ * silica runs every transition in the library off two tokens, and its defaults
+ * are the standard material curve at 150ms — correct, neutral, and the same
+ * curve sparx uses.
+ *
+ * theme.css has carried `--ease-piggles` since the brand was set up, described
+ * there as "the settle a round, soft object has and a flat rectangle does not".
+ * It was never wired to anything silica paints, so every hover, focus, open and
+ * close in the console moved like sparx's while the token sat unused two
+ * hundred lines above.
+ *
+ * Pointing silica's own `--ease` at it is the whole of the fix, and it is felt
+ * everywhere at once — a dropdown that overshoots a hair and settles is the
+ * difference between software that feels mechanical and software that feels
+ * physical. Slightly longer than the default too: 150ms is snappy, and snappy
+ * is not what this brand is.
+ *
+ * Untouched under `prefers-reduced-motion: reduce`, where silica forces the
+ * duration to 0.01ms with !important — which is the correct outcome and not
+ * something this file should try to win. */
+[data-theme='light'],
+[data-theme='dark'] {
+  --ease: var(--ease-piggles);
+  --duration: 200ms;
+}
+
+/* ── Navigation, de-jargonised ────────────────────────────────────────────────
+ *
+ * silica's Sidebar group heading ships as an 11px, 700-weight, letter-spaced,
+ * UPPERCASE label at 55% ink. That is the micro-caps idiom every developer tool
+ * uses, and it is wrong here three separate ways:
+ *
+ *   • Root RULE #3 — 55% ink is faded text on something a person is meant to
+ *     read. Fading is reserved for text deliberately NOT meant to be read.
+ *   • The 16px body floor — 11px is below even the 14px caption allowance, and
+ *     this is the label organising the primary navigation.
+ *   • DESIGN.md §1 — "if a screen could be dropped into sparx without anyone
+ *     noticing, it is not finished." Uppercase micro-caps are the single
+ *     loudest signal that a screen was built for an operator.
+ *
+ * Fixed HERE, once, rather than at the call sites: the same class renders the
+ * rail's Starred and Recent headings, every group in the app panel, and the
+ * mobile drawer. A className on one of them would have left the other two, which
+ * is exactly the deferred fix RULE #1 exists to stop.
+ *
+ * Sentence case, a real ink, and hierarchy from weight and size — which is what
+ * root RULE #3 asks for in place of fading.
+ *
+ * The one thing NOT changed is that it is still a heading: 700 weight against
+ * the rows' 400 is what separates them now.
+ */
+.sidebar-group-label {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-base-content);
+}
+
+/* Nav rows — the text somebody reads more often than anything else in the
+ * product, shipped by silica at a 14px caption size with 8px of padding.
+ *
+ * 16px and roomier. The fifteen-app rail gets taller and that is fine: the rail
+ * already scrolls, and a scroll is a much smaller cost than fifteen rows of
+ * small type somebody has to lean towards. Spacious is the brief. */
+.sidebar-item {
+  font-size: 1rem;
+  padding: 0.625rem 0.75rem;
+}
+
+/* And air BETWEEN the rows. silica ships a 2px gap, which is a list; 4px with
+ * the taller rows above is a set of things you can hit without aiming. */
+.sidebar-group {
+  gap: 0.25rem;
+}
+
+/* The gap between GROUPS — the six color families in the rail, and the sections
+ * inside an app's panel. This is the spacing that does the actual grouping work,
+ * so it is the one that has to be unmistakable. */
+.sidebar-content {
+  gap: 1.25rem;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────────
+ *
+ * `scrollbar-color: <thumb> <track>` is the standard property and it INHERITS,
+ * so one declaration reaches every scroll container in the app — no ::-webkit
+ * pseudo-elements, no per-container anything.
+ *
+ * Tokens on both halves, so dark resolves itself. The track stays transparent:
+ * a filled gutter reads as a channel cut through the surface, which is exactly
+ * the heavy chrome Piggles is not. */
+:root {
+  scrollbar-color: color-mix(in oklab, var(--color-base-content) 28%, transparent) transparent;
+}
+
+/* Inside an app, the thumb wears that app's hue. `--color-module` is bound on
+ * `[data-module]` (see workbench components/module-scope.tsx), so this
+ * re-resolves per subtree for nothing — a Sell pane scrolls in Sell's colour
+ * and a Stock pane in Stock's. */
+[data-module] {
+  scrollbar-color: color-mix(in oklab, var(--color-module) 55%, transparent) transparent;
+}

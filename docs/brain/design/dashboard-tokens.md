@@ -5,13 +5,13 @@ type: reference
 status: active
 applies-to: [dashboard]
 sources:
-  - packages/brand/src/theme.css
-  - packages/ui/src/tokens.css
+  - sparx/packages/brand/src/theme.css
+  - sparx/packages/ui/src/tokens.css
 ---
 
-> ⚠️ **This is a materialized mirror of the live token files.** Colors come from `packages/brand/src/theme.css` (`@sparx/brand`, the silicaui theme); non-color tokens (type/space/radius/shadow/motion + chart palette) come from `packages/ui/src/tokens.css`. The values are written out on purpose — code is referenced last, so the brain must carry the numbers you build with. **The code is the source of truth: if this sheet and a token file disagree, the code wins and the mismatch is a bug to fix now.** Re-sync this note in the same change that edits the tokens ([[CONTRACT]] → "design constants are materialized"). In components you reference the **token var** or a **silicaui class**, never the raw hex — these values are for *knowing what's right*, not for pasting.
+> ⚠️ **This is a materialized mirror of the live token files.** Colors come from `sparx/packages/brand/src/theme.css` (`@sparx/brand`, the silicaui theme); non-color tokens (type/space/radius/shadow/motion + chart palette) come from `sparx/packages/ui/src/tokens.css`. The values are written out on purpose — code is referenced last, so the brain must carry the numbers you build with. **The code is the source of truth: if this sheet and a token file disagree, the code wins and the mismatch is a bug to fix now.** Re-sync this note in the same change that edits the tokens ([[CONTRACT]] → "design constants are materialized"). In components you reference the **token var** or a **silicaui class**, never the raw hex — these values are for *knowing what's right*, not for pasting.
 
-This is the **dashboard** system (silicaui + `@sparx/brand`, consumed via `@wizeworks/silicaui-react` + `@sparx/ui` compositions). The **site** system is themeable — see [[site-tokens]] and [[two-design-systems]].
+This is the **dashboard** system (silicaui + `@sparx/brand`, consumed via `@wizeworks/silicaui-react` + `@wizeworks/ui` compositions). The **site** system is themeable — see [[site-tokens]] and [[two-design-systems]].
 
 ## Brand
 
@@ -24,7 +24,7 @@ This is the **dashboard** system (silicaui + `@sparx/brand`, consumed via `@wize
 
 The dark `--color-primary` (`#818cf8`) is defined **once** here — no app-level `:root` redefinition overrides it anymore (the historical bug where dark buttons rendered the light indigo is dead).
 
-## Type scale — 16px floor, **two weights only** (`packages/ui/src/tokens.css`)
+## Type scale — 16px floor, **two weights only** (`sparx/packages/ui/src/tokens.css`)
 
 `xs 12px` (0.75rem) · `sm 14px` captions (0.875) · **`base 16px` body floor** (1rem, never below) · `lg 18px` reading (1.125) · `xl 20px` (1.25) · `2xl 24px` (1.5) · `3xl 30px` (1.875) · `4xl 36px` (2.25).
 
@@ -52,7 +52,7 @@ The dark `--color-primary` (`#818cf8`) is defined **once** here — no app-level
 | `--color-base-content` | `#0a0a0a` | `#f0f0f0` | primary text/ink |
 | `--color-neutral` | `#1f2937` | `#e5e7eb` | high-contrast **inverse** accent panel (flips) |
 
-**Text inks are opacity on the base ink** (no invented `muted`/`faint` colors): secondary `text-base-content/70` · tertiary `text-base-content/50` · muted `text-base-content/60` · disabled `text-base-content/40`. Emphasis border `border-base-content/30`. Depth is the base ramp (`200` ground → `100` reading surface → content/module/semantic → media), corner-wrap cascade; **color carries the depth** (a hairline `border-base-300` only where a step is too subtle). Detail in `packages/ui/CLAUDE.md`.
+**Text inks are opacity on the base ink** (no invented `muted`/`faint` colors): secondary `text-base-content/70` · tertiary `text-base-content/50` · muted `text-base-content/60` · disabled `text-base-content/40`. Emphasis border `border-base-content/30`. Depth is the base ramp (`200` ground → `100` reading surface → content/module/semantic → media), corner-wrap cascade; **color carries the depth** (a hairline `border-base-300` only where a step is too subtle). Detail in `sparx/packages/ui/CLAUDE.md`.
 
 ## Semantic palette — state, its own axis ([[status-is-its-own-axis]])
 
@@ -93,11 +93,11 @@ silicaui's Tailwind plugin emits every `color × variant` class from the palette
 
 - **solid** = `bg-<color>` + `text-<color>-content` · **soft** = `bg-<color> bg-soft` (tint) + `text-<color>` (ink) · **outline** = `border-<color>` + `text-<color>` · **ghost/link** = `text-<color>`, transparent.
 - **`bg-soft`** paints `color-mix(in oklab, <accent> 15%, base)` — theme-aware, computed once. A tint is ALWAYS `<color> + soft`; never hand-pick a per-module light hex.
-- **Selection controls come from silicaui, not `@sparx/ui`** — `Checkbox` / `Switch` / `RadioGroup` / `Slider` / `Progress` are imported from `@wizeworks/silicaui-react` and take a real plugin color class (`checkbox-primary`, `switch-module`, …). `@sparx/ui` once hand-rolled them on Radix, where a color class couldn't attach, so each set a per-instance `--sx-sel` / `--sx-sel-fg` from `colorVars(color)`. That was the last parallel token vocabulary in the repo; both the components and `colorVars` are **deleted** (2026-07-31).
+- **Selection controls come from silicaui, not `@wizeworks/ui`** — `Checkbox` / `Switch` / `RadioGroup` / `Slider` / `Progress` are imported from `@wizeworks/silicaui-react` and take a real plugin color class (`checkbox-primary`, `switch-module`, …). `@wizeworks/ui` once hand-rolled them on Radix, where a color class couldn't attach, so each set a per-instance `--sx-sel` / `--sx-sel-fg` from `colorVars(color)`. That was the last parallel token vocabulary in the repo; both the components and `colorVars` are **deleted** (2026-07-31).
 
-**Module *card* tint:** `<Card variant="module">` = `bg-module bg-soft` inside a `<ModuleProvider>` (theme-aware ~15% `color-mix` into `--color-base-100`, text/border untouched). Wrap a panel in `<ModuleProvider module="…">` to tint it. Detail: `packages/ui/CLAUDE.md`.
+**Module *card* tint:** `<Card variant="module">` = `bg-module bg-soft` inside a `<ModuleProvider>` (theme-aware ~15% `color-mix` into `--color-base-100`, text/border untouched). Wrap a panel in `<ModuleProvider module="…">` to tint it. Detail: `sparx/packages/ui/CLAUDE.md`.
 
-## Chart palette (`packages/ui/src/tokens.css`)
+## Chart palette (`sparx/packages/ui/src/tokens.css`)
 
 light: `1 #6366f1 · 2 #14b8a6 · 3 #f97316 · 4 #06b6d4 · 5 #ec4899 · 6 #10b981` (dark: lifted). A single hero series uses `--color-module`.
 

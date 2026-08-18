@@ -9,7 +9,7 @@ import { accountUrl, APP_BY_ID, APPS, appIcon } from '@piggles/config';
 import { PigglesMascot } from '@piggles/mascot/react';
 import type { MascotPoseId } from '@piggles/mascot';
 
-// Two inline arrows rather than an icon import. apps/web has no icon package of
+// Two inline arrows rather than an icon import. sparx/apps/web has no icon package of
 // its own — the only one in the workspace arrives through @piggles/config as APP
 // ICONS, which is the right dependency for a rail glyph and the wrong one for a
 // chevron — and a new dependency needs asking for. They inherit `currentColor`,
@@ -318,7 +318,7 @@ function WindowRows({ rows }: { rows: Row[] }) {
               </Badge>
             )}
             {row.figure && (
-              <span className="text-module font-heading text-3xl font-extrabold tabular-nums">
+              <span className="ink-module font-heading text-3xl font-extrabold tabular-nums">
                 {row.figure}
               </span>
             )}
@@ -863,7 +863,7 @@ export function TheDay() {
 function BeatCopy({ beat }: { beat: Beat }) {
   return (
     <div data-group={beat.group}>
-      <span className="bg-module bg-soft text-module inline-flex items-center rounded-full px-3.5 py-2 text-sm font-semibold tabular-nums">
+      <span className="bg-module bg-soft ink-module inline-flex items-center rounded-full px-3.5 py-2 text-sm font-semibold tabular-nums">
         {beat.when}
       </span>
       <h2 className="mt-4 text-[clamp(1.55rem,6.4vw,2.1rem)] leading-[1.07] font-extrabold lg:text-[clamp(1.75rem,2.7vw,2.625rem)]">

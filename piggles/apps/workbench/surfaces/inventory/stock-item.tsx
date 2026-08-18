@@ -102,6 +102,10 @@ import {
 import { useGenerateBarcodes, useVariantBarcodes } from './scan-data';
 import { productCopyWith } from '../../lib/product';
 
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
+
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes a line of numbers pinned to the left edge. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -938,6 +942,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
             title="No item was chosen"
             description="This pane shows the stock of one item. Open it from the Stock list by clicking a row."
@@ -1038,57 +1043,63 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Stock item actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        {/* Sheds its label first: the product is one click away either way, and
+      <PaneToolbar
+        label="Stock item actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          <>
+            {/* Sheds its label first: the product is one click away either way, and
             counting is what this pane is for. */}
-        {productId ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            title="Open the product this belongs to"
-            onClick={(event) => {
-              ctx.open(
-                'commerce.product.detail',
-                { id: productId },
-                { target: event.shiftKey ? 'beside' : 'tab' }
-              );
+            {productId ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                className="ml-auto shrink-0 whitespace-nowrap"
+                title="Open the product this belongs to"
+                onClick={(event) => {
+                  ctx.open(
+                    'commerce.product.detail',
+                    { id: productId },
+                    { target: event.shiftKey ? 'beside' : 'tab' }
+                  );
+                }}
+              >
+                <Icon glyph={faBox} className="size-4" aria-hidden />
+                <span className="hidden @xl:inline">Open product</span>
+              </Button>
+            ) : null}
+            <Button
+              size="sm"
+              color="module"
+              className={`shrink-0 whitespace-nowrap${productId ? '' : 'ml-auto'}`}
+              disabled={locations.length === 0}
+              onClick={() => {
+                startCount(levels[0]?.warehouseId ?? null);
+              }}
+            >
+              <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
+              Record a count
+            </Button>
+          </>
+        }
+        refresh={
+          /* ALWAYS the last child of a toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={item.isFetching}
+            updatedAt={item.data ? item.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void item.refetch();
+              void holds.refetch();
+              void history.refetch();
             }}
-          >
-            <Icon glyph={faBox} className="size-4" aria-hidden />
-            <span className="hidden @xl:inline">Open product</span>
-          </Button>
-        ) : null}
-
-        <Button
-          size="sm"
-          color="module"
-          className={`shrink-0 whitespace-nowrap${productId ? '' : 'ml-auto'}`}
-          disabled={locations.length === 0}
-          onClick={() => {
-            startCount(levels[0]?.warehouseId ?? null);
-          }}
-        >
-          <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
-          Record a count
-        </Button>
-
-        {/* ALWAYS the last child of a toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={item.isFetching}
-          updatedAt={item.data ? item.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void item.refetch();
-            void holds.refetch();
-            void history.refetch();
-          }}
-        />
-      </PaneToolbar>
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

@@ -4,7 +4,7 @@
 
 Applied by [deploy-prod.yml](../../.github/workflows/deploy-prod.yml) on each release. Runs `prisma migrate deploy` against Cloud SQL via PgBouncer.
 
-The Job runs in-cluster (where the Cloud SQL private IP is reachable) so we don't need the Cloud SQL Auth Proxy. The image is the latest `api-rest` build — migrations live alongside the API code in the `@sparx/db` workspace.
+The Job runs in-cluster (where the Cloud SQL private IP is reachable) so we don't need the Cloud SQL Auth Proxy. The image is the latest `api-rest` build — migrations live alongside the API code in the `@wizeworks/db` workspace.
 
 ### Manual run
 

@@ -45,21 +45,21 @@ the word "pipeline" used as a noun.
 
 Listed because nine of the eleven workstreams below are extensions of these, not new systems.
 
-| Machinery                            | Where                                                                     | What this plan does with it                                             |
-| ------------------------------------ | ------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Domain-neutral field engine          | `packages/field-schema` (`FieldDef`, 16 field types, recursive validator) | **Third consumer**: CRM custom properties + custom objects (§3)         |
-| Schema-driven form renderer          | `apps/workbench/surfaces/cms/schema-form.tsx`                             | Rendering custom properties on every CRM record (§3.5)                  |
-| Schema editor UI                     | `apps/workbench/surfaces/cms/content-type-detail.tsx`                     | The property-editor surface's shape (§3.5)                              |
-| Predicate DSL (bounded, JSON-Schema) | `packages/automation-schemas/src/condition.ts` (`ConditionGroup`)         | Report filters, scoring rules, SLA conditions, static-list rules (§8)   |
-| Segment rule DSL + evaluator         | `packages/crm-schemas/src/segment-rule.ts`, `segment-evaluator` consumer  | Gains custom-property + association + score sources (§3.4, §10)         |
-| Encrypted-OAuth connection pattern   | `CalendarConnection` + `lib/scheduling-calendar-oauth.ts` (AES-256-GCM)   | Copied verbatim for `MailboxConnection` (§5.2)                          |
-| Email send/track pipeline            | `email.send` → `email-worker` → Mailgun → `email_events`                  | Carries 1:1 sales email; adds threading headers (§5.3)                  |
-| Activity projection consumer         | `packages/crm/src/consumers/projection.ts`                                | Projects engagement + calls + tickets into the existing timeline (§5.5) |
-| Pipelines + ordered typed stages     | `Pipeline` / `PipelineStage` (probability, `stage_type`)                  | Gains `objectKey` so tickets reuse it wholesale (§7.2)                  |
-| dnd-kit board patterns               | `automations/flow-canvas`, `invoicing/stage-canvas`, `social/calendar`    | The deal board and ticket board (§4)                                    |
-| BYO-credential provider registry     | `packages/sms` (provider + registry + console fallback)                   | Shape copied for `packages/voice` (§5.6)                                |
-| Tenant secret encryption             | `@sparx/integration-framework` `secret-crypto`                            | BYO telephony + BYO mailbox credentials (§5.6)                          |
-| Report query services                | `packages/crm/src/services/reporting-service.ts` (7 reports)              | Re-expressed as seeded built-in report definitions (§8.4)               |
+| Machinery                            | Where                                                                               | What this plan does with it                                             |
+| ------------------------------------ | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Domain-neutral field engine          | `wizeworks/packages/field-schema` (`FieldDef`, 16 field types, recursive validator) | **Third consumer**: CRM custom properties + custom objects (§3)         |
+| Schema-driven form renderer          | `sparx/apps/workbench/surfaces/cms/schema-form.tsx`                                 | Rendering custom properties on every CRM record (§3.5)                  |
+| Schema editor UI                     | `sparx/apps/workbench/surfaces/cms/content-type-detail.tsx`                         | The property-editor surface's shape (§3.5)                              |
+| Predicate DSL (bounded, JSON-Schema) | `wizeworks/packages/automation-schemas/src/condition.ts` (`ConditionGroup`)         | Report filters, scoring rules, SLA conditions, static-list rules (§8)   |
+| Segment rule DSL + evaluator         | `wizeworks/packages/crm-schemas/src/segment-rule.ts`, `segment-evaluator` consumer  | Gains custom-property + association + score sources (§3.4, §10)         |
+| Encrypted-OAuth connection pattern   | `CalendarConnection` + `lib/scheduling-calendar-oauth.ts` (AES-256-GCM)             | Copied verbatim for `MailboxConnection` (§5.2)                          |
+| Email send/track pipeline            | `email.send` → `email-worker` → Mailgun → `email_events`                            | Carries 1:1 sales email; adds threading headers (§5.3)                  |
+| Activity projection consumer         | `wizeworks/packages/crm/src/consumers/projection.ts`                                | Projects engagement + calls + tickets into the existing timeline (§5.5) |
+| Pipelines + ordered typed stages     | `Pipeline` / `PipelineStage` (probability, `stage_type`)                            | Gains `objectKey` so tickets reuse it wholesale (§7.2)                  |
+| dnd-kit board patterns               | `automations/flow-canvas`, `invoicing/stage-canvas`, `social/calendar`              | The deal board and ticket board (§4)                                    |
+| BYO-credential provider registry     | `wizeworks/packages/sms` (provider + registry + console fallback)                   | Shape copied for `wizeworks/packages/voice` (§5.6)                      |
+| Tenant secret encryption             | `@wizeworks/integration-framework` `secret-crypto`                                  | BYO telephony + BYO mailbox credentials (§5.6)                          |
+| Report query services                | `wizeworks/packages/crm/src/services/reporting-service.ts` (7 reports)              | Re-expressed as seeded built-in report definitions (§8.4)               |
 
 ## 3. Workstream A — the CRM object registry (custom properties, then custom objects)
 
@@ -90,7 +90,7 @@ model CrmObjectDef {
   label      String @db.VarChar(120)
   labelPlural String @map("label_plural") @db.VarChar(120)
   iconKey    String? @map("icon_key") @db.VarChar(63)
-  // A FieldSchema (@sparx/field-schema). For `builtin`, the TENANT-ADDED
+  // A FieldSchema (@wizeworks/field-schema). For `builtin`, the TENANT-ADDED
   // properties only — the spine stays in columns. For `custom`, the whole record.
   propertySchema Json @map("property_schema")
   // custom objects only: which property is the record's display title
@@ -101,7 +101,7 @@ model CrmObjectDef {
 ```
 
 The four built-in rows are seeded with an empty schema at CRM module activation, alongside the
-existing built-in pipelines and segments (`packages/crm/src/consumers/module-activation.ts`).
+existing built-in pipelines and segments (`wizeworks/packages/crm/src/consumers/module-activation.ts`).
 
 ### 3.2 Storage
 
@@ -140,7 +140,7 @@ model change. This limit gets stated in the plan rather than discovered in produ
 
 ### 3.3 Property types
 
-Everything `@sparx/field-schema` already ships — text, long text, rich text, slug, number, boolean,
+Everything `@wizeworks/field-schema` already ships — text, long text, rich text, slug, number, boolean,
 date, datetime, enum (single + multi), url, email, reference, asset, object, repeater — plus three
 CRM-specific additions to the shared engine (they belong upstream, not in a CRM fork, per RULE #1):
 
@@ -177,7 +177,7 @@ captured_ is a text box, not a property. The definition of done for §3 includes
 The registry above already carries them. What ships later is the **generic surface pair** — one
 list surface and one detail surface driven entirely by a `CrmObjectDef`, registered dynamically
 into the workbench catalog at runtime rather than as static entries in
-`apps/workbench/lib/surfaces/catalog/crm.ts`. A tenant defining a "Property listing" or "Service
+`sparx/apps/workbench/lib/surfaces/catalog/crm.ts`. A tenant defining a "Property listing" or "Service
 contract" object gets a working list, detail, search, timeline, association panel and automation
 trigger from the definition alone.
 
@@ -185,7 +185,7 @@ trigger from the definition alone.
 
 Smallest, most visible, no new model, no new endpoint.
 
-`apps/workbench/surfaces/crm/deals-list.tsx` is a table. It becomes a **table _or_ board**, with the
+`sparx/apps/workbench/surfaces/crm/deals-list.tsx` is a table. It becomes a **table _or_ board**, with the
 board as the default and the choice remembered per user.
 
 - Columns are the pipeline's `PipelineStage` rows in `sort_order`; each column header carries its
@@ -264,9 +264,9 @@ chain. A copy is then filed in the mailbox's Sent folder over IMAP `APPEND`, bec
 do that and a rep who cannot find their own sent mail concludes sparx emailed a customer behind
 their back.
 
-**Everything about the protocols is pure and unit-tested** in `@sparx/crm/mail` (`mime.ts`,
+**Everything about the protocols is pure and unit-tested** in `@wizeworks/crm/mail` (`mime.ts`,
 `inbound.ts`, `rfc822.ts`, `imap.ts`, `smtp.ts`), hand-written for the same reason
-`@sparx/scheduling` hand-writes its iCal and CalDAV parsers. The sockets live in api-rest
+`@wizeworks/scheduling` hand-writes its iCal and CalDAV parsers. The sockets live in api-rest
 (`crm-mailbox-imap.ts`, `crm-mailbox-smtp.ts`).
 
 **Automated mail is filtered before the privacy gate, not after** — `Auto-Submitted`, the `List-*`
@@ -320,7 +320,7 @@ model EngagementMessage {
 ### 5.4 Templates and snippets
 
 `SalesTemplate` (name, subject, HTML body, folder, owner, shared flag, send/open/reply counters) and
-`SalesSnippet` (shortcut, body). Both compose the existing `@sparx/email` atomic components rather
+`SalesSnippet` (shortcut, body). Both compose the existing `@wizeworks/email` atomic components rather
 than carrying raw markup, per the email-template rule in the root `CLAUDE.md`. Merge tags reuse the
 existing `list_merge_tags` vocabulary, extended with custom properties from §3.
 
@@ -347,7 +347,7 @@ rather than a navigation.
 
 ### 5.6 Calling
 
-`packages/voice`, shaped exactly like `packages/sms`: a `VoiceProvider` contract, a Twilio
+`wizeworks/packages/voice`, shaped exactly like `wizeworks/packages/sms`: a `VoiceProvider` contract, a Twilio
 implementation, a console fallback for dev, and a registry that selects on configured credentials.
 Credentials are **tenant-BYO** — the platform never fronts its own vendor account for a tenant's
 outbound traffic ([[feedback_no_platform_ai_byok_only]]), so `resolveVoiceProvider` takes credentials
@@ -476,7 +476,7 @@ existing. Modules are independent and never default on, and a CRM-only tenant ha
 also different facts — when the support desk is staffed is not when bay 2 can be booked. The policy
 therefore carries its **own** calendar (weekly windows + IANA timezone + holidays).
 
-What IS shared is the arithmetic underneath, extracted to **`@sparx/time`**: two unrelated promises
+What IS shared is the arithmetic underneath, extracted to **`@wizeworks/time`**: two unrelated promises
 in this platform are stated in local time and stored as UTC instants, both have to survive daylight
 saving, and a DST bug fixed in one copy would still be a bug in the other.
 
@@ -515,7 +515,7 @@ model CrmDashboardWidget { dashboardId, reportId, x, y, w, h }
   authors the eighth. Nothing regresses, and the built-ins double as worked examples a user can
   duplicate and edit — which is how a non-technical user actually learns a builder.
 - **Charts** follow the `dataviz` skill's palette discipline and the `--chart-*` tokens already in
-  `packages/ui/src/tokens.css`.
+  `sparx/packages/ui/src/tokens.css`.
 - **Language:** the surface asks "what do you want to count?" and "how do you want it broken down?"
   It does not say "measure", "dimension" or "aggregate".
 
@@ -601,13 +601,13 @@ Six deviations from the above, all deliberate — read these before changing any
    built for intake routing in §7.4 and takes the same config, resolves the same assignee, and opens
    the same request. A second name for it would put two indistinguishable entries in the palette.
    Six of the seven planned actions shipped; this is the seventh, and it already existed.
-4. **The condition evaluator MOVED to `@sparx/automation-schemas`.** `ConditionGroup` is now the
+4. **The condition evaluator MOVED to `@wizeworks/automation-schemas`.** `ConditionGroup` is now the
    filter language of three things — automations, the report builder (§8) and scoring — which only
-   works if all three agree on what a condition MEANS. With the evaluator inside `@sparx/automation`,
+   works if all three agree on what a condition MEANS. With the evaluator inside `@wizeworks/automation`,
    packages that cannot depend on the engine had two options: take the whole engine for one pure
    function, or write their own comparison semantics. The second is how `contains` comes to mean
    something subtly different in scoring than in automations, and nobody finds out until a
-   customer's numbers disagree with their rules. `packages/automation/src/conditions/evaluate.ts` is
+   customer's numbers disagree with their rules. `wizeworks/packages/automation/src/conditions/evaluate.ts` is
    now a re-export, so every existing import path still works.
 5. **Scoring rides its own consumer, not the segment evaluator.** The plan put it inside the segment
    evaluator on the grounds that that consumer already re-runs on the right events — true of the
@@ -644,7 +644,7 @@ limit.
 ## 12. Workstream J — the remainder
 
 - **E-sign on quotes.** `BillingDocumentSignature { documentId, signerName, signerEmail, signedAt,
-ip, userAgent, signatureData, tokenHash }` plus a tokenised public signing page on `apps/site`.
+ip, userAgent, signatureData, tokenHash }` plus a tokenised public signing page on `wizeworks/apps/site`.
   The rendering pipeline (`billing-render-service`, `billing-snapshot`) already produces the
   document; this adds the accept step and freezes the snapshot on signature.
 - **Meeting links.** The scheduling module already books; what's missing is the CRM-side link — a
@@ -664,12 +664,12 @@ a plan that scores 10 and a plan that scores 6 with a long tail of follow-ups.
    same slice. A capability an AI client can't reach isn't finished (root `CLAUDE.md`).
 2. **RLS.** Every new table is `ENABLE` + `FORCE` RLS with a `tenant_isolation` policy, hand-written
    in the migration. Any in-migration backfill loops tenants with `set_config('app.tenant_id', …)`
-   — the non-superuser footgun in `packages/db/CLAUDE.md`.
+   — the non-superuser footgun in `wizeworks/packages/db/CLAUDE.md`.
 3. **Site scoping.** Every new tenant-scoped object carries `property_id` and follows docs/131's
    patterns — denormalise from the parent at creation, `SetNull` for records that outlive a site,
    `Cascade` for authored configuration.
 4. **Events, not inline side effects.** New business events are published to Pub/Sub and consumed by
-   workers; `EventType` in `packages/events/src/types.ts` is the catalog and topic name == event
+   workers; `EventType` in `wizeworks/packages/events/src/types.ts` is the catalog and topic name == event
    type.
 5. **Modules.** Tickets/service activate as part of the `crm` module; calling gates on a configured
    voice provider. No new default-on anything ([[feedback_never_default_modules_on]]).
@@ -678,7 +678,7 @@ a plan that scores 10 and a plan that scores 6 with a long tail of follow-ups.
    Every list and board is responsive to the 3-tier collapse.
 7. **Copy.** Written for a business owner. "The extra details you track", not "custom properties".
    "Who else is involved", not "associations". "What you're aiming for", not "goal criteria".
-8. **Tests.** Each workstream ships integration tests in `packages/crm/test/integration/` including
+8. **Tests.** Each workstream ships integration tests in `wizeworks/packages/crm/test/integration/` including
    an RLS isolation case for every new table, matching the existing 20-suite pattern.
 9. **Seed data.** Every new object gets rich demo rows in `prisma/seed.ts`
    ([[feedback_seed_rich_local_data]]) — a CRM with three contacts proves nothing.
@@ -708,7 +708,7 @@ Migration directory names continue monotonically from `20270206000000` (the newe
 > lexicographically by directory name, so authoring `20270214000000_crm_company_rename` from the
 > original table would have produced a never-applied migration sorting BEFORE applied ones — and
 > `migrate deploy` refuses that mid-release, after the roles Job has already run. See
-> packages/db/CLAUDE.md. **Neither phase-7 migration has been applied yet** — see §14.1.
+> wizeworks/packages/db/CLAUDE.md. **Neither phase-7 migration has been applied yet** — see §14.1.
 
 Phase 0 is independently shippable in days and should not wait for the rest. Phases 1 and 2 are
 strictly ordered — associations want the registry to name their endpoints. Phases 3–6 are
@@ -883,7 +883,7 @@ Everything listed here previously — the duplicates confidence model, the signa
 `/meet/[slug]` page, the domain-match offer, launcher entries for custom objects and the
 integration suite — is BUILT and was driven in a browser on 2026-08-10. **Saved views now cover
 every CRM list**, also driven in a browser: Customers, Companies, Deals (board and table),
-Requests, and the generic list that serves a tenant's own record types. `pnpm --filter @sparx/db
+Requests, and the generic list that serves a tenant's own record types. `pnpm --filter @wizeworks/db
 build` is verified (it needed one run with dev stopped — `prisma generate` cannot replace the
 query-engine DLL while a dev server holds it). The NULL-site uniqueness finding is now FIXED, and
 chasing it turned up a considerably worse bug in `mergeService`; both are below.
@@ -1327,7 +1327,7 @@ still refused **by name** rather than answered with an empty table.
 Three things fell out of doing it that were worse than the headline gap:
 
 - **camelCase property keys were unreportable, everywhere.** The compiler's `custom.<key>` rule was
-  lowercase-only while `@sparx/field-schema` has always minted camelCase keys — the shape the property
+  lowercase-only while `@wizeworks/field-schema` has always minted camelCase keys — the shape the property
   editor itself produces. So `seatsLeft`, `renewalMonth`, and any property with a capital in it,
   picked out of the builder's own field list, answered "there is no field called that." This was live
   for custom properties on **contacts and deals** too, not only for invented types. The rule must
@@ -1529,7 +1529,7 @@ its focus ring as `var(--<family>-accent, var(--color-primary))`, and `--color-p
 `#e04631`, so a control with no `color` prop focuses in what reads as the danger color — a field
 saying _you got that wrong_ about content that is fine. 52 of 207 CRM controls were fixed one at a
 time earlier in this sweep, which is a treatment, not a cure: the 53rd was already sitting in the
-nav panel's own filter box. One block in `apps/workbench/app/globals.css` now repoints the default
+nav panel's own filter box. One block in `sparx/apps/workbench/app/globals.css` now repoints the default
 for all fifteen data-entry families under `[data-module]`.
 
 The `-border` companions in that block are load-bearing rather than noise. A resting border reads
@@ -1646,7 +1646,7 @@ as a `Condition` — one wrong operator name, `equals` instead of `eq` — does 
 through to the sub-group branch, Zod strips the unrecognised keys, and it is stored as
 `{"logic":"AND","conditions":[]}`. The filter is gone and the write reports success. The operator
 names are `eq`/`neq`/`gt`/`lt`/`gte`/`lte`/`contains`/`not_contains`/`in`/`not_in`/`is_set`/
-`is_not_set` (`packages/automation-schemas/src/condition.ts`) — check against that list rather than
+`is_not_set` (`wizeworks/packages/automation-schemas/src/condition.ts`) — check against that list rather than
 guessing, because nothing downstream will tell you. Same family as the `.default()`-survives-
 `.partial()` footgun this doc already records.
 
@@ -1717,8 +1717,8 @@ the `b2b_accounts` → `companies` rename, the trade-terms panel gated on the `b
 domain association, e-sign on quotes, meeting links, saved views, and duplicate management at scale.
 Nothing else in this plan is outstanding.
 
-At this checkpoint, with all migrations applied and the client regenerated: `@sparx/crm` 41 files /
-**400 tests**, `@sparx/automation` 5 files / **70 tests**, `automation-schemas` 13,
+At this checkpoint, with all migrations applied and the client regenerated: `@wizeworks/crm` 41 files /
+**400 tests**, `@wizeworks/automation` 5 files / **70 tests**, `automation-schemas` 13,
 `automation-actions` 54, api-rest 81. Typecheck clean across crm, crm-schemas, automation,
 automation-schemas, automation-actions, api-rest and workbench; eslint and prettier clean
 repo-wide; all four structural checks passing; and the RLS audit clean across **351 tables (319
@@ -1734,12 +1734,12 @@ executed `ticketService` and `ticketSlaSweep`. Writing it found nothing in the p
 faults in the tests themselves, all the same one: they share a tenant, and a policy promoted to
 default in one test legitimately changes what the next test is measured against.
 
-**Phase 0** shipped a generic `RecordBoard<T>` (`apps/workbench/components/record-board.tsx`) rather
+**Phase 0** shipped a generic `RecordBoard<T>` (`sparx/apps/workbench/components/record-board.tsx`) rather
 than a deal-specific one, so §7's ticket board is a parameterisation rather than a second board.
 Dragging into a lost stage asks why, and that reason is now editable on the deal — it was being
 captured and then never shown, which made a typo in it permanent.
 
-**Phase 1** put the field engine in `@sparx/field-schema` (shared with CMS content types and
+**Phase 1** put the field engine in `@wizeworks/field-schema` (shared with CMS content types and
 commerce product types) and added `coerce.ts` there — text→typed values, so the CSV importer can
 read `"$4,800"` and `"3/14/2027"` and REFUSE what it cannot read rather than guessing. Import and
 export both carry declared properties; export heads them `custom.<key>` so a round-trip does not
@@ -1765,8 +1765,8 @@ beside it. Then the two halves that were outstanding:
   table that stores no tokens is an invitation to half-build the thing again. Polling, not IDLE;
   `UIDVALIDITY` stored with the cursor; sending over the mailbox's own SMTP with a Sent-folder
   `APPEND`; automated mail filtered before the privacy gate. Protocols are pure and tested in
-  `@sparx/crm/mail`; sockets are in api-rest.
-- **Calling (§5.6).** `packages/voice` mirrors `@sparx/sms` — provider contract, Twilio adapter,
+  `@wizeworks/crm/mail`; sockets are in api-rest.
+- **Calling (§5.6).** `wizeworks/packages/voice` mirrors `@wizeworks/sms` — provider contract, Twilio adapter,
   console fallback, registry — except that the credentials are the **tenant's own**, never the
   platform's. Click-to-call rings the rep's phone FIRST and bridges to the customer, because dialling
   from a browser tab needs WebRTC, a mic permission and a headset, and fails exactly when someone

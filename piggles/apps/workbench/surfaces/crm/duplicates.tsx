@@ -20,12 +20,12 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { faCheck, faClipboardCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -50,6 +50,10 @@ import {
   useMergeCustomers,
   type DuplicateGroup,
 } from './duplicates-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -120,44 +124,40 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Duplicate controls">
-        <Text as="span" className="shrink-0 text-sm">
-          {isPending
-            ? 'Checking…'
-            : clusters.length === 0
-              ? 'None found'
-              : clusters.length === 1
-                ? '1 possible duplicate'
-                : `${String(clusters.length)} possible duplicates`}
-        </Text>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={groups ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Duplicate controls"
+        status={
+          <Text as="span" className="shrink-0 text-sm">
+            {isPending
+              ? 'Checking…'
+              : clusters.length === 0
+                ? 'None found'
+                : clusters.length === 1
+                  ? '1 possible duplicate'
+                  : `${String(clusters.length)} possible duplicates`}
+          </Text>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={groups ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneEmpty
+            <PaneLoadError
               icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
               title="Could not check for duplicates"
               description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
           </Card>
         ) : isPending ? (
@@ -165,6 +165,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : clusters.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
               title="No duplicates found"
               description="Every customer looks unique — nobody shares an email address, or a name and company. We check whenever you reopen this, so come back after a busy spell."
@@ -172,16 +173,11 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
           </Card>
         ) : (
           <div className={COLUMN}>
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Possible duplicates
-              </Heading>
-              <Text>
-                Each group below looks like one person entered more than once. Choose the record to
-                keep, then merge the others into it — their orders, spending and history all move
-                across, and the extra records are retired.
-              </Text>
-            </div>
+            <Text>
+              Each group below looks like one person entered more than once. Choose the record to
+              keep, then merge the others into it — their orders, spending and history all move
+              across, and the extra records are retired.
+            </Text>
 
             {canMerge && certainCount > 0 ? (
               <div className="border-base-300 rounded-box flex flex-wrap items-center justify-between gap-3 border px-4 py-3">

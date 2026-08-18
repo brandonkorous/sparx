@@ -4,7 +4,7 @@ node: data
 type: pattern
 status: active
 sources:
-  - packages/db/CLAUDE.md
+  - wizeworks/packages/db/CLAUDE.md
   - .github/workflows/release.yml
   - scripts/check-migration-order.mjs
 ---

@@ -7,7 +7,7 @@ Last Updated: 2026-06-08
 ## v2.0 update — `CollapsibleNav` + canvas parity (supersedes D4/D5)
 
 The header nav is now a **prebuilt `@sparx/site-ui` component, `CollapsibleNav`**,
-rendered by BOTH the live site and the editor canvas — not an `apps/site`-only
+rendered by BOTH the live site and the editor canvas — not an `wizeworks/apps/site`-only
 island. This fixed two things v1.0 left open:
 
 - **Canvas parity.** The dashboard canvas has its own renderer (`registry.tsx`)
@@ -25,8 +25,8 @@ island. This fixed two things v1.0 left open:
   identically at the simulated device width and the real viewport.
 - **Centralized in site-ui, not forked (supersedes D5).** `CollapsibleNav`
   composes the existing `NavMenu` + `Drawer` primitives; its CSS lives in
-  `packages/site-ui/src/styles/collapsible-nav.css` (compiled into both
-  `styles.css` and `styles.canvas.css`). The `apps/site` island
+  `wizeworks/packages/site-ui/src/styles/collapsible-nav.css` (compiled into both
+  `styles.css` and `styles.canvas.css`). The `wizeworks/apps/site` island
   (`builder-nav-menu.tsx`) and the `.st-builder-nav*` viewport switch are deleted.
 
 D1, D2, and D3 below still stand (scoping the legacy CSS, a real mobile app-bar,
@@ -44,11 +44,11 @@ the page body.
 ## Background: two chrome systems, one class namespace
 
 A tenant's chrome comes from one of two mutually-exclusive paths (see
-`apps/site/app/layout.tsx`):
+`wizeworks/apps/site/app/layout.tsx`):
 
 1. **Builder chrome** (`BuilderSiteChrome`) — when a published Builder layout
    exists. Header/footer are a Builder **node tree** (Logo · NavMenu · Button …)
-   rendered by `apps/site/components/builder-renderer.tsx` using the
+   rendered by `wizeworks/apps/site/components/builder-renderer.tsx` using the
    `@sparx/site-ui` primitives. The nav primitive emits
    `<nav class="st-nav st-nav--row|--stack"><a class="st-nav__item">`.
 2. **Legacy chrome** (`SiteHeader`/`SiteFooter`) — the fallback when there is no
@@ -57,7 +57,7 @@ A tenant's chrome comes from one of two mutually-exclusive paths (see
    (`components/mobile-nav.tsx` + the `.st-drawer-*` CSS).
 
 Both systems use the bare class `.st-nav`. The legacy responsive rule in
-`apps/site/app/site.css` was written for path 2 but was **unscoped**:
+`wizeworks/apps/site/app/site.css` was written for path 2 but was **unscoped**:
 
 ```css
 @media (max-width: 760px) {
@@ -85,7 +85,7 @@ footer aren't responsive."
   nav on phones.
 
 - **D2 — Give the Builder header a real mobile app-bar.** A new client island,
-  `apps/site/components/builder-nav-menu.tsx`, renders a **row** NavMenu as:
+  `wizeworks/apps/site/components/builder-nav-menu.tsx`, renders a **row** NavMenu as:
   inline links ≥ 768px; a hamburger + slide-in drawer < 768px. It reuses the
   existing `.st-nav__toggle` + `.st-drawer-*` CSS and the proven MobileNav
   behavior (Escape, backdrop click, body-scroll lock, close-on-select). The
@@ -113,7 +113,7 @@ footer aren't responsive."
 - **D5 — Reuse, don't fork.** The island reuses the existing drawer CSS kit and
   the `.st-iconbtn`/`.st-nav__toggle` styling. The only new CSS is the
   inline-vs-hamburger visibility switch (`.st-builder-nav*`). No `@sparx/site-ui`
-  rebuild is required — all changes live in `apps/site` + the blueprint.
+  rebuild is required — all changes live in `wizeworks/apps/site` + the blueprint.
 
 ## Known follow-ups (not in this slice)
 
@@ -130,10 +130,10 @@ responsiveness rule):
 
 ## Files
 
-- `apps/site/app/site.css` — D1 scoping + D5 `.st-builder-nav*` visibility switch.
-- `apps/site/components/builder-nav-menu.tsx` — D2 island (new).
-- `apps/site/components/builder-renderer.tsx` — route row NavMenu to the island.
-- `packages/blueprints/src/blueprints/notion-workspace.ts` — D3 app-bar header.
-- MCP authoring contract (`packages/builder/src/mcp/vocabulary.ts`,
-  `.../write-tools.ts`, `packages/sitebuilder/src/mcp/write-tools.ts`) now mandates
+- `wizeworks/apps/site/app/site.css` — D1 scoping + D5 `.st-builder-nav*` visibility switch.
+- `wizeworks/apps/site/components/builder-nav-menu.tsx` — D2 island (new).
+- `wizeworks/apps/site/components/builder-renderer.tsx` — route row NavMenu to the island.
+- `wizeworks/packages/blueprints/src/blueprints/notion-workspace.ts` — D3 app-bar header.
+- MCP authoring contract (`wizeworks/packages/builder/src/mcp/vocabulary.ts`,
+  `.../write-tools.ts`, `wizeworks/packages/sitebuilder/src/mcp/write-tools.ts`) now mandates
   responsive header/footer authoring.

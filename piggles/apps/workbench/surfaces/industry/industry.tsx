@@ -217,32 +217,39 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Industry actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!chosen || apply.isPending}
-          loading={apply.isPending}
-          onClick={() => {
-            void onApply();
-          }}
-        >
-          <Icon glyph={faCheck} className="size-4" aria-hidden />
-          {isReapply ? 'Update setup' : 'Set my industry'}
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Industry actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!chosen || apply.isPending}
+            loading={apply.isPending}
+            onClick={() => {
+              void onApply();
+            }}
+          >
+            <Icon glyph={faCheck} className="size-4" aria-hidden />
+            {isReapply ? 'Update setup' : 'Set my industry'}
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className={COLUMN}>
             <div className="flex flex-col gap-1">

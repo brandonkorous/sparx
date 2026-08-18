@@ -4,7 +4,7 @@ import 'server-only';
 //
 // ── WHY THIS IS ASKED AT ALL ────────────────────────────────────────────────
 //
-// The platform registers the Google provider CONDITIONALLY: `packages/auth`'s
+// The platform registers the Google provider CONDITIONALLY: `wizeworks/packages/auth`'s
 // server config spreads in `socialProviders` only when both `GOOGLE_CLIENT_ID`
 // and `GOOGLE_CLIENT_SECRET` are present, and adds the One Tap plugin under the
 // same condition. On a deployment without them, `/api/auth/sign-in/social`
@@ -19,7 +19,7 @@ import 'server-only';
 //
 // ── THE COUPLING, STATED OUT LOUD ───────────────────────────────────────────
 //
-// This repeats a condition that lives in `packages/auth/src/server.ts`, and a
+// This repeats a condition that lives in `wizeworks/packages/auth/src/server.ts`, and a
 // repeated condition drifts. The alternative was a capability query on the
 // shared auth package, which is a change to shared code for one app's benefit —
 // and the shared workbench has the same latent bug today (it renders its Google

@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-tattoo-fineline',
-    version: '1.3.0',
-    name: 'sparx — Tattoo (Fine Line)',
-    summary:
-        'A bright, minimal fine-line tattoo-studio site — a bone off-white palette, a warm near-black ink and one quiet soft-gold accent, with a clean grotesque and gallery-style work carrying the page. Installs a working booking flow: a free consultation, fine-line pieces priced by size, plus lettering and delicate floral; three artists you book by name with their own hours; and a session-deposit policy. Ships as "Faint", a light, considered studio — the calm opposite of the dark tattoo shop.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-tattoo-fineline',
+  version: '1.3.0',
+  name: 'sparx — Tattoo (Fine Line)',
+  summary:
+    'A bright, minimal fine-line tattoo-studio site — a bone off-white palette, a warm near-black ink and one quiet soft-gold accent, with a clean grotesque and gallery-style work carrying the page. Installs a working booking flow: a free consultation, fine-line pieces priced by size, plus lettering and delicate floral; three artists you book by name with their own hours; and a session-deposit policy. Ships as "Faint", a light, considered studio — the calm opposite of the dark tattoo shop.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Faint',
+    tagline: 'Fine lines, made to last.',
+    colors: {
+      primary: '#bda884',
+      primaryForeground: '#100a03',
+      accent: '#887f73',
+      secondary: '#595451',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'faint',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Faint',
-        tagline: 'Fine lines, made to last.',
-        colors: {
-            primary: '#bda884',
-            primaryForeground: '#100a03',
-            accent: '#887f73',
-            secondary: '#595451',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#bda884',
+      colorAccent: '#887f73',
+      colorSecondary: '#595451',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'faint',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#bda884',
-            colorAccent: '#887f73',
-            colorSecondary: '#595451',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

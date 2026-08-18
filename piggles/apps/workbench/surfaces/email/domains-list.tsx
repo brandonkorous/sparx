@@ -11,7 +11,7 @@
 // sends from it by default).
 
 import { useMemo, useState } from 'react';
-import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, Heading, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { faEnvelopeCircleCheck, faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
@@ -26,6 +26,10 @@ import {
   useSendingDomains,
   type SendingDomain,
 } from './domains-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'email';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -89,21 +93,13 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneEmpty
+        <PaneLoadError
           icon={<Icon glyph={faEnvelopeCircleCheck} className="size-6" aria-hidden />}
           title="Could not load your sending addresses"
           description="This is a problem reaching the server. Your addresses are unaffected — nothing has been lost."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </Card>
     );
@@ -111,53 +107,72 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Sending address list controls">
-        {/* The width sits on a WRAPPER: SearchInput forwards className to its
+      <PaneToolbar
+        label="Sending address list controls"
+        search={
+          /* The width sits on a WRAPPER: SearchInput forwards className to its
             inner <input>, so a class aimed at the control never reaches the
-            element that lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+            element that lays out. */
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search sending addresses"
+              placeholder="Search addresses…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        status={
+          <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
+            {needle
+              ? `${String(matches.length)} of ${String(all.length)}`
+              : all.length === 1
+                ? '1 address'
+                : `${String(all.length)} addresses`}
+          </p>
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
-            aria-label="Search sending addresses"
-            placeholder="Search addresses…"
-            value={search}
-            onValueChange={setSearch}
+            className="ml-auto shrink-0 whitespace-nowrap"
+            title="Add a sending address — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add a sending address
+          </Button>
+        }
+        views={{
+          target: '/email/domains',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-        <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
-          {needle
-            ? `${String(matches.length)} of ${String(all.length)}`
-            : all.length === 1
-              ? '1 address'
-              : `${String(all.length)} addresses`}
-        </p>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add a sending address — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a sending address
-        </Button>
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isPending ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : matches.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={needle !== ''}
             noResults={{
               icon: <Icon glyph={faPaperPlane} className="size-6" aria-hidden />,

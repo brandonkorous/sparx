@@ -48,6 +48,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '../invoicing/money-input';
@@ -255,7 +256,18 @@ function PriceListLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }
 
   return (
-    <PriceListEditor ctx={ctx} id={id} list={listQuery.data} entries={entriesQuery.data ?? []} />
+    <PriceListEditor
+      ctx={ctx}
+      id={id}
+      list={listQuery.data}
+      entries={entriesQuery.data ?? []}
+      isFetching={listQuery.isFetching || entriesQuery.isFetching}
+      updatedAt={listQuery.data ? listQuery.dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void listQuery.refetch();
+        void entriesQuery.refetch();
+      }}
+    />
   );
 }
 
@@ -264,11 +276,18 @@ function PriceListEditor({
   id,
   list,
   entries,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   list?: PriceListRow;
   entries?: PriceListEntryRow[];
+  /** Only the saved-list state has queries behind it; "new" has none. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -545,37 +564,48 @@ function PriceListEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Price list actions">
-        {!isNew && list ? (
-          <Badge color={priceListState(list).tone} variant="soft" size="sm">
-            {priceListState(list).label}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create price list' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Price list actions"
+        status={
+          !isNew && list ? (
+            <Badge color={priceListState(list).tone} variant="soft" size="sm">
+              {priceListState(list).label}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create price list' : 'Save'}
+          </Button>
+        }
+        refresh={
+          /* Two queries feed this pane — the list itself and its per-product
+            prices — so one refresh reloads both. */
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a price list
-              </Heading>
-              <Text>
-                A price list gives certain customers their own prices — a wholesale sheet for the
-                businesses you supply, or a members’ rate. Set who it is for, then the price of each
-                product for them.
-              </Text>
-            </div>
+            <Text>
+              A price list gives certain customers their own prices — a wholesale sheet for the
+              businesses you supply, or a members’ rate. Set who it is for, then the price of each
+              product for them.
+            </Text>
           ) : null}
 
           {failure ? (

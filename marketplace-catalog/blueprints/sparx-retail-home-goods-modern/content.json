@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "how-we-design",
-        "status": "published",
-        "body": {
-            "title": "How we design an object",
-            "excerpt": "Every piece we make starts as a drawing and a problem to solve — never a shape looking for a use. Here’s how an object gets from a sketch to your shelf.",
-            "featuredImage": {
-                "$asset": "post-materials"
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-design",
+    "status": "published",
+    "body": {
+      "title": "How we design an object",
+      "excerpt": "Every piece we make starts as a drawing and a problem to solve — never a shape looking for a use. Here’s how an object gets from a sketch to your shelf.",
+      "featuredImage": {
+        "$asset": "post-materials"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most homeware is designed backwards: a shape is chosen because it looks good in a photograph, and a purpose is invented for it afterwards. We work the other way around. Before anything is drawn, we write down the problem — a corner that needs a reading light, a wall that needs storage without bulk, a table that needs one confident object — and the object is the answer to that sentence."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Most homeware is designed backwards: a shape is chosen because it looks good in a photograph, and a purpose is invented for it afterwards. We work the other way around. Before anything is drawn, we write down the problem — a corner that needs a reading light, a wall that needs storage without bulk, a table that needs one confident object — and the object is the answer to that sentence."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The problem comes first"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "That discipline is what keeps the catalogue small and sharp. A lamp has to throw usable light and hold its balance; a shelf has to carry real weight and still ship flat; a rug has to survive a hallway and stay graphic after a hundred washes. If a design can’t answer its problem better than what already exists, we don’t make it — no matter how good it looks on the bench."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Honest materials, on show"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "We choose materials for how they behave, not just how they look, and then we leave them visible. Powder-coated steel keeps its edge, solid oak takes years of use, wool felt softens sound, hand-blown glass reads as a single clean line. Nothing is clad in a veneer pretending to be something else. When the structure is honest, the object needs no decoration — the way it’s made is the way it looks."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "building-a-room-around-one-object",
-        "status": "published",
-        "body": {
-            "title": "Building a room around one object",
-            "excerpt": "A restrained room can read as flat — unless one confident object carries the color. Here’s how to choose it, and how to let everything else recede.",
-            "featuredImage": {
-                "$asset": "post-palette"
+            "content": [
+              {
+                "type": "text",
+                "text": "The problem comes first"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That discipline is what keeps the catalogue small and sharp. A lamp has to throw usable light and hold its balance; a shelf has to carry real weight and still ship flat; a rug has to survive a hallway and stay graphic after a hundred washes. If a design can’t answer its problem better than what already exists, we don’t make it — no matter how good it looks on the bench."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "There’s a version of minimalism that goes cold — all grey, all oak, all restraint, and nothing to rest your eye on. The fix isn’t more objects; it’s one better one. A single piece carrying a bold color or a strong silhouette gives a quiet room a centre of gravity, and lets everything around it stay calm on purpose rather than by accident."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Pick the hero, then hold the line"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Start by choosing the one object that gets to be loud — an ochre floor lamp, a graphic rug, a monolithic vase — and place it where the eye lands first. Then hold the line everywhere else: keep the walls and the big soft furniture in neutrals, keep the materials to two or three, and resist the urge to answer your bold piece with a second one. One hero per room; the rest is chorus."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Let the negative space work"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The empty parts of a room are doing as much work as the full ones. A bare stretch of wall, a clear shelf, an uncluttered floor — that space is what lets a single object read as deliberate instead of lost. Buy less, leave room around what you keep, and the pieces you chose with intent finally get to be seen. That’s the whole method, and it costs nothing to apply."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "layering-light-in-a-modern-room",
-        "status": "published",
-        "body": {
-            "title": "Layering light in a modern room",
-            "excerpt": "One bright ceiling light flattens everything under it. Good rooms are lit in layers — here’s the simple three-part rule we design our lighting around.",
-            "featuredImage": {
-                "$asset": "post-lighting"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The fastest way to make a considered room feel like an office is to light it from a single bright fixture in the middle of the ceiling. Flat, overhead, shadowless light erases the texture and depth you spent so long getting right. The rooms that feel good after dark are lit the way a stage is — in layers, from several heights, each doing a different job."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Ambient, task, accent"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Think in three layers. Ambient is the soft, general fill that keeps the room from going black — often bounced off a wall or a ceiling rather than pointed down. Task is the focused, adjustable light you actually read and cook and work by, like an arc lamp reaching over a chair. Accent is the low, warm pool that adds mood and picks out an object — a lamp on a shelf, a glow in a corner. Get one of each and you can light the room for anything."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Warm, low, and on a dimmer"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Two more rules and you’re done. Keep the color temperature warm — the light should feel like late afternoon, not a hospital — and keep as much of it as possible low, at or below eye level, where it flatters a room instead of interrogating it. And put everything you can on a dimmer, so a single room can be bright for a dinner and soft for a Sunday. Lighting isn’t one decision; it’s a set of them you get to make again every evening."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Honest materials, on show"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We choose materials for how they behave, not just how they look, and then we leave them visible. Powder-coated steel keeps its edge, solid oak takes years of use, wool felt softens sound, hand-blown glass reads as a single clean line. Nothing is clad in a veneer pretending to be something else. When the structure is honest, the object needs no decoration — the way it’s made is the way it looks."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "building-a-room-around-one-object",
+    "status": "published",
+    "body": {
+      "title": "Building a room around one object",
+      "excerpt": "A restrained room can read as flat — unless one confident object carries the color. Here’s how to choose it, and how to let everything else recede.",
+      "featuredImage": {
+        "$asset": "post-palette"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There’s a version of minimalism that goes cold — all grey, all oak, all restraint, and nothing to rest your eye on. The fix isn’t more objects; it’s one better one. A single piece carrying a bold color or a strong silhouette gives a quiet room a centre of gravity, and lets everything around it stay calm on purpose rather than by accident."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Pick the hero, then hold the line"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start by choosing the one object that gets to be loud — an ochre floor lamp, a graphic rug, a monolithic vase — and place it where the eye lands first. Then hold the line everywhere else: keep the walls and the big soft furniture in neutrals, keep the materials to two or three, and resist the urge to answer your bold piece with a second one. One hero per room; the rest is chorus."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Let the negative space work"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The empty parts of a room are doing as much work as the full ones. A bare stretch of wall, a clear shelf, an uncluttered floor — that space is what lets a single object read as deliberate instead of lost. Buy less, leave room around what you keep, and the pieces you chose with intent finally get to be seen. That’s the whole method, and it costs nothing to apply."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "layering-light-in-a-modern-room",
+    "status": "published",
+    "body": {
+      "title": "Layering light in a modern room",
+      "excerpt": "One bright ceiling light flattens everything under it. Good rooms are lit in layers — here’s the simple three-part rule we design our lighting around.",
+      "featuredImage": {
+        "$asset": "post-lighting"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The fastest way to make a considered room feel like an office is to light it from a single bright fixture in the middle of the ceiling. Flat, overhead, shadowless light erases the texture and depth you spent so long getting right. The rooms that feel good after dark are lit the way a stage is — in layers, from several heights, each doing a different job."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Ambient, task, accent"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Think in three layers. Ambient is the soft, general fill that keeps the room from going black — often bounced off a wall or a ceiling rather than pointed down. Task is the focused, adjustable light you actually read and cook and work by, like an arc lamp reaching over a chair. Accent is the low, warm pool that adds mood and picks out an object — a lamp on a shelf, a glow in a corner. Get one of each and you can light the room for anything."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Warm, low, and on a dimmer"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Two more rules and you’re done. Keep the color temperature warm — the light should feel like late afternoon, not a hospital — and keep as much of it as possible low, at or below eye level, where it flatters a room instead of interrogating it. And put everything you can on a dimmer, so a single room can be bright for a dinner and soft for a Sunday. Lighting isn’t one decision; it’s a set of them you get to make again every evening."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

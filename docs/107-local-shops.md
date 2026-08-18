@@ -75,13 +75,13 @@ These axes do **not** all belong to the marketplace. They split across two layer
 split right is what makes the feature reusable instead of a marketplace silo:
 
 1. **Commerce-level local-fulfillment primitives (reusable).** _Fulfillment method_, _pickup
-   locations_, and _delivery zones_ are **commerce capabilities** — they live in `@sparx/commerce` and
-   power **any** sales channel: a tenant's own storefront checkout (`apps/site`) **and** sparx.market.
+   locations_, and _delivery zones_ are **commerce capabilities** — they live in `@wizeworks/commerce` and
+   power **any** sales channel: a tenant's own storefront checkout (`wizeworks/apps/site`) **and** sparx.market.
    A small shop selling on its own sparx site gets local pickup/delivery for free out of this work.
 2. **Marketplace-level local discovery + directory + events.** Cross-tenant "shops near me", the
    merchant directory's geo, the "near me" SEO surfaces, and the markets/events model are **specific to
    sparx.market** (they require the global, cross-tenant projection that only the marketplace has). They
-   live in the market service + `apps/market`.
+   live in the market service + `sparx/apps/market`.
 
 This is the same shape as the rest of the platform: shared primitives in the package layer, the
 cross-tenant aggregation in the marketplace layer.
@@ -120,7 +120,7 @@ These are locked by the research + the existing architecture. The build plan ass
   first, distance on cards). A map view is an opt-in toggle so its cost only accrues when a buyer opens
   it. If/when shown: **MapLibre GL JS + a hosted tile SKU** (OSM attribution) — never the raw public
   OSM tile endpoint (its policy forbids commercial/bulk use with no SLA).
-- **D6 — Fulfillment primitives live in `@sparx/commerce`; discovery/directory/events in the market
+- **D6 — Fulfillment primitives live in `@wizeworks/commerce`; discovery/directory/events in the market
   layer.** (See [§2.1](#21-two-architectural-layers-the-key-structural-decision).)
 - **D7 — No new billing module.** "Local" is a **capability of sparx.market participation**, not a
   separately-priced module (the platform has modules, not tiers; participation is
@@ -377,13 +377,13 @@ The open questions were resolved with Brandon:
 4. **Verified-address neighborhood scoping → later.** A powerful hyperlocal-trust primitive but a
    privacy escalation; revisited after the core surface lands.
 5. **Buyer accounts → COMMITTED (a sparx.market-wide foundation).** _Clarification:_ tenant storefronts
-   **already** have full customer accounts — `packages/customer-auth` (Layer-2, tenant-scoped, Argon2id)
-   with a complete account area in `apps/site/app/account/*` (orders, addresses, profile, wishlist,
+   **already** have full customer accounts — `wizeworks/packages/customer-auth` (Layer-2, tenant-scoped, Argon2id)
+   with a complete account area in `wizeworks/apps/site/app/account/*` (orders, addresses, profile, wishlist,
    bookings, B2B), per [archive/27](archive/27-customer-accounts-site-auth.md). What is guest-first today
    is **sparx.market specifically** — and a marketplace buyer is a _different_ identity from a per-seller
    customer (they shop across many sellers). So sparx.market gets its own **marketplace-scoped buyer
    account** — the natural home for a saved default location + pickup preferences + cross-seller order
-   history (exactly what local discovery wants). **Approach: reuse `packages/customer-auth` scoped to the
+   history (exactly what local discovery wants). **Approach: reuse `wizeworks/packages/customer-auth` scoped to the
    marketplace** (not a third auth system), linking to the per-seller `Customer` records that checkout
    already ensures on purchase. This is broader than Local Shops (a sparx.market foundation) and may
    warrant its own short spec when built; tracked as a committed dependency, surfaced in

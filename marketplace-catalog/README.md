@@ -54,7 +54,7 @@ to serve 25 dead listings.)
 On demand, against docker Postgres or to re-assert the shelf without a restart:
 
 ```bash
-pnpm --filter @sparx/api-rest marketplace:self-register
+pnpm --filter @wizeworks/api-rest marketplace:self-register
 ```
 
 Idempotent. The artifact is immutable per version so it is written once; media is
@@ -67,7 +67,7 @@ wrong artifact.
 
 `themes/` and `components/` used to live here. They were deleted on 2026-08-02 and are
 not coming back: both are authored in code (`FIRST_PARTY_THEMES` /
-`FIRST_PARTY_COMPONENTS` in `@sparx/silica-catalog`), so a bundle was a _copy_ of code
+`FIRST_PARTY_COMPONENTS` in `@wizeworks/silica-catalog`), so a bundle was a _copy_ of code
 that had to be re-published per cluster to stay true — and because the old ingest
 upserted and never pruned, a bundle deleted from the repo left its row serving forever.
 Production carried 96 component listings of which 25 were exactly that debris.

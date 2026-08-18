@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSession } from '@sparx/auth';
+import { getSession } from '@wizeworks/auth';
 
 export const dynamic = 'force-dynamic';
 

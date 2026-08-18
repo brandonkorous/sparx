@@ -55,7 +55,7 @@ mode rendering, and the 5-step onboarding wizard.
   menus live in `16-cms-navigation.prisma` (CMS domain). Only inverse-relation arrays touch the
   tenant hub (`02-tenant.prisma`).
 - **One service, many transports.** REST and MCP are thin wrappers over the
-  `packages/sitebuilder` service layer (mirrors the CRM contract). No business logic in
+  `wizeworks/packages/sitebuilder` service layer (mirrors the CRM contract). No business logic in
   routes.
 - **Module gating.** Every admin and public route gates on `isModuleEnabled(tenantId,
 'site')`; a disabled tenant returns the standard 404.
@@ -64,7 +64,7 @@ mode rendering, and the 5-step onboarding wizard.
 
 ## 3. Data model
 
-`packages/db/prisma/schema/49-sitebuilder.prisma` — five tenant-scoped models, all
+`wizeworks/packages/db/prisma/schema/49-sitebuilder.prisma` — five tenant-scoped models, all
 `ENABLE + FORCE` RLS with a `<table>_tenant_isolation` policy on `current_tenant_id()`.
 
 - **`SiteConfig`** (PK = `tenantId`) — the editable source of truth. `themeKey`,
@@ -93,8 +93,8 @@ without RLS bypass; per-row writes still ride `withTenant`.
 
 ## 4. Theme engine & write-through
 
-`packages/site-themes` is the **compiler**, not a theme library. The themes sparx ships
-are code in `@sparx/silica-catalog` — `FIRST_PARTY_THEMES`, forty of them across two
+`wizeworks/packages/site-themes` is the **compiler**, not a theme library. The themes sparx ships
+are code in `@wizeworks/silica-catalog` — `FIRST_PARTY_THEMES`, forty of them across two
 shelves (twenty business-named, twenty silicaui presets).
 
 It held six presets of its own (apex, industrial, drift, market, fleet, drop), each with
@@ -111,7 +111,7 @@ so the two disagreed.
 
 A theme reaches the compiler as data, never by name:
 `themePresetV2FromTokens(light, dark)` turns a resolved silica token bag into a
-`ThemePresetV2`, and `themePresetFor` (in `@sparx/sitebuilder`) writes the stored
+`ThemePresetV2`, and `themePresetFor` (in `@wizeworks/sitebuilder`) writes the stored
 `{v, v1, v2}` blob a site carries in `SiteConfig.draftSettings.themePreset`.
 `compileThemeForTenant({ preset, brand, presentation })` layers brand identity and the
 presentation overlay over it. `compileTokens(overlay)` remains for the legacy v1 surface
@@ -131,7 +131,7 @@ concept.
 
 ## 5. Sections
 
-`packages/sitebuilder-schemas` is the single source of truth for section config — one Zod
+`wizeworks/packages/sitebuilder-schemas` is the single source of truth for section config — one Zod
 schema per type (`hero`, `featured-products`, `testimonials`, `collection-grid`,
 `rich-text`, `image-banner`, `email-signup`) plus a `SECTION_REGISTRY` consulted by the
 customizer (form generation), the service (validation), and the site (rendering).
@@ -165,7 +165,7 @@ edit ─▶ draftSettings / SiteSection rows (autosave, ETag-guarded)
 - **Customizer preview:** the dashboard hosts the draft site in an iframe. Token
   edits push to the iframe via `postMessage` CSS-var injection (no reload) for the shown
   mode; structural edits debounce-PATCH the draft then refresh; a theme swap reloads.
-- **Scheduled publish:** an in-process advisory-locked tick in `services/api-rest`
+- **Scheduled publish:** an in-process advisory-locked tick in `wizeworks/services/api-rest`
   (mirroring `scheduled-publish.ts`, distinct lock key) scans `find_due_site_publishes`
   and runs `publishNow` per due tenant. No Pub/Sub worker, no new Cloud Run service.
 

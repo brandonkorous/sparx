@@ -1,4 +1,4 @@
-# apps/market — the first-party sparx.market storefront (docs/106 §4.7). A single-
+# sparx/apps/market — the first-party sparx.market storefront (docs/106 §4.7). A single-
 # host public Next.js app (sparx.market) that reads the cross-tenant market_listings
 # projection via api-rest's /v1/public/market/* and checks out through sparx's OWN
 # platform Stripe account (merchant-of-record). Same shape as apps/site.yaml.

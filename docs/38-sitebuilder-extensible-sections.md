@@ -14,7 +14,7 @@ Adding one means an engineer touches five places and ships a deploy:
 1. **Zod schema** — the config contract ([sections/hero.ts](../packages/sitebuilder-schemas/src/sections/hero.ts) `HeroConfig`)
 2. **`SectionField[]`** — the editor form spec (`heroFields`)
 3. **Register** in `SECTION_REGISTRY` ([section-registry.ts](../packages/sitebuilder-schemas/src/section-registry.ts))
-4. **React renderer** in [apps/site/components/sections/](../apps/site/components/sections)
+4. **React renderer** in [wizeworks/apps/site/components/sections/](../apps/site/components/sections)
 5. **`switch` case** in [section-renderer.tsx](../apps/site/components/section-renderer.tsx)
 
 This document specifies how we let **tenants and agencies add their own components without a deploy** — and
@@ -183,7 +183,7 @@ scope), and theme tokens:
 - **Output:** server-rendered to sanitized HTML; any embed/iframe primitive is **host-allowlist-validated**,
   reusing the allowlist doc 37 §9 already requires for the Embed section.
 
-This keeps custom sections on the site's own CSS surface (it does not consume `@sparx/ui`) and inside
+This keeps custom sections on the site's own CSS surface (it does not consume `@wizeworks/ui`) and inside
 the flat-stack model — a custom section is one block, not a nesting mechanism.
 
 The template language is specified in full — node set, value-expression grammar, the `st-tpl-*` CSS contract,
@@ -234,7 +234,7 @@ preserved as the final fallback.
    `st-tpl-*` class family. See [handoff spec](handoffs/sitebuilder-custom-section-template-spec.md).
 2. **Definition versioning & migration.** When a tenant edits a definition that live + published pages
    reference, what migrates and what stays pinned? (Ties to §4.5.)
-3. **Where the interpreter lives.** A new runtime package vs. extending `@sparx/sitebuilder-schemas` (which is
+3. **Where the interpreter lives.** A new runtime package vs. extending `@wizeworks/sitebuilder-schemas` (which is
    deliberately zod-only and React-free). Likely a separate `@sparx/section-runtime` so backends never pull
    React ([[feedback_dockerfile_package_wiring]]).
 4. **Cross-tenant sharing / export** — the bridge from Phase B/C (tenant-private) to Phase D (marketplace

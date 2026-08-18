@@ -22,7 +22,7 @@
 // per-person layer is Favourites and Recent on the /v1/me spine, plus the access
 // gate — a teammate restricted to Invoices still sees less than the owner does.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '@/lib/api/client';
 
 export const RAIL_KEY = ['tenant', 'rail'];

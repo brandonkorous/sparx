@@ -2,7 +2,7 @@
 // Per-package configs extend this via `import baseConfig from '../../eslint.config.js'`.
 //
 // The "no Tailwind classes in feature code" rule (per docs/23 §15) lives in the
-// apps/* configs, NOT here, so that packages/ui can freely write Tailwind.
+// apps/* configs, NOT here, so that sparx/packages/ui can freely write Tailwind.
 
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -34,6 +34,11 @@ export default tseslint.config(
       // resolve them and every typed rule errors. wrangler typechecks and
       // bundles these on deploy.
       'cloudflare/**',
+      // Piggles' product-screenshot capture tool. Node CLI scripts outside the
+      // Next app's tsconfig, and they resolve Playwright from a GLOBAL install
+      // on purpose (see public/product/README.md) — so it types as `any` and
+      // every typed rule errors on it. Prettier still formats them.
+      'piggles/apps/web/scripts/**',
     ],
   },
   js.configs.recommended,
@@ -77,11 +82,11 @@ export default tseslint.config(
     },
     settings: {
       react: { version: 'detect' },
-      // Map @sparx/ui field components to the DOM elements they render, so
+      // Map @wizeworks/ui field components to the DOM elements they render, so
       // jsx-a11y resolves a `<Label>`/`<label>` wrapping a `<Checkbox>` /
       // `<RadioGroupItem>` / `<Input>` / … as an associated control (the native
-      // control is nested at runtime). apps/site does the same for its Sparx*
-      // components; this covers the shared @sparx/ui primitives.
+      // control is nested at runtime). wizeworks/apps/site does the same for its Sparx*
+      // components; this covers the shared @wizeworks/ui primitives.
       'jsx-a11y': {
         components: {
           Checkbox: 'input',

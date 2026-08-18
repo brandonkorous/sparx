@@ -5,16 +5,16 @@ type: rule
 status: active
 applies-to: [workbench]
 sources:
-  - apps/workbench/components/surface-mount.tsx
-  - apps/workbench/components/chrome-boundary.tsx
-  - apps/workbench/components/root-boundary.tsx
-  - apps/workbench/components/write-failure-reporter.tsx
-  - apps/workbench/components/crash-listeners.tsx
-  - apps/workbench/lib/api/write-failure.ts
-  - apps/workbench/lib/api/write-meta.ts
-  - apps/workbench/app/error.tsx
-  - apps/workbench/app/global-error.tsx
-  - packages/app-kit/src/chunk-error.ts
+  - sparx/apps/workbench/components/surface-mount.tsx
+  - sparx/apps/workbench/components/chrome-boundary.tsx
+  - sparx/apps/workbench/components/root-boundary.tsx
+  - sparx/apps/workbench/components/write-failure-reporter.tsx
+  - sparx/apps/workbench/components/crash-listeners.tsx
+  - sparx/apps/workbench/lib/api/write-failure.ts
+  - sparx/apps/workbench/lib/api/write-meta.ts
+  - sparx/apps/workbench/app/error.tsx
+  - sparx/apps/workbench/app/global-error.tsx
+  - wizeworks/packages/app-kit/src/chunk-error.ts
 ---
 
 Five layers, and each exists because the one above it structurally cannot see what it catches.

@@ -31,7 +31,6 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -41,6 +40,7 @@ import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { ReturnDispositionPanel } from './return-disposition-panel';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -100,9 +100,8 @@ function ReturnIdentity({ detail }: { detail: ReturnDetail }) {
   ];
   return (
     <div className="flex flex-col gap-1">
-      <Heading level={1} className="text-2xl font-semibold">
-        Return for order {detail.orderNumber ?? '—'}
-      </Heading>
+      {/* The order this came back from IS this pane's identity, and the tab
+          carries it. The buyer leads the body instead. */}
       <Text className="text-lg">{detail.customerName ?? 'Unknown customer'}</Text>
       <Text className="text-sm">{facts.join(' · ')}</Text>
     </div>
@@ -111,7 +110,7 @@ function ReturnIdentity({ detail }: { detail: ReturnDetail }) {
 
 export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: detail, isPending, isError, refetch } = useReturn(id);
+  const { data: detail, isPending, isError, isFetching, dataUpdatedAt, refetch } = useReturn(id);
 
   const orderNumber = detail?.orderNumber ?? null;
   useEffect(() => {
@@ -141,10 +140,29 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // Split so the body always has a loaded return: the order lookup below keys on
   // a real orderId, never the empty string the pane holds while the return loads
   // (useOrder has no enabled guard of its own).
-  return <ReturnDetailBody detail={detail} />;
+  return (
+    <ReturnDetailBody
+      detail={detail}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
-function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
+function ReturnDetailBody({
+  detail,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  detail: ReturnDetail;
+  isFetching: boolean;
+  updatedAt: number;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -215,13 +233,21 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Return actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        <div className="flex-1" />
-        <Text className="text-sm">Order {detail.orderNumber ?? '—'}</Text>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Return actions"
+        status={
+          <>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            <div className="flex-1" />
+            <Text className="text-sm">Order {detail.orderNumber ?? '—'}</Text>
+          </>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className={COLUMN}>

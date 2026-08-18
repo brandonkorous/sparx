@@ -6,7 +6,7 @@
 
 ---
 
-> **Reconciled 2026-07-22 (docs-vs-built audit):** This portal is **BUILT** — the sparx operations console ships in `apps/admin` at `app/(console)/sparx/*` (tenants, users, billing, domains, sites, metrics, partners, feedback, support), backed by audited api-rest `/internal/operator/*` endpoints and a separate WizeWorks Better Auth staff instance. It is **no longer a planned/empty placeholder.** One deliberate design change from this spec: the interactive **"Impersonate tenant"** tool (§3, §4) was **replaced by a READ-ONLY account view** (build-plan decision **D7** — no `tenant:impersonate` capability, no impersonation token, no change to the tenant app). Operators understand an account through representation parity (the tenant's own formatters/labels/statuses, rendered read-only), never by assuming a tenant session. Capability model + full decisions live in [docs/apps/admin/build-plan.md](apps/admin/build-plan.md).
+> **Reconciled 2026-07-22 (docs-vs-built audit):** This portal is **BUILT** — the sparx operations console ships in `wizeworks/apps/admin` at `app/(console)/sparx/*` (tenants, users, billing, domains, sites, metrics, partners, feedback, support), backed by audited api-rest `/internal/operator/*` endpoints and a separate WizeWorks Better Auth staff instance. It is **no longer a planned/empty placeholder.** One deliberate design change from this spec: the interactive **"Impersonate tenant"** tool (§3, §4) was **replaced by a READ-ONLY account view** (build-plan decision **D7** — no `tenant:impersonate` capability, no impersonation token, no change to the tenant app). Operators understand an account through representation parity (the tenant's own formatters/labels/statuses, rendered read-only), never by assuming a tenant session. Capability model + full decisions live in [docs/apps/admin/build-plan.md](wizeworks/apps/admin/build-plan.md).
 
 ## 1. Overview
 
@@ -114,7 +114,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 > **deliberately not built.** Decision **D7** removed it as the highest-blast-radius
 > path in the design: there is no `impersonation_grants` table, no `tenant:impersonate`
 > capability, and no change to the tenant app. Instead, operators get a **read-only
-> account view** — every tenant surface in `apps/admin` reuses the tenant's own
+> account view** — every tenant surface in `wizeworks/apps/admin` reuses the tenant's own
 > formatters/labels/status derivations (or api-rest returns tenant-shaped payloads) so
 > the operator reads the data exactly as the tenant sees it, without ever holding a
 > tenant session. Cross-tenant reads **and** writes route through audited api-rest
@@ -140,7 +140,7 @@ Impersonation is read-only by default. Super admins can enable write access for 
 
 ## 5. Tech Stack
 
-- **Framework:** Next.js 15 (separate app in monorepo: `apps/admin`)
+- **Framework:** Next.js 15 (separate app in monorepo: `wizeworks/apps/admin`)
 - **Auth:** Better Auth, WizeWorks organization, staff only
 - **Data:** Direct PostgreSQL queries (read replicas for analytics)
 - **Deploy:** WizeWorks GKE cluster (not SparxWorks) — separate infra from product
@@ -151,10 +151,10 @@ Impersonation is read-only by default. Super admins can enable write access for 
 ## 6. Implementation Checklist
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** The sparx console is built in
-> `apps/admin/app/(console)/sparx/*`. Impersonation was replaced by the read-only
+> `wizeworks/apps/admin/app/(console)/sparx/*`. Impersonation was replaced by the read-only
 > account view (D7). Cross-product (kanNINJA/HelpNinja) sections remain future scope.
 
-- [x] apps/admin created in monorepo
+- [x] wizeworks/apps/admin created in monorepo
 - [x] Better Auth WizeWorks staff instance setup
 - [x] Staff roles as **capability bundles** (not hardcoded role checks) — see build-plan D5
 - [x] Tenant list + search

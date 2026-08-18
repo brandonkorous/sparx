@@ -25,20 +25,13 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Select,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import {
-  faCreditCard,
-  faPause,
-  faPlay,
-  faRepeat,
-  faSquare,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faCreditCard, faPause, faPlay, faSquare } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -207,9 +200,6 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
     <div className={COLUMN}>
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Heading level={1} className="text-2xl font-semibold">
-            {customer}
-          </Heading>
           <Badge color={state.tone} variant="soft">
             {state.label}
           </Badge>
@@ -500,20 +490,18 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Repeat order actions">
-        <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {sub?.customerName ?? 'Repeat order'}
-        </Heading>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={sub ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Repeat order actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={sub ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -529,7 +517,9 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </Card>
           </div>
         ) : isPending || !sub ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className="py-1">
             <DetailBody sub={sub} />

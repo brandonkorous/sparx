@@ -40,16 +40,16 @@ import { useObjectTypes } from '../../surfaces/crm/object-types-data';
  * by group.
  */
 export function useReachableModules(): Set<string> | null {
-    const { data: moduleStates } = useModuleStates();
+  const { data: moduleStates } = useModuleStates();
 
-    return useMemo(() => {
-        if (!moduleStates) return null;
-        return new Set(
-            moduleStates
-                .filter((state) => state.enabled && state.reachable !== false)
-                .map((state) => state.slug)
-        );
-    }, [moduleStates]);
+  return useMemo(() => {
+    if (!moduleStates) return null;
+    return new Set(
+      moduleStates
+        .filter((state) => state.enabled && state.reachable !== false)
+        .map((state) => state.slug)
+    );
+  }, [moduleStates]);
 }
 
 /**
@@ -62,14 +62,14 @@ export function useReachableModules(): Set<string> | null {
  * disabled BY, so it shows.
  */
 export function moduleIsVisible(
-    module: string,
-    reachable: Set<string> | null,
-    known: Set<string>
+  module: string,
+  reachable: Set<string> | null,
+  known: Set<string>
 ): boolean {
-    if (module === 'platform') return true;
-    if (!reachable) return true;
-    if (!known.has(module)) return true;
-    return reachable.has(module);
+  if (module === 'platform') return true;
+  if (!reachable) return true;
+  if (!known.has(module)) return true;
+  return reachable.has(module);
 }
 
 /**
@@ -90,28 +90,28 @@ export function moduleIsVisible(
  * once; a second gate written twice would reintroduce it.
  */
 export function surfaceIsVisible(
-    surface: Pick<SurfaceDefinition, 'key' | 'module' | 'requiresModules'>,
-    reachable: Set<string> | null,
-    known: Set<string>
+  surface: Pick<SurfaceDefinition, 'key' | 'module' | 'requiresModules'>,
+  reachable: Set<string> | null,
+  known: Set<string>
 ): boolean {
-    // A surface the PRODUCT does not have loses before any module question is
-    // asked — sparx.market is not a commerce capability a brand might have turned
-    // off, it is a marketplace that exists under one brand and not the other. See
-    // ProductAdapter.hiddenSurfaces.
-    if (productHidesSurface(surface.key)) return false;
-    const required = surface.requiresModules;
-    if (!required) return moduleIsVisible(surface.module, reachable, known);
-    // Declared-but-empty is "always show", and it has to short-circuit before the
-    // `.some()` below, which is false for an empty list.
-    if (required.length === 0) return true;
-    if (!reachable) return true;
-    return required.some((slug) => moduleIsVisible(slug, reachable, known));
+  // A surface the PRODUCT does not have loses before any module question is
+  // asked — sparx.market is not a commerce capability a brand might have turned
+  // off, it is a marketplace that exists under one brand and not the other. See
+  // ProductAdapter.hiddenSurfaces.
+  if (productHidesSurface(surface.key)) return false;
+  const required = surface.requiresModules;
+  if (!required) return moduleIsVisible(surface.module, reachable, known);
+  // Declared-but-empty is "always show", and it has to short-circuit before the
+  // `.some()` below, which is false for an empty list.
+  if (required.length === 0) return true;
+  if (!reachable) return true;
+  return required.some((slug) => moduleIsVisible(slug, reachable, known));
 }
 
 /** Slugs the server told us about at all — distinct from the ones it approved. */
 export function useKnownModules(): Set<string> {
-    const { data: moduleStates } = useModuleStates();
-    return useMemo(() => new Set(moduleStates?.map((state) => state.slug)), [moduleStates]);
+  const { data: moduleStates } = useModuleStates();
+  return useMemo(() => new Set(moduleStates?.map((state) => state.slug)), [moduleStates]);
 }
 
 /**
@@ -132,69 +132,69 @@ export function useKnownModules(): Set<string> {
  * the same records would be two doors into one room, one of them worse.
  */
 function useTenantRecordTypeRows(): SurfaceDefinition[] {
-    const { data } = useObjectTypes({ kind: 'custom' });
+  const { data } = useObjectTypes({ kind: 'custom' });
 
-    return useMemo(() => {
-        const base = getSurface('crm.records.list');
-        if (!base) return [];
-        return (data?.items ?? [])
-            .filter((type) => type.archivedAt === null)
-            .map((type) => ({
-                ...base,
-                title: type.labelPlural || type.label,
-                icon: faBoxes,
-                section: 'Your records',
-                // After every built-in section, since these are additions to a CRM that
-                // already works rather than the first thing anyone looks for.
-                order: 900,
-                defaultParams: { objectKey: type.key },
-                createSurface: undefined,
-                keywords: [type.label, type.labelPlural, type.key],
-            }));
-    }, [data]);
+  return useMemo(() => {
+    const base = getSurface('crm.records.list');
+    if (!base) return [];
+    return (data?.items ?? [])
+      .filter((type) => type.archivedAt === null)
+      .map((type) => ({
+        ...base,
+        title: type.labelPlural || type.label,
+        icon: faBoxes,
+        section: 'Your records',
+        // After every built-in section, since these are additions to a CRM that
+        // already works rather than the first thing anyone looks for.
+        order: 900,
+        defaultParams: { objectKey: type.key },
+        createSurface: undefined,
+        keywords: [type.label, type.labelPlural, type.key],
+      }));
+  }, [data]);
 }
 
 export function useVisibleNav(): NavModule[] {
-    const nav = useMemo(() => buildNav(), []);
-    const reachable = useReachableModules();
-    const known = useKnownModules();
-    const recordTypeRows = useTenantRecordTypeRows();
+  const nav = useMemo(() => buildNav(), []);
+  const reachable = useReachableModules();
+  const known = useKnownModules();
+  const recordTypeRows = useTenantRecordTypeRows();
 
-    return useMemo(
-        () =>
-            nav
-                .map((entry) => {
-                    if (entry.module !== 'crm' || recordTypeRows.length === 0) return entry;
-                    return {
-                        ...entry,
-                        sections: [...entry.sections, { title: 'Your records', surfaces: recordTypeRows }],
-                        count: entry.count + recordTypeRows.length,
-                    };
-                })
-                // Gate per SURFACE, not per module. A module group whose surfaces answer
-                // the entitlement question differently (Finance) keeps the ones this
-                // account can use and drops the rest, instead of the group being all-or-
-                // nothing. `count` is recomputed from what survived — a badge counting
-                // rows nobody can see is worse than no badge.
-                .map((entry) => {
-                    const sections = entry.sections
-                        .map((section) => ({
-                            ...section,
-                            surfaces: section.surfaces.filter((surface) =>
-                                surfaceIsVisible(surface, reachable, known)
-                            ),
-                        }))
-                        .filter((section) => section.surfaces.length > 0);
-                    return {
-                        ...entry,
-                        sections,
-                        count: sections.reduce((total, section) => total + section.surfaces.length, 0),
-                    };
-                })
-                // A module with nothing left to show is not a module this account has.
-                // This subsumes the old whole-module filter: every surface in a gated
-                // module fails its own gate, so the group empties and disappears.
-                .filter((entry) => entry.count > 0),
-        [nav, reachable, known, recordTypeRows]
-    );
+  return useMemo(
+    () =>
+      nav
+        .map((entry) => {
+          if (entry.module !== 'crm' || recordTypeRows.length === 0) return entry;
+          return {
+            ...entry,
+            sections: [...entry.sections, { title: 'Your records', surfaces: recordTypeRows }],
+            count: entry.count + recordTypeRows.length,
+          };
+        })
+        // Gate per SURFACE, not per module. A module group whose surfaces answer
+        // the entitlement question differently (Finance) keeps the ones this
+        // account can use and drops the rest, instead of the group being all-or-
+        // nothing. `count` is recomputed from what survived — a badge counting
+        // rows nobody can see is worse than no badge.
+        .map((entry) => {
+          const sections = entry.sections
+            .map((section) => ({
+              ...section,
+              surfaces: section.surfaces.filter((surface) =>
+                surfaceIsVisible(surface, reachable, known)
+              ),
+            }))
+            .filter((section) => section.surfaces.length > 0);
+          return {
+            ...entry,
+            sections,
+            count: sections.reduce((total, section) => total + section.surfaces.length, 0),
+          };
+        })
+        // A module with nothing left to show is not a module this account has.
+        // This subsumes the old whole-module filter: every surface in a gated
+        // module fails its own gate, so the group empties and disappears.
+        .filter((entry) => entry.count > 0),
+    [nav, reachable, known, recordTypeRows]
+  );
 }

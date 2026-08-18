@@ -17,8 +17,8 @@ The "Templates" feature (internally **Blueprints**, docs/54) installs a whole th
 
 Files in play:
 
-- `packages/blueprints/src/blueprints/{tattoo-studio,beauty-salon-spa,antique-shop,auto-parts}.ts` — the 4 manifests.
-- `packages/blueprints/src/registry.ts` — registers all 5 templates.
+- `wizeworks/packages/blueprints/src/blueprints/{tattoo-studio,beauty-salon-spa,antique-shop,auto-parts}.ts` — the 4 manifests.
+- `wizeworks/packages/blueprints/src/registry.ts` — registers all 5 templates.
 - `mockups/templates/*.html` — the design mockups these were built from (open them to see the intended look; they use clean SVG wordmark logos).
 - `docs/help/building-a-template.md` — the authoring guide (manifest anatomy, node model, gotchas).
 - `apps/dashboard/public/blueprint-previews/` — where preview PNGs live; `retail-store-blog.png` exists; `tattoo-studio.png` here is **stale (old garbled logo) — overwrite it**.
@@ -29,7 +29,7 @@ The manifests currently have **no `preview` field** (the 4 new ones) — that's 
 
 1. **The installer is NOT idempotent.** Product handles are unique per tenant. If a template was _ever_ installed in a tenant, reinstalling it (even after deleting its site — deleting a site keeps its products/content) fails with **"Couldn't install — an internal error occurred"** (duplicate handle at the commerce step).
    → **Install each template on a FRESH site in a tenant that has never had that template.** If the live env is a clean tenant, you're fine. If you must reuse, pick a tenant/site where that specific template was never installed.
-   → _(Recommended follow‑up, optional: make `installBlueprint` in `services/api-rest/src/lib/blueprint-installer.ts` upsert‑by‑handle so reinstalls don't collide. Not required for this task.)_
+   → _(Recommended follow‑up, optional: make `installBlueprint` in `wizeworks/services/api-rest/src/lib/blueprint-installer.ts` upsert‑by‑handle so reinstalls don't collide. Not required for this task.)_
 2. **Each template needs its OWN fresh site** so its product/content grids are clean. Products & content are **property‑scoped** (a fresh property shows only its own records), so separate sites = clean screenshots. Installing two templates on the same property mixes their grids.
 3. **Install lands on the ACTIVE property** (the site selected in the dashboard's top breadcrumb site‑switcher). Create the site, confirm it's active ("Editing now"), then install.
 4. **Logo:** already fixed in code — each template ships a brand‑colored **monogram** (a `ui-avatars.com` SVG, env‑agnostic) **plus** the business name in the header (a Logo + Heading lockup). Verify the header shows "mark + name", not a garbled image. _(Background: the originals hot‑linked a `picsum.photos` random photo into the logo slot → noise.)_
@@ -47,15 +47,15 @@ The manifests currently have **no `preview` field** (the 4 new ones) — that's 
 
 ## Also do
 
-- **Flagship logo:** `packages/blueprints/src/blueprints/retail-store-blog.ts` still uses a `picsum` logo (`pic('driftwood-logo', …)`) and a plain `node('Logo', { bind: 'site.identity' })` header — apply the **same monogram + header name‑lockup fix** the 4 new ones use (see any of them for the pattern: ui‑avatars logo asset URL in brand colors + a `Stack` of Logo + Heading in the header). Recapture/refresh its preview if you reinstall it.
+- **Flagship logo:** `wizeworks/packages/blueprints/src/blueprints/retail-store-blog.ts` still uses a `picsum` logo (`pic('driftwood-logo', …)`) and a plain `node('Logo', { bind: 'site.identity' })` header — apply the **same monogram + header name‑lockup fix** the 4 new ones use (see any of them for the pattern: ui‑avatars logo asset URL in brand colors + a `Stack` of Logo + Heading in the header). Recapture/refresh its preview if you reinstall it.
 
 ## Gate (must be green before handing back)
 
 ```
-pnpm --filter @sparx/blueprints test        # parseBlueprint runs via registry; expect 15 passed
-pnpm --filter @sparx/blueprints typecheck
-pnpm --filter @sparx/blueprints lint
-pnpm exec prettier --check "packages/blueprints/src/**/*.ts" "apps/dashboard/public/blueprint-previews/*"  # png not formatted; check the .ts
+pnpm --filter @wizeworks/blueprints test        # parseBlueprint runs via registry; expect 15 passed
+pnpm --filter @wizeworks/blueprints typecheck
+pnpm --filter @wizeworks/blueprints lint
+pnpm exec prettier --check "wizeworks/packages/blueprints/src/**/*.ts" "apps/dashboard/public/blueprint-previews/*"  # png not formatted; check the .ts
 ```
 
 After adding `preview` to the 4 manifests, run `pnpm exec prettier --write` on the changed `.ts` files.

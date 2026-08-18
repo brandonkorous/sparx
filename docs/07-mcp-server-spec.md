@@ -7,12 +7,12 @@
 ---
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the tenant MCP service
-> (`services/api-mcp`) ships **~150 tools across all modules** today — the catalog in
+> (`wizeworks/services/api-mcp`) ships **~150 tools across all modules** today — the catalog in
 > §3 below is an early, partial sample, not the current inventory. The operator UI
-> moved off the deleted `apps/dashboard` into `apps/workbench`: the AI tool-policy +
+> moved off the deleted `apps/dashboard` into `sparx/apps/workbench`: the AI tool-policy +
 > prompt-library surfaces (§9/§10, "/ai/tools", "/ai/prompts") live under
-> `apps/workbench/surfaces/ai`, and connection management ("Settings → AI
-> Integrations", §5) under `apps/workbench/surfaces/ai-connections`. Still open:
+> `sparx/apps/workbench/surfaces/ai`, and connection management ("Settings → AI
+> Integrations", §5) under `sparx/apps/workbench/surfaces/ai-connections`. Still open:
 > Microsoft-Copilot AAD-token auth (§2) is spec, not built — Claude/ChatGPT OAuth 2.1
 >
 > - API-key are the live paths.
@@ -152,11 +152,11 @@ Best performing product: Bosch Injector Set at $12,400."
 
 ## 5. Authentication
 
-The transport accepts **three** bearer credentials, discriminated by token shape at `services/api-mcp/src/auth.ts`:
+The transport accepts **three** bearer credentials, discriminated by token shape at `wizeworks/services/api-mcp/src/auth.ts`:
 
 1. **Internal JWT** (HS256, three dot-separated segments) — minted by the dashboard for first-party staff calls.
-2. **API key** (`sk_live_<8>_<32>`) — issued in AI Integrations, verified via `@sparx/auth/api-keys`.
-3. **OAuth 2.1 access token** (opaque 32-char) — issued by the MCP OAuth flow below and verified by `verifyMcpOAuthToken` in `@sparx/auth/mcp-oauth`.
+2. **API key** (`sk_live_<8>_<32>`) — issued in AI Integrations, verified via `@wizeworks/auth/api-keys`.
+3. **OAuth 2.1 access token** (opaque 32-char) — issued by the MCP OAuth flow below and verified by `verifyMcpOAuthToken` in `@wizeworks/auth/mcp-oauth`.
 
 In all three the tenant must have the `ai` module active; per-tool scopes then decide which tools run.
 
@@ -168,7 +168,7 @@ Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Aut
 2. Client fetches that **Protected Resource Metadata** (RFC 9728, served by api-mcp) → `authorization_servers: ["https://app.sparx.works"]` + the MCP scope vocabulary.
 3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the dashboard) → authorize / token / register endpoints, `code_challenge_methods_supported: ["S256"]`.
 4. Client **self-registers** at `/api/auth/mcp/register` (rate-limited), then opens `/api/auth/mcp/authorize`.
-5. A `before` hook (`packages/auth/src/server.ts` `mcpAuthorizeGuard`) refuses to mint a code unless the request carries a **signed, session-bound, short-lived consent grant** — so every authorize is funnelled through the first-party **consent + scope-picker** page at `/oauth/consent`. The user signs in (if needed), sees who is connecting + where tokens go, and **picks exactly which scopes to grant** (capped by their role). Approval mints the grant and hands back to the plugin, which issues the code.
+5. A `before` hook (`wizeworks/packages/auth/src/server.ts` `mcpAuthorizeGuard`) refuses to mint a code unless the request carries a **signed, session-bound, short-lived consent grant** — so every authorize is funnelled through the first-party **consent + scope-picker** page at `/oauth/consent`. The user signs in (if needed), sees who is connecting + where tokens go, and **picks exactly which scopes to grant** (capped by their role). Approval mints the grant and hands back to the plugin, which issues the code.
 6. Client exchanges the code at `/api/auth/mcp/token` (PKCE verified) for an opaque access token (1h) + refresh token (30d, on `offline_access`).
 
 **Hardening notes (deliberate, since DCR is public):** PKCE is mandatory and **S256-only** (both off by default in the plugin build); redirect URIs are **exact-matched** against the DCR registration; the requested `resource` must be our MCP server (RFC 8707); the plugin's `getMcpSession` does **not** check expiry, so `verifyMcpOAuthToken` enforces `access_token_expires_at` + client-not-disabled in one atomic query as `sparx_owner`. The `oauth_*` tables are `ENABLE`-but-**NO-FORCE** RLS with **no policy** (owner-only; `sparx_app` sees zero rows). Tenants view + revoke connections in **Settings → AI Integrations** ("Connected assistants").
@@ -245,7 +245,7 @@ Rate limits are an **abuse cap, not a billing tier** — eligibility is the `ai`
 | Requests/day              | 5,000 |
 | Write `tools/call`/minute | 10    |
 
-The write sub-cap is independent of the overall per-minute cap, to blunt accidental bulk actions. The numbers are a single tunable constant (`MCP_QUOTA` in `services/api-mcp/src/rate-limit.ts`) — there are no per-tenant tiers to thread through.
+The write sub-cap is independent of the overall per-minute cap, to blunt accidental bulk actions. The numbers are a single tunable constant (`MCP_QUOTA` in `wizeworks/services/api-mcp/src/rate-limit.ts`) — there are no per-tenant tiers to thread through.
 
 ---
 
@@ -270,7 +270,7 @@ Tenants can view their full AI interaction history in the dashboard.
 The tool catalog (§3) is code-defined and identical for every tenant; **scopes + the `ai` module gate** decide what a given API key can call. On top of that, a tenant may **disable individual tools** for ALL of its connections — a per-tenant allow/deny overlay (the kill switch a cautious tenant wants for, say, `update_order_status` or `purchase_domain`, without revoking the whole key).
 
 - **Storage:** `ai_tool_policies` (tenant-scoped, FORCE RLS) — one row per overridden tool: `{ tool_name, enabled }`. **Absence of a row = exposed** (the default-on behavior, so a tenant that never touches this surface sees no change). A row with `enabled = false` disables the tool.
-- **Enforcement (`services/api-mcp`):** the per-request server factory loads the tenant's disabled set once (`loadDisabledTools`, under the tenant GUC) and **does not register** disabled tools. They are therefore absent from `tools/list`, and the MCP SDK rejects any direct `tools/call` for an unregistered name — registration-skip IS the enforcement. The policy load fails **open** (all tools exposed) on a read error, so a transient DB blip never silently strips the assistant.
+- **Enforcement (`wizeworks/services/api-mcp`):** the per-request server factory loads the tenant's disabled set once (`loadDisabledTools`, under the tenant GUC) and **does not register** disabled tools. They are therefore absent from `tools/list`, and the MCP SDK rejects any direct `tools/call` for an unregistered name — registration-skip IS the enforcement. The policy load fails **open** (all tools exposed) on a read error, so a transient DB blip never silently strips the assistant.
 - **Management:** `GET /v1/ai/tool-policies` returns the full catalog with each tool's effective exposure; `PUT /v1/ai/tool-policies/:tool` (`{enabled}`) flips one; `DELETE /v1/ai/tool-policies/:tool` resets one to default; `POST /v1/ai/tool-policies/reset` clears every override. Reads are viewer; writes are **admin** (a security control, same bar as issuing an API key). Surfaced in the dashboard at **/ai/tools**.
 
 ---
@@ -281,5 +281,5 @@ A tenant-scoped library of reusable, named AI prompts — a support-assistant **
 
 - **Storage:** `ai_prompt_templates` (tenant-scoped, FORCE RLS): `{ key, name, description, category, body, variables, model, enabled, metadata }`. `key` is a per-tenant unique slug (the idempotency handle); `body` may carry `{{variable}}` placeholders the consuming flow fills; `category ∈ persona | support | email | product | seo | social | crm | general`; `model` is an optional per-prompt model override.
 - **Seeded via the real provisioning paths:** the **`ai` module preset** (`ai-prompt-library-core`) installs the platform default library (ensure-by-key, idempotent — never overwrites a tenant's edited copy), and every **industry starter** references it, so picking a vertical with AI active seeds the prompts too. Sample data adds demo prompts (cleared by "Clear sample data").
-- **Consumed (not a CRUD island):** the live-chat first-responder (`services/api-rest/src/lib/chat/ai-handler.ts`) reads the tenant's active enabled **`persona`** template to ground its system prompt and pick its model — falling back to the platform default voice. The functional tool contract (the `respond` tool + confidence + escalation) is always appended and is never overridable by a persona.
+- **Consumed (not a CRUD island):** the live-chat first-responder (`wizeworks/services/api-rest/src/lib/chat/ai-handler.ts`) reads the tenant's active enabled **`persona`** template to ground its system prompt and pick its model — falling back to the platform default voice. The functional tool contract (the `respond` tool + confidence + escalation) is always appended and is never overridable by a persona.
 - **Management:** `GET/POST /v1/ai/prompt-templates`, `GET/PATCH/DELETE /v1/ai/prompt-templates/:id`, and `POST /v1/ai/prompt-templates/install-defaults`. Reads are viewer, writes are editor, the bulk default-install is admin. Surfaced in the dashboard at **/ai/prompts**.

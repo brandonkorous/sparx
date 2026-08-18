@@ -21,18 +21,22 @@ import {
   EmptyState,
   SearchInput,
   Select,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faTag } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { audienceSummary, priceListState, type PriceListRow } from './price-lists-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined },
@@ -75,47 +79,65 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Price list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Price list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search price lists"
+              placeholder="Search price lists…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
-            aria-label="Search price lists"
-            placeholder="Search price lists…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-        <div className="hidden w-40 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Show which price lists"
-            value={filter}
-            items={FILTERS.map((entry) => ({ value: entry.value, label: entry.label }))}
-            onValueChange={(next) => {
-              setFilter((next as FilterValue | null) ?? 'all');
+            className="ml-auto"
+            title="Add a price list — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add a price list
+          </Button>
+        }
+        controls={
+          <div className="w-40 shrink-0">
+            <Select
+              size="sm"
+              aria-label="Show which price lists"
+              value={filter}
+              items={FILTERS.map((entry) => ({ value: entry.value, label: entry.label }))}
+              onValueChange={(next) => {
+                setFilter((next as FilterValue | null) ?? 'all');
+              }}
+            />
+          </div>
+        }
+        views={{
+          target: '/commerce/pricing',
+          // The status picker lives in `controls`, not `filters`, so it rides here.
+          params: { q: search.trim(), status: filter },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setFilter((next.status as FilterValue | undefined) ?? 'all');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a price list — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a price list
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -128,6 +150,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faTag} className="size-6" aria-hidden />,

@@ -40,9 +40,9 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faScaleBalanced } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -128,16 +128,11 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            What you planned against what you paid
-          </Heading>
-          <Text>
-            Everything that arrived in the period, compared with the cost you had planned for it —
-            including what it cost to get here, because a supplier who holds their price and moves
-            the shipping onto you has not held their price.
-          </Text>
-        </div>
+        <Text>
+          Everything that arrived in the period, compared with the cost you had planned for it —
+          including what it cost to get here, because a supplier who holds their price and moves the
+          shipping onto you has not held their price.
+        </Text>
 
         <Card className="shrink-0">
           <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
@@ -276,49 +271,53 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Cost comparison controls">
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Period to compare"
-          value={String(rangeDays)}
-          onChange={(event) => {
-            setRangeDays(Number(event.target.value));
-          }}
-        >
-          {RANGE_PRESETS.map((preset) => (
-            <option key={preset.days} value={preset.days}>
-              {preset.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Location"
-          value={locationId}
-          onChange={(event) => {
-            setLocationId(event.target.value);
-          }}
-        >
-          <option value="">Every location</option>
-          {activeLocations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={report.isFetching}
-          updatedAt={report.dataUpdatedAt}
-          onRefresh={() => {
-            void report.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Cost comparison controls"
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Period to compare"
+              value={String(rangeDays)}
+              onChange={(event) => {
+                setRangeDays(Number(event.target.value));
+              }}
+            >
+              {RANGE_PRESETS.map((preset) => (
+                <option key={preset.days} value={preset.days}>
+                  {preset.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Location"
+              value={locationId}
+              onChange={(event) => {
+                setLocationId(event.target.value);
+              }}
+            >
+              <option value="">Every location</option>
+              {activeLocations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={report.isFetching}
+            updatedAt={report.dataUpdatedAt}
+            onRefresh={() => {
+              void report.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>

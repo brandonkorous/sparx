@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { requireSession } from '@sparx/auth';
+import { requireSession } from '@wizeworks/auth';
 import { safeInternalPath } from '@piggles/config';
 import { writeConsent } from '@/lib/consent';
 import { text } from '@/lib/form';

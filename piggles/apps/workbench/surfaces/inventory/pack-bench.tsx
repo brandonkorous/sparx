@@ -37,10 +37,10 @@ import {
   Card,
   EmptyState,
   Input,
-  Table,
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faBarcodeRead,
   faBox,
@@ -113,7 +113,18 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Pack bench controls">
+      <PaneToolbar
+        label="Pack bench controls"
+        refresh={
+          <RefreshButton
+            isFetching={boxes.isFetching}
+            updatedAt={boxes.data ? boxes.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void boxes.refetch();
+            }}
+          />
+        }
+      >
         <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
         <span className="text-sm">
           {plural(
@@ -147,14 +158,6 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
           <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @md:inline">Another box</span>
         </Button>
-
-        <RefreshButton
-          isFetching={boxes.isFetching}
-          updatedAt={boxes.data ? boxes.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void boxes.refetch();
-          }}
-        />
       </PaneToolbar>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">

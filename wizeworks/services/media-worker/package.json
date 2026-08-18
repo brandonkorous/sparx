@@ -1,0 +1,35 @@
+{
+  "name": "@wizeworks/media-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx media transcoder. Receives media.uploaded events via Pub/Sub push (Cloud Run HTTP entrypoint), generates AVIF/WebP/JPEG variants with sharp, computes blurhash + dominant color, and updates MediaAsset + MediaVariant rows (docs/12 §3, plan Phase 3).",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@azure/storage-blob": "^12.33.0",
+    "@google-cloud/storage": "^7.16.0",
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "blurhash": "^2.0.5",
+    "pino": "^9.5.0",
+    "sharp": "^0.34.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

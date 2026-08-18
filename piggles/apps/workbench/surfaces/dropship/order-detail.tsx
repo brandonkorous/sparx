@@ -3,8 +3,8 @@
 // One supplier order — read-only, the record of what a supplier was asked to
 // ship and where it got to.
 //
-// This is a transaction view, not an editor: it keeps an identity heading (which
-// supplier, which of your orders) rather than an editable name field. The one
+// This is a transaction view, not an editor: it has no editable name field, and
+// its identity — which supplier — is carried once, by the pane's tab. The one
 // thing you can DO here is recovery — re-route an order the supplier never
 // received — which is a decision behind a confirm, not a form.
 //
@@ -23,7 +23,6 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Text,
   Timestamp,
   useToast,
@@ -37,6 +36,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -71,7 +71,14 @@ function FactRow({ label, children }: { label: string; children: React.ReactNode
 
 export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: order, isPending, isError, refetch } = useDropshipOrder(id);
+  const {
+    data: order,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useDropshipOrder(id);
   const suppliers = useSuppliers();
   const toast = useToast();
   const confirm = useConfirm();
@@ -140,80 +147,91 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier order actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        {order.trackingUrl ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="ml-auto shrink-0"
-            // Children arrive via silica's `render` composition; the a11y rule
-            // reads the source anchor and cannot see them.
-            // eslint-disable-next-line jsx-a11y/anchor-has-content -- children arrive via `render`
-            render={<a href={order.trackingUrl} target="_blank" rel="noreferrer" />}
-          >
-            <Icon glyph={faTruck} className="size-4" aria-hidden />
-            Track parcel
-            <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
-          </Button>
-        ) : null}
-
-        {/* Cross-module: this opens the customer's commerce order, so it wears
+      <PaneToolbar
+        label="Supplier order actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching || suppliers.isFetching}
+            updatedAt={order ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+              void suppliers.refetch();
+            }}
+          />
+        }
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          order.trackingUrl ? (
+            <Button
+              size="sm"
+              variant="outline"
+              color="neutral"
+              className="ml-auto shrink-0"
+              // Children arrive via silica's `render` composition; the a11y rule
+              // reads the source anchor and cannot see them.
+              // eslint-disable-next-line jsx-a11y/anchor-has-content -- children arrive via `render`
+              render={<a href={order.trackingUrl} target="_blank" rel="noreferrer" />}
+            >
+              <Icon glyph={faTruck} className="size-4" aria-hidden />
+              Track parcel
+              <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
+            </Button>
+          ) : null
+        }
+        controls={
+          <>
+            {/* Cross-module: this opens the customer's commerce order, so it wears
             commerce's hue. */}
-        <ModuleScope
-          module="commerce"
-          className={order.trackingUrl ? 'shrink-0' : 'ml-auto shrink-0'}
-        >
-          <Button
-            size="sm"
-            variant="outline"
-            color="module"
-            onClick={(event) => {
-              ctx.open(
-                'commerce.order.detail',
-                { id: order.orderId },
-                { target: targetFor(event) }
-              );
-            }}
-          >
-            <Icon glyph={faBagShopping} className="size-4" aria-hidden />
-            Customer order
-          </Button>
-        </ModuleScope>
-
-        {canReroute ? (
-          <Button
-            size="sm"
-            color="module"
-            className="shrink-0"
-            loading={route.isPending}
-            onClick={() => {
-              void onReroute();
-            }}
-          >
-            <Icon glyph={faRotate} className="size-4" aria-hidden />
-            Route again
-          </Button>
-        ) : null}
-      </PaneToolbar>
+            <ModuleScope
+              module="commerce"
+              className={order.trackingUrl ? 'shrink-0' : 'ml-auto shrink-0'}
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                color="module"
+                onClick={(event) => {
+                  ctx.open(
+                    'commerce.order.detail',
+                    { id: order.orderId },
+                    { target: targetFor(event) }
+                  );
+                }}
+              >
+                <Icon glyph={faBagShopping} className="size-4" aria-hidden />
+                Customer order
+              </Button>
+            </ModuleScope>
+            {canReroute ? (
+              <Button
+                size="sm"
+                color="module"
+                className="shrink-0"
+                loading={route.isPending}
+                onClick={() => {
+                  void onReroute();
+                }}
+              >
+                <Icon glyph={faRotate} className="size-4" aria-hidden />
+                Route again
+              </Button>
+            ) : null}
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* Identity: this is a read-only transaction, so it leads with a real
-              heading saying WHAT it is. */}
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {supplierName ? `Order to ${supplierName}` : 'Supplier order'}
-            </Heading>
-            <Text className="text-sm">
-              Placed <Timestamp value={order.createdAt} format="relative" />
-              {order.supplierOrderId ? ` · Supplier reference ${order.supplierOrderId}` : ''}
-            </Text>
-          </div>
+          {/* The supplier names the pane's TAB, so the body opens with when this
+              was placed and the reference to quote back to them. */}
+          <Text className="text-sm">
+            Placed <Timestamp value={order.createdAt} format="relative" />
+            {order.supplierOrderId ? ` · Supplier reference ${order.supplierOrderId}` : ''}
+          </Text>
 
           {/* ONE status message — the failure text when there is one (it names the
               exact problem), otherwise the plain description of the state. */}

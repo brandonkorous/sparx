@@ -51,7 +51,7 @@ Heaviest by reference count in `piggles/`: `query` (183), `api-client` (98),
 ### Class 1 — brand-blind, misnamed only (31 packages)
 
 Already platform code. Nothing inside them expresses sparx; the scope was chosen
-when sparx was the only product. Sampled `@sparx/query` — every "sparx" hit is a
+when sparx was the only product. Sampled `@wizeworks/query` — every "sparx" hit is a
 comment or a docstring naming the import path.
 
 ```
@@ -64,7 +64,7 @@ site-themes sitebuilder-schemas social story-schemas
 
 (29 listed; `links` and `attribution` are Class 3.)
 
-**Action: rename and relocate.** No rebuild. `@sparx/db` in particular must never
+**Action: rename and relocate.** No rebuild. `@wizeworks/db` in particular must never
 be forked — one schema, 277 models, 164 migrations, one database, one tenant
 pool. Two copies of it is the failure mode the shared database exists to prevent.
 
@@ -104,9 +104,9 @@ Piggles console at [globals.css:33-34](../../apps/workbench/app/globals.css):
   custom properties.
 
 Both belong in the shared tree. They live in `@sparx/brand` for the historical
-reason that workbench imports no `@sparx/ui` CSS.
+reason that workbench imports no `@wizeworks/ui` CSS.
 
-**`@sparx/ui`** — sparx-specific compositions over silicaui. Declared as a
+**`@wizeworks/ui`** — sparx-specific compositions over silicaui. Declared as a
 dependency of `piggles/apps/workbench` and imported **zero times**. Dead edge;
 drop it.
 
@@ -115,12 +115,12 @@ drop it.
 The most damaging class, because the package looks neutral and the constant is
 not.
 
-| Location                                                                                             | Constant                                     | Consequence                                                                                                                                                                                          |
-| ---------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [packages/links/src/server.ts:21](../../../packages/links/src/server.ts#L21)                         | `DEFAULT_ORIGIN = 'https://app.sparx.works'` | Every absolute link the platform builds for a Piggles tenant — invitation emails, chat notifications, partner payouts — points at sparx. `appOrigin()` reads one global env var with no brand input. |
-| [packages/attribution/src/launch-links.ts:11](../../../packages/attribution/src/launch-links.ts#L11) | `SITE = 'https://sparx.works'`               | UTM/launch links are sparx-only.                                                                                                                                                                     |
+| Location                                                                                                       | Constant                                     | Consequence                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [wizeworks/packages/links/src/server.ts:21](../../../packages/links/src/server.ts#L21)                         | `DEFAULT_ORIGIN = 'https://app.sparx.works'` | Every absolute link the platform builds for a Piggles tenant — invitation emails, chat notifications, partner payouts — points at sparx. `appOrigin()` reads one global env var with no brand input. |
+| [wizeworks/packages/attribution/src/launch-links.ts:11](../../../packages/attribution/src/launch-links.ts#L11) | `SITE = 'https://sparx.works'`               | UTM/launch links are sparx-only.                                                                                                                                                                     |
 
-`packages/api-client` has 37 "sparx" hits; all are comments or example URLs in
+`wizeworks/packages/api-client` has 37 "sparx" hits; all are comments or example URLs in
 docstrings. Harmless, but they are why a grep-based audit overcounts — the
 codemod must not treat prose as code.
 
@@ -135,15 +135,15 @@ Four places hardcode those paths and break on a move:
 1. **[pnpm-workspace.yaml](../../../pnpm-workspace.yaml)** — globs `apps/*`,
    `packages/*`, `services/*`, `piggles/apps/*`, `piggles/packages/*`.
 2. **[Dockerfile.base:72-105](../../../Dockerfile.base)** — copies `packages` and
-   `services` wholesale, and `pnpm install --filter "@sparx/db..."`.
+   `services` wholesale, and `pnpm install --filter "@wizeworks/db..."`.
 3. **[piggles/apps/workbench/Dockerfile:54+](../../apps/workbench/Dockerfile)** —
    enumerates **34 `packages/*/package.json` COPY lines by hand**, one per
    transitive dependency. Already a maintenance hazard; a rename invalidates
    every line.
 4. **[.github/workflows/release.yml](../../../.github/workflows/release.yml)** —
    change detection diffs runtime paths `apps/ services/ packages/ k8s/`
-   (line ~805, ~1224); image matrix names `packages/db/Dockerfile`; the Azure
-   bootstrap reads `packages/db/sql/azure-bootstrap.sql`.
+   (line ~805, ~1224); image matrix names `wizeworks/packages/db/Dockerfile`; the Azure
+   bootstrap reads `wizeworks/packages/db/sql/azure-bootstrap.sql`.
 
 Plus `eslint.config.js` ignores, `.prettierignore`, `turbo.json`, and the
 structural check scripts.
@@ -175,6 +175,6 @@ Its header is explicit:
 That reasoning was correct for the boundary it was defending and is the wrong
 boundary now. It defends _"Piggles must not import sparx's app code"_. The
 invariant we actually need is _"deleting `sparx/` must not affect Piggles"_ — and
-under that one, a package named `@sparx/db` sitting outside any `sparx/` tree is
+under that one, a package named `@wizeworks/db` sitting outside any `sparx/` tree is
 an unanswered question, not a pass. **A0** replaces the check rather than
 extending it.

@@ -53,7 +53,7 @@ sources:
 Related: [[other-note]], [[another-node]]
 ```
 
-- **`applies-to` is mandatory on anything design- or component-related.** The #1 latent error is conflating the two design systems: dashboard (`--color-*` / `@sparx/ui` / `ModuleProvider`) vs site (`--st-*` / `@sparx/site-ui` / `surface-compile`). A note that doesn't declare which one it governs is a trap.
+- **`applies-to` is mandatory on anything design- or component-related.** The #1 latent error is conflating the two design systems: dashboard (`--color-*` / `@wizeworks/ui` / `ModuleProvider`) vs site (`--st-*` / `@sparx/site-ui` / `surface-compile`). A note that doesn't declare which one it governs is a trap.
 - Link **liberally** with `[[slug]]`. A link to a note that doesn't exist yet is fine — it marks a note worth writing, not an error.
 
 ## File naming

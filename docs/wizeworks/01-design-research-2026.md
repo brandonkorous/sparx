@@ -422,7 +422,7 @@ These block the branding document and are listed in the order they need answerin
    operations? If no, §3.4 is off and we commit fully to Technical Editorial.
 5. **Named proof.** Which customers can we name, with what numbers, on the record?
 6. **Entity name.** Shipped code currently carries both "WizeWorks, Inc." and "WizeWorks LLC"
-   (`apps/web/app/layout.tsx` vs `apps/web/app/careers/roles.ts`). One is wrong and it appears in
+   (`sparx/apps/web/app/layout.tsx` vs `sparx/apps/web/app/careers/roles.ts`). One is wrong and it appears in
    structured data and legal copy.
 7. **Industry set.** Which six to eight industries get real pages, per §11?
 

@@ -15,15 +15,9 @@
 
 import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Button,
-  Card,
-  Heading,
-  Text,
-  ToggleGroup,
-  ToggleGroupItem,
-} from '@wizeworks/silicaui-react';
+import { Card, Heading, Text, ToggleGroup, ToggleGroupItem } from '@wizeworks/silicaui-react';
 import {
   faArrowUpRightFromSquare,
   faChartColumn,
@@ -48,6 +42,10 @@ import {
 import { PlatformMark } from '../../components/platform-mark';
 import { AccountAvatar, useAvatarByTargetId, formatWhen } from './post-visuals';
 import { formatMinuteOfDay, localTimezone, useBestTime, WEEKDAY_NAMES } from './planning-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'social';
 
 /* ── The windows a business thinks in ─────────────────────────────────────── */
 
@@ -266,24 +264,16 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
-          <PaneEmpty
+          <PaneLoadError
             icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your numbers"
             description={socialErrorMessage(
               insights.error,
               'This is a problem reaching the server. Nothing about your posts has changed.'
             )}
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void insights.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void insights.refetch();
+            }}
           />
         </Card>
       </div>
@@ -294,39 +284,46 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Insights controls">
-        <ToggleGroup
-          color="module"
-          size="sm"
-          value={[String(windowDays)]}
-          aria-label="How far back to look"
-          onValueChange={(value: string[]) => {
-            const next = value[value.length - 1];
-            if (next) setWindowDays(Number(next));
-          }}
-        >
-          {WINDOWS.map((w) => (
-            <ToggleGroupItem key={w.value} value={w.value}>
-              {w.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={insights.isFetching}
-          updatedAt={insights.data ? insights.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void insights.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Insights controls"
+        controls={
+          <ToggleGroup
+            color="module"
+            size="sm"
+            value={[String(windowDays)]}
+            aria-label="How far back to look"
+            onValueChange={(value: string[]) => {
+              const next = value[value.length - 1];
+              if (next) setWindowDays(Number(next));
+            }}
+          >
+            {WINDOWS.map((w) => (
+              <ToggleGroupItem key={w.value} value={w.value}>
+                {w.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={insights.isFetching}
+            updatedAt={insights.data ? insights.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void insights.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {insights.isPending ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : isEmpty ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
               title="No numbers yet"
               description="Performance shows up here once your posts have been live for a while and the accounts report back. Open a post you have already sent and hit “Refresh numbers” to pull the latest."

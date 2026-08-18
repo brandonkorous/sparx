@@ -2,8 +2,8 @@
 
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { auth, authPrisma, publishAuthEmail } from '@sparx/auth';
-import { appOrigin } from '@sparx/links/server';
+import { auth, authPrisma, publishAuthEmail } from '@wizeworks/auth';
+import { appOrigin } from '@wizeworks/links/server';
 
 // Accepting a team invitation (docs/114 §A.4).
 //

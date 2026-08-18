@@ -25,10 +25,10 @@ import {
   Card,
   EmptyState,
   SearchInput,
-  Table,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBoxArchive, faPlus, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -209,60 +209,69 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Supplier list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search suppliers"
+              placeholder="Supplier name or code…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New supplier',
+          icon: faPlus,
+          onClick: () => {
+            ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
+          },
+        }}
+        controls={
+          <ToggleGroup
             size="sm"
-            aria-label="Search suppliers"
-            placeholder="Supplier name or code…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+            color="module"
+            className="ml-auto shrink-0"
+            value={includeArchived ? ['archived'] : []}
+            onValueChange={(next: unknown[]) => {
+              setIncludeArchived(next.includes('archived'));
               resetWindow();
             }}
-          />
-        </div>
-
-        <ToggleGroup
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          value={includeArchived ? ['archived'] : []}
-          onValueChange={(next: unknown[]) => {
-            setIncludeArchived(next.includes('archived'));
-            resetWindow();
-          }}
-        >
-          <ToggleGroupItem
-            value="archived"
-            aria-label="Include archived suppliers"
-            title="Include archived suppliers"
           >
-            <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">Archived</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <Button
-          size="sm"
-          color="module"
-          className="shrink-0 whitespace-nowrap"
-          onClick={() => {
-            ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New supplier</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+            <ToggleGroupItem
+              value="archived"
+              aria-label="Include archived suppliers"
+              title="Include archived suppliers"
+            >
+              <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
+              <span>Archived</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        }
+        views={{
+          target: '/inventory/suppliers',
+          params: { q: search.trim(), archived: includeArchived ? '1' : '' },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setIncludeArchived(next.archived === '1');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {/* Full width — base-100 card lifted off the recessed pane. Matches the
           house list convention: the table fills the pane. */}

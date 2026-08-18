@@ -5,9 +5,9 @@ type: decision
 status: active
 applies-to: [n/a]
 sources:
-  - services/api-rest/src/lib/marketplace/self-register.ts
-  - services/api-rest/src/lib/marketplace/blueprint-bundles.ts
-  - services/api-rest/src/lib/marketplace/resolve.ts
+  - wizeworks/services/api-rest/src/lib/marketplace/self-register.ts
+  - wizeworks/services/api-rest/src/lib/marketplace/blueprint-bundles.ts
+  - wizeworks/services/api-rest/src/lib/marketplace/resolve.ts
   - marketplace-catalog/blueprints/
 ---
 

@@ -24,7 +24,7 @@ Related: [97-analytics-reporting-architecture.md](97-analytics-reporting-archite
 ## 1. Correcting the premise
 
 Early discussion assumed the reporting layer barely existed. **That was wrong,
-and the correction changes the plan.** An audit of `services/api-rest` found:
+and the correction changes the plan.** An audit of `wizeworks/services/api-rest` found:
 
 - **~60 reporting endpoints across 15 of 18 modules.** Commerce alone has 13.
   Only `storefront`, `finance` and `platform` have none.

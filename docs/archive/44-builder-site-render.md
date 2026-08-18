@@ -53,15 +53,15 @@ A site **server component** `BuilderRenderer` walks the tree → semantic
 production markup. It is DISTINCT from the editor canvas: no selection chrome, no
 fixed preview heights, real `<img>`/prices/text. What's shared with the editor:
 
-- the node **model** — already in `@sparx/builder-schemas`.
+- the node **model** — already in `@wizeworks/builder-schemas`.
 - binding **resolution** — `resolvePath` / `cardinalityOf` are PROMOTED from the
-  dashboard's `_builder/model.ts` into `@sparx/builder-schemas` (a `runtime.ts`),
+  dashboard's `_builder/model.ts` into `@wizeworks/builder-schemas` (a `runtime.ts`),
   so editor and site resolve bindings through ONE implementation. No drift
   on the core semantic.
 
 The box-base → CSS mapping is reimplemented for production (it maps to the live
 `--st-*` tokens, where the editor maps to `--bxc-*`). When a second renderer
-consumer appears (email), extract a `@sparx/builder-render` package; not yet.
+consumer appears (email), extract a `@wizeworks/builder-render` package; not yet.
 
 **2.4 Theming — reuse the site's `--st-*` contract.**
 The renderer emits the same surface / spacing / width / height semantics as the
@@ -94,9 +94,9 @@ untouched; a new Builder page lights up its slug. Safe + reversible.
 
 ## 4. Where the code lives
 
-- **`@sparx/builder-schemas`** — `slug` on `BuilderPageDto` + `Create`/`Update`
+- **`@wizeworks/builder-schemas`** — `slug` on `BuilderPageDto` + `Create`/`Update`
   inputs; a `PublishedPageDto`; `runtime.ts` (`resolvePath`/`cardinalityOf`).
-- **`@sparx/builder`** — `pageService`: `slug` in `toDto`/`create`/`update`;
+- **`@wizeworks/builder`** — `pageService`: `slug` in `toDto`/`create`/`update`;
   `getPublishedBySlug(ctx, slug)`.
 - **api-rest** — `routes/v1/public/builder.ts` → `GET /v1/public/builder/page`.
 - **site** — `lib/builder.ts` (`getPublishedBuilderPage`) +

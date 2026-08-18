@@ -11,6 +11,11 @@
  * Piggles values win is that they sit outside the layer system. Do not wrap
  * theme.css in a `@layer`.
  *
+ * theme.css is now an ENTRY that `@import`s seven partials from ./theme/. Every
+ * one of them is unlayered for the same reason, and the import order is
+ * load-bearing — see the map at the top of theme.css. Adding a partial means
+ * adding an `@import` there, never a `@layer` anywhere.
+ *
  * Lives in its own plain-CSS file (NOT globals.css) because globals.css is the
  * Tailwind v4 entry, and Tailwind rewrites a top-level `@layer` statement there to
  * its own canonical order, dropping any custom one. A standalone file imported

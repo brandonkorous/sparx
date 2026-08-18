@@ -80,7 +80,7 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 
 | Item                                       | What remains                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **UTM attribution tie-in**                 | Code merged into the working tree (worker + taxonomy + test). Needs `pnpm install` to link the new `@sparx/attribution` dep into `social-worker`, then a deploy. See §3 (decision) + §5 (hand-off).                                                                                                                                                                                                                                                                                                                                                                                |
+| **UTM attribution tie-in**                 | Code merged into the working tree (worker + taxonomy + test). Needs `pnpm install` to link the new `@wizeworks/attribution` dep into `social-worker`, then a deploy. See §3 (decision) + §5 (hand-off).                                                                                                                                                                                                                                                                                                                                                                            |
 | **Analytics — post performance (Measure)** | Full vertical merged: `social_post_metrics` model + RLS migration; `getMetrics` on the Meta adapters (FB + IG, counts on granted scopes, reach/impressions best-effort) + tests; `social.metrics.collect` event + worker collector; api-rest `GET /posts/:id/metrics`, `GET /insights`, `POST /posts/:id/metrics/refresh`; workbench **Insights** surface. Needs the DB regen + Terraform apply + deploy (§5). Reach/impressions stay null until the extra Meta review clears. **2026-07-29: `getMetrics` now covers ALL 8 adapters** (was 3 of 8 — see the decision entry below). |
 
 ### Not started ⬜ / blocked 🔒
@@ -229,11 +229,11 @@ with its config UI.
 
 The social MCP already had full compose/lifecycle parity, but an agent had no way
 to DISCOVER the target ids `create_social_post` needs — a keyhole (can post, can't
-see where). Fixed by moving the connections read view into `@sparx/social`
-(`connections.ts` → `@sparx/social/service`, api-rest re-exports it — one service,
+see where). Fixed by moving the connections read view into `@wizeworks/social`
+(`connections.ts` → `@wizeworks/social/service`, api-rest re-exports it — one service,
 many transports) and adding one `read:social` tool `list_social_connections`
 (returns each connection + its targets: `id`, `name`, `enabled`, `propertyId`).
-Now: **list connections → (upload media via `@sparx/media/mcp`) → create draft →
+Now: **list connections → (upload media via `@wizeworks/media/mcp`) → create draft →
 schedule/publish** is fully agent-drivable. Account CONNECT (OAuth) stays out of
 MCP by design. Design note: [mcp-media-agent-parity.md](mcp-media-agent-parity.md)
 (also scopes the media site-scoping + auto-groups/collections work — NOT built
@@ -254,7 +254,7 @@ and **pushed to `main`, deploy pipeline running** — NOT yet verified live:
    BOTH the route and its test so it can't drift again (a private test copy staying green
    while the route drifted is what shipped the bug). The first byte-upload test dodged this
    (no 1:1 crop existed yet → used the base).
-2. **Retry churned permanent errors** (commit `9ce7cf8d`, `@sparx/social` + worker). The
+2. **Retry churned permanent errors** (commit `9ce7cf8d`, `@wizeworks/social` + worker). The
    deferred-target retry (from the earlier worker fix) hammered a permanent 4xx all 5
    attempts. Fixed: Graph + image-fetch helpers throw a status-bearing `HttpError`; the
    worker's `isRetryableError()` keeps `pending` only for transient failures (5xx / 429 /
@@ -294,7 +294,7 @@ Root cause, run to ground against prod:
 The worker downloads the image itself (a plain GET, no Range → 200) and POSTs the
 bytes, so Facebook never fetches our CDN and the 206 is irrelevant. `graphPostMultipart`
 
-- `fetchImageBinary` in `@sparx/social`; `facebook.ts` single + multi photo paths;
+- `fetchImageBinary` in `@wizeworks/social`; `facebook.ts` single + multi photo paths;
   regression test locks "source, never url=".
 
 * **Why not fix it at Cloudflare (which would cover every platform at once):** a
@@ -393,7 +393,7 @@ Outbound post links are tagged for attribution in the `social-worker` publish dr
 - **Why not the renderer:** it's pure and also drives the composer preview, which
   should show the human link, not a tracking URL. The campaign month is a
   publish-time fact anyway.
-- **Reuse, don't reinvent:** tagging calls `buildUtmUrl` from `@sparx/attribution`
+- **Reuse, don't reinvent:** tagging calls `buildUtmUrl` from `@wizeworks/attribution`
   and the controlled taxonomy ([80](../80-marketing-attribution-analytics.md)) — never an ad-hoc tag, which is the
   fragmentation the taxonomy exists to prevent.
 - **Scheme:** `utm_source` per platform, `utm_medium=organic-social`,
@@ -470,10 +470,10 @@ inbox). What remains:
 
 ## 5. Pending hand-offs
 
-**Done 2026-07-28:** `pnpm install` (links `@sparx/attribution` into `social-worker` and
-`@sparx/social` into the workbench, lockfile updated); both migrations applied to the local docker
+**Done 2026-07-28:** `pnpm install` (links `@wizeworks/attribution` into `social-worker` and
+`@wizeworks/social` into the workbench, lockfile updated); both migrations applied to the local docker
 Postgres and the Prisma client regenerated. Typecheck, lint, format and tests are green across
-`@sparx/social`, `social-worker`, `api-rest`, `@sparx/email` and `workbench`.
+`@wizeworks/social`, `social-worker`, `api-rest`, `@wizeworks/email` and `workbench`.
 
 **Terraform applied 2026-07-28** (targeted at `module.pubsub` + `module.social_worker_cloudrun`, so
 the Cloudflare resources stayed out of the graph — there was a CF auth issue at the time and the
@@ -561,7 +561,7 @@ reveals the gap.
 - Design: [133 — Social Media Posting](../133-social-media-posting.md)
 - Build plan: [134 — Social Media build plan](../134-social-media-build-plan.md)
 - Attribution engine: [80 — attribution](../80-*) · taxonomy in
-  `packages/attribution/src/taxonomy.ts`
+  `wizeworks/packages/attribution/src/taxonomy.ts`
 - Session attribution + analytics: [128](../128-session-attribution.md),
   [129](../129-analytics-dashboards.md), [130](../130-analytics-normalization.md)
 - Media serving contract: [brain: services](../brain/apps/services.md)

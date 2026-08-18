@@ -1,44 +1,38 @@
 {
-    "schemaVersion": 1,
-    "category": "blueprint",
-    "slug": "sparx-retail-eyewear-heritage",
-    "name": "Eyewear (Heritage)",
-    "version": "1.4.0",
-    "tagline": "A warm, working storefront for a heritage hand-made eyewear house.",
-    "description": "A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colorways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme — bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.",
-    "payload": "blueprint.ts",
-    "facets": {
-        "vertical": "retail",
-        "industry": "Eyewear & optical"
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-retail-eyewear-heritage",
+  "name": "Eyewear (Heritage)",
+  "version": "1.4.0",
+  "tagline": "A warm, working storefront for a heritage hand-made eyewear house.",
+  "description": "A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colorways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme — bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Eyewear & optical"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Eyewear (Heritage) icon"
     },
-    "pricing": {
-        "model": "free",
-        "priceCents": 0
-    },
-    "requires": {
-        "modules": [
-            "builder",
-            "commerce",
-            "cms",
-            "crm",
-            "email"
-        ]
-    },
-    "media": [
-        {
-            "file": "media/icon.png",
-            "kind": "icon",
-            "alt": "Eyewear (Heritage) icon"
-        },
-        {
-            "file": "media/preview.png",
-            "kind": "preview",
-            "alt": "Eyewear (Heritage) — home page preview"
-        }
-    ],
-    "author": {
-        "displayName": "WizeWorks"
-    },
-    "accent": "#1a412b",
-    "sortWeight": 85
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Eyewear (Heritage) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "WizeWorks"
+  },
+  "accent": "#1a412b",
+  "sortWeight": 85
 }

@@ -82,11 +82,11 @@ container → an `array` source or a `list` field.
 
 ## 4. Where the logic lives
 
-- **`@sparx/builder-schemas`** (zod-free TS): the `DataSource`/`FieldSchema` types, the
+- **`@wizeworks/builder-schemas`** (zod-free TS): the `DataSource`/`FieldSchema` types, the
   pure `mapCmsContentType(ct) → DataSource[]` mapper (accepts a structural CMS-field
-  shape — no dependency on `@sparx/cms-schemas`), and the code-defined `COMMERCE_SOURCES`
+  shape — no dependency on `@wizeworks/cms-schemas`), and the code-defined `COMMERCE_SOURCES`
   / `CRM_SOURCES`.
-- **`@sparx/builder`** — `bindingService.getSchema(ctx)`: reads the tenant's content
+- **`@wizeworks/builder`** — `bindingService.getSchema(ctx)`: reads the tenant's content
   types (`withTenant` → `tx.contentType`, a read-only cross-module introspection — the
   builder must know what types exist to offer them), maps them, and concatenates the
   code-defined Commerce/CRM sources.

@@ -6,13 +6,13 @@ status: active
 applies-to: [both]
 sources:
   - DESIGN.md
-  - packages/ui/src/tokens.css
+  - sparx/packages/ui/src/tokens.css
   - docs/sparx-brand-guide.md
 ---
 
 Geist everywhere, **two weights only — 400 and 500** (never 600/700 in body UI; the wordmark mark is the exception, Geist 700 with the "x" in `#6366F1`).
 
-**Body floors at 16px, platform-wide.** `packages/ui/src/tokens.css` already implements it (`--text-base: 1rem`). Longer-form reading can go up (18px); captions may drop to **14px**; **never 11–13px for body**. Use the shared `--text-*` scale via `<Text>` — never a raw `text-[13px]`.
+**Body floors at 16px, platform-wide.** `sparx/packages/ui/src/tokens.css` already implements it (`--text-base: 1rem`). Longer-form reading can go up (18px); captions may drop to **14px**; **never 11–13px for body**. Use the shared `--text-*` scale via `<Text>` — never a raw `text-[13px]`.
 
 - **Dashboard:** fixed rem scale, **no `clamp()`**.
 - **Site:** fluid `clamp()`-based type is allowed (tenant-scaled).

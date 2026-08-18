@@ -9,8 +9,8 @@
 //   ['crm','mailboxes']   every connected mailbox
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
-import { ApiError } from '@sparx/api-client';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
 import { productCopy } from '../../lib/product';
 

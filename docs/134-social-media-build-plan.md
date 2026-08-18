@@ -32,15 +32,15 @@ Last Updated: 2026-07-22
 
 **Goal:** the module can be turned on/off and its event topics exist; no user surface yet.
 
-- `packages/modules/src/index.ts` — add `social` to the `ModuleSlug` union + `ALL_MODULES`
+- `wizeworks/packages/modules/src/index.ts` — add `social` to the `ModuleSlug` union + `ALL_MODULES`
   (no `REQUIRES`, no `BUNDLED_FREE`).
-- `services/api-rest/src/lib/module-toggle.ts` — add `social` to the duplicated
+- `wizeworks/services/api-rest/src/lib/module-toggle.ts` — add `social` to the duplicated
   `MODULE_SLUGS` toggle vocabulary.
-- `packages/billing/src/price-catalog.ts` — **no** `MODULE_MONTHLY_CENTS` entry (a
+- `wizeworks/packages/billing/src/price-catalog.ts` — **no** `MODULE_MONTHLY_CENTS` entry (a
   module with no entry is not billed → free); add a comment so the omission is not
   "fixed" later. Enabling flows the normal toggle path; `syncModuleItems` finds no
   price id and creates no Stripe item.
-- `packages/events/src/types.ts` — add the `social.*` literals (§10 of 133).
+- `wizeworks/packages/events/src/types.ts` — add the `social.*` literals (§10 of 133).
 - `terraform/envs/prod/main.tf` — declare the `social.*` topics (`[]` topic-only for
   now; `social.post.due` gets the `social-worker` subscriber in Slice 4).
 
@@ -55,7 +55,7 @@ surface (Slice 6); the automation module tag (Slice 7).
 
 **Goal:** the four tables exist with tenant isolation.
 
-- `packages/db/prisma/schema/87-social.prisma` — `SocialConnection`, `SocialTarget`,
+- `wizeworks/packages/db/prisma/schema/87-social.prisma` — `SocialConnection`, `SocialTarget`,
   `SocialPost`, `SocialPostTarget` (§5 of 133), each `tenant_id` + FORCE RLS, mirroring
   the `79-channels.prisma` shape. `SocialConnection` holds `accessTokenEnc` /
   `refreshTokenEnc` (Text, AES-GCM boxed), `SOCIAL_TOKEN_KEY`.
@@ -68,11 +68,11 @@ the client. New-model code compiles only after that.
 **Acceptance (post-pipeline):** tables exist; a cross-tenant select returns 0 rows
 under a tenant role.
 
-### Slice 2 — `@sparx/social` package + `SocialAdapter` contract
+### Slice 2 — `@wizeworks/social` package + `SocialAdapter` contract
 
 **Goal:** the network-free core — contract, registry, renderer, crypto — fully tested.
 
-- New workspace package `@sparx/social` (new-workspace-package skill): `SocialAdapter`
+- New workspace package `@wizeworks/social` (new-workspace-package skill): `SocialAdapter`
   interface + shared types (§4), the adapter **registry**, the AES-GCM secret box
   (`SOCIAL_TOKEN_KEY`, reusing the channels crypto util), and the **renderer**
   (`SocialPost` → `RenderedPost` per target + constraint validation).
@@ -110,7 +110,7 @@ platform needed.
 **Goal:** scheduled + reviewed posting.
 
 - `scheduledAt` + `find_due_social_posts()` SECURITY DEFINER drain mirroring
-  `services/api-rest/src/lib/scheduled-publish.ts`; emits `social.post.due`.
+  `wizeworks/services/api-rest/src/lib/scheduled-publish.ts`; emits `social.post.due`.
 - Full lifecycle states + the approval gate: require-approval tenant default, `approve`
   as a staff permission (§7 of 133).
 
@@ -120,7 +120,7 @@ platform needed.
 
 **Goal:** the whole flow with no hand-rolled API calls.
 
-- `apps/workbench` `social` surface (workbench-surface conventions): Connections,
+- `sparx/apps/workbench` `social` surface (workbench-surface conventions): Connections,
   Composer (live per-platform preview + focal-point crop), Calendar/queue, Approvals
   inbox. Add the `social` module hue token + `MODULE_META` card. Media auto-variants
   (§8 of 133) generated in the media worker; composer exposes the focal point.

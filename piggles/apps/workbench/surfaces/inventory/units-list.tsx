@@ -27,6 +27,7 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -34,7 +35,7 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
@@ -42,10 +43,10 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { faPlus, faRuler, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -65,6 +66,9 @@ import {
 } from './assembly-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
+/** Registry module for this pane, so the brand draws Stock's own picture rather
+ *  than the generic one. */
+const MODULE = 'inventory';
 
 /** What kind of thing a unit measures, said the way a person would. Grouping the
  *  list by this is the only reason it exists — a business with fourteen units
@@ -77,7 +81,7 @@ const DIMENSIONS: { value: UomDimension; label: string }[] = [
   { value: 'area', label: 'Area' },
 ];
 
-export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
+export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
   const units = useUnitsOfMeasure(true);
@@ -168,17 +172,33 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const body = () => {
+    // Both non-ready states are carded and centred in the same column the ready
+    // body uses, so the pane keeps its shape as the units arrive.
     if (units.isError) {
       return (
-        <EmptyState
-          icon={<Icon glyph={faRuler} className="size-6" aria-hidden />}
-          title="Could not load your units"
-          description="This is a problem reaching the server. Your units and everything measured in them are unaffected."
-        />
+        <div className={COLUMN}>
+          <Card>
+            <PaneLoadError
+              module={MODULE}
+              icon={<Icon glyph={faRuler} className="size-6" aria-hidden />}
+              title="Could not load your units"
+              description="This is a problem reaching the server. Your units and everything measured in them are unaffected."
+              onRetry={() => {
+                void units.refetch();
+              }}
+            />
+          </Card>
+        </div>
       );
     }
     if (units.isPending) {
-      return <PaneWaiting />;
+      return (
+        <div className={COLUMN}>
+          <Card>
+            <PaneWaiting module={MODULE} />
+          </Card>
+        </div>
+      );
     }
 
     const grouped = DIMENSIONS.map((d) => ({
@@ -188,15 +208,10 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            Units
-          </Heading>
-          <Text>
-            The words you count in — each, case, box, pair. How many singles are in a case is set on
-            each item, because a case of one thing is rarely a case of another.
-          </Text>
-        </div>
+        <Text>
+          The words you count in — each, case, box, pair. How many singles are in a case is set on
+          each item, because a case of one thing is rarely a case of another.
+        </Text>
 
         {adding ? (
           <FormSection
@@ -408,35 +423,40 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Unit actions">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faRuler} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            Units
-          </Text>
-        </span>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={adding}
-          onClick={() => {
-            setAdding(true);
-            ctx.setTitle('Units');
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a unit
-        </Button>
-        <RefreshButton
-          isFetching={units.isFetching}
-          updatedAt={units.dataUpdatedAt}
-          onRefresh={() => {
-            void units.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Unit actions"
+        status={
+          <span className="inline-flex items-center gap-1.5">
+            <Icon glyph={faRuler} className="size-4" aria-hidden />
+            <Text as="span" className="text-sm font-medium">
+              Units
+            </Text>
+          </span>
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={adding}
+            onClick={() => {
+              setAdding(true);
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add a unit
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={units.isFetching}
+            updatedAt={units.dataUpdatedAt}
+            onRefresh={() => {
+              void units.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>

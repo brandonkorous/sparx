@@ -2,6 +2,7 @@ import * as React from 'react';
 import { redirect } from 'next/navigation';
 import { Alert, Text } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
+import { AppearanceControl } from '@/components/appearance-control';
 import { APP_BY_ID, MODULE_TO_APP, moduleTerm } from '@piggles/config';
 import {
   getSession,
@@ -9,7 +10,7 @@ import {
   capBusinessScopes,
   MCP_SCOPE_CATALOG,
   type StaffRole,
-} from '@sparx/auth';
+} from '@wizeworks/auth';
 import {
   parseAuthorizeParams,
   validateAuthorizeRequest,
@@ -21,7 +22,7 @@ import { ConsentForm } from './_components/consent-form';
 // "Do you want to let this app in?" — the MCP OAuth consent screen (docs/07 §5).
 //
 // Every /mcp/authorize request is funnelled here by the guard hook in
-// @sparx/auth. The person reviews who is asking and where their access will be
+// @wizeworks/auth. The person reviews who is asking and where their access will be
 // sent, then chooses exactly what it may do.
 //
 // It lives in the ACCOUNT app because this is the only Piggles app that mounts
@@ -52,7 +53,15 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <main className="bg-base-200 grid min-h-dvh place-items-center p-4 sm:p-6">
       <div className="flex w-full max-w-2xl flex-col items-center gap-5">
-        <Logo className="h-10 w-auto" title="Piggles" />
+        {/* The mark centred, with the appearance control pulled to the right of
+            the same row — this screen is a single centred card, so a separate
+            header row for one chrome control would be a second bar for nothing. */}
+        <div className="flex w-full items-center justify-center">
+          <Logo className="h-10 w-auto" title="Piggles" />
+          <span className="ml-auto">
+            <AppearanceControl />
+          </span>
+        </div>
         <div className="bg-base-100 border-base-300 flex max-h-[calc(100dvh-7rem)] w-full flex-col overflow-hidden rounded-xl border">
           {children}
         </div>

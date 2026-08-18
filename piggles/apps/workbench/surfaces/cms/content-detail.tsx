@@ -40,7 +40,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -311,30 +310,28 @@ function CreateEntry({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New content actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!type}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Create
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New content actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!type}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Create
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Write something new
-            </Heading>
-            <Text>
-              Choose what kind of thing this is, then fill it in. It starts as a private draft — you
-              decide when to publish it.
-            </Text>
-          </div>
+          <Text>
+            Choose what kind of thing this is, then fill it in. It starts as a private draft — you
+            decide when to publish it.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -689,46 +686,18 @@ function ManageBody({
     <div className={PANE_SHELL}>
       {/* `wrap` because the lifecycle actions that appear depend on the entry's
           state — there is no fixed set to reduce to one line. */}
-      <PaneToolbar label="Content actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          {!isPublished ? (
-            <Button size="sm" color="module" loading={publish.isPending} onClick={publishNow}>
-              <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
-              {isScheduled ? 'Publish now' : 'Publish'}
-            </Button>
-          ) : null}
-          {!isPublished && !isScheduled ? (
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              disabled={lifecycleBusy}
-              onClick={() => {
-                setScheduleOpen(true);
-              }}
-            >
-              <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
-              Schedule…
-            </Button>
-          ) : null}
-          {isPublished || isScheduled ? (
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              loading={unpublish.isPending}
-              onClick={() => {
-                void onUnpublish();
-              }}
-            >
-              {isScheduled ? 'Cancel schedule' : 'Unpublish'}
-            </Button>
-          ) : null}
-
+      <PaneToolbar
+        label="Content actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          // Save is `primary`, never `controls`. `controls` relocates into the
+          // overflow popover under 672px, and the one control a person opened
+          // this pane to press must not be behind a tap they cannot predict.
+          // Enforced by scripts/check-toolbar-primary.mjs.
           <Button
             size="sm"
             color="module"
@@ -738,10 +707,49 @@ function ManageBody({
           >
             Save
           </Button>
-        </div>
-
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+        }
+        controls={
+          // Lifecycle, not commit — these are genuinely secondary and may move.
+          <div className="flex flex-wrap items-center gap-2">
+            {!isPublished ? (
+              <Button size="sm" color="module" loading={publish.isPending} onClick={publishNow}>
+                <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
+                {isScheduled ? 'Publish now' : 'Publish'}
+              </Button>
+            ) : null}
+            {!isPublished && !isScheduled ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                disabled={lifecycleBusy}
+                onClick={() => {
+                  setScheduleOpen(true);
+                }}
+              >
+                <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
+                Schedule…
+              </Button>
+            ) : null}
+            {isPublished || isScheduled ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                loading={unpublish.isPending}
+                onClick={() => {
+                  void onUnpublish();
+                }}
+              >
+                {isScheduled ? 'Cancel schedule' : 'Unpublish'}
+              </Button>
+            ) : null}
+          </div>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

@@ -15,7 +15,7 @@ Last Updated: 2026-07-19
 > heartbeat is **Pulse v0** — this layer absorbs and grows it, it isn't a
 > collision.
 >
-> **Surfaces = workbench, always.** `apps/workbench` is the staff app going
+> **Surfaces = workbench, always.** `sparx/apps/workbench` is the staff app going
 > forward; `apps/dashboard` is legacy and gets no new work (see
 > [[project_workbench_replaces_dashboard]]). Every UI target here — the jobs
 > tray, the Pulse surface, the notification center — is built in the workbench.
@@ -121,7 +121,7 @@ ledgers, and the surfaces that consume it.
 
 ### Substrate — mature
 
-- `EventType` in [packages/events/src/types.ts](../packages/events/src/types.ts): ~200 events across tenant lifecycle, content, media, email, commerce (catalog / cart / orders / payment / subscriptions / returns / reviews / gift cards / configurator), inventory, domains, b2b, scheduling, dropship, search, chat, partner, forms, feedback, import.
+- `EventType` in [wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts): ~200 events across tenant lifecycle, content, media, email, commerce (catalog / cart / orders / payment / subscriptions / returns / reviews / gift cards / configurator), inventory, domains, b2b, scheduling, dropship, search, chat, partner, forms, feedback, import.
 - `publishEvent()` catches+logs (never fails the request), batches, and **tees every event to the automation fan-in topic** — so a consumer can already see the entire firehose in one place. That fan-in is the natural feed for a notification rule engine.
 
 ## Target architecture
@@ -253,7 +253,7 @@ tenant-only and re-deriving them for admin later would be the drift trap.
 Only **one new table.** Everything else is read-layer + audit coverage.
 
 ```prisma
-// packages/db/prisma/schema/NN-notifications.prisma  (FORCE-RLS, tenant-scoped)
+// wizeworks/packages/db/prisma/schema/NN-notifications.prisma  (FORCE-RLS, tenant-scoped)
 model Notification {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId    String    @map("tenant_id") @db.Uuid
@@ -281,7 +281,7 @@ A `NotificationPreference` model (per-user, per-kind, per-channel toggles) is a
 fast-follow once the center exists; until then the worker applies sane defaults.
 
 RLS: standard tenant-isolation FORCE-RLS ([data node](brain/data.md) /
-[packages/db/CLAUDE.md](../packages/db/CLAUDE.md)) — and the migration follows
+[wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)) — and the migration follows
 the per-tenant `set_config` backfill discipline if it ever backfills.
 
 ## API surface (all under the read-spine)

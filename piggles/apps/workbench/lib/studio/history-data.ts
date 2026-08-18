@@ -9,23 +9,24 @@
 //     site-wide snapshots' manifests, read through one owner
 //   · a piece SHARED with your other sites — its own version rows in the library
 //   · an email — its own version rows
-//   · a look — nothing yet, and this says so rather than showing an empty list
+//   · a look — its own version rows too, on the TENANT tier where a look lives
 //
-// The last one matters: an empty history and a history that was never kept render
-// identically, and only one of them means "you have never changed this".
+// The last one is a table of its own rather than an entry in the site snapshots,
+// and that is structural: a look is tenant-wide, the snapshots are property-scoped,
+// so a history keyed by property could only say when one of the sites wearing it
+// happened to be saved — never when the look itself changed.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import type { StudioDoc } from '@wizeworks/studio';
 import { api } from '../api/client';
-import { pieceKeyOf } from '../../surfaces/builder/studio/saved-pieces';
+import { pieceKeyOf } from './saved-pieces';
 
 /** Which store a document's history comes out of. */
 export type HistorySource =
   | { store: 'site'; ownerKind: 'page' | 'layout' | 'symbol'; ownerId: string }
   | { store: 'library'; key: string }
   | { store: 'email'; emailId: string }
-  /** No history is kept for this document yet — `why` is shown to the author. */
-  | { store: 'none'; why: string };
+  | { store: 'theme'; themeId: string };
 
 /** One point in a document's history, whichever store it came from. */
 export interface HistoryEntry {
@@ -45,33 +46,21 @@ export interface DocumentHistory {
   releases: HistoryEntry[];
 }
 
-/**
- * Where this document's history lives.
- *
- * A look is the one gap, and it is a real one rather than an oversight: a look is
- * now its own tenant-wide record, and the site snapshots that back the history above
- * still describe the site's old theme column — so a list built from them would be a
- * list of somebody else's changes.
- */
+/** Where this document's history lives. */
 export function historySourceOf(doc: StudioDoc): HistorySource {
   if (doc.kind === 'page') return { store: 'site', ownerKind: 'page', ownerId: doc.id };
   if (doc.kind === 'layout') return { store: 'site', ownerKind: 'layout', ownerId: doc.id };
   if (doc.kind === 'email') return { store: 'email', emailId: doc.id };
-  if (doc.kind === 'component') {
-    const key = pieceKeyOf(doc.id);
-    return key ? { store: 'library', key } : { store: 'site', ownerKind: 'symbol', ownerId: doc.id };
-  }
-  return {
-    store: 'none',
-    why: 'Changes to a look aren’t kept as history yet. Duplicate one before a big change and you can always go back to the copy.',
-  };
+  if (doc.kind === 'theme') return { store: 'theme', themeId: doc.id };
+  const key = pieceKeyOf(doc.id);
+  return key ? { store: 'library', key } : { store: 'site', ownerKind: 'symbol', ownerId: doc.id };
 }
 
 export function historyKey(source: HistorySource) {
   if (source.store === 'site') return ['studio', 'history', source.ownerKind, source.ownerId];
   if (source.store === 'library') return ['studio', 'history', 'library', source.key];
   if (source.store === 'email') return ['studio', 'history', 'email', source.emailId];
-  return ['studio', 'history', 'none'];
+  return ['studio', 'history', 'theme', source.themeId];
 }
 
 /** A library version as `/v1/builder/components/:key/versions` returns it. */
@@ -83,6 +72,15 @@ interface LibraryVersion {
 /** An email version as `/v1/builder/emails/:id/versions` returns it. */
 interface EmailVersion {
   id: string;
+  actorId: string | null;
+  createdAt: string;
+  current: boolean;
+}
+
+/** A look's version as `/v1/builder/themes/:id/versions` returns it. */
+interface ThemeVersion {
+  id: string;
+  source: string;
   actorId: string | null;
   createdAt: string;
   current: boolean;
@@ -130,14 +128,26 @@ async function fetchHistory(source: HistorySource): Promise<DocumentHistory> {
     };
   }
 
-  return { drafts: [], releases: [] };
+  const { versions } = await api.get<{ versions: ThemeVersion[] }>(
+    `/v1/builder/themes/${encodeURIComponent(source.themeId)}/versions`
+  );
+  // One ladder, split by what each entry WAS. A look's publish is a point in the
+  // same history rather than a separate one — unlike a page, whose published state
+  // is a different tree in a different column.
+  const entries = versions.map((v) => ({
+    id: v.id,
+    source: v.source,
+    actorId: v.actorId,
+    createdAt: v.createdAt,
+    current: v.current,
+  }));
+  return { drafts: entries, releases: entries.filter((e) => e.source === 'publish') };
 }
 
 export function useDocumentHistory(source: HistorySource) {
   return useQuery({
     queryKey: historyKey(source),
     queryFn: () => fetchHistory(source),
-    enabled: source.store !== 'none',
     staleTime: 15_000,
   });
 }
@@ -173,7 +183,11 @@ export function useRestoreVersion(source: HistorySource) {
         await api.post<unknown>(
           `/v1/builder/emails/${encodeURIComponent(source.emailId)}/versions/${entryId}/restore`
         );
+        return;
       }
+      await api.post<unknown>(
+        `/v1/builder/themes/${encodeURIComponent(source.themeId)}/versions/${entryId}/restore`
+      );
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: historyKey(source) });

@@ -1,0 +1,310 @@
+// Picking and packing — getting the right things off the right shelves and into
+// the right box (docs/146 Phase 4).
+//
+// ── What we had, and why it was not this ─────────────────────────────────────
+//
+// `OrderFulfillment` (27-crm-order-fulfillments) is a SHIPPING RECORD: carrier,
+// tracking number, which lines went. It describes an outcome. Nothing described
+// the WORK — which shelves someone walks to, in what order, what they found when
+// they got there, and whether the box that went out matched the order. That work
+// is where a warehouse's accuracy is actually won or lost, and it was invisible.
+//
+// ── Picking does NOT change the stock number ─────────────────────────────────
+//
+// The most important thing to hold onto here. By the time a pick list exists the
+// order has been placed, and `commitSaleOnTx` has already taken the units off
+// `inventory_levels.on_hand`. The goods are gone from the ledger and still
+// physically on the shelf. So a confirmed pick writes NO warehouse movement — it
+// would be a second decrement for one sale.
+//
+// What a pick DOES know that checkout could not is WHICH SHELF. The sale's bin
+// draw-down was a richest-first guess (see `drawDownAcrossBins`), made hours
+// earlier by code that had no way to know where a person would walk. Confirming
+// a pick from a different shelf writes a bin-level correction so the shelves end
+// up describing the building. The warehouse total never moves; only the seating
+// under it changes. Same layering as Phase 2, for the same reason.
+//
+// The one exception is a SHORT pick, and it is not really an exception: the units
+// that were not found were never picked, so the sale that removed them has not
+// happened yet. They go back on-hand AND straight into `allocated` for the order
+// that still wants them — visible, held, and not resellable — and the shelf is
+// routed to a count so a human settles whether they exist. See
+// `pick-lifecycle.ts`.
+
+model PickList {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Per-tenant human identifier (PICK-000001). Prints as a Code 128 label so the
+  // sheet itself is scannable (docs/146 Phase 3.3).
+  number      String @db.VarChar(20)
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  // single | batch | wave. A CHECK pins it.
+  //   single  one order, one list. The default, and right up to a few dozen
+  //           orders a day: the picker carries one tote and cannot mis-sort.
+  //   batch   several orders on one walk, each into its own tote. Fewer walks;
+  //           the sort happens at the pick face.
+  //   wave    several orders merged BY SHELF — the picker takes eleven of one
+  //           thing from one bin and sorts them into orders at the pack bench.
+  //           Fastest per unit, and the only mode where a mis-sort is possible,
+  //           which is why pack verification (below) is not optional for it.
+  kind String @default("single") @db.VarChar(10)
+
+  // draft | assigned | picking | picked | cancelled. A CHECK pins it.
+  //   draft     generated, nobody has it yet
+  //   assigned  it has a picker's name on it
+  //   picking   the first line has been confirmed
+  //   picked    every line is picked, short, or skipped — the walk is over
+  //   cancelled terminal; any shorts already raised stay raised
+  status String @default("draft") @db.VarChar(12)
+
+  // Whoever is walking it. A staff user id, or free text for a floor login that
+  // is not a sparx account — the throughput report groups on this, and refusing
+  // an unlinked name would mean the report simply has no rows for half a shift.
+  assignedTo String? @map("assigned_to") @db.VarChar(127)
+
+  // The strategy used to choose shelves, SNAPSHOT at generation. The warehouse
+  // setting can change tomorrow; this list was built under today's, and a report
+  // that attributes yesterday's walk to today's rule is lying quietly.
+  strategy String @default("fifo") @db.VarChar(20)
+
+  note String? @db.Text
+
+  // Lifecycle stamps. `startedAt` is the first confirmed line, not the assignment
+  // — a list assigned at 08:00 and started at 11:00 took twenty minutes to pick,
+  // not three hours, and units-per-hour has to agree with the picker about that.
+  assignedAt DateTime? @map("assigned_at") @db.Timestamptz
+  startedAt  DateTime? @map("started_at") @db.Timestamptz
+  pickedAt   DateTime? @map("picked_at") @db.Timestamptz
+
+  cancelledAt     DateTime? @map("cancelled_at") @db.Timestamptz
+  cancelledReason String?   @map("cancelled_reason") @db.VarChar(500)
+
+  createdBy String?  @map("created_by") @db.VarChar(127)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  lines    PickListLine[]
+  orders   PickListOrder[]
+  packages ShipmentPackage[]
+
+  @@unique([tenantId, number], map: "inventory_pick_lists_tenant_number_unique")
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@index([tenantId, warehouseId, status])
+  @@index([tenantId, assignedTo, status])
+  @@map("inventory_pick_lists")
+}
+
+// Which orders a list covers. A join rather than a column on PickList because a
+// batch or wave covers many, and rather than a column on the LINE because "is
+// this order fully picked" is a question about the order, and answering it by
+// scanning every line of a 400-line wave is the query that gets slow first.
+model PickListOrder {
+  pickListId String @map("pick_list_id") @db.Uuid
+  orderId    String @map("order_id") @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+
+  /// Sort order within a batch — tote 1, tote 2. Also what the pack bench calls
+  /// the order, so "tote 3" on the trolley and "tote 3" on screen agree.
+  position Int @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pickList PickList @relation(fields: [pickListId], references: [id], onDelete: Cascade)
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@id([pickListId, orderId])
+  @@index([tenantId, orderId])
+  @@map("inventory_pick_list_orders")
+}
+
+// One "go to this shelf and take this many of this" instruction.
+//
+// A line always points at ONE order item, even on a wave. Merging by variant
+// across orders would make the walk marginally shorter and would make it
+// impossible to say which customer the missing unit belonged to — and every
+// short pick, every mis-pick and every accuracy number depends on being able to
+// say exactly that. The merge is a DISPLAY concern: consecutive lines on the same
+// shelf are shown together and confirmed together.
+model PickListLine {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  pickListId String @map("pick_list_id") @db.Uuid
+
+  orderId     String @map("order_id") @db.Uuid
+  orderItemId String @map("order_item_id") @db.Uuid
+  variantId   String @map("variant_id") @db.Uuid
+
+  // The shelf the allocator chose. Null on a location that does not use bins —
+  // there is exactly one place to go, and naming it would be noise.
+  binId String? @map("bin_id") @db.Uuid
+
+  // The batch the allocator chose, when the item is lot-tracked. FEFO picks the
+  // nearest expiry; the picker is told the lot number so they can check the box
+  // in their hand against it, which is the whole point of tracking lots.
+  lotId String? @map("lot_id") @db.Uuid
+
+  /// How many to take.
+  quantity       Int
+  /// How many were actually taken. Zero until confirmed.
+  pickedQuantity Int @default(0) @map("picked_quantity")
+  /// quantity − pickedQuantity at the moment the picker gave up on the line.
+  /// Stored rather than derived: a line can be confirmed short and then re-picked
+  /// against a new list, and the record of what went wrong the first time is the
+  /// thing the accuracy report is made of.
+  shortQuantity  Int @default(0) @map("short_quantity")
+
+  // not_found | damaged | wrong_item | insufficient | inaccessible | other.
+  // A CHECK pins it. Free-text-only reasons produce a report nobody can group,
+  // and "other" with a note is the escape hatch that keeps the list honest.
+  shortReason String? @map("short_reason") @db.VarChar(20)
+  shortNote   String? @map("short_note") @db.Text
+
+  /// The count raised to settle a short. Soft pointer, no FK: the count outlives
+  /// the pick list and must not be cascade-deleted by it.
+  shortCountId String? @map("short_count_id") @db.Uuid
+
+  /// Walk order. Lower is earlier; assigned at generation from the bin's
+  /// `pickSequence` (nulls last), then by bin code, so an unsequenced warehouse
+  /// still produces a stable, alphabetically sensible route.
+  pickSequence Int @default(0) @map("pick_sequence")
+
+  // pending | picked | short | skipped. A CHECK pins it. `skipped` is a picker
+  // deliberately moving on (they will come back); `short` is a decision.
+  status String @default("pending") @db.VarChar(10)
+
+  /// True when the picker scanned the item rather than tapping Confirm. The
+  /// accuracy report separates the two, because they are not equally trustworthy
+  /// and pretending otherwise flatters the number.
+  verifiedByScan Boolean @default(false) @map("verified_by_scan")
+
+  pickedAt DateTime? @map("picked_at") @db.Timestamptz
+  pickedBy String?   @map("picked_by") @db.VarChar(127)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pickList  PickList       @relation(fields: [pickListId], references: [id], onDelete: Cascade)
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  bin       InventoryBin?  @relation(fields: [binId], references: [id], onDelete: SetNull)
+  lot       LotBatch?      @relation(fields: [lotId], references: [id], onDelete: SetNull)
+
+  // An order item may legitimately appear on the SAME list twice — five from the
+  // pick face and three from bulk is two shelves and therefore two instructions.
+  // So no unique over (pickListId, orderItemId); the guard that matters is that
+  // the sum of open allocations never exceeds the item's unfulfilled quantity,
+  // which is a service-level check because it spans lists.
+  @@index([tenantId, pickListId, pickSequence])
+  @@index([tenantId, orderItemId])
+  @@index([tenantId, variantId, status])
+  @@index([tenantId, pickedBy, pickedAt(sort: Desc)])
+  @@map("inventory_pick_list_lines")
+}
+
+// A physical box. What actually goes on the van.
+//
+// Separate from `OrderFulfillment` on purpose, and this is worth being clear
+// about because the two look similar. A fulfillment is the SHIPPING record — it
+// exists to carry a carrier, a tracking number and a customer notification, and
+// it is created when the box is closed. A package is the PACKING record: it
+// exists from the moment someone starts putting things in a box, it holds the
+// weight and dimensions the rate quote needs, and it holds the scan-verified
+// contents. Closing a package creates the fulfillment; that hand-off lives in
+// `@wizeworks/commerce` (`pack-fulfillment.ts`), the one package that can see both
+// the warehouse and the order.
+model ShipmentPackage {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  number  String @db.VarChar(20) // PKG-000001
+  orderId String @map("order_id") @db.Uuid
+
+  /// The walk this box came off, when there was one. Null for a box packed
+  /// straight from an order with no pick list — a one-person shop that never
+  /// generates a walk still gets pack verification, which is the half of this
+  /// phase that helps them.
+  pickListId String? @map("pick_list_id") @db.Uuid
+
+  // open | packed | cancelled. A CHECK pins it. `open` accepts scans; `packed` is
+  // sealed and has (or is about to have) a fulfillment; `cancelled` releases its
+  // contents back to unpacked so they can go in a different box.
+  status String @default("open") @db.VarChar(10)
+
+  // What the carrier charges by. Millimetres and grams, integers, because a rate
+  // quote rounds anyway and a float weight that reads 0.30000000000000004 in a
+  // support ticket costs more trust than the precision was ever worth.
+  weightGrams Int? @map("weight_grams")
+  lengthMm    Int? @map("length_mm")
+  widthMm     Int? @map("width_mm")
+  heightMm    Int? @map("height_mm")
+
+  /// box | envelope | pallet | tube | custom — free-ish text the rate request
+  /// passes through; no CHECK, because carriers keep inventing packaging types
+  /// and a constraint here would block a legitimate quote.
+  packagingType String? @map("packaging_type") @db.VarChar(32)
+
+  /// The shipping record this box became. Soft pointer, no FK — a fulfillment can
+  /// be cancelled and re-made without destroying the packing record of what was
+  /// physically in the box.
+  fulfillmentId String? @map("fulfillment_id") @db.Uuid
+
+  note String? @db.Text
+
+  packedAt DateTime? @map("packed_at") @db.Timestamptz
+  packedBy String?   @map("packed_by") @db.VarChar(127)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  pickList PickList? @relation(fields: [pickListId], references: [id], onDelete: SetNull)
+
+  lines ShipmentPackageLine[]
+
+  @@unique([tenantId, number], map: "inventory_shipment_packages_tenant_number_unique")
+  @@index([tenantId, orderId, createdAt])
+  @@index([tenantId, status])
+  @@index([tenantId, pickListId])
+  @@map("inventory_shipment_packages")
+}
+
+// What went in the box, per order line. One row per (package, order item): a
+// customer buying four of something that goes in two boxes gets two rows of two,
+// and the packing slip for each box says two rather than four.
+model ShipmentPackageLine {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  packageId String @map("package_id") @db.Uuid
+
+  orderItemId String  @map("order_item_id") @db.Uuid
+  variantId   String? @map("variant_id") @db.Uuid
+
+  quantity Int @default(0)
+
+  /// How many of those units were confirmed by a scan rather than typed. The pack
+  /// bench's own accuracy number, and the thing that makes "verified" mean
+  /// something on a packing slip.
+  scannedQuantity Int @default(0) @map("scanned_quantity")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  package   ShipmentPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  orderItem OrderItem       @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@unique([packageId, orderItemId], map: "inventory_shipment_package_lines_package_item_unique")
+  @@index([tenantId, packageId])
+  @@index([tenantId, orderItemId])
+  @@map("inventory_shipment_package_lines")
+}

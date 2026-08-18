@@ -1,0 +1,27 @@
+{
+  "name": "@wizeworks/story-schemas",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The story grammar — the clause catalog, industry starters, tense/audience vocabulary, story state model, and the example stories. Source of truth for the narrative onboarding (docs/15-merchant-onboarding-prd.md) AND the marketing hero that shows it off. Pure data-as-code: no React, no server import.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

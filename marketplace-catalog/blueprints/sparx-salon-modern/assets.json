@@ -1,47 +1,47 @@
 [
-    {
-        "id": "salon-modern-hero",
-        "url": "https://images.unsplash.com/photo-1637777277337-f114350fb088?w=1600&q=80",
-        "alt": "A sunlit salon full of plants and warm wood"
-    },
-    {
-        "id": "salon-modern-space",
-        "url": "https://images.unsplash.com/photo-1747832802200-7aaceb517e0c?w=1600&q=80",
-        "alt": "A styling corner with trailing plants and natural light"
-    },
-    {
-        "id": "salon-modern-curly",
-        "url": "https://images.unsplash.com/photo-1747832802200-7aaceb517e0c?w=1600&q=80",
-        "alt": "A stylist shaping defined, healthy curls"
-    },
-    {
-        "id": "salon-modern-rowan",
-        "url": "https://images.unsplash.com/photo-1560869713-7d0a29430803?w=1600&q=80",
-        "alt": "Rowan Ellis, curl and cut specialist"
-    },
-    {
-        "id": "salon-modern-juniper",
-        "url": "https://images.unsplash.com/photo-1617690825153-8bb0a8e3c911?w=1600&q=80",
-        "alt": "Juniper Vale, color specialist"
-    },
-    {
-        "id": "salon-modern-marisol",
-        "url": "https://images.unsplash.com/photo-1605980766335-d3a41c7332a1?w=1600&q=80",
-        "alt": "Marisol Reyes, stylist"
-    },
-    {
-        "id": "salon-modern-work1",
-        "url": "https://images.unsplash.com/photo-1600948835780-9c4a8b55cf50?w=1600&q=80",
-        "alt": "Sun-kissed, hand-painted highlights"
-    },
-    {
-        "id": "salon-modern-work2",
-        "url": "https://images.unsplash.com/photo-1763741141049-352dfafcc64f?w=1600&q=80",
-        "alt": "A bouncy, defined curly cut"
-    },
-    {
-        "id": "salon-modern-work3",
-        "url": "https://images.unsplash.com/photo-1717160675643-53a7a2ebaa9f?w=1600&q=80",
-        "alt": "A soft, textured lived-in shag"
-    }
+  {
+    "id": "salon-modern-hero",
+    "url": "https://images.unsplash.com/photo-1637777277337-f114350fb088?w=1600&q=80",
+    "alt": "A sunlit salon full of plants and warm wood"
+  },
+  {
+    "id": "salon-modern-space",
+    "url": "https://images.unsplash.com/photo-1747832802200-7aaceb517e0c?w=1600&q=80",
+    "alt": "A styling corner with trailing plants and natural light"
+  },
+  {
+    "id": "salon-modern-curly",
+    "url": "https://images.unsplash.com/photo-1747832802200-7aaceb517e0c?w=1600&q=80",
+    "alt": "A stylist shaping defined, healthy curls"
+  },
+  {
+    "id": "salon-modern-rowan",
+    "url": "https://images.unsplash.com/photo-1560869713-7d0a29430803?w=1600&q=80",
+    "alt": "Rowan Ellis, curl and cut specialist"
+  },
+  {
+    "id": "salon-modern-juniper",
+    "url": "https://images.unsplash.com/photo-1617690825153-8bb0a8e3c911?w=1600&q=80",
+    "alt": "Juniper Vale, color specialist"
+  },
+  {
+    "id": "salon-modern-marisol",
+    "url": "https://images.unsplash.com/photo-1605980766335-d3a41c7332a1?w=1600&q=80",
+    "alt": "Marisol Reyes, stylist"
+  },
+  {
+    "id": "salon-modern-work1",
+    "url": "https://images.unsplash.com/photo-1600948835780-9c4a8b55cf50?w=1600&q=80",
+    "alt": "Sun-kissed, hand-painted highlights"
+  },
+  {
+    "id": "salon-modern-work2",
+    "url": "https://images.unsplash.com/photo-1763741141049-352dfafcc64f?w=1600&q=80",
+    "alt": "A bouncy, defined curly cut"
+  },
+  {
+    "id": "salon-modern-work3",
+    "url": "https://images.unsplash.com/photo-1717160675643-53a7a2ebaa9f?w=1600&q=80",
+    "alt": "A soft, textured lived-in shag"
+  }
 ]

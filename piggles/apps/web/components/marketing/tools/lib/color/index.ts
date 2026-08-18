@@ -12,11 +12,11 @@
  */
 export { clamp, hslToRgb, parseHex, rgbToHsl, toHex, type Hsl, type Rgb } from './convert';
 export {
-    contrastRatio,
-    gradeContrast,
-    readableInk,
-    relativeLuminance,
-    type ContrastVerdict,
+  contrastRatio,
+  gradeContrast,
+  readableInk,
+  relativeLuminance,
+  type ContrastVerdict,
 } from './contrast';
 export { harmony, HARMONY_LABELS, type HarmonyKind } from './harmony';
 export { ramp, RAMP_STEPS, type RampStep } from './ramp';

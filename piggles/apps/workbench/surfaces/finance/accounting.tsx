@@ -42,11 +42,11 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faCheck,
   faDownload,
@@ -1287,22 +1287,26 @@ export function AccountingSurface() {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Accounting controls">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faPlug} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            Your accounting package
-          </Text>
-        </span>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Accounting controls"
+        status={
+          <span className="inline-flex items-center gap-1.5">
+            <Icon glyph={faPlug} className="size-4" aria-hidden />
+            <Text as="span" className="text-sm font-medium">
+              Your accounting package
+            </Text>
+          </span>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -1326,7 +1330,9 @@ export function AccountingSurface() {
             </Alert>
           </div>
         ) : isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
             {/* The position, said plainly and once, at the top. Someone arriving

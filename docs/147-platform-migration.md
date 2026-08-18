@@ -31,7 +31,7 @@ Two halves, and they only work together:
 
 ### The state before this work
 
-- [`services/import-worker/`](../services/import-worker) exists and is sound: `import.job.created`
+- [`wizeworks/services/import-worker/`](../services/import-worker) exists and is sound: `import.job.created`
   → load `ImportJob.rawRows` → per-entity processor → per-row `ImportJobRow` with error text.
 - Processors exist for exactly four entities: **products, customers, b2b_accounts, discounts**.
 - The API ([commerce](../services/api-rest/src/routes/v1/commerce/import.ts),
@@ -40,9 +40,9 @@ Two halves, and they only work together:
   `rows: Record<string,string>[]`, plus a `columnMap` option **that nothing reads**.
 - **Zero vendor awareness anywhere in the repo.** A tenant with a Shopify export has to hand-map
   it into our column names, which is the exact work we are claiming to remove.
-- **No import UI at all** in `apps/workbench`. The backend is headless — there is no upload, no
+- **No import UI at all** in `sparx/apps/workbench`. The backend is headless — there is no upload, no
   mapping, no preview, no progress, no error report.
-- [`apps/web/app/migrate/page.tsx`](../apps/web/app/migrate/page.tsx) is a `<ComingSoon>` stub,
+- [`sparx/apps/web/app/migrate/page.tsx`](../apps/web/app/migrate/page.tsx) is a `<ComingSoon>` stub,
   `robots: { index: false }`, that **already advertises** Shopify/HubSpot/Mailchimp/WordPress
   importers which do not exist.
 - Inventory has ~70 services and ~45 workbench surfaces and **no import path whatsoever** —
@@ -78,16 +78,16 @@ what will happen.** Two distinct gates, because they answer different questions:
    do not have." So the run is executed against the real tenant DB inside a transaction that is
    always rolled back, and reports create/update/skip/error per row.
 
-The validator is **one implementation in `@sparx/migration`**, called from both the browser and
+The validator is **one implementation in `@wizeworks/migration`**, called from both the browser and
 the worker. Two validators would drift, and the day they drift is the day the preview tells a
 tenant something different from what the import does.
 
 **No new tables.** A migration run is a set of `ImportJob` rows sharing an
 `options.migrationRunId`. `entityType` is already `VarChar(50)` free-form, so new entities are
 code, not schema. This keeps the whole feature outside the migration pipeline and off the
-critical path — see [packages/db/CLAUDE.md](../packages/db/CLAUDE.md) for why that matters.
+critical path — see [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md) for why that matters.
 
-**Zero new dependencies.** `@sparx/migration` ships its own RFC-4180 CSV reader and its own
+**Zero new dependencies.** `@wizeworks/migration` ships its own RFC-4180 CSV reader and its own
 WXR/XML reader. Both are ~200 lines, both are tested, and both handle the vendor quirks a
 general-purpose library would fight us on (Shopify's embedded newlines inside `Body (HTML)`,
 WordPress's CDATA-wrapped everything, BOM-prefixed exports from Excel round-trips).
@@ -139,23 +139,23 @@ Live API connectors (phase 5): **Shopify** (Admin GraphQL), **WordPress/WooComme
 ## 4. Architecture
 
 ```
-apps/workbench/surfaces/migration/          the operator experience
+sparx/apps/workbench/surfaces/migration/          the operator experience
   ├─ migration-start        vendor picker → what you'll need
   ├─ migration-run          upload → detect → map → dry-run → execute → results
   └─ migration-history      past runs, per-row errors, re-run
         │  parses in-browser via
         ▼
-packages/migration/                         @sparx/migration — pure, isomorphic, zero deps
+wizeworks/packages/migration/                         @wizeworks/migration — pure, isomorphic, zero deps
   ├─ parse/csv.ts           RFC-4180 reader (quotes, embedded newlines, CRLF, BOM)
   ├─ parse/xml.ts           minimal XML/CDATA reader
   ├─ parse/wxr.ts           WordPress eXtended RSS → canonical content rows
   ├─ vendors/<slug>.ts      one adapter per vendor: fingerprints + field maps
   ├─ detect.ts              filename + header fingerprint → (vendor, entity, confidence)
   ├─ canonical.ts           the canonical row shape per entity — the contract
-  └─ registry.ts            the vendor catalogue (also feeds apps/web)
+  └─ registry.ts            the vendor catalogue (also feeds sparx/apps/web)
         │  posts canonical rows to
         ▼
-services/api-rest/src/routes/v1/migration/  the run API
+wizeworks/services/api-rest/src/routes/v1/migration/  the run API
   POST /v1/migration/runs                   create a run (n chunked ImportJobs)
   GET  /v1/migration/runs                   list
   GET  /v1/migration/runs/:runId            status + per-job rollup + errors
@@ -164,12 +164,12 @@ services/api-rest/src/routes/v1/migration/  the run API
   GET  /v1/migration/vendors                the catalogue, module-aware
         │  publishes import.job.created  →
         ▼
-services/import-worker/src/processors/      one processor per entity
+wizeworks/services/import-worker/src/processors/      one processor per entity
   products · variants · customers · orders · inventory · categories · collections
   · content · media · redirects · companies · deals · tickets · discounts · b2b_accounts
 ```
 
-`apps/web/app/migrate/` reads the **same** `@sparx/migration` registry the importer runs on, so
+`sparx/apps/web/app/migrate/` reads the **same** `@wizeworks/migration` registry the importer runs on, so
 a marketing page can never claim an entity the importer does not carry. That is the entire
 reason the registry lives in a shared package rather than in the app.
 
@@ -234,11 +234,11 @@ Every page tells ONE story ([[feedback_pages_tell_a_story]]) — promise → rec
 
 ## 7. Task ledger
 
-**Where this stands (2026-08-11). Every phase is built and green.** `@sparx/migration`
+**Where this stands (2026-08-11). Every phase is built and green.** `@wizeworks/migration`
 (182 tests), every import-worker processor plus an end-to-end walkthrough (26 tests), the
 `/v1/migration` API with 20 route tests, the three live connectors, the workbench surfaces
 including the live-connection flow, and the `/migrate` hub plus twenty vendor pages with
-their OG cards. Lint, typecheck, tests and Prettier are clean across `@sparx/migration`,
+their OG cards. Lint, typecheck, tests and Prettier are clean across `@wizeworks/migration`,
 `import-worker`, `api-rest`, `workbench` and `web`.
 
 **Seven real bugs were found by testing, and every one was invisible to a unit test.** They are worth recording because each is a shape that will
@@ -260,7 +260,7 @@ across that seam. `email-worker` parses the envelope; `import-worker` parsed the
 compiled, both passed lint, and one silently dropped every message it was ever sent. The same seam
 exists for **RLS**: a worker holds no request context, so every read of a tenant-scoped table must
 be wrapped in `withTenant` explicitly, and an unscoped read returns EMPTY rather than an error.
-Both are now pinned by `services/import-worker/src/handler.test.ts`, whose fixture is deliberately
+Both are now pinned by `wizeworks/services/import-worker/src/handler.test.ts`, whose fixture is deliberately
 built as the envelope — a test asserting `parseEvent(payload)` would have passed throughout, and is
 exactly what "covered" would have looked like.
 
@@ -276,7 +276,7 @@ anything this work added.
 
 Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
-### Phase 1 — `@sparx/migration` (the shared brain)
+### Phase 1 — `@wizeworks/migration` (the shared brain)
 
 - [x] 1.1 Package scaffold, wired into workspace + tsconfig + eslint + vitest
 - [x] 1.2 RFC-4180 CSV reader (quotes, escaped quotes, embedded newlines, CRLF, BOM) + tests
@@ -331,13 +331,13 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### Phase 5 — live connectors
 
-- [x] 5.1 Connector contract in `@sparx/migration` (paged pull → canonical rows) + the URL guard
+- [x] 5.1 Connector contract in `@wizeworks/migration` (paged pull → canonical rows) + the URL guard
 - [x] 5.2 Shopify Admin GraphQL connector — 8 resources, including the three with no export
 - [x] 5.3 WooCommerce / WordPress REST connector — one connector, two APIs, shop optional
 - [x] 5.4 HubSpot CRM v3 connector — pipeline labels and associations resolved per page
 - [x] 5.5 Credentials entered per pull and never stored; `guardedFetch` in api-rest; surface wired
 
-### Phase 6 — apps/web
+### Phase 6 — sparx/apps/web
 
 - [x] 6.1 `/migrate` hub (replaces the ComingSoon stub, indexable)
 - [x] 6.2 `/migrate/[vendor]` page system + OG route
@@ -378,34 +378,34 @@ cost something to find out.
 
 ### The file map
 
-| Where                                                   | What                                                                        |
-| ------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `packages/migration/src/parse/{csv,xml,wxr}.ts`         | The three readers. Zero deps, deliberately.                                 |
-| `packages/migration/src/{canonical,coerce,validate}.ts` | The row contract, value coercion, and the validator both sides run.         |
-| `packages/migration/src/detect.ts`                      | Fingerprint → vendor. `readSource()` is the whole browser-side entry point. |
-| `packages/migration/src/vendors/*.ts`                   | One adapter per competitor. `_helpers.ts` is the shared mapping vocabulary. |
-| `packages/migration/src/registry.ts`                    | The catalogue the API **and** the marketing site read.                      |
-| `services/import-worker/src/processors/`                | One `EntityProcessor` per entity + `index.ts` registry + `resolve.ts`.      |
-| `services/api-rest/src/routes/v1/migration.ts`          | The five endpoints.                                                         |
-| `apps/workbench/surfaces/migration/`                    | Vendor picker, the run, past moves, the manual column mapper.               |
-| `apps/web/components/marketing/migrate/`                | 20 stories + the hub and vendor page components.                            |
-| `packages/migration/src/connectors/`                    | The three live connections. `http.ts` is the retry + URL guard.             |
-| `services/api-rest/src/lib/guarded-fetch.ts`            | The resolver half of the SSRF guard; only the service can do this half.     |
-| `apps/workbench/surfaces/migration/live-connection.tsx` | Credentials → what to bring → pull, into the same report a file gets.       |
-| `services/import-worker/test/integration/`              | The end-to-end walk: real CSV, real processors, real database.              |
+| Where                                                             | What                                                                        |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `wizeworks/packages/migration/src/parse/{csv,xml,wxr}.ts`         | The three readers. Zero deps, deliberately.                                 |
+| `wizeworks/packages/migration/src/{canonical,coerce,validate}.ts` | The row contract, value coercion, and the validator both sides run.         |
+| `wizeworks/packages/migration/src/detect.ts`                      | Fingerprint → vendor. `readSource()` is the whole browser-side entry point. |
+| `wizeworks/packages/migration/src/vendors/*.ts`                   | One adapter per competitor. `_helpers.ts` is the shared mapping vocabulary. |
+| `wizeworks/packages/migration/src/registry.ts`                    | The catalogue the API **and** the marketing site read.                      |
+| `wizeworks/services/import-worker/src/processors/`                | One `EntityProcessor` per entity + `index.ts` registry + `resolve.ts`.      |
+| `wizeworks/services/api-rest/src/routes/v1/migration.ts`          | The five endpoints.                                                         |
+| `sparx/apps/workbench/surfaces/migration/`                        | Vendor picker, the run, past moves, the manual column mapper.               |
+| `sparx/apps/web/components/marketing/migrate/`                    | 20 stories + the hub and vendor page components.                            |
+| `wizeworks/packages/migration/src/connectors/`                    | The three live connections. `http.ts` is the retry + URL guard.             |
+| `wizeworks/services/api-rest/src/lib/guarded-fetch.ts`            | The resolver half of the SSRF guard; only the service can do this half.     |
+| `sparx/apps/workbench/surfaces/migration/live-connection.tsx`     | Credentials → what to bring → pull, into the same report a file gets.       |
+| `wizeworks/services/import-worker/test/integration/`              | The end-to-end walk: real CSV, real processors, real database.              |
 
 ### Verification commands that actually work here
 
 ```bash
-pnpm --filter @sparx/migration test          # 135
-pnpm --filter @sparx/import-worker test      # 19
+pnpm --filter @wizeworks/migration test          # 135
+pnpm --filter @wizeworks/import-worker test      # 19
 pnpm --filter <pkg> lint
 pnpm --filter <pkg> typecheck
 
 # api-rest EXHAUSTS Node's default heap. This is the size of that project, not
 # anything this work added — it is not a type error, and the message looks nothing
 # like one:
-NODE_OPTIONS=--max-old-space-size=8192 ./node_modules/.bin/tsc -p services/api-rest/tsconfig.json --noEmit
+NODE_OPTIONS=--max-old-space-size=8192 ./node_modules/.bin/tsc -p wizeworks/services/api-rest/tsconfig.json --noEmit
 ```
 
 ### House idioms these files had to be corrected onto
@@ -422,7 +422,7 @@ Each of these was a typecheck or lint failure before it was a rule:
   `toast.add({ title, description, type })`, not `toast({ color })`. silica `Select`'s
   `onValueChange` hands back `unknown`.
 - Prisma model names are `productCategory` and `productCollection`, not `category`/`collection`.
-- `publish()` from `@sparx/api-core/pubsub` is `(logger, type, tenantId, actorId, data)`.
+- `publish()` from `@wizeworks/api-core/pubsub` is `(logger, type, tenantId, actorId, data)`.
 - `no-irregular-whitespace` fires on a literal U+FEFF **in a comment**; strings are exempt.
 
 ### Phase 5 — how the live connections actually work
@@ -441,7 +441,7 @@ and it buys three things at once:
 **Credentials are never stored.** They are typed into the workbench, sent with each pull, used,
 and forgotten; closing the pane loses them. A migration is a one-off, and a key to a platform
 somebody has just left is a liability with no upside. (This replaces the earlier sketch of
-capturing them through `@sparx/integration-framework` — the BYO rule that sketch existed to
+capturing them through `@wizeworks/integration-framework` — the BYO rule that sketch existed to
 satisfy is satisfied more completely by not keeping them at all.)
 
 **Why these three and no others.** Shopify, WordPress/WooCommerce and HubSpot are the only
@@ -465,7 +465,7 @@ What each one adds beyond the file path:
 | WordPress | The file path needs two exporters in two different menus, one of which makes a 90 MB XML file. One site address replaces both — and for a publisher with no shop, the address is the only thing they have to give us.                                                                   |
 | HubSpot   | The API writes stage IDs (`closedwon`); the CSV writes labels. So this reads the portal's pipelines first and translates them back, and batch-resolves associations into company names and contact emails. Without that step every deal lands `open`, including the ones that were won. |
 
-**The API is the proxy, and it is a guarded one.** `services/api-rest/src/lib/guarded-fetch.ts`
+**The API is the proxy, and it is a guarded one.** `wizeworks/services/api-rest/src/lib/guarded-fetch.ts`
 resolves the hostname and refuses any private, loopback, link-local or CGNAT address before the
 request goes out. `assertSafeUrl` in the package does the syntactic half (so the browser applies
 it too); the resolver half can only live in the service. The WordPress connector takes a site

@@ -31,7 +31,7 @@
 //     retire the intent, which raced the boot on any session where resolving the
 //     active site took longer than that.)
 
-import { matchPath, normalizePath, SITE_PARAM } from '@sparx/links';
+import { matchPath, normalizePath, SITE_PARAM } from '@wizeworks/links';
 import type { SurfaceParams } from '../surfaces/descriptor';
 import { decodeDescriptor } from '../surfaces/descriptor';
 import { getSurface } from '../surfaces/registry';

@@ -6,7 +6,7 @@
 
 ---
 
-> **Reconciled 2026-07-22 (docs-vs-built audit):** Current build reality — **LIVE:** the module-flag → Stripe-subscription sync (`syncModuleItems`), the **Trial → Grace → Suspend** lifecycle (§6, enforced off the tenant row with no Stripe dependency), and public-**site suspension** (`apps/site` overlay). **Absent:** there is **no standalone tenant-facing `settings/billing` page** — `apps/dashboard` was deleted and rebuilt as `apps/workbench`, which ships only the billing **chrome banner + trial chip** (`apps/workbench/components/billing/*`); self-serve management is the embedded Stripe Customer Portal, not a custom settings page. **Deferred:** additional-site recurring billing (§5 add-on line item — create-site is open, metering unwired). **Removed:** the tiered **Transaction Fees** below (§2, §5) — no plan tiers, only modules; the sole platform payment fee is now **sparx Pay's flat 0.5%**, charged in-flow via `application_fee_amount` (see [docs/94 §8](94-ADR-payment-gateway.md) and [docs/92 §2](92-billing-stripe-go-live.md)), not a metered Connect fee.
+> **Reconciled 2026-07-22 (docs-vs-built audit):** Current build reality — **LIVE:** the module-flag → Stripe-subscription sync (`syncModuleItems`), the **Trial → Grace → Suspend** lifecycle (§6, enforced off the tenant row with no Stripe dependency), and public-**site suspension** (`wizeworks/apps/site` overlay). **Absent:** there is **no standalone tenant-facing `settings/billing` page** — `apps/dashboard` was deleted and rebuilt as `sparx/apps/workbench`, which ships only the billing **chrome banner + trial chip** (`sparx/apps/workbench/components/billing/*`); self-serve management is the embedded Stripe Customer Portal, not a custom settings page. **Deferred:** additional-site recurring billing (§5 add-on line item — create-site is open, metering unwired). **Removed:** the tiered **Transaction Fees** below (§2, §5) — no plan tiers, only modules; the sole platform payment fee is now **sparx Pay's flat 0.5%**, charged in-flow via `application_fee_amount` (see [docs/94 §8](94-ADR-payment-gateway.md) and [docs/92 §2](92-billing-stripe-go-live.md)), not a metered Connect fee.
 
 ## 1. Philosophy
 
@@ -37,8 +37,8 @@ Each module is independently activatable:
 - Every module is independent and optional — a tenant activates only the ones it uses (minimum one).
 - Builder is optional, not a required base. It hosts and serves a website (pages, themes, domains, SSL, CDN); a tenant that wants a hosted sparx site turns it on.
 - Headless consumers don't need Builder — a content-only publisher (CMS), a CRM-only team, or anyone driving their own frontend off the API/MCP can run without it.
-- **B2B requires Commerce** — enabling B2B auto-activates **and bills** Commerce (B2B is wholesale _on top of_ the commerce engine), and Commerce cannot be turned off while B2B is on. Enforced in the activation handlers (`@sparx/modules` `REQUIRES` graph), not just documented.
-- **Invoicing is a bundled-free capability of Commerce and B2B** — either one activates the full Invoicing surface (authoring, AR, aging, templates, MCP tools) at **$0**. A tenant with neither pays **$19** for it standalone (a service business — contractor, repair shop, consultant — that quotes and bills without a site). Modeled as the `@sparx/modules` `BUNDLED_FREE` graph: the standalone `invoicing` flag is only ever set on a real $19 purchase, so the bundled case is never billed.
+- **B2B requires Commerce** — enabling B2B auto-activates **and bills** Commerce (B2B is wholesale _on top of_ the commerce engine), and Commerce cannot be turned off while B2B is on. Enforced in the activation handlers (`@wizeworks/modules` `REQUIRES` graph), not just documented.
+- **Invoicing is a bundled-free capability of Commerce and B2B** — either one activates the full Invoicing surface (authoring, AR, aging, templates, MCP tools) at **$0**. A tenant with neither pays **$19** for it standalone (a service business — contractor, repair shop, consultant — that quotes and bills without a site). Modeled as the `@wizeworks/modules` `BUNDLED_FREE` graph: the standalone `invoicing` flag is only ever set on a real $19 purchase, so the bundled case is never billed.
 - Modules can be added or removed at any time (prorated).
 
 ### Transaction Fees — REMOVED (2026-07-22)
@@ -144,15 +144,15 @@ Modules are chosen up front in onboarding (docs/15 §3), so the trial is about _
 independent of whether Stripe billing has been provisioned, because the trial clock
 lives on the tenant row, not in Stripe:
 
-- **Trial starts at signup**, not at module-select. `@sparx/auth` `provisionTenant`
+- **Trial starts at signup**, not at module-select. `@wizeworks/auth` `provisionTenant`
   stamps `subscriptionStatus = 'trialing'` + `trialEndsAt = now + 14d` on every new
   tenant. So the trial is real the moment an account exists, with or without Stripe.
 - **One pure gate resolves the phase.** `resolveBillingPhase(tenant, now)` in
-  `@sparx/billing` (`gate.ts`) maps the tenant's billing columns → `trialing | active |
+  `@wizeworks/billing` (`gate.ts`) maps the tenant's billing columns → `trialing | active |
 grace | suspended | exempt` + a day countdown. No Stripe call, no DB read — the same
   function runs on the public-site hot path and in the dashboard. Platform tenant
   (`SPARX_PLATFORM_TENANT_ID`) + enterprise plans resolve `exempt`.
-- **Public site suspends at day 21.** `apps/site` reads `billingPhase` off the cached
+- **Public site suspends at day 21.** `wizeworks/apps/site` reads `billingPhase` off the cached
   tenant payload and serves the neutral "site unavailable" overlay when `suspended`
   (short-circuiting all storefront chrome + data reads). Grace keeps the site live.
 - **Dashboard banner ladder + trial chip** live in the workbench chrome
@@ -186,7 +186,7 @@ The site stays live for visitors; the dashboard nudges daily. A lapsed **active*
 
 ### Day 21 — Suspend
 
-No active subscription past grace → the **site** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
+No active subscription past grace → the **site** (`wizeworks/apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
 
 ### Anytime — Reactivate
 

@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-16
 
-`piggles/apps/workbench` was copied from `apps/workbench` on 2026-08-14
+`piggles/apps/workbench` was copied from `sparx/apps/workbench` on 2026-08-14
 (piggles/CLAUDE.md RULE #0). 800 tracked files came from sparx; piggles has 839.
 The delta is not what it looks like: the new files are mascot art and the console
 chrome, and what the copy dropped is mostly **routes**, not components.

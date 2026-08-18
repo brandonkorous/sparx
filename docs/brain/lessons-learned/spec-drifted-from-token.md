@@ -5,10 +5,10 @@ type: decision
 status: active
 sources:
   - docs/brain/design/typography.md
-  - packages/ui/src/tokens.css
+  - sparx/packages/ui/src/tokens.css
 ---
 
-**What happened:** `apps/dashboard/DESIGN.md §3` (and `docs/23 §4`) specify **15px body**, while `packages/ui/src/tokens.css` implements **16px** (`--text-base: 1rem`) — which is also the platform-wide guidance. The prose spec drifted from the code that implements it.
+**What happened:** `apps/dashboard/DESIGN.md §3` (and `docs/23 §4`) specify **15px body**, while `sparx/packages/ui/src/tokens.css` implements **16px** (`--text-base: 1rem`) — which is also the platform-wide guidance. The prose spec drifted from the code that implements it.
 
 **Why it matters:** a value written in prose *and* in code will diverge. Readers can't tell which is authoritative, and the stale one gets copied forward into new work.
 

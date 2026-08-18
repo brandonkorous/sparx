@@ -22,14 +22,18 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { authClient } from '@sparx/auth/client';
+import { authClient } from '@wizeworks/auth/client';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+
+/** Registry module for this surface, so the brand draws one consistent picture
+ *  in its empty, waiting and failed states. */
+const MODULE = 'platform';
 import {
   faLaptopMobile,
   faRightFromBracket,
@@ -167,9 +171,12 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
           </AlertActions>
         </Alert>
       ) : isPending ? (
-        <PaneWaiting label="Loading your devices…" />
+        <PaneWaiting module={MODULE} label="Loading your devices…" />
       ) : rows.length === 0 ? (
-        <EmptyState
+        /* No Card: the FormSection is one. <PaneEmpty> so this state draws the
+           same kind of picture as the <PaneWaiting> beside it. */
+        <PaneEmpty
+          module={MODULE}
           icon={<Icon glyph={faLaptopMobile} className="size-6" aria-hidden />}
           title="No signed-in devices"
           description="Nothing is signed in to your account right now."

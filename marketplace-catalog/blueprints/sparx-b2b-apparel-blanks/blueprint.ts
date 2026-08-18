@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-b2b-apparel-blanks',
-    version: '1.4.0',
-    name: 'sparx — Blank Apparel (Wholesale)',
-    summary:
-        'A complete, working wholesale shop for a blank-apparel supplier: a real catalogue of blank tees, fleece, headwear and bags sold by the case and priced per unit, with Color × Size variant grids, categories, collections, a bespoke trade PDP carrying bulk price breaks and net-terms, and a merchandised home page pitched at decorators. Clean, catalogue-efficient theme — cool slate paper, near-black ink, one confident cobalt accent. Shipped as Blankstock.',
-    vertical: 'b2b',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-b2b-apparel-blanks',
+  version: '1.4.0',
+  name: 'sparx — Blank Apparel (Wholesale)',
+  summary:
+    'A complete, working wholesale shop for a blank-apparel supplier: a real catalogue of blank tees, fleece, headwear and bags sold by the case and priced per unit, with Color × Size variant grids, categories, collections, a bespoke trade PDP carrying bulk price breaks and net-terms, and a merchandised home page pitched at decorators. Clean, catalogue-efficient theme — cool slate paper, near-black ink, one confident cobalt accent. Shipped as Blankstock.',
+  vertical: 'b2b',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Blankstock',
+    tagline: 'Blanks that print clean, priced for the run.',
+    colors: {
+      primary: '#1a1f29',
+      primaryForeground: '#f5f9ff',
+      accent: '#145ec1',
+      secondary: '#4a5361',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'b2b-apparel-blanks',
+    basePresetKey: 'b2b-apparel-blanks',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Blankstock',
-        tagline: 'Blanks that print clean, priced for the run.',
-        colors: {
-            primary: '#1a1f29',
-            primaryForeground: '#f5f9ff',
-            accent: '#145ec1',
-            secondary: '#4a5361',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#1a1f29',
+      colorAccent: '#145ec1',
+      colorSecondary: '#4a5361',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'b2b-apparel-blanks',
-        basePresetKey: 'b2b-apparel-blanks',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#1a1f29',
-            colorAccent: '#145ec1',
-            colorSecondary: '#4a5361',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

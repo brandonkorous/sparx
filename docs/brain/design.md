@@ -20,8 +20,8 @@ Design is the **language**, not the library. It is the layer that got skipped on
 
 ## Sources of truth
 
-- Console non-color values → `packages/ui/src/tokens.css`. Console **color + design language** → `DESIGN.md` (replaces the deleted `apps/dashboard/DESIGN.md`; `apps/dashboard` no longer exists).
-- Site tokens → `docs/33-token-model-v2.md`. Site compile → `packages/surface-compile/src/theme.ts`.
+- Console non-color values → `sparx/packages/ui/src/tokens.css`. Console **color + design language** → `DESIGN.md` (replaces the deleted `apps/dashboard/DESIGN.md`; `apps/dashboard` no longer exists).
+- Site tokens → `docs/33-token-model-v2.md`. Site compile → `wizeworks/packages/surface-compile/src/theme.ts`.
 - Component contract → `docs/23-frontend-component-architecture.md`. Variant API → `docs/35-ui-variant-system.md`.
 - Brand + voice → `docs/sparx-brand-guide.md`.
 
@@ -36,4 +36,4 @@ The partner pages proved the failure mode: the *components* were used correctly,
 ## Quarantine
 
 - `docs/18-frontend-architecture.md` — HSL blue tokens, Inter font, pre-CVA components. Stale; do not copy from it.
-- `docs/sparx-design-tokens.css` — a token file diverged from live `tokens.css` (14px base, removed 3px stripe, wrong `--color-info`). The root doc-map points here by mistake — use `packages/ui/src/tokens.css`.
+- `docs/sparx-design-tokens.css` — a token file diverged from live `tokens.css` (14px base, removed 3px stripe, wrong `--color-info`). The root doc-map points here by mistake — use `sparx/packages/ui/src/tokens.css`.

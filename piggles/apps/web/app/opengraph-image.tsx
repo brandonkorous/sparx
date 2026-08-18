@@ -1,5 +1,6 @@
+import { OG_SIZE, renderOg } from '@piggles/brand/og';
 import { PRODUCT } from '@piggles/config';
-import { OG_SIZE, renderOg } from '@/lib/og';
+import { resolveIntent } from '@piggles/mascot';
 
 // The default card — used by any page that does not supply its own.
 export const runtime = 'nodejs';
@@ -11,5 +12,6 @@ export default function Image() {
   return renderOg({
     title: 'Everything your business runs on, for $49 a month',
     subtitle: 'Fifteen apps. One price. Named for what you are actually doing.',
+    pose: resolveIntent('hero'),
   });
 }

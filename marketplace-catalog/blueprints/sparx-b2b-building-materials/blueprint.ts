@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-b2b-building-materials',
-    version: '1.4.0',
-    name: 'sparx — Building Materials (B2B / Wholesale)',
-    summary:
-        'A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag — timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety — with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme — warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.',
-    vertical: 'b2b',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-b2b-building-materials',
+  version: '1.4.0',
+  name: 'sparx — Building Materials (B2B / Wholesale)',
+  summary:
+    'A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag — timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety — with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme — warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.',
+  vertical: 'b2b',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Yardstock Trade Supplies',
+    tagline: 'Everything for the job, priced for the trade.',
+    colors: {
+      primary: '#513721',
+      primaryForeground: '#fef7f2',
+      accent: '#825c00',
+      secondary: '#594a3c',
+    },
+    fonts: {
+      heading: 'Oswald',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'b2b-building-materials',
+    basePresetKey: 'b2b-building-materials',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Yardstock Trade Supplies',
-        tagline: 'Everything for the job, priced for the trade.',
-        colors: {
-            primary: '#513721',
-            primaryForeground: '#fef7f2',
-            accent: '#825c00',
-            secondary: '#594a3c',
-        },
-        fonts: {
-            heading: 'Oswald',
-            body: 'Inter',
-        },
+      colorPrimary: '#513721',
+      colorAccent: '#825c00',
+      colorSecondary: '#594a3c',
+      fontHeading: 'Oswald',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'b2b-building-materials',
-        basePresetKey: 'b2b-building-materials',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#513721',
-            colorAccent: '#825c00',
-            colorSecondary: '#594a3c',
-            fontHeading: 'Oswald',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

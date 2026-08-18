@@ -13,14 +13,20 @@
 // record, so inventing a list of them here would be a place you could never
 // actually add one.
 
-import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
 import { faMoneyBill, faPlus, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { countryName, regionName } from './geo';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import {
   nexusLabel,
   taxErrorMessage,
@@ -93,61 +99,54 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Tax controls">
-        <Icon glyph={faMoneyBill} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Tax
-        </Heading>
-        {automatic ? (
-          <Badge color="info" variant="soft" size="sm">
-            Automatic
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={zones.isFetching}
-          updatedAt={zones.data ? zones.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void zones.refetch();
-            void auto.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Tax controls"
+        status={
+          automatic ? (
+            <Badge color="info" variant="soft" size="sm">
+              Automatic
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={zones.isFetching}
+            updatedAt={zones.data ? zones.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void zones.refetch();
+              void auto.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Carded, because the branch beside it is a stack of FormSections —
+              each already a card. Uncarded, the failure floated on the pane's
+              recessed surface. */}
           {zones.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load your tax settings"
-              description={taxErrorMessage(
-                zones.error,
-                'This is a problem reaching the server. Your tax settings are unaffected.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void zones.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load your tax settings"
+                description={taxErrorMessage(
+                  zones.error,
+                  'This is a problem reaching the server. Your tax settings are unaffected.'
+                )}
+                onRetry={() => {
+                  void zones.refetch();
+                }}
+              />
+            </Card>
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Tax you collect
-                </Heading>
-                <Text className="text-sm">
-                  {automatic
-                    ? `Tax is worked out automatically by ${automatic.label ?? automatic.providerSlug}. The places and rates below are a backup used only if that service is ever unavailable.`
-                    : 'Add a place for each country or state where you have to collect tax, then set the rate. A shopper is only charged tax in a place that is switched on. If you are not sure where you owe tax, check with an accountant.'}
-                </Text>
-              </div>
+              <Text className="text-sm">
+                {automatic
+                  ? `Tax is worked out automatically by ${automatic.label ?? automatic.providerSlug}. The places and rates below are a backup used only if that service is ever unavailable.`
+                  : 'Add a place for each country or state where you have to collect tax, then set the rate. A shopper is only charged tax in a place that is switched on. If you are not sure where you owe tax, check with an accountant.'}
+              </Text>
 
               <FormSection
                 title="Places you collect tax"
@@ -166,9 +165,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               >
                 {zones.isPending ? (
-                  <Text className="text-sm" role="status">
-                    Loading…
-                  </Text>
+                  <InlineWaiting />
                 ) : rows.length === 0 ? (
                   <EmptyState
                     size="sm"

@@ -14,17 +14,8 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-  Timestamp,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Timestamp } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowDown,
   faArrowUp,
@@ -35,6 +26,7 @@ import {
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -46,6 +38,10 @@ import {
 } from './automations-presentation';
 import { useAutomations, type Automation } from './automations-data';
 import { productCopy } from '../../lib/product';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'automations';
 
 type SortKey = 'name' | 'trigger' | 'runs' | 'lastRun' | 'status';
 type Dir = 'asc' | 'desc';
@@ -144,96 +140,102 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Automations list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search automations"
-            placeholder="Search automations…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <div className="hidden w-36 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Filter by status"
-            value={status}
-            items={{
-              all: 'Any status',
-              active: 'On',
-              paused: 'Paused',
-              draft: 'Draft',
-              error: 'Needs attention',
-            }}
-            onValueChange={(next) => {
-              setStatus((next as string) || 'all');
-            }}
-          />
-        </div>
-        <div className="hidden w-36 shrink-0 @2xl:block">
-          <Select
-            size="sm"
-            aria-label="Filter by who made it"
-            value={origin}
-            items={{
-              all: 'Anyone',
-              user: 'Made by you',
-              system: productCopy('automations.recipe.byPlatform', 'Set up by sparx'),
-            }}
-            onValueChange={(next) => {
-              setOrigin((next as string) || 'all');
-            }}
-          />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="New automation — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Automations list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search automations"
+              placeholder="Search automations…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New automation',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open('automations.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New automation</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'New automation — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <>
+            <div className="w-36 shrink-0">
+              <Select
+                size="sm"
+                aria-label="Filter by status"
+                value={status}
+                items={{
+                  all: 'Any status',
+                  active: 'On',
+                  paused: 'Paused',
+                  draft: 'Draft',
+                  error: 'Needs attention',
+                }}
+                onValueChange={(next) => {
+                  setStatus((next as string) || 'all');
+                }}
+              />
+            </div>
+            <div className="w-36 shrink-0">
+              <Select
+                size="sm"
+                aria-label="Filter by who made it"
+                value={origin}
+                items={{
+                  all: 'Anyone',
+                  user: 'Made by you',
+                  system: productCopy('automations.recipe.byPlatform', 'Set up by sparx'),
+                }}
+                onValueChange={(next) => {
+                  setOrigin((next as string) || 'all');
+                }}
+              />
+            </div>
+          </>
+        }
+        views={{
+          target: '/automations',
+          params: { q: search.trim(), status, origin, sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus(next.status ?? 'all');
+            setOrigin(next.origin ?? 'all');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as SortKey, dir });
+            }
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
             title="Could not load your automations"
             description="Something went wrong reaching the server. Your rules are unaffected and still running — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting label="Loading automations…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtering}
             noResults={{
               icon: <Icon glyph={faDiagramProject} className="size-6" aria-hidden />,

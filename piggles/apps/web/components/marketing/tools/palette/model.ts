@@ -3,9 +3,9 @@ import { parseHex, toHex, type Rgb } from '../lib/color';
 /** A palette is an ordered list of these. `id` is stable across reorders and
  *  shuffles so a dragged column keeps its DOM node and its pointer capture. */
 export interface Swatch {
-    id: string;
-    hex: string;
-    locked: boolean;
+  id: string;
+  hex: string;
+  locked: boolean;
 }
 
 export type Palette = Swatch[];
@@ -25,9 +25,9 @@ let counter = 0;
 export const newId = (): string => `sw${counter++}`;
 
 export const swatch = (hex: string, locked = false): Swatch => ({
-    id: newId(),
-    hex: hex.toUpperCase(),
-    locked,
+  id: newId(),
+  hex: hex.toUpperCase(),
+  locked,
 });
 
 /** The palette a first-time visitor lands on, IN SLOT ORDER — the Piggles pink
@@ -46,26 +46,26 @@ export const startingPalette = (): Palette => STARTER.map((hex) => swatch(hex));
  * short parameter instead of two that can disagree with each other.
  */
 export function encode(palette: Palette): string {
-    return palette
-        .map((s) => {
-            const bare = s.hex.replace('#', '');
-            return s.locked ? bare.toUpperCase() : bare.toLowerCase();
-        })
-        .join('-');
+  return palette
+    .map((s) => {
+      const bare = s.hex.replace('#', '');
+      return s.locked ? bare.toUpperCase() : bare.toLowerCase();
+    })
+    .join('-');
 }
 
 export function decode(value: string | null): Palette | null {
-    if (!value) return null;
-    const parts = value.split('-').filter(Boolean);
-    if (parts.length < MIN_SWATCHES || parts.length > MAX_SWATCHES) return null;
+  if (!value) return null;
+  const parts = value.split('-').filter(Boolean);
+  if (parts.length < MIN_SWATCHES || parts.length > MAX_SWATCHES) return null;
 
-    const out: Palette = [];
-    for (const part of parts) {
-        const rgb = parseHex(part);
-        if (!rgb) return null;
-        out.push(swatch(toHex(rgb), part === part.toUpperCase()));
-    }
-    return out;
+  const out: Palette = [];
+  for (const part of parts) {
+    const rgb = parseHex(part);
+    if (!rgb) return null;
+    out.push(swatch(toHex(rgb), part === part.toUpperCase()));
+  }
+  return out;
 }
 
 export const rgbOf = (s: Swatch): Rgb => parseHex(s.hex) ?? { r: 0, g: 0, b: 0 };
@@ -73,9 +73,9 @@ export const rgbOf = (s: Swatch): Rgb => parseHex(s.hex) ?? { r: 0, g: 0, b: 0 }
 /** Reorder without mutating. Returns the same array when nothing moves, so a
  *  drag that hovers its own slot does not re-render the stage on every frame. */
 export function move<T>(list: T[], from: number, to: number): T[] {
-    if (from === to || to < 0 || to >= list.length) return list;
-    const next = [...list];
-    const [item] = next.splice(from, 1);
-    next.splice(to, 0, item!);
-    return next;
+  if (from === to || to < 0 || to >= list.length) return list;
+  const next = [...list];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item!);
+  return next;
 }

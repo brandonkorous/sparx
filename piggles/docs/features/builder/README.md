@@ -61,7 +61,7 @@ active layout_, because a blob has room for exactly one.
 
 ## What we build, and what we never touch
 
-The document format stays silica's. `apps/site` and api-rest read published trees
+The document format stays silica's. `wizeworks/apps/site` and api-rest read published trees
 directly and have never heard of the builder, so a new editor changes nothing
 downstream.
 
@@ -71,8 +71,8 @@ downstream.
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `@wizeworks/silicaui-html`                        | schema (`Site`/`Page`/`Node`/`Theme`/`SymbolDef`), `toHtml` · `renderPage` · `composeFrame` · `expandComponent`, `stamp` · `stampTree` · `assignOrds` · `generateKeyBetween`, `validateClassString` · `composeValidators` · `lintTree`, `resolveThemeTokens` · `deriveContent` · `contrastRatio` |
 | `@wizeworks/silicaui-builder`                     | the pure helpers only — `splitToken` · `setTokenAt` · `tokenStateAt` · `declaredBreakpoints`, `mergeCatalog` · `paletteGroups` · `themeShelves`                                                                                                                                                  |
-| `@sparx/silica-catalog`                           | `SPARX_CATALOG` · `SITE_CATALOG` · `HOST_COMPONENTS` · `SPARX_THEME_GROUPS` (20 system themes) · the starter seeds                                                                                                                                                                               |
-| `@sparx/builder-schemas`                          | the binding resolver, the class validator, the DTOs                                                                                                                                                                                                                                              |
+| `@wizeworks/silica-catalog`                       | `SPARX_CATALOG` · `SITE_CATALOG` · `HOST_COMPONENTS` · `SPARX_THEME_GROUPS` (20 system themes) · the starter seeds                                                                                                                                                                               |
+| `@wizeworks/builder-schemas`                      | the binding resolver, the class validator, the DTOs                                                                                                                                                                                                                                              |
 | `@wizeworks/silicaui-react` + the Tailwind plugin | every control in the chrome (root RULE #1 still binds)                                                                                                                                                                                                                                           |
 
 **Built:** the session (documents in memory + the resolution chain), the op log and
@@ -81,7 +81,7 @@ navigator, the pane chrome, and per-document save/preview/publish.
 
 ## The package
 
-`packages/studio`, published as **`@wizeworks/studio`** — shared platform, per root
+`wizeworks/packages/studio`, published as **`@wizeworks/studio`** — shared platform, per root
 CLAUDE.md's ownership table, so sparx can adopt it later. Piggles is the only
 consumer at first; sparx's workbench stays on `<Builder>` untouched.
 
@@ -160,7 +160,7 @@ FORCE-RLS tenant policy with no exception.
 
 The migration is `20270327000000_builder_themes` — after
 `20270326000000_marketplace_origin_brand`, per
-[packages/db/CLAUDE.md](../../../../packages/db/CLAUDE.md). Its backfill turns
+[wizeworks/packages/db/CLAUDE.md](../../../../packages/db/CLAUDE.md). Its backfill turns
 each site's active theme and its saved-theme library into rows, and **loops
 tenants setting `app.tenant_id` per tenant**: both tables are FORCE RLS and
 `sparx_owner` is a non-superuser in production, so an unscoped pass reads zero

@@ -104,7 +104,7 @@ want visibly different fans, and today neither can ask for one.
 
 ### If it ships
 
-sparx's pricing hero (`apps/web/components/marketing/pricing/module-deck.tsx`) needs no change but
+sparx's pricing hero (`sparx/apps/web/components/marketing/pricing/module-deck.tsx`) needs no change but
 a `--stack-peek` of around `4%` — its cards are already at full content height and are simply not
 peeking. Until then the deck ships as-is: it still cycles, it is still the right device, it just
 reads as one card rather than a deck.

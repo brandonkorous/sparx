@@ -262,15 +262,15 @@ jobs:
       matrix:
         include:
           # Apps + APIs (k8s/apps)
-          - { name: api-rest, dockerfile: services/api-rest/Dockerfile }
-          - { name: api-graphql, dockerfile: services/api-graphql/Dockerfile }
-          - { name: api-mcp, dockerfile: services/api-mcp/Dockerfile }
-          - { name: mcp-site, dockerfile: services/mcp-site/Dockerfile }
-          - { name: workbench, dockerfile: apps/workbench/Dockerfile }
-          - { name: web, dockerfile: apps/web/Dockerfile }
-          - { name: site, dockerfile: apps/site/Dockerfile }
-          - { name: market, dockerfile: apps/market/Dockerfile }
-          - { name: admin, dockerfile: apps/admin/Dockerfile }
+          - { name: api-rest, dockerfile: wizeworks/services/api-rest/Dockerfile }
+          - { name: api-graphql, dockerfile: wizeworks/services/api-graphql/Dockerfile }
+          - { name: api-mcp, dockerfile: wizeworks/services/api-mcp/Dockerfile }
+          - { name: mcp-site, dockerfile: wizeworks/services/mcp-site/Dockerfile }
+          - { name: workbench, dockerfile: sparx/apps/workbench/Dockerfile }
+          - { name: web, dockerfile: sparx/apps/web/Dockerfile }
+          - { name: site, dockerfile: wizeworks/apps/site/Dockerfile }
+          - { name: market, dockerfile: sparx/apps/market/Dockerfile }
+          - { name: admin, dockerfile: wizeworks/apps/admin/Dockerfile }
           # Piggles — the sister brand's three surfaces (k8s/apps). Separate
           # images because they are separate applications: piggles/CLAUDE.md
           # RULE #0 says either product must be deletable tomorrow without
@@ -281,7 +281,7 @@ jobs:
           # far side of the handoff, so those two ship together or not at all.
           - { name: piggles-web, dockerfile: piggles/apps/web/Dockerfile }
           - { name: piggles-account, dockerfile: piggles/apps/account/Dockerfile }
-          # Directory `apps/workbench`, image `piggles-console`: the console is a
+          # Directory `sparx/apps/workbench`, image `piggles-console`: the console is a
           # workbench-shaped app, but "workbench" is a sparx word and nothing an
           # operator reads should carry it (RULE #3).
           - { name: piggles-console, dockerfile: piggles/apps/workbench/Dockerfile }
@@ -290,12 +290,12 @@ jobs:
           # are now handler libraries under packages/*-worker running inside
           # event-worker. media-worker and import-worker stay separate — see the
           # header of that manifest for which isolation was worth keeping.
-          - { name: event-worker, dockerfile: services/event-worker/Dockerfile }
-          - { name: media-worker, dockerfile: services/media-worker/Dockerfile }
-          - { name: import-worker, dockerfile: services/import-worker/Dockerfile }
+          - { name: event-worker, dockerfile: wizeworks/services/event-worker/Dockerfile }
+          - { name: media-worker, dockerfile: wizeworks/services/media-worker/Dockerfile }
+          - { name: import-worker, dockerfile: wizeworks/services/import-worker/Dockerfile }
           # The migration + seed runner. Not a Deployment — stage 2 runs it as a
           # Job, which is why it is built alongside the images it never joins.
-          - { name: db, dockerfile: packages/db/Dockerfile }
+          - { name: db, dockerfile: wizeworks/packages/db/Dockerfile }
 
     steps:
       - uses: actions/checkout@v4
@@ -720,14 +720,14 @@ jobs:
 
           # OPERATOR_DATABASE_URL — derived when absent, never silently omitted.
           #
-          # apps/admin talks to the wize_admin schema as `wize_operator`, a
+          # wizeworks/apps/admin talks to the wize_admin schema as `wize_operator`, a
           # different role from the one in DATABASE_URL. When the var is unset,
-          # packages/operator-auth/src/db.ts falls back to a LOCALHOST dev
+          # wizeworks/packages/operator-auth/src/db.ts falls back to a LOCALHOST dev
           # default — so the admin pod dialled 127.0.0.1:5544 in-cluster and
           # every sign-in returned 500, while the console looked deployed and
           # healthy.
           #
-          # Deriving it is sound rather than a guess: packages/db/sql/azure-bootstrap.sql
+          # Deriving it is sound rather than a guess: wizeworks/packages/db/sql/azure-bootstrap.sql
           # sets wize_operator's password from the SAME app_password as
           # sparx_app, so on this provider the two differ only by role name.
           # Supplying OPERATOR_DATABASE_URL explicitly in SPARX_APP_SECRETS_ENV
@@ -752,7 +752,7 @@ jobs:
           # job just applied, not copied by hand.
           #
           # These two select the media storage backend. api-rest, media-worker and
-          # packages/media each take Azure Blob when BOTH are present and fall through
+          # wizeworks/packages/media each take Azure Blob when BOTH are present and fall through
           # to the LOCAL DISK backend when either is missing — the backend written for
           # a laptop. That fallback is silent by design and it has already cost us
           # once: when GCP was retired `GCS_MEDIA_BUCKET` went away, all three services
@@ -931,7 +931,7 @@ jobs:
   # public access DISABLED and lives in the VNet: the only thing that can reach
   # it is already inside the cluster.
   #
-  #   roles    packages/db/sql/azure-bootstrap.sql. `sparx_app` — the
+  #   roles    wizeworks/packages/db/sql/azure-bootstrap.sql. `sparx_app` — the
   #            unprivileged NOBYPASSRLS role every application connection uses —
   #            comes from a Docker-image entrypoint convention that a MANAGED
   #            Postgres will never run. Idempotent, so it runs every time.
@@ -1010,7 +1010,7 @@ jobs:
         run: |
           set -euo pipefail
           kubectl create configmap db-bootstrap-roles -n "$NAMESPACE" \
-            --from-file=azure-bootstrap.sql=packages/db/sql/azure-bootstrap.sql \
+            --from-file=azure-bootstrap.sql=wizeworks/packages/db/sql/azure-bootstrap.sql \
             --dry-run=client -o yaml | kubectl apply -f -
 
           kubectl delete job db-roles -n "$NAMESPACE" --ignore-not-found

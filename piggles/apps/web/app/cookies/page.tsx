@@ -3,35 +3,47 @@ import { Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Table } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
+import { ConsentChange } from '@/components/consent-change';
 import { PageHero } from '@/components/marketing/page-hero';
+import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 
 // /cookies — what each of the three Piggles surfaces actually stores in your
 // browser.
 //
 // ── THIS PAGE IS DERIVED FROM THE CODE, NOT FROM A TEMPLATE ─────────────────
 //
-// Every row below was read out of the repository, and the shape of the answer
-// was genuinely surprising: the marketing site and the account app set NO
-// analytics cookies at all, and product analytics exists on the CONSOLE only.
-// A boilerplate cookie policy would have claimed a tracking stack across all
-// three domains that does not exist, which is both a lie and — for a product
-// whose /trust page is built on refusing to overclaim — the wrong kind of lie.
+// Every row below was read out of the repository. A boilerplate cookie policy
+// would have claimed a tracking stack across all three domains, and for a
+// product whose /trust page is built on refusing to overclaim, that is the
+// wrong kind of lie.
 //
 // Verified at the time of writing:
 //
-//   • apps/web (meetpiggles.com)   — no posthog-js, no @sparx/attribution, no
-//                                    third-party tag of any kind. Sets nothing.
-//                                    Attribution rides the ?from= query string
-//                                    on the signup link instead of a cookie,
+//   • apps/web (meetpiggles.com)      — no posthog-js and no third-party tag of
+//                                    any kind. It records ONE thing, and only
+//                                    with permission: where a visit came from
+//                                    (lib/attribution.ts), behind the bar in
+//                                    components/consent-bar.tsx. The answer
+//                                    itself is a cookie too — a remembered "no"
+//                                    is the only way to honour a no.
+//   • apps/account (getpiggles.com)  — Better Auth session cookie only. The
+//                                    attribution arrives in the signup LINK
+//                                    (lib/attribution.ts), never in a cookie,
 //                                    because three registrable domains cannot
-//                                    share one anyway (see @piggles/config's
-//                                    accountUrl, and apps/account/lib/attribution.ts).
-//   • apps/account (getpiggles.com) — Better Auth session cookie only.
+//                                    share one.
 //   • apps/workbench (mypiggles.com) — session cookie, the active-site cookie,
-//                                    PostHog (gated on NEXT_PUBLIC_POSTHOG_KEY,
-//                                    so a build without a key initialises none
-//                                    of it), and it READS sparx_attr_first if a
-//                                    sparx property set one.
+//                                    and PostHog gated on the account-level
+//                                    consent record.
+//
+// ── WHAT CHANGED, AND WHY THIS PARAGRAPH IS HERE ────────────────────────────
+//
+// This page used to say the marketing site "has no tags at all" and "sets
+// nothing", which was true and expensive: a visitor arriving from a paid
+// campaign carried the campaign in the URL and none of it survived the click to
+// signup, so every customer looked like they had simply appeared. Attribution
+// cannot be reconstructed after the fact. The decision was to measure it and to
+// ASK — not to measure it quietly and leave this page describing a product that
+// no longer existed. If the ask is ever removed, this page is wrong again.
 //
 // ── KEEPING IT TRUE ─────────────────────────────────────────────────────────
 //
@@ -89,13 +101,13 @@ interface CookieRow {
 
 const ESSENTIAL: CookieRow[] = [
   {
-    name: 'better-auth.session_token',
+    name: 'piggles-account.session_token',
     where: `${PRODUCT.hosts.account} and ${PRODUCT.hosts.console}`,
     what: 'Keeps you signed in. Each of the two sites sets its own copy on its own address — they cannot share one — and both point at the same single sign-in, so signing out of either ends both.',
     life: 'Until the session expires or you sign out',
   },
   {
-    name: 'sparx_active_property',
+    name: 'piggles_active_property',
     where: PRODUCT.hosts.console,
     what: 'Remembers which of your sites you were last working on, so the workspace opens where you left it. It holds an identifier for one of your own sites and nothing about you.',
     life: 'One year',
@@ -110,10 +122,22 @@ const PRODUCT_ANALYTICS: CookieRow[] = [
     life: 'Up to one year',
   },
   {
-    name: 'sparx_attr_first',
-    where: `Read on ${PRODUCT.hosts.console}`,
-    what: 'Records which page first brought somebody to a WizeWorks product, so we can tell what is working. Piggles’ own marketing site does not set it — this is read only if you arrived by way of a sparx site.',
-    life: 'Up to one year, if present',
+    name: 'piggles_attr_first',
+    where: PRODUCT.hosts.marketing,
+    what: 'Where you first came from — a search, an advert, somebody else’s website — so we know what is worth doing more of. Written once and never revised, so however often you come back it still says how you found us the first time. Only set if you say yes.',
+    life: 'Up to one year',
+  },
+  {
+    name: 'piggles_attr_last',
+    where: PRODUCT.hosts.marketing,
+    what: 'The same thing for your most recent visit that came from somewhere. A plain return visit leaves it alone rather than overwriting it. Only set if you say yes.',
+    life: 'Up to one year',
+  },
+  {
+    name: 'piggles_consent_state',
+    where: PRODUCT.hosts.marketing,
+    what: 'Your answer to the question above, so we stop asking. This one is set whichever way you answer — including when you say no, because remembering a no is the only way to honour it.',
+    life: 'One year',
   },
 ];
 
@@ -123,8 +147,8 @@ const FACTS = [
     body: 'There is no ad network on any Piggles site, nothing is sold or passed to a data broker, and nothing here follows you to somebody else’s website.',
   },
   {
-    title: 'The site you are on right now sets nothing',
-    body: `${PRODUCT.hosts.marketing} has no tags at all. Which page you clicked "start free" from travels in the link itself rather than in a cookie — the three Piggles addresses are separate domains and could not share one anyway.`,
+    title: 'This site asks before it remembers anything',
+    body: `${PRODUCT.hosts.marketing} has no advertising tags and no third-party scripts. It does keep one thing, and only if you agree to it: where you came from, so we can tell which of the things we do actually brings anybody here. Say no and it keeps nothing but your no. When you click "start free", what it knows travels in the link — the three Piggles addresses are separate domains and could not share a cookie anyway.`,
   },
   {
     title: 'Signing in with Google is your choice',
@@ -140,7 +164,7 @@ const FACTS = [
   },
   {
     title: 'You are asked before anything is counted',
-    body: `The one optional thing on this list runs inside ${PRODUCT.hosts.console}, and the question is put before you ever get there — on the signup form, or on a screen of its own if you signed up with Google. Say no and it never starts. Either answer is kept with your account and changed whenever you like, from ${PRODUCT.hosts.account}. Nothing on this site needs asking, because this site sets nothing.`,
+    body: `Twice, because there are two different things to ask about. On this site: may we remember where you came from — answered in the bar at the bottom, changeable whenever you like. Inside ${PRODUCT.hosts.console}: may we see which screens you use — answered on the signup form, or on a screen of its own if you signed up with Google, and kept with your account so it follows you. Say no to either and that one never starts.`,
   },
   {
     title: 'Turning them off',
@@ -179,6 +203,12 @@ export default function CookiesPage() {
       <PageHero
         heading="Cookies, and the short list of them."
         lede="A cookie is a small note a website leaves in your browser so the next page knows something the last one did. Here is every one Piggles uses, which of our three sites uses it, and what it is for."
+        figure={
+          <DocumentFigure
+            sections={`${ESSENTIAL.length + PRODUCT_ANALYTICS.length}, every one named`}
+            covers="All three Piggles sites"
+          />
+        }
       />
 
       <Section>
@@ -193,12 +223,20 @@ export default function CookiesPage() {
       </Section>
 
       <Section className="bg-base-100 border-base-300 border-y">
-        <h2 className="text-3xl font-extrabold sm:text-4xl">The ones that tell us what to fix</h2>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">The ones you choose</h2>
         <p className="mt-6 max-w-[70ch] text-lg">
-          These live inside the workspace at {PRODUCT.hosts.console} — the place you do the work —
-          and nowhere else. They are how we find out that a screen is confusing or that something
-          failed quietly.
+          Two things, asked separately in the two places they apply. On this site: where you came
+          from, so we know which of the things we do actually brings anybody here. Inside the
+          workspace at {PRODUCT.hosts.console}: which screens you use, so we find out that one is
+          confusing before you have to tell us. Neither runs until you say yes, and neither is ever
+          sold or passed on.
         </p>
+        <div className="mt-8 max-w-[70ch]">
+          {/* Your answer for THIS site, and the way to change it. The workspace
+              one lives with your account, because it follows the person rather
+              than the browser. */}
+          <ConsentChange />
+        </div>
         <div className="mt-8">
           <Rows rows={PRODUCT_ANALYTICS} />
         </div>

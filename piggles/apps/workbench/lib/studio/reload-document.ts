@@ -18,7 +18,8 @@ import { toPageDoc } from '../../surfaces/studio/use-page-document';
 import type { PageRow } from './page-data';
 import type { SiteSymbol } from './piece-data';
 import type { EmailRow } from './email-data';
-import { pieceKeyOf } from '../../surfaces/builder/studio/saved-pieces';
+import type { ThemeRow } from './data';
+import { pieceKeyOf } from './saved-pieces';
 
 /** Fetch the document fresh and hand it to the open store, if a pane is holding one. */
 export async function reloadDocument(session: StudioSession, ref: DocumentRef): Promise<void> {
@@ -48,6 +49,29 @@ export async function reloadDocument(session: StudioSession, ref: DocumentRef): 
       publishedAt: row.publishedAt,
       unpublished: row.hasUnpublishedChanges || !row.published,
       document: row.silicaDoc,
+    });
+    return;
+  }
+
+  if (ref.kind === 'theme') {
+    const row = await api.get<ThemeRow>(`/v1/builder/themes/${encodeURIComponent(ref.id)}`);
+    store.reset({
+      kind: 'theme',
+      id: row.id,
+      name: row.name,
+      rev: 0,
+      publishedAt: row.publishedAt,
+      unpublished: row.unpublished,
+      // The stored vocabulary is provenance ('custom' | 'preset' | 'marketplace');
+      // the document's is EDITABILITY. Everything a tenant owns is 'tenant',
+      // however it got here — the same mapping `toDoc` makes when the pane opens,
+      // and it has to be the same or a restore would change what the pane thinks
+      // it may edit.
+      origin: row.origin === 'marketplace' ? 'marketplace' : 'tenant',
+      tenantId: null,
+      marketplaceThemeId: row.marketplaceThemeId,
+      marketplaceVersion: row.marketplaceVersion,
+      theme: row.draft,
     });
     return;
   }

@@ -31,7 +31,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   NumberField,
   SearchInput,
@@ -47,6 +46,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaField } from './media-field';
@@ -139,7 +139,14 @@ export function CategoryDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 /** Fetches the category first so a failed load REPLACES the form rather than
  *  rendering an empty one beside a dead Save. */
 function CategoryLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: category, isPending, isError, refetch } = useCategory(id);
+  const {
+    data: category,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useCategory(id);
 
   if (isError) {
     return (
@@ -161,17 +168,35 @@ function CategoryLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <CategoryEditor ctx={ctx} id={id} category={category} />;
+  return (
+    <CategoryEditor
+      ctx={ctx}
+      id={id}
+      category={category}
+      isFetching={isFetching}
+      updatedAt={category ? dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function CategoryEditor({
   ctx,
   id,
   category,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   category?: CategoryDetail;
+  /** Only the saved-category state has a query behind it; "new" has none. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -355,37 +380,46 @@ function CategoryEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Category actions">
-        {!isNew && category?.featured ? (
-          <Badge color="info" variant="soft" size="sm">
-            Featured
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create category' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Category actions"
+        status={
+          !isNew && category?.featured ? (
+            <Badge color="info" variant="soft" size="sm">
+              Featured
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create category' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a category
-              </Heading>
-              <Text>
-                A category is a part of your website&apos;s menu — an aisle shoppers browse down.
-                Categories can sit inside one another, so &ldquo;Cookware&rdquo; can live under
-                &ldquo;Camping&rdquo;.
-              </Text>
-            </div>
+            <Text>
+              A category is a part of your website&apos;s menu — an aisle shoppers browse down.
+              Categories can sit inside one another, so &ldquo;Cookware&rdquo; can live under
+              &ldquo;Camping&rdquo;.
+            </Text>
           ) : null}
 
           {failure ? (

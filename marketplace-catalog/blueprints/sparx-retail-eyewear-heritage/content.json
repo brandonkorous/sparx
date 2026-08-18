@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "the-making-of-a-frame",
-        "status": "published",
-        "body": {
-            "title": "The making of a frame, from block to bench",
-            "excerpt": "Five weeks, forty pairs of hands, and a single block of acetate. Here is how a pair of Atelier Optique glasses is actually made — and why we still do it the slow way.",
-            "featuredImage": {
-                "$asset": "post-acetate"
+  {
+    "typeKey": "blog_post",
+    "slug": "the-making-of-a-frame",
+    "status": "published",
+    "body": {
+      "title": "The making of a frame, from block to bench",
+      "excerpt": "Five weeks, forty pairs of hands, and a single block of acetate. Here is how a pair of Atelier Optique glasses is actually made — and why we still do it the slow way.",
+      "featuredImage": {
+        "$asset": "post-acetate"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A frame begins as a flat sheet of acetate — a plant-based plastic pressed from cotton fibre and set with color and figure right through the block, not sprayed on the surface. We buy ours from a mill in northern Italy that has supplied this workshop for three generations, and we choose the sheets by eye, the way you’d choose a cut of timber, for the depth and movement in the pattern."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A frame begins as a flat sheet of acetate — a plant-based plastic pressed from cotton fibre and set with color and figure right through the block, not sprayed on the surface. We buy ours from a mill in northern Italy that has supplied this workshop for three generations, and we choose the sheets by eye, the way you’d choose a cut of timber, for the depth and movement in the pattern."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Milled from a single block"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Rather than assemble a frame from moulded parts, we mill each front from one solid block. It is slower and it wastes more material, but it means the grain runs unbroken across the frame and there are no seams to fail. The front is then cut, drilled for hinges, and the rims hollowed for the lenses — still, at this stage, matte and lifeless to look at."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Days in the drums, then the hand-polish"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The magic is in the finishing. Each frame goes into rotating beechwood drums with pumice and small wooden pegs and tumbles for days, knocking off every tool mark. Then a maker takes it to a cloth wheel and polishes it by hand until the acetate comes up with a deep, wet lustre — the living shine that tells you a frame was finished by a person, not a machine. Only then do we set the five-barrel hinges with steel rivets, and only then does it earn the name on the temple."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "finding-your-shape",
-        "status": "published",
-        "body": {
-            "title": "Finding the shape that suits you",
-            "excerpt": "The old rule is balance and contrast — round softens angles, angular sharpens curves. Here is how that plays out across the house, with the frames to start from.",
-            "featuredImage": {
-                "$asset": "post-fit"
+            "content": [
+              {
+                "type": "text",
+                "text": "Milled from a single block"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Rather than assemble a frame from moulded parts, we mill each front from one solid block. It is slower and it wastes more material, but it means the grain runs unbroken across the frame and there are no seams to fail. The front is then cut, drilled for hinges, and the rims hollowed for the lenses — still, at this stage, matte and lifeless to look at."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "There is one idea behind every guide to choosing glasses: balance and contrast. A frame that gently contrasts with the lines of your face tends to flatter it, while one that echoes your shape can amplify it. It is a rule of thumb, not a law — but it’s a good place to begin, and the house has a shape for each starting point."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Softer faces, stronger lines"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If your face is round or full, with soft curves and a similar width and length, a little architecture flatters you — the rectangular Ellsworth adds definition, and the lifted line of the Marguerite draws the eye up and out. The idea is to lend the face a few clean edges to play against."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Stronger faces, softer frames"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If your face is square or angular, with a strong jaw and brow, do the opposite and soften it. The rounded Beaumont is the house answer — its hand-filed panto curve takes the edge off without hiding your features — and the smaller Whitfield does the same in a lighter, more scholarly key. Oval faces, the lucky ones, can wear almost anything; shop by the mood you want and trust your own eye over any rule."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "ninety-years-at-the-bench",
-        "status": "published",
-        "body": {
-            "title": "Ninety years at the same bench",
-            "excerpt": "A workshop, three generations and one stubborn idea: that a pair of glasses should outlast the trend that sold it. A short history of the house.",
-            "featuredImage": {
-                "$asset": "post-1932"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The workshop opened in 1932, when our grandfather rented a narrow room, bought a lathe and a set of files, and began cutting spectacle fronts from acetate for the town’s opticians. The first pattern he drew — a modest rounded panto — is still pinned above the bench, and we still strike a numbered run of it every year as the 1932 Anniversary."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Three generations, one method"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The tools have barely changed, and neither has the method. We still mill from a single block, still tumble in beechwood drums, still polish by hand and set the hinges with five barrels and steel rivets. New machines can make a frame faster; none can make it better, and we have never been in a hurry. What has grown is only the reach — the same bench now sends frames around the world."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Made to be handed on"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The idea that has kept the lights on for ninety years is a simple, almost old-fashioned one: a good frame should be repaired, not replaced. So we glaze every lens ourselves, adjust and repair anything we have ever made for free, and build each pair heavy enough in the hand to be worn for decades and then passed to someone else. That, and not the price, is what we mean by luxury."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Days in the drums, then the hand-polish"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The magic is in the finishing. Each frame goes into rotating beechwood drums with pumice and small wooden pegs and tumbles for days, knocking off every tool mark. Then a maker takes it to a cloth wheel and polishes it by hand until the acetate comes up with a deep, wet lustre — the living shine that tells you a frame was finished by a person, not a machine. Only then do we set the five-barrel hinges with steel rivets, and only then does it earn the name on the temple."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "finding-your-shape",
+    "status": "published",
+    "body": {
+      "title": "Finding the shape that suits you",
+      "excerpt": "The old rule is balance and contrast — round softens angles, angular sharpens curves. Here is how that plays out across the house, with the frames to start from.",
+      "featuredImage": {
+        "$asset": "post-fit"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is one idea behind every guide to choosing glasses: balance and contrast. A frame that gently contrasts with the lines of your face tends to flatter it, while one that echoes your shape can amplify it. It is a rule of thumb, not a law — but it’s a good place to begin, and the house has a shape for each starting point."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Softer faces, stronger lines"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If your face is round or full, with soft curves and a similar width and length, a little architecture flatters you — the rectangular Ellsworth adds definition, and the lifted line of the Marguerite draws the eye up and out. The idea is to lend the face a few clean edges to play against."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Stronger faces, softer frames"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If your face is square or angular, with a strong jaw and brow, do the opposite and soften it. The rounded Beaumont is the house answer — its hand-filed panto curve takes the edge off without hiding your features — and the smaller Whitfield does the same in a lighter, more scholarly key. Oval faces, the lucky ones, can wear almost anything; shop by the mood you want and trust your own eye over any rule."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "ninety-years-at-the-bench",
+    "status": "published",
+    "body": {
+      "title": "Ninety years at the same bench",
+      "excerpt": "A workshop, three generations and one stubborn idea: that a pair of glasses should outlast the trend that sold it. A short history of the house.",
+      "featuredImage": {
+        "$asset": "post-1932"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The workshop opened in 1932, when our grandfather rented a narrow room, bought a lathe and a set of files, and began cutting spectacle fronts from acetate for the town’s opticians. The first pattern he drew — a modest rounded panto — is still pinned above the bench, and we still strike a numbered run of it every year as the 1932 Anniversary."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Three generations, one method"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The tools have barely changed, and neither has the method. We still mill from a single block, still tumble in beechwood drums, still polish by hand and set the hinges with five barrels and steel rivets. New machines can make a frame faster; none can make it better, and we have never been in a hurry. What has grown is only the reach — the same bench now sends frames around the world."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Made to be handed on"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The idea that has kept the lights on for ninety years is a simple, almost old-fashioned one: a good frame should be repaired, not replaced. So we glaze every lens ourselves, adjust and repair anything we have ever made for free, and build each pair heavy enough in the hand to be worn for decades and then passed to someone else. That, and not the price, is what we mean by luxury."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

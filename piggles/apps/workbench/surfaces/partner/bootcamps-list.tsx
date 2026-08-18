@@ -15,13 +15,17 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
-  Table,
+  Card,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faGraduationCap, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneEmpty } from '../../components/pane-empty';
+/** Registry module for this pane, so the brand draws one consistent picture
+ *  across every partner state. */
+const MODULE = 'partner';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useBootcamps, usePartnerProfile, type Bootcamp } from './data';
@@ -91,32 +95,39 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Bootcamps list controls">
-        <Text className="text-sm whitespace-nowrap">
-          {bootcamps.length === 1 ? '1 bootcamp' : `${String(bootcamps.length)} bootcamps`}
-        </Text>
-        {canHost ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            title="New bootcamp — hold Shift to open alongside, Alt for a new window"
-            onClick={openNew}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New bootcamp
-          </Button>
-        ) : (
-          <span className="ml-auto" />
-        )}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Bootcamps list controls"
+        status={
+          <Text className="text-sm whitespace-nowrap">
+            {bootcamps.length === 1 ? '1 bootcamp' : `${String(bootcamps.length)} bootcamps`}
+          </Text>
+        }
+        primary={
+          canHost ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              title="New bootcamp — hold Shift to open alongside, Alt for a new window"
+              onClick={openNew}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              New bootcamp
+            </Button>
+          ) : (
+            <span className="ml-auto" />
+          )
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {isError ? (
         <PartnerLoadError
@@ -143,24 +154,30 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
               </Alert>
             ) : null}
 
+            {/* Carded, because the branch beside it is a card — uncarded, the empty
+                state was the one thing on this pane sitting on the recessed
+                surface. */}
             {bootcamps.length === 0 ? (
-              <EmptyState
-                icon={<Icon glyph={faGraduationCap} className="size-6" aria-hidden />}
-                title="No bootcamps yet"
-                description={
-                  canHost
-                    ? 'Create your first cohort. Save it as a draft, then publish it when you’re ready to take sign-ups.'
-                    : 'Once your partner account is active, the cohorts you create will appear here.'
-                }
-                actions={
-                  canHost ? (
-                    <Button size="sm" color="module" onClick={openNew}>
-                      <Icon glyph={faPlus} className="size-4" aria-hidden />
-                      New bootcamp
-                    </Button>
-                  ) : undefined
-                }
-              />
+              <Card>
+                <PaneEmpty
+                  module={MODULE}
+                  icon={<Icon glyph={faGraduationCap} className="size-6" aria-hidden />}
+                  title="No bootcamps yet"
+                  description={
+                    canHost
+                      ? 'Create your first cohort. Save it as a draft, then publish it when you’re ready to take sign-ups.'
+                      : 'Once your partner account is active, the cohorts you create will appear here.'
+                  }
+                  actions={
+                    canHost ? (
+                      <Button size="sm" color="module" onClick={openNew}>
+                        <Icon glyph={faPlus} className="size-4" aria-hidden />
+                        New bootcamp
+                      </Button>
+                    ) : undefined
+                  }
+                />
+              </Card>
             ) : (
               <section className="card bg-base-100 overflow-hidden">
                 <div className="px-2">

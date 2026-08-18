@@ -54,7 +54,7 @@ than a ban because a ban would fail on day one and get disabled.
 Wire into `package.json` scripts, [.githooks/pre-push](../../../.githooks/pre-push)
 and CI alongside `check:events` / `check:routes` / `check:docker`.
 
-**Exit:** `pnpm check:boundaries` green; artificially adding one `@sparx/query`
+**Exit:** `pnpm check:boundaries` green; artificially adding one `@wizeworks/query`
 import to a Piggles file makes it red.
 
 ---
@@ -70,7 +70,7 @@ Six edits. Three fix live, visible bugs.
 | A1.3 | `surfaces/onboarding/onboarding-layout.tsx` | `<Wordmark aria-label="sparx" />` → `@piggles/brand` `Logo`. Blocks **B3.4**                                                                                                            |
 | A1.4 | `lib/tour/*` (8 files)                      | **Decide: delete or port.** Currently unreachable and carrying sparx marks. Deleting also drops the `driver.js` dependency. Porting means Piggles marks + a mount site. Blocks **B3.1** |
 | A1.5 | `app/globals.css:33-34`                     | `@sparx/brand/{silica-gaps,toast}.css` → move both files to a brand-blind package (`@wizeworks/silica-gaps`, or fold into `brand-core` in A2.3) and re-point. sparx re-points too       |
-| A1.6 | `apps/workbench/package.json`               | Drop the `@sparx/ui` dependency — declared, imported zero times                                                                                                                         |
+| A1.6 | `sparx/apps/workbench/package.json`         | Drop the `@wizeworks/ui` dependency — declared, imported zero times                                                                                                                     |
 
 **Exit:** `grep -rE "@sparx/(brand|ui)" piggles/` returns nothing. Console builds.
 Every mascot, mark and wordmark visible in the Piggles console comes from
@@ -82,7 +82,7 @@ Every mascot, mark and wordmark visible in the Piggles console comes from
 
 ### A2.1 — brand-aware `appOrigin()` _(blocks B2.3)_
 
-[packages/links/src/server.ts:21](../../../packages/links/src/server.ts#L21)
+[wizeworks/packages/links/src/server.ts:21](../../../packages/links/src/server.ts#L21)
 hardcodes `https://app.sparx.works` and `appOrigin()` takes no brand.
 
 Make the origin a **per-brand lookup**, resolved from `Tenant.platformBrand`
@@ -96,7 +96,7 @@ a boundary violation; a `Record<BrandKey, string>` built from environment is not
 Then audit every `appOrigin()` / `appLink()` caller for a brand it can supply.
 Known: [api-rest team.ts:85](../../../services/api-rest/src/routes/v1/team.ts#L85)
 (invitations), `lib/chat/notify.ts`, `lib/partners/payouts.ts`,
-`lib/users/password-reset.ts`, `packages/auth/src/server.ts:422`.
+`lib/users/password-reset.ts`, `wizeworks/packages/auth/src/server.ts:422`.
 
 **Exit:** an invitation minted for a tenant with `platformBrand = 'piggles'`
 carries a `mypiggles.com` accept URL. Add a unit test that asserts it.
@@ -138,7 +138,7 @@ outside a comment.
 ## A3 — The rename
 
 `@sparx/<x>` → `@wizeworks/<x>` for all 31 Class-1 packages. `@sparx/brand` keeps
-its name (it is sparx's); `@sparx/ui` keeps its name.
+its name (it is sparx's); `@wizeworks/ui` keeps its name.
 
 **Scripted.** `scripts/codemod-scope-rename.mjs`, run and re-run, never hand
 edits. It rewrites: package `name` fields, `dependencies` / `devDependencies`
@@ -158,7 +158,7 @@ scope for the codemod; the `.tmp/` ones can be deleted instead.
 
 **Exit:** `pnpm install && pnpm typecheck && pnpm lint && pnpm test` green.
 `grep -r "@sparx/" --include='*.ts*' . | grep -v node_modules` returns only
-`@sparx/brand` and `@sparx/ui`.
+`@sparx/brand` and `@wizeworks/ui`.
 
 ---
 
@@ -171,7 +171,7 @@ scope for the codemod; the `.tmp/` ones can be deleted instead.
 | `apps/`               | `sparx/apps/`               |
 | `packages/{brand,ui}` | `sparx/packages/{brand,ui}` |
 
-`apps/admin` and `apps/site` go to `wizeworks/apps/` — admin is the WizeWorks
+`wizeworks/apps/admin` and `wizeworks/apps/site` go to `wizeworks/apps/` — admin is the WizeWorks
 staff console, site paints the tenant's brand and is indifferent to which brand
 sold it. Both are argued in wizeworks/CLAUDE.md; do not re-litigate.
 

@@ -12,7 +12,7 @@
 // This file is JUST the SPEC; composition + emission live in the shared
 // `service-sites/harness.ts` (a restaurant sets `menu` + `chrome.navLinks` for the Menu/Reserve
 // nav). Run:
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-restaurant-winebar.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-restaurant-winebar.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-restaurant-winebar/**" \
 //     "marketplace-catalog/_gen/gen-restaurant-winebar.ts"
 //
@@ -26,8 +26,8 @@ import { pathToFileURL } from 'node:url';
 import {
   el,
   type Node,
-} from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
+} from '../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import {
   defineTheme,

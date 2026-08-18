@@ -37,7 +37,7 @@
 #
 # NOTE: this couples media durability to the disk. It survives pod restarts and
 # node reimages, but it is not replicated and has no snapshot schedule. Moving to
-# Blob Storage would need a new driver in packages/media (which today has exactly
+# Blob Storage would need a new driver in wizeworks/packages/media (which today has exactly
 # two: GCS and local disk), so it is a deliberate later decision, not an
 # oversight.
 # ---------------------------------------------------------------------------

@@ -14,7 +14,8 @@
 // cache keys, and folding that into the file that fetches the tenant name would
 // make both harder to read.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from './client';
 
 export type FeedbackCategory = 'idea' | 'problem' | 'question' | 'praise';
@@ -231,4 +232,10 @@ export function feedbackErrorMessage(error: unknown): string {
   const message = (error as { message?: string } | null)?.message;
   if (code === 'RATE_LIMITED' && message) return message;
   return 'That didn’t send. Give it a moment and try again.';
+}
+
+/** A 404 is a fact about the message ("it is gone"); anything else is a fact
+ *  about the network. A thread pane needs to tell those two apart. */
+export function isFeedbackNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404;
 }

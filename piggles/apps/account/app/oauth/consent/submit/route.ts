@@ -17,7 +17,7 @@ import {
   signConsentGrant,
   OIDC_BASE_SCOPES,
   type StaffRole,
-} from '@sparx/auth';
+} from '@wizeworks/auth';
 import {
   parseAuthorizeParams,
   validateAuthorizeRequest,
@@ -95,7 +95,7 @@ function approve(
   q.set('code_challenge_method', 'S256');
   if (params.nonce) q.set('nonce', params.nonce);
   // `sparx_grant` is the platform's wire name, read by the `before` hook in
-  // @sparx/auth. It is shared with the other brand by construction, so it stays
+  // @wizeworks/auth. It is shared with the other brand by construction, so it stays
   // as-is until the scope rename (piggles/docs/migration, phase A3) renames both
   // sides together — changing one half here would break the handshake.
   q.set('sparx_grant', grant);

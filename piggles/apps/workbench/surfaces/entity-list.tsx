@@ -9,13 +9,14 @@
 
 import { useState, type ReactNode } from 'react';
 import { PaneWaiting } from '../components/pane-waiting';
-import { useQuery } from '@sparx/query';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { useQuery } from '@wizeworks/query';
+import { Badge, Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../components/table';
 import { faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { PigglesIcon } from '@piggles/ui';
 import { api } from '../lib/api/client';
-import type { OpenTarget, SurfaceContext } from '../lib/surfaces/registry';
+import { getSurface, type OpenTarget, type SurfaceContext } from '../lib/surfaces/registry';
 import { RefreshButton } from '../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
 import { ListEmptyState } from '../components/list-empty-state';
@@ -67,6 +68,9 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
 
     const rows = data ?? [];
     const glyph = config.emptyIcon;
+    // One factory serves many surfaces, so the module is read from the registry
+    // entry this pane was opened as rather than baked into the config.
+    const module = getSurface(ctx.descriptor.surface)?.module;
 
     const open = (row: T, event: { shiftKey: boolean; altKey: boolean }) => {
       if (!config.detailSurface) return;
@@ -80,49 +84,54 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
       // would quietly make every list built on it inconsistent with the
       // hand-written ones.
       <div className={PANE_SHELL}>
-        <PaneToolbar label="List controls">
-          {/* SearchInput ships the leading icon and a clear button, so every
+        <PaneToolbar
+          label="List controls"
+          search={
+            /* SearchInput ships the leading icon and a clear button, so every
               list gets the same "how do I get back to everything?" affordance.
               The width sits on a WRAPPER: SearchInput forwards className to its
               inner <input>, so a sizing class aimed at the control never reaches
-              the element that actually lays out. */}
-          <div className="max-w-xs min-w-0 flex-1">
-            <SearchInput
-              size="sm"
-              aria-label={config.searchPlaceholder}
-              placeholder={config.searchPlaceholder}
-              value={search}
-              onValueChange={setSearch}
-            />
-          </div>
-          {/* `ml-auto` rather than a flex-1 spacer div: same result without a
+              the element that actually lays out. */
+            <div className="max-w-xs min-w-0 flex-1">
+              <SearchInput
+                size="sm"
+                aria-label={config.searchPlaceholder}
+                placeholder={config.searchPlaceholder}
+                value={search}
+                onValueChange={setSearch}
+              />
+            </div>
+          }
+          primary={
+            /* `ml-auto` rather than a flex-1 spacer div: same result without a
               phantom element sitting in the middle of the Toolbar's roving
-              arrow-key focus. It rides on whichever control comes first on the
-              right — the New button when there is one, otherwise refresh. */}
-          {config.createSurface ? (
-            <Button
-              color="module"
-              size="sm"
-              className="ml-auto"
-              title={`${config.createLabel ?? 'New'} — hold Shift to open alongside, Alt for a new window`}
-              onClick={(event) => {
-                ctx.open(config.createSurface!, { id: 'new' }, { target: targetFor(event) });
+              arrow-key focus. */
+            config.createSurface ? (
+              <Button
+                color="module"
+                size="sm"
+                className="ml-auto"
+                title={`${config.createLabel ?? 'New'} — hold Shift to open alongside, Alt for a new window`}
+                onClick={(event) => {
+                  ctx.open(config.createSurface!, { id: 'new' }, { target: targetFor(event) });
+                }}
+              >
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
+                {config.createLabel ?? 'New'}
+              </Button>
+            ) : null
+          }
+          refresh={
+            /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={data ? dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void refetch();
               }}
-            >
-              <Icon glyph={faPlus} className="size-4" aria-hidden />
-              {config.createLabel ?? 'New'}
-            </Button>
-          ) : null}
-          {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-          <RefreshButton
-            className={config.createSurface ? undefined : 'ml-auto'}
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        </PaneToolbar>
+            />
+          }
+        />
 
         <Card className="min-h-0 flex-1 overflow-y-auto">
           {error ? (
@@ -136,6 +145,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
             <PaneWaiting />
           ) : rows.length === 0 ? (
             <ListEmptyState
+              module={module}
               filtered={Boolean(search)}
               noResults={{
                 icon: glyph ? <Icon glyph={glyph} className="size-6" aria-hidden /> : undefined,

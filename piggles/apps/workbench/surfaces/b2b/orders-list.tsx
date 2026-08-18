@@ -12,18 +12,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-  Text,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCartShopping, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -96,48 +86,52 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Wholesale order controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search wholesale orders"
-            placeholder="Order number or company…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+      <PaneToolbar
+        label="Wholesale order controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search wholesale orders"
+              placeholder="Order number or company…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        filters={[
+          {
+            label: 'Show',
+            key: 'state',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
               resetWindow();
+            },
+            options: FILTERS,
+          },
+        ]}
+        views={{
+          target: '/b2b/orders',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter wholesale orders"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       {accountId && accountName ? (
         <div className="flex items-center gap-2">

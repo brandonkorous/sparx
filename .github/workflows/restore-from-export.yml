@@ -345,7 +345,7 @@ jobs:
       # The tarball's paths are relative to MEDIA_LOCAL_DIR, so they land as
       # `<tenantId>/originals/...` and `<tenantId>/variants/...` — exactly the
       # object keys the GCS buckets used, and exactly what LocalStorage in
-      # packages/media joins onto its root. api-rest serves these back over
+      # wizeworks/packages/media joins onto its root. api-rest serves these back over
       # /v1/public/media/variants/*, so a path that is off by one segment
       # transcodes fine and then 404s forever.
       #

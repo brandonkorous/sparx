@@ -1,0 +1,147 @@
+/* ── The bridges: data-app / data-group / data-module ⇒ active hue ─────────────
+ *
+ * Part of @piggles/brand/theme.css — imported from it, never directly.
+ * UNLAYERED on purpose: that is what outranks silicaui's `base` layer.
+ * See ../layers.css.
+ *
+ * Repoints `--color-module` for a subtree from an ATTRIBUTE, so a component
+ * shifts the active hue by rendering `data-app="sell"` and nothing else. No
+ * inline `style`, no JS color table.
+ *
+ * ALL THREE attributes are live and that is deliberate. `data-app` is Piggles'
+ * own vocabulary, used by the Piggles shell and nav. `data-group` colors a whole
+ * section of chrome. `data-module` is what the SHARED workbench surfaces already
+ * emit — and since sparx's bridge lives in a stylesheet a Piggles app never
+ * loads, the same hues have to answer to that name here too.
+ *
+ * Order matters: a nested attribute wins over its ancestor by normal cascade
+ * proximity, which is what makes a Sell panel inside a Customers pane wear Sell. */
+
+[data-app='home'] {
+  --color-module: var(--color-app-home);
+  --color-module-content: var(--color-app-home-content);
+}
+[data-app='site'] {
+  --color-module: var(--color-app-site);
+  --color-module-content: var(--color-app-site-content);
+}
+[data-app='content'] {
+  --color-module: var(--color-app-content);
+  --color-module-content: var(--color-app-content-content);
+}
+[data-app='get_found'],
+[data-app='get-found'] {
+  --color-module: var(--color-app-get-found);
+  --color-module-content: var(--color-app-get-found-content);
+}
+[data-app='sell'] {
+  --color-module: var(--color-app-sell);
+  --color-module-content: var(--color-app-sell-content);
+}
+[data-app='stock'] {
+  --color-module: var(--color-app-stock);
+  --color-module-content: var(--color-app-stock-content);
+}
+[data-app='customers'] {
+  --color-module: var(--color-app-customers);
+  --color-module-content: var(--color-app-customers-content);
+}
+[data-app='messages'] {
+  --color-module: var(--color-app-messages);
+  --color-module-content: var(--color-app-messages-content);
+}
+[data-app='bookings'] {
+  --color-module: var(--color-app-bookings);
+  --color-module-content: var(--color-app-bookings-content);
+}
+[data-app='invoices'] {
+  --color-module: var(--color-app-invoices);
+  --color-module-content: var(--color-app-invoices-content);
+}
+[data-app='money'] {
+  --color-module: var(--color-app-money);
+  --color-module-content: var(--color-app-money-content);
+}
+[data-app='team'] {
+  --color-module: var(--color-app-team);
+  --color-module-content: var(--color-app-team-content);
+}
+[data-app='automations'] {
+  --color-module: var(--color-app-automations);
+  --color-module-content: var(--color-app-automations-content);
+}
+[data-app='partners'] {
+  --color-module: var(--color-app-partners);
+  --color-module-content: var(--color-app-partners-content);
+}
+[data-app='connections'] {
+  --color-module: var(--color-app-connections);
+  --color-module-content: var(--color-app-connections-content);
+}
+
+/* The `data-module` half — what the shared workbench surfaces emit. */
+[data-module='builder'],
+[data-module='storefront'],
+[data-module='cms'],
+[data-module='seo'],
+[data-module='social'] {
+  --color-module: var(--color-group-web);
+  --color-module-content: var(--color-group-web-content);
+}
+[data-module='commerce'],
+[data-module='inventory'],
+[data-module='dropship'],
+[data-module='b2b'] {
+  --color-module: var(--color-group-sell);
+  --color-module-content: var(--color-group-sell-content);
+}
+[data-module='crm'],
+[data-module='chat'],
+[data-module='scheduling'],
+[data-module='email'] {
+  --color-module: var(--color-group-people);
+  --color-module-content: var(--color-group-people-content);
+}
+[data-module='invoicing'],
+[data-module='finance'] {
+  --color-module: var(--color-group-money);
+  --color-module-content: var(--color-group-money-content);
+}
+[data-module='staff'],
+[data-module='partner'],
+[data-module='ai'],
+[data-module='automations'] {
+  --color-module: var(--color-group-run);
+  --color-module-content: var(--color-group-run-content);
+}
+[data-module='platform'] {
+  --color-module: var(--color-group-home);
+  --color-module-content: var(--color-group-home-content);
+}
+
+/* Group-level, for chrome that colors a whole section of the nav rather than one
+   app — the rail's group headers, the app launcher's sections. */
+[data-group='home'] {
+  --color-module: var(--color-group-home);
+  --color-module-content: var(--color-group-home-content);
+}
+[data-group='web'] {
+  --color-module: var(--color-group-web);
+  --color-module-content: var(--color-group-web-content);
+}
+[data-group='sell'] {
+  --color-module: var(--color-group-sell);
+  --color-module-content: var(--color-group-sell-content);
+}
+[data-group='people'] {
+  --color-module: var(--color-group-people);
+  --color-module-content: var(--color-group-people-content);
+}
+[data-group='money'] {
+  --color-module: var(--color-group-money);
+  --color-module-content: var(--color-group-money-content);
+}
+[data-group='run'] {
+  --color-module: var(--color-group-run);
+  --color-module-content: var(--color-group-run-content);
+}

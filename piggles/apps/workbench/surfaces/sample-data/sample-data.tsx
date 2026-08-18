@@ -16,7 +16,7 @@
 import { useEffect } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { Badge, Button, Card, Heading, Text, useToast } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Text, useToast } from '@wizeworks/silicaui-react';
 import { faDatabase, faFlask, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
@@ -171,45 +171,49 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Sample data actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={load.isPending}
-          disabled={busy}
-          onClick={() => {
-            void onLoad();
-          }}
-        >
-          <Icon glyph={faDatabase} className="size-4" aria-hidden />
-          {load.isPending
-            ? loaded
-              ? 'Replacing…'
-              : 'Loading…'
-            : loaded
-              ? 'Reload sample data'
-              : 'Load sample data'}
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Sample data actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={load.isPending}
+            disabled={busy}
+            onClick={() => {
+              void onLoad();
+            }}
+          >
+            <Icon glyph={faDatabase} className="size-4" aria-hidden />
+            {load.isPending
+              ? loaded
+                ? 'Replacing…'
+                : 'Loading…'
+              : loaded
+                ? 'Reload sample data'
+                : 'Load sample data'}
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className={COLUMN}>
             <div className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Sample data
-                </Heading>
                 <Badge color={loaded ? 'success' : 'neutral'} variant="soft" size="sm">
                   {loaded ? 'Loaded' : 'Not loaded'}
                 </Badge>

@@ -22,19 +22,16 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  NativeSelect,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faFileText, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -47,6 +44,10 @@ import {
   type ContentEntry,
   type EntryStatus,
 } from './data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'cms';
 
 /** The chips ARE the questions people open this list to answer. */
 const STATUS_FILTERS = [
@@ -142,83 +143,78 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      {/* `wrap` after reducing what can reduce: below @2xl the primary action
-          sheds its label to the icon, and the kind picker hides on the narrowest
-          panes. At a normal width this is one line. */}
-      <PaneToolbar label="Content list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search content"
-            placeholder="Title or web address…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+      <PaneToolbar
+        label="Content list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search content"
+              placeholder="Title or web address…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New',
+          icon: faPlus,
+          onClick: create,
+          title: 'Write something new — hold Shift to open alongside, Alt for a new window',
+        }}
+        filters={[
+          {
+            label: 'Show',
+            // The persisted name is the domain word, not the bar's question —
+            // the platform's starter views are written as `{ status: 'draft' }`.
+            key: 'status',
+            value: statusFilter,
+            neutralValue: 'all',
+            options: STATUS_FILTERS.map((entry) => ({ value: entry.value, label: entry.label })),
+            onValueChange: (next) => {
+              setStatusFilter(next as StatusFilterValue);
               resetWindow();
+            },
+          },
+          {
+            label: 'Kind of content',
+            key: 'type',
+            value: typeKey,
+            neutralValue: '',
+            // A business can define any number of content types, so this is the
+            // open-ended one — a select on the bar, never twenty chips.
+            present: 'select',
+            options: [
+              { value: '', label: 'All kinds' },
+              ...(types ?? []).map((type) => ({ value: type.key, label: type.name })),
+            ],
+            onValueChange: (next) => {
+              setTypeKey(next);
+              resetWindow();
+            },
+          },
+        ]}
+        views={{
+          target: '/cms/content',
+          params: { q: search },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <Filter
-          color="module"
-          value={statusFilter}
-          onValueChange={(next) => {
-            setStatusFilter((next as StatusFilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by status"
-        >
-          {STATUS_FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        {/* Hidden on the narrowest panes: it is the least-used control here, and
-            search + status answer most questions on their own. */}
-        <label className="hidden items-center @xl:flex">
-          <span className="sr-only">Kind of content</span>
-          <NativeSelect
-            size="sm"
-            color="module"
-            value={typeKey}
-            aria-label="Kind of content"
-            onChange={(event) => {
-              setTypeKey(event.target.value);
-              resetWindow();
-            }}
-          >
-            <option value="">All kinds</option>
-            {(types ?? []).map((type) => (
-              <option key={type.key} value={type.key}>
-                {type.name}
-              </option>
-            ))}
-          </NativeSelect>
-        </label>
-
-        <Button
-          data-tour="cms-new"
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Write something new — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @2xl:inline">New</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {staleAfterFailure ? (
@@ -246,26 +242,19 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the table — "nothing written yet" over a
           // connection failure is a lie about their work, and the worst one to tell.
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="Could not load your content"
             description="This is a problem reaching the server. Nothing you have written is affected — none of it has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faFileText} className="size-6" aria-hidden />,

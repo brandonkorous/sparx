@@ -1,4 +1,4 @@
-import { withTenant } from '@sparx/db';
+import { withTenant } from '@wizeworks/db';
 
 // The consent decision, stored on the ACCOUNT rather than in a cookie.
 //

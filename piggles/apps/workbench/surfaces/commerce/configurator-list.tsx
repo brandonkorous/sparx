@@ -14,15 +14,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faPlus, faSliders } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -32,6 +25,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import type { Tone } from './products-data';
 import { useConfiguratorTemplates, type SortDir, type TemplateSort } from './configurator-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -121,55 +118,74 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Configurator list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search builds"
-            placeholder="Search builds…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        </div>
-        <div className="hidden w-36 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Show which builds"
-            value={status}
-            items={{ all: 'All builds', active: 'Live', draft: 'Not live', archived: 'Retired' }}
-            onValueChange={(next) => {
-              setStatus(next as string);
-              resetWindow();
-            }}
-          />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Set up a build — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Configurator list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search builds"
+              placeholder="Search builds…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Set up a build',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open(
               'commerce.configurator-template.detail',
               { id: 'new' },
               { target: targetFor(event) }
             );
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Set up a build</span>
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'Set up a build — hold Shift to open alongside, Alt for a new window',
+        }}
+        filters={[
+          {
+            label: 'Show',
+            key: 'status',
+            value: status,
+            neutralValue: 'all',
+            options: [
+              { value: 'all', label: 'All' },
+              { value: 'active', label: 'Live' },
+              { value: 'draft', label: 'Not live' },
+              { value: 'archived', label: 'Retired' },
+            ],
+            onValueChange: (next) => {
+              setStatus(next);
+              resetWindow();
+            },
+          },
+        ]}
+        views={{
+          target: '/commerce/configurator',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as TemplateSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -181,6 +197,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={anyFilter}
             noResults={{
               icon: <Icon glyph={faSliders} className="size-6" aria-hidden />,

@@ -20,7 +20,6 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -28,6 +27,7 @@ import { faClone, faListCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { AutomationEditor } from './automation-editor';
@@ -63,7 +63,14 @@ export function AutomationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ManageAutomation({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: automation, isPending, isError, refetch } = useAutomation(id);
+  const {
+    data: automation,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useAutomation(id);
 
   if (isError) {
     return (
@@ -85,11 +92,34 @@ function ManageAutomation({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  if (automation.locked) return <LockedAutomation ctx={ctx} automation={automation} />;
+  if (automation.locked)
+    return (
+      <LockedAutomation
+        ctx={ctx}
+        automation={automation}
+        isFetching={isFetching}
+        updatedAt={dataUpdatedAt}
+        onRefresh={() => {
+          void refetch();
+        }}
+      />
+    );
   return <AutomationEditor ctx={ctx} automation={automation} />;
 }
 
-function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation: Automation }) {
+function LockedAutomation({
+  ctx,
+  automation,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  automation: Automation;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const clone = useCloneAutomation(automation.id);
   const state = automationState(automation.status);
@@ -125,49 +155,55 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Automation actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        <TierBadge origin={automation.origin} locked={automation.locked} />
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          className="ml-auto shrink-0"
-          onClick={(event) => {
-            ctx.open(
-              'automations.runs',
-              { automationId: automation.id },
-              { target: targetFor(event) }
-            );
-          }}
-        >
-          <Icon glyph={faListCheck} className="size-4" aria-hidden />
-          Runs
-        </Button>
-        <Button
-          size="sm"
-          color="module"
-          className="shrink-0"
-          loading={clone.isPending}
-          onClick={onClone}
-        >
-          <Icon glyph={faClone} className="size-4" aria-hidden />
-          Duplicate to edit
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Automation actions"
+        status={
+          <>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            <TierBadge origin={automation.origin} locked={automation.locked} />
+          </>
+        }
+        primary={
+          <Button
+            size="sm"
+            variant="outline"
+            className="ml-auto shrink-0"
+            onClick={(event) => {
+              ctx.open(
+                'automations.runs',
+                { automationId: automation.id },
+                { target: targetFor(event) }
+              );
+            }}
+          >
+            <Icon glyph={faListCheck} className="size-4" aria-hidden />
+            Runs
+          </Button>
+        }
+        controls={
+          <Button
+            size="sm"
+            color="module"
+            className="shrink-0"
+            loading={clone.isPending}
+            onClick={onClone}
+          >
+            <Icon glyph={faClone} className="size-4" aria-hidden />
+            Duplicate to edit
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {automation.name}
-            </Heading>
-            {automation.description ? (
-              <Text className="text-sm">{automation.description}</Text>
-            ) : null}
-          </div>
+          {automation.description ? (
+            <Text className="text-sm">{automation.description}</Text>
+          ) : null}
 
           <Alert color="info" variant="soft">
             <AlertContent>

@@ -19,8 +19,8 @@
 // the card above it has.
 
 import { useEffect, useState } from 'react';
-import { Heading, Text } from '@wizeworks/silicaui-react';
-import { useSession } from '@sparx/auth/client';
+import { Text } from '@wizeworks/silicaui-react';
+import { useSession } from '@wizeworks/auth/client';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -59,26 +59,19 @@ export function SecuritySurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Security actions">
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={updatedAt}
-          onRefresh={refreshAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Security actions"
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={refreshAll} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Security
-            </Heading>
-            <Text>
-              How you sign in, the devices signed in right now, and a record of what has been done
-              in your account.
-            </Text>
-          </div>
+          <Text>
+            How you sign in, the devices signed in right now, and a record of what has been done in
+            your account.
+          </Text>
 
           <PasswordCard />
 

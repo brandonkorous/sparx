@@ -35,7 +35,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Text,
@@ -49,6 +48,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -125,7 +125,17 @@ function InvoiceLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  return <InvoiceManage ctx={ctx} invoice={invoiceQuery.data} />;
+  return (
+    <InvoiceManage
+      ctx={ctx}
+      invoice={invoiceQuery.data}
+      isFetching={invoiceQuery.isFetching}
+      updatedAt={invoiceQuery.dataUpdatedAt}
+      onRefresh={() => {
+        void invoiceQuery.refetch();
+      }}
+    />
+  );
 }
 
 /* ── Create ─────────────────────────────────────────────────────────────── */
@@ -201,29 +211,27 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New invoice actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Raise invoice
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New invoice actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Raise invoice
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Raise an invoice
-            </Heading>
-            <Text>
-              Bill a trade account for work outside an order. Orders on terms invoice themselves —
-              this is for everything else.
-            </Text>
-          </div>
+          <Text>
+            Bill a trade account for work outside an order. Orders on terms invoice themselves —
+            this is for everything else.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -363,7 +371,19 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
 
 /* ── Manage ─────────────────────────────────────────────────────────────── */
 
-function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: InvoiceRow }) {
+function InvoiceManage({
+  ctx,
+  invoice,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  invoice: InvoiceRow;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
   const update = useUpdateInvoice(invoice.id);
@@ -440,35 +460,38 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Invoice actions">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        {editable ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={update.isPending}
-            disabled={!dirty}
-            onClick={save}
-          >
-            Save
-          </Button>
-        ) : null}
-      </PaneToolbar>
+      <PaneToolbar
+        label="Invoice actions"
+        status={
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+        }
+        primary={
+          editable ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              loading={update.isPending}
+              disabled={!dirty}
+              onClick={save}
+            >
+              Save
+            </Button>
+          ) : null
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Invoice {invoice.invoiceNumber}
-            </Heading>
-            <Text>
-              {invoice.account ? invoice.account.companyName : 'A trade account'} ·{' '}
-              {formatCents(invoice.amountCents)}
-            </Text>
-          </div>
+          <Text>
+            {invoice.account ? invoice.account.companyName : 'A trade account'} ·{' '}
+            {formatCents(invoice.amountCents)}
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">

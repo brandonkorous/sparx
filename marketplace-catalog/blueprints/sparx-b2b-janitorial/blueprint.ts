@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-b2b-janitorial',
-    version: '1.4.0',
-    name: 'sparx — Janitorial & Facility Supply (B2B)',
-    summary:
-        'A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.',
-    vertical: 'b2b',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-b2b-janitorial',
+  version: '1.4.0',
+  name: 'sparx — Janitorial & Facility Supply (B2B)',
+  summary:
+    'A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.',
+  vertical: 'b2b',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Saniworx',
+    tagline: 'Clean, stocked, and on schedule.',
+    colors: {
+      primary: '#006283',
+      primaryForeground: '#f2fafd',
+      accent: '#007982',
+      secondary: '#235466',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'b2b-janitorial',
+    basePresetKey: 'b2b-janitorial',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Saniworx',
-        tagline: 'Clean, stocked, and on schedule.',
-        colors: {
-            primary: '#006283',
-            primaryForeground: '#f2fafd',
-            accent: '#007982',
-            secondary: '#235466',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#006283',
+      colorAccent: '#007982',
+      colorSecondary: '#235466',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'b2b-janitorial',
-        basePresetKey: 'b2b-janitorial',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#006283',
-            colorAccent: '#007982',
-            colorSecondary: '#235466',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

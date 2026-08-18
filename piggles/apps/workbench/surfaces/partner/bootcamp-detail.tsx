@@ -391,72 +391,79 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Bootcamp actions" wrap>
-        {state ? (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        ) : (
-          <span className="inline-flex items-center gap-1.5">
-            <Icon glyph={faGraduationCap} className="size-4" aria-hidden />
-            <Text as="span" className="text-sm font-medium">
-              New bootcamp
-            </Text>
-          </span>
-        )}
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={saving}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {isNew ? 'Save draft' : 'Save'}
-        </Button>
-
-        {!isNew && status === 'draft' && isCertified ? (
+      <PaneToolbar
+        label="Bootcamp actions"
+        status={
+          state ? (
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+          ) : (
+            <span className="inline-flex items-center gap-1.5">
+              <Icon glyph={faGraduationCap} className="size-4" aria-hidden />
+              <Text as="span" className="text-sm font-medium">
+                New bootcamp
+              </Text>
+            </span>
+          )
+        }
+        primary={
           <Button
             size="sm"
-            variant="outline"
             color="module"
-            loading={setStatus.isPending}
-            onClick={() => {
-              void onPublish();
-            }}
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={saving}
+            onClick={save}
           >
-            <Icon glyph={faRocket} className="size-4" aria-hidden />
-            Publish
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {isNew ? 'Save draft' : 'Save'}
           </Button>
-        ) : null}
-
-        {!isNew && status === 'published' ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="danger"
-            loading={setStatus.isPending}
-            onClick={() => {
-              void onCancel();
-            }}
-          >
-            <Icon glyph={faCircleXmark} className="size-4" aria-hidden />
-            Cancel
-          </Button>
-        ) : null}
-
-        {isNew ? null : (
-          <RefreshButton
-            isFetching={bootcamp.isFetching}
-            updatedAt={bootcamp.data ? bootcamp.dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void bootcamp.refetch();
-            }}
-          />
-        )}
-      </PaneToolbar>
+        }
+        controls={
+          <>
+            {!isNew && status === 'draft' && isCertified ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="module"
+                loading={setStatus.isPending}
+                onClick={() => {
+                  void onPublish();
+                }}
+              >
+                <Icon glyph={faRocket} className="size-4" aria-hidden />
+                Publish
+              </Button>
+            ) : null}
+            {!isNew && status === 'published' ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="danger"
+                loading={setStatus.isPending}
+                onClick={() => {
+                  void onCancel();
+                }}
+              >
+                <Icon glyph={faCircleXmark} className="size-4" aria-hidden />
+                Cancel
+              </Button>
+            ) : null}
+          </>
+        }
+        refresh={
+          isNew ? null : (
+            <RefreshButton
+              isFetching={bootcamp.isFetching}
+              updatedAt={bootcamp.data ? bootcamp.dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void bootcamp.refetch();
+              }}
+            />
+          )
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

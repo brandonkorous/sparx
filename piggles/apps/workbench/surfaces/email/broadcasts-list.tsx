@@ -22,17 +22,16 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Timestamp,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -41,6 +40,10 @@ import {
   useBroadcastStats,
   type Broadcast,
 } from './broadcasts-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'email';
 
 const DETAIL_KEY = 'email.broadcasts.detail';
 
@@ -101,81 +104,80 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Broadcasts list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search broadcasts"
-            placeholder="Search broadcasts…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <div className="hidden w-40 shrink-0 @md:block">
-          <NativeSelect
-            size="sm"
-            aria-label="Filter by status"
-            value={status}
-            onChange={(event) => {
-              setStatus(event.target.value);
-            }}
-          >
-            <option value="all">Any status</option>
-            <option value="draft">Draft</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="sent">Sent</option>
-            <option value="cancelled">Cancelled</option>
-            <option value="failed">Failed</option>
-          </NativeSelect>
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          title="New broadcast — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Broadcasts list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search broadcasts"
+              placeholder="Search broadcasts…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New broadcast',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New broadcast</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'New broadcast — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <div className="w-40 shrink-0">
+            <NativeSelect
+              size="sm"
+              aria-label="Filter by status"
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value);
+              }}
+            >
+              <option value="all">Any status</option>
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="sent">Sent</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="failed">Failed</option>
+            </NativeSelect>
+          </div>
+        }
+        views={{
+          target: '/email/broadcasts',
+          params: { q: search.trim(), status },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus(next.status ?? 'all');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
             title="Could not load your broadcasts"
             description="Something went wrong reaching the server. Anything already sent is unaffected — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting label="Loading broadcasts…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtering}
             noResults={{
               icon: <Icon glyph={faPaperPlane} className="size-6" aria-hidden />,

@@ -31,12 +31,11 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Tabs,
   TabsList,
@@ -46,13 +45,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import {
-  faFloppyDisk,
-  faLanguage,
-  faPlus,
-  faServer,
-  faTrashCan,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faFloppyDisk, faLanguage, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -74,7 +67,13 @@ import {
   type ProductSource,
   type ProductTranslation,
 } from './translations-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
+
+/** Registry module for this pane, so the brand draws Content's own picture
+ *  rather than the generic one. */
+const MODULE = 'cms';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -133,42 +132,46 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (productId === '' || failed || loading) {
     return (
       <ModuleScope module="commerce" className={PANE_SHELL}>
-        <PaneToolbar label="Product translations actions">
-          <Icon glyph={faLanguage} className="size-4 shrink-0" aria-hidden />
-          <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-            {productId === '' ? 'Translations' : title}
-          </Heading>
-          <RefreshButton
-            className="ml-auto"
-            isFetching={source.isFetching || translations.isFetching}
-            updatedAt={source.data ? source.dataUpdatedAt : undefined}
-            onRefresh={refresh}
-          />
-        </PaneToolbar>
+        <PaneToolbar
+          label="Product translations actions"
+          refresh={
+            <RefreshButton
+              isFetching={source.isFetching || translations.isFetching}
+              updatedAt={source.data ? source.dataUpdatedAt : undefined}
+              onRefresh={refresh}
+            />
+          }
+        />
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className={COLUMN}>
+            {/* All three non-ready states are carded, matching the editor — a stack
+                of FormSections, each already a card. */}
             {productId === '' ? (
-              <EmptyState
-                icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
-                title="No product chosen"
-                description="Open a product from the translations list to write its words in another language."
-              />
+              <Card>
+                <PaneEmpty
+                  module={MODULE}
+                  icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
+                  title="No product chosen"
+                  description="Open a product from the translations list to write its words in another language."
+                />
+              </Card>
             ) : failed ? (
-              <EmptyState
-                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-                title="Could not load this product"
-                description={translationErrorMessage(
-                  source.error ?? translations.error,
-                  'This is a problem reaching the server. None of your wording has been lost.'
-                )}
-                actions={
-                  <Button size="sm" color="module" onClick={refresh}>
-                    Try again
-                  </Button>
-                }
-              />
+              <Card>
+                <PaneLoadError
+                  module={MODULE}
+                  icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
+                  title="Could not load this product"
+                  description={translationErrorMessage(
+                    source.error ?? translations.error,
+                    'This is a problem reaching the server. None of your wording has been lost.'
+                  )}
+                  onRetry={refresh}
+                />
+              </Card>
             ) : (
-              <InlineWaiting />
+              <Card>
+                <PaneWaiting module={MODULE} />
+              </Card>
             )}
           </div>
         </div>
@@ -340,42 +343,38 @@ function Editor({
 
   return (
     <ModuleScope module="commerce" className={PANE_SHELL}>
-      <PaneToolbar label="Product translations actions" wrap>
-        <Icon glyph={faLanguage} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {product.title}
-        </Heading>
-        <Badge color={status.tone} variant="soft" size="sm">
-          {status.label}
-        </Badge>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto"
-          disabled={!canSave}
-          loading={saveTranslation.isPending}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {active === '' ? 'Save' : `Save ${localeName(active)}`}
-        </Button>
-
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={onRefresh} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Product translations actions"
+        status={
+          <Badge color={status.tone} variant="soft" size="sm">
+            {status.label}
+          </Badge>
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto"
+            disabled={!canSave}
+            loading={saveTranslation.isPending}
+            onClick={save}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {active === '' ? 'Save' : `Save ${localeName(active)}`}
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {product.title}
-            </Heading>
-            <Text className="text-base">
-              {locales.length === 0
-                ? 'Written in one language. Add another and shoppers reading your site in it will see your words, not a machine translation.'
-                : `Translate this product’s name and description. Your own words are on the left of each box; type the translation on the right.`}
-            </Text>
-          </div>
+          <Text className="text-base">
+            {locales.length === 0
+              ? 'Written in one language. Add another and shoppers reading your site in it will see your words, not a machine translation.'
+              : `Translate this product’s name and description. Your own words are on the left of each box; type the translation on the right.`}
+          </Text>
 
           {locales.length === 0 ? null : (
             <Tabs

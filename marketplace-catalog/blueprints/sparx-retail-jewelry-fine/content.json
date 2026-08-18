@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "gold-vs-silver",
-        "status": "published",
-        "body": {
-            "title": "Gold or silver: how to actually choose",
-            "excerpt": "Not a taste test — a practical guide to skin tone, upkeep, budget and how the two metals age, so you buy the one you’ll wear.",
-            "featuredImage": {
-                "$asset": "aurelia-post-metals"
+  {
+    "typeKey": "blog_post",
+    "slug": "gold-vs-silver",
+    "status": "published",
+    "body": {
+      "title": "Gold or silver: how to actually choose",
+      "excerpt": "Not a taste test — a practical guide to skin tone, upkeep, budget and how the two metals age, so you buy the one you’ll wear.",
+      "featuredImage": {
+        "$asset": "aurelia-post-metals"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The gold-versus-silver question gets treated as a matter of taste, but most of the answer is practical. Both of ours are solid metal — 14k gold and .925 sterling silver, never plated — so neither will wear through or turn your skin green. The difference is in tone, upkeep, budget, and how each one ages."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The gold-versus-silver question gets treated as a matter of taste, but most of the answer is practical. Both of ours are solid metal — 14k gold and .925 sterling silver, never plated — so neither will wear through or turn your skin green. The difference is in tone, upkeep, budget, and how each one ages."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Tone and how they age"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Warm skin tones tend to sit beautifully against gold; cooler tones against silver — but the honest answer is to hold each to your wrist in daylight and trust your eye. In wear, 14k gold barely changes: it keeps its color for decades with almost no effort. Sterling silver naturally tarnishes to a soft grey over time, which some people love as patina and others polish back to bright in seconds with a cloth."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Budget, and mixing the two"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Gold costs more because it genuinely is more — our silver versions run a little over half the price of the same piece in gold, which makes silver a lovely way to try a design before committing. And the old rule about never mixing metals is gone: a gold signet next to a silver band reads as considered now, not careless. Buy the metal you’ll actually reach for, and layer freely."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "caring-for-solid-jewelry",
-        "status": "published",
-        "body": {
-            "title": "Caring for solid gold and silver",
-            "excerpt": "Solid metal is forgiving, but a few small habits keep it looking new — here’s the whole routine, and the two things to actually avoid.",
-            "featuredImage": {
-                "$asset": "aurelia-post-care"
+            "content": [
+              {
+                "type": "text",
+                "text": "Tone and how they age"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Warm skin tones tend to sit beautifully against gold; cooler tones against silver — but the honest answer is to hold each to your wrist in daylight and trust your eye. In wear, 14k gold barely changes: it keeps its color for decades with almost no effort. Sterling silver naturally tarnishes to a soft grey over time, which some people love as patina and others polish back to bright in seconds with a cloth."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "One of the quiet luxuries of solid jewelry is how little it asks of you. There’s no plating to wear through, so a scratch polishes out and a piece can be worn hard for years. Still, a few small habits keep gold bright and silver from tarnishing faster than it needs to."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The everyday routine"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Put jewelry on last — after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings off for the gym, the garden and the washing-up; it’s knocks and grit, not water, that do the damage. A quick rub with a soft cloth after wear is enough most days. Once a month, warm water, a drop of dish soap and a soft brush brings everything back — then dry it properly before it goes away."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Storing it, and what to avoid"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Store pieces separately so they don’t scratch each other — a lined box or even individual soft pouches. Silver keeps best sealed away from air, which is why a little zip bag slows tarnish dramatically. The two things to genuinely avoid: chlorine (take rings off before a pool or hot tub) and abrasive \"polishing\" pastes on anything with stones. When in doubt, send it to us — cleaning and re-polishing anything we made is free, for life."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "finding-your-ring-size",
-        "status": "published",
-        "body": {
-            "title": "How to find your ring size at home",
-            "excerpt": "No jeweler, no gadget — a piece of string, a ruler, and two rules that stop you sizing wrong. Plus what to do if you land between sizes.",
-            "featuredImage": {
-                "$asset": "aurelia-post-sizing"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Ordering a ring online feels like a gamble, but sizing at home is genuinely simple — and more reliable than guessing in a shop on a cold day. All you need is a strip of paper or string, a ruler, and a couple of minutes."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The string method"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Wrap a thin strip of paper snugly around the base of the finger, mark where it overlaps, and lay it flat against a millimetre ruler. That length is your finger’s circumference; match it to our size chart. Measure the actual finger the ring will live on — hands differ left to right — and do it at the end of the day, when fingers are at their largest, never first thing in the morning or straight after cold water."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Between sizes, and wide bands"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "If you land between two sizes, size up: a fraction loose is comfortable, a fraction tight is unwearable. Wide bands sit more snugly than thin ones, so go up a half size for anything chunky like the signet. Still unsure? Order two sizes, keep the one that fits and send the other back free — or come in and we’ll size you properly. And every ring we make can be resized once for free within the first year."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Budget, and mixing the two"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Gold costs more because it genuinely is more — our silver versions run a little over half the price of the same piece in gold, which makes silver a lovely way to try a design before committing. And the old rule about never mixing metals is gone: a gold signet next to a silver band reads as considered now, not careless. Buy the metal you’ll actually reach for, and layer freely."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "caring-for-solid-jewelry",
+    "status": "published",
+    "body": {
+      "title": "Caring for solid gold and silver",
+      "excerpt": "Solid metal is forgiving, but a few small habits keep it looking new — here’s the whole routine, and the two things to actually avoid.",
+      "featuredImage": {
+        "$asset": "aurelia-post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "One of the quiet luxuries of solid jewelry is how little it asks of you. There’s no plating to wear through, so a scratch polishes out and a piece can be worn hard for years. Still, a few small habits keep gold bright and silver from tarnishing faster than it needs to."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The everyday routine"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Put jewelry on last — after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings off for the gym, the garden and the washing-up; it’s knocks and grit, not water, that do the damage. A quick rub with a soft cloth after wear is enough most days. Once a month, warm water, a drop of dish soap and a soft brush brings everything back — then dry it properly before it goes away."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Storing it, and what to avoid"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Store pieces separately so they don’t scratch each other — a lined box or even individual soft pouches. Silver keeps best sealed away from air, which is why a little zip bag slows tarnish dramatically. The two things to genuinely avoid: chlorine (take rings off before a pool or hot tub) and abrasive \"polishing\" pastes on anything with stones. When in doubt, send it to us — cleaning and re-polishing anything we made is free, for life."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "finding-your-ring-size",
+    "status": "published",
+    "body": {
+      "title": "How to find your ring size at home",
+      "excerpt": "No jeweler, no gadget — a piece of string, a ruler, and two rules that stop you sizing wrong. Plus what to do if you land between sizes.",
+      "featuredImage": {
+        "$asset": "aurelia-post-sizing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ordering a ring online feels like a gamble, but sizing at home is genuinely simple — and more reliable than guessing in a shop on a cold day. All you need is a strip of paper or string, a ruler, and a couple of minutes."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The string method"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wrap a thin strip of paper snugly around the base of the finger, mark where it overlaps, and lay it flat against a millimetre ruler. That length is your finger’s circumference; match it to our size chart. Measure the actual finger the ring will live on — hands differ left to right — and do it at the end of the day, when fingers are at their largest, never first thing in the morning or straight after cold water."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Between sizes, and wide bands"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you land between two sizes, size up: a fraction loose is comfortable, a fraction tight is unwearable. Wide bands sit more snugly than thin ones, so go up a half size for anything chunky like the signet. Still unsure? Order two sizes, keep the one that fits and send the other back free — or come in and we’ll size you properly. And every ring we make can be resized once for free within the first year."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

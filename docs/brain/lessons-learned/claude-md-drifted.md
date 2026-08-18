@@ -10,7 +10,7 @@ sources:
 
 Grounding the brain against real code found the **root `CLAUDE.md`** — which loads every turn and is treated as binding — materially stale in several places:
 
-1. **Repo status:** "early scaffold phase… `apps/*` are empty placeholders… `@sparx/ui` has no actual components yet." Reality: **~6 apps, ~18 services, ~60 packages, 164 migrations, 277 Prisma models, ~90 UI components.** The single most misleading statement in the repo.
+1. **Repo status:** "early scaffold phase… `apps/*` are empty placeholders… `@wizeworks/ui` has no actual components yet." Reality: **~6 apps, ~18 services, ~60 packages, 164 migrations, 277 Prisma models, ~90 UI components.** The single most misleading statement in the repo.
 2. **Email provider:** "Postal on `sparx.email`." Reality: **Mailgun** in prod; Postal decommissioned (fallback only). `services/CLAUDE.md` is correct.
 3. **Event names:** cites `order.created` / `customer.updated` — **neither exists** (`order.placed/paid/…`, `search.entity.changed`).
 4. **Better Auth primitives:** "use its API-key and MFA primitives." Reality: **API keys are custom; MFA is unimplemented.** Only org membership uses the plugin.

@@ -5,7 +5,7 @@
 //
 // WHY THIS FILE EXISTS: `preview.ts` used to shell out to `@tailwindcss/cli`, resolved by a
 // hard-coded `node_modules/.pnpm/@tailwindcss+cli@4.3.0/...` path. That package entered the
-// workspace as a dependency of `packages/site-ui`; when site-ui went away the CLI went with
+// workspace as a dependency of `wizeworks/packages/site-ui`; when site-ui went away the CLI went with
 // it, and every template generator's preview step started failing on a missing module — the
 // review aid was dead for the whole second batch of templates. The compile itself was never
 // the problem, so this reimplements exactly what the CLI does (compile the input CSS, scan

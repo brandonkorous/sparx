@@ -25,7 +25,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Switch,
   Text,
@@ -36,6 +35,7 @@ import { useConfirm } from '../../lib/confirm';
 import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -77,7 +77,14 @@ export function ShippingProfileDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ProfileLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: profile, isPending, isError, refetch } = useShippingProfile(id);
+  const {
+    data: profile,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useShippingProfile(id);
 
   if (isError) {
     return (
@@ -99,17 +106,34 @@ function ProfileLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <ProfileEditor ctx={ctx} id={id} profile={profile} />;
+  return (
+    <ProfileEditor
+      ctx={ctx}
+      id={id}
+      profile={profile}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function ProfileEditor({
   ctx,
   id,
   profile,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   profile?: ShippingProfile;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -226,46 +250,51 @@ function ProfileEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Product group actions">
-        {!isNew ? (
-          <Badge color="neutral" variant="soft" size="sm">
-            {productCount === 0
-              ? 'No products yet'
-              : productCount === 1
-                ? '1 product'
-                : `${String(productCount)} products`}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create group' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Product group actions"
+        status={
+          !isNew ? (
+            <Badge color="neutral" variant="soft" size="sm">
+              {productCount === 0
+                ? 'No products yet'
+                : productCount === 1
+                  ? '1 product'
+                  : `${String(productCount)} products`}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create group' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={profile ? updatedAt : undefined}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a product group
-              </Heading>
-              <Text>
-                Group together products that ship the same way — bulky freight, anything needing a
-                signature — so you can price their delivery on its own. You add products to the
-                group from each product later.
-              </Text>
-            </div>
-          ) : (
-            <Heading level={1} className="text-2xl font-semibold">
-              {profile?.name}
-            </Heading>
-          )}
+            <Text>
+              Group together products that ship the same way — bulky freight, anything needing a
+              signature — so you can price their delivery on its own. You add products to the group
+              from each product later.
+            </Text>
+          ) : null}
 
           {failure ? (
             <Alert color="error" variant="soft">

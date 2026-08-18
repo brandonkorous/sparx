@@ -17,14 +17,14 @@ import {
   el,
   type Node,
   type Theme,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { renderSilicaBody } from '../../../packages/silica-catalog/src/render';
+import { renderSilicaBody } from '../../../wizeworks/packages/silica-catalog/src/render';
 import {
   createSilicaResolver,
   defaultSilicaFormat,
-} from '../../../packages/builder-schemas/src/silica-resolve';
-import { buildSilicaThemeCssFromTheme } from '../../../packages/site-themes/src/v2/silica-css';
+} from '../../../wizeworks/packages/builder-schemas/src/silica-resolve';
+import { buildSilicaThemeCssFromTheme } from '../../../wizeworks/packages/site-themes/src/v2/silica-css';
 
 import { composeServiceSite, faces, type ServiceSiteSpec } from './harness';
 

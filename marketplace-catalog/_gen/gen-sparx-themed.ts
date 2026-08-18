@@ -1,13 +1,13 @@
 // Generator: the 20 THEMED CLONES of the golden `sparx` blueprint — one per sparx
-// silica theme (`SPARX_THEMES`, packages/silica-catalog). Each clone is the SAME
+// silica theme (`SPARX_THEMES`, wizeworks/packages/silica-catalog). Each clone is the SAME
 // complete multi-module starter (shop · journal · booking · wholesale, the 6 neutral
 // goods, the 3 journal posts, the 2-touch welcome series) re-dressed in one theme's
 // look. Together with the flagship `sparx` (Ember) bundle that is 21 blueprints.
 //
 // Run (docs marketplace-catalog/CLAUDE.md — generator is the source of truth):
-//   pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-sparx-themed.ts"
+//   pnpm --filter @wizeworks/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-sparx-themed.ts"
 //   pnpm exec prettier --write "marketplace-catalog/blueprints/sparx-*/**" "marketplace-catalog/_gen/gen-sparx-themed.ts"
-//   pnpm --filter @sparx/api-rest marketplace:self-register
+//   pnpm --filter @wizeworks/api-rest marketplace:self-register
 //
 // WHY RELATIVE IMPORTS. This file legitimately reads the theme catalog + the color
 // util (workspace packages), but it lives under marketplace-catalog/ which has no
@@ -20,9 +20,9 @@ import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { SPARX_THEMES } from '../../packages/silica-catalog/src/themes';
-import { resolveSparxTheme } from '../../packages/silica-catalog/src/resolve-sparx-theme';
-import { colorToHex } from '../../packages/site-themes/src/v2/color';
+import { SPARX_THEMES } from '../../wizeworks/packages/silica-catalog/src/themes';
+import { resolveSparxTheme } from '../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
+import { colorToHex } from '../../wizeworks/packages/site-themes/src/v2/color';
 import type { Theme } from '@wizeworks/silicaui-html';
 
 const here = dirname(fileURLToPath(import.meta.url));

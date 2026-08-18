@@ -46,7 +46,7 @@ import {
   faSpinner,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { validateRows, type CanonicalEntity, type MappedEntity } from '@sparx/migration';
+import { validateRows, type CanonicalEntity, type MappedEntity } from '@wizeworks/migration';
 import { ReportProblemButton } from '../../components/feedback/report-problem-button';
 import {
   MAX_LIVE_PAGES,

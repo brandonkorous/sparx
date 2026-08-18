@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-photo-portrait',
-    version: '1.3.0',
-    name: 'sparx — Photography (Portrait)',
-    summary:
-        'A bright, modern family & portrait photography site — a fresh coral palette, a crisp near-white ground and a clean modern sans, with a joyful session menu. Installs a working booking flow: real session types (mini, family, newborn, branding, headshots), photographers you book by name with their own hours, a studio space in-studio sessions reserve, and a session-deposit policy. Ships as "Frame & Field", a light-filled portrait studio.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-photo-portrait',
+  version: '1.3.0',
+  name: 'sparx — Photography (Portrait)',
+  summary:
+    'A bright, modern family & portrait photography site — a fresh coral palette, a crisp near-white ground and a clean modern sans, with a joyful session menu. Installs a working booking flow: real session types (mini, family, newborn, branding, headshots), photographers you book by name with their own hours, a studio space in-studio sessions reserve, and a session-deposit policy. Ships as "Frame & Field", a light-filled portrait studio.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Frame & Field',
+    tagline: 'Bright, joyful portraits — easy to book.',
+    colors: {
+      primary: '#ea6b5e',
+      primaryForeground: '#130807',
+      accent: '#2cb3b3',
+      secondary: '#333d50',
+    },
+    fonts: {
+      heading: 'Outfit',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'framefield',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Frame & Field',
-        tagline: 'Bright, joyful portraits — easy to book.',
-        colors: {
-            primary: '#ea6b5e',
-            primaryForeground: '#130807',
-            accent: '#2cb3b3',
-            secondary: '#333d50',
-        },
-        fonts: {
-            heading: 'Outfit',
-            body: 'Inter',
-        },
+      colorPrimary: '#ea6b5e',
+      colorAccent: '#2cb3b3',
+      colorSecondary: '#333d50',
+      fontHeading: 'Outfit',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'framefield',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#ea6b5e',
-            colorAccent: '#2cb3b3',
-            colorSecondary: '#333d50',
-            fontHeading: 'Outfit',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

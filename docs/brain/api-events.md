@@ -17,4 +17,4 @@ Our own interfaces — the surfaces other systems (and the dashboard) consume. O
 
 ## Sources of truth
 
-`services/api-rest/src/routes/v1/` · `services/api-mcp/src/tool-registry.ts` · `packages/events/src/types.ts` · `services/email-worker/` + `packages/email/src/`.
+`wizeworks/services/api-rest/src/routes/v1/` · `wizeworks/services/api-mcp/src/tool-registry.ts` · `wizeworks/packages/events/src/types.ts` · `services/email-worker/` + `wizeworks/packages/email/src/`.

@@ -10,14 +10,14 @@
 > order channel on the generic channel-integration framework (docs/106), not the
 > per-column approach the original §5/§13 pseudocode sketched. The real shape:
 >
-> - **Adapter, not bespoke routes.** `TikTokShopAdapter` (`@sparx/channels`,
+> - **Adapter, not bespoke routes.** `TikTokShopAdapter` (`@wizeworks/channels`,
 >   `shape: 'order'`) implements the full contract — signed Open-Platform calls,
 >   OAuth + shop-cipher resolution, `pushProduct`/`removeProduct`, `ingestOrder`,
 >   `pushFulfillment`, `pushInventory`, `getAnalytics`, `verifyWebhook`.
 > - **No per-channel columns.** Listings map via the generic `ChannelProductMapping`
 >   table (variant ↔ TikTok product/sku id); there is no `tiktokEnabled`/
 >   `tiktokSkuId` on products/variants.
-> - **Tokens are AES-256-GCM on the connection row** (`@sparx/channels/crypto`,
+> - **Tokens are AES-256-GCM on the connection row** (`@wizeworks/channels/crypto`,
 >   `CHANNELS_TOKEN_KEY`), not Secret Manager refs — OAuth tokens rotate hourly and
 >   a row cipher box rotates with a plain `UPDATE`. The shop cipher rides the
 >   connection `metadata` and surfaces as `ChannelAuth.params`.
@@ -39,7 +39,7 @@
 > orders split out by their `source` slug — TikTok Shop, Etsy, … — every other
 > order keyed by its `channel` bucket) and applies to every channel, not just
 > TikTok. The primitive `deriveChannelKey` + the canonical channel labels live in
-> `@sparx/crm-schemas` (one source of truth, shared by REST + MCP + dashboard).
+> `@wizeworks/crm-schemas` (one source of truth, shared by REST + MCP + dashboard).
 > Shape: `reportingService.channelComparison` / `channelRevenue` /
 > `channelTopProducts` → `GET /v1/commerce/reports/channel-revenue` +
 > `/channel-top-products` → the `get_channel_revenue` / `get_channel_comparison` /
@@ -310,7 +310,7 @@ The consolidation key is **derived**: a `marketplace` order keys by its `source`
 slug (so TikTok Shop and Etsy are distinct lines instead of collapsing into one
 "marketplace" bucket); every other order keys by its `channel` bucket. The
 primitive `deriveChannelKey(channel, source)` + the canonical channel labels live
-in `@sparx/crm-schemas` — one source of truth shared by the reporting service, the
+in `@wizeworks/crm-schemas` — one source of truth shared by the reporting service, the
 REST routes, the MCP tools, and the dashboard. `channelFeeCents` (the marketplace
 commission) is summed so net-after-fees revenue reconciles.
 
@@ -428,7 +428,7 @@ Orders from TikTok Shop show a TikTok badge and the `tiktok_shop` source label. 
 TikTok Shop is implemented as a channel adapter — the same pattern used for future channels (Amazon, Instagram Shopping, etc.).
 
 ```typescript
-// packages/channels/src/types.ts
+// wizeworks/packages/channels/src/types.ts
 interface ChannelAdapter {
   id: string; // 'tiktok_shop'
   name: string; // 'TikTok Shop'

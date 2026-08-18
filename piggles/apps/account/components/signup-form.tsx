@@ -42,6 +42,16 @@ import { AuthDivider, GoogleButton } from './social-sign-in';
 // those signups meet the gate's screen instead. One question, two places it can
 // be answered, one record.
 //
+// ── IT IS NOT THE ONLY THING BEING RECORDED, AND IT SAYS SO ─────────────────
+//
+// This box governs the CONSOLE's tracker and nothing else. Separately, the form
+// carries whatever meetpiggles.com noted about how somebody got here — the
+// campaign, and the advert if they allowed that too — in a hidden field, on a
+// permission given over there. Both are legitimate; the failure mode is a page
+// that mentions one and stays quiet about the other while saying "never
+// advertising" next to a field holding a click id. So when a payload is present,
+// the page says so, in the place it is happening.
+//
 // `size="lg"` on every control: 58px, inside Piggles' 56–60 comfort target. One
 // decision, stated per form (DESIGN.md §5).
 
@@ -57,7 +67,15 @@ function Submit() {
   );
 }
 
-export function SignUpForm({ from, google }: { from: string; google: boolean }) {
+export function SignUpForm({
+  from,
+  attribution,
+  google,
+}: {
+  from: string;
+  attribution: string;
+  google: boolean;
+}) {
   const [state, action] = useActionState<SignUpState, FormData>(signUpAction, { error: null });
   // Google's failures arrive outside the server action, so they need their own
   // channel. One <Alert> renders whichever is set — two stacked error boxes for
@@ -71,6 +89,10 @@ export function SignUpForm({ from, google }: { from: string; google: boolean }) 
         {/* The placement that sent them here, carried from the marketing link and
             captured first-party. Hidden because it is telemetry, not an answer. */}
         <input type="hidden" name="from" value={from} />
+        {/* Where they came from BEFORE that click — the campaign, the referrer,
+            the ad. Recorded on meetpiggles.com with permission and handed over in
+            the link, because three registrable domains cannot share a cookie. */}
+        <input type="hidden" name="a" value={attribution} />
 
         {error ? (
           <Alert color="danger" variant="soft">
@@ -121,11 +143,38 @@ export function SignUpForm({ from, google }: { from: string; google: boolean }) 
         >
           <Checkbox id="analytics" name="analytics" color="primary" className="row-span-2 mt-0.5" />
           <span className="text-base font-bold">Help us fix what is confusing</span>
+          {/* SCOPED to what this box actually governs. It read "never
+              advertising" flatly, which was true of the tracker and misleading
+              on this page: the form below carries whatever the marketing site
+              noted about how you got here, and that can include an advert. A
+              blanket "never advertising" beside a hidden field holding a click
+              id is the kind of true-but-wrong sentence that costs more trust
+              than the thing it was reassuring about. */}
           <span className="text-base">
-            Lets us see which screens get used inside {PRODUCT.name}. Never sold, never advertising,
-            and never anything you have stored. You can change this any time from your account.
+            This one is about the workspace: which screens get used inside {PRODUCT.name}, so we can
+            find the confusing ones. Never sold, never used to advertise to you, and never anything
+            you have stored in it. You can change it any time from your account.
           </span>
         </label>
+
+        {/* Only when something actually came with them. It names what is in the
+            hidden field above rather than describing the policy in general —
+            somebody who arrived from an advert should be told so on the page
+            that is about to record it, not left to find it in a cookie policy. */}
+        {attribution ? (
+          <p className="text-base">
+            You came here from a link that told us where you found us, because you agreed to that on{' '}
+            {PRODUCT.hosts.marketing}. It is kept with your account so we know what is worth doing
+            more of, and it is listed in full on{' '}
+            <a
+              className="font-semibold underline"
+              href={`https://${PRODUCT.hosts.marketing}/cookies`}
+            >
+              cookies
+            </a>
+            .
+          </p>
+        ) : null}
 
         <Submit />
       </form>

@@ -8,24 +8,23 @@
 // theme all come from the shared platform packages, so the blocks an author can
 // insert here are the same ones the storefront renders.
 
-import { useMemo } from 'react';
-import type { StudioHost } from '@wizeworks/studio/react';
-import { validateResponsiveVocabulary } from '@sparx/silica-catalog';
-import { useBrand, useSiteConfig } from '../../surfaces/builder/studio/data';
-import {
-  applyBrandOverride,
-  tenantTheme,
-  type BrandColumns,
-} from '../../surfaces/builder/studio/brand-theme';
-import { makeRenderHostNode } from '../../surfaces/builder/studio/host-cores';
-import { useActiveProperty } from '../../surfaces/builder/studio/data';
+import { useMemo, type ReactNode } from 'react';
+import type { DocumentKind } from '@wizeworks/studio';
+import type { EmailPreviewHost, StudioHost } from '@wizeworks/studio/react';
+import type { Theme } from '@wizeworks/silicaui-html';
+import type { EmailColorDefaults } from '@wizeworks/silicaui-builder/email';
+import { validateResponsiveVocabulary } from '@wizeworks/silica-catalog';
+import { useBrand, useSiteConfig } from './site-data';
+import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
+import { makeRenderHostNode } from './host-cores';
+import { useActiveProperty } from './site-data';
 import { useMediaPicker } from '../../surfaces/cms/media-picker';
 import { useActiveSiteId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { PieceSettingsPanel } from '../../surfaces/studio/piece-settings-panel';
 import { EmailTagsPanel } from '../../surfaces/studio/email-tags-panel';
 import { catalogFor } from './catalog-scope';
-import { useCanvasPreview } from './preview';
+import { useCanvasPreview, type CanvasPreview } from './preview';
 import { EMAIL_CONTENT_BLOCKS, useEmailPreview } from './email-domain';
 import { useEmailColors } from './email-data';
 
@@ -72,42 +71,65 @@ export function useStudioHostConfig(): StudioHost | null {
 
   return useMemo(() => {
     if (!fallbackTheme) return null;
-    // The same root for both, so the mark a header draws and the text a bound node
-    // draws come from one answer about who this business is.
-    const drawHostNode = makeRenderHostNode(preview.root);
-    return {
+    return buildHost({
       fallbackTheme,
-      catalog: catalogFor,
-      renderHostNode: (node) => drawHostNode(node, { preview: true }),
-      resolveBinding: (ref) => preview.resolve(ref),
-      // The business's own picture browser, so no image field ever asks for a web
-      // address. A picked asset with no URL is one still being processed — treated
-      // as "nothing picked" rather than written as an empty source.
-      pickAsset: async () => {
-        const picked = await pickMedia();
-        return picked?.url ? { url: picked.url, alt: picked.filename } : null;
-      },
-      // Email resolves against its own sample recipient, never the site's preview
-      // root: `customer.firstName` means the person this is being SENT to.
+      preview,
       emailPreview,
-      // The exact colours the send paints with, so a new block lands on brand.
-      // Undefined until the read settles — silica's own neutral default then,
-      // which is visibly not the brand rather than quietly the wrong brand.
-      ...(emailColors.data ? { emailColors: emailColors.data } : {}),
-      emailCatalog: () => EMAIL_CONTENT_BLOCKS,
-      // A document's own settings live under the DOCUMENT — select the page (or the
-      // piece) itself and they are there, rather than in a drawer with a second Save
-      // button of its own.
-      inspectorPanels: (_node, ctx) => {
-        if (!ctx.isRoot) return null;
-        if (ctx.doc.kind === 'page') return <PageSettingsPanel />;
-        if (ctx.doc.kind === 'component') return <PieceSettingsPanel />;
-        if (ctx.doc.kind === 'email') return <EmailTagsPanel />;
-        return null;
-      },
-      // Platform policy, not a tenant setting: a viewport variant makes the device
-      // toggle lie about the page, and no business benefits from opting into that.
-      validateClass: (className: string) => validateResponsiveVocabulary(className),
-    } satisfies StudioHost;
+      emailColors: emailColors.data,
+      pickMedia,
+    });
   }, [fallbackTheme, preview, emailPreview, emailColors.data, pickMedia]);
+}
+
+/** A document's own settings live UNDER the document — select the page (or the piece,
+ *  or the email) itself and they are there, rather than in a drawer with a second Save
+ *  button of its own. */
+function panelFor(kind: DocumentKind): ReactNode {
+  if (kind === 'page') return <PageSettingsPanel />;
+  if (kind === 'component') return <PieceSettingsPanel />;
+  if (kind === 'email') return <EmailTagsPanel />;
+  return null;
+}
+
+function buildHost({
+  fallbackTheme,
+  preview,
+  emailPreview,
+  emailColors,
+  pickMedia,
+}: {
+  fallbackTheme: Theme;
+  preview: CanvasPreview;
+  emailPreview: EmailPreviewHost;
+  emailColors: EmailColorDefaults | undefined;
+  pickMedia: () => Promise<{ url: string | null; filename: string } | null>;
+}): StudioHost {
+  // The same root for both, so the mark a header draws and the text a bound node
+  // draws come from one answer about who this business is.
+  const drawHostNode = makeRenderHostNode(preview.root);
+  return {
+    fallbackTheme,
+    catalog: catalogFor,
+    renderHostNode: (node) => drawHostNode(node, { preview: true }),
+    resolveBinding: (ref) => preview.resolve(ref),
+    // The business's own picture browser, so no image field ever asks for a web
+    // address. A picked asset with no URL is one still being processed — treated as
+    // "nothing picked" rather than written as an empty source.
+    pickAsset: async () => {
+      const picked = await pickMedia();
+      return picked?.url ? { url: picked.url, alt: picked.filename } : null;
+    },
+    // Email resolves against its own sample recipient, never the site's preview root:
+    // `customer.firstName` means the person this is being SENT to.
+    emailPreview,
+    // The exact colours the send paints with, so a new block lands on brand. Absent
+    // until the read settles — silica's neutral default then, which is visibly not
+    // the brand rather than quietly the wrong brand.
+    ...(emailColors ? { emailColors } : {}),
+    emailCatalog: () => EMAIL_CONTENT_BLOCKS,
+    inspectorPanels: (_node, ctx) => (ctx.isRoot ? panelFor(ctx.doc.kind) : null),
+    // Platform policy, not a tenant setting: a viewport variant makes the device
+    // toggle lie about the page, and no business benefits from opting into that.
+    validateClass: (className: string) => validateResponsiveVocabulary(className),
+  };
 }

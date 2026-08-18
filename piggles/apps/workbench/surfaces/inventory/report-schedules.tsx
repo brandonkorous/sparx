@@ -21,6 +21,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -28,12 +30,12 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
-  Table,
+  Card,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCalendarClock, faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -41,6 +43,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage } from './data';
+
+/** Registry module for this pane, so the brand draws Stock's own picture rather
+ *  than the generic one. */
+const MODULE = 'inventory';
 import {
   cadenceSentence,
   deliveryStatusLabel,
@@ -128,50 +134,62 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (schedules.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
+          module={MODULE}
           icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Could not load your scheduled reports"
           description="This is a problem reaching the server. Nothing has stopped sending — the list just could not be loaded."
+          onRetry={() => {
+            void schedules.refetch();
+          }}
         />
       );
     }
     if (schedules.isPending) {
-      return <PaneWaiting />;
+      return <PaneWaiting module={MODULE} />;
     }
     if (items.length === 0) {
+      // Nothing narrows this list, so it has only the first-run branch to tell
+      // — but it still goes through <PaneEmpty> so the picture is the brand's.
       return (
-        <EmptyState
+        <PaneEmpty
+          module={MODULE}
           icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Nothing is being sent to anyone"
           description="Pick a report, say who should get it and how often, and it arrives in their inbox — the spreadsheet attached and the headline numbers in the body. An accountant who wants the month-end valuation does not need a login to receive one."
-        >
-          <Button
-            color="module"
-            onClick={() => {
-              ctx.open('inventory.reports.schedule', { id: 'new' });
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Send a report to someone
-          </Button>
-        </EmptyState>
+          actions={
+            <Button
+              color="module"
+              onClick={() => {
+                ctx.open('inventory.reports.schedule', { id: 'new' });
+              }}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              Send a report to someone
+            </Button>
+          }
+        />
       );
     }
 
     return (
-      <div className="flex flex-col gap-3">
+      <>
         {paused.length > 0 ? (
-          <Alert color="danger" variant="soft">
-            <AlertContent>
-              <AlertTitle>
-                {plural(paused.length, 'report has', 'reports have')} stopped sending
-              </AlertTitle>
-              <AlertDescription>
-                Each one failed four times in a row and was paused so it would not keep trying into
-                a mailbox that is not there. Open it to see why and switch it back on.
-              </AlertDescription>
-            </AlertContent>
-          </Alert>
+          // Padded, because the table beside it fills the card edge to edge and
+          // an alert flush against the card's corners reads as a mistake.
+          <div className="p-3 pb-0">
+            <Alert color="danger" variant="soft">
+              <AlertContent>
+                <AlertTitle>
+                  {plural(paused.length, 'report has', 'reports have')} stopped sending
+                </AlertTitle>
+                <AlertDescription>
+                  Each one failed four times in a row and was paused so it would not keep trying
+                  into a mailbox that is not there. Open it to see why and switch it back on.
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          </div>
         ) : null}
 
         <Table hover>
@@ -252,48 +270,55 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
             ))}
           </tbody>
         </Table>
-      </div>
+      </>
     );
   };
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Scheduled report controls">
-        {paused.length > 0 ? (
+      <PaneToolbar
+        label="Scheduled report controls"
+        primary={
           <Button
-            color={showPaused ? 'danger' : 'neutral'}
-            variant={showPaused ? 'soft' : 'outline'}
+            color="module"
             size="sm"
+            className="ml-auto"
             onClick={() => {
-              setShowPaused((current) => !current);
+              ctx.open('inventory.reports.schedule', { id: 'new' });
             }}
           >
-            {showPaused ? 'Hide' : 'Show'} the {paused.length} that stopped
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Send a report
           </Button>
-        ) : null}
+        }
+        controls={
+          paused.length > 0 ? (
+            <Button
+              color={showPaused ? 'danger' : 'neutral'}
+              variant={showPaused ? 'soft' : 'outline'}
+              size="sm"
+              onClick={() => {
+                setShowPaused((current) => !current);
+              }}
+            >
+              {showPaused ? 'Hide' : 'Show'} the {paused.length} that stopped
+            </Button>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={schedules.isFetching}
+            updatedAt={schedules.data ? schedules.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void schedules.refetch();
+            }}
+          />
+        }
+      />
 
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          onClick={() => {
-            ctx.open('inventory.reports.schedule', { id: 'new' });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Send a report
-        </Button>
-
-        <RefreshButton
-          isFetching={schedules.isFetching}
-          updatedAt={schedules.data ? schedules.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void schedules.refetch();
-          }}
-        />
-      </PaneToolbar>
-
-      <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
+      {/* ONE card around the whole conditional — loading, failure, empty and the
+          table all fill the same content region, so the pane never jumps. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
     </div>
   );
 }

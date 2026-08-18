@@ -19,7 +19,7 @@
 // be lost and makes the operator answer for it. Never auto-reloads either way.
 
 import { useEffect, useRef } from 'react';
-import { queryKeys, useQuery } from '@sparx/query';
+import { queryKeys, useQuery } from '@wizeworks/query';
 import { useToast } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
 import { useWorkbench } from '../lib/workbench/context';

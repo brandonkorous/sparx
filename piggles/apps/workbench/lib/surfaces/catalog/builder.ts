@@ -5,25 +5,25 @@
 // ONE document in its own pane, so several can be open at once — a page beside the
 // header it wears, or two pages side by side.
 //
-// `builder.studio` is the OLD whole-site editor, still listed while the per-document
-// panes land (the cutover is Phase 9 of piggles/docs/features/builder). Then the
-// design assets (Site · Blueprints · Saved pieces), and the Forms inbox.
+// The old whole-site editor is GONE — one surface that owned every document at once,
+// replaced by these. Its keyword set moved onto the panes that now answer for it:
+// 'header'/'footer'/'menu' land on Header & footer, 'design'/'edit site' on Page.
+// Then the design assets (Site · Blueprints · Saved pieces), and the Forms inbox.
 
 import {
   faChartColumn,
   faClockRotateLeft,
   faCube,
+  faCloudArrowUp,
   faEnvelope,
   faEye,
   faFileLines,
   faGlobe,
   faInbox,
   faPalette,
-  faPencil,
   faTableLayout,
 } from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
-import { StudioSurface } from '../../../surfaces/builder/studio/studio-surface';
 import { SiteIdentitySurface } from '../../../surfaces/builder/site-identity';
 import { BlueprintsListSurface } from '../../../surfaces/builder/blueprints-list';
 import { BlueprintDetailSurface } from '../../../surfaces/builder/blueprint-detail';
@@ -36,37 +36,12 @@ import { PagePaneSurface } from '../../../surfaces/studio/page-pane';
 import { PiecePaneSurface } from '../../../surfaces/studio/piece-pane';
 import { HistoryPaneSurface } from '../../../surfaces/studio/history-pane';
 import { PreviewPaneSurface } from '../../../surfaces/studio/preview-pane';
+import { PublishPaneSurface } from '../../../surfaces/studio/publish-pane';
 import { FormSubmissionsListSurface } from '../../../surfaces/builder/form-submissions-list';
 import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-detail';
 import { PageResultsSurface } from '../../../surfaces/builder/page-results';
 
 export const BUILDER_SURFACES: SurfaceDefinition[] = [
-  // ── The two builders lead — the module's primary, unsectioned surfaces ──
-  {
-    key: 'builder.studio',
-    title: 'Editor',
-    module: 'builder',
-    icon: faPencil,
-    order: 1,
-    // 'header'/'footer'/'menu' land here now: site layout is edited on the
-    // editor's canvas, not a separate surface.
-    keywords: [
-      'design',
-      'edit site',
-      'studio',
-      'drag and drop',
-      'layout',
-      'pages',
-      'header',
-      'footer',
-      'menu',
-    ],
-    // The visual editor — silica `<Builder>`. Owns page selection AND site layout;
-    // opened blank (first page) or with `{ pageId }` / `{ componentId }` / `{ mode }`.
-    // `mode` is what makes the header/footer/menu keywords above honest: they land
-    // here, and `{ mode: 'layout' }` lands on the chrome rather than a page body.
-    component: StudioSurface,
-  },
   {
     key: 'builder.theme',
     title: 'Look & feel',
@@ -85,7 +60,20 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     module: 'builder',
     icon: faFileLines,
     order: 2,
-    keywords: ['page', 'edit page', 'design page', 'home page', 'about', 'landing'],
+    keywords: [
+      'page',
+      'edit page',
+      'design page',
+      'home page',
+      'about',
+      'landing',
+      // Inherited from the retired whole-site editor, so the words people already
+      // search with still land somewhere real.
+      'design',
+      'edit site',
+      'studio',
+      'drag and drop',
+    ],
     // ONE page, opened with `{ pageId }` — several of these can be open at once, on
     // different pages, because each is its own document. Opened with no page it
     // asks which one, rather than showing a blank canvas.
@@ -138,6 +126,18 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     // reason as History: without a document it can only tell you to open one.
     listed: false,
     component: PreviewPaneSurface,
+  },
+  {
+    key: 'builder.publish',
+    title: 'Publish',
+    module: 'builder',
+    icon: faCloudArrowUp,
+    order: 7,
+    keywords: ['go live', 'publish', 'launch', 'roll back', 'put back', 'releases', 'check'],
+    // The WHOLE-SITE counterpart to each builder's own Publish: what is waiting, the
+    // pre-publish check, every version that went live, and the way back. Listed,
+    // because "is my site up to date" is a question with no document attached.
+    component: PublishPaneSurface,
   },
 
   /* ── Design ────────────────────────────────────────────────────────────── */

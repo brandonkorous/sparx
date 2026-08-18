@@ -34,6 +34,7 @@ import {
 import { faExclamationTriangle, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -257,18 +258,31 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Email settings actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!dirty || hasFormatError || settings.isPending || save.isPending}
-          onClick={onSave}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {save.isPending ? 'Saving…' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Email settings actions"
+        refresh={
+          <RefreshButton
+            isFetching={settings.isFetching || domains.isFetching}
+            updatedAt={settings.data ? settings.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void settings.refetch();
+              void domains.refetch();
+            }}
+          />
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!dirty || hasFormatError || settings.isPending || save.isPending}
+            onClick={onSave}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {save.isPending ? 'Saving…' : 'Save'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {settings.isPending ? (

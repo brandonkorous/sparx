@@ -21,7 +21,7 @@ These are all largely independent of each other and can be built in parallel. Le
 >   both surfaces; the marketplace was re-specced as the data-driven catalog in [docs/60](60-marketplace.md)
 >   v0.3, which supersedes this section's phasing.
 > - **Universal Search (Feature 3): DONE.** Ph1 + Ph2 projectors shipped and the scoped-key 501 is
->   fixed (`generateScopedSearchKey` in `@sparx/search`).
+>   fixed (`generateScopedSearchKey` in `@wizeworks/search`).
 > - **Product Markup (Feature 4): Ph1, Ph2, and Surcharges (Ph2b) shipped.** Remaining: Ph3
 >   (quote/invoice-line markup) and Ph4 (cost-change recompute worker + MCP tools).
 > - **Legal & Consent (Feature 1): slices 3b–6 shipped** (seed worker, site consent UX,
@@ -33,7 +33,7 @@ These are all largely independent of each other and can be built in parallel. Le
 ## Feature 1 — Legal & Consent Completion (docs/42)
 
 **Spec:** [docs/42-legal-and-consent.md](42-legal-and-consent.md)
-**Already shipped:** Slices 0 (design doc), 1 (foundations: 4 tables + RLS migrations, `LEGAL_TEMPLATES` catalog, `legalKind` on `content_entries`, `legal-versions` constant, `GET/PATCH /v1/tenant/consent`), 2 (public placements API, site footer fix, real legal pages replacing ComingSoon stubs on apps/web), 3a (public consent POST + config fanout into `/v1/public/tenants/:slug`), PageView fix.
+**Already shipped:** Slices 0 (design doc), 1 (foundations: 4 tables + RLS migrations, `LEGAL_TEMPLATES` catalog, `legalKind` on `content_entries`, `legal-versions` constant, `GET/PATCH /v1/tenant/consent`), 2 (public placements API, site footer fix, real legal pages replacing ComingSoon stubs on sparx/apps/web), 3a (public consent POST + config fanout into `/v1/public/tenants/:slug`), PageView fix.
 **Remaining:** Slices 3b, 4, 5, 6, 7, 8.
 
 ### Slice 3b — Seed worker + Terraform
@@ -57,18 +57,18 @@ Terraform additions:
 
 The banner/preference-center island that renders on tenant sites.
 
-`apps/site/lib/consent.ts` — client registry:
+`wizeworks/apps/site/lib/consent.ts` — client registry:
 
 - `getConsent()` — reads `sparx_consent_state` cookie
 - `onConsentChange(cb)` — listens on `window` `CustomEvent('sparx:consent')`
 - `gateTracker({ category, load })` — runs `load` when category is granted
 
-SSR in `apps/site/app/layout.tsx`:
+SSR in `wizeworks/apps/site/app/layout.tsx`:
 
 - Read consent cookie server-side (existing pattern: same as `sparx_theme` cookie)
 - Pass `consentConfig` (from `/v1/public/tenants/:slug` — already in the payload) and `initialConsent` to the consent island
 
-Consent island `apps/site/components/consent/consent-island.tsx` (React client component):
+Consent island `wizeworks/apps/site/components/consent/consent-island.tsx` (React client component):
 
 - **Off mode:** render nothing
 - **Quiet notice:** persistent "Manage cookies" link in footer; opens preference center
@@ -116,7 +116,7 @@ Re-acceptance banner on dashboard: if `GET /v1/me/legal-status` returns stale do
 
 **High-risk slice — schedule via DB Migrate workflow only.**
 
-A migration that loops all existing tenants and seeds legal pages + placements under each tenant's RLS context. Must use the `set_config('app.tenant_id', ...)` pattern per tenant (see CLAUDE.md + `packages/db/CLAUDE.md` — `sparx_owner` is a non-superuser, sees zero rows without `set_config`).
+A migration that loops all existing tenants and seeds legal pages + placements under each tenant's RLS context. Must use the `set_config('app.tenant_id', ...)` pattern per tenant (see CLAUDE.md + `wizeworks/packages/db/CLAUDE.md` — `sparx_owner` is a non-superuser, sees zero rows without `set_config`).
 
 Script structure:
 
@@ -161,7 +161,7 @@ The Themes catalog pulls from the tenant's available saved themes + system-provi
 
 Theme catalog adapter for `/marketplace/themes`:
 
-- List: system themes (curated registry in `@sparx/ui`) + tenant-saved themes
+- List: system themes (curated registry in `@wizeworks/ui`) + tenant-saved themes
 - Facets: Style/mood (minimal, bold, editorial, playful), Color family, Layout density, Industry
 - Detail page: live preview using the Builder's theme preview mechanism, "Apply" CTA
 
@@ -171,7 +171,7 @@ Install count + rating: stub with static data for system themes until telemetry 
 
 ### Phase 2 — Components category
 
-The Components catalog exposes the system/shared component registry (docs/53 — `@sparx/blueprints` + system catalog).
+The Components catalog exposes the system/shared component registry (docs/53 — `@wizeworks/blueprints` + system catalog).
 
 Component catalog adapter for `/marketplace/components`:
 
@@ -216,7 +216,7 @@ The category browse page switches from in-memory filter/sort to Typesense querie
 
 ### Phase 5 — Public pre-auth funnel
 
-`apps/web` public marketplace browse surface (no auth required):
+`sparx/apps/web` public marketplace browse surface (no auth required):
 
 - Route: `sparx.works/marketplace`
 - Same three-tier IA (home / category / detail) but no install CTAs — replaced with "Sign up to install" + sign-up modal
@@ -253,7 +253,7 @@ Each new entity type gets a card in the ⌘K result list with an appropriate ico
 
 ### Phase 3 — Scoped-key 501 fix
 
-The Typesense scoped-key generation (per-tenant search isolation) currently returns 501 Not Implemented. Implement `generateScopedSearchKey(tenantId)` in `services/typesense-worker/` or `@sparx/search` using the Typesense Node.js client's `generateScopedSearchKey()` method with a filter_by `tenantId:{tenantId}` embedded.
+The Typesense scoped-key generation (per-tenant search isolation) currently returns 501 Not Implemented. Implement `generateScopedSearchKey(tenantId)` in `services/typesense-worker/` or `@wizeworks/search` using the Typesense Node.js client's `generateScopedSearchKey()` method with a filter_by `tenantId:{tenantId}` embedded.
 
 The site's public search (`/v1/public/search`) uses this scoped key — fix unblocks site product search from being truly tenant-isolated.
 
@@ -272,7 +272,7 @@ DB migration — new tables (RLS ENABLE + FORCE):
 - `markup_rules` (full schema per docs/48 §7 — all fields except `bands` JSONB for matrix)
 - Add to `product_variants`: `markup_rule_id UUID REFERENCES markup_rules(id)`, `applied_markup JSONB`
 
-`applyMarkupRule(cost, rule)` — pure function in `@sparx/commerce` package. Applies method, rounding, floor, ceiling. Returns `{ price, margin, appliedRule }`.
+`applyMarkupRule(cost, rule)` — pure function in `@wizeworks/commerce` package. Applies method, rounding, floor, ceiling. Returns `{ price, margin, appliedRule }`.
 
 API:
 

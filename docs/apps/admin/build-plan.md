@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-05
 
-> The build plan for `apps/admin` — the **WizeWorks operator console** at `admin.wize.works`. It is the
+> The build plan for `wizeworks/apps/admin` — the **WizeWorks operator console** at `admin.wize.works`. It is the
 > concrete _how_ for the two specs that already exist:
 >
 > - **Scope umbrella:** [docs/76-admin-portal-spec.md](../../76-admin-portal-spec.md) — what the portal
@@ -14,7 +14,7 @@
 >   Deferred." Where 76 and 16 §2.4 disagree on _how_, **16 §2.4 wins** (see [D1](#2-decisions-locked)).
 > - **First feature:** [feedback.md](feedback.md) — feedback triage, built after the shell (Slice 7).
 >
-> `apps/admin` is currently an **empty placeholder** — greenfield inside a built platform.
+> `wizeworks/apps/admin` is currently an **empty placeholder** — greenfield inside a built platform.
 
 > **Decisions locked (v1.1, 2026-07-04).** After review: same cluster + `wize-admin` namespace (no new
 > cluster); a second Better Auth instance in a dedicated **`wize_admin` Postgres schema** (same DB, split
@@ -47,15 +47,15 @@ Everything the admin app needs to _reuse_ exists; everything that would _weaken 
 | Capability                    | Where                                                                                                                                                                                | How the admin uses it                                                                                  |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | Next.js app scaffold          | [apps/dashboard](../../../apps/dashboard) (`next.config.mjs`, `Dockerfile`, `postcss.config.mjs`, `tsconfig.json`)                                                                   | Copy the standalone-output + Tailwind-v4 + filtered-install pattern exactly.                           |
-| Better Auth (self-hosted)     | [packages/auth/src/server.ts](../../../packages/auth/src/server.ts) + [prisma.ts](../../../packages/auth/src/prisma.ts)                                                              | Same library + Prisma-adapter machinery — but a **separate instance** on its own schema (D3).          |
-| Component library             | `@sparx/ui`                                                                                                                                                                          | The whole CVA/Radix system; operator console wears its own module hue.                                 |
-| Tenant "dispatch" row         | [packages/db/prisma/schema/02-tenant.prisma](../../../packages/db/prisma/schema/02-tenant.prisma)                                                                                    | `tenants` is **non-RLS/global** — but the admin reads it via api-rest, not directly (D6).              |
-| Per-tenant scoping primitive  | [packages/db/src/tenant-context.ts](../../../packages/db/src/tenant-context.ts) (`withTenant`, `withSystem`)                                                                         | Used **inside api-rest** for the operator read endpoints — not in the admin app.                       |
-| Tenant-scoped audit log       | [packages/db/prisma/schema/04-audit.prisma](../../../packages/db/prisma/schema/04-audit.prisma) (`audit_logs`, `actor_type`)                                                         | Operator-initiated writes stamp this as `actor_type = 'operator'` (owner-visible).                     |
-| Internal (Layer-5) principals | [docs/16 §2.5](../../16-auth-security.md), `services/api-rest/src/routes/internal/` (`acquisition-report.ts` is the cross-tenant-reporting precedent)                                | The exact pattern the new `/internal/operator/*` endpoints follow.                                     |
+| Better Auth (self-hosted)     | [wizeworks/packages/auth/src/server.ts](../../../packages/auth/src/server.ts) + [prisma.ts](../../../packages/auth/src/prisma.ts)                                                    | Same library + Prisma-adapter machinery — but a **separate instance** on its own schema (D3).          |
+| Component library             | `@wizeworks/ui`                                                                                                                                                                      | The whole CVA/Radix system; operator console wears its own module hue.                                 |
+| Tenant "dispatch" row         | [wizeworks/packages/db/prisma/schema/02-tenant.prisma](../../../packages/db/prisma/schema/02-tenant.prisma)                                                                          | `tenants` is **non-RLS/global** — but the admin reads it via api-rest, not directly (D6).              |
+| Per-tenant scoping primitive  | [wizeworks/packages/db/src/tenant-context.ts](../../../packages/db/src/tenant-context.ts) (`withTenant`, `withSystem`)                                                               | Used **inside api-rest** for the operator read endpoints — not in the admin app.                       |
+| Tenant-scoped audit log       | [wizeworks/packages/db/prisma/schema/04-audit.prisma](../../../packages/db/prisma/schema/04-audit.prisma) (`audit_logs`, `actor_type`)                                               | Operator-initiated writes stamp this as `actor_type = 'operator'` (owner-visible).                     |
+| Internal (Layer-5) principals | [docs/16 §2.5](../../16-auth-security.md), `wizeworks/services/api-rest/src/routes/internal/` (`acquisition-report.ts` is the cross-tenant-reporting precedent)                      | The exact pattern the new `/internal/operator/*` endpoints follow.                                     |
 | Analytics rollups             | `Rollup*` models on the tenant (revenue/collected/site/etc., docs/97)                                                                                                                | Platform-metrics endpoints aggregate these server-side in api-rest.                                    |
 | Billing substrate             | tenant `stripe*` fields + `BillingSubscriptionItem` (docs/67), api-rest billing routes                                                                                               | Billing-ops endpoints read/act through these; no new billing engine.                                   |
-| Domains substrate             | `Domain[]` / `DomainPurchase[]` on tenant, `@sparx/godaddy`, `@sparx/registrar`, `services/domain-worker`                                                                            | Domain endpoints read these; force-reverify re-triggers the worker path.                               |
+| Domains substrate             | `Domain[]` / `DomainPurchase[]` on tenant, `@wizeworks/godaddy`, `@wizeworks/registrar`, `services/domain-worker`                                                                    | Domain endpoints read these; force-reverify re-triggers the worker path.                               |
 | Deploy machinery              | [build-images.yml](../../../.github/workflows/build-images.yml) matrix + [deploy-prod.yml](../../../.github/workflows/deploy-prod.yml) rollout loop + [k8s/apps/](../../../k8s/apps) | Add `admin` to one matrix + one loop + one manifest (§6).                                              |
 | Cloudflare (same account)     | [terraform/envs/prod/cloudflare.tf](../../../terraform/envs/prod)                                                                                                                    | `wize.works` is in the same Cloudflare account — add a record + Access app (no new zone provisioning). |
 
@@ -90,7 +90,7 @@ Everything the admin app needs to _reuse_ exists; everything that would _weaken 
 - **D3 — Operator identity = a second Better Auth instance on a dedicated `wize_admin` Postgres schema.**
   Same `sparx` database, new **schema** (Postgres's namespace). A dedicated role `wize_operator` owns/uses
   `wize_admin`; `sparx_app` has zero access to it and `wize_operator` has zero access to `public` business
-  tables. The operator instance uses its **own small Prisma client** (in `@sparx/operator-auth`) connecting
+  tables. The operator instance uses its **own small Prisma client** (in `@wizeworks/operator-auth`) connecting
   with `?schema=wize_admin`, so its migration history (`wize_admin._prisma_migrations`) is separate and
   there is **no churn** on the 277-model main schema. Operators have **no `tid`**.
   - **Split-later guarantee:** **no foreign keys from `wize_admin` into `public`.** The operator audit log
@@ -151,10 +151,10 @@ Everything the admin app needs to _reuse_ exists; everything that would _weaken 
                           │
                           ▼
         ┌─────────────────────────────────────────────┐
-        │  apps/admin  (Next.js standalone, wize-admin  │
+        │  wizeworks/apps/admin  (Next.js standalone, wize-admin  │
         │              namespace, SA: wize-admin)       │
         │                                               │
-        │  Auth boundary:  @sparx/operator-auth         │  ← 2nd Better Auth instance (D3)
+        │  Auth boundary:  @wizeworks/operator-auth         │  ← 2nd Better Auth instance (D3)
         │    email+password, twoFactor-READY (D8),      │     own Prisma client → schema=wize_admin
         │    session → capabilities (D5), NO tid        │
         │                                               │
@@ -186,7 +186,7 @@ Three seams the app is built around:
 
 Two parts, both through the pipeline (use the **db-migration** skill; mind the FORCE-RLS backfill footgun).
 
-**A) New `wize_admin` schema (own Prisma project in `@sparx/operator-auth`, own migration history):**
+**A) New `wize_admin` schema (own Prisma project in `@wizeworks/operator-auth`, own migration history):**
 
 | Table                                                         | Purpose                                                                                                                                                                                                      |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -213,11 +213,11 @@ The deployable spine. After this, `brandon@wize.works` can sign in (behind Cloud
 `admin.wize.works` shell that shows "signed in as X, capabilities: …" and nothing else — but the security
 boundary, the audit trail, and the api-rest seam are all real.
 
-- Scaffold `apps/admin` from the dashboard pattern (§6.1): standalone Next, Tailwind v4, `@sparx/ui`, own
+- Scaffold `wizeworks/apps/admin` from the dashboard pattern (§6.1): standalone Next, Tailwind v4, `@wizeworks/ui`, own
   port, trimmed Dockerfile.
-- `@sparx/operator-auth`: the second Better Auth instance (D3) — `emailAndPassword`, **twoFactor-ready**
+- `@wizeworks/operator-auth`: the second Better Auth instance (D3) — `emailAndPassword`, **twoFactor-ready**
   (D8), own Prisma client → `wize_admin`, own `BETTER_AUTH_SECRET`. Set-password bootstrap for D10.
-- `@sparx/operator` (app-side): `requireOperator()` (session → operator + capabilities), `requireCapability(cap)`
+- `@wizeworks/operator` (app-side): `requireOperator()` (session → operator + capabilities), `requireCapability(cap)`
   default-deny, and the audit writer. Plus the typed api-rest internal client (shared secret + `X-Operator-Id`).
 - api-rest: a new `/internal/operator/*` plugin (mirrors `internal/acquisition-report.ts`) with its own
   secret `SPARX_INTERNAL_OPERATOR_TOKEN`, `schema: { hide: true }`, constant-time compare, fail-closed.
@@ -252,7 +252,7 @@ Gated `billing:read` / `billing:act`.
 
 All custom domains cross-tenant, SSL cert status, CNAME verification, **force re-verify** (re-trigger the
 `domain-worker` path), GoDaddy purchase/renewal history. Reads `Domain[]` / `DomainPurchase[]`; acts via the
-domain worker + `@sparx/registrar`. Gated `domain:manage`.
+domain worker + `@wizeworks/registrar`. Gated `domain:manage`.
 
 ### Slice 6 — Support tools
 
@@ -301,9 +301,9 @@ reads (no cross-partner ledger). Bootcamps are host-partner-owned → read-only 
 
 ### 6.1 Scaffold checklist (copy from `apps/dashboard`)
 
-- `package.json`: `@sparx/admin`, `type: module`, scripts `dev`/`build`/`lint`/`typecheck`/`test`, own dev
-  port (e.g. `3002`), deps trimmed to what admin imports (`@sparx/ui`, `@sparx/operator-auth`, `@sparx/operator`,
-  next 16, react 19, tailwind 4, better-auth). **No `@sparx/db` business-model imports** — it talks to api-rest.
+- `package.json`: `@wizeworks/admin`, `type: module`, scripts `dev`/`build`/`lint`/`typecheck`/`test`, own dev
+  port (e.g. `3002`), deps trimmed to what admin imports (`@wizeworks/ui`, `@wizeworks/operator-auth`, `@wizeworks/operator`,
+  next 16, react 19, tailwind 4, better-auth). **No `@wizeworks/db` business-model imports** — it talks to api-rest.
 - `next.config.mjs`: `output: 'standalone'`, `outputFileTracingRoot: ../../`, `transpilePackages` for the
   `@sparx/*` it imports, `serverExternalPackages` for `@prisma/client` + `better-auth`.
 - `postcss.config.mjs` (`@tailwindcss/postcss`), `tsconfig.json` (extends `../../tsconfig.base.json`, `@/*`).
@@ -363,7 +363,7 @@ If a slice can't meet these, it doesn't ship.
 - **F6 — Migration ships through the pipeline.** `wize_admin` schema + hand-edited RLS/grants; watch the
   FORCE-RLS backfill footgun (`wize_operator` is non-superuser in prod). db-migration skill.
 - **F7 — User owns dev + commits.** Verify via typecheck/lint/DB+API, not by restarting their dev server;
-  stage only `apps/admin` / new-package / docs files by path; leave the tree for the user to commit.
+  stage only `wizeworks/apps/admin` / new-package / docs files by path; leave the tree for the user to commit.
 
 ---
 

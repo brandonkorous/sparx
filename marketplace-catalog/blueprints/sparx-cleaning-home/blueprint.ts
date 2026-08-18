@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-cleaning-home',
-    version: '1.3.0',
-    name: 'sparx — House Cleaning (Home)',
-    summary:
-        'A bright, cheerful residential house-cleaning site — a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as "Tidy Nest", with a recurring-plan angle — the same trusted cleaner every visit.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-cleaning-home',
+  version: '1.3.0',
+  name: 'sparx — House Cleaning (Home)',
+  summary:
+    'A bright, cheerful residential house-cleaning site — a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as "Tidy Nest", with a recurring-plan angle — the same trusted cleaner every visit.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Tidy Nest',
+    tagline: 'Come home to clean.',
+    colors: {
+      primary: '#00b8b4',
+      primaryForeground: '#020e0d',
+      accent: '#ef7c59',
+      secondary: '#334550',
+    },
+    fonts: {
+      heading: 'Nunito',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'tidynest',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Tidy Nest',
-        tagline: 'Come home to clean.',
-        colors: {
-            primary: '#00b8b4',
-            primaryForeground: '#020e0d',
-            accent: '#ef7c59',
-            secondary: '#334550',
-        },
-        fonts: {
-            heading: 'Nunito',
-            body: 'Inter',
-        },
+      colorPrimary: '#00b8b4',
+      colorAccent: '#ef7c59',
+      colorSecondary: '#334550',
+      fontHeading: 'Nunito',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'tidynest',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#00b8b4',
-            colorAccent: '#ef7c59',
-            colorSecondary: '#334550',
-            fontHeading: 'Nunito',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

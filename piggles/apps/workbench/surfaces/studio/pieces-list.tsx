@@ -15,7 +15,7 @@ import { useStudioBinding } from '../../lib/studio/provider';
 import { useSessionSnapshot } from '@wizeworks/studio/react';
 import { useConfirm } from '../../lib/confirm';
 import { fetchPiecePlacements, useDeletePiece } from '../../lib/studio/piece-data';
-import { pieceKeyOf } from '../builder/studio/saved-pieces';
+import { pieceKeyOf } from '../../lib/studio/saved-pieces';
 
 interface PieceEntry {
   id: string;
@@ -75,39 +75,7 @@ function PieceRow({
   onOpen: (pieceId: string) => void;
   onOpenBeside: (pieceId: string) => void;
 }) {
-  const confirm = useConfirm();
-  const toast = useToast();
-  const deletePiece = useDeletePiece();
-
-  /**
-   * Delete, having first said what it costs.
-   *
-   * The placement count is fetched at the moment of asking, not held from the list:
-   * "used on 4 pages" is the whole basis of the decision, and a number from when the
-   * pane opened can be wrong by the time someone acts on it.
-   */
-  const remove = async () => {
-    const placements = await fetchPiecePlacements(piece.id).catch(() => null);
-    const where =
-      placements === null
-        ? 'We couldn’t check where this is used.'
-        : placements.length === 0
-          ? 'It isn’t used anywhere yet.'
-          : `It’s used on ${placements.map((p) => p.label).join(', ')}.`;
-
-    const ok = await confirm({
-      title: `Delete “${piece.name}”?`,
-      description: `${where} Those stay exactly as they look now — they just stop following this piece, so changing it later won’t change them.${
-        piece.shared ? ' This piece is shared with your other sites.' : ''
-      }`,
-      confirmLabel: 'Delete piece',
-      cancelLabel: 'Keep it',
-      color: 'danger',
-    });
-    if (!ok) return;
-    await deletePiece.mutateAsync(piece.id);
-    toast.add({ title: `“${piece.name}” deleted`, type: 'success' });
-  };
+  const { remove, removing } = useRemovePiece(piece);
 
   return (
     <li className="bg-base-100 mb-2 flex items-center gap-2 rounded-lg pr-2 shadow-sm">
@@ -137,11 +105,49 @@ function PieceRow({
         variant="soft"
         aria-label={`Delete ${piece.name}`}
         title="Delete"
-        disabled={deletePiece.isPending}
+        disabled={removing}
         onClick={() => void remove()}
       >
         <Icon glyph={faTrash} className="size-4" aria-hidden />
       </Button>
     </li>
   );
+}
+
+/**
+ * Delete, having first said what it costs.
+ *
+ * The placement count is fetched at the moment of ASKING, not held from the list:
+ * "used on 4 pages" is the whole basis of the decision, and a number from when the
+ * pane opened can be wrong by the time someone acts on it.
+ */
+function useRemovePiece(piece: PieceEntry): { remove: () => Promise<void>; removing: boolean } {
+  const confirm = useConfirm();
+  const toast = useToast();
+  const deletePiece = useDeletePiece();
+
+  const remove = async () => {
+    const placements = await fetchPiecePlacements(piece.id).catch(() => null);
+    const where =
+      placements === null
+        ? 'We couldn’t check where this is used.'
+        : placements.length === 0
+          ? 'It isn’t used anywhere yet.'
+          : `It’s used on ${placements.map((p) => p.label).join(', ')}.`;
+
+    const ok = await confirm({
+      title: `Delete “${piece.name}”?`,
+      description: `${where} Those stay exactly as they look now — they just stop following this piece, so changing it later won’t change them.${
+        piece.shared ? ' This piece is shared with your other sites.' : ''
+      }`,
+      confirmLabel: 'Delete piece',
+      cancelLabel: 'Keep it',
+      color: 'danger',
+    });
+    if (!ok) return;
+    await deletePiece.mutateAsync(piece.id);
+    toast.add({ title: `“${piece.name}” deleted`, type: 'success' });
+  };
+
+  return { remove, removing: deletePiece.isPending };
 }

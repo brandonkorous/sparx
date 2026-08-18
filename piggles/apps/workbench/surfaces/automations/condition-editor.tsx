@@ -22,7 +22,7 @@ import {
   type ConditionGroup,
   type ConditionNode,
   type ConditionOperator,
-} from '@sparx/automation-schemas';
+} from '@wizeworks/automation-schemas';
 import {
   COMMON_CONDITION_FIELDS,
   CONDITION_OPERATORS,

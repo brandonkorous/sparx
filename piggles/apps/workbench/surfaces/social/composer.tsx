@@ -63,6 +63,7 @@ import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -997,36 +998,34 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New post actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={compose.isPending && compose.variables?.action === 'draft'}
-          disabled={!canSaveDraft}
-          onClick={() => {
-            run('draft');
-          }}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save draft
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New post actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            loading={compose.isPending && compose.variables?.action === 'draft'}
+            disabled={!canSaveDraft}
+            onClick={() => {
+              run('draft');
+            }}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save draft
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Split studio: compose on the left, what it will ACTUALLY look like on the
             right. Stacks to one column below lg so the composer works on a phone. */}
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 lg:flex-row lg:items-start">
           <div className="flex min-w-0 flex-1 flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Write a post
-              </Heading>
-              <Text>
-                Write it once, choose where it goes, and see exactly how it lands on each account
-                before it leaves.
-              </Text>
-            </div>
+            <Text>
+              Write it once, choose where it goes, and see exactly how it lands on each account
+              before it leaves.
+            </Text>
 
             {failure ? (
               <Alert color="error" variant="soft">
@@ -1301,7 +1300,19 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
    MANAGE A SAVED POST
    ══════════════════════════════════════════════════════════════════════════ */
 
-function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
+function ComposeManage({
+  ctx,
+  post,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  post: Post;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
   const viewer = useViewer();
@@ -1573,56 +1584,73 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Post actions" wrap>
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-        <div className="flex-1" />
-        {/* Post it again — the cheapest real leverage in the module. Available on
+      <PaneToolbar
+        label="Post actions"
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+        status={
+          <>
+            <Badge color={meta.tone} variant="soft" size="sm">
+              {meta.label}
+            </Badge>
+            <div className="flex-1" />
+          </>
+        }
+        // Save is `primary`, never `controls`: `controls` relocates into the
+        // overflow popover under 672px, and a commit action must be reachable
+        // at every width. Enforced by scripts/check-toolbar-primary.mjs.
+        primary={
+          editable && canWrite ? (
+            <Button
+              color="module"
+              size="sm"
+              disabled={!changed || update.isPending}
+              loading={update.isPending}
+              onClick={saveChanges}
+            >
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+              Save changes
+            </Button>
+          ) : null
+        }
+        controls={
+          <>
+            {/* Post it again — the cheapest real leverage in the module. Available on
             anything that has actually gone out. */}
-        {canWrite && (post.status === 'published' || post.status === 'partially_published') ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="module"
-            loading={duplicate.isPending}
-            onClick={doDuplicate}
-          >
-            <Icon glyph={faClone} className="size-4" aria-hidden />
-            Post this again
-          </Button>
-        ) : null}
-        {editable && canWrite ? (
-          <Button
-            color="module"
-            size="sm"
-            disabled={!changed || update.isPending}
-            loading={update.isPending}
-            onClick={saveChanges}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            Save changes
-          </Button>
-        ) : null}
-        {/* Delete is a lifecycle action on the whole post, so it rides the frame
+            {canWrite && (post.status === 'published' || post.status === 'partially_published') ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="module"
+                loading={duplicate.isPending}
+                onClick={doDuplicate}
+              >
+                <Icon glyph={faClone} className="size-4" aria-hidden />
+                Post this again
+              </Button>
+            ) : null}
+            {/* Delete is a lifecycle action on the whole post, so it rides the frame
             header with the rest of them — icon-only, because a destructive verb
             spelled out next to Save is the one pair worth keeping visually
             unalike. The confirm names what is lost before anything happens. */}
-        {isAdmin && post.status !== 'publishing' ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            color="danger"
-            shape="square"
-            aria-label="Delete this post"
-            title="Delete this post"
-            loading={remove.isPending}
-            onClick={doDelete}
-          >
-            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-          </Button>
-        ) : null}
-      </PaneToolbar>
+            {isAdmin && post.status !== 'publishing' ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                color="danger"
+                shape="square"
+                aria-label="Delete this post"
+                title="Delete this post"
+                loading={remove.isPending}
+                onClick={doDelete}
+              >
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+              </Button>
+            ) : null}
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Same split studio as writing a new post: the post on the left, the real
@@ -2006,7 +2034,18 @@ function ComposerInner({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  return <ComposeManage key={post.data.id} ctx={ctx} post={post.data} />;
+  return (
+    <ComposeManage
+      key={post.data.id}
+      ctx={ctx}
+      post={post.data}
+      isFetching={post.isFetching}
+      updatedAt={post.dataUpdatedAt}
+      onRefresh={() => {
+        void post.refetch();
+      }}
+    />
+  );
 }
 
 export function SocialComposerSurface({ ctx }: { ctx: SurfaceContext }) {

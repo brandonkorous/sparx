@@ -35,68 +35,6 @@
 // not the platform's vocabulary. See `resolveTitle` in the shared registry.
 
 /**
- * Group headings inside a nav panel, keyed by the platform's own section string.
- *
- * Keyed by the STRING, so this also does a second job: the platform ships
- * "Setup", "Set up", "Setting up" and "Settings" as four separate strings that
- * all mean the same thing in different modules, and "Reports" / "Reporting" as
- * two more. Mapping them onto one Piggles word each collapses them everywhere at
- * once, and a person moving between apps meets the same heading rather than four
- * spellings of it.
- */
-export const PIGGLES_SECTIONS: Readonly<Record<string, string>> = {
-  // The four spellings of one idea.
-  Setup: 'Setting it up',
-  'Set up': 'Setting it up',
-  'Setting up': 'Setting it up',
-  Settings: 'Setting it up',
-
-  // ...and the two spellings of another. "How it is going" rather than
-  // "Reports", because nobody opens their software wanting a report; they want
-  // to know how it is going.
-  Reports: 'How it is going',
-  Reporting: 'How it is going',
-  Results: 'How it is going',
-
-  // Category nouns, replaced by the job.
-  Catalog: 'What you sell',
-  Pricing: 'What you charge',
-  Selling: 'Where you sell',
-  'Product panels': 'On a product',
-  'In progress': 'Half-finished',
-  Structure: 'How it is organised',
-  Localization: 'Other languages',
-  Library: 'Your library',
-  Design: 'Your pages',
-  Forms: 'What people send you',
-  Sales: 'Winning work',
-  Support: 'Helping people',
-  Customers: 'Worth chasing',
-  Planning: 'Looking ahead',
-  Making: 'Making things',
-  Counting: 'Counting it',
-  Buying: 'Buying it in',
-  'Going out': 'Going out the door',
-  Scanning: 'Barcodes and scanning',
-  Trade: 'Wholesale',
-  Checks: 'Health checks',
-  Compliance: 'Keeping it legal',
-  Bookings: 'Your diary',
-  'Connections & access': 'Who can get in',
-  'Did we make money': 'Did you make money',
-
-  // "What sparx does" named the other product in the navigation. It groups the
-  // screens that decide what this software is set up to do for you, which is a
-  // true and brand-free way to say it.
-  'What sparx does': 'How Piggles is set up',
-
-  // No entry for 'What you pay sparx'. Its one surface is hidden — what a
-  // Piggles business pays WizeWorks lives on getpiggles.com and never in the
-  // console (piggles/CLAUDE.md RULE #2), so the heading has nothing under it and
-  // never renders. Renaming it would be inventing a screen.
-};
-
-/**
  * Screen names, by surface key.
  *
  * Grouped by the Piggles app they surface under, because that is the panel a

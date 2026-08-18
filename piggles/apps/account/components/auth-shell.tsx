@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { PRODUCT } from '@piggles/config';
+import { AppearanceControl } from './appearance-control';
 import { Assurances } from './assurances';
 
 // The frame every signed-out / setup screen sits in.
@@ -43,81 +44,86 @@ import { Assurances } from './assurances';
 type Shape = 'auth' | 'setup';
 
 const GRID: Record<Shape, string> = {
-    auth: 'lg:grid-cols-[1fr_minmax(0,30rem)]',
-    setup: 'lg:grid-cols-[minmax(0,20rem)_1fr]',
+  auth: 'lg:grid-cols-[1fr_minmax(0,30rem)]',
+  setup: 'lg:grid-cols-[minmax(0,20rem)_1fr]',
 };
 
 export function AuthShell({
-    heading,
-    lede,
-    children,
-    panel,
-    aside,
-    footer,
-    shape = 'auth',
+  heading,
+  lede,
+  children,
+  panel,
+  aside,
+  footer,
+  shape = 'auth',
 }: {
-    /** The task, named. Always the page's `h1` — the panel's big line beside it is
-     *  a promise rather than a document heading, so it stays a `<p>`. */
-    heading: string;
-    lede?: string;
-    children: ReactNode;
-    /** The column beside the form. Omit it and the card centres itself. */
-    panel?: ReactNode;
-    /** A line under the card — the way to the other credential screen. */
-    aside?: ReactNode;
-    /** Small print under that. */
-    footer?: ReactNode;
-    shape?: Shape;
+  /** The task, named. Always the page's `h1` — the panel's big line beside it is
+   *  a promise rather than a document heading, so it stays a `<p>`. */
+  heading: string;
+  lede?: string;
+  children: ReactNode;
+  /** The column beside the form. Omit it and the card centres itself. */
+  panel?: ReactNode;
+  /** A line under the card — the way to the other credential screen. */
+  aside?: ReactNode;
+  /** Small print under that. */
+  footer?: ReactNode;
+  shape?: Shape;
 }) {
-    return (
-        // The one sanctioned decorative use of brand color (DESIGN.md §7): a pale
-        // pink wash, resolved by silica's universal `soft` treatment from
-        // `--color-accent` rather than baked as a hex, so it follows the theme into
-        // dark. NOT a gradient — root's ban stands, and a flat wash is what the
-        // brand board asks for anyway.
-        // `flex flex-col` with the band OUTSIDE the centred container, so the band
-        // runs the full width of the viewport while everything above it stays on the
-        // 72rem measure. Boxed and inset like the form, it read as a fifth thing to
-        // deal with; full-bleed on its own surface it reads as the floor of the page.
-        <div className="bg-accent bg-soft flex min-h-dvh flex-col">
-            <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10 lg:px-10">
-                <Link
-                    href={`https://${PRODUCT.hosts.marketing}`}
-                    aria-label={`${PRODUCT.name} home`}
-                    className="self-start"
-                >
-                    <Logo className="h-11 w-auto" />
-                </Link>
+  return (
+    // The one sanctioned decorative use of brand color (DESIGN.md §7): a pale
+    // pink wash, resolved by silica's universal `soft` treatment from
+    // `--color-accent` rather than baked as a hex, so it follows the theme into
+    // dark. NOT a gradient — root's ban stands, and a flat wash is what the
+    // brand board asks for anyway.
+    // `flex flex-col` with the band OUTSIDE the centred container, so the band
+    // runs the full width of the viewport while everything above it stays on the
+    // 72rem measure. Boxed and inset like the form, it read as a fifth thing to
+    // deal with; full-bleed on its own surface it reads as the floor of the page.
+    <div className="bg-accent bg-soft flex min-h-dvh flex-col">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10 lg:px-10">
+        {/* The logo and the appearance control are the only two things on this
+            row, at opposite ends: the one way out, and the one preference a
+            person can set before they have an account to keep it on. It sits
+            here rather than beside the form because it is not part of the task —
+            somebody reading in dark should be able to fix a white sign-in page
+            without hunting, and then never look at this corner again. */}
+        <div className="flex items-center justify-between gap-4">
+          <Link href={`https://${PRODUCT.hosts.marketing}`} aria-label={`${PRODUCT.name} home`}>
+            <Logo className="h-11 w-auto" />
+          </Link>
+          <AppearanceControl />
+        </div>
 
-                <div
-                    className={`grid flex-1 items-center gap-10 py-10 lg:gap-16 lg:py-16 ${panel ? GRID[shape] : 'justify-items-center'}`}
-                >
-                    {panel ? <div className="order-2 lg:order-1">{panel}</div> : null}
+        <div
+          className={`grid flex-1 items-center gap-10 py-10 lg:gap-16 lg:py-16 ${panel ? GRID[shape] : 'justify-items-center'}`}
+        >
+          {panel ? <div className="order-2 lg:order-1">{panel}</div> : null}
 
-                    <div className={`order-1 w-full lg:order-2 ${panel ? '' : 'max-w-lg'}`}>
-                        <Card>
-                            <CardBody>
-                                <div>
-                                    {/* Matches the promise beside it. Fredoka's axis stops at
+          <div className={`order-1 w-full lg:order-2 ${panel ? '' : 'max-w-lg'}`}>
+            <Card>
+              <CardBody>
+                <div>
+                  {/* Matches the promise beside it. Fredoka's axis stops at
                       700, so `font-black` renders there. */}
-                                    <h1 className="text-3xl font-black sm:text-4xl">{heading}</h1>
-                                    {lede ? <p className="mt-2 text-lg">{lede}</p> : null}
-                                </div>
-
-                                {children}
-                            </CardBody>
-                        </Card>
-
-                        {aside ? <div className="mt-6 text-base">{aside}</div> : null}
-                        {footer ? <div className="mt-6 max-w-prose text-base">{footer}</div> : null}
-                    </div>
+                  <h1 className="text-3xl font-black sm:text-4xl">{heading}</h1>
+                  {lede ? <p className="mt-2 text-lg">{lede}</p> : null}
                 </div>
-            </div>
 
-            {/* Only on the credential screens. Somebody in onboarding has already
+                {children}
+              </CardBody>
+            </Card>
+
+            {aside ? <div className="mt-6 text-base">{aside}</div> : null}
+            {footer ? <div className="mt-6 max-w-prose text-base">{footer}</div> : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Only on the credential screens. Somebody in onboarding has already
           decided; re-arguing the case to a customer who just signed up reads as
           a product that has not noticed they said yes. */}
-            {shape === 'auth' ? <Assurances /> : null}
-        </div>
-    );
+      {shape === 'auth' ? <Assurances /> : null}
+    </div>
+  );
 }

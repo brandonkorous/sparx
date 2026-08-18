@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-nutrition-wellness',
-    version: '1.3.0',
-    name: 'sparx — Nutrition (Wellness)',
-    summary:
-        'A warm, non-diet nutrition site — a soft-cream palette, a sage primary and a terracotta accent, with fresh-food photography carrying the page. Installs a working online booking flow: a free discovery call plus initial, gut-health, weight, intuitive-eating and family consults, three registered dietitians you book by name with evening and Saturday hours, and a no-show hold policy. Ships as "Nourish Nutrition", a caring whole-health practice.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-nutrition-wellness',
+  version: '1.3.0',
+  name: 'sparx — Nutrition (Wellness)',
+  summary:
+    'A warm, non-diet nutrition site — a soft-cream palette, a sage primary and a terracotta accent, with fresh-food photography carrying the page. Installs a working online booking flow: a free discovery call plus initial, gut-health, weight, intuitive-eating and family consults, three registered dietitians you book by name with evening and Saturday hours, and a no-show hold policy. Ships as "Nourish Nutrition", a caring whole-health practice.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Nourish Nutrition',
+    tagline: 'Whole-health nutrition, kindly done.',
+    colors: {
+      primary: '#42774b',
+      primaryForeground: '#f4faf5',
+      accent: '#cb7043',
+      secondary: '#473b2c',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'nourish',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Nourish Nutrition',
-        tagline: 'Whole-health nutrition, kindly done.',
-        colors: {
-            primary: '#42774b',
-            primaryForeground: '#f4faf5',
-            accent: '#cb7043',
-            secondary: '#473b2c',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Inter',
-        },
+      colorPrimary: '#42774b',
+      colorAccent: '#cb7043',
+      colorSecondary: '#473b2c',
+      fontHeading: 'Fraunces',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'nourish',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#42774b',
-            colorAccent: '#cb7043',
-            colorSecondary: '#473b2c',
-            fontHeading: 'Fraunces',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

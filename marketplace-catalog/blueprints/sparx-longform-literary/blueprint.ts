@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-longform-literary',
-    version: '1.4.0',
-    name: 'sparx — Longform Literary',
-    summary:
-        'A serif, reading-first front page for a literary magazine — a single ranked lead essay over a contents rail, a live journal, a curated "in this issue" table of contents, magazine departments, and a bespoke serif article page tuned for reading an essay end to end, in a warm-paper one-red theme. Modelled on the literary-longform archetype; shipped as The Meridian. Ships a light store (a print membership, an anthology, merch) to demonstrate content + commerce together.',
-    vertical: 'content',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-longform-literary',
+  version: '1.4.0',
+  name: 'sparx — Longform Literary',
+  summary:
+    'A serif, reading-first front page for a literary magazine — a single ranked lead essay over a contents rail, a live journal, a curated "in this issue" table of contents, magazine departments, and a bespoke serif article page tuned for reading an essay end to end, in a warm-paper one-red theme. Modelled on the literary-longform archetype; shipped as The Meridian. Ships a light store (a print membership, an anthology, merch) to demonstrate content + commerce together.',
+  vertical: 'content',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'The Meridian',
+    tagline: 'Where an argument has room to breathe.',
+    colors: {
+      primary: '#bb0916',
+      primaryForeground: '#fff6f5',
+      accent: '#bb0916',
+      secondary: '#564b42',
+    },
+    fonts: {
+      heading: 'Playfair Display',
+      body: 'Spectral',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'longform-literary',
+    basePresetKey: 'longform-literary',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'The Meridian',
-        tagline: 'Where an argument has room to breathe.',
-        colors: {
-            primary: '#bb0916',
-            primaryForeground: '#fff6f5',
-            accent: '#bb0916',
-            secondary: '#564b42',
-        },
-        fonts: {
-            heading: 'Playfair Display',
-            body: 'Spectral',
-        },
+      colorPrimary: '#bb0916',
+      colorAccent: '#bb0916',
+      colorSecondary: '#564b42',
+      fontHeading: 'Playfair Display',
+      fontBody: 'Spectral',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'longform-literary',
-        basePresetKey: 'longform-literary',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#bb0916',
-            colorAccent: '#bb0916',
-            colorSecondary: '#564b42',
-            fontHeading: 'Playfair Display',
-            fontBody: 'Spectral',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

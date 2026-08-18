@@ -14,10 +14,14 @@
 // chrome — not a per-row action here, which would be a second, competing way to
 // do the same thing.
 
-import { Badge, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
 import { faBuilding } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneEmpty } from '../../components/pane-empty';
+/** Registry module for this pane, so the brand draws one consistent picture
+ *  across every partner state. */
+const MODULE = 'partner';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { usePartnerClients, type PartnerClient } from './data';
@@ -73,19 +77,23 @@ export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Clients list controls">
-        <Text className="text-sm whitespace-nowrap">
-          {clients.length === 1 ? '1 client' : `${String(clients.length)} clients`}
-        </Text>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Clients list controls"
+        status={
+          <Text className="text-sm whitespace-nowrap">
+            {clients.length === 1 ? '1 client' : `${String(clients.length)} clients`}
+          </Text>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {isError ? (
         <PartnerLoadError
@@ -100,11 +108,16 @@ export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
       ) : clients.length === 0 ? (
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className={COLUMN}>
-            <EmptyState
-              icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
-              title="No clients yet"
-              description="Refer a business with your link, or ask a client to add you to their account as a consultant. Accounts you refer or manage will appear here."
-            />
+            {/* Carded like the list beside it, so the pane keeps its shape when
+                the first client arrives. */}
+            <Card>
+              <PaneEmpty
+                module={MODULE}
+                icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
+                title="No clients yet"
+                description="Refer a business with your link, or ask a client to add you to their account as a consultant. Accounts you refer or manage will appear here."
+              />
+            </Card>
           </div>
         </div>
       ) : (

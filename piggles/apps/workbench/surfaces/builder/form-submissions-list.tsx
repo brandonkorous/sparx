@@ -15,6 +15,7 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -27,9 +28,9 @@ import {
   Filter,
   FilterItem,
   NativeSelect,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faInbox } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
@@ -139,58 +140,71 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Submissions inbox controls" wrap>
-        <Filter
-          color="module"
-          value={statusFilter}
-          onValueChange={(next) => {
-            setStatusFilter((next as StatusFilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by status"
-        >
-          {STATUS_FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        {/* Only worth showing once more than one form has ever been submitted —
-            with a single form the picker chooses nothing. */}
-        {forms.length > 1 ? (
-          <label className="hidden items-center @xl:flex">
-            <span className="sr-only">Which form</span>
-            <NativeSelect
-              size="sm"
+      <PaneToolbar
+        label="Submissions inbox controls"
+        controls={
+          <>
+            <Filter
               color="module"
-              value={formNodeId}
-              aria-label="Which form"
-              onChange={(event) => {
-                setFormNodeId(event.target.value);
+              value={statusFilter}
+              onValueChange={(next) => {
+                setStatusFilter((next as StatusFilterValue | null) ?? 'all');
                 resetWindow();
               }}
+              showReset={false}
+              aria-label="Filter by status"
             >
-              <option value="">All forms</option>
-              {forms.map((form) => (
-                <option key={form.formNodeId} value={form.formNodeId}>
-                  {(form.formName ?? 'Untitled form') + ` (${String(form.count)})`}
-                </option>
+              {STATUS_FILTERS.map((entry) => (
+                <FilterItem key={entry.value} value={entry.value}>
+                  {entry.label}
+                </FilterItem>
               ))}
-            </NativeSelect>
-          </label>
-        ) : null}
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+            </Filter>
+            {/* Only worth showing once more than one form has ever been submitted —
+            with a single form the picker chooses nothing. */}
+            {forms.length > 1 ? (
+              <label className="items-center">
+                <span className="sr-only">Which form</span>
+                <NativeSelect
+                  size="sm"
+                  color="module"
+                  value={formNodeId}
+                  aria-label="Which form"
+                  onChange={(event) => {
+                    setFormNodeId(event.target.value);
+                    resetWindow();
+                  }}
+                >
+                  <option value="">All forms</option>
+                  {forms.map((form) => (
+                    <option key={form.formNodeId} value={form.formNodeId}>
+                      {(form.formName ?? 'Untitled form') + ` (${String(form.count)})`}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </label>
+            ) : null}
+          </>
+        }
+        views={{
+          target: '/builder/forms',
+          params: { status: statusFilter, form: formNodeId },
+          onApply: (next) => {
+            setStatusFilter((next.status ?? 'all') as StatusFilterValue);
+            setFormNodeId(next.form ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {staleAfterFailure ? (
@@ -218,21 +232,13 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the table — "nothing submitted yet" over a
           // connection failure is a lie about their enquiries, the worst one to tell.
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title="Could not load your submissions"
             description="This is a problem reaching the server. Nothing anyone sent has been lost — none of it is affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting />

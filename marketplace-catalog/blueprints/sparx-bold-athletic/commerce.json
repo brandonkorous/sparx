@@ -1,1438 +1,1311 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "bib-shorts",
+      "name": "Bib Shorts",
+      "description": "All-day and race-fit bibs.",
+      "featured": true
+    },
+    {
+      "handle": "jerseys",
+      "name": "Jerseys",
+      "description": "From ultralight climbers to brushed thermals.",
+      "featured": true
+    },
+    {
+      "handle": "base-layers",
+      "name": "Base Layers",
+      "description": "The quiet layer that regulates everything.",
+      "featured": false
+    },
+    {
+      "handle": "cold-weather",
+      "name": "Cold Weather",
+      "description": "Gilets, shells and thermals for the off-season.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Socks, caps and gloves.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-in",
+      "name": "New This Season",
+      "description": "The latest kit off the test rides.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "endurance-bib-short",
+        "aero-jersey",
+        "wind-gilet",
+        "merino-base-layer",
+        "race-socks"
+      ]
+    },
+    {
+      "handle": "bib-shorts",
+      "name": "Bib Shorts",
+      "description": "The single piece of kit worth getting right first.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["endurance-bib-short", "race-bib-short"]
+    },
+    {
+      "handle": "jerseys",
+      "name": "Jerseys",
+      "description": "A jersey for every temperature and every gradient.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["climbers-jersey", "aero-jersey", "thermal-jersey"]
+    },
+    {
+      "handle": "cold-weather",
+      "name": "Cold Weather",
+      "description": "The layers that keep you riding through the off-season.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "thermal-jersey",
+        "merino-base-layer",
+        "wind-gilet",
+        "stormshell-rain-jacket",
+        "thermal-gloves"
+      ]
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "The small upgrades that finish the kit.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["race-socks", "cotton-cap", "thermal-gloves"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "endurance-bib-short",
+      "title": "Endurance Bib Short",
+      "description": "The bib built for the sixth hour. A seamless, multi-density chamois carries you through a full day in the saddle, and a lightweight bracing upper with a mesh back holds the pad exactly where it should be without ever digging in. Compressive Italian fabric, laser-cut grippers, and flatlock seams placed where your legs never meet the frame.",
+      "status": "active",
+      "productType": "Bib Shorts",
+      "vendor": "Threshold",
+      "tags": ["bib-shorts", "endurance-fit", "chamois", "road"],
+      "categoryHandles": ["bib-shorts"],
+      "collectionHandles": ["new-in", "bib-shorts"],
+      "seoTitle": "Endurance Bib Short — all-day cycling bib shorts",
+      "seoDescription": "A multi-density seamless chamois and compressive Italian fabric, built for all-day endurance rides.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A compressive Italian-milled Lycra body over a seamless, multi-density chamois — denser under the sit bones, softer at the edges — carried on a bracing mesh upper so the pad never shifts. Flatlock seams throughout, placed off every contact point.",
+        "fit": "Endurance fit: supportive without race compression, with a higher back and a wide, flat leg gripper for time in the saddle. True to size; between sizes, size up for all-day comfort.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Italian Lycra",
+            "percent": "80%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "20%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
+      "options": [
         {
-            "handle": "bib-shorts",
-            "name": "Bib Shorts",
-            "description": "All-day and race-fit bibs.",
-            "featured": true
-        },
-        {
-            "handle": "jerseys",
-            "name": "Jerseys",
-            "description": "From ultralight climbers to brushed thermals.",
-            "featured": true
-        },
-        {
-            "handle": "base-layers",
-            "name": "Base Layers",
-            "description": "The quiet layer that regulates everything.",
-            "featured": false
-        },
-        {
-            "handle": "cold-weather",
-            "name": "Cold Weather",
-            "description": "Gilets, shells and thermals for the off-season.",
-            "featured": true
-        },
-        {
-            "handle": "accessories",
-            "name": "Accessories",
-            "description": "Socks, caps and gloves.",
-            "featured": false
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
         }
-    ],
-    "collections": [
+      ],
+      "variants": [
         {
-            "handle": "new-in",
-            "name": "New This Season",
-            "description": "The latest kit off the test rides.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "endurance-bib-short",
-                "aero-jersey",
-                "wind-gilet",
-                "merino-base-layer",
-                "race-socks"
-            ]
+          "sku": "THR-BIB-END-XS",
+          "priceCents": 18000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
         },
         {
-            "handle": "bib-shorts",
-            "name": "Bib Shorts",
-            "description": "The single piece of kit worth getting right first.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "endurance-bib-short",
-                "race-bib-short"
-            ]
+          "sku": "THR-BIB-END-S",
+          "priceCents": 18000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
         },
         {
-            "handle": "jerseys",
-            "name": "Jerseys",
-            "description": "A jersey for every temperature and every gradient.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "climbers-jersey",
-                "aero-jersey",
-                "thermal-jersey"
-            ]
+          "sku": "THR-BIB-END-M",
+          "priceCents": 18000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
         },
         {
-            "handle": "cold-weather",
-            "name": "Cold Weather",
-            "description": "The layers that keep you riding through the off-season.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "thermal-jersey",
-                "merino-base-layer",
-                "wind-gilet",
-                "stormshell-rain-jacket",
-                "thermal-gloves"
-            ]
+          "sku": "THR-BIB-END-L",
+          "priceCents": 18000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
         },
         {
-            "handle": "accessories",
-            "name": "Accessories",
-            "description": "The small upgrades that finish the kit.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "race-socks",
-                "cotton-cap",
-                "thermal-gloves"
-            ]
+          "sku": "THR-BIB-END-XL",
+          "priceCents": 18000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-BIB-END-XXL",
+          "priceCents": 18000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
         }
-    ],
-    "products": [
+      ],
+      "images": [
         {
-            "handle": "endurance-bib-short",
-            "title": "Endurance Bib Short",
-            "description": "The bib built for the sixth hour. A seamless, multi-density chamois carries you through a full day in the saddle, and a lightweight bracing upper with a mesh back holds the pad exactly where it should be without ever digging in. Compressive Italian fabric, laser-cut grippers, and flatlock seams placed where your legs never meet the frame.",
-            "status": "active",
-            "productType": "Bib Shorts",
-            "vendor": "Threshold",
-            "tags": [
-                "bib-shorts",
-                "endurance-fit",
-                "chamois",
-                "road"
-            ],
-            "categoryHandles": [
-                "bib-shorts"
-            ],
-            "collectionHandles": [
-                "new-in",
-                "bib-shorts"
-            ],
-            "seoTitle": "Endurance Bib Short — all-day cycling bib shorts",
-            "seoDescription": "A multi-density seamless chamois and compressive Italian fabric, built for all-day endurance rides.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A compressive Italian-milled Lycra body over a seamless, multi-density chamois — denser under the sit bones, softer at the edges — carried on a bracing mesh upper so the pad never shifts. Flatlock seams throughout, placed off every contact point.",
-                "fit": "Endurance fit: supportive without race compression, with a higher back and a wide, flat leg gripper for time in the saddle. True to size; between sizes, size up for all-day comfort.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
-                "materials": [
-                    {
-                        "name": "Italian Lycra",
-                        "percent": "80%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "20%"
-                    }
-                ],
-                "origin": "Made in Italy"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-BIB-END-XS",
-                    "priceCents": 18000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-END-S",
-                    "priceCents": 18000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-END-M",
-                    "priceCents": 18000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-END-L",
-                    "priceCents": 18000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-END-XL",
-                    "priceCents": 18000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-END-XXL",
-                    "priceCents": 18000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "endurance-bib-short",
-                    "isPrimary": true,
-                    "alt": "The Endurance Bib Short"
-                }
-            ]
-        },
-        {
-            "handle": "race-bib-short",
-            "title": "Race Bib Short",
-            "description": "When the ride turns into a race. A thinner, faster chamois and a second-skin compressive fit put everything into the pedals — cut close, held tight, and finished with a wide power band that stays put through a full-gas sprint. For the days you are riding to win the sign, not just to finish.",
-            "status": "active",
-            "productType": "Bib Shorts",
-            "vendor": "Threshold",
-            "tags": [
-                "bib-shorts",
-                "race-fit",
-                "compressive",
-                "road"
-            ],
-            "categoryHandles": [
-                "bib-shorts"
-            ],
-            "collectionHandles": [
-                "bib-shorts"
-            ],
-            "seoTitle": "Race Bib Short — compressive race-fit cycling bibs",
-            "seoDescription": "A fast, thin chamois in a second-skin compressive cut for race-day riding.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A second-skin compressive weave over a thin, fast race chamois, finished with a wide silicone power band. Every panel is cut close and bonded flat so nothing bags, rolls or robs a watt.",
-                "fit": "Race fit: aggressive and body-hugging, short at the front and long at the back for the drops. Between sizes, size down.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
-                "materials": [
-                    {
-                        "name": "Compressive nylon",
-                        "percent": "78%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "22%"
-                    }
-                ],
-                "origin": "Made in Italy"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-BIB-RACE-XS",
-                    "priceCents": 22000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-RACE-S",
-                    "priceCents": 22000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-RACE-M",
-                    "priceCents": 22000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-RACE-L",
-                    "priceCents": 22000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-RACE-XL",
-                    "priceCents": 22000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-BIB-RACE-XXL",
-                    "priceCents": 22000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "race-bib-short",
-                    "isPrimary": true,
-                    "alt": "The Race Bib Short"
-                }
-            ]
-        },
-        {
-            "handle": "climbers-jersey",
-            "title": "Climber's Jersey",
-            "description": "The lightest jersey we make, for the days the road only goes up. An airy open-knit body dumps heat on a long climb, three deep pockets swallow a full day of food, and a half-length zip lets you dial the airflow as the gradient bites. Barely there on the back, exactly there when the sun is on you.",
-            "status": "active",
-            "productType": "Jerseys",
-            "vendor": "Threshold",
-            "tags": [
-                "jersey",
-                "lightweight",
-                "climbing",
-                "summer"
-            ],
-            "categoryHandles": [
-                "jerseys"
-            ],
-            "collectionHandles": [
-                "jerseys"
-            ],
-            "seoTitle": "Climber's Jersey — ultralight summer cycling jersey",
-            "seoDescription": "An ultralight open-knit cycling jersey with three deep pockets, built for long summer climbs.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "An ultralight open-knit polyester body that dumps heat on a climb, a half-length front zip to dial the airflow, and three deep drop-in pockets plus a zipped valuables pocket for a full day of food.",
-                "fit": "Climbing fit: close through the body without race compression, so it still breathes on a long ascent. True to size.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
-                "materials": [
-                    {
-                        "name": "Recycled polyester",
-                        "percent": "88%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "12%"
-                    }
-                ],
-                "origin": "Made in Portugal"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-JER-CLM-XS",
-                    "priceCents": 14000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-JER-CLM-S",
-                    "priceCents": 14000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-JER-CLM-M",
-                    "priceCents": 14000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-JER-CLM-L",
-                    "priceCents": 14000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-JER-CLM-XL",
-                    "priceCents": 14000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-JER-CLM-XXL",
-                    "priceCents": 14000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "climbers-jersey",
-                    "isPrimary": true,
-                    "alt": "The Climber's Jersey"
-                }
-            ]
-        },
-        {
-            "handle": "aero-jersey",
-            "title": "Aero Jersey",
-            "description": "A jersey cut to disappear in the wind. A race-close body, bonded seams and textured sleeve panels shave watts where they hide, while a gripper hem keeps it locked down in the drops. Fast enough for the bunch, comfortable enough to wear all day getting there.",
-            "status": "active",
-            "productType": "Jerseys",
-            "vendor": "Threshold",
-            "tags": [
-                "jersey",
-                "aero",
-                "race-fit",
-                "road"
-            ],
-            "categoryHandles": [
-                "jerseys"
-            ],
-            "collectionHandles": [
-                "new-in",
-                "jerseys"
-            ],
-            "seoTitle": "Aero Jersey — race-fit aerodynamic cycling jersey",
-            "seoDescription": "A race-close aero cycling jersey with bonded seams and textured sleeve panels.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A race-close body in a slick low-drag weave with textured sleeve panels that trip the airflow, bonded seams throughout and a silicone gripper hem that locks it down in the drops.",
-                "fit": "Aero race fit: very close, cut for the riding position rather than the coffee stop. Between sizes, size down.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
-                "materials": [
-                    {
-                        "name": "Polyamide",
-                        "percent": "82%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "18%"
-                    }
-                ],
-                "origin": "Made in Italy"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-JER-AERO-XS",
-                    "priceCents": 16000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-JER-AERO-S",
-                    "priceCents": 16000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-JER-AERO-M",
-                    "priceCents": 16000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-JER-AERO-L",
-                    "priceCents": 16000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-JER-AERO-XL",
-                    "priceCents": 16000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-JER-AERO-XXL",
-                    "priceCents": 16000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "aero-jersey",
-                    "isPrimary": true,
-                    "alt": "The Aero Jersey"
-                }
-            ]
-        },
-        {
-            "handle": "thermal-jersey",
-            "title": "Thermal Roubaix Jersey",
-            "description": "A brushed-back thermal jersey for the cold, dry days that make winter riding worth it. A deep pile inner traps warmth without the bulk of a jacket, a tall zip guard keeps the wind off your throat, and a dropped tail covers you in the drops. The jersey that turns three-season riding into four.",
-            "status": "active",
-            "productType": "Jerseys",
-            "vendor": "Threshold",
-            "tags": [
-                "jersey",
-                "thermal",
-                "winter",
-                "cold-weather"
-            ],
-            "categoryHandles": [
-                "jerseys",
-                "cold-weather"
-            ],
-            "collectionHandles": [
-                "jerseys",
-                "cold-weather"
-            ],
-            "seoTitle": "Thermal Roubaix Jersey — brushed thermal winter cycling jersey",
-            "seoDescription": "A brushed-back thermal cycling jersey with a tall zip guard, built for cold, dry winter rides.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A brushed-back Roubaix thermal fabric with a deep, warm pile inner, a tall fleece-lined zip guard that keeps the wind off your throat and a dropped tail for coverage in the drops.",
-                "fit": "Winter fit: room for a base layer underneath without bulk. True to size; size up if you layer heavily.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
-                "materials": [
-                    {
-                        "name": "Brushed polyester",
-                        "percent": "86%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "14%"
-                    }
-                ],
-                "origin": "Made in Portugal"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-JER-THM-XS",
-                    "priceCents": 17500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-JER-THM-S",
-                    "priceCents": 17500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-JER-THM-M",
-                    "priceCents": 17500,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-JER-THM-L",
-                    "priceCents": 17500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-JER-THM-XL",
-                    "priceCents": 17500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-JER-THM-XXL",
-                    "priceCents": 17500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "thermal-jersey",
-                    "isPrimary": true,
-                    "alt": "The Thermal Roubaix Jersey"
-                }
-            ]
-        },
-        {
-            "handle": "mesh-base-layer",
-            "title": "Mesh Base Layer",
-            "description": "The layer that does the quiet work. A featherweight open mesh sits between you and your jersey and moves sweat off your skin before it can chill you — barely there in summer, essential the moment the pace drops on a descent. Wear it under everything, feel it on nothing.",
-            "status": "active",
-            "productType": "Base Layers",
-            "vendor": "Threshold",
-            "tags": [
-                "base-layer",
-                "mesh",
-                "summer",
-                "wicking"
-            ],
-            "categoryHandles": [
-                "base-layers"
-            ],
-            "collectionHandles": [],
-            "seoTitle": "Mesh Base Layer — lightweight wicking cycling base layer",
-            "seoDescription": "A featherweight open-mesh cycling base layer that moves sweat off the skin fast.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A featherweight open-mesh knit that lifts sweat off the skin and hands it to your jersey, with flatlock seams so nothing rubs under a race fit.",
-                "fit": "Second-skin fit — it should sit snug against the skin to wick properly. True to size.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
-                "materials": [
-                    {
-                        "name": "Polypropylene",
-                        "percent": "100%"
-                    }
-                ],
-                "origin": "Made in Italy"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-BASE-MSH-XS",
-                    "priceCents": 5500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MSH-S",
-                    "priceCents": 5500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MSH-M",
-                    "priceCents": 5500,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MSH-L",
-                    "priceCents": 5500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MSH-XL",
-                    "priceCents": 5500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MSH-XXL",
-                    "priceCents": 5500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "mesh-base-layer",
-                    "isPrimary": true,
-                    "alt": "The Mesh Base Layer"
-                }
-            ]
-        },
-        {
-            "handle": "merino-base-layer",
-            "title": "Merino Long-Sleeve Base",
-            "description": "Winter warmth that regulates itself. A fine merino blend holds heat when you are soft-pedalling and sheds it when you go hard, resists odour over back-to-back days, and stays warm even when it is damp. The base layer that makes a cold ride feel like a choice, not a sentence.",
-            "status": "active",
-            "productType": "Base Layers",
-            "vendor": "Threshold",
-            "tags": [
-                "base-layer",
-                "merino",
-                "winter",
-                "cold-weather"
-            ],
-            "categoryHandles": [
-                "base-layers",
-                "cold-weather"
-            ],
-            "collectionHandles": [
-                "new-in",
-                "cold-weather"
-            ],
-            "seoTitle": "Merino Long-Sleeve Base — winter merino cycling base layer",
-            "seoDescription": "A fine merino long-sleeve cycling base layer that regulates heat and resists odour.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A fine merino-blend long-sleeve knit that holds heat when you soft-pedal and sheds it when you go hard, resists odour over back-to-back days and stays warm even when it is damp.",
-                "fit": "Close winter base fit, long in the sleeve and body so it stays tucked. True to size.",
-                "care": "Machine wash cold on the wool cycle, inside out; reshape and dry flat. No fabric softener, no tumble dryer — heat felts merino. Air between rides and it needs washing far less than you think.",
-                "materials": [
-                    {
-                        "name": "Merino wool",
-                        "percent": "62%"
-                    },
-                    {
-                        "name": "Polyester",
-                        "percent": "33%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "5%"
-                    }
-                ],
-                "origin": "Made in Italy"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-BASE-MER-XS",
-                    "priceCents": 9500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MER-S",
-                    "priceCents": 9500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MER-M",
-                    "priceCents": 9500,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MER-L",
-                    "priceCents": 9500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MER-XL",
-                    "priceCents": 9500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-BASE-MER-XXL",
-                    "priceCents": 9500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "merino-base-layer",
-                    "isPrimary": true,
-                    "alt": "The Merino Long-Sleeve Base"
-                }
-            ]
-        },
-        {
-            "handle": "wind-gilet",
-            "title": "Featherweight Wind Gilet",
-            "description": "The insurance that lives in your pocket. A whisper-thin windproof front knocks the chill off a fast descent and a cold start, while a mesh back stops you cooking on the way back up. Packs down to the size of a gel, weighs almost nothing, and saves more rides than any other piece you own.",
-            "status": "active",
-            "productType": "Gilets",
-            "vendor": "Threshold",
-            "tags": [
-                "gilet",
-                "windproof",
-                "packable",
-                "cold-weather"
-            ],
-            "categoryHandles": [
-                "cold-weather"
-            ],
-            "collectionHandles": [
-                "new-in",
-                "cold-weather"
-            ],
-            "seoTitle": "Featherweight Wind Gilet — packable windproof cycling gilet",
-            "seoDescription": "A whisper-thin packable windproof cycling gilet with a breathable mesh back.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A whisper-thin windproof ripstop front with a breathable mesh back, a full zip with a chin guard, and a rear pocket it packs down into — smaller than a gel.",
-                "fit": "Close over a jersey, cut to layer without flapping at speed. True to size.",
-                "care": "Machine wash warm on a gentle cycle, zipped up, with like colors; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.",
-                "materials": [
-                    {
-                        "name": "Ripstop nylon",
-                        "percent": "100%"
-                    }
-                ],
-                "origin": "Made in Vietnam"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-GIL-WND-XS",
-                    "priceCents": 13000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-GIL-WND-S",
-                    "priceCents": 13000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-GIL-WND-M",
-                    "priceCents": 13000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-GIL-WND-L",
-                    "priceCents": 13000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-GIL-WND-XL",
-                    "priceCents": 13000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-GIL-WND-XXL",
-                    "priceCents": 13000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "wind-gilet",
-                    "isPrimary": true,
-                    "alt": "The Featherweight Wind Gilet"
-                }
-            ]
-        },
-        {
-            "handle": "stormshell-rain-jacket",
-            "title": "Stormshell Rain Jacket",
-            "description": "Built for the ride you would rather not do. A genuinely waterproof, genuinely breathable three-layer shell with taped seams, a storm flap over the zip and a dropped tail keeps the weather out for hours, not minutes — then packs away small when the sky clears. The jacket that decides you are going, whatever it is doing outside.",
-            "status": "active",
-            "productType": "Jackets",
-            "vendor": "Threshold",
-            "tags": [
-                "jacket",
-                "waterproof",
-                "rain",
-                "cold-weather"
-            ],
-            "categoryHandles": [
-                "cold-weather"
-            ],
-            "collectionHandles": [
-                "cold-weather"
-            ],
-            "seoTitle": "Stormshell Rain Jacket — waterproof breathable cycling shell",
-            "seoDescription": "A taped-seam three-layer waterproof, breathable cycling rain jacket that packs away small.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A genuinely waterproof, genuinely breathable three-layer laminate shell with fully taped seams, a storm flap over the zip, a dropped tail and a packable rear pocket.",
-                "fit": "Race-cut shell, close enough to layer over a jersey without billowing in a crosswind. True to size.",
-                "care": "Machine wash warm on a gentle cycle, zipped up, with like colors; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.",
-                "materials": [
-                    {
-                        "name": "3-layer waterproof laminate",
-                        "percent": "100%"
-                    }
-                ],
-                "origin": "Made in Vietnam"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        },
-                        {
-                            "value": "XXL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-JKT-STM-XS",
-                    "priceCents": 24000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "THR-JKT-STM-S",
-                    "priceCents": 24000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-JKT-STM-M",
-                    "priceCents": 24000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-JKT-STM-L",
-                    "priceCents": 24000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-JKT-STM-XL",
-                    "priceCents": 24000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                },
-                {
-                    "sku": "THR-JKT-STM-XXL",
-                    "priceCents": 24000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XXL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "stormshell-rain-jacket",
-                    "isPrimary": true,
-                    "alt": "The Stormshell Rain Jacket"
-                }
-            ]
-        },
-        {
-            "handle": "thermal-gloves",
-            "title": "Long-Finger Thermal Gloves",
-            "description": "Warm hands, working fingers. A wind-blocking back and a brushed lining keep the cold out down to freezing, while a thin, tacky palm keeps you in full control of the bars and the levers — no fumbling for the shifter, no numb fingers on a long descent. A soft thumb panel for the one job every rider needs it for.",
-            "status": "active",
-            "productType": "Gloves",
-            "vendor": "Threshold",
-            "tags": [
-                "gloves",
-                "thermal",
-                "winter",
-                "cold-weather"
-            ],
-            "categoryHandles": [
-                "accessories",
-                "cold-weather"
-            ],
-            "collectionHandles": [
-                "cold-weather",
-                "accessories"
-            ],
-            "seoTitle": "Long-Finger Thermal Gloves — winter cycling gloves",
-            "seoDescription": "Wind-blocking brushed-lined long-finger cycling gloves with a tacky, dexterous palm.",
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-GLV-THM-S",
-                    "priceCents": 6000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "THR-GLV-THM-M",
-                    "priceCents": 6000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "THR-GLV-THM-L",
-                    "priceCents": 6000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "THR-GLV-THM-XL",
-                    "priceCents": 6000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "thermal-gloves",
-                    "isPrimary": true,
-                    "alt": "The Long-Finger Thermal Gloves"
-                }
-            ]
-        },
-        {
-            "handle": "race-socks",
-            "title": "Aero Race Socks",
-            "description": "The last watt is at your ankle. A tall, sheer aero cuff and a compressive fit keep the airflow clean and your legs feeling fresh, while a cushioned sole and a mesh instep handle the sweat. Fast, loud when you want them to be, and the easiest upgrade in cycling.",
-            "status": "active",
-            "productType": "Socks",
-            "vendor": "Threshold",
-            "tags": [
-                "socks",
-                "aero",
-                "race",
-                "accessories"
-            ],
-            "categoryHandles": [
-                "accessories"
-            ],
-            "collectionHandles": [
-                "new-in",
-                "accessories"
-            ],
-            "seoTitle": "Aero Race Socks — tall aero cycling socks",
-            "seoDescription": "Tall, compressive aero cycling socks with a cushioned sole and breathable mesh instep.",
-            "options": [
-                {
-                    "name": "Color",
-                    "displayType": "swatch",
-                    "values": [
-                        {
-                            "value": "Black"
-                        },
-                        {
-                            "value": "White"
-                        },
-                        {
-                            "value": "Hi-Vis"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-SCK-BLK",
-                    "priceCents": 2200,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Color": "Black"
-                    }
-                },
-                {
-                    "sku": "THR-SCK-WHT",
-                    "priceCents": 2200,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Color": "White"
-                    }
-                },
-                {
-                    "sku": "THR-SCK-HIV",
-                    "priceCents": 2200,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Color": "Hi-Vis"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "race-socks",
-                    "isPrimary": true,
-                    "alt": "The Aero Race Socks"
-                }
-            ]
-        },
-        {
-            "handle": "cotton-cap",
-            "title": "Cotton Cycling Cap",
-            "description": "The one that never goes out of fashion. A classic cotton cap sits under the helmet on a cold morning, flips its little brim up for the cafe stop, and keeps the rain and the sun out of your eyes on the road. Every rider owns one; the good ones own three.",
-            "status": "active",
-            "productType": "Caps",
-            "vendor": "Threshold",
-            "tags": [
-                "cap",
-                "cotton",
-                "classic",
-                "accessories"
-            ],
-            "categoryHandles": [
-                "accessories"
-            ],
-            "collectionHandles": [
-                "accessories"
-            ],
-            "seoTitle": "Cotton Cycling Cap — classic under-helmet cycling cap",
-            "seoDescription": "A classic cotton cycling cap for under the helmet, the cafe stop and the road.",
-            "options": [
-                {
-                    "name": "Color",
-                    "displayType": "swatch",
-                    "values": [
-                        {
-                            "value": "Black"
-                        },
-                        {
-                            "value": "White"
-                        },
-                        {
-                            "value": "Hi-Vis"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "THR-CAP-BLK",
-                    "priceCents": 2800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Color": "Black"
-                    }
-                },
-                {
-                    "sku": "THR-CAP-WHT",
-                    "priceCents": 2800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Color": "White"
-                    }
-                },
-                {
-                    "sku": "THR-CAP-HIV",
-                    "priceCents": 2800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Color": "Hi-Vis"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "cotton-cap",
-                    "isPrimary": true,
-                    "alt": "The Cotton Cycling Cap"
-                }
-            ]
+          "assetId": "endurance-bib-short",
+          "isPrimary": true,
+          "alt": "The Endurance Bib Short"
         }
-    ]
+      ]
+    },
+    {
+      "handle": "race-bib-short",
+      "title": "Race Bib Short",
+      "description": "When the ride turns into a race. A thinner, faster chamois and a second-skin compressive fit put everything into the pedals — cut close, held tight, and finished with a wide power band that stays put through a full-gas sprint. For the days you are riding to win the sign, not just to finish.",
+      "status": "active",
+      "productType": "Bib Shorts",
+      "vendor": "Threshold",
+      "tags": ["bib-shorts", "race-fit", "compressive", "road"],
+      "categoryHandles": ["bib-shorts"],
+      "collectionHandles": ["bib-shorts"],
+      "seoTitle": "Race Bib Short — compressive race-fit cycling bibs",
+      "seoDescription": "A fast, thin chamois in a second-skin compressive cut for race-day riding.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A second-skin compressive weave over a thin, fast race chamois, finished with a wide silicone power band. Every panel is cut close and bonded flat so nothing bags, rolls or robs a watt.",
+        "fit": "Race fit: aggressive and body-hugging, short at the front and long at the back for the drops. Between sizes, size down.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Compressive nylon",
+            "percent": "78%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "22%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-BIB-RACE-XS",
+          "priceCents": 22000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-BIB-RACE-S",
+          "priceCents": 22000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-BIB-RACE-M",
+          "priceCents": 22000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-BIB-RACE-L",
+          "priceCents": 22000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-BIB-RACE-XL",
+          "priceCents": 22000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-BIB-RACE-XXL",
+          "priceCents": 22000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "race-bib-short",
+          "isPrimary": true,
+          "alt": "The Race Bib Short"
+        }
+      ]
+    },
+    {
+      "handle": "climbers-jersey",
+      "title": "Climber's Jersey",
+      "description": "The lightest jersey we make, for the days the road only goes up. An airy open-knit body dumps heat on a long climb, three deep pockets swallow a full day of food, and a half-length zip lets you dial the airflow as the gradient bites. Barely there on the back, exactly there when the sun is on you.",
+      "status": "active",
+      "productType": "Jerseys",
+      "vendor": "Threshold",
+      "tags": ["jersey", "lightweight", "climbing", "summer"],
+      "categoryHandles": ["jerseys"],
+      "collectionHandles": ["jerseys"],
+      "seoTitle": "Climber's Jersey — ultralight summer cycling jersey",
+      "seoDescription": "An ultralight open-knit cycling jersey with three deep pockets, built for long summer climbs.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "An ultralight open-knit polyester body that dumps heat on a climb, a half-length front zip to dial the airflow, and three deep drop-in pockets plus a zipped valuables pocket for a full day of food.",
+        "fit": "Climbing fit: close through the body without race compression, so it still breathes on a long ascent. True to size.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Recycled polyester",
+            "percent": "88%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "12%"
+          }
+        ],
+        "origin": "Made in Portugal"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-JER-CLM-XS",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-JER-CLM-S",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-JER-CLM-M",
+          "priceCents": 14000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-JER-CLM-L",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-JER-CLM-XL",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-JER-CLM-XXL",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "climbers-jersey",
+          "isPrimary": true,
+          "alt": "The Climber's Jersey"
+        }
+      ]
+    },
+    {
+      "handle": "aero-jersey",
+      "title": "Aero Jersey",
+      "description": "A jersey cut to disappear in the wind. A race-close body, bonded seams and textured sleeve panels shave watts where they hide, while a gripper hem keeps it locked down in the drops. Fast enough for the bunch, comfortable enough to wear all day getting there.",
+      "status": "active",
+      "productType": "Jerseys",
+      "vendor": "Threshold",
+      "tags": ["jersey", "aero", "race-fit", "road"],
+      "categoryHandles": ["jerseys"],
+      "collectionHandles": ["new-in", "jerseys"],
+      "seoTitle": "Aero Jersey — race-fit aerodynamic cycling jersey",
+      "seoDescription": "A race-close aero cycling jersey with bonded seams and textured sleeve panels.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A race-close body in a slick low-drag weave with textured sleeve panels that trip the airflow, bonded seams throughout and a silicone gripper hem that locks it down in the drops.",
+        "fit": "Aero race fit: very close, cut for the riding position rather than the coffee stop. Between sizes, size down.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Polyamide",
+            "percent": "82%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "18%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-JER-AERO-XS",
+          "priceCents": 16000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-JER-AERO-S",
+          "priceCents": 16000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-JER-AERO-M",
+          "priceCents": 16000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-JER-AERO-L",
+          "priceCents": 16000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-JER-AERO-XL",
+          "priceCents": 16000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-JER-AERO-XXL",
+          "priceCents": 16000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aero-jersey",
+          "isPrimary": true,
+          "alt": "The Aero Jersey"
+        }
+      ]
+    },
+    {
+      "handle": "thermal-jersey",
+      "title": "Thermal Roubaix Jersey",
+      "description": "A brushed-back thermal jersey for the cold, dry days that make winter riding worth it. A deep pile inner traps warmth without the bulk of a jacket, a tall zip guard keeps the wind off your throat, and a dropped tail covers you in the drops. The jersey that turns three-season riding into four.",
+      "status": "active",
+      "productType": "Jerseys",
+      "vendor": "Threshold",
+      "tags": ["jersey", "thermal", "winter", "cold-weather"],
+      "categoryHandles": ["jerseys", "cold-weather"],
+      "collectionHandles": ["jerseys", "cold-weather"],
+      "seoTitle": "Thermal Roubaix Jersey — brushed thermal winter cycling jersey",
+      "seoDescription": "A brushed-back thermal cycling jersey with a tall zip guard, built for cold, dry winter rides.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A brushed-back Roubaix thermal fabric with a deep, warm pile inner, a tall fleece-lined zip guard that keeps the wind off your throat and a dropped tail for coverage in the drops.",
+        "fit": "Winter fit: room for a base layer underneath without bulk. True to size; size up if you layer heavily.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Brushed polyester",
+            "percent": "86%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "14%"
+          }
+        ],
+        "origin": "Made in Portugal"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-JER-THM-XS",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-JER-THM-S",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-JER-THM-M",
+          "priceCents": 17500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-JER-THM-L",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-JER-THM-XL",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-JER-THM-XXL",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "thermal-jersey",
+          "isPrimary": true,
+          "alt": "The Thermal Roubaix Jersey"
+        }
+      ]
+    },
+    {
+      "handle": "mesh-base-layer",
+      "title": "Mesh Base Layer",
+      "description": "The layer that does the quiet work. A featherweight open mesh sits between you and your jersey and moves sweat off your skin before it can chill you — barely there in summer, essential the moment the pace drops on a descent. Wear it under everything, feel it on nothing.",
+      "status": "active",
+      "productType": "Base Layers",
+      "vendor": "Threshold",
+      "tags": ["base-layer", "mesh", "summer", "wicking"],
+      "categoryHandles": ["base-layers"],
+      "collectionHandles": [],
+      "seoTitle": "Mesh Base Layer — lightweight wicking cycling base layer",
+      "seoDescription": "A featherweight open-mesh cycling base layer that moves sweat off the skin fast.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A featherweight open-mesh knit that lifts sweat off the skin and hands it to your jersey, with flatlock seams so nothing rubs under a race fit.",
+        "fit": "Second-skin fit — it should sit snug against the skin to wick properly. True to size.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Polypropylene",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-BASE-MSH-XS",
+          "priceCents": 5500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-BASE-MSH-S",
+          "priceCents": 5500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-BASE-MSH-M",
+          "priceCents": 5500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-BASE-MSH-L",
+          "priceCents": 5500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-BASE-MSH-XL",
+          "priceCents": 5500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-BASE-MSH-XXL",
+          "priceCents": 5500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "mesh-base-layer",
+          "isPrimary": true,
+          "alt": "The Mesh Base Layer"
+        }
+      ]
+    },
+    {
+      "handle": "merino-base-layer",
+      "title": "Merino Long-Sleeve Base",
+      "description": "Winter warmth that regulates itself. A fine merino blend holds heat when you are soft-pedalling and sheds it when you go hard, resists odour over back-to-back days, and stays warm even when it is damp. The base layer that makes a cold ride feel like a choice, not a sentence.",
+      "status": "active",
+      "productType": "Base Layers",
+      "vendor": "Threshold",
+      "tags": ["base-layer", "merino", "winter", "cold-weather"],
+      "categoryHandles": ["base-layers", "cold-weather"],
+      "collectionHandles": ["new-in", "cold-weather"],
+      "seoTitle": "Merino Long-Sleeve Base — winter merino cycling base layer",
+      "seoDescription": "A fine merino long-sleeve cycling base layer that regulates heat and resists odour.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A fine merino-blend long-sleeve knit that holds heat when you soft-pedal and sheds it when you go hard, resists odour over back-to-back days and stays warm even when it is damp.",
+        "fit": "Close winter base fit, long in the sleeve and body so it stays tucked. True to size.",
+        "care": "Machine wash cold on the wool cycle, inside out; reshape and dry flat. No fabric softener, no tumble dryer — heat felts merino. Air between rides and it needs washing far less than you think.",
+        "materials": [
+          {
+            "name": "Merino wool",
+            "percent": "62%"
+          },
+          {
+            "name": "Polyester",
+            "percent": "33%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "5%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-BASE-MER-XS",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-BASE-MER-S",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-BASE-MER-M",
+          "priceCents": 9500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-BASE-MER-L",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-BASE-MER-XL",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-BASE-MER-XXL",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "merino-base-layer",
+          "isPrimary": true,
+          "alt": "The Merino Long-Sleeve Base"
+        }
+      ]
+    },
+    {
+      "handle": "wind-gilet",
+      "title": "Featherweight Wind Gilet",
+      "description": "The insurance that lives in your pocket. A whisper-thin windproof front knocks the chill off a fast descent and a cold start, while a mesh back stops you cooking on the way back up. Packs down to the size of a gel, weighs almost nothing, and saves more rides than any other piece you own.",
+      "status": "active",
+      "productType": "Gilets",
+      "vendor": "Threshold",
+      "tags": ["gilet", "windproof", "packable", "cold-weather"],
+      "categoryHandles": ["cold-weather"],
+      "collectionHandles": ["new-in", "cold-weather"],
+      "seoTitle": "Featherweight Wind Gilet — packable windproof cycling gilet",
+      "seoDescription": "A whisper-thin packable windproof cycling gilet with a breathable mesh back.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A whisper-thin windproof ripstop front with a breathable mesh back, a full zip with a chin guard, and a rear pocket it packs down into — smaller than a gel.",
+        "fit": "Close over a jersey, cut to layer without flapping at speed. True to size.",
+        "care": "Machine wash warm on a gentle cycle, zipped up, with like colors; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.",
+        "materials": [
+          {
+            "name": "Ripstop nylon",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Vietnam"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-GIL-WND-XS",
+          "priceCents": 13000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-GIL-WND-S",
+          "priceCents": 13000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-GIL-WND-M",
+          "priceCents": 13000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-GIL-WND-L",
+          "priceCents": 13000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-GIL-WND-XL",
+          "priceCents": 13000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-GIL-WND-XXL",
+          "priceCents": 13000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "wind-gilet",
+          "isPrimary": true,
+          "alt": "The Featherweight Wind Gilet"
+        }
+      ]
+    },
+    {
+      "handle": "stormshell-rain-jacket",
+      "title": "Stormshell Rain Jacket",
+      "description": "Built for the ride you would rather not do. A genuinely waterproof, genuinely breathable three-layer shell with taped seams, a storm flap over the zip and a dropped tail keeps the weather out for hours, not minutes — then packs away small when the sky clears. The jacket that decides you are going, whatever it is doing outside.",
+      "status": "active",
+      "productType": "Jackets",
+      "vendor": "Threshold",
+      "tags": ["jacket", "waterproof", "rain", "cold-weather"],
+      "categoryHandles": ["cold-weather"],
+      "collectionHandles": ["cold-weather"],
+      "seoTitle": "Stormshell Rain Jacket — waterproof breathable cycling shell",
+      "seoDescription": "A taped-seam three-layer waterproof, breathable cycling rain jacket that packs away small.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A genuinely waterproof, genuinely breathable three-layer laminate shell with fully taped seams, a storm flap over the zip, a dropped tail and a packable rear pocket.",
+        "fit": "Race-cut shell, close enough to layer over a jersey without billowing in a crosswind. True to size.",
+        "care": "Machine wash warm on a gentle cycle, zipped up, with like colors; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.",
+        "materials": [
+          {
+            "name": "3-layer waterproof laminate",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Vietnam"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-JKT-STM-XS",
+          "priceCents": 24000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "THR-JKT-STM-S",
+          "priceCents": 24000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-JKT-STM-M",
+          "priceCents": 24000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-JKT-STM-L",
+          "priceCents": 24000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-JKT-STM-XL",
+          "priceCents": 24000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        },
+        {
+          "sku": "THR-JKT-STM-XXL",
+          "priceCents": 24000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "stormshell-rain-jacket",
+          "isPrimary": true,
+          "alt": "The Stormshell Rain Jacket"
+        }
+      ]
+    },
+    {
+      "handle": "thermal-gloves",
+      "title": "Long-Finger Thermal Gloves",
+      "description": "Warm hands, working fingers. A wind-blocking back and a brushed lining keep the cold out down to freezing, while a thin, tacky palm keeps you in full control of the bars and the levers — no fumbling for the shifter, no numb fingers on a long descent. A soft thumb panel for the one job every rider needs it for.",
+      "status": "active",
+      "productType": "Gloves",
+      "vendor": "Threshold",
+      "tags": ["gloves", "thermal", "winter", "cold-weather"],
+      "categoryHandles": ["accessories", "cold-weather"],
+      "collectionHandles": ["cold-weather", "accessories"],
+      "seoTitle": "Long-Finger Thermal Gloves — winter cycling gloves",
+      "seoDescription": "Wind-blocking brushed-lined long-finger cycling gloves with a tacky, dexterous palm.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-GLV-THM-S",
+          "priceCents": 6000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "THR-GLV-THM-M",
+          "priceCents": 6000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "THR-GLV-THM-L",
+          "priceCents": 6000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "THR-GLV-THM-XL",
+          "priceCents": 6000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "thermal-gloves",
+          "isPrimary": true,
+          "alt": "The Long-Finger Thermal Gloves"
+        }
+      ]
+    },
+    {
+      "handle": "race-socks",
+      "title": "Aero Race Socks",
+      "description": "The last watt is at your ankle. A tall, sheer aero cuff and a compressive fit keep the airflow clean and your legs feeling fresh, while a cushioned sole and a mesh instep handle the sweat. Fast, loud when you want them to be, and the easiest upgrade in cycling.",
+      "status": "active",
+      "productType": "Socks",
+      "vendor": "Threshold",
+      "tags": ["socks", "aero", "race", "accessories"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["new-in", "accessories"],
+      "seoTitle": "Aero Race Socks — tall aero cycling socks",
+      "seoDescription": "Tall, compressive aero cycling socks with a cushioned sole and breathable mesh instep.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "White"
+            },
+            {
+              "value": "Hi-Vis"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-SCK-BLK",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "THR-SCK-WHT",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "THR-SCK-HIV",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Hi-Vis"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "race-socks",
+          "isPrimary": true,
+          "alt": "The Aero Race Socks"
+        }
+      ]
+    },
+    {
+      "handle": "cotton-cap",
+      "title": "Cotton Cycling Cap",
+      "description": "The one that never goes out of fashion. A classic cotton cap sits under the helmet on a cold morning, flips its little brim up for the cafe stop, and keeps the rain and the sun out of your eyes on the road. Every rider owns one; the good ones own three.",
+      "status": "active",
+      "productType": "Caps",
+      "vendor": "Threshold",
+      "tags": ["cap", "cotton", "classic", "accessories"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories"],
+      "seoTitle": "Cotton Cycling Cap — classic under-helmet cycling cap",
+      "seoDescription": "A classic cotton cycling cap for under the helmet, the cafe stop and the road.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "White"
+            },
+            {
+              "value": "Hi-Vis"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "THR-CAP-BLK",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "THR-CAP-WHT",
+          "priceCents": 2800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "THR-CAP-HIV",
+          "priceCents": 2800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Hi-Vis"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cotton-cap",
+          "isPrimary": true,
+          "alt": "The Cotton Cycling Cap"
+        }
+      ]
+    }
+  ]
 }

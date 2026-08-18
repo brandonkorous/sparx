@@ -32,12 +32,12 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCalculator, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -255,38 +255,44 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Supplier performance controls">
-        <NativeSelect
-          size="sm"
-          className="max-w-44 shrink"
-          aria-label="Show suppliers"
-          value={scoredOnly ? 'graded' : 'all'}
-          onChange={(event) => {
-            setScoredOnly(event.target.value === 'graded');
-          }}
-        >
-          <option value="all">Everyone</option>
-          <option value="graded">Graded only</option>
-        </NativeSelect>
-
-        <Button
-          className="ml-auto"
-          size="sm"
-          color="module"
-          loading={recompute.isPending}
-          onClick={onRecompute}
-        >
-          <Icon glyph={faCalculator} className="size-4" aria-hidden />
-          Measure now
-        </Button>
-        <RefreshButton
-          isFetching={report.isFetching}
-          updatedAt={report.data ? report.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void report.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Supplier performance controls"
+        primary={
+          <Button
+            className="ml-auto"
+            size="sm"
+            color="module"
+            loading={recompute.isPending}
+            onClick={onRecompute}
+          >
+            <Icon glyph={faCalculator} className="size-4" aria-hidden />
+            Measure now
+          </Button>
+        }
+        controls={
+          <NativeSelect
+            size="sm"
+            className="max-w-44 shrink"
+            aria-label="Show suppliers"
+            value={scoredOnly ? 'graded' : 'all'}
+            onChange={(event) => {
+              setScoredOnly(event.target.value === 'graded');
+            }}
+          >
+            <option value="all">Everyone</option>
+            <option value="graded">Graded only</option>
+          </NativeSelect>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={report.isFetching}
+            updatedAt={report.data ? report.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void report.refetch();
+            }}
+          />
+        }
+      />
 
       {measuredAt !== null ? (
         <Text className="text-sm">

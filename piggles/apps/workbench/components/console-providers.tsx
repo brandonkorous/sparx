@@ -1,6 +1,6 @@
 'use client';
 
-import { QueryProvider } from '@sparx/query/provider';
+import { QueryProvider } from '@wizeworks/query/provider';
 import { ImperativeAlertDialogProvider, ToastProvider } from '@wizeworks/silicaui-react';
 import { CrashListeners } from '@/components/crash-listeners';
 import { PostHogProvider } from '@/components/posthog-provider';
@@ -45,7 +45,10 @@ export function ConsoleProviders({ children }: { children: React.ReactNode }) {
     // toasts or the confirm dialog falls all the way to the framework's own
     // replacement document.
     <RootBoundary>
-      <QueryProvider devtools devtoolsButtonPosition="bottom-right">
+      {/* No query devtools. Its launcher is a fixed button with no off switch
+          of its own, so it sat over the workspace and in every product
+          screenshot — and it is not a tool this team uses. */}
+      <QueryProvider devtools={false}>
         {/* Product analytics. No-ops outside production and when no key is
             baked, so wrapping the tree unconditionally is safe — and mounting it
             is what keeps the console from being the surface nobody has numbers

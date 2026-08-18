@@ -40,7 +40,7 @@
  * depends on.
  *
  * In practice: take the newest directory name on the base branch and pick a
- * bigger one. `pnpm --filter @sparx/db exec prisma migrate dev --create-only`
+ * bigger one. `pnpm --filter @wizeworks/db exec prisma migrate dev --create-only`
  * then rename, or author the directory by hand — both are normal here, since
  * the RLS policies are hand-edited SQL that Prisma cannot generate anyway.
  *
@@ -49,19 +49,59 @@
  */
 import { execFileSync } from 'node:child_process';
 
-const MIGRATIONS = 'packages/db/prisma/migrations';
+const MIGRATIONS = 'wizeworks/packages/db/prisma/migrations';
 const NAME_RE = /^\d{14}_[a-z0-9_]+$/;
 
 const baseRef = process.argv[2] || 'origin/main';
 
-/** git, captured, trimmed, empty string on a non-zero exit we expect. */
+/**
+ * git, captured, trimmed, empty string on a non-zero exit we expect.
+ *
+ * stderr is PIPED rather than inherited: probing for a path that may not exist
+ * at a ref is normal control flow here, and letting git print `fatal: Not a
+ * valid object name` for each probe puts two alarming lines above an OK.
+ */
 function git(args, { allowFailure = false } = {}) {
   try {
-    return execFileSync('git', args, { encoding: 'utf8' }).trim();
+    return execFileSync('git', args, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
   } catch (error) {
     if (allowFailure) return '';
     throw error;
   }
+}
+
+/**
+ * Where the migrations directory lives at a given ref.
+ *
+ * Almost always MIGRATIONS. The exception is a ref from BEFORE a tree move: the
+ * db package has already been relocated once (`packages/db` →
+ * `wizeworks/packages/db`), and on the push carrying that move the base ref is
+ * the last commit that still had the old path.
+ *
+ * That case has to be FOUND, not shrugged at. A missing path yields an empty
+ * base, an empty base yields no ceiling, and with no ceiling every ordering
+ * comparison is skipped — so the check reports a cheerful "OK: 245 migration(s)
+ * added" while validating precisely nothing. A check that goes silently blind on
+ * a refactor is worse than no check, because the green is believed.
+ *
+ * So: try the known path, then ask git for any `prisma/migrations` in the tree,
+ * and fail loudly if neither answers.
+ */
+function migrationsDirAt(ref) {
+  const known = git(['ls-tree', '--name-only', `${ref}:${MIGRATIONS}`], { allowFailure: true });
+  if (known) return MIGRATIONS;
+
+  // `-d` so this lists the DIRECTORY entries, not the thousands of .sql files
+  // inside them.
+  const found = git(['ls-tree', '-d', '-r', '--name-only', ref], { allowFailure: true })
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.endsWith('/prisma/migrations'));
+
+  return found.length > 0 ? found[0] : null;
 }
 
 /**
@@ -70,8 +110,8 @@ function git(args, { allowFailure = false } = {}) {
  * `git ls-tree` rather than reading the filesystem: the point of comparison is
  * what the BASE branch contains, not what is checked out.
  */
-function migrationsAt(ref) {
-  const out = git(['ls-tree', '--name-only', `${ref}:${MIGRATIONS}`], {
+function migrationsAt(ref, dir) {
+  const out = git(['ls-tree', '--name-only', `${ref}:${dir}`], {
     allowFailure: true,
   });
   return out
@@ -80,11 +120,30 @@ function migrationsAt(ref) {
     .filter((name) => name && name !== 'migration_lock.toml');
 }
 
-const base = migrationsAt(baseRef);
-const head = migrationsAt('HEAD');
+const baseDir = migrationsDirAt(baseRef);
+const headDir = migrationsDirAt('HEAD');
+
+if (!headDir) {
+  console.error(`No migrations directory found at HEAD — is ${MIGRATIONS} still the path?`);
+  process.exit(1);
+}
+if (!baseDir) {
+  console.error(
+    `No migrations directory found at ${baseRef}. This check compares against the base ref,\n` +
+      `so with nothing to compare against it can only report a false pass — refusing to.\n` +
+      `Check the ref exists and is fetched (CI needs fetch-depth: 0).`
+  );
+  process.exit(1);
+}
+if (baseDir !== headDir) {
+  console.log(`Note: migrations moved ${baseDir} → ${headDir} in this change.`);
+}
+
+const base = migrationsAt(baseRef, baseDir);
+const head = migrationsAt('HEAD', headDir);
 
 if (head.length === 0) {
-  console.error(`No migrations found at HEAD:${MIGRATIONS} — is the path right?`);
+  console.error(`No migrations found at HEAD:${headDir} — is the path right?`);
   process.exit(1);
 }
 
@@ -155,7 +214,7 @@ if (problems.length > 0) {
   console.error(
     `  Newest migration on ${baseRef}: ${base.reduce((a, b) => (a > b ? a : b), '(none)')}`
   );
-  console.error(`  See packages/db/CLAUDE.md for the naming convention.\n`);
+  console.error(`  See wizeworks/packages/db/CLAUDE.md for the naming convention.\n`);
   process.exit(1);
 }
 

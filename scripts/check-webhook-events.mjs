@@ -3,14 +3,14 @@
 //
 // There are THREE, and each failure between them is silent in a different way:
 //
-//   1. `EVENT_KEYS` in services/api-rest/.../webhooks/subscriptions.ts
+//   1. `EVENT_KEYS` in wizeworks/services/api-rest/.../webhooks/subscriptions.ts
 //      The allow-list the API validates against. A key missing here is rejected
 //      at save time with a validation error naming no cause.
-//   2. `WEBHOOK_EVENTS` in apps/workbench/surfaces/cms/webhooks-data.ts
+//   2. `WEBHOOK_EVENTS` in sparx/apps/workbench/surfaces/cms/webhooks-data.ts
 //      The human catalogue the picker renders. A key missing here is
 //      subscribable only by someone hand-writing JSON against the API — so the
 //      feature exists and nobody can find it.
-//   3. `EventType` in packages/events/src/types.ts
+//   3. `EventType` in wizeworks/packages/events/src/types.ts
 //      The event registry. A key allowed in (1) that is not in (3) can never
 //      fire, because nothing will ever publish it.
 //
@@ -30,9 +30,9 @@ import { dirname, join } from 'node:path';
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(repoRoot, rel), 'utf8');
 
-const ROUTE = 'services/api-rest/src/routes/v1/webhooks/subscriptions.ts';
-const CATALOG = 'apps/workbench/surfaces/cms/webhooks-data.ts';
-const REGISTRY = 'packages/events/src/types.ts';
+const ROUTE = 'wizeworks/services/api-rest/src/routes/v1/webhooks/subscriptions.ts';
+const CATALOG = 'sparx/apps/workbench/surfaces/cms/webhooks-data.ts';
+const REGISTRY = 'wizeworks/packages/events/src/types.ts';
 
 /** The `const EVENT_KEYS = [ … ] as const` block in the route. */
 function routeKeys() {

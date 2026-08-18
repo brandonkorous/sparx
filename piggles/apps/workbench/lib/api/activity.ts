@@ -12,7 +12,7 @@
 // audit, so it already appears.
 
 import { useMemo } from 'react';
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { api } from './client';
 
 export interface ActivityItem {
@@ -65,7 +65,7 @@ export interface ActivityItem {
  *     working through their own day. The timeline on the booking has them.
  *
  * Scheduling writes its audit trail from the SERVICE, not the route —
- * `recordBookingEvent` in packages/scheduling/src/booking-history.ts, which is
+ * `recordBookingEvent` in wizeworks/packages/scheduling/src/booking-history.ts, which is
  * also what feeds GET /v1/scheduling/bookings/:id/timeline. The Pub/Sub publish
  * beside it (publishBookingEvent) is a separate channel for the worker; do not
  * add audit writes at the call sites, they are already there.
@@ -142,6 +142,11 @@ export function useActivity(options: ActivityOptions = {}): {
    * error, and it self-corrects the moment they step back.
    */
   hasMore: boolean;
+  /** The read failed. Without this a caller cannot tell "no activity" from "the
+   *  server could not be reached", and both arrive as an empty `items`. */
+  failed: boolean;
+  /** Re-runs the window, for the failure state's retry. */
+  retry: () => void;
 } {
   const { actions, limit = 50, before, actorId, enabled = true } = options;
   const actionParam = actions && actions.length > 0 ? actions.join(',') : undefined;
@@ -170,14 +175,19 @@ export function useActivity(options: ActivityOptions = {}): {
   });
 
   const items = query.data?.items;
+  const { refetch } = query;
   return useMemo(
     () => ({
       items: items ?? [],
       ready: !query.isLoading,
       busy: query.isFetching,
       hasMore: (items?.length ?? 0) >= limit,
+      failed: query.isError,
+      retry: () => {
+        void refetch();
+      },
     }),
-    [items, query.isLoading, query.isFetching, limit]
+    [items, query.isLoading, query.isFetching, query.isError, refetch, limit]
   );
 }
 

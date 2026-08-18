@@ -15,10 +15,11 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
-  Button,
-  EmptyState,
+  Card,
   Heading,
   Select,
   Stat,
@@ -29,11 +30,15 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { faChartColumn, faChartLine, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { faChartLine } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   RANGE_LABEL,
@@ -130,52 +135,56 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Reports controls">
-        <Icon glyph={faChartColumn} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          Reports
-        </Heading>
-        <div className="ml-auto w-36">
-          <Select
-            size="sm"
-            color="module"
-            aria-label="Time period"
-            value={preset}
-            items={[
-              { value: '7', label: RANGE_LABEL['7'] },
-              { value: '30', label: RANGE_LABEL['30'] },
-              { value: '90', label: RANGE_LABEL['90'] },
-            ]}
-            onValueChange={(next) => {
-              setPreset((next as RangePreset) ?? '30');
-            }}
+      <PaneToolbar
+        label="Reports controls"
+        controls={
+          <div className="ml-auto w-36">
+            <Select
+              size="sm"
+              color="module"
+              aria-label="Time period"
+              value={preset}
+              items={[
+                { value: '7', label: RANGE_LABEL['7'] },
+                { value: '30', label: RANGE_LABEL['30'] },
+                { value: '90', label: RANGE_LABEL['90'] },
+              ]}
+              onValueChange={(next) => {
+                setPreset((next as RangePreset) ?? '30');
+              }}
+            />
+          </div>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? summary.dataUpdatedAt : undefined}
+            onRefresh={refetchAll}
           />
-        </div>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? summary.dataUpdatedAt : undefined}
-          onRefresh={refetchAll}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* Both non-ready states are carded, matching the ready one — a stack of
+              FormSections, each already a card. */}
           {summary.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load your reports"
-              description={reportsErrorMessage(
-                summary.error,
-                'This is a problem reaching the server. Try again in a moment.'
-              )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
+                title="Could not load your reports"
+                description={reportsErrorMessage(
+                  summary.error,
+                  'This is a problem reaching the server. Try again in a moment.'
+                )}
+                onRetry={refetchAll}
+              />
+            </Card>
           ) : summary.isPending || !data ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : (
             <>
               <div className="flex flex-col gap-1">
@@ -188,11 +197,14 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               </div>
 
               {!hasSales ? (
-                <EmptyState
-                  icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
-                  title="No sales in this period"
-                  description="Once orders come in, this fills with your revenue, your best sellers, and where the sales came from. Try a longer period above, or check back after your next sale."
-                />
+                <Card>
+                  <PaneEmpty
+                    module={MODULE}
+                    icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
+                    title="No sales in this period"
+                    description="Once orders come in, this fills with your revenue, your best sellers, and where the sales came from. Try a longer period above, or check back after your next sale."
+                  />
+                </Card>
               ) : (
                 <>
                   <Stats className="w-full">

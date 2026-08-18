@@ -19,6 +19,7 @@
 
 import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
@@ -27,7 +28,6 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
-  EmptyState,
   Field,
   FieldControl,
   FieldLabel,
@@ -44,6 +44,7 @@ import {
   faPaperPlane,
   faPlus,
   faTrashCan,
+  faUsers,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -71,6 +72,10 @@ import {
   toDateInput,
   weekRange,
 } from './format';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'staff';
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -266,100 +271,113 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Schedule controls" wrap>
-        <div className="flex items-center gap-1">
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            aria-label="Previous week"
-            onClick={() => {
-              setRange((current) => shiftRange(current, -1));
+      <PaneToolbar
+        label="Schedule controls"
+        primary={
+          drafts.length > 0 ? (
+            <Button
+              size="sm"
+              color="module"
+              className="ml-auto"
+              loading={publish.isPending}
+              onClick={doPublish}
+            >
+              <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
+              Publish {String(drafts.length)} {drafts.length === 1 ? 'shift' : 'shifts'}
+            </Button>
+          ) : null
+        }
+        controls={
+          <>
+            <div className="flex items-center gap-1">
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                aria-label="Previous week"
+                onClick={() => {
+                  setRange((current) => shiftRange(current, -1));
+                }}
+              >
+                <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
+              </Button>
+              <Text as="span" className="min-w-40 text-center text-sm font-medium">
+                {new Date(`${range.from}T00:00:00.000Z`).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'short',
+                  timeZone: 'UTC',
+                })}
+                {' – '}
+                {new Date(`${range.to}T00:00:00.000Z`).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'short',
+                  timeZone: 'UTC',
+                })}
+              </Text>
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                aria-label="Next week"
+                onClick={() => {
+                  setRange((current) => shiftRange(current, 1));
+                }}
+              >
+                <Icon glyph={faChevronRight} className="size-4" aria-hidden />
+              </Button>
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              onClick={() => {
+                setRange(weekRange(new Date()));
+              }}
+            >
+              This week
+            </Button>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={shifts.isFetching}
+            updatedAt={shifts.data ? shifts.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void shifts.refetch();
             }}
-          >
-            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
-          </Button>
-          <Text as="span" className="min-w-40 text-center text-sm font-medium">
-            {new Date(`${range.from}T00:00:00.000Z`).toLocaleDateString(undefined, {
-              day: 'numeric',
-              month: 'short',
-              timeZone: 'UTC',
-            })}
-            {' – '}
-            {new Date(`${range.to}T00:00:00.000Z`).toLocaleDateString(undefined, {
-              day: 'numeric',
-              month: 'short',
-              timeZone: 'UTC',
-            })}
-          </Text>
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            aria-label="Next week"
-            onClick={() => {
-              setRange((current) => shiftRange(current, 1));
-            }}
-          >
-            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
-          </Button>
-        </div>
-
-        <Button
-          size="sm"
-          variant="ghost"
-          color="neutral"
-          onClick={() => {
-            setRange(weekRange(new Date()));
-          }}
-        >
-          This week
-        </Button>
-
-        {drafts.length > 0 ? (
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto"
-            loading={publish.isPending}
-            onClick={doPublish}
-          >
-            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
-            Publish {String(drafts.length)} {drafts.length === 1 ? 'shift' : 'shifts'}
-          </Button>
-        ) : null}
-
-        <RefreshButton
-          className={drafts.length > 0 ? undefined : 'ml-auto'}
-          isFetching={shifts.isFetching}
-          updatedAt={shifts.data ? shifts.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void shifts.refetch();
-          }}
-        />
-      </PaneToolbar>
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {shifts.isError ? (
-          <EmptyState
-            icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
-            title="Could not load the rota"
-            description="The server could not be reached. Nothing on the schedule is affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void shifts.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
+              title="Could not load the rota"
+              description="The server could not be reached. Nothing on the schedule is affected."
+              onRetry={() => {
+                void shifts.refetch();
+              }}
+            />
+          </Card>
+        ) : people.isError && (people.data?.items.length ?? 0) === 0 ? (
+          // A failed roster read left this count at 0, which the branch below
+          // told as "nobody works here" — the wrong fact, and the wrong fix.
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
+              title="Could not load your team"
+              description="The rota needs to know who works for you, and that list could not be read. Nobody's record is affected."
+              onRetry={() => {
+                void people.refetch();
+              }}
+            />
+          </Card>
         ) : (people.data?.items.length ?? 0) === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
               title="Nobody to schedule yet"
               description="Add people to your team first, then you can build a week around them."

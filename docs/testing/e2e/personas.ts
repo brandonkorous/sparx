@@ -5,16 +5,16 @@
  * driving the app by hand (or via the playwright-cli skill), not a package
  * import. Pair with checklist.md, which maps features to the personas below.
  *
- * Credential convention follows packages/db/prisma/seed.ts
+ * Credential convention follows wizeworks/packages/db/prisma/seed.ts
  * (`e2e-*@sparx.test`) so these are recognizable as disposable dev/test
  * accounts, never real ones. Passwords are plaintext by design — same as
  * the existing seed — because this is dev-only, non-prod data.
  *
- * Module keys are exactly the ModuleSlug union from packages/modules/src/index.ts:
+ * Module keys are exactly the ModuleSlug union from wizeworks/packages/modules/src/index.ts:
  * builder | commerce | cms | crm | email | b2b | invoicing | dropship |
  * inventory | chat | ai | scheduling
  *
- * Two rules from packages/modules that shape the combos below:
+ * Two rules from wizeworks/packages/modules that shape the combos below:
  *   - `b2b` requires `commerce` to be on.
  *   - `invoicing` and `inventory` are bundled-free (auto-enabled) whenever
  *     `commerce` or `b2b` is on — listed explicitly below anyway so each
@@ -36,7 +36,7 @@ export type ModuleSlug =
   | 'ai'
   | 'scheduling';
 
-/** Matches the industry starter keys in services/api-rest/src/lib/industry-starters.ts */
+/** Matches the industry starter keys in wizeworks/services/api-rest/src/lib/industry-starters.ts */
 export type IndustryStarter =
   | 'apparel'
   | 'food'

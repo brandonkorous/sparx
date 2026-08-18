@@ -6,10 +6,10 @@ status: active
 applies-to: [both]
 sources:
   - DESIGN.md
-  - packages/brand/src/theme.css
-  - packages/ui/src/tokens.css
+  - sparx/packages/brand/src/theme.css
+  - sparx/packages/ui/src/tokens.css
   - docs/33-token-model-v2.md
-  - packages/surface-compile/src/theme.ts
+  - wizeworks/packages/surface-compile/src/theme.ts
 ---
 
 > 🚫 **The tenant-facing system is a "site", never a "storefront".** "storefront" was retired → "site" (2026-06-13) and survives only as a commerce _sales-channel_ name. Full glossary: [[terminology]].
@@ -18,26 +18,26 @@ sparx has **two** design systems. **The axis is whose brand a surface wears — 
 
 |                   | **sparx's own surfaces**                                                                    | **Tenant sites**                        |
 | ----------------- | ------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Apps              | `apps/workbench`, `apps/web`, `apps/market`, `apps/admin`, `apps/b2b-portal`                | `apps/site`                             |
+| Apps              | `sparx/apps/workbench`, `sparx/apps/web`, `sparx/apps/market`, `wizeworks/apps/admin`, `sparx/apps/b2b-portal`                | `wizeworks/apps/site`                             |
 | Whose brand       | **ours**                                                                                    | **the tenant's**                        |
 | Token prefix      | `--color-base-*` / semantic `--color-*` / `--color-module-*` (silica, from `@sparx/brand`)  | `--st-*`                                |
 | Component classes | silicaui plugin classes (`btn-*`, `bg-<color>`, `bg-soft`)                                  | `.st-c-*`                               |
-| Library           | `@wizeworks/silicaui-react` (primitives) + `@sparx/ui` (compositions) + `ModuleScope`       | `@sparx/site-ui` + `@sparx/site-themes` |
-| Compiled          | silica plugin + brand theme per app                                                         | `packages/surface-compile`, per-tenant  |
+| Library           | `@wizeworks/silicaui-react` (primitives) + `@wizeworks/ui` (compositions) + `ModuleScope`       | `@sparx/site-ui` + `@wizeworks/site-themes` |
+| Compiled          | silica plugin + brand theme per app                                                         | `wizeworks/packages/surface-compile`, per-tenant  |
 | Themeable         | no — one house system                                                                       | yes — per-tenant brand                  |
 | Type scale        | fixed rem (no `clamp()`)                                                                    | fluid `clamp()` allowed                 |
 
 ## Correction (2026-07-31): the old split was on the wrong axis
 
-This note previously split **"Dashboard / admin"** vs **"Site"**, which left `apps/web` and
-`apps/market` belonging to neither. That gap was not academic — it read as permission to treat
+This note previously split **"Dashboard / admin"** vs **"Site"**, which left `sparx/apps/web` and
+`sparx/apps/market` belonging to neither. That gap was not academic — it read as permission to treat
 marketing as its own design system with its own rules, and it directly produced a proposal to write
 a second, parallel `DESIGN.md` for the marketing apps.
 
-**Console and marketing are ONE system.** `apps/workbench`, `apps/web` and `apps/market` all import
+**Console and marketing are ONE system.** `sparx/apps/workbench`, `sparx/apps/web` and `sparx/apps/market` all import
 the same `@sparx/brand/theme.css` and register the same palette through the same
 `@plugin '@wizeworks/silicaui'`. The **only** difference anywhere in the platform is a single token
-override — `apps/web` sets `--radius-box: 1.5rem` against the brand default `0.5rem`.
+override — `sparx/apps/web` sets `--radius-box: 1.5rem` against the brand default `0.5rem`.
 
 **That is the sanctioned shape of variance: override a token, never fork the language.** A surface
 that needs to differ changes a value in its own `globals.css`; it does not get its own rules, doc, or
@@ -48,7 +48,7 @@ density, which composition idioms are allowed) — see [[console-is-not-marketin
 different question from which design system you are in, and conflating the two is what produced the
 error above.
 
-**Why the real boundary still matters:** `apps/site` renders **someone else's brand**, so
+**Why the real boundary still matters:** `wizeworks/apps/site` renders **someone else's brand**, so
 `ModuleScope`, `--color-module-*` and the sparx palette are meaningless there, and an `--st-*` value
 is meaningless in ours. The two look similar enough that rules bleed across, and a `ModuleScope`
 assumption on a tenant site is wrong at a level typecheck never catches. One shared seam: the site's

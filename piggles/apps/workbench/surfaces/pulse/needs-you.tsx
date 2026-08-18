@@ -18,7 +18,9 @@
 // would push rows they already passed down onto the next page.
 
 import { useState } from 'react';
-import { Badge, Button, EmptyState, Text, Tooltip } from '@wizeworks/silicaui-react';
+import { Badge, Button, Text, Tooltip } from '@wizeworks/silicaui-react';
+import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { faBell, faCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
@@ -36,6 +38,10 @@ import {
 } from '../../components/notifications/format';
 import { productCopy } from '../../lib/product';
 
+/** Registry module for this surface, so the brand draws one consistent picture
+ *  in its empty, waiting and failed states. */
+const MODULE = 'platform';
+
 type InboxState = 'unread' | 'all';
 
 export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
@@ -47,7 +53,7 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
   const [cursors, setCursors] = useState<string[]>([]);
 
   const before = cursors[cursors.length - 1];
-  const { items, ready, busy, hasMore } = useNotificationInbox({
+  const { items, ready, busy, hasMore, failed, retry } = useNotificationInbox({
     state,
     limit: pageSize,
     ...(before ? { before } : {}),
@@ -70,7 +76,7 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
     setCursors([]);
   };
 
-  const empty = ready && items.length === 0 && cursors.length === 0;
+  const empty = ready && !failed && items.length === 0 && cursors.length === 0;
 
   return (
     <FormSection
@@ -116,26 +122,44 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
       </div>
 
-      {empty ? (
-        <EmptyState
+      {/* No Card: the FormSection around this IS one. What was missing is the
+          wrapper — and this is exactly the two-branch case <ListEmptyState> owns,
+          because the Unread filter is what makes an inbox look empty.
+          Empty is a WIN here, not an absence, and the words have to say so. The
+          first draft read "Nothing needs you" — which lands as *nobody needs
+          you*, from a product, to someone running their own business, on the
+          screen they see most often. */}
+      {failed && items.length === 0 ? (
+        // Split out of the empty branch: a failed read left `items` empty, so a
+        // connection blip was telling somebody they were all caught up while a
+        // failed payment sat unread behind it. Only when the list is actually
+        // empty — a failed poll over notices still on screen leaves them be.
+        <PaneLoadError
           icon={<Icon glyph={faBell} className="size-6" aria-hidden />}
-          // Empty is a WIN here, not an absence, and the words have to say so.
-          // The first draft read "Nothing needs you" — which lands as *nobody
-          // needs you*, from a product, to someone running their own business,
-          // on the screen they see most often. An empty inbox means they are on
-          // top of things; the copy should tell them that.
-          title={state === 'unread' ? "You're all caught up" : 'Nothing here yet'}
-          description={
-            state === 'unread'
-              ? productCopy(
-                  'pulse.needsYou.description',
-                  'Anything waiting on you turns up here — a payment that failed, stock running low, a reply from the Piggles team.'
-                )
-              : productCopy(
-                  'pulse.needsYou.firstRun',
-                  'When Piggles has something to tell you, it lands here and stays, so you can come back to it whenever you like.'
-                )
-          }
+          title="Could not load what needs you"
+          description="This is a problem reaching the server. Anything waiting on you is still waiting — it just could not be read."
+          onRetry={retry}
+        />
+      ) : empty ? (
+        <ListEmptyState
+          module={MODULE}
+          filtered={state === 'unread'}
+          noResults={{
+            icon: <Icon glyph={faBell} className="size-6" aria-hidden />,
+            title: "You're all caught up",
+            description: productCopy(
+              'pulse.needsYou.description',
+              'Anything waiting on you turns up here — a payment that failed, stock running low, a reply from the Piggles team.'
+            ),
+          }}
+          firstRun={{
+            icon: <Icon glyph={faBell} className="size-6" aria-hidden />,
+            title: 'Nothing here yet',
+            description: productCopy(
+              'pulse.needsYou.firstRun',
+              'When Piggles has something to tell you, it lands here and stays, so you can come back to it whenever you like.'
+            ),
+          }}
         />
       ) : items.length === 0 ? (
         // Reachable when a full last window left the cursor one step past the

@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
   Field,
   FieldControl,
@@ -32,12 +33,12 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBoxArchive, faFloppyDisk, faGrid, faQrcode } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
@@ -242,58 +243,66 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Shelf controls">
-        <Button
-          color="module-inventory"
-          size="sm"
-          disabled={!valid || !changed || create.isPending || update.isPending}
-          onClick={submit}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save
-        </Button>
-
-        {!isNew && !isSystem ? (
-          <Tooltip content="Remove this shelf">
-            <Button
-              size="sm"
-              variant="ghost"
-              color="danger"
-              aria-label="Remove this shelf"
-              onClick={() => void onArchive()}
-            >
-              <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-            </Button>
-          </Tooltip>
-        ) : null}
-
-        {!isNew ? (
-          <Tooltip content="Print a label for this shelf">
-            <Button
-              size="sm"
-              variant="ghost"
-              color="neutral"
-              aria-label="Print a label for this shelf"
-              onClick={() => {
-                ctx.open('inventory.bins.labels', { binId: id }, { target: 'beside' });
-              }}
-            >
-              <Icon glyph={faQrcode} className="size-4" aria-hidden />
-            </Button>
-          </Tooltip>
-        ) : null}
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={bin.isFetching || contents.isFetching}
-          updatedAt={bin.data ? bin.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            setLoaded(false);
-            void bin.refetch();
-            void contents.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Shelf controls"
+        // Save is `primary`, never `controls`: `controls` relocates into the
+        // overflow popover under 672px, and a commit action must be reachable
+        // at every width. Enforced by scripts/check-toolbar-primary.mjs.
+        primary={
+          <Button
+            color="module-inventory"
+            size="sm"
+            disabled={!valid || !changed || create.isPending || update.isPending}
+            onClick={submit}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save
+          </Button>
+        }
+        controls={
+          <>
+            {!isNew && !isSystem ? (
+              <Tooltip content="Remove this shelf">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="danger"
+                  aria-label="Remove this shelf"
+                  onClick={() => void onArchive()}
+                >
+                  <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
+                </Button>
+              </Tooltip>
+            ) : null}
+            {!isNew ? (
+              <Tooltip content="Print a label for this shelf">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="neutral"
+                  aria-label="Print a label for this shelf"
+                  onClick={() => {
+                    ctx.open('inventory.bins.labels', { binId: id }, { target: 'beside' });
+                  }}
+                >
+                  <Icon glyph={faQrcode} className="size-4" aria-hidden />
+                </Button>
+              </Tooltip>
+            ) : null}
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={bin.isFetching || contents.isFetching}
+            updatedAt={bin.data ? bin.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              setLoaded(false);
+              void bin.refetch();
+              void contents.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -573,12 +582,20 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </section>
           ) : null}
 
+          {/* A peer of the sections above, so it is carded like them — uncarded it
+              was the one thing on the pane sitting on the recessed surface. Kept
+              as a compact EmptyState rather than <PaneEmpty>: this is a notice
+              beside a form, not the pane's content region, and the brand's
+              picture at full size would outrank the form it is about. */}
           {isNew && activeLocations.length === 0 ? (
-            <EmptyState
-              icon={<Icon glyph={faGrid} className="size-6" aria-hidden />}
-              title="No locations yet"
-              description="A shelf lives inside a location, so add the place first."
-            />
+            <Card className="p-4">
+              <EmptyState
+                size="sm"
+                icon={<Icon glyph={faGrid} className="size-6" aria-hidden />}
+                title="No locations yet"
+                description="A shelf lives inside a location, so add the place first."
+              />
+            </Card>
           ) : null}
         </div>
       </div>

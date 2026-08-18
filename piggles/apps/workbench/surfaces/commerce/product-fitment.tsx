@@ -55,11 +55,11 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Card,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -105,8 +105,14 @@ import {
   type ProductFitmentRange,
 } from './products-data';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const LABEL = 'Fitment';
+/** Registry module for this pane, so the brand draws Sell's own picture in the
+ *  empty, waiting and failed states rather than the generic one. */
+const MODULE = 'commerce';
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 type ReadyScope = Extract<ProductScope, { state: 'ready' }>;
@@ -585,34 +591,37 @@ function FitmentBody({
     });
   };
 
+  // Every branch below returns a CARD, because the populated one is a run of
+  // them — one per compatibility list. A state that skipped the card floated on
+  // the pane's recessed surface while its neighbour sat lifted on it, which is
+  // what this pane was screenshotted for.
   const body = () => {
     if (fitment.isError || domainsQuery.isError) {
+      // A failed FIRST load means there is nothing behind the message, so it is
+      // the empty-state shape rather than an Alert — an Alert is a banner over
+      // content that is still there. See components/pane-load-error.tsx.
       return (
-        <Alert color="danger" variant="soft">
-          <AlertContent>
-            <AlertTitle>Could not load what this product fits</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. Nothing about the product has changed — it just
-              could not be read just now.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="danger"
-            variant="soft"
-            onClick={() => {
+        <Card>
+          <PaneLoadError
+            module={MODULE}
+            icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
+            title="Could not load what this product fits"
+            description="This is a problem reaching the server. Nothing about the product has changed — it just could not be read just now."
+            onRetry={() => {
               void fitment.refetch();
               void domainsQuery.refetch();
             }}
-          >
-            Try again
-          </Button>
-        </Alert>
+          />
+        </Card>
       );
     }
 
     if (fitment.isPending || domainsQuery.isPending) {
-      return <InlineWaiting />;
+      return (
+        <Card>
+          <PaneWaiting module={MODULE} />
+        </Card>
+      );
     }
 
     // Nothing to match AGAINST is a different problem from nothing matched YET,
@@ -620,46 +629,52 @@ function FitmentBody({
     // destination rather than an Add button that opens an empty picker.
     if (domains.length === 0) {
       return (
-        <EmptyState
-          icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
-          title="There is nothing to match against yet"
-          description="Before a product can be marked as fitting something, your catalog needs a list of what those things ARE — a list of vehicles, of machine models, of printers. Add one and every product can then be matched against it."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={(event) => {
-                ctx.open('commerce.fitment.list', undefined, {
-                  target: event.shiftKey ? 'beside' : 'tab',
-                });
-              }}
-            >
-              Set up a compatibility list
-            </Button>
-          }
-        />
+        <Card>
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
+            title="There is nothing to match against yet"
+            description="Before a product can be marked as fitting something, your catalog needs a list of what those things ARE — a list of vehicles, of machine models, of printers. Add one and every product can then be matched against it."
+            actions={
+              <Button
+                size="sm"
+                color="module"
+                onClick={(event) => {
+                  ctx.open('commerce.fitment.list', undefined, {
+                    target: event.shiftKey ? 'beside' : 'tab',
+                  });
+                }}
+              >
+                Set up a compatibility list
+              </Button>
+            }
+          />
+        </Card>
       );
     }
 
     if (rules.length === 0) {
       return (
-        <EmptyState
-          icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
-          title="This product is not matched to anything"
-          description="Shoppers using “does this fit what I own?” on your website will never be shown this product. Add what it fits and it starts appearing for the right people."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                setPicking(true);
-              }}
-            >
-              <Icon glyph={faPlus} className="size-4" aria-hidden />
-              Add what it fits
-            </Button>
-          }
-        />
+        <Card>
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
+            title="This product is not matched to anything"
+            description="Shoppers using “does this fit what I own?” on your website will never be shown this product. Add what it fits and it starts appearing for the right people."
+            actions={
+              <Button
+                size="sm"
+                color="module"
+                onClick={() => {
+                  setPicking(true);
+                }}
+              >
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
+                Add what it fits
+              </Button>
+            }
+          />
+        </Card>
       );
     }
 
@@ -735,43 +750,44 @@ function FitmentBody({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Fitment actions">
-        <Icon glyph={faPuzzlePiece} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {scope.product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-
-        {/* This pane's primary action, in this pane's own toolbar — not floating
+      <PaneToolbar
+        label="Fitment actions"
+        status={
+          scope.isFollowing ? (
+            <Badge color="info" variant="soft" size="sm">
+              Following
+            </Badge>
+          ) : null
+        }
+        primary={
+          /* This pane's primary action, in this pane's own toolbar — not floating
             at the bottom of the list where it would read as belonging to the
             last card rather than to the pane. Its label sheds first when the
-            pane is docked narrow; the icon carries it. */}
-        {rules.length > 0 && domains.length > 0 ? (
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto"
-            onClick={() => {
-              setPicking(true);
+            pane is docked narrow; the icon carries it. */
+          rules.length > 0 && domains.length > 0 ? (
+            <Button
+              size="sm"
+              color="module"
+              className="ml-auto"
+              onClick={() => {
+                setPicking(true);
+              }}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              <span className="hidden @md:inline">Add what it fits</span>
+            </Button>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={fitment.isFetching}
+            updatedAt={fitment.dataUpdatedAt}
+            onRefresh={() => {
+              void fitment.refetch();
             }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Add what it fits</span>
-          </Button>
-        ) : null}
-        <RefreshButton
-          className={rules.length > 0 && domains.length > 0 ? undefined : 'ml-auto'}
-          isFetching={fitment.isFetching}
-          updatedAt={fitment.dataUpdatedAt}
-          onRefresh={() => {
-            void fitment.refetch();
-          }}
-        />
-      </PaneToolbar>
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -808,7 +824,7 @@ export function ProductFitmentSurface({ ctx }: { ctx: SurfaceContext }) {
   const scope = useProductScope(ctx, { label: LABEL, hold: picking });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
   // Keyed on the product so a following pane that DID move starts clean rather
   // than carrying one product's state onto the next.

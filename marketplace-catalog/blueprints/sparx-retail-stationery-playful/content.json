@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "a-happy-desk-in-five-minutes",
-        "status": "published",
-        "body": {
-            "title": "A happy desk in five minutes",
-            "excerpt": "You don’t need a whole makeover to like your desk more — you need three small changes and about five minutes. Here’s the quick, cheerful reset we do ourselves.",
-            "featuredImage": {
-                "$asset": "post-desk-setup"
+  {
+    "typeKey": "blog_post",
+    "slug": "a-happy-desk-in-five-minutes",
+    "status": "published",
+    "body": {
+      "title": "A happy desk in five minutes",
+      "excerpt": "You don’t need a whole makeover to like your desk more — you need three small changes and about five minutes. Here’s the quick, cheerful reset we do ourselves.",
+      "featuredImage": {
+        "$asset": "post-desk-setup"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A desk you like sitting at is not about matching everything or buying a big organiser you’ll never fill. It’s about a couple of small, bright things within arm’s reach and a clear patch to actually work on. Give us five minutes and we’ll give you a desk that makes the boring jobs a little less boring."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A desk you like sitting at is not about matching everything or buying a big organiser you’ll never fill. It’s about a couple of small, bright things within arm’s reach and a clear patch to actually work on. Give us five minutes and we’ll give you a desk that makes the boring jobs a little less boring."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Clear the flat surface, keep one bright thing"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Start by sweeping everything off the main surface and only putting back what earns its spot — the notebook you’re using, the pens you actually reach for, and one thing that just makes you smile: a pin on a jar, a sticker on the laptop, a rainbow cube of sticky notes. A clear surface plus one hit of color beats a tidy-but-grey desk every time."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Give jobs a home and a color"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The trick that makes it stick is color-coding by feel, not by system. Today’s list gets a bright sticky note where you can’t miss it; the notebook gets a color you like opening; the calendar sits where you’ll actually glance at it. When a task has a color and a place, you stop losing it — and the desk starts working with you instead of against you."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "small-gifts-that-always-land",
-        "status": "published",
-        "body": {
-            "title": "Small gifts that always land",
-            "excerpt": "Stuck on a little present? Stationery is the easy win — cheap enough to be casual, thoughtful enough to mean it. A short, tested list of gifts that never miss.",
-            "featuredImage": {
-                "$asset": "post-gift-ideas"
+            "content": [
+              {
+                "type": "text",
+                "text": "Clear the flat surface, keep one bright thing"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start by sweeping everything off the main surface and only putting back what earns its spot — the notebook you’re using, the pens you actually reach for, and one thing that just makes you smile: a pin on a jar, a sticker on the laptop, a rainbow cube of sticky notes. A clear surface plus one hit of color beats a tidy-but-grey desk every time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The best small gift is one the person would love but would never quite buy for themselves. Stationery is full of them — a pen that’s nicer than the free one, a notebook too pretty to hoard, a silly sticker that makes them laugh. Here’s how we’d pick, whatever the occasion."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "For the friend who’s always busy"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Give them a reason to slow down for five minutes: a Color-Pop notebook and the gel-pen set, so the endless to-do list becomes something almost fun to write. It says “I see how much you’ve got on” without being a self-help book, and it’s the gift they’ll actually use every single day."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "For the person who has everything"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Go small, go colorful, go consumable. An enamel pin they’d never pick, a sticker pack for their laptop, a box of bright cards for the notes they mean to send. Little things that get used up and don’t clutter a shelf — and if you’re not sure, the Happy Desk Bundle is the whole grin in one box. Add a note at checkout and we’ll wrap it and write it in."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "keeping-a-creative-habit-going",
-        "status": "published",
-        "body": {
-            "title": "Keeping a creative habit going",
-            "excerpt": "The blank page wins when the notebook is boring and the pens are dry. Here’s how a bit of color keeps a doodle-a-day or a journal habit alive past week two.",
-            "featuredImage": {
-                "$asset": "post-creativity"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Most creative habits don’t die from lack of ideas — they die from friction. The notebook’s in a drawer, the good pen’s run out, and the page feels too precious to “waste”. Fix those three things and a doodle-a-day or a five-line journal suddenly gets a lot easier to keep. Color, it turns out, does a surprising amount of the work."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Make it fun, not precious"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A cheap, cheerful notebook beats a fancy one you’re scared to open. When the paper is bright and the pens are a set you like reaching for, the page stops feeling like a test and starts feeling like play. Give yourself permission to scribble, color outside the lines, and fill a page with nonsense — the habit is the point, not the masterpiece."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Keep it where you’ll see it"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A habit sticks when the tools are closer than the excuse. Leave the notebook open on the desk with a pen across it, not zipped away in a bag. Stick a bright note on the cover with the one tiny thing you’ll do today — a doodle, a line, a color. Small and visible wins; out of sight really is out of mind, and a habit you can see is a habit you keep."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Give jobs a home and a color"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The trick that makes it stick is color-coding by feel, not by system. Today’s list gets a bright sticky note where you can’t miss it; the notebook gets a color you like opening; the calendar sits where you’ll actually glance at it. When a task has a color and a place, you stop losing it — and the desk starts working with you instead of against you."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "small-gifts-that-always-land",
+    "status": "published",
+    "body": {
+      "title": "Small gifts that always land",
+      "excerpt": "Stuck on a little present? Stationery is the easy win — cheap enough to be casual, thoughtful enough to mean it. A short, tested list of gifts that never miss.",
+      "featuredImage": {
+        "$asset": "post-gift-ideas"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best small gift is one the person would love but would never quite buy for themselves. Stationery is full of them — a pen that’s nicer than the free one, a notebook too pretty to hoard, a silly sticker that makes them laugh. Here’s how we’d pick, whatever the occasion."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "For the friend who’s always busy"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Give them a reason to slow down for five minutes: a Color-Pop notebook and the gel-pen set, so the endless to-do list becomes something almost fun to write. It says “I see how much you’ve got on” without being a self-help book, and it’s the gift they’ll actually use every single day."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "For the person who has everything"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Go small, go colorful, go consumable. An enamel pin they’d never pick, a sticker pack for their laptop, a box of bright cards for the notes they mean to send. Little things that get used up and don’t clutter a shelf — and if you’re not sure, the Happy Desk Bundle is the whole grin in one box. Add a note at checkout and we’ll wrap it and write it in."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "keeping-a-creative-habit-going",
+    "status": "published",
+    "body": {
+      "title": "Keeping a creative habit going",
+      "excerpt": "The blank page wins when the notebook is boring and the pens are dry. Here’s how a bit of color keeps a doodle-a-day or a journal habit alive past week two.",
+      "featuredImage": {
+        "$asset": "post-creativity"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most creative habits don’t die from lack of ideas — they die from friction. The notebook’s in a drawer, the good pen’s run out, and the page feels too precious to “waste”. Fix those three things and a doodle-a-day or a five-line journal suddenly gets a lot easier to keep. Color, it turns out, does a surprising amount of the work."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Make it fun, not precious"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A cheap, cheerful notebook beats a fancy one you’re scared to open. When the paper is bright and the pens are a set you like reaching for, the page stops feeling like a test and starts feeling like play. Give yourself permission to scribble, color outside the lines, and fill a page with nonsense — the habit is the point, not the masterpiece."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Keep it where you’ll see it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A habit sticks when the tools are closer than the excuse. Leave the notebook open on the desk with a pen across it, not zipped away in a bag. Stick a bright note on the cover with the one tiny thing you’ll do today — a doodle, a line, a color. Small and visible wins; out of sight really is out of mind, and a habit you can see is a habit you keep."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

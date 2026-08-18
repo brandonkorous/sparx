@@ -1,42 +1,42 @@
 [
-    {
-        "id": "salon-editorial-hero",
-        "url": "https://images.unsplash.com/photo-1706629503650-cade709d15e3?w=1600&q=80",
-        "alt": "A bright, calm salon interior in warm neutrals"
-    },
-    {
-        "id": "salon-editorial-interior",
-        "url": "https://images.unsplash.com/photo-1712213396688-c6f2d536671f?w=1600&q=80",
-        "alt": "A styling station with soft natural light"
-    },
-    {
-        "id": "salon-editorial-ava",
-        "url": "https://images.unsplash.com/photo-1734111719430-fe4a3973f8af?w=1600&q=80",
-        "alt": "Ava Bennett, senior stylist"
-    },
-    {
-        "id": "salon-editorial-maya",
-        "url": "https://images.unsplash.com/photo-1777125259057-67d1dae9caad?w=1600&q=80",
-        "alt": "Maya Cole, stylist"
-    },
-    {
-        "id": "salon-editorial-noor",
-        "url": "https://images.unsplash.com/photo-1546877625-cb8c71916608?w=1600&q=80",
-        "alt": "Noor Rahim, color specialist"
-    },
-    {
-        "id": "salon-editorial-work1",
-        "url": "https://images.unsplash.com/photo-1785456390070-9960e3997066?w=1600&q=80",
-        "alt": "A soft, lived-in balayage"
-    },
-    {
-        "id": "salon-editorial-work2",
-        "url": "https://images.unsplash.com/photo-1672788709547-6d7f239972c3?w=1600&q=80",
-        "alt": "A precise, glossy blunt cut"
-    },
-    {
-        "id": "salon-editorial-work3",
-        "url": "https://images.unsplash.com/photo-1613754773306-532ec48b0de5?w=1600&q=80",
-        "alt": "An effortless textured finish"
-    }
+  {
+    "id": "salon-editorial-hero",
+    "url": "https://images.unsplash.com/photo-1706629503650-cade709d15e3?w=1600&q=80",
+    "alt": "A bright, calm salon interior in warm neutrals"
+  },
+  {
+    "id": "salon-editorial-interior",
+    "url": "https://images.unsplash.com/photo-1712213396688-c6f2d536671f?w=1600&q=80",
+    "alt": "A styling station with soft natural light"
+  },
+  {
+    "id": "salon-editorial-ava",
+    "url": "https://images.unsplash.com/photo-1734111719430-fe4a3973f8af?w=1600&q=80",
+    "alt": "Ava Bennett, senior stylist"
+  },
+  {
+    "id": "salon-editorial-maya",
+    "url": "https://images.unsplash.com/photo-1777125259057-67d1dae9caad?w=1600&q=80",
+    "alt": "Maya Cole, stylist"
+  },
+  {
+    "id": "salon-editorial-noor",
+    "url": "https://images.unsplash.com/photo-1546877625-cb8c71916608?w=1600&q=80",
+    "alt": "Noor Rahim, color specialist"
+  },
+  {
+    "id": "salon-editorial-work1",
+    "url": "https://images.unsplash.com/photo-1785456390070-9960e3997066?w=1600&q=80",
+    "alt": "A soft, lived-in balayage"
+  },
+  {
+    "id": "salon-editorial-work2",
+    "url": "https://images.unsplash.com/photo-1672788709547-6d7f239972c3?w=1600&q=80",
+    "alt": "A precise, glossy blunt cut"
+  },
+  {
+    "id": "salon-editorial-work3",
+    "url": "https://images.unsplash.com/photo-1613754773306-532ec48b0de5?w=1600&q=80",
+    "alt": "An effortless textured finish"
+  }
 ]

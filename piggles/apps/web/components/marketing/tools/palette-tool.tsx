@@ -31,37 +31,37 @@ import type { Scheme } from './palette/generate';
  * underneath are for whoever they forward it to.
  */
 export function PaletteTool() {
-    const [scheme, setScheme] = useState<Scheme>('balanced');
-    const [vision, setVision] = useState<Vision>('normal');
-    const [ink, setInk] = useState<ContentInk>({});
+  const [scheme, setScheme] = useState<Scheme>('balanced');
+  const [vision, setVision] = useState<Vision>('normal');
+  const [ink, setInk] = useState<ContentInk>({});
 
-    const p = usePalette(scheme);
-    const roles = assign(p.palette, ink);
+  const p = usePalette(scheme);
+  const roles = assign(p.palette, ink);
 
-    /** Dropping an override restores silica's measured answer rather than freezing
-     *  today's value, so it keeps tracking a color that changes underneath it. */
-    const resetInk = (role: Role) => setInk(({ [role]: _dropped, ...rest }) => rest);
+  /** Dropping an override restores silica's measured answer rather than freezing
+   *  today's value, so it keeps tracking a color that changes underneath it. */
+  const resetInk = (role: Role) => setInk(({ [role]: _dropped, ...rest }) => rest);
 
-    return (
-        <div className="flex flex-col gap-10">
-            <PaletteEditor
-                palette={p}
-                roles={roles}
-                ink={ink}
-                scheme={scheme}
-                vision={vision}
-                onScheme={setScheme}
-                onVision={setVision}
-                onInk={(role, hex) => setInk((prev) => ({ ...prev, [role]: hex }))}
-                onResetInk={resetInk}
-            />
+  return (
+    <div className="flex flex-col gap-10">
+      <PaletteEditor
+        palette={p}
+        roles={roles}
+        ink={ink}
+        scheme={scheme}
+        vision={vision}
+        onScheme={setScheme}
+        onVision={setVision}
+        onInk={(role, hex) => setInk((prev) => ({ ...prev, [role]: hex }))}
+        onResetInk={resetInk}
+      />
 
-            <Preview roles={roles} vision={vision} />
+      <Preview roles={roles} vision={vision} />
 
-            <div className="grid items-start gap-6 xl:grid-cols-2">
-                <Pairs palette={p.palette} vision={vision} />
-                <ExportPanel palette={p.palette} roles={roles} ink={ink} />
-            </div>
-        </div>
-    );
+      <div className="grid items-start gap-6 xl:grid-cols-2">
+        <Pairs palette={p.palette} vision={vision} />
+        <ExportPanel palette={p.palette} roles={roles} ink={ink} />
+      </div>
+    </div>
+  );
 }

@@ -10,14 +10,19 @@
 // the rail for partner tenants, so `not a partner` is a deep-link edge; it is
 // handled rather than assumed away.
 
-import { Button, Card } from '@wizeworks/silicaui-react';
+import { Card } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { faAward, faLock, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
-import { ApiError } from '@sparx/api-client';
+import { ApiError } from '@wizeworks/api-client';
 import { productCopy, productCopyWith } from '../../lib/product';
+
+/** Registry module for these panes, so the brand draws one consistent picture
+ *  across every partner state. */
+const MODULE = 'partner';
 
 /** A centred message that fills the pane — for the states where there is no list
  *  or form to show. Always inside a PANE_SHELL so the chrome matches a loaded
@@ -36,7 +41,13 @@ export function PartnerMessage({
   return (
     <div className={PANE_SHELL}>
       <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneEmpty icon={icon} title={title} description={description} actions={actions} />
+        <PaneEmpty
+          module={MODULE}
+          icon={icon}
+          title={title}
+          description={description}
+          actions={actions}
+        />
       </Card>
     </div>
   );
@@ -45,7 +56,11 @@ export function PartnerMessage({
 export function PartnerLoading() {
   return (
     <div className={PANE_SHELL}>
-      <PaneWaiting />
+      {/* Same card <PartnerMessage> and every loaded partner pane use, so the
+          pane does not gain a surface the moment its data lands. */}
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneWaiting module={MODULE} />
+      </Card>
     </div>
   );
 }
@@ -84,17 +99,19 @@ export function PartnerLoadError({
       />
     );
   }
+  // Not <PartnerMessage>: that shell draws the "nothing here yet" picture, and a
+  // server that could not be reached is a failure, not an invitation.
   return (
-    <PartnerMessage
-      icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-      title={`Could not load ${section}`}
-      description="This is a problem reaching the server. Nothing about your partner account has changed — try again in a moment."
-      actions={
-        <Button size="sm" color="module" onClick={onRetry}>
-          Try again
-        </Button>
-      }
-    />
+    <div className={PANE_SHELL}>
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneLoadError
+          icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+          title={`Could not load ${section}`}
+          description="This is a problem reaching the server. Nothing about your partner account has changed — try again in a moment."
+          onRetry={onRetry}
+        />
+      </Card>
+    </div>
   );
 }
 

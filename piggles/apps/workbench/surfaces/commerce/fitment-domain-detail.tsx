@@ -37,7 +37,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Text,
   Textarea,
@@ -50,6 +49,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FITMENT_ICONS, resolveFitmentIcon } from './fitment-icons';
 import { FitmentNodeManager } from './fitment-nodes';
@@ -155,7 +155,14 @@ export function FitmentDomainDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: domain, isPending, isError, refetch } = useFitmentDomain(id);
+  const {
+    data: domain,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useFitmentDomain(id);
 
   if (isError) {
     return (
@@ -177,17 +184,35 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <DomainEditor ctx={ctx} id={id} domain={domain} />;
+  return (
+    <DomainEditor
+      ctx={ctx}
+      id={id}
+      domain={domain}
+      isFetching={isFetching}
+      updatedAt={domain ? dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function DomainEditor({
   ctx,
   id,
   domain,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   domain?: FitmentDomain;
+  /** Only the saved-list state has a query behind it; "new" has none. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -325,38 +350,49 @@ function DomainEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Compatibility list actions">
-        <Icon glyph={HeaderIcon} className="size-4 shrink-0" aria-hidden />
-        {!isNew && domain ? (
-          <Badge color="neutral" variant="soft" size="sm">
-            {rootCountLabel(domain)}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || Boolean(levelError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create list' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Compatibility list actions"
+        status={
+          <>
+            <Icon glyph={HeaderIcon} className="size-4 shrink-0" aria-hidden />
+            {!isNew && domain ? (
+              <Badge color="neutral" variant="soft" size="sm">
+                {rootCountLabel(domain)}
+              </Badge>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || Boolean(levelError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create list' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Set up a compatibility list
-              </Heading>
-              <Text>
-                A compatibility list is how your website answers “does this fit what I have?”. You
-                describe the kinds of things your products fit — vehicles, phones, machines — and
-                shoppers can filter to just the parts that work for them.
-              </Text>
-            </div>
+            <Text>
+              A compatibility list is how your website answers “does this fit what I have?”. You
+              describe the kinds of things your products fit — vehicles, phones, machines — and
+              shoppers can filter to just the parts that work for them.
+            </Text>
           ) : null}
 
           {failure ? (

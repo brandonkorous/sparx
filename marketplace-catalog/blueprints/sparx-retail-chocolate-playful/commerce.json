@@ -1,727 +1,622 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "boxes",
+      "name": "Boxes",
+      "description": "Colorful bonbon and assortment boxes.",
+      "featured": true
+    },
+    {
+      "handle": "build-your-own",
+      "name": "Build your own",
+      "description": "Pick your size and your flavours.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Cocoa bombs, dipped treats and ready-to-send boxes.",
+      "featured": true
+    },
+    {
+      "handle": "subscription",
+      "name": "Subscription",
+      "description": "A fresh box of treats every month.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "bestsellers",
+      "name": "Best sellers",
+      "description": "The treats everyone comes back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "rainbow-bonbon-box",
+        "salted-caramel-bonbons",
+        "hot-cocoa-bombs",
+        "birthday-gift-box",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "new-arrivals",
+      "name": "Fresh & fun",
+      "description": "The newest treats off the bench.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "rainbow-bonbon-box",
+        "build-your-own-box",
+        "hot-cocoa-bombs",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "gifts-ready",
+      "name": "Ready to send",
+      "description": "Boxes packed, wrapped and gift-ready.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "build-your-own-box",
+        "birthday-gift-box",
+        "kids-treat-bundle",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "bonbon-boxes",
+      "name": "Bonbon boxes",
+      "description": "Hand-painted filled chocolates, by the box.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["rainbow-bonbon-box", "salted-caramel-bonbons", "dark-and-milk-mix"]
+    },
+    {
+      "handle": "party-pleasers",
+      "name": "Party pleasers",
+      "description": "For a room full of different tastes.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["dark-and-milk-mix", "chocolate-dipped-pretzels", "marshmallow-pops"]
+    },
+    {
+      "handle": "little-treats",
+      "name": "Little treats",
+      "description": "Small joys that make a Tuesday better.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "hot-cocoa-bombs",
+        "chocolate-dipped-pretzels",
+        "marshmallow-pops",
+        "kids-treat-bundle"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "rainbow-bonbon-box",
+      "title": "Rainbow Bonbon Box",
+      "description": "Our signature box and the one everyone photographs before they eat it — a jewel-bright assortment of hand-painted bonbons, every color a different filling. Passionfruit yellow, raspberry pink, blueberry blue, salted-caramel gold, mint green and a dark-chocolate ganache. Proper chocolate, real fruit, and a lot of joy in a small box.",
+      "status": "active",
+      "productType": "Chocolate box",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["bonbons", "colorful", "assortment", "best-seller"],
+      "categoryHandles": ["boxes"],
+      "collectionHandles": ["bestsellers", "new-arrivals", "bonbon-boxes"],
+      "seoTitle": "Rainbow Bonbon Box — hand-painted filled chocolates | Sweet Tooth Co.",
+      "seoDescription": "A jewel-bright box of hand-painted bonbons, every color a different filling. Boxes of 9, 16 or 24.",
+      "options": [
         {
-            "handle": "boxes",
-            "name": "Boxes",
-            "description": "Colorful bonbon and assortment boxes.",
-            "featured": true
-        },
-        {
-            "handle": "build-your-own",
-            "name": "Build your own",
-            "description": "Pick your size and your flavours.",
-            "featured": true
-        },
-        {
-            "handle": "gifts",
-            "name": "Gifts",
-            "description": "Cocoa bombs, dipped treats and ready-to-send boxes.",
-            "featured": true
-        },
-        {
-            "handle": "subscription",
-            "name": "Subscription",
-            "description": "A fresh box of treats every month.",
-            "featured": true
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "9 pieces"
+            },
+            {
+              "value": "16 pieces"
+            },
+            {
+              "value": "24 pieces"
+            }
+          ]
         }
-    ],
-    "collections": [
+      ],
+      "variants": [
         {
-            "handle": "bestsellers",
-            "name": "Best sellers",
-            "description": "The treats everyone comes back for.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "rainbow-bonbon-box",
-                "salted-caramel-bonbons",
-                "hot-cocoa-bombs",
-                "birthday-gift-box",
-                "subscription"
-            ]
+          "sku": "STC-BON-RBW-9",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "9 pieces"
+          }
         },
         {
-            "handle": "new-arrivals",
-            "name": "Fresh & fun",
-            "description": "The newest treats off the bench.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "rainbow-bonbon-box",
-                "build-your-own-box",
-                "hot-cocoa-bombs",
-                "subscription"
-            ]
+          "sku": "STC-BON-RBW-16",
+          "priceCents": 3700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "16 pieces"
+          }
         },
         {
-            "handle": "gifts-ready",
-            "name": "Ready to send",
-            "description": "Boxes packed, wrapped and gift-ready.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "build-your-own-box",
-                "birthday-gift-box",
-                "kids-treat-bundle",
-                "subscription"
-            ]
-        },
-        {
-            "handle": "bonbon-boxes",
-            "name": "Bonbon boxes",
-            "description": "Hand-painted filled chocolates, by the box.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "rainbow-bonbon-box",
-                "salted-caramel-bonbons",
-                "dark-and-milk-mix"
-            ]
-        },
-        {
-            "handle": "party-pleasers",
-            "name": "Party pleasers",
-            "description": "For a room full of different tastes.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "dark-and-milk-mix",
-                "chocolate-dipped-pretzels",
-                "marshmallow-pops"
-            ]
-        },
-        {
-            "handle": "little-treats",
-            "name": "Little treats",
-            "description": "Small joys that make a Tuesday better.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "hot-cocoa-bombs",
-                "chocolate-dipped-pretzels",
-                "marshmallow-pops",
-                "kids-treat-bundle"
-            ]
+          "sku": "STC-BON-RBW-24",
+          "priceCents": 5300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "24 pieces"
+          }
         }
-    ],
-    "products": [
+      ],
+      "images": [
         {
-            "handle": "rainbow-bonbon-box",
-            "title": "Rainbow Bonbon Box",
-            "description": "Our signature box and the one everyone photographs before they eat it — a jewel-bright assortment of hand-painted bonbons, every color a different filling. Passionfruit yellow, raspberry pink, blueberry blue, salted-caramel gold, mint green and a dark-chocolate ganache. Proper chocolate, real fruit, and a lot of joy in a small box.",
-            "status": "active",
-            "productType": "Chocolate box",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "bonbons",
-                "colorful",
-                "assortment",
-                "best-seller"
-            ],
-            "categoryHandles": [
-                "boxes"
-            ],
-            "collectionHandles": [
-                "bestsellers",
-                "new-arrivals",
-                "bonbon-boxes"
-            ],
-            "seoTitle": "Rainbow Bonbon Box — hand-painted filled chocolates | Sweet Tooth Co.",
-            "seoDescription": "A jewel-bright box of hand-painted bonbons, every color a different filling. Boxes of 9, 16 or 24.",
-            "options": [
-                {
-                    "name": "Box size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "9 pieces"
-                        },
-                        {
-                            "value": "16 pieces"
-                        },
-                        {
-                            "value": "24 pieces"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-BON-RBW-9",
-                    "priceCents": 2200,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "9 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BON-RBW-16",
-                    "priceCents": 3700,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "16 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BON-RBW-24",
-                    "priceCents": 5300,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "24 pieces"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-rainbow",
-                    "isPrimary": true,
-                    "alt": "Rainbow Bonbon Box"
-                }
-            ]
-        },
-        {
-            "handle": "salted-caramel-bonbons",
-            "title": "Salted Caramel Bonbons",
-            "description": "For the caramel devotees. Slow-cooked salted caramel — properly dark, buttery and barely sweet — in a thin, snappy milk-chocolate shell with a flake of sea salt on top. The one flavour we can never make enough of, in a box of its own.",
-            "status": "active",
-            "productType": "Chocolate box",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "bonbons",
-                "caramel",
-                "sea-salt"
-            ],
-            "categoryHandles": [
-                "boxes"
-            ],
-            "collectionHandles": [
-                "bestsellers",
-                "bonbon-boxes"
-            ],
-            "seoTitle": "Salted Caramel Bonbons — a box of the classic | Sweet Tooth Co.",
-            "seoDescription": "Slow-cooked salted caramel in a snappy milk-chocolate shell with flaked sea salt. Boxes of 9, 16 or 24.",
-            "options": [
-                {
-                    "name": "Box size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "9 pieces"
-                        },
-                        {
-                            "value": "16 pieces"
-                        },
-                        {
-                            "value": "24 pieces"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-BON-CAR-9",
-                    "priceCents": 2300,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "9 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BON-CAR-16",
-                    "priceCents": 3900,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "16 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BON-CAR-24",
-                    "priceCents": 5500,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "24 pieces"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-caramel",
-                    "isPrimary": true,
-                    "alt": "Salted Caramel Bonbons"
-                }
-            ]
-        },
-        {
-            "handle": "dark-and-milk-mix",
-            "title": "Dark & Milk Mix Box",
-            "description": "The crowd-pleaser for a room full of different tastes. Half rich dark-chocolate bonbons, half creamy milk — a mix of ganaches, pralines and caramels so everyone finds their favourite. The safe bet that still feels special: perfect for an office, a dinner party, or a “bring something” Sunday.",
-            "status": "active",
-            "productType": "Chocolate box",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "bonbons",
-                "assortment",
-                "crowd-pleaser"
-            ],
-            "categoryHandles": [
-                "boxes"
-            ],
-            "collectionHandles": [
-                "bonbon-boxes",
-                "party-pleasers"
-            ],
-            "seoTitle": "Dark & Milk Mix Box — an assortment for everyone | Sweet Tooth Co.",
-            "seoDescription": "Half dark, half milk — ganaches, pralines and caramels so everyone finds a favourite. Boxes of 9, 16 or 24.",
-            "options": [
-                {
-                    "name": "Box size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "9 pieces"
-                        },
-                        {
-                            "value": "16 pieces"
-                        },
-                        {
-                            "value": "24 pieces"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-BON-MIX-9",
-                    "priceCents": 2100,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "9 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BON-MIX-16",
-                    "priceCents": 3600,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "16 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BON-MIX-24",
-                    "priceCents": 5000,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "24 pieces"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-darkmilk",
-                    "isPrimary": true,
-                    "alt": "Dark & Milk Mix Box"
-                }
-            ]
-        },
-        {
-            "handle": "build-your-own-box",
-            "title": "Build-Your-Own Box",
-            "description": "Pick the size, we make it your box. Choose from the full flavour list at checkout — or leave it to us for a “maker’s choice” of what’s tasting best — and we hand-fill it, box it, and add a card if it’s a gift. The most fun you can have without licking the tray, and the surest way to get exactly what you love.",
-            "status": "active",
-            "productType": "Chocolate box",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "build-your-own",
-                "custom",
-                "gift"
-            ],
-            "categoryHandles": [
-                "build-your-own"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "gifts-ready"
-            ],
-            "seoTitle": "Build-Your-Own Box — pick your chocolates | Sweet Tooth Co.",
-            "seoDescription": "Choose your size and your flavours and we hand-fill your box. Boxes of 9, 16 or 24, gift-ready.",
-            "options": [
-                {
-                    "name": "Box size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "9 pieces"
-                        },
-                        {
-                            "value": "16 pieces"
-                        },
-                        {
-                            "value": "24 pieces"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-BYO-9",
-                    "priceCents": 2400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "9 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BYO-16",
-                    "priceCents": 4100,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "16 pieces"
-                    }
-                },
-                {
-                    "sku": "STC-BYO-24",
-                    "priceCents": 5800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Box size": "24 pieces"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-byo",
-                    "isPrimary": true,
-                    "alt": "A build-your-own selection box being filled"
-                }
-            ]
-        },
-        {
-            "handle": "hot-cocoa-bombs",
-            "title": "Hot Cocoa Bombs",
-            "description": "The best bit of a winter evening: drop a bomb into a mug, pour over hot milk, and watch the shell melt open to spill cocoa and marshmallows into the cup. Each one is a hollow chocolate sphere packed with real drinking-chocolate and mini marshmallows. Comes as a set of three — Classic, Peppermint or Salted Caramel.",
-            "status": "active",
-            "productType": "Hot chocolate",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "cocoa-bombs",
-                "hot-chocolate",
-                "fun",
-                "best-seller"
-            ],
-            "categoryHandles": [
-                "gifts"
-            ],
-            "collectionHandles": [
-                "bestsellers",
-                "new-arrivals",
-                "little-treats"
-            ],
-            "seoTitle": "Hot Cocoa Bombs — melt-open hot chocolate spheres | Sweet Tooth Co.",
-            "seoDescription": "Hollow chocolate spheres packed with drinking chocolate and marshmallows. Classic, Peppermint or Salted Caramel — set of three.",
-            "options": [
-                {
-                    "name": "Flavour",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Classic"
-                        },
-                        {
-                            "value": "Peppermint"
-                        },
-                        {
-                            "value": "Salted caramel"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-BOMB-CL",
-                    "priceCents": 1800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Flavour": "Classic"
-                    }
-                },
-                {
-                    "sku": "STC-BOMB-PM",
-                    "priceCents": 1800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Flavour": "Peppermint"
-                    }
-                },
-                {
-                    "sku": "STC-BOMB-SC",
-                    "priceCents": 1900,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Flavour": "Salted caramel"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-cocoabombs",
-                    "isPrimary": true,
-                    "alt": "Three hot-cocoa bombs beside a mug"
-                }
-            ]
-        },
-        {
-            "handle": "chocolate-dipped-pretzels",
-            "title": "Chocolate-Dipped Pretzels",
-            "description": "Sweet, salty and impossible to stop at one. Crunchy pretzel rods dipped in thick chocolate and finished with a bright, playful drizzle and a scatter of sprinkles. A bag of ten, made to be shared (or not) — the snack that disappears fastest at every party we cater.",
-            "status": "active",
-            "productType": "Dipped treats",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "dipped",
-                "pretzels",
-                "snack",
-                "sweet-and-salty"
-            ],
-            "categoryHandles": [
-                "gifts"
-            ],
-            "collectionHandles": [
-                "little-treats",
-                "party-pleasers"
-            ],
-            "seoTitle": "Chocolate-Dipped Pretzels — sweet and salty | Sweet Tooth Co.",
-            "seoDescription": "Crunchy pretzel rods dipped in thick chocolate with a playful drizzle and sprinkles. A bag of ten.",
-            "options": [
-                {
-                    "name": "Chocolate",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "Milk"
-                        },
-                        {
-                            "value": "Dark"
-                        },
-                        {
-                            "value": "White drizzle"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-PRZ-MK",
-                    "priceCents": 1400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Chocolate": "Milk"
-                    }
-                },
-                {
-                    "sku": "STC-PRZ-DK",
-                    "priceCents": 1400,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Chocolate": "Dark"
-                    }
-                },
-                {
-                    "sku": "STC-PRZ-WH",
-                    "priceCents": 1400,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Chocolate": "White drizzle"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-pretzels",
-                    "isPrimary": true,
-                    "alt": "Chocolate-dipped pretzels with drizzle"
-                }
-            ]
-        },
-        {
-            "handle": "marshmallow-pops",
-            "title": "Chocolate Marshmallow Pops",
-            "description": "Big fluffy marshmallows on a stick, dunked in chocolate and rolled in colorful sprinkles — the treat that turns any table into a party and keeps small hands very happy. A set of six, each a different sprinkle. Fun to hand out, fun to hand over, gone in about a minute.",
-            "status": "active",
-            "productType": "Dipped treats",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "dipped",
-                "marshmallow",
-                "party",
-                "kids"
-            ],
-            "categoryHandles": [
-                "gifts"
-            ],
-            "collectionHandles": [
-                "little-treats",
-                "party-pleasers"
-            ],
-            "seoTitle": "Chocolate Marshmallow Pops — party treats on a stick | Sweet Tooth Co.",
-            "seoDescription": "Fluffy marshmallows dipped in chocolate and rolled in colorful sprinkles. A set of six.",
-            "variants": [
-                {
-                    "sku": "STC-MSH-POP",
-                    "priceCents": 1600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-marshmallow",
-                    "isPrimary": true,
-                    "alt": "Chocolate-dipped marshmallow pops with sprinkles"
-                }
-            ]
-        },
-        {
-            "handle": "birthday-gift-box",
-            "title": "The Birthday Box",
-            "description": "A birthday in a box, ready to send. A bright assortment of bonbons, a couple of marshmallow pops and a chocolate “Happy Birthday” plaque, packed in a confetti-lined keepsake box with a candle and a card you write at checkout. We do the wrapping; you take the credit.",
-            "status": "active",
-            "productType": "Gift box",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "gift",
-                "birthday",
-                "set"
-            ],
-            "categoryHandles": [
-                "gifts"
-            ],
-            "collectionHandles": [
-                "gifts-ready",
-                "bestsellers"
-            ],
-            "seoTitle": "The Birthday Box — a birthday of chocolate, ready to send | Sweet Tooth Co.",
-            "seoDescription": "Bonbons, marshmallow pops and a chocolate plaque in a confetti-lined box with a candle and a card.",
-            "variants": [
-                {
-                    "sku": "STC-GFT-BDY",
-                    "priceCents": 3800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-birthday",
-                    "isPrimary": true,
-                    "alt": "A birthday gift box of chocolates with a candle"
-                }
-            ]
-        },
-        {
-            "handle": "kids-treat-bundle",
-            "title": "Kids’ Treat Bundle",
-            "description": "Made for smaller sweet tooths (and the grown-ups who remember being one). Fun-shaped milk-chocolate treats, a couple of marshmallow pops and a mini hot-cocoa bomb, all in a colorful lunchbox-style tin they’ll keep afterwards. Nut-free and made to be shared — the after-school win or the party-bag upgrade.",
-            "status": "active",
-            "productType": "Gift box",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "gift",
-                "kids",
-                "nut-free",
-                "bundle"
-            ],
-            "categoryHandles": [
-                "gifts"
-            ],
-            "collectionHandles": [
-                "gifts-ready",
-                "little-treats"
-            ],
-            "seoTitle": "Kids’ Treat Bundle — fun-shaped chocolate in a keepsake tin | Sweet Tooth Co.",
-            "seoDescription": "Fun-shaped chocolates, marshmallow pops and a mini cocoa bomb in a colorful tin. Nut-free.",
-            "variants": [
-                {
-                    "sku": "STC-GFT-KIDS",
-                    "priceCents": 2600,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-kids",
-                    "isPrimary": true,
-                    "alt": "A kids treat bundle of fun-shaped chocolates"
-                }
-            ]
-        },
-        {
-            "handle": "subscription",
-            "title": "Treat Subscription",
-            "description": "A fresh box of bright, seasonal treats on your doorstep every month — a new mix each time, chosen from what’s tasting (and looking) best, with a note on what’s inside. Pick one box or two, and skip, swap or cancel any time. The easiest present to keep giving, including to yourself.",
-            "status": "active",
-            "productType": "Subscription",
-            "vendor": "Sweet Tooth Co.",
-            "tags": [
-                "subscription",
-                "gift"
-            ],
-            "categoryHandles": [
-                "subscription"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "gifts-ready",
-                "bestsellers"
-            ],
-            "seoTitle": "Treat Subscription — a fresh box of chocolate every month | Sweet Tooth Co.",
-            "seoDescription": "A flexible monthly treat subscription — a new seasonal mix each time; skip, swap or cancel any time.",
-            "options": [
-                {
-                    "name": "Plan",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "One box"
-                        },
-                        {
-                            "value": "Two boxes"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "STC-SUB-1",
-                    "priceCents": 2400,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Plan": "One box"
-                    }
-                },
-                {
-                    "sku": "STC-SUB-2",
-                    "priceCents": 4400,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Plan": "Two boxes"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "prod-subscription",
-                    "isPrimary": true,
-                    "alt": "A monthly treat subscription box"
-                }
-            ]
+          "assetId": "prod-rainbow",
+          "isPrimary": true,
+          "alt": "Rainbow Bonbon Box"
         }
-    ]
+      ]
+    },
+    {
+      "handle": "salted-caramel-bonbons",
+      "title": "Salted Caramel Bonbons",
+      "description": "For the caramel devotees. Slow-cooked salted caramel — properly dark, buttery and barely sweet — in a thin, snappy milk-chocolate shell with a flake of sea salt on top. The one flavour we can never make enough of, in a box of its own.",
+      "status": "active",
+      "productType": "Chocolate box",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["bonbons", "caramel", "sea-salt"],
+      "categoryHandles": ["boxes"],
+      "collectionHandles": ["bestsellers", "bonbon-boxes"],
+      "seoTitle": "Salted Caramel Bonbons — a box of the classic | Sweet Tooth Co.",
+      "seoDescription": "Slow-cooked salted caramel in a snappy milk-chocolate shell with flaked sea salt. Boxes of 9, 16 or 24.",
+      "options": [
+        {
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "9 pieces"
+            },
+            {
+              "value": "16 pieces"
+            },
+            {
+              "value": "24 pieces"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "STC-BON-CAR-9",
+          "priceCents": 2300,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "9 pieces"
+          }
+        },
+        {
+          "sku": "STC-BON-CAR-16",
+          "priceCents": 3900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "16 pieces"
+          }
+        },
+        {
+          "sku": "STC-BON-CAR-24",
+          "priceCents": 5500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "24 pieces"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-caramel",
+          "isPrimary": true,
+          "alt": "Salted Caramel Bonbons"
+        }
+      ]
+    },
+    {
+      "handle": "dark-and-milk-mix",
+      "title": "Dark & Milk Mix Box",
+      "description": "The crowd-pleaser for a room full of different tastes. Half rich dark-chocolate bonbons, half creamy milk — a mix of ganaches, pralines and caramels so everyone finds their favourite. The safe bet that still feels special: perfect for an office, a dinner party, or a “bring something” Sunday.",
+      "status": "active",
+      "productType": "Chocolate box",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["bonbons", "assortment", "crowd-pleaser"],
+      "categoryHandles": ["boxes"],
+      "collectionHandles": ["bonbon-boxes", "party-pleasers"],
+      "seoTitle": "Dark & Milk Mix Box — an assortment for everyone | Sweet Tooth Co.",
+      "seoDescription": "Half dark, half milk — ganaches, pralines and caramels so everyone finds a favourite. Boxes of 9, 16 or 24.",
+      "options": [
+        {
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "9 pieces"
+            },
+            {
+              "value": "16 pieces"
+            },
+            {
+              "value": "24 pieces"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "STC-BON-MIX-9",
+          "priceCents": 2100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "9 pieces"
+          }
+        },
+        {
+          "sku": "STC-BON-MIX-16",
+          "priceCents": 3600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "16 pieces"
+          }
+        },
+        {
+          "sku": "STC-BON-MIX-24",
+          "priceCents": 5000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "24 pieces"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-darkmilk",
+          "isPrimary": true,
+          "alt": "Dark & Milk Mix Box"
+        }
+      ]
+    },
+    {
+      "handle": "build-your-own-box",
+      "title": "Build-Your-Own Box",
+      "description": "Pick the size, we make it your box. Choose from the full flavour list at checkout — or leave it to us for a “maker’s choice” of what’s tasting best — and we hand-fill it, box it, and add a card if it’s a gift. The most fun you can have without licking the tray, and the surest way to get exactly what you love.",
+      "status": "active",
+      "productType": "Chocolate box",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["build-your-own", "custom", "gift"],
+      "categoryHandles": ["build-your-own"],
+      "collectionHandles": ["new-arrivals", "gifts-ready"],
+      "seoTitle": "Build-Your-Own Box — pick your chocolates | Sweet Tooth Co.",
+      "seoDescription": "Choose your size and your flavours and we hand-fill your box. Boxes of 9, 16 or 24, gift-ready.",
+      "options": [
+        {
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "9 pieces"
+            },
+            {
+              "value": "16 pieces"
+            },
+            {
+              "value": "24 pieces"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "STC-BYO-9",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "9 pieces"
+          }
+        },
+        {
+          "sku": "STC-BYO-16",
+          "priceCents": 4100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "16 pieces"
+          }
+        },
+        {
+          "sku": "STC-BYO-24",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "24 pieces"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-byo",
+          "isPrimary": true,
+          "alt": "A build-your-own selection box being filled"
+        }
+      ]
+    },
+    {
+      "handle": "hot-cocoa-bombs",
+      "title": "Hot Cocoa Bombs",
+      "description": "The best bit of a winter evening: drop a bomb into a mug, pour over hot milk, and watch the shell melt open to spill cocoa and marshmallows into the cup. Each one is a hollow chocolate sphere packed with real drinking-chocolate and mini marshmallows. Comes as a set of three — Classic, Peppermint or Salted Caramel.",
+      "status": "active",
+      "productType": "Hot chocolate",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["cocoa-bombs", "hot-chocolate", "fun", "best-seller"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["bestsellers", "new-arrivals", "little-treats"],
+      "seoTitle": "Hot Cocoa Bombs — melt-open hot chocolate spheres | Sweet Tooth Co.",
+      "seoDescription": "Hollow chocolate spheres packed with drinking chocolate and marshmallows. Classic, Peppermint or Salted Caramel — set of three.",
+      "options": [
+        {
+          "name": "Flavour",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Classic"
+            },
+            {
+              "value": "Peppermint"
+            },
+            {
+              "value": "Salted caramel"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "STC-BOMB-CL",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Classic"
+          }
+        },
+        {
+          "sku": "STC-BOMB-PM",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Peppermint"
+          }
+        },
+        {
+          "sku": "STC-BOMB-SC",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Salted caramel"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cocoabombs",
+          "isPrimary": true,
+          "alt": "Three hot-cocoa bombs beside a mug"
+        }
+      ]
+    },
+    {
+      "handle": "chocolate-dipped-pretzels",
+      "title": "Chocolate-Dipped Pretzels",
+      "description": "Sweet, salty and impossible to stop at one. Crunchy pretzel rods dipped in thick chocolate and finished with a bright, playful drizzle and a scatter of sprinkles. A bag of ten, made to be shared (or not) — the snack that disappears fastest at every party we cater.",
+      "status": "active",
+      "productType": "Dipped treats",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["dipped", "pretzels", "snack", "sweet-and-salty"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["little-treats", "party-pleasers"],
+      "seoTitle": "Chocolate-Dipped Pretzels — sweet and salty | Sweet Tooth Co.",
+      "seoDescription": "Crunchy pretzel rods dipped in thick chocolate with a playful drizzle and sprinkles. A bag of ten.",
+      "options": [
+        {
+          "name": "Chocolate",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Milk"
+            },
+            {
+              "value": "Dark"
+            },
+            {
+              "value": "White drizzle"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "STC-PRZ-MK",
+          "priceCents": 1400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Chocolate": "Milk"
+          }
+        },
+        {
+          "sku": "STC-PRZ-DK",
+          "priceCents": 1400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Chocolate": "Dark"
+          }
+        },
+        {
+          "sku": "STC-PRZ-WH",
+          "priceCents": 1400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Chocolate": "White drizzle"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-pretzels",
+          "isPrimary": true,
+          "alt": "Chocolate-dipped pretzels with drizzle"
+        }
+      ]
+    },
+    {
+      "handle": "marshmallow-pops",
+      "title": "Chocolate Marshmallow Pops",
+      "description": "Big fluffy marshmallows on a stick, dunked in chocolate and rolled in colorful sprinkles — the treat that turns any table into a party and keeps small hands very happy. A set of six, each a different sprinkle. Fun to hand out, fun to hand over, gone in about a minute.",
+      "status": "active",
+      "productType": "Dipped treats",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["dipped", "marshmallow", "party", "kids"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["little-treats", "party-pleasers"],
+      "seoTitle": "Chocolate Marshmallow Pops — party treats on a stick | Sweet Tooth Co.",
+      "seoDescription": "Fluffy marshmallows dipped in chocolate and rolled in colorful sprinkles. A set of six.",
+      "variants": [
+        {
+          "sku": "STC-MSH-POP",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-marshmallow",
+          "isPrimary": true,
+          "alt": "Chocolate-dipped marshmallow pops with sprinkles"
+        }
+      ]
+    },
+    {
+      "handle": "birthday-gift-box",
+      "title": "The Birthday Box",
+      "description": "A birthday in a box, ready to send. A bright assortment of bonbons, a couple of marshmallow pops and a chocolate “Happy Birthday” plaque, packed in a confetti-lined keepsake box with a candle and a card you write at checkout. We do the wrapping; you take the credit.",
+      "status": "active",
+      "productType": "Gift box",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["gift", "birthday", "set"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-ready", "bestsellers"],
+      "seoTitle": "The Birthday Box — a birthday of chocolate, ready to send | Sweet Tooth Co.",
+      "seoDescription": "Bonbons, marshmallow pops and a chocolate plaque in a confetti-lined box with a candle and a card.",
+      "variants": [
+        {
+          "sku": "STC-GFT-BDY",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-birthday",
+          "isPrimary": true,
+          "alt": "A birthday gift box of chocolates with a candle"
+        }
+      ]
+    },
+    {
+      "handle": "kids-treat-bundle",
+      "title": "Kids’ Treat Bundle",
+      "description": "Made for smaller sweet tooths (and the grown-ups who remember being one). Fun-shaped milk-chocolate treats, a couple of marshmallow pops and a mini hot-cocoa bomb, all in a colorful lunchbox-style tin they’ll keep afterwards. Nut-free and made to be shared — the after-school win or the party-bag upgrade.",
+      "status": "active",
+      "productType": "Gift box",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["gift", "kids", "nut-free", "bundle"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-ready", "little-treats"],
+      "seoTitle": "Kids’ Treat Bundle — fun-shaped chocolate in a keepsake tin | Sweet Tooth Co.",
+      "seoDescription": "Fun-shaped chocolates, marshmallow pops and a mini cocoa bomb in a colorful tin. Nut-free.",
+      "variants": [
+        {
+          "sku": "STC-GFT-KIDS",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-kids",
+          "isPrimary": true,
+          "alt": "A kids treat bundle of fun-shaped chocolates"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Treat Subscription",
+      "description": "A fresh box of bright, seasonal treats on your doorstep every month — a new mix each time, chosen from what’s tasting (and looking) best, with a note on what’s inside. Pick one box or two, and skip, swap or cancel any time. The easiest present to keep giving, including to yourself.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Sweet Tooth Co.",
+      "tags": ["subscription", "gift"],
+      "categoryHandles": ["subscription"],
+      "collectionHandles": ["new-arrivals", "gifts-ready", "bestsellers"],
+      "seoTitle": "Treat Subscription — a fresh box of chocolate every month | Sweet Tooth Co.",
+      "seoDescription": "A flexible monthly treat subscription — a new seasonal mix each time; skip, swap or cancel any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One box"
+            },
+            {
+              "value": "Two boxes"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "STC-SUB-1",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "One box"
+          }
+        },
+        {
+          "sku": "STC-SUB-2",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Two boxes"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A monthly treat subscription box"
+        }
+      ]
+    }
+  ]
 }

@@ -7,7 +7,7 @@ The point: a UI rubric catches "is it on-system and well-composed"; the UX heuri
 
 > **SUPERSEDED (2026-08-01).** This skill wires a form in `apps/dashboard`, which no longer
 > exists, using `SurfaceFrame` / the detail-view registries, which have been deleted from
-> `@sparx/ui`. Do not follow the procedure below. Building a surface in the flagship app is
+> `@wizeworks/ui`. Do not follow the procedure below. Building a surface in the flagship app is
 > the `workbench-surface` agent + [docs/123-workbench.md](<../../../docs/123-workbench.md>);
 > its pane-vs-modal rule replaces the drawer/modal/full-page choice described here. The
 > three-registries footgun is retained only as a lesson about keeping wiring in one place.
@@ -41,7 +41,7 @@ The agent returns the report to the main thread; the human review + fix happen h
 
 ## UI rubric — 5 axes → one composite 1–10
 
-1. **System fidelity** — tokens/variants only (no hardcoded color, no re-skinned controls — docs/23 §1/§15, docs/35). Components from `@sparx/ui`. Module accent via `--module-active`. **Status pills carry a semantic color** via `statusTone()` (docs/35 §9) — a neutral/outline pill where a tone applies (active/draft/paid/failed…) is a deduction; so is a hand-rolled `<span>` pill or `className="text-xs"` instead of `size`.
+1. **System fidelity** — tokens/variants only (no hardcoded color, no re-skinned controls — docs/23 §1/§15, docs/35). Components from `@wizeworks/ui`. Module accent via `--module-active`. **Status pills carry a semantic color** via `statusTone()` (docs/35 §9) — a neutral/outline pill where a tone applies (active/draft/paid/failed…) is a deduction; so is a hand-rolled `<span>` pill or `className="text-xs"` instead of `size`.
 2. **Layout & hierarchy** — the right shell (SurfaceFrame F-layout for forms; no double header, no in-card footer toolbar, no dead side gutters, no vertical void). One heading hierarchy, **no eyebrows**. A complex **tabbed record** (product, customer, B2B) carries a full-height **context rail** beside the tabs — a non-editable summary of its vitals (docs/86 §5.2) — that **fills its column edge-to-edge, not floats as a card**; the body renders full-bleed so the two-pane fills and Save **floors** below the scroll (a footer overlapping the form, or a summary that doesn't fill its column, is a deduction).
 3. **Interaction clarity & safety** — primary action obvious (`color="module"`); **Cancel is the leftmost toolbar anchor**, same place every surface; destructive action in the toolbar's `destructive` slot (after Cancel, danger-styled, never beside the primary, never in the summary aside); loading/disabled/error states present. **Lifecycle controls (status badge + Publish/Archive/Preview/…) live in the frame header** via `DetailHeaderSlot` (docs/86 §5.1), never a bespoke in-body "Status" card — and in the header secondary actions are **icon-only with a tooltip**, only the status badge + primary action keep text.
 4. **Responsive** — the container-query collapse works (two-col → one-col stack); usable on mobile; no viewport media-query hacks fighting the frame.

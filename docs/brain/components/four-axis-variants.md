@@ -6,8 +6,8 @@ status: active
 applies-to: [dashboard]
 sources:
   - docs/35-ui-variant-system.md
-  - packages/ui/CLAUDE.md
-  - packages/brand/src/theme.css
+  - sparx/packages/ui/CLAUDE.md
+  - sparx/packages/brand/src/theme.css
 ---
 
 Every color-bearing control is **four orthogonal axes: `color × variant × size × shape`** — never a flat enum.
@@ -16,7 +16,7 @@ Every color-bearing control is **four orthogonal axes: `color × variant × size
 - **`variant`** is the treatment: `solid | soft | outline | dashed | ghost | link`. It answers *how loud?*
 - They are **separate** — `primary` is a color, not a variant. `<Badge color="success" variant="soft">` is a legal combination precisely because they're independent.
 
-Resolution is **silicaui's Tailwind-plugin classes**: `<Button color variant size>` → `btn btn-<color> btn-<variant> btn-<size>` (silica spells `dashed` as `btn-dash`). The plugin emits every color × treatment class from the `@sparx/brand/theme.css` tokens, so runtime/custom/tenant colors work with **no rebuild**. This holds for the selection controls too: Checkbox/Radio/Switch/Slider/Progress are imported from `@wizeworks/silicaui-react` and take `checkbox-<color>` / `switch-<color>` / … directly. (They were briefly hand-rolled on Radix in `@sparx/ui`, where a plugin color class can't attach, and drove their accent off a per-instance `--sx-sel` custom property — deleted 2026-07-31 along with `colorVars()`.) A tint is always `<color> + soft` (`bg-<color> bg-soft`) — never a baked value.
+Resolution is **silicaui's Tailwind-plugin classes**: `<Button color variant size>` → `btn btn-<color> btn-<variant> btn-<size>` (silica spells `dashed` as `btn-dash`). The plugin emits every color × treatment class from the `@sparx/brand/theme.css` tokens, so runtime/custom/tenant colors work with **no rebuild**. This holds for the selection controls too: Checkbox/Radio/Switch/Slider/Progress are imported from `@wizeworks/silicaui-react` and take `checkbox-<color>` / `switch-<color>` / … directly. (They were briefly hand-rolled on Radix in `@wizeworks/ui`, where a plugin color class can't attach, and drove their accent off a per-instance `--sx-sel` custom property — deleted 2026-07-31 along with `colorVars()`.) A tint is always `<color> + soft` (`bg-<color> bg-soft`) — never a baked value.
 
 **Why:** a flat `variant="primary"` enum can't express "soft success" without a combinatorial explosion or a hardcoded hex. The four-axis recipe is why any hue works in any treatment.
 

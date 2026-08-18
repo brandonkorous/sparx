@@ -9,7 +9,7 @@
 import { Field, FieldDescription, FieldLabel, NativeSelect } from '@wizeworks/silicaui-react';
 import type { PageDoc } from '@wizeworks/studio';
 import { useApply } from '@wizeworks/studio/react';
-import { useProductTypeChoices } from '../builder/studio/data';
+import { useProductTypeChoices } from '../../lib/studio/site-data';
 
 /** What one record of this type is called, in the words a shop owner uses. */
 const RECORD_LABELS: Record<string, string> = {

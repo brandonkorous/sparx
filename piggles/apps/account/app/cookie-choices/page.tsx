@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { requireSession } from '@sparx/auth';
+import { requireSession } from '@wizeworks/auth';
 import { safeInternalPath, PRODUCT } from '@piggles/config';
 import { AuthShell } from '@/components/auth-shell';
 import { ConsentChoice } from '@/components/consent-choice';

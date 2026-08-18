@@ -1,1912 +1,1747 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "dresses",
+      "name": "Dresses",
+      "description": "Mini, midi and maxi — the going-out rail.",
+      "featured": true
+    },
+    {
+      "handle": "tops",
+      "name": "Tops",
+      "description": "Camis, tees, corsets and everything under a jacket.",
+      "featured": true
+    },
+    {
+      "handle": "denim",
+      "name": "Jeans & Bottoms",
+      "description": "Wide-leg denim, cargos and skirts.",
+      "featured": true
+    },
+    {
+      "handle": "sets",
+      "name": "Sets & Rompers",
+      "description": "Two pieces, one decision — matching sets and jumpsuits.",
+      "featured": false
+    },
+    {
+      "handle": "swim",
+      "name": "Swim",
+      "description": "Bikinis and one-pieces, vacation-ready.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "The finishing pieces — bags and shades.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New Arrivals",
+      "description": "This week’s freshest drops, across every rail.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "halston-cutout-mini-dress",
+        "rib-knit-cami-3-pack",
+        "oversized-graphic-tee",
+        "high-rise-wide-leg-jean",
+        "faux-leather-mini-skirt",
+        "ribbed-lounge-set",
+        "ring-detail-string-bikini",
+        "oversized-shield-sunglasses"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best Sellers",
+      "description": "The styles that keep selling out and coming back.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "coastline-satin-maxi",
+        "bandage-bodycon-midi",
+        "rib-knit-cami-3-pack",
+        "high-rise-wide-leg-jean",
+        "cargo-parachute-pant",
+        "ribbed-lounge-set",
+        "one-shoulder-one-piece",
+        "quilted-shoulder-bag"
+      ]
+    },
+    {
+      "handle": "the-edit",
+      "name": "The Edit",
+      "description": "The going-out edit — the pieces the team is styling right now.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "halston-cutout-mini-dress",
+        "coastline-satin-maxi",
+        "corset-bustier-top",
+        "blazer-short-suit-set",
+        "strapless-wide-leg-jumpsuit"
+      ]
+    },
+    {
+      "handle": "denim-reset",
+      "name": "Denim Reset",
+      "description": "Wide-leg, cargo and everything to build around them.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "high-rise-wide-leg-jean",
+        "cargo-parachute-pant",
+        "faux-leather-mini-skirt"
+      ]
+    },
+    {
+      "handle": "sale",
+      "name": "Sale — 60-80% Off",
+      "description": "The final rail. Prices as marked, while sizes last.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "halston-cutout-mini-dress",
+        "coastline-satin-maxi",
+        "bandage-bodycon-midi",
+        "oversized-graphic-tee",
+        "corset-bustier-top",
+        "cargo-parachute-pant",
+        "blazer-short-suit-set",
+        "strapless-wide-leg-jumpsuit",
+        "ring-detail-string-bikini",
+        "quilted-shoulder-bag"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "halston-cutout-mini-dress",
+      "title": "Halston Cutout Mini Dress",
+      "description": "A body-skimming mini in a stretch-crepe that holds its shape, with a sharp waist cutout and a hidden back zip. The one you reach for when the night is a maybe and the answer needs to be yes.",
+      "status": "active",
+      "productType": "Dress",
+      "vendor": "Voltage",
+      "tags": ["dress", "mini", "going-out", "sale"],
+      "categoryHandles": ["dresses"],
+      "collectionHandles": ["new-arrivals", "the-edit", "sale"],
+      "seoTitle": "Halston Cutout Mini Dress — stretch-crepe going-out mini",
+      "seoDescription": "A stretch-crepe cutout mini dress with a sharp waist and hidden zip. Was $44.99, now $30.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A stretch-crepe that holds its shape through a night out, cut close to the body with a sharp waist cutout and a hidden back zip. Lined through the skirt so it never turns sheer under a phone light.",
+        "fit": "A body-skimming mini, true to size with a little stretch; between sizes and want room at dinner, size up. Hits mid-thigh on most.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
+        "materials": [
+          {
+            "name": "Polyester",
+            "percent": "92%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "8%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
         {
-            "handle": "dresses",
-            "name": "Dresses",
-            "description": "Mini, midi and maxi — the going-out rail.",
-            "featured": true
-        },
-        {
-            "handle": "tops",
-            "name": "Tops",
-            "description": "Camis, tees, corsets and everything under a jacket.",
-            "featured": true
-        },
-        {
-            "handle": "denim",
-            "name": "Jeans & Bottoms",
-            "description": "Wide-leg denim, cargos and skirts.",
-            "featured": true
-        },
-        {
-            "handle": "sets",
-            "name": "Sets & Rompers",
-            "description": "Two pieces, one decision — matching sets and jumpsuits.",
-            "featured": false
-        },
-        {
-            "handle": "swim",
-            "name": "Swim",
-            "description": "Bikinis and one-pieces, vacation-ready.",
-            "featured": true
-        },
-        {
-            "handle": "accessories",
-            "name": "Accessories",
-            "description": "The finishing pieces — bags and shades.",
-            "featured": false
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
         }
-    ],
-    "collections": [
+      ],
+      "variants": [
         {
-            "handle": "new-arrivals",
-            "name": "New Arrivals",
-            "description": "This week’s freshest drops, across every rail.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "halston-cutout-mini-dress",
-                "rib-knit-cami-3-pack",
-                "oversized-graphic-tee",
-                "high-rise-wide-leg-jean",
-                "faux-leather-mini-skirt",
-                "ribbed-lounge-set",
-                "ring-detail-string-bikini",
-                "oversized-shield-sunglasses"
-            ]
+          "sku": "VLT-HALSTON-XS",
+          "priceCents": 3099,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
         },
         {
-            "handle": "best-sellers",
-            "name": "Best Sellers",
-            "description": "The styles that keep selling out and coming back.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "coastline-satin-maxi",
-                "bandage-bodycon-midi",
-                "rib-knit-cami-3-pack",
-                "high-rise-wide-leg-jean",
-                "cargo-parachute-pant",
-                "ribbed-lounge-set",
-                "one-shoulder-one-piece",
-                "quilted-shoulder-bag"
-            ]
+          "sku": "VLT-HALSTON-S",
+          "priceCents": 3099,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
         },
         {
-            "handle": "the-edit",
-            "name": "The Edit",
-            "description": "The going-out edit — the pieces the team is styling right now.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "halston-cutout-mini-dress",
-                "coastline-satin-maxi",
-                "corset-bustier-top",
-                "blazer-short-suit-set",
-                "strapless-wide-leg-jumpsuit"
-            ]
+          "sku": "VLT-HALSTON-M",
+          "priceCents": 3099,
+          "compareAtPriceCents": 4499,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
         },
         {
-            "handle": "denim-reset",
-            "name": "Denim Reset",
-            "description": "Wide-leg, cargo and everything to build around them.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "high-rise-wide-leg-jean",
-                "cargo-parachute-pant",
-                "faux-leather-mini-skirt"
-            ]
+          "sku": "VLT-HALSTON-L",
+          "priceCents": 3099,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
         },
         {
-            "handle": "sale",
-            "name": "Sale — 60-80% Off",
-            "description": "The final rail. Prices as marked, while sizes last.",
-            "type": "manual",
-            "featured": false,
-            "productHandles": [
-                "halston-cutout-mini-dress",
-                "coastline-satin-maxi",
-                "bandage-bodycon-midi",
-                "oversized-graphic-tee",
-                "corset-bustier-top",
-                "cargo-parachute-pant",
-                "blazer-short-suit-set",
-                "strapless-wide-leg-jumpsuit",
-                "ring-detail-string-bikini",
-                "quilted-shoulder-bag"
-            ]
+          "sku": "VLT-HALSTON-XL",
+          "priceCents": 3099,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
         }
-    ],
-    "products": [
+      ],
+      "images": [
         {
-            "handle": "halston-cutout-mini-dress",
-            "title": "Halston Cutout Mini Dress",
-            "description": "A body-skimming mini in a stretch-crepe that holds its shape, with a sharp waist cutout and a hidden back zip. The one you reach for when the night is a maybe and the answer needs to be yes.",
-            "status": "active",
-            "productType": "Dress",
-            "vendor": "Voltage",
-            "tags": [
-                "dress",
-                "mini",
-                "going-out",
-                "sale"
-            ],
-            "categoryHandles": [
-                "dresses"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "the-edit",
-                "sale"
-            ],
-            "seoTitle": "Halston Cutout Mini Dress — stretch-crepe going-out mini",
-            "seoDescription": "A stretch-crepe cutout mini dress with a sharp waist and hidden zip. Was $44.99, now $30.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A stretch-crepe that holds its shape through a night out, cut close to the body with a sharp waist cutout and a hidden back zip. Lined through the skirt so it never turns sheer under a phone light.",
-                "fit": "A body-skimming mini, true to size with a little stretch; between sizes and want room at dinner, size up. Hits mid-thigh on most.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
-                "materials": [
-                    {
-                        "name": "Polyester",
-                        "percent": "92%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "8%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-HALSTON-XS",
-                    "priceCents": 3099,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-HALSTON-S",
-                    "priceCents": 3099,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-HALSTON-M",
-                    "priceCents": 3099,
-                    "compareAtPriceCents": 4499,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-HALSTON-L",
-                    "priceCents": 3099,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-HALSTON-XL",
-                    "priceCents": 3099,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "halston-cutout-mini",
-                    "isPrimary": true,
-                    "alt": "The Halston Cutout Mini Dress"
-                }
-            ]
-        },
-        {
-            "handle": "coastline-satin-maxi",
-            "title": "Coastline Satin Maxi",
-            "description": "A liquid-satin maxi that pours to the floor with a thigh-high slit and a cowl back. Weighted so it moves with you and not against you — dinner, a wedding, or a very good Tuesday.",
-            "status": "active",
-            "productType": "Dress",
-            "vendor": "Voltage",
-            "tags": [
-                "dress",
-                "maxi",
-                "satin",
-                "sale"
-            ],
-            "categoryHandles": [
-                "dresses"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "the-edit",
-                "sale"
-            ],
-            "seoTitle": "Coastline Satin Maxi — slit satin maxi dress",
-            "seoDescription": "A liquid-satin maxi dress with a thigh-high slit and cowl back. Was $59.99, now $38.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A liquid satin with enough weight to pour to the floor rather than cling, with a thigh-high slit and a cowl back. Bias-cut so it moves with you and skims rather than grips.",
-                "fit": "A long, fluid maxi, true to size; the slit and the bias cut do the shaping. Cut for a heel — check the length against your shoes before the big night.",
-                "care": "Cold hand-wash, or a delicate machine cycle in a bag, inside out; hang to dry and never tumble, which pills satin. A cool iron on the reverse takes out a travel crease.",
-                "materials": [
-                    {
-                        "name": "Polyester",
-                        "percent": "95%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "5%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-COASTLINE-XS",
-                    "priceCents": 3899,
-                    "compareAtPriceCents": 5999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-COASTLINE-S",
-                    "priceCents": 3899,
-                    "compareAtPriceCents": 5999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-COASTLINE-M",
-                    "priceCents": 3899,
-                    "compareAtPriceCents": 5999,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-COASTLINE-L",
-                    "priceCents": 3899,
-                    "compareAtPriceCents": 5999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-COASTLINE-XL",
-                    "priceCents": 3899,
-                    "compareAtPriceCents": 5999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "coastline-satin-maxi",
-                    "isPrimary": true,
-                    "alt": "The Coastline Satin Maxi"
-                }
-            ]
-        },
-        {
-            "handle": "bandage-bodycon-midi",
-            "title": "Bandage Bodycon Midi",
-            "description": "A sculpting bandage-knit midi that pulls everything in and lets nothing go. High neck, banded hem, and enough stretch to sit through dinner and still dance after.",
-            "status": "active",
-            "productType": "Dress",
-            "vendor": "Voltage",
-            "tags": [
-                "dress",
-                "midi",
-                "bodycon",
-                "sale"
-            ],
-            "categoryHandles": [
-                "dresses"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "sale"
-            ],
-            "seoTitle": "Bandage Bodycon Midi — sculpting bandage-knit midi dress",
-            "seoDescription": "A sculpting high-neck bandage-knit midi dress. Was $39.99, now $27.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A dense bandage knit that sculpts and smooths, with a high neck and a banded hem that stays put. Enough stretch to sit through dinner and dance after.",
-                "fit": "A sculpting bandage-knit midi that pulls in and holds; runs snug by design, so size up if you want less compression. High neck, banded hem.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
-                "materials": [
-                    {
-                        "name": "Nylon",
-                        "percent": "90%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "10%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-BANDAGE-XS",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-BANDAGE-S",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-BANDAGE-M",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-BANDAGE-L",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-BANDAGE-XL",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "bandage-bodycon-midi",
-                    "isPrimary": true,
-                    "alt": "The Bandage Bodycon Midi"
-                }
-            ]
-        },
-        {
-            "handle": "rib-knit-cami-3-pack",
-            "title": "Rib-Knit Cami 3-Pack",
-            "description": "Three of the cami you already wear to death — a stretch rib that hugs without gripping, in the neutrals that go under everything. Buy the pack, stop doing laundry on a deadline.",
-            "status": "active",
-            "productType": "Top",
-            "vendor": "Voltage",
-            "tags": [
-                "top",
-                "cami",
-                "basics",
-                "sale"
-            ],
-            "categoryHandles": [
-                "tops"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "best-sellers",
-                "sale"
-            ],
-            "seoTitle": "Rib-Knit Cami 3-Pack — stretch rib camisole set",
-            "seoDescription": "Three stretch rib-knit cami tops in everyday neutrals. Was $28.99, now $19.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A stretch rib that hugs the body without gripping, in the neutral tones that go under everything. A slim adjustable strap and a clean neckline; three to a pack so the laundry never catches you out.",
-                "fit": "A close rib that hugs without gripping; true to size and stretches to fit. Three per pack in everyday neutrals.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
-                "materials": [
-                    {
-                        "name": "Viscose",
-                        "percent": "62%"
-                    },
-                    {
-                        "name": "Nylon",
-                        "percent": "33%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "5%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-CAMI-XS",
-                    "priceCents": 1999,
-                    "compareAtPriceCents": 2899,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-CAMI-S",
-                    "priceCents": 1999,
-                    "compareAtPriceCents": 2899,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-CAMI-M",
-                    "priceCents": 1999,
-                    "compareAtPriceCents": 2899,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-CAMI-L",
-                    "priceCents": 1999,
-                    "compareAtPriceCents": 2899,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-CAMI-XL",
-                    "priceCents": 1999,
-                    "compareAtPriceCents": 2899,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "rib-knit-cami-3-pack",
-                    "isPrimary": true,
-                    "alt": "The Rib-Knit Cami 3-Pack"
-                }
-            ]
-        },
-        {
-            "handle": "oversized-graphic-tee",
-            "title": "Oversized Graphic Tee",
-            "description": "A drop-shoulder cotton tee cut big on purpose, with a soft-hand print that survives the wash. Knot it, tuck it, or let it hang over the cargos — it works every way you throw it on.",
-            "status": "active",
-            "productType": "Top",
-            "vendor": "Voltage",
-            "tags": [
-                "top",
-                "tee",
-                "graphic",
-                "sale"
-            ],
-            "categoryHandles": [
-                "tops"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "sale"
-            ],
-            "seoTitle": "Oversized Graphic Tee — drop-shoulder cotton graphic tee",
-            "seoDescription": "An oversized drop-shoulder cotton graphic tee with a soft-hand print. Was $24.99, now $16.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A drop-shoulder cotton jersey cut big on purpose, with a soft-hand print that survives the wash rather than cracking off it. Heavy enough not to go see-through.",
-                "fit": "Cut oversized on purpose with a dropped shoulder; size down for a closer fit, keep your size for the intended slouch. Long enough to knot or tuck.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
-                "materials": [
-                    {
-                        "name": "Cotton",
-                        "percent": "100%"
-                    }
-                ],
-                "origin": "Made in Bangladesh"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-GRAPHTEE-XS",
-                    "priceCents": 1699,
-                    "compareAtPriceCents": 2499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-GRAPHTEE-S",
-                    "priceCents": 1699,
-                    "compareAtPriceCents": 2499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-GRAPHTEE-M",
-                    "priceCents": 1699,
-                    "compareAtPriceCents": 2499,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-GRAPHTEE-L",
-                    "priceCents": 1699,
-                    "compareAtPriceCents": 2499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-GRAPHTEE-XL",
-                    "priceCents": 1699,
-                    "compareAtPriceCents": 2499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "oversized-graphic-tee",
-                    "isPrimary": true,
-                    "alt": "The Oversized Graphic Tee"
-                }
-            ]
-        },
-        {
-            "handle": "corset-bustier-top",
-            "title": "Corset Bustier Top",
-            "description": "A structured bustier with real boning and a hook-and-eye front that holds its line all night. Wear it with the wide-leg jean and a blazer, or just the blazer.",
-            "status": "active",
-            "productType": "Top",
-            "vendor": "Voltage",
-            "tags": [
-                "top",
-                "corset",
-                "going-out",
-                "sale"
-            ],
-            "categoryHandles": [
-                "tops"
-            ],
-            "collectionHandles": [
-                "the-edit",
-                "sale"
-            ],
-            "seoTitle": "Corset Bustier Top — boned hook-front bustier",
-            "seoDescription": "A structured boned corset bustier top with a hook-and-eye front. Was $34.99, now $22.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A structured bodice with real boning and a hook-and-eye front that holds its line all night, in a firm woven with a touch of stretch. Fully lined, with a clean top edge.",
-                "fit": "A structured, boned bustier that holds its line; true to size but firm — size up for comfort over a long night. Best with the wide-leg jean, or under a blazer.",
-                "care": "Cold hand-wash and hang to dry to protect the boning; do not tumble, wring or hot-iron. Spot-clean between wears rather than washing every time.",
-                "materials": [
-                    {
-                        "name": "Polyester",
-                        "percent": "88%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "8%"
-                    },
-                    {
-                        "name": "Boning",
-                        "percent": "4%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-CORSET-XS",
-                    "priceCents": 2299,
-                    "compareAtPriceCents": 3499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-CORSET-S",
-                    "priceCents": 2299,
-                    "compareAtPriceCents": 3499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-CORSET-M",
-                    "priceCents": 2299,
-                    "compareAtPriceCents": 3499,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-CORSET-L",
-                    "priceCents": 2299,
-                    "compareAtPriceCents": 3499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-CORSET-XL",
-                    "priceCents": 2299,
-                    "compareAtPriceCents": 3499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "corset-bustier-top",
-                    "isPrimary": true,
-                    "alt": "The Corset Bustier Top"
-                }
-            ]
-        },
-        {
-            "handle": "high-rise-wide-leg-jean",
-            "title": "High-Rise Wide-Leg Jean",
-            "description": "A rigid-with-a-little-give denim cut high on the waist and wide all the way down, so it lengthens the leg and forgives the lunch. The pair the whole outfit gets built around.",
-            "status": "active",
-            "productType": "Jeans",
-            "vendor": "Voltage",
-            "tags": [
-                "denim",
-                "jeans",
-                "wide-leg",
-                "sale"
-            ],
-            "categoryHandles": [
-                "denim"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "best-sellers",
-                "denim-reset",
-                "sale"
-            ],
-            "seoTitle": "High-Rise Wide-Leg Jean — high-waist wide-leg denim",
-            "seoDescription": "A high-rise wide-leg jean in rigid-give denim that lengthens the leg. Was $49.99, now $34.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A rigid-with-a-little-give denim cut high on the waist and wide to the floor, so it lengthens the leg and forgives the lunch. Proper five-pocket construction with a button fly.",
-                "fit": "High on the waist and wide all the way down; true to size at the waist, long in the leg — hem it or wear a heel. Rigid with a little give, so it holds its shape.",
-                "care": "Wash cold inside out with like colors and hang to dry — the less you wash denim, the longer the color lasts. A cool iron on the reverse if you like it crisp; skip the tumble dryer, which sets the creases in.",
-                "materials": [
-                    {
-                        "name": "Cotton",
-                        "percent": "99%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "1%"
-                    }
-                ],
-                "origin": "Made in Bangladesh"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-WIDEJEAN-XS",
-                    "priceCents": 3499,
-                    "compareAtPriceCents": 4999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-WIDEJEAN-S",
-                    "priceCents": 3499,
-                    "compareAtPriceCents": 4999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-WIDEJEAN-M",
-                    "priceCents": 3499,
-                    "compareAtPriceCents": 4999,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-WIDEJEAN-L",
-                    "priceCents": 3499,
-                    "compareAtPriceCents": 4999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-WIDEJEAN-XL",
-                    "priceCents": 3499,
-                    "compareAtPriceCents": 4999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "high-rise-wide-leg-jean",
-                    "isPrimary": true,
-                    "alt": "The High-Rise Wide-Leg Jean"
-                }
-            ]
-        },
-        {
-            "handle": "cargo-parachute-pant",
-            "title": "Cargo Parachute Pant",
-            "description": "A lightweight parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be — the easy win on a getting-dressed-fast morning.",
-            "status": "active",
-            "productType": "Pants",
-            "vendor": "Voltage",
-            "tags": [
-                "bottoms",
-                "cargo",
-                "parachute",
-                "sale"
-            ],
-            "categoryHandles": [
-                "denim"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "denim-reset",
-                "sale"
-            ],
-            "seoTitle": "Cargo Parachute Pant — cinch-hem utility cargo",
-            "seoDescription": "A lightweight cinch-hem parachute cargo pant with real pockets. Was $48.00, now $32.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A lightweight nylon parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be.",
-                "fit": "Baggy through the leg with cinch-cord hems to tune the volume; true to size, sits high. Wear them puddled or cinched at the ankle.",
-                "care": "Machine wash cold on a gentle cycle and hang to dry; the nylon barely creases and dries fast. Skip the tumble dryer, which can shrink the cord channels.",
-                "materials": [
-                    {
-                        "name": "Nylon",
-                        "percent": "100%"
-                    }
-                ],
-                "origin": "Made in Vietnam"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-CARGO-XS",
-                    "priceCents": 3299,
-                    "compareAtPriceCents": 4800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-CARGO-S",
-                    "priceCents": 3299,
-                    "compareAtPriceCents": 4800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-CARGO-M",
-                    "priceCents": 3299,
-                    "compareAtPriceCents": 4800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-CARGO-L",
-                    "priceCents": 3299,
-                    "compareAtPriceCents": 4800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-CARGO-XL",
-                    "priceCents": 3299,
-                    "compareAtPriceCents": 4800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "cargo-parachute-pant",
-                    "isPrimary": true,
-                    "alt": "The Cargo Parachute Pant"
-                }
-            ]
-        },
-        {
-            "handle": "faux-leather-mini-skirt",
-            "title": "Faux-Leather Mini Skirt",
-            "description": "A matte faux-leather mini with a hidden stretch panel so it moves like fabric, not armour. Off to the office with tights, out at night with the corset — one skirt, two lives.",
-            "status": "active",
-            "productType": "Skirt",
-            "vendor": "Voltage",
-            "tags": [
-                "bottoms",
-                "skirt",
-                "faux-leather",
-                "sale"
-            ],
-            "categoryHandles": [
-                "denim"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "sale"
-            ],
-            "seoTitle": "Faux-Leather Mini Skirt — matte stretch-panel mini",
-            "seoDescription": "A matte faux-leather mini skirt with a hidden stretch panel. Was $32.99, now $21.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A matte faux-leather face over a hidden stretch panel, so it moves like fabric rather than armour. Lined, with a clean waistband and an invisible side zip.",
-                "fit": "A close mini with a hidden stretch panel so it moves with you; true to size, sits high on the waist. Tights in winter, bare in summer.",
-                "care": "Wipe the faux-leather clean with a damp cloth; do not machine-wash, tumble or iron the coated face. Hang it rather than folding, so it does not crease at the seat.",
-                "materials": [
-                    {
-                        "name": "Polyurethane",
-                        "percent": "88%"
-                    },
-                    {
-                        "name": "Polyester",
-                        "percent": "10%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "2%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-MINISKIRT-XS",
-                    "priceCents": 2199,
-                    "compareAtPriceCents": 3299,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-MINISKIRT-S",
-                    "priceCents": 2199,
-                    "compareAtPriceCents": 3299,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-MINISKIRT-M",
-                    "priceCents": 2199,
-                    "compareAtPriceCents": 3299,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-MINISKIRT-L",
-                    "priceCents": 2199,
-                    "compareAtPriceCents": 3299,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-MINISKIRT-XL",
-                    "priceCents": 2199,
-                    "compareAtPriceCents": 3299,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "faux-leather-mini-skirt",
-                    "isPrimary": true,
-                    "alt": "The Faux-Leather Mini Skirt"
-                }
-            ]
-        },
-        {
-            "handle": "ribbed-lounge-set",
-            "title": "Ribbed Lounge Set",
-            "description": "A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. Buy it together, split it up forever.",
-            "status": "active",
-            "productType": "Matching set",
-            "vendor": "Voltage",
-            "tags": [
-                "set",
-                "loungewear",
-                "ribbed",
-                "sale"
-            ],
-            "categoryHandles": [
-                "sets"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "best-sellers",
-                "sale"
-            ],
-            "seoTitle": "Ribbed Lounge Set — matching rib-knit lounge set",
-            "seoDescription": "A matching rib-knit lounge set: fitted long-sleeve and high-waist flare. Was $44.99, now $29.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. The rib holds its shape wash after wash.",
-                "fit": "A fitted long-sleeve and a high-waist flare, close through the body and relaxed through the leg; true to size. Buy it as a set, wear the halves apart.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
-                "materials": [
-                    {
-                        "name": "Cotton",
-                        "percent": "65%"
-                    },
-                    {
-                        "name": "Polyester",
-                        "percent": "30%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "5%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-LOUNGE-XS",
-                    "priceCents": 2999,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-LOUNGE-S",
-                    "priceCents": 2999,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-LOUNGE-M",
-                    "priceCents": 2999,
-                    "compareAtPriceCents": 4499,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-LOUNGE-L",
-                    "priceCents": 2999,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-LOUNGE-XL",
-                    "priceCents": 2999,
-                    "compareAtPriceCents": 4499,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "ribbed-lounge-set",
-                    "isPrimary": true,
-                    "alt": "The Ribbed Lounge Set"
-                }
-            ]
-        },
-        {
-            "handle": "blazer-short-suit-set",
-            "title": "Blazer + Short Suit Set",
-            "description": "A tailored two-piece — a structured single-button blazer and a matching high-waist short — in a crease-resistant suiting that reads expensive and packs like nothing. The whole look, one add-to-bag.",
-            "status": "active",
-            "productType": "Matching set",
-            "vendor": "Voltage",
-            "tags": [
-                "set",
-                "suit",
-                "tailored",
-                "sale"
-            ],
-            "categoryHandles": [
-                "sets"
-            ],
-            "collectionHandles": [
-                "the-edit",
-                "sale"
-            ],
-            "seoTitle": "Blazer + Short Suit Set — tailored blazer and short two-piece",
-            "seoDescription": "A tailored blazer and matching high-waist short suit set in crease-resistant suiting. Was $79.99, now $54.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A crease-resistant suiting that reads expensive and packs like nothing, tailored into a structured single-button blazer and a matching high-waist short. Fully lined, with working details.",
-                "fit": "A structured single-button blazer and a matching high-waist short; true to size, tailored close — size up the blazer if you layer under it. The whole look in one bag.",
-                "care": "Machine wash cold on a gentle cycle or dry-clean; hang to dry and steam rather than hot-iron to keep the tailoring sharp. Do not tumble, which puckers the lining.",
-                "materials": [
-                    {
-                        "name": "Polyester",
-                        "percent": "63%"
-                    },
-                    {
-                        "name": "Viscose",
-                        "percent": "33%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "4%"
-                    }
-                ],
-                "origin": "Made in Turkey"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-SUIT-XS",
-                    "priceCents": 5499,
-                    "compareAtPriceCents": 7999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-SUIT-S",
-                    "priceCents": 5499,
-                    "compareAtPriceCents": 7999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-SUIT-M",
-                    "priceCents": 5499,
-                    "compareAtPriceCents": 7999,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-SUIT-L",
-                    "priceCents": 5499,
-                    "compareAtPriceCents": 7999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-SUIT-XL",
-                    "priceCents": 5499,
-                    "compareAtPriceCents": 7999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "blazer-short-suit-set",
-                    "isPrimary": true,
-                    "alt": "The Blazer + Short Suit Set"
-                }
-            ]
-        },
-        {
-            "handle": "strapless-wide-leg-jumpsuit",
-            "title": "Strapless Wide-Leg Jumpsuit",
-            "description": "A strapless jumpsuit with a grippy inner band that stays put and a wide leg that reads like a gown from across the room. One piece, zero decisions, all night.",
-            "status": "active",
-            "productType": "Jumpsuit",
-            "vendor": "Voltage",
-            "tags": [
-                "set",
-                "jumpsuit",
-                "going-out",
-                "sale"
-            ],
-            "categoryHandles": [
-                "sets"
-            ],
-            "collectionHandles": [
-                "the-edit",
-                "sale"
-            ],
-            "seoTitle": "Strapless Wide-Leg Jumpsuit — grip-band wide-leg jumpsuit",
-            "seoDescription": "A strapless wide-leg jumpsuit with a grippy inner band that stays put. Was $58.00, now $39.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A strapless wide-leg jumpsuit in a firm stretch crepe with a grippy silicone inner band that stays up, and a wide leg that reads like a gown from across the room.",
-                "fit": "True to size through the body, long in the leg for a heel; the inner band grips, so try it before a big night to trust it. Strapless, wide-leg.",
-                "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
-                "materials": [
-                    {
-                        "name": "Polyester",
-                        "percent": "90%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "10%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        },
-                        {
-                            "value": "XL"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-JUMPSUIT-XS",
-                    "priceCents": 3999,
-                    "compareAtPriceCents": 5800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-JUMPSUIT-S",
-                    "priceCents": 3999,
-                    "compareAtPriceCents": 5800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-JUMPSUIT-M",
-                    "priceCents": 3999,
-                    "compareAtPriceCents": 5800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-JUMPSUIT-L",
-                    "priceCents": 3999,
-                    "compareAtPriceCents": 5800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                },
-                {
-                    "sku": "VLT-JUMPSUIT-XL",
-                    "priceCents": 3999,
-                    "compareAtPriceCents": 5800,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XL"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "strapless-wide-leg-jumpsuit",
-                    "isPrimary": true,
-                    "alt": "The Strapless Wide-Leg Jumpsuit"
-                }
-            ]
-        },
-        {
-            "handle": "ring-detail-string-bikini",
-            "title": "Ring-Detail String Bikini",
-            "description": "A string bikini with gold-tone ring hardware and fully adjustable ties, so one size range fits a lot of bodies. Quick-dry, fade-resistant, and cut to sit exactly where you set it.",
-            "status": "active",
-            "productType": "Swimwear",
-            "vendor": "Voltage",
-            "tags": [
-                "swim",
-                "bikini",
-                "vacation",
-                "sale"
-            ],
-            "categoryHandles": [
-                "swim"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "sale"
-            ],
-            "seoTitle": "Ring-Detail String Bikini — adjustable ring-hardware bikini",
-            "seoDescription": "A quick-dry string bikini with gold-tone ring hardware and adjustable ties. Was $36.99, now $24.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A quick-dry, fade-resistant swim fabric with gold-tone ring hardware and fully adjustable ties top and bottom. Lined, with secure stitching that holds up to real swimming.",
-                "fit": "Fully adjustable ties top and bottom, so one size range fits a lot of bodies; cut to sit where you set it. Quick-dry and fade-resistant.",
-                "care": "Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet — that is what kills the stretch.",
-                "materials": [
-                    {
-                        "name": "Nylon",
-                        "percent": "82%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "18%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-BIKINI-XS",
-                    "priceCents": 2499,
-                    "compareAtPriceCents": 3699,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-BIKINI-S",
-                    "priceCents": 2499,
-                    "compareAtPriceCents": 3699,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-BIKINI-M",
-                    "priceCents": 2499,
-                    "compareAtPriceCents": 3699,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-BIKINI-L",
-                    "priceCents": 2499,
-                    "compareAtPriceCents": 3699,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "ring-detail-string-bikini",
-                    "isPrimary": true,
-                    "alt": "The Ring-Detail String Bikini"
-                }
-            ]
-        },
-        {
-            "handle": "one-shoulder-one-piece",
-            "title": "One-Shoulder One-Piece",
-            "description": "A sculpting one-shoulder one-piece with a hidden shelf and a high-cut leg. Reads as a swimsuit at the pool and a bodysuit under a skirt — the hardest-working thing in the bag.",
-            "status": "active",
-            "productType": "Swimwear",
-            "vendor": "Voltage",
-            "tags": [
-                "swim",
-                "one-piece",
-                "vacation",
-                "sale"
-            ],
-            "categoryHandles": [
-                "swim"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "sale"
-            ],
-            "seoTitle": "One-Shoulder One-Piece — sculpting one-shoulder swimsuit",
-            "seoDescription": "A sculpting one-shoulder one-piece swimsuit with a hidden shelf and high-cut leg. Was $39.99, now $27.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A sculpting swim fabric with a hidden shelf bust and a high-cut leg, in a one-shoulder cut. Fully lined and firm enough to smooth, quick to dry.",
-                "fit": "A sculpting one-shoulder cut with a hidden shelf and a high-cut leg; true to size with firm support. Doubles as a bodysuit under a skirt.",
-                "care": "Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet — that is what kills the stretch.",
-                "materials": [
-                    {
-                        "name": "Polyamide",
-                        "percent": "80%"
-                    },
-                    {
-                        "name": "Elastane",
-                        "percent": "20%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "XS"
-                        },
-                        {
-                            "value": "S"
-                        },
-                        {
-                            "value": "M"
-                        },
-                        {
-                            "value": "L"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-ONEPIECE-XS",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "XS"
-                    }
-                },
-                {
-                    "sku": "VLT-ONEPIECE-S",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "S"
-                    }
-                },
-                {
-                    "sku": "VLT-ONEPIECE-M",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "M"
-                    }
-                },
-                {
-                    "sku": "VLT-ONEPIECE-L",
-                    "priceCents": 2799,
-                    "compareAtPriceCents": 3999,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "L"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "one-shoulder-one-piece",
-                    "isPrimary": true,
-                    "alt": "The One-Shoulder One-Piece"
-                }
-            ]
-        },
-        {
-            "handle": "oversized-shield-sunglasses",
-            "title": "Oversized Shield Sunglasses",
-            "description": "A single-lens shield in a wraparound frame that covers half the face and all the mystery. UV400, featherlight, and the fastest way to finish a look — throw them on and leave.",
-            "status": "active",
-            "productType": "Accessory",
-            "vendor": "Voltage",
-            "tags": [
-                "accessory",
-                "sunglasses",
-                "sale"
-            ],
-            "categoryHandles": [
-                "accessories"
-            ],
-            "collectionHandles": [
-                "new-arrivals",
-                "sale"
-            ],
-            "seoTitle": "Oversized Shield Sunglasses — UV400 wraparound shield",
-            "seoDescription": "Oversized UV400 shield sunglasses in a featherlight wraparound frame. Was $19.99, now $12.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A single-lens shield in a wraparound acetate frame that covers half the face and all the mystery. UV400, featherlight, with spring hinges that take a knock.",
-                "fit": "A one-size wraparound shield that covers half the face; featherlight, with spring hinges that suit most head shapes. UV400 on every lens.",
-                "care": "Wipe the lens with the pouch it comes in, not a shirt hem, which scratches the coating; store them in the case rather than face-down. Keep them off a hot dashboard, where the frame can warp.",
-                "materials": [
-                    {
-                        "name": "Polycarbonate lens",
-                        "percent": "60%"
-                    },
-                    {
-                        "name": "Acetate frame",
-                        "percent": "40%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "One size"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-SHADES-ONESIZE",
-                    "priceCents": 1299,
-                    "compareAtPriceCents": 1999,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "One size"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "oversized-shield-sunglasses",
-                    "isPrimary": true,
-                    "alt": "The Oversized Shield Sunglasses"
-                }
-            ]
-        },
-        {
-            "handle": "quilted-shoulder-bag",
-            "title": "Quilted Shoulder Bag",
-            "description": "A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long. Fits the phone, the cards and the lipstick — and nothing you were going to lose anyway.",
-            "status": "active",
-            "productType": "Accessory",
-            "vendor": "Voltage",
-            "tags": [
-                "accessory",
-                "bag",
-                "sale"
-            ],
-            "categoryHandles": [
-                "accessories"
-            ],
-            "collectionHandles": [
-                "best-sellers",
-                "sale"
-            ],
-            "seoTitle": "Quilted Shoulder Bag — chain-strap quilted vegan-leather bag",
-            "seoDescription": "A quilted vegan-leather shoulder bag with a doubling gold chain strap. Was $44.99, now $29.99.",
-            "productTypeKey": "apparel",
-            "attributes": {
-                "fabric": "A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long, on a magnetic-snap closure. Lined, with a slip pocket inside.",
-                "fit": "A compact shoulder bag with a chain you can double up or wear long; fits a phone, cards and a lipstick. One size, structured to hold its shape.",
-                "care": "Wipe the vegan leather with a soft damp cloth and let it air-dry; keep it out of prolonged sun and rain. Stuff it when it is not in use so it holds its shape, and store it in the dust bag.",
-                "materials": [
-                    {
-                        "name": "Polyurethane",
-                        "percent": "82%"
-                    },
-                    {
-                        "name": "Polyester lining",
-                        "percent": "14%"
-                    },
-                    {
-                        "name": "Metal hardware",
-                        "percent": "4%"
-                    }
-                ],
-                "origin": "Made in China"
-            },
-            "options": [
-                {
-                    "name": "Size",
-                    "displayType": "dropdown",
-                    "values": [
-                        {
-                            "value": "One size"
-                        }
-                    ]
-                }
-            ],
-            "variants": [
-                {
-                    "sku": "VLT-BAG-ONESIZE",
-                    "priceCents": 2999,
-                    "compareAtPriceCents": 4499,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue",
-                    "optionValues": {
-                        "Size": "One size"
-                    }
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "quilted-shoulder-bag",
-                    "isPrimary": true,
-                    "alt": "The Quilted Shoulder Bag"
-                }
-            ]
+          "assetId": "halston-cutout-mini",
+          "isPrimary": true,
+          "alt": "The Halston Cutout Mini Dress"
         }
-    ]
+      ]
+    },
+    {
+      "handle": "coastline-satin-maxi",
+      "title": "Coastline Satin Maxi",
+      "description": "A liquid-satin maxi that pours to the floor with a thigh-high slit and a cowl back. Weighted so it moves with you and not against you — dinner, a wedding, or a very good Tuesday.",
+      "status": "active",
+      "productType": "Dress",
+      "vendor": "Voltage",
+      "tags": ["dress", "maxi", "satin", "sale"],
+      "categoryHandles": ["dresses"],
+      "collectionHandles": ["best-sellers", "the-edit", "sale"],
+      "seoTitle": "Coastline Satin Maxi — slit satin maxi dress",
+      "seoDescription": "A liquid-satin maxi dress with a thigh-high slit and cowl back. Was $59.99, now $38.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A liquid satin with enough weight to pour to the floor rather than cling, with a thigh-high slit and a cowl back. Bias-cut so it moves with you and skims rather than grips.",
+        "fit": "A long, fluid maxi, true to size; the slit and the bias cut do the shaping. Cut for a heel — check the length against your shoes before the big night.",
+        "care": "Cold hand-wash, or a delicate machine cycle in a bag, inside out; hang to dry and never tumble, which pills satin. A cool iron on the reverse takes out a travel crease.",
+        "materials": [
+          {
+            "name": "Polyester",
+            "percent": "95%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "5%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-COASTLINE-XS",
+          "priceCents": 3899,
+          "compareAtPriceCents": 5999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-COASTLINE-S",
+          "priceCents": 3899,
+          "compareAtPriceCents": 5999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-COASTLINE-M",
+          "priceCents": 3899,
+          "compareAtPriceCents": 5999,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-COASTLINE-L",
+          "priceCents": 3899,
+          "compareAtPriceCents": 5999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-COASTLINE-XL",
+          "priceCents": 3899,
+          "compareAtPriceCents": 5999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "coastline-satin-maxi",
+          "isPrimary": true,
+          "alt": "The Coastline Satin Maxi"
+        }
+      ]
+    },
+    {
+      "handle": "bandage-bodycon-midi",
+      "title": "Bandage Bodycon Midi",
+      "description": "A sculpting bandage-knit midi that pulls everything in and lets nothing go. High neck, banded hem, and enough stretch to sit through dinner and still dance after.",
+      "status": "active",
+      "productType": "Dress",
+      "vendor": "Voltage",
+      "tags": ["dress", "midi", "bodycon", "sale"],
+      "categoryHandles": ["dresses"],
+      "collectionHandles": ["best-sellers", "sale"],
+      "seoTitle": "Bandage Bodycon Midi — sculpting bandage-knit midi dress",
+      "seoDescription": "A sculpting high-neck bandage-knit midi dress. Was $39.99, now $27.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A dense bandage knit that sculpts and smooths, with a high neck and a banded hem that stays put. Enough stretch to sit through dinner and dance after.",
+        "fit": "A sculpting bandage-knit midi that pulls in and holds; runs snug by design, so size up if you want less compression. High neck, banded hem.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
+        "materials": [
+          {
+            "name": "Nylon",
+            "percent": "90%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "10%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-BANDAGE-XS",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-BANDAGE-S",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-BANDAGE-M",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-BANDAGE-L",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-BANDAGE-XL",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "bandage-bodycon-midi",
+          "isPrimary": true,
+          "alt": "The Bandage Bodycon Midi"
+        }
+      ]
+    },
+    {
+      "handle": "rib-knit-cami-3-pack",
+      "title": "Rib-Knit Cami 3-Pack",
+      "description": "Three of the cami you already wear to death — a stretch rib that hugs without gripping, in the neutrals that go under everything. Buy the pack, stop doing laundry on a deadline.",
+      "status": "active",
+      "productType": "Top",
+      "vendor": "Voltage",
+      "tags": ["top", "cami", "basics", "sale"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "sale"],
+      "seoTitle": "Rib-Knit Cami 3-Pack — stretch rib camisole set",
+      "seoDescription": "Three stretch rib-knit cami tops in everyday neutrals. Was $28.99, now $19.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A stretch rib that hugs the body without gripping, in the neutral tones that go under everything. A slim adjustable strap and a clean neckline; three to a pack so the laundry never catches you out.",
+        "fit": "A close rib that hugs without gripping; true to size and stretches to fit. Three per pack in everyday neutrals.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
+        "materials": [
+          {
+            "name": "Viscose",
+            "percent": "62%"
+          },
+          {
+            "name": "Nylon",
+            "percent": "33%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "5%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-CAMI-XS",
+          "priceCents": 1999,
+          "compareAtPriceCents": 2899,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-CAMI-S",
+          "priceCents": 1999,
+          "compareAtPriceCents": 2899,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-CAMI-M",
+          "priceCents": 1999,
+          "compareAtPriceCents": 2899,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-CAMI-L",
+          "priceCents": 1999,
+          "compareAtPriceCents": 2899,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-CAMI-XL",
+          "priceCents": 1999,
+          "compareAtPriceCents": 2899,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "rib-knit-cami-3-pack",
+          "isPrimary": true,
+          "alt": "The Rib-Knit Cami 3-Pack"
+        }
+      ]
+    },
+    {
+      "handle": "oversized-graphic-tee",
+      "title": "Oversized Graphic Tee",
+      "description": "A drop-shoulder cotton tee cut big on purpose, with a soft-hand print that survives the wash. Knot it, tuck it, or let it hang over the cargos — it works every way you throw it on.",
+      "status": "active",
+      "productType": "Top",
+      "vendor": "Voltage",
+      "tags": ["top", "tee", "graphic", "sale"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["new-arrivals", "sale"],
+      "seoTitle": "Oversized Graphic Tee — drop-shoulder cotton graphic tee",
+      "seoDescription": "An oversized drop-shoulder cotton graphic tee with a soft-hand print. Was $24.99, now $16.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A drop-shoulder cotton jersey cut big on purpose, with a soft-hand print that survives the wash rather than cracking off it. Heavy enough not to go see-through.",
+        "fit": "Cut oversized on purpose with a dropped shoulder; size down for a closer fit, keep your size for the intended slouch. Long enough to knot or tuck.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
+        "materials": [
+          {
+            "name": "Cotton",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Bangladesh"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-GRAPHTEE-XS",
+          "priceCents": 1699,
+          "compareAtPriceCents": 2499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-GRAPHTEE-S",
+          "priceCents": 1699,
+          "compareAtPriceCents": 2499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-GRAPHTEE-M",
+          "priceCents": 1699,
+          "compareAtPriceCents": 2499,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-GRAPHTEE-L",
+          "priceCents": 1699,
+          "compareAtPriceCents": 2499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-GRAPHTEE-XL",
+          "priceCents": 1699,
+          "compareAtPriceCents": 2499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "oversized-graphic-tee",
+          "isPrimary": true,
+          "alt": "The Oversized Graphic Tee"
+        }
+      ]
+    },
+    {
+      "handle": "corset-bustier-top",
+      "title": "Corset Bustier Top",
+      "description": "A structured bustier with real boning and a hook-and-eye front that holds its line all night. Wear it with the wide-leg jean and a blazer, or just the blazer.",
+      "status": "active",
+      "productType": "Top",
+      "vendor": "Voltage",
+      "tags": ["top", "corset", "going-out", "sale"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["the-edit", "sale"],
+      "seoTitle": "Corset Bustier Top — boned hook-front bustier",
+      "seoDescription": "A structured boned corset bustier top with a hook-and-eye front. Was $34.99, now $22.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A structured bodice with real boning and a hook-and-eye front that holds its line all night, in a firm woven with a touch of stretch. Fully lined, with a clean top edge.",
+        "fit": "A structured, boned bustier that holds its line; true to size but firm — size up for comfort over a long night. Best with the wide-leg jean, or under a blazer.",
+        "care": "Cold hand-wash and hang to dry to protect the boning; do not tumble, wring or hot-iron. Spot-clean between wears rather than washing every time.",
+        "materials": [
+          {
+            "name": "Polyester",
+            "percent": "88%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "8%"
+          },
+          {
+            "name": "Boning",
+            "percent": "4%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-CORSET-XS",
+          "priceCents": 2299,
+          "compareAtPriceCents": 3499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-CORSET-S",
+          "priceCents": 2299,
+          "compareAtPriceCents": 3499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-CORSET-M",
+          "priceCents": 2299,
+          "compareAtPriceCents": 3499,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-CORSET-L",
+          "priceCents": 2299,
+          "compareAtPriceCents": 3499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-CORSET-XL",
+          "priceCents": 2299,
+          "compareAtPriceCents": 3499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "corset-bustier-top",
+          "isPrimary": true,
+          "alt": "The Corset Bustier Top"
+        }
+      ]
+    },
+    {
+      "handle": "high-rise-wide-leg-jean",
+      "title": "High-Rise Wide-Leg Jean",
+      "description": "A rigid-with-a-little-give denim cut high on the waist and wide all the way down, so it lengthens the leg and forgives the lunch. The pair the whole outfit gets built around.",
+      "status": "active",
+      "productType": "Jeans",
+      "vendor": "Voltage",
+      "tags": ["denim", "jeans", "wide-leg", "sale"],
+      "categoryHandles": ["denim"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "denim-reset", "sale"],
+      "seoTitle": "High-Rise Wide-Leg Jean — high-waist wide-leg denim",
+      "seoDescription": "A high-rise wide-leg jean in rigid-give denim that lengthens the leg. Was $49.99, now $34.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A rigid-with-a-little-give denim cut high on the waist and wide to the floor, so it lengthens the leg and forgives the lunch. Proper five-pocket construction with a button fly.",
+        "fit": "High on the waist and wide all the way down; true to size at the waist, long in the leg — hem it or wear a heel. Rigid with a little give, so it holds its shape.",
+        "care": "Wash cold inside out with like colors and hang to dry — the less you wash denim, the longer the color lasts. A cool iron on the reverse if you like it crisp; skip the tumble dryer, which sets the creases in.",
+        "materials": [
+          {
+            "name": "Cotton",
+            "percent": "99%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "1%"
+          }
+        ],
+        "origin": "Made in Bangladesh"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-WIDEJEAN-XS",
+          "priceCents": 3499,
+          "compareAtPriceCents": 4999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-WIDEJEAN-S",
+          "priceCents": 3499,
+          "compareAtPriceCents": 4999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-WIDEJEAN-M",
+          "priceCents": 3499,
+          "compareAtPriceCents": 4999,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-WIDEJEAN-L",
+          "priceCents": 3499,
+          "compareAtPriceCents": 4999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-WIDEJEAN-XL",
+          "priceCents": 3499,
+          "compareAtPriceCents": 4999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "high-rise-wide-leg-jean",
+          "isPrimary": true,
+          "alt": "The High-Rise Wide-Leg Jean"
+        }
+      ]
+    },
+    {
+      "handle": "cargo-parachute-pant",
+      "title": "Cargo Parachute Pant",
+      "description": "A lightweight parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be — the easy win on a getting-dressed-fast morning.",
+      "status": "active",
+      "productType": "Pants",
+      "vendor": "Voltage",
+      "tags": ["bottoms", "cargo", "parachute", "sale"],
+      "categoryHandles": ["denim"],
+      "collectionHandles": ["best-sellers", "denim-reset", "sale"],
+      "seoTitle": "Cargo Parachute Pant — cinch-hem utility cargo",
+      "seoDescription": "A lightweight cinch-hem parachute cargo pant with real pockets. Was $48.00, now $32.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A lightweight nylon parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be.",
+        "fit": "Baggy through the leg with cinch-cord hems to tune the volume; true to size, sits high. Wear them puddled or cinched at the ankle.",
+        "care": "Machine wash cold on a gentle cycle and hang to dry; the nylon barely creases and dries fast. Skip the tumble dryer, which can shrink the cord channels.",
+        "materials": [
+          {
+            "name": "Nylon",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Vietnam"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-CARGO-XS",
+          "priceCents": 3299,
+          "compareAtPriceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-CARGO-S",
+          "priceCents": 3299,
+          "compareAtPriceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-CARGO-M",
+          "priceCents": 3299,
+          "compareAtPriceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-CARGO-L",
+          "priceCents": 3299,
+          "compareAtPriceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-CARGO-XL",
+          "priceCents": 3299,
+          "compareAtPriceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cargo-parachute-pant",
+          "isPrimary": true,
+          "alt": "The Cargo Parachute Pant"
+        }
+      ]
+    },
+    {
+      "handle": "faux-leather-mini-skirt",
+      "title": "Faux-Leather Mini Skirt",
+      "description": "A matte faux-leather mini with a hidden stretch panel so it moves like fabric, not armour. Off to the office with tights, out at night with the corset — one skirt, two lives.",
+      "status": "active",
+      "productType": "Skirt",
+      "vendor": "Voltage",
+      "tags": ["bottoms", "skirt", "faux-leather", "sale"],
+      "categoryHandles": ["denim"],
+      "collectionHandles": ["new-arrivals", "sale"],
+      "seoTitle": "Faux-Leather Mini Skirt — matte stretch-panel mini",
+      "seoDescription": "A matte faux-leather mini skirt with a hidden stretch panel. Was $32.99, now $21.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A matte faux-leather face over a hidden stretch panel, so it moves like fabric rather than armour. Lined, with a clean waistband and an invisible side zip.",
+        "fit": "A close mini with a hidden stretch panel so it moves with you; true to size, sits high on the waist. Tights in winter, bare in summer.",
+        "care": "Wipe the faux-leather clean with a damp cloth; do not machine-wash, tumble or iron the coated face. Hang it rather than folding, so it does not crease at the seat.",
+        "materials": [
+          {
+            "name": "Polyurethane",
+            "percent": "88%"
+          },
+          {
+            "name": "Polyester",
+            "percent": "10%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "2%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-MINISKIRT-XS",
+          "priceCents": 2199,
+          "compareAtPriceCents": 3299,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-MINISKIRT-S",
+          "priceCents": 2199,
+          "compareAtPriceCents": 3299,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-MINISKIRT-M",
+          "priceCents": 2199,
+          "compareAtPriceCents": 3299,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-MINISKIRT-L",
+          "priceCents": 2199,
+          "compareAtPriceCents": 3299,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-MINISKIRT-XL",
+          "priceCents": 2199,
+          "compareAtPriceCents": 3299,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "faux-leather-mini-skirt",
+          "isPrimary": true,
+          "alt": "The Faux-Leather Mini Skirt"
+        }
+      ]
+    },
+    {
+      "handle": "ribbed-lounge-set",
+      "title": "Ribbed Lounge Set",
+      "description": "A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. Buy it together, split it up forever.",
+      "status": "active",
+      "productType": "Matching set",
+      "vendor": "Voltage",
+      "tags": ["set", "loungewear", "ribbed", "sale"],
+      "categoryHandles": ["sets"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "sale"],
+      "seoTitle": "Ribbed Lounge Set — matching rib-knit lounge set",
+      "seoDescription": "A matching rib-knit lounge set: fitted long-sleeve and high-waist flare. Was $44.99, now $29.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. The rib holds its shape wash after wash.",
+        "fit": "A fitted long-sleeve and a high-waist flare, close through the body and relaxed through the leg; true to size. Buy it as a set, wear the halves apart.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
+        "materials": [
+          {
+            "name": "Cotton",
+            "percent": "65%"
+          },
+          {
+            "name": "Polyester",
+            "percent": "30%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "5%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-LOUNGE-XS",
+          "priceCents": 2999,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-LOUNGE-S",
+          "priceCents": 2999,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-LOUNGE-M",
+          "priceCents": 2999,
+          "compareAtPriceCents": 4499,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-LOUNGE-L",
+          "priceCents": 2999,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-LOUNGE-XL",
+          "priceCents": 2999,
+          "compareAtPriceCents": 4499,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ribbed-lounge-set",
+          "isPrimary": true,
+          "alt": "The Ribbed Lounge Set"
+        }
+      ]
+    },
+    {
+      "handle": "blazer-short-suit-set",
+      "title": "Blazer + Short Suit Set",
+      "description": "A tailored two-piece — a structured single-button blazer and a matching high-waist short — in a crease-resistant suiting that reads expensive and packs like nothing. The whole look, one add-to-bag.",
+      "status": "active",
+      "productType": "Matching set",
+      "vendor": "Voltage",
+      "tags": ["set", "suit", "tailored", "sale"],
+      "categoryHandles": ["sets"],
+      "collectionHandles": ["the-edit", "sale"],
+      "seoTitle": "Blazer + Short Suit Set — tailored blazer and short two-piece",
+      "seoDescription": "A tailored blazer and matching high-waist short suit set in crease-resistant suiting. Was $79.99, now $54.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A crease-resistant suiting that reads expensive and packs like nothing, tailored into a structured single-button blazer and a matching high-waist short. Fully lined, with working details.",
+        "fit": "A structured single-button blazer and a matching high-waist short; true to size, tailored close — size up the blazer if you layer under it. The whole look in one bag.",
+        "care": "Machine wash cold on a gentle cycle or dry-clean; hang to dry and steam rather than hot-iron to keep the tailoring sharp. Do not tumble, which puckers the lining.",
+        "materials": [
+          {
+            "name": "Polyester",
+            "percent": "63%"
+          },
+          {
+            "name": "Viscose",
+            "percent": "33%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "4%"
+          }
+        ],
+        "origin": "Made in Turkey"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-SUIT-XS",
+          "priceCents": 5499,
+          "compareAtPriceCents": 7999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-SUIT-S",
+          "priceCents": 5499,
+          "compareAtPriceCents": 7999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-SUIT-M",
+          "priceCents": 5499,
+          "compareAtPriceCents": 7999,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-SUIT-L",
+          "priceCents": 5499,
+          "compareAtPriceCents": 7999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-SUIT-XL",
+          "priceCents": 5499,
+          "compareAtPriceCents": 7999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "blazer-short-suit-set",
+          "isPrimary": true,
+          "alt": "The Blazer + Short Suit Set"
+        }
+      ]
+    },
+    {
+      "handle": "strapless-wide-leg-jumpsuit",
+      "title": "Strapless Wide-Leg Jumpsuit",
+      "description": "A strapless jumpsuit with a grippy inner band that stays put and a wide leg that reads like a gown from across the room. One piece, zero decisions, all night.",
+      "status": "active",
+      "productType": "Jumpsuit",
+      "vendor": "Voltage",
+      "tags": ["set", "jumpsuit", "going-out", "sale"],
+      "categoryHandles": ["sets"],
+      "collectionHandles": ["the-edit", "sale"],
+      "seoTitle": "Strapless Wide-Leg Jumpsuit — grip-band wide-leg jumpsuit",
+      "seoDescription": "A strapless wide-leg jumpsuit with a grippy inner band that stays put. Was $58.00, now $39.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A strapless wide-leg jumpsuit in a firm stretch crepe with a grippy silicone inner band that stays up, and a wide leg that reads like a gown from across the room.",
+        "fit": "True to size through the body, long in the leg for a heel; the inner band grips, so try it before a big night to trust it. Strapless, wide-leg.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.",
+        "materials": [
+          {
+            "name": "Polyester",
+            "percent": "90%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "10%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-JUMPSUIT-XS",
+          "priceCents": 3999,
+          "compareAtPriceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-JUMPSUIT-S",
+          "priceCents": 3999,
+          "compareAtPriceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-JUMPSUIT-M",
+          "priceCents": 3999,
+          "compareAtPriceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-JUMPSUIT-L",
+          "priceCents": 3999,
+          "compareAtPriceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "VLT-JUMPSUIT-XL",
+          "priceCents": 3999,
+          "compareAtPriceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "strapless-wide-leg-jumpsuit",
+          "isPrimary": true,
+          "alt": "The Strapless Wide-Leg Jumpsuit"
+        }
+      ]
+    },
+    {
+      "handle": "ring-detail-string-bikini",
+      "title": "Ring-Detail String Bikini",
+      "description": "A string bikini with gold-tone ring hardware and fully adjustable ties, so one size range fits a lot of bodies. Quick-dry, fade-resistant, and cut to sit exactly where you set it.",
+      "status": "active",
+      "productType": "Swimwear",
+      "vendor": "Voltage",
+      "tags": ["swim", "bikini", "vacation", "sale"],
+      "categoryHandles": ["swim"],
+      "collectionHandles": ["new-arrivals", "sale"],
+      "seoTitle": "Ring-Detail String Bikini — adjustable ring-hardware bikini",
+      "seoDescription": "A quick-dry string bikini with gold-tone ring hardware and adjustable ties. Was $36.99, now $24.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A quick-dry, fade-resistant swim fabric with gold-tone ring hardware and fully adjustable ties top and bottom. Lined, with secure stitching that holds up to real swimming.",
+        "fit": "Fully adjustable ties top and bottom, so one size range fits a lot of bodies; cut to sit where you set it. Quick-dry and fade-resistant.",
+        "care": "Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet — that is what kills the stretch.",
+        "materials": [
+          {
+            "name": "Nylon",
+            "percent": "82%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "18%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-BIKINI-XS",
+          "priceCents": 2499,
+          "compareAtPriceCents": 3699,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-BIKINI-S",
+          "priceCents": 2499,
+          "compareAtPriceCents": 3699,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-BIKINI-M",
+          "priceCents": 2499,
+          "compareAtPriceCents": 3699,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-BIKINI-L",
+          "priceCents": 2499,
+          "compareAtPriceCents": 3699,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ring-detail-string-bikini",
+          "isPrimary": true,
+          "alt": "The Ring-Detail String Bikini"
+        }
+      ]
+    },
+    {
+      "handle": "one-shoulder-one-piece",
+      "title": "One-Shoulder One-Piece",
+      "description": "A sculpting one-shoulder one-piece with a hidden shelf and a high-cut leg. Reads as a swimsuit at the pool and a bodysuit under a skirt — the hardest-working thing in the bag.",
+      "status": "active",
+      "productType": "Swimwear",
+      "vendor": "Voltage",
+      "tags": ["swim", "one-piece", "vacation", "sale"],
+      "categoryHandles": ["swim"],
+      "collectionHandles": ["best-sellers", "sale"],
+      "seoTitle": "One-Shoulder One-Piece — sculpting one-shoulder swimsuit",
+      "seoDescription": "A sculpting one-shoulder one-piece swimsuit with a hidden shelf and high-cut leg. Was $39.99, now $27.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A sculpting swim fabric with a hidden shelf bust and a high-cut leg, in a one-shoulder cut. Fully lined and firm enough to smooth, quick to dry.",
+        "fit": "A sculpting one-shoulder cut with a hidden shelf and a high-cut leg; true to size with firm support. Doubles as a bodysuit under a skirt.",
+        "care": "Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet — that is what kills the stretch.",
+        "materials": [
+          {
+            "name": "Polyamide",
+            "percent": "80%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "20%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-ONEPIECE-XS",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "VLT-ONEPIECE-S",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "VLT-ONEPIECE-M",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "VLT-ONEPIECE-L",
+          "priceCents": 2799,
+          "compareAtPriceCents": 3999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "one-shoulder-one-piece",
+          "isPrimary": true,
+          "alt": "The One-Shoulder One-Piece"
+        }
+      ]
+    },
+    {
+      "handle": "oversized-shield-sunglasses",
+      "title": "Oversized Shield Sunglasses",
+      "description": "A single-lens shield in a wraparound frame that covers half the face and all the mystery. UV400, featherlight, and the fastest way to finish a look — throw them on and leave.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Voltage",
+      "tags": ["accessory", "sunglasses", "sale"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["new-arrivals", "sale"],
+      "seoTitle": "Oversized Shield Sunglasses — UV400 wraparound shield",
+      "seoDescription": "Oversized UV400 shield sunglasses in a featherlight wraparound frame. Was $19.99, now $12.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A single-lens shield in a wraparound acetate frame that covers half the face and all the mystery. UV400, featherlight, with spring hinges that take a knock.",
+        "fit": "A one-size wraparound shield that covers half the face; featherlight, with spring hinges that suit most head shapes. UV400 on every lens.",
+        "care": "Wipe the lens with the pouch it comes in, not a shirt hem, which scratches the coating; store them in the case rather than face-down. Keep them off a hot dashboard, where the frame can warp.",
+        "materials": [
+          {
+            "name": "Polycarbonate lens",
+            "percent": "60%"
+          },
+          {
+            "name": "Acetate frame",
+            "percent": "40%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One size"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-SHADES-ONESIZE",
+          "priceCents": 1299,
+          "compareAtPriceCents": 1999,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "One size"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "oversized-shield-sunglasses",
+          "isPrimary": true,
+          "alt": "The Oversized Shield Sunglasses"
+        }
+      ]
+    },
+    {
+      "handle": "quilted-shoulder-bag",
+      "title": "Quilted Shoulder Bag",
+      "description": "A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long. Fits the phone, the cards and the lipstick — and nothing you were going to lose anyway.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Voltage",
+      "tags": ["accessory", "bag", "sale"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["best-sellers", "sale"],
+      "seoTitle": "Quilted Shoulder Bag — chain-strap quilted vegan-leather bag",
+      "seoDescription": "A quilted vegan-leather shoulder bag with a doubling gold chain strap. Was $44.99, now $29.99.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long, on a magnetic-snap closure. Lined, with a slip pocket inside.",
+        "fit": "A compact shoulder bag with a chain you can double up or wear long; fits a phone, cards and a lipstick. One size, structured to hold its shape.",
+        "care": "Wipe the vegan leather with a soft damp cloth and let it air-dry; keep it out of prolonged sun and rain. Stuff it when it is not in use so it holds its shape, and store it in the dust bag.",
+        "materials": [
+          {
+            "name": "Polyurethane",
+            "percent": "82%"
+          },
+          {
+            "name": "Polyester lining",
+            "percent": "14%"
+          },
+          {
+            "name": "Metal hardware",
+            "percent": "4%"
+          }
+        ],
+        "origin": "Made in China"
+      },
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One size"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VLT-BAG-ONESIZE",
+          "priceCents": 2999,
+          "compareAtPriceCents": 4499,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "One size"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "quilted-shoulder-bag",
+          "isPrimary": true,
+          "alt": "The Quilted Shoulder Bag"
+        }
+      ]
+    }
+  ]
 }

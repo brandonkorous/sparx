@@ -26,7 +26,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Text,
   Textarea,
@@ -39,6 +38,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { ListMembership } from './list-membership';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -86,7 +86,7 @@ export function SegmentDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function SegmentLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: segment, isPending, isError, refetch } = useSegment(id);
+  const { data: segment, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSegment(id);
 
   if (isError) {
     return (
@@ -108,7 +108,18 @@ function SegmentLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <SegmentEditor ctx={ctx} id={id} segment={segment} />;
+  return (
+    <SegmentEditor
+      ctx={ctx}
+      id={id}
+      segment={segment}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 interface Identity {
@@ -121,10 +132,18 @@ function SegmentEditor({
   ctx,
   id,
   segment,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   segment?: Segment;
+  /** The loader's query, threaded down. Absent while creating — a segment that
+   *  does not exist yet has nothing to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -134,8 +153,10 @@ function SegmentEditor({
   const create = useCreateSegment();
   const update = useUpdateSegment(id);
   const archive = useArchiveSegment(id);
-  const { data: savedCount } = useSegmentMemberCount(id);
-  const { data: members } = useSegmentMembers(id);
+  const memberCount = useSegmentMemberCount(id);
+  const memberList = useSegmentMembers(id);
+  const savedCount = memberCount.data;
+  const members = memberList.data;
   const { members: roster } = useTeamRoster();
   const { data: accounts } = useAccounts();
 
@@ -347,86 +368,103 @@ function SegmentEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Segment actions">
-        {segment?.isBuiltIn ? (
-          <Badge color="module" variant="soft" size="sm">
-            Built-in
-          </Badge>
-        ) : null}
-        {isArchived ? (
-          <Badge color="neutral" variant="soft" size="sm">
-            Archived
-          </Badge>
-        ) : null}
-        <PreviewLabel
-          loading={preview.isFetching}
-          matches={preview.data?.matches}
-          sampled={preview.data?.sampled}
-          total={preview.data?.total}
-          invalid={!serialized.ok}
-        />
-        {/* Only once it exists, and only for rule-driven groups — a hand-picked
+      <PaneToolbar
+        label="Segment actions"
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={Boolean(isFetching) || memberCount.isFetching || memberList.isFetching}
+              updatedAt={segment ? updatedAt : undefined}
+              onRefresh={() => {
+                onRefresh();
+                void memberCount.refetch();
+                void memberList.refetch();
+              }}
+            />
+          ) : undefined
+        }
+        status={
+          <>
+            {segment?.isBuiltIn ? (
+              <Badge color="module" variant="soft" size="sm">
+                Built-in
+              </Badge>
+            ) : null}
+            {isArchived ? (
+              <Badge color="neutral" variant="soft" size="sm">
+                Archived
+              </Badge>
+            ) : null}
+            <PreviewLabel
+              loading={preview.isFetching}
+              matches={preview.data?.matches}
+              sampled={preview.data?.sampled}
+              total={preview.data?.total}
+              invalid={!serialized.ok}
+            />
+          </>
+        }
+        primary={
+          <>
+            {/* Only once it exists, and only for rule-driven groups — a hand-picked
             list has no rules to re-derive membership from, and re-cutting one
             would empty something somebody built by hand. */}
-        {!isNew && segment?.kind === 'dynamic' ? (
-          <Tooltip content="Re-check every customer against these rules. Membership normally keeps itself up to date; use this if a group looks out of date.">
+            {!isNew && segment?.kind === 'dynamic' ? (
+              <Tooltip content="Re-check every customer against these rules. Membership normally keeps itself up to date; use this if a group looks out of date.">
+                <Button
+                  color="module"
+                  variant="soft"
+                  size="sm"
+                  className="ml-auto shrink-0"
+                  loading={recompute.isPending}
+                  onClick={() => {
+                    recompute.mutate(segment.id, {
+                      onSuccess: (result) => {
+                        toast.add({
+                          title:
+                            result.changed === 0
+                              ? 'Already up to date'
+                              : `${result.changed.toLocaleString()} ${result.changed === 1 ? 'person' : 'people'} moved in or out`,
+                          description: `Checked ${result.scanned.toLocaleString()} customers.`,
+                          type: 'success',
+                        });
+                      },
+                      onError: () => {
+                        toast.add({
+                          title: 'Could not update the membership',
+                          description: 'Nothing was changed — try again in a moment.',
+                          type: 'error',
+                        });
+                      },
+                    });
+                  }}
+                >
+                  Update membership
+                </Button>
+              </Tooltip>
+            ) : null}
             <Button
               color="module"
-              variant="soft"
               size="sm"
-              className="ml-auto shrink-0"
-              loading={recompute.isPending}
-              onClick={() => {
-                recompute.mutate(segment.id, {
-                  onSuccess: (result) => {
-                    toast.add({
-                      title:
-                        result.changed === 0
-                          ? 'Already up to date'
-                          : `${result.changed.toLocaleString()} ${result.changed === 1 ? 'person' : 'people'} moved in or out`,
-                      description: `Checked ${result.scanned.toLocaleString()} customers.`,
-                      type: 'success',
-                    });
-                  },
-                  onError: () => {
-                    toast.add({
-                      title: 'Could not update the membership',
-                      description: 'Nothing was changed — try again in a moment.',
-                      type: 'error',
-                    });
-                  },
-                });
-              }}
+              className={!isNew && segment?.kind === 'dynamic' ? 'shrink-0' : 'ml-auto shrink-0'}
+              loading={saving}
+              disabled={Boolean(blocked) || (!isNew && !dirty)}
+              onClick={submit}
             >
-              Update membership
+              {isNew ? 'Create segment' : 'Save'}
             </Button>
-          </Tooltip>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className={!isNew && segment?.kind === 'dynamic' ? 'shrink-0' : 'ml-auto shrink-0'}
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create segment' : 'Save'}
-        </Button>
-      </PaneToolbar>
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Create a segment
-              </Heading>
-              <Text>
-                A segment is a saved group of customers built from conditions — big spenders, or
-                everyone who has not bought in a year. As you add conditions, the count in the bar
-                shows how many customers match right now.
-              </Text>
-            </div>
+            <Text>
+              A segment is a saved group of customers built from conditions — big spenders, or
+              everyone who has not bought in a year. As you add conditions, the count in the bar
+              shows how many customers match right now.
+            </Text>
           ) : null}
 
           {failure ? (

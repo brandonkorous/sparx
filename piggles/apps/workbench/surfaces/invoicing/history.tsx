@@ -11,8 +11,9 @@
 // noise on every draft, and the section appearing for the first time when the
 // first record freezes is itself informative.
 
-import { useQuery } from '@sparx/query';
-import { Badge, Button, Table, Tooltip, useToast } from '@wizeworks/silicaui-react';
+import { useQuery } from '@wizeworks/query';
+import { Badge, Button, Tooltip, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPrint } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';

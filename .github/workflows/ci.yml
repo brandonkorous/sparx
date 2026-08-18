@@ -127,7 +127,7 @@ jobs:
         with:
           turbo-cache-key: typecheck
       # The heap cap the lint job has had all along, and this job needed just as
-      # much. `@sparx/api-rest` is one `tsc` program over 469 files, and it sits
+      # much. `@wizeworks/api-rest` is one `tsc` program over 469 files, and it sits
       # RIGHT ON V8's default old-space ceiling (~4 GB): it type-checks in a
       # shade under 4 GB, so it passes whenever turbo replays it from cache and
       # dies with `FATAL ERROR: Ineffective mark-compacts near heap limit` on the
@@ -196,7 +196,7 @@ jobs:
     name: Surface ↔ address parity
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    # Every workbench surface must have an address in @sparx/links, and every
+    # Every workbench surface must have an address in @wizeworks/links, and every
     # address must name a surface that exists. A surface with no address is a
     # pane nobody can link to and one the URL bar cannot name; an address with no
     # surface is a link that opens nothing — the failure that left
@@ -265,6 +265,14 @@ jobs:
       # "Modules" reached the rail of a product that has no module pricing.
       - name: Check no sparx vocabulary reaches the Piggles nav
         run: node piggles/scripts/check-nav-vocabulary.mjs
+
+      # The two consoles are the same product shape under two brands, and almost
+      # everything that holds them up — toasts, confirms, crash reporting, deep
+      # links, the guide — is furniture nobody asks for by name and everybody
+      # notices missing. A capability added to one and forgotten in the other
+      # must turn this red rather than be found by a customer.
+      - name: Check the two consoles have not drifted apart
+        run: node scripts/check-console-parity.mjs
 
   webhook-events:
     name: Webhook event parity

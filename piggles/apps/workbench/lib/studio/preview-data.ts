@@ -1,0 +1,214 @@
+// Placeholder canvas data — the resolver root silica reads bindings against.
+//
+// The binding catalog says what a page CAN bind to; this shapes typed placeholder
+// records to that catalog so every offered path resolves to something believable
+// on the canvas (a bound heading reads a sample title, a product repeater renders
+// three cards). Real records arrive on the live site — the Preview action opens
+// it. Pure + deterministic (no Date.now / Math.random) so the canvas is stable.
+//
+// A lean sibling of the dashboard's `buildPreviewData`, built fresh for the
+// workbench off the SAME `DataSource`/`FieldSchema` shapes from
+// `@wizeworks/builder-schemas`.
+
+import type { DataSource, DataSources, FieldSchema } from '@wizeworks/builder-schemas';
+
+/** The tenant's REAL site-chrome identity, shaped exactly like the storefront's
+ *  `site.identity` resolver root — so a bound Wordmark/logo/name on the frame
+ *  previews the actual brand instead of a placeholder. */
+export interface SiteIdentityPreview {
+  name: string;
+  /** `null`, not '' — an empty string is a known-but-empty value the resolver fills
+   *  OVER the authored content, blanking the node. */
+  tagline: string | null;
+  logo: { url: string; alt: string } | null;
+  logoDark: { url: string; alt: string } | null;
+}
+
+/** The tenant's real `site.*` chrome data — identity + social links — overlaid onto
+ *  the placeholder preview data so the canvas header AND footer match the live site. */
+export interface SitePreviewData {
+  identity: SiteIdentityPreview;
+  social: { platform: string; url: string }[];
+}
+
+const SAMPLE_TITLES = [
+  'Built for the work',
+  'A closer look at the craft',
+  'Notes from the field',
+  'Made to last',
+  'The details that matter',
+];
+const SAMPLE_LINES = [
+  'A short, human sentence standing in for the real copy.',
+  'Placeholder text — the writer fills this in from the module form.',
+  'Just enough preview copy to see the layout breathe.',
+];
+const SAMPLE_PARAS = [
+  'A longer passage would run here. The template decides how it looks; the writer supplies the words in the module.',
+  'Two or three sentences of body copy — enough to show measure and rhythm. Real content replaces this once the record is filled.',
+];
+
+/** The typed product attributes (docs/143), shaped exactly like the live site's
+ *  resolved `attributeSections` array so a product page's auto-render repeat shows
+ *  believable content on the canvas — a couple of label/value blocks plus one
+ *  section that is itself a small table (a `items` sub-repeat, e.g. spec rows).
+ *  Real values arrive from each product's own typed attributes on the live site. */
+const SAMPLE_ATTRIBUTE_SECTIONS: Record<string, unknown>[] = [
+  {
+    label: 'Materials',
+    value: 'Midweight 100% organic cotton, garment-dyed for a lived-in feel.',
+    items: [],
+  },
+  {
+    label: 'Care',
+    value: 'Machine wash cold, tumble dry low, warm iron if needed.',
+    items: [],
+  },
+  {
+    label: 'Specifications',
+    value: '',
+    items: [
+      { label: 'Weight', value: '240 gsm' },
+      { label: 'Fit', value: 'Relaxed' },
+      { label: 'Origin', value: 'Made in Portugal' },
+    ],
+  },
+];
+
+function pick(arr: string[], i: number): string {
+  return arr[i % arr.length] ?? '';
+}
+
+function titleish(key: string): boolean {
+  return /(title|name|heading|headline|label|question)/i.test(key);
+}
+
+function imageValue(f: FieldSchema, i: number): { url: string; alt: string; description: string } {
+  return { url: '', alt: `${f.label || 'Image'} ${i + 1}`, description: '' };
+}
+
+function placeholder(f: FieldSchema, i: number): unknown {
+  // The product's typed attribute sections (docs/143) get realistic sample content
+  // rather than the generic title/line filler, so the PDP's auto-render repeat reads
+  // like a real product-detail block on the canvas.
+  if (f.key === 'attributeSections' && f.kind === 'list') {
+    return SAMPLE_ATTRIBUTE_SECTIONS;
+  }
+  switch (f.kind) {
+    case 'richtext':
+      return pick(SAMPLE_PARAS, i);
+    case 'number':
+      return /price/i.test(f.key) ? 24 + i * 10 : i + 1;
+    case 'boolean':
+      return i % 2 === 0;
+    case 'date':
+      return '2026-01-15';
+    case 'option':
+      return f.cardinality === 'array' ? ['Sample', 'Tag'] : 'Sample';
+    case 'reference':
+      return f.cardinality === 'array' ? [`${f.label} A`, `${f.label} B`] : `${f.label}`;
+    case 'image':
+      return imageValue(f, i);
+    case 'images':
+      return [0, 1, 2].map((k) => imageValue(f, k));
+    case 'file':
+      return { url: '', name: `${f.label || 'file'}.pdf` };
+    case 'group':
+      return buildRecord(f.fields ?? [], i);
+    case 'list':
+      return [0, 1].map((k) => buildRecord(f.fields ?? [], k));
+    case 'text':
+    default:
+      return titleish(f.key) ? pick(SAMPLE_TITLES, i) : pick(SAMPLE_LINES, i);
+  }
+}
+
+function buildRecord(fields: FieldSchema[], i: number): Record<string, unknown> {
+  const rec: Record<string, unknown> = {};
+  for (const f of fields) rec[f.key] = placeholder(f, i);
+  return rec;
+}
+
+function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
+  const segs = dottedKey.split('.');
+  let cursor = root as Record<string, unknown>;
+  for (let i = 0; i < segs.length - 1; i += 1) {
+    const seg = segs[i] ?? '';
+    const next = cursor[seg];
+    if (typeof next !== 'object' || next === null) cursor[seg] = {};
+    cursor = cursor[seg] as Record<string, unknown>;
+  }
+  cursor[segs[segs.length - 1] ?? ''] = value;
+}
+
+/** How many placeholder records an array source with no declared cap gets, and the
+ *  ceiling on one that declares a large one.
+ *
+ *  A flat three used to be the answer for every array source, and it made the canvas
+ *  lie about the thing an author is actually laying out. The count now comes from the
+ *  source (`maxItems`), which is what the fetch will really return.
+ *
+ *  BOTH NUMBERS ARE MULTIPLES OF FOUR, and that is the whole point. The catalog grid is
+ *  `@2xl:grid-cols-3 @4xl:grid-cols-4`, so on a wide canvas it resolves to FOUR columns —
+ *  and three records into a four-column grid leaves a permanent hole in the last cell.
+ *  The author sees a ragged row, assumes the grid is mis-sized, and "fixes" a layout that
+ *  was never broken: with 24 real products that row is full. The preview has to fill
+ *  whole rows or it invents a defect the live page does not have.
+ *
+ *  The ceiling is for the UNBOUNDED sources — the paginated catalog grid genuinely shows
+ *  24, but 24 grey tiles is a canvas an author scrolls past to reach the next section,
+ *  and rows 3–6 tell them nothing rows 1–2 didn't. Two full rows reads as "a grid of
+ *  many". Only ever a CEILING: a source that yields fewer previews fewer, so this is
+ *  never the old lie in the other direction.
+ *
+ *  A per-instance `limit` (silicaui 0.38, docs/silicaui/01 §12) is applied by the ENGINE at
+ *  render, below this — so an author who asks for 3 correctly sees 3, hole included.
+ *  That hole is real; the one this constant removes was not. */
+const DEFAULT_PREVIEW_ITEMS = 4;
+const MAX_PREVIEW_ITEMS = 8;
+
+/** Build placeholder data shaped to the catalog so every offered binding path
+ *  resolves: an array source → as many records as it actually yields (see the caps
+ *  above); a record source → one. When the tenant's real chrome is supplied it
+ *  OVERRIDES the synthetic `site.identity` + `site.social`, so the header
+ *  (Logo/Wordmark) and footer (SocialLinks) preview the actual brand/links, matching
+ *  the live site instead of placeholder text. */
+export function buildPreviewRoot(
+  sources: readonly DataSource[],
+  site?: SitePreviewData | null
+): DataSources {
+  const root: DataSources = {};
+  // SHALLOWEST KEY FIRST, and this ordering is load-bearing rather than tidy.
+  //
+  // Some source keys are PREFIXES of others: `commerce.category` is the array of browse
+  // categories, and `commerce.category.<handle>` is one category's products — one per
+  // tenant collection. Writing the deep key first builds `commerce.category = { handle:
+  // [...] }`, and the shallow write then REPLACES that whole object with the category
+  // array, silently discarding every per-collection source. The repeat bound to it then
+  // resolves to nothing, and an unresolved collection keeps its authored children — which
+  // is exactly one card, with nothing on screen to say why.
+  //
+  // Writing shallow-first makes the deep key a property ON the array, which is where the
+  // dotted path resolver looks for it, so both survive. Catalog order is otherwise
+  // whatever the API happened to serialise, which is why this was intermittent.
+  const ordered = [...sources].sort(
+    (a, b) => a.key.split('.').length - b.key.split('.').length || a.key.localeCompare(b.key)
+  );
+  for (const s of ordered) {
+    const count = Math.min(s.maxItems ?? DEFAULT_PREVIEW_ITEMS, MAX_PREVIEW_ITEMS);
+    const value =
+      s.cardinality === 'array'
+        ? Array.from({ length: Math.max(1, count) }, (_, i) => buildRecord(s.fields, i))
+        : buildRecord(s.fields, 0);
+    setAtPath(root, s.key, value);
+  }
+  // Real chrome wins over the placeholder. Set even when the catalog has no `site.*`
+  // source, so the frame's bound header/footer still resolve; `site.social` is
+  // overwritten even when empty (SocialLinks then falls back to its own clean
+  // placeholder icons rather than synthetic record garbage).
+  if (site) {
+    setAtPath(root, 'site.identity', site.identity);
+    setAtPath(root, 'site.social', site.social);
+  }
+  return root;
+}

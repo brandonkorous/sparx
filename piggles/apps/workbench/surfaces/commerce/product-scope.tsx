@@ -48,6 +48,13 @@
 // independently-opened workbench tab has its own module instance. A dockview
 // popout shares this module by reference and needs no message at all.
 //
+// ── Sharing a following pane ─────────────────────────────────────────────
+//
+// "Send me that" means the product on screen, so a following pane copies a link
+// that PINS the product it is currently showing. It does that by declaring the
+// params for links only (`useShareAs`, lib/workbench/share-as.ts) — its own
+// descriptor is untouched, so the pane goes on following after the copy.
+//
 // ── The four states, and why a pane may not invent a fifth ───────────────
 //
 // `useProductScope` returns a discriminated union. Everything that is not
@@ -94,15 +101,20 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
-import { Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, Text } from '@wizeworks/silicaui-react';
 import { faBox, faBoxOpen, faMagnifyingGlass, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useWorkbench } from '../../lib/workbench/context';
 import { usePaneId } from '../../lib/workbench/dirty';
+import { useShareAs } from '../../lib/workbench/share-as';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
+import { EmptyStateActions } from '../../components/list-empty-state';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProduct, type Product } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
 
 /* ── The selection channel ──────────────────────────────────────────────── */
 
@@ -233,7 +245,17 @@ export function openProductFacet(
 /* ── The scope hook ─────────────────────────────────────────────────────── */
 
 export type ProductScope =
-  | { state: 'none'; productId: null; product: null; isFollowing: true; pin: null; retry: null }
+  | {
+      state: 'none';
+      productId: null;
+      product: null;
+      isFollowing: true;
+      pin: null;
+      retry: null;
+      /** Nothing is being fetched, because there is no product to fetch. */
+      isFetching: false;
+      updatedAt: undefined;
+    }
   | {
       state: 'loading' | 'missing' | 'error';
       productId: string;
@@ -241,6 +263,8 @@ export type ProductScope =
       isFollowing: boolean;
       pin: () => void;
       retry: () => void;
+      isFetching: boolean;
+      updatedAt: number | undefined;
     }
   | {
       state: 'ready';
@@ -249,6 +273,8 @@ export type ProductScope =
       isFollowing: boolean;
       pin: () => void;
       retry: () => void;
+      isFetching: boolean;
+      updatedAt: number | undefined;
     };
 
 export interface ProductScopeOptions {
@@ -294,6 +320,11 @@ export function useProductScope(ctx: SurfaceContext, options: ProductScopeOption
 
   const isFollowing = pinned === null;
 
+  // A following pane has no productId in its params, so no address — and the
+  // link someone wants is to the product they can see. Declared for links only;
+  // the descriptor is untouched, so this does not pin the pane.
+  useShareAs(isFollowing && effective ? { ...ctx.params, productId: effective } : null);
+
   useEffect(() => {
     ctx.setTitle(product ? `${options.label} · ${product.title}` : options.label);
   }, [ctx, product, options.label]);
@@ -317,8 +348,13 @@ export function useProductScope(ctx: SurfaceContext, options: ProductScopeOption
       isFollowing: true,
       pin: null,
       retry: null,
+      isFetching: false,
+      updatedAt: undefined,
     };
   }
+
+  const isFetching = query.isFetching;
+  const updatedAt = query.data ? query.dataUpdatedAt : undefined;
 
   // A 404 is a FACT about the product ("it is gone"); anything else is a fact
   // about the network. Telling someone their product was deleted because a
@@ -332,7 +368,16 @@ export function useProductScope(ctx: SurfaceContext, options: ProductScopeOption
       : 'loading';
 
   if (state === 'ready' && product) {
-    return { state: 'ready', productId: effective, product, isFollowing, pin, retry };
+    return {
+      state: 'ready',
+      productId: effective,
+      product,
+      isFollowing,
+      pin,
+      retry,
+      isFetching,
+      updatedAt,
+    };
   }
   return {
     state: state === 'ready' ? 'loading' : state,
@@ -341,6 +386,8 @@ export function useProductScope(ctx: SurfaceContext, options: ProductScopeOption
     isFollowing,
     pin,
     retry,
+    isFetching,
+    updatedAt,
   };
 }
 
@@ -360,29 +407,56 @@ function isNotFound(error: unknown): boolean {
  * by every facet pane so the eight of them cannot drift into eight dialects of
  * "nothing here".
  *
- * It renders the full pane shell (including a toolbar) rather than bare
- * content, because a pane that loses its toolbar when it loses its product
- * jumps by the height of the bar every time the selection changes.
+ * It keeps the toolbar through loading/missing/error, because a pane that loses
+ * its bar every time the selection changes jumps by the height of it. The bar
+ * carries no title of its own — the pane's tab already says what this is.
+ *
+ * `none` has no product, so nothing to re-read — but it DOES have an address.
+ * The panel is the surface and the product is a parameter of it, so
+ * `/commerce/products/stock` opens this pane set to follow, and that is a link
+ * worth sending. The bar therefore carries the copy-link and nothing else, which
+ * is what it took to stop this state rendering as a blank white strip.
  */
 export function ProductScopeFallback({
   ctx,
   scope,
   label,
+  module,
 }: {
   ctx: SurfaceContext;
   scope: ProductScope;
   label: string;
+  /** Which app this facet belongs to, so the brand draws that app's picture
+   *  rather than the generic one. Passed straight through to the state
+   *  components — this file decides nothing about it. */
+  module?: string;
 }) {
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${label} actions`}>
-        <Heading level={2} className="text-base font-semibold">
-          {label}
-        </Heading>
-      </PaneToolbar>
-      <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto">
-        <ScopeMessage ctx={ctx} scope={scope} label={label} />
-      </div>
+      {/* The bar stays in EVERY state, `none` included. A pane that drops its
+          chrome reads as broken beside the one docked next to it, and an empty
+          state is when someone is least sure they are in the right place. */}
+      <PaneToolbar
+        label={`${label} actions`}
+        {...(scope.state === 'none'
+          ? {}
+          : {
+              refresh: (
+                <RefreshButton
+                  isFetching={scope.isFetching}
+                  updatedAt={scope.updatedAt}
+                  onRefresh={scope.retry}
+                />
+              ),
+            })}
+      />
+      {/* The card is the pane's content REGION, so it wraps every state rather
+          than one of them — a card that appeared only when the pane was empty
+          would make the chrome jump as a product loads. Same one card a ready
+          facet fills. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">
+        <ScopeMessage ctx={ctx} scope={scope} label={label} module={module} />
+      </Card>
     </div>
   );
 }
@@ -391,14 +465,20 @@ function ScopeMessage({
   ctx,
   scope,
   label,
+  module,
 }: {
   ctx: SurfaceContext;
   scope: ProductScope;
   label: string;
+  module?: string;
 }) {
   if (scope.state === 'none') {
+    // A pane that works and has nothing chosen — <PaneEmpty>, not a raw
+    // EmptyState. The wrapper is what puts the brand's picture here and drops
+    // the glyph chip when it does; hand-rolling it drew a grey chip instead.
     return (
-      <EmptyState
+      <PaneEmpty
+        module={module}
         icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
         title="Choose a product first"
         description={`This panel shows ${label.toLowerCase()} for one product at a time. Open a product and it will follow along — or open this from a product to keep it fixed on that one.`}
@@ -421,17 +501,24 @@ function ScopeMessage({
   }
 
   if (scope.state === 'loading') {
-    return <InlineWaiting />;
+    // The whole pane is waiting, not a block inside one — so PaneWaiting, which
+    // fills the region. InlineWaiting left a single small line adrift in it.
+    return <PaneWaiting module={module} />;
   }
 
   if (scope.state === 'missing') {
+    // `missing`, so the wrapper suppresses a retry that could only ever fail and
+    // tones this as a warning rather than an error — a deleted product is not a
+    // fault.
     return (
-      <EmptyState
+      <PaneLoadError
+        module={module}
+        reason="missing"
         icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
         title="That product is no longer here"
         description="It has been deleted, or it belongs to a different site from the one you are working in. Nothing shown here applies to it any more."
         actions={
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <EmptyStateActions>
             <Button
               size="sm"
               color="module"
@@ -446,29 +533,25 @@ function ScopeMessage({
             <Button
               size="sm"
               variant="outline"
-              color="neutral"
               onClick={() => {
                 ctx.close();
               }}
             >
               Close this panel
             </Button>
-          </div>
+          </EmptyStateActions>
         }
       />
     );
   }
 
   return (
-    <EmptyState
+    <PaneLoadError
+      module={module}
       icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
       title={`Could not load ${label.toLowerCase()}`}
       description="This is a problem reaching the server. Nothing about the product has changed — it just could not be read just now."
-      actions={
-        <Button size="sm" color="module" onClick={scope.retry}>
-          Try again
-        </Button>
-      }
+      onRetry={scope.retry}
     />
   );
 }

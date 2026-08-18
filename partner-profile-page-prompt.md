@@ -18,23 +18,23 @@ page → links. Ship all of it. It is not done until a real partner row resolves
   client — **that is expected**; say so in your report rather than working around it.
 - **Migration directory names must be MONOTONIC.** Prisma orders lexicographically and
   this repo's hand-authored prefixes run ~6 months ahead of the wall clock. The newest
-  existing migration is `packages/db/prisma/migrations/20270131000000_silica_class_vocabulary`.
+  existing migration is `wizeworks/packages/db/prisma/migrations/20270131000000_silica_class_vocabulary`.
   Yours **must sort after it** — use `20270201000000_partner_slug`. CI enforces this
   (`scripts/check-migration-order.mjs`). Do not let `migrate dev` name it for you.
 - **RLS is hand-written SQL, not Prisma-generated.** The partner policies live in
-  `packages/db/prisma/migrations/20261003000000_partner_program/migration.sql`
+  `wizeworks/packages/db/prisma/migrations/20261003000000_partner_program/migration.sql`
   (`partners_visibility`). Read it before touching anything that reads partners publicly.
 - **Do not commit or push.** Leave everything in the working tree and report changed files.
 - **Do not start or restart the dev server.** Verify with typecheck / lint / curl against
   the already-running stack (marketing is on **:3003**, api-rest on **:3100**).
-- Read **`CLAUDE.md`** and **`packages/db/CLAUDE.md`** before you start. The design rules
+- Read **`CLAUDE.md`** and **`wizeworks/packages/db/CLAUDE.md`** before you start. The design rules
   in CLAUDE.md (RULE #1–#4) are binding on the page you build.
 
 ---
 
 ## Current state — verified, do not re-derive
 
-**Model** — `packages/db/prisma/schema/83-partners.prisma`, `model Partner`:
+**Model** — `wizeworks/packages/db/prisma/schema/83-partners.prisma`, `model Partner`:
 
 - `id` uuid PK, `tenantId` uuid (unique — one partner per tenant)
 - `displayName` VarChar(255), `bio` VarChar(2000), `websiteUrl`, `kind`, `photoUrl`
@@ -45,7 +45,7 @@ page → links. Ship all of it. It is not done until a real partner row resolves
 - `referralCode` VarChar(32), globally unique via `@@unique([referralCode], map: "partners_referral_code_unique")`
 - **There is no `slug` column.** That is the gap.
 
-**API** — `services/api-rest/src/routes/v1/public/partners.ts`:
+**API** — `wizeworks/services/api-rest/src/routes/v1/public/partners.ts`:
 
 - `GET /v1/public/partners` → faceted list
 - `GET /v1/public/partners/:id` → **`z.string().uuid()`**, calls `directoryService.getPartner(id)`
@@ -53,7 +53,7 @@ page → links. Ship all of it. It is not done until a real partner row resolves
 - The `/v1/public/` prefix skips Bearer auth (see `app.ts`); the directory runs under
   `withSystem` so the `partners_visibility` RLS policy applies.
 
-**Service** — `services/api-rest/src/lib/partners/`:
+**Service** — `wizeworks/services/api-rest/src/lib/partners/`:
 
 - `directory.ts` → `getPartner(id)` filters `status: 'active', directoryVisible: true, deletedAt: null`
   and maps through `toPartnerCard()`.
@@ -65,20 +65,20 @@ page → links. Ship all of it. It is not done until a real partner row resolves
   `uniqueSlug(tx, title)` (6 attempts, `randomBytes(2)` suffix, then `randomBytes(4)`).
   **Mirror these for partners rather than inventing a second convention.**
 
-**Marketing data layer** — `apps/web/lib/partners.ts`: server-only, reads
+**Marketing data layer** — `sparx/apps/web/lib/partners.ts`: server-only, reads
 `SPARX_API_REST_URL` (default `http://localhost:3100`), unwraps a `{success, data}` envelope,
 `next: { revalidate: 300 }`, and **degrades to empty on any error so pages still render**.
 Exports `PartnerCard`, `PartnerProfile extends PartnerCard` (adds `locationCountry`,
 `headline`), `TIER_META`, `partnerLocation()`. Neither type has a `slug`.
 
-**Marketing routes** — `apps/web/app/partners/` has `page.tsx`, `directory/`,
+**Marketing routes** — `sparx/apps/web/app/partners/` has `page.tsx`, `directory/`,
 `opengraph-image.tsx`, `twitter-image.tsx`, `actions.ts`. **No `[slug]` route exists.**
 
 ---
 
 ## What to build
 
-### 1. Migration — `packages/db/prisma/migrations/20270201000000_partner_slug/migration.sql`
+### 1. Migration — `wizeworks/packages/db/prisma/migrations/20270201000000_partner_slug/migration.sql`
 
 - `ALTER TABLE partners ADD COLUMN slug varchar(160);`
 - **Backfill every existing row** from `display_name` using the same rules as `slugify()`
@@ -88,7 +88,7 @@ Exports `PartnerCard`, `PartnerProfile extends PartnerCard` (adds `locationCount
 - Then `ALTER COLUMN slug SET NOT NULL` and add `CREATE UNIQUE INDEX partners_slug_unique ON partners (slug);`
 - Order matters: add nullable → backfill → set not-null → unique index. A single
   `ADD COLUMN ... NOT NULL UNIQUE` will fail on any table with rows.
-- **Check `packages/db/CLAUDE.md` for the FORCE-RLS backfill footgun** before writing the
+- **Check `wizeworks/packages/db/CLAUDE.md` for the FORCE-RLS backfill footgun** before writing the
   UPDATE — a plain `UPDATE` inside a migration on an RLS-forced table can silently affect
   zero rows. Follow whatever that doc says; do not guess.
 
@@ -103,7 +103,7 @@ slug String @db.VarChar(160)
 ### 2. Service
 
 - Add `slugify()` / `uniquePartnerSlug(tx, displayName)` to
-  `services/api-rest/src/lib/partners/service.ts` (or a shared helper both it and
+  `wizeworks/services/api-rest/src/lib/partners/service.ts` (or a shared helper both it and
   `bootcamp-service.ts` import — **preferred**, but do not refactor bootcamps' behaviour).
   Fallback base string should be `'partner'`, not `'bootcamp'`.
 - `provisionForTenant()` must set `slug: await uniquePartnerSlug(tx, input.displayName)`
@@ -118,7 +118,7 @@ slug String @db.VarChar(160)
 
 ### 3. API
 
-In `services/api-rest/src/routes/v1/public/partners.ts`, add:
+In `wizeworks/services/api-rest/src/routes/v1/public/partners.ts`, add:
 
 ```
 GET /v1/public/partners/slug/:slug   → directoryService.getPartnerBySlug(slug)
@@ -129,22 +129,22 @@ overloading it to accept both means a malformed uuid silently becomes a slug loo
 Keep the existing `:id` route working (internal callers may use it). Validate with
 `z.string().min(1).max(160).regex(/^[a-z0-9-]+$/)`. 404 via `notFound('Partner', slug)`.
 
-### 4. Marketing data layer — `apps/web/lib/partners.ts`
+### 4. Marketing data layer — `sparx/apps/web/lib/partners.ts`
 
 - Add `slug: string` to `PartnerCard`.
 - Add `fetchPartner(slug: string): Promise<PartnerProfile | null>` using the existing
   `getPublic()` helper. It must return `null` (not throw) on 404 or on any failure, so the
   page can call `notFound()` itself.
 
-### 5. The page — `apps/web/app/partners/[slug]/page.tsx`
+### 5. The page — `sparx/apps/web/app/partners/[slug]/page.tsx`
 
 **Read these three files first and match them exactly.** They are the current house pattern
 and were rebuilt this week:
 
-- `apps/web/components/marketing/band.tsx` — the `<Band>` section shell (`tone`,
+- `sparx/apps/web/components/marketing/band.tsx` — the `<Band>` section shell (`tone`,
   `flush`, `bleed`). **Every section is a `<Band>`.** Do not hand-roll `<section>`.
-- `apps/web/app/partners/directory/page.tsx` — band rhythm, empty states, metadata shape.
-- `apps/web/app/partners/directory/_components/partner-card.tsx` and
+- `sparx/apps/web/app/partners/directory/page.tsx` — band rhythm, empty states, metadata shape.
+- `sparx/apps/web/app/partners/directory/_components/partner-card.tsx` and
   `_components/specialties.ts` — **reuse `specialty()` for the module-hued tags.**
 
 Requirements:
@@ -166,11 +166,11 @@ Requirements:
 
 ### 6. Wire it up
 
-- `apps/web/app/partners/directory/_components/partner-card.tsx`: the partner **name**
+- `sparx/apps/web/app/partners/directory/_components/partner-card.tsx`: the partner **name**
   becomes a link to `/partners/${partner.slug}`. Keep the external "Visit their site ↗"
   link as a separate action — they go to different places and both matter.
-- `apps/web/components/marketing/partners/directory.tsx` (the aside on `/partners`): same.
-- `apps/web/app/sitemap.ts`: include published partner profiles. Check how it already
+- `sparx/apps/web/components/marketing/partners/directory.tsx` (the aside on `/partners`): same.
+- `sparx/apps/web/app/sitemap.ts`: include published partner profiles. Check how it already
   awaits published bootcamps and follow that.
 
 ---
@@ -180,7 +180,7 @@ Requirements:
 These are from `CLAUDE.md` and have caused rejected work on this exact page family:
 
 - **silicaui first, Tailwind utilities second, nothing else.** No new dependency, no bespoke
-  CSS, **no inline `style` prop**. `apps/web/app/marketing.css` still holds legacy `.mkt-*`
+  CSS, **no inline `style` prop**. `sparx/apps/web/app/marketing.css` still holds legacy `.mkt-*`
   classes — **do not add to it**; several were deleted this week.
 - **Body text floor is 16px** (`text-md`). `text-sm` is for genuine captions only. The old
   partner pages were riddled with 14px body copy.
@@ -227,7 +227,7 @@ curl -s http://localhost:3003/partners/<slug> \
 1. `pnpm --filter @sparx/web exec tsc --noEmit -p tsconfig.json` — clean, **or** failing
    only on `slug` not existing on the generated Prisma client (report this explicitly).
 2. `pnpm --filter @sparx/web exec eslint app/partners components/marketing/partners` — clean.
-3. `pnpm --filter @sparx/api-rest exec tsc --noEmit` — same caveat.
+3. `pnpm --filter @wizeworks/api-rest exec tsc --noEmit` — same caveat.
 4. `npx prettier --check` on every file you touched.
 5. `node scripts/check-migration-order.mjs` passes.
 6. The rendered-HTML scan above returns no glued words.

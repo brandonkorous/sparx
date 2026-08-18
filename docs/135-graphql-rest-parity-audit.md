@@ -19,8 +19,8 @@ first-class alternate to the REST API**, not a narrow read slice — so the targ
 the queryable/manageable surface. This document is the endpoint-level audit and the concrete backlog
 to close the gap.
 
-Source of truth: a full sweep of `services/api-rest/src/routes/**` (250 route files) and the entire
-`services/api-graphql/src` surface, performed 2026-07-22.
+Source of truth: a full sweep of `wizeworks/services/api-rest/src/routes/**` (250 route files) and the entire
+`wizeworks/services/api-graphql/src` surface, performed 2026-07-22.
 
 ---
 
@@ -43,7 +43,7 @@ Source of truth: a full sweep of `services/api-rest/src/routes/**` (250 route fi
 
 REST routes are **thin**. Every domain route delegates to service objects in a reusable
 `@sparx/<domain>` package — e.g. `commerce/carts.ts` imports `cartService`, `checkoutService` from
-`@sparx/commerce`; the CRM GraphQL resolvers already wrap `@sparx/crm`'s `customerService`,
+`@wizeworks/commerce`; the CRM GraphQL resolvers already wrap `@wizeworks/crm`'s `customerService`,
 `dealService`, etc. Domain-logic packages exist for nearly every domain (commerce, inventory, crm,
 cms, billing, dropship, scheduling, automation, builder, channels, email, forms, media, payments,
 search).
@@ -57,7 +57,7 @@ hand-written (§6).
 
 ## 3. Current GraphQL surface (what is DONE)
 
-Single Mercurius instance at `POST /v1/graphql`, hand-written SDL, auth via `@sparx/api-core/auth`.
+Single Mercurius instance at `POST /v1/graphql`, hand-written SDL, auth via `@wizeworks/api-core/auth`.
 
 ### CMS content — 🟡 partial (6 queries / 5 mutations)
 
@@ -71,7 +71,7 @@ Resolvers here **inline** their logic (don't wrap a single service fn).
 
 Customers, B2B accounts, pipelines, stages, deals, deal forecast, deal↔order/quote attachments,
 activities, tasks (+overdue/today), segments (+members/preview/recompute), reports (snapshot, funnel,
-win-loss, acquisition). Resolvers are genuinely thin over `@sparx/crm`.
+win-loss, acquisition). Resolvers are genuinely thin over `@wizeworks/crm`.
 **Quality gap:** every CRM mutation takes an opaque `JSON!` input — the SDL doesn't type the payloads.
 
 ---
@@ -96,30 +96,30 @@ queries, bulk/lifecycle actions to mutations).
 
 ### Tier 1 — core commerce/ops data (defines "alternate to REST")
 
-| Domain           | REST | Service pkg             | Entities → GraphQL                                                                                                                                                                                                                                                                                                   |
-| ---------------- | ---: | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Commerce catalog | ~232 | `@sparx/commerce`       | products, variants, options, images, translations, categories, collections, price-lists, discounts, gift-cards, account-credit, markup/surcharge rules, shipping/tax zones+rates, providers, returns, subscriptions, reviews, Q&A, wishlists, fitment, bundles, configurators, storefront settings, commerce reports |
-| Orders           |   18 | `@sparx/commerce`       | orders, payments, fulfillments, shipping labels/tracking, refunds                                                                                                                                                                                                                                                    |
-| Inventory        |  104 | `@sparx/inventory`      | levels, locations, sources, lots/serials/recalls, suppliers, purchase-orders, receipts, reorder, counts, transfers, movements, sync/agent, reports                                                                                                                                                                   |
-| B2B              |   40 | `@sparx/commerce` (b2b) | accounts, fleets, overrides, pricing-tiers, price resolution, quotes, AR invoices, approval rules/queue, holds, reports                                                                                                                                                                                              |
-| Invoicing        |   45 | `@sparx/billing`        | documents (+lines/snapshots/payments/convert), workflows+stages, line-types, templates, aging, reports                                                                                                                                                                                                               |
-| Scheduling       |   57 | `@sparx/scheduling`     | services, resources, availability, bookings (+lifecycle), policies, calendar connections, series, waitlist, classes/attendees, reports                                                                                                                                                                               |
+| Domain           | REST | Service pkg                 | Entities → GraphQL                                                                                                                                                                                                                                                                                                   |
+| ---------------- | ---: | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Commerce catalog | ~232 | `@wizeworks/commerce`       | products, variants, options, images, translations, categories, collections, price-lists, discounts, gift-cards, account-credit, markup/surcharge rules, shipping/tax zones+rates, providers, returns, subscriptions, reviews, Q&A, wishlists, fitment, bundles, configurators, storefront settings, commerce reports |
+| Orders           |   18 | `@wizeworks/commerce`       | orders, payments, fulfillments, shipping labels/tracking, refunds                                                                                                                                                                                                                                                    |
+| Inventory        |  104 | `@wizeworks/inventory`      | levels, locations, sources, lots/serials/recalls, suppliers, purchase-orders, receipts, reorder, counts, transfers, movements, sync/agent, reports                                                                                                                                                                   |
+| B2B              |   40 | `@wizeworks/commerce` (b2b) | accounts, fleets, overrides, pricing-tiers, price resolution, quotes, AR invoices, approval rules/queue, holds, reports                                                                                                                                                                                              |
+| Invoicing        |   45 | `@wizeworks/billing`        | documents (+lines/snapshots/payments/convert), workflows+stages, line-types, templates, aging, reports                                                                                                                                                                                                               |
+| Scheduling       |   57 | `@wizeworks/scheduling`     | services, resources, availability, bookings (+lifecycle), policies, calendar connections, series, waitlist, classes/attendees, reports                                                                                                                                                                               |
 
 ### Tier 2 — content, marketing, site
 
-| Domain                                   | REST | Service pkg                 | Notes                                                                                                                                                                                         |
-| ---------------------------------------- | ---: | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Builder                                  |   72 | `@sparx/builder`            | pages, layouts, silica site, components/symbols, archetypes, emails, governance, analytics. Op-log autosave (`PUT /site`) is REST-shaped — expose reads + publish/release/restore as GraphQL. |
-| Site (sitebuilder)                       |   67 | `@sparx/sitebuilder`        | layout slots, sections, assignments, page-layouts, definitions, themes, saved-themes, publish/rollback/schedule, blueprints, navigation, presets, brand                                       |
-| Email                                    |   25 | `@sparx/email*`             | settings, domains, suppressions, broadcasts (+send/schedule/cancel), analytics                                                                                                                |
-| Content (finish)                         |    9 | `@sparx/cms`                | preview-tokens, reports, content-analytics, revision restore, schema authoring                                                                                                                |
-| SEO                                      |   15 | `@sparx/seo-audit`          | audit/audits, reports, organic (search-console reads). OAuth exchange stays REST (§7).                                                                                                        |
-| Automation                               |   15 | `@sparx/automation`         | automations, versions/publish/restore, runs, reports                                                                                                                                          |
-| Media                                    |    8 | `@sparx/media`              | assets read/patch/delete + reports. Upload presign/complete stays REST (§7).                                                                                                                  |
-| Authors / Redirects / Forms / Taxonomies |   24 | cms / seo / forms           | straightforward CRUD                                                                                                                                                                          |
-| Channels / Market                        |   16 | `@sparx/channels`           | connections, mappings, merchant profile/products/settlement. OAuth callback stays REST.                                                                                                       |
-| Dropship                                 |   22 | `@sparx/dropship`           | suppliers, catalog import, products, order routing, analytics/reports                                                                                                                         |
-| Finance                                  |    8 | `@sparx/commerce`/`billing` | payments/payouts/receivables/channels ledgers (read-only)                                                                                                                                     |
+| Domain                                   | REST | Service pkg                     | Notes                                                                                                                                                                                         |
+| ---------------------------------------- | ---: | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Builder                                  |   72 | `@wizeworks/builder`            | pages, layouts, silica site, components/symbols, archetypes, emails, governance, analytics. Op-log autosave (`PUT /site`) is REST-shaped — expose reads + publish/release/restore as GraphQL. |
+| Site (sitebuilder)                       |   67 | `@wizeworks/sitebuilder`        | layout slots, sections, assignments, page-layouts, definitions, themes, saved-themes, publish/rollback/schedule, blueprints, navigation, presets, brand                                       |
+| Email                                    |   25 | `@wizeworks/email*`             | settings, domains, suppressions, broadcasts (+send/schedule/cancel), analytics                                                                                                                |
+| Content (finish)                         |    9 | `@wizeworks/cms`                | preview-tokens, reports, content-analytics, revision restore, schema authoring                                                                                                                |
+| SEO                                      |   15 | `@wizeworks/seo-audit`          | audit/audits, reports, organic (search-console reads). OAuth exchange stays REST (§7).                                                                                                        |
+| Automation                               |   15 | `@wizeworks/automation`         | automations, versions/publish/restore, runs, reports                                                                                                                                          |
+| Media                                    |    8 | `@wizeworks/media`              | assets read/patch/delete + reports. Upload presign/complete stays REST (§7).                                                                                                                  |
+| Authors / Redirects / Forms / Taxonomies |   24 | cms / seo / forms               | straightforward CRUD                                                                                                                                                                          |
+| Channels / Market                        |   16 | `@wizeworks/channels`           | connections, mappings, merchant profile/products/settlement. OAuth callback stays REST.                                                                                                       |
+| Dropship                                 |   22 | `@wizeworks/dropship`           | suppliers, catalog import, products, order routing, analytics/reports                                                                                                                         |
+| Finance                                  |    8 | `@wizeworks/commerce`/`billing` | payments/payouts/receivables/channels ledgers (read-only)                                                                                                                                     |
 
 ### Tier 3 — platform, tenant, AI, misc
 
@@ -148,12 +148,12 @@ queries, bulk/lifecycle actions to mutations).
    Where a REST route currently inlines logic (CMS content, and a few commerce routes), extract to the
    service package first so both surfaces share one code path.
 3. **Type the inputs.** Replace the CRM `JSON!` inputs with real input types derived from the
-   `*-schemas` Zod packages (`@sparx/crm-schemas`, `@sparx/commerce-schemas`, …). A Zod→GraphQL-input
+   `*-schemas` Zod packages (`@wizeworks/crm-schemas`, `@wizeworks/commerce-schemas`, …). A Zod→GraphQL-input
    generator keeps them in lockstep with REST validation.
 4. **Subscriptions.** Stand up the missing real-time surface over the existing Pub/Sub event catalog
    (`order.placed`/`order.paid`, `inventory.*`, `booking.*`, …) via `mercurius` subscriptions — the
    events already exist; only the GraphQL transport is missing.
-5. **Auth/tenancy/audit are already shared** via `@sparx/api-core` (`requireRole`, `withRequestTenant`,
+5. **Auth/tenancy/audit are already shared** via `@wizeworks/api-core` (`requireRole`, `withRequestTenant`,
    `writeAudit`, `publish`, module gates). Reuse verbatim — no parallel implementation.
 
 ## 7. What stays REST-only (honest scope of "parity")

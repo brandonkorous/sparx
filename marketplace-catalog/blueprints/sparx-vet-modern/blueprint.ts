@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-vet-modern',
-    version: '1.3.0',
-    name: 'sparx — Veterinary (Modern)',
-    summary:
-        'A calm, modern veterinary-wellness site — a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-vet-modern',
+  version: '1.3.0',
+  name: 'sparx — Veterinary (Modern)',
+  summary:
+    'A calm, modern veterinary-wellness site — a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Fauna Veterinary',
+    tagline: 'Calm, whole-pet care.',
+    colors: {
+      primary: '#638c6b',
+      primaryForeground: '#060e07',
+      accent: '#c29373',
+      secondary: '#37473b',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'fauna',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Fauna Veterinary',
-        tagline: 'Calm, whole-pet care.',
-        colors: {
-            primary: '#638c6b',
-            primaryForeground: '#060e07',
-            accent: '#c29373',
-            secondary: '#37473b',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Inter',
-        },
+      colorPrimary: '#638c6b',
+      colorAccent: '#c29373',
+      colorSecondary: '#37473b',
+      fontHeading: 'Fraunces',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'fauna',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#638c6b',
-            colorAccent: '#c29373',
-            colorSecondary: '#37473b',
-            fontHeading: 'Fraunces',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

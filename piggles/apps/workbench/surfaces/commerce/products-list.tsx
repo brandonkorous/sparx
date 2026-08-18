@@ -29,19 +29,16 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
-  Filter,
-  FilterItem,
   SearchInput,
-  Table,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faBox, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatDate,
@@ -53,6 +50,10 @@ import {
   type ProductStatus,
   type SortDirection,
 } from './products-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 /**
  * The chips are the questions, not the stored words.
@@ -186,16 +187,15 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
     // Surfaces, not one slab: the pane is base-200, the toolbar and table are
     // base-100 cards lifted onto it.
     <div className={PANE_SHELL}>
-      {/* `wrap` after reducing everything that can reduce. Four chips are a fixed
-          ~15rem that cannot shrink, and below @2xl the primary action has already
-          shed its label to the icon and the separator has gone. At a normal pane
-          width this is one line; at 320px, beside a product, it takes two rather
-          than clipping the filters off the right edge. */}
-      <PaneToolbar label="Product list controls" wrap>
-        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
-            its inner <input>, so a sizing class aimed at the control never
-            reaches the element that actually lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
+      {/* Slots, not children: the bar decides what gives way, and on a narrow
+          pane the chips relocate into its popover rather than spilling onto a
+          second row. `activeControls` is what keeps that honest — a list showing
+          eight of forty products has to say so even when the chip saying it is
+          folded away. "All" is the null state and counts as nothing. */}
+      <PaneToolbar
+        label="Product list controls"
+        activeControls={filter === 'all' ? 0 : 1}
+        search={
           <SearchInput
             size="sm"
             aria-label="Search products"
@@ -206,50 +206,49 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
               resetWindow();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @2xl:block" />
-
-        {/* `showReset={false}` because "All" already IS the reset; a × beside it
-            would be two controls for one idea. */}
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
+        }
+        filters={[
+          {
+            label: 'Show',
+            // The chips ARE the statuses, so that is the name they persist under —
+            // and what the platform's seeded "Drafts" view speaks.
+            key: 'status',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
+              resetWindow();
+            },
+            options: FILTERS,
+          },
+        ]}
+        primaryAction={{
+          label: 'Add a product',
+          icon: faPlus,
+          onClick: create,
+          title: 'Add a product — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/commerce/products',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as ProductSortKey, dir });
+            }
             resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter products"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <Button
-          data-tour="commerce-add-product"
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add a product — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @2xl:inline">Add a product</span>
-        </Button>
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {/* A refetch that failed while a good window is already on screen is NOT
@@ -284,26 +283,19 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the table rather than rendering an empty one:
           // "No products yet" over a connection failure is a lie about the
           // catalog, and the worst possible one to tell someone.
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title="Could not load your products"
             description="This is a problem reaching the server. Your catalog is unaffected — nothing has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading products…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faBox} className="size-6" aria-hidden />,
@@ -331,7 +323,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Table size="sm" hover>
             <thead>
               <tr>
-                {header('title', 'Product')}
+                {header('title', 'Product', 'w-full')}
                 <th className="hidden @xl:table-cell">Brand</th>
                 <th className="hidden text-right @2xl:table-cell">Versions</th>
                 {header('updatedAt', 'Changed', 'hidden @4xl:table-cell')}
@@ -361,24 +353,22 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {/* The name IS the row. The web address underneath is a
                           note about it, so it is smaller — but at full ink, not
                           faded: it is there to be read. */}
-                      <span className="block max-w-64 truncate font-medium">{product.title}</span>
-                      <span className="block max-w-64 truncate font-mono text-sm">
-                        /{product.handle}
-                      </span>
+                      <span className="block truncate font-medium">{product.title}</span>
+                      <span className="block truncate font-mono text-sm">/{product.handle}</span>
                     </td>
-                    <td className="hidden max-w-40 truncate @xl:table-cell">
+                    <td className="hidden max-w-40 truncate whitespace-nowrap @xl:table-cell">
                       {product.vendor ?? product.productType ?? '—'}
                     </td>
                     <td className="hidden text-right tabular-nums @2xl:table-cell">
                       {product.variantCount}
                     </td>
-                    <td className="hidden text-sm @4xl:table-cell">
+                    <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
                       {formatDate(product.updatedAt)}
                     </td>
                     <td className="text-right font-medium whitespace-nowrap tabular-nums">
                       {priceLabel(product)}
                     </td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       <Badge color={state.tone} variant="soft" size="sm">
                         {state.label}
                       </Badge>

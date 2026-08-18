@@ -26,7 +26,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { faCode, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { Action } from '@sparx/automation-schemas';
+import type { Action } from '@wizeworks/automation-schemas';
 import {
   actionDef,
   availableActions,

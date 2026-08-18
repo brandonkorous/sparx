@@ -47,7 +47,7 @@ The rest of this doc walks each step.
 Each template is one TypeScript file plus a one-line registration:
 
 ```
-packages/blueprints/
+wizeworks/packages/blueprints/
   src/
     blueprints/
       retail-store-blog.ts     ← the manifest (one file per template)
@@ -518,7 +518,7 @@ Aim for a clean shot of the home page (the card crops to 16:10, top-aligned).
 Add your template to the catalog so the `/templates` page picks it up:
 
 ```ts
-// packages/blueprints/src/registry.ts
+// wizeworks/packages/blueprints/src/registry.ts
 import { retailStoreBlog } from './blueprints/retail-store-blog';
 import { yourTemplate } from './blueprints/your-template'; // ← add
 
@@ -534,7 +534,7 @@ That's it — the `/templates` page, the install API, and the marketplace all re
 
 ## Test it
 
-1. **It validates on build.** `parseBlueprint()` runs when the module loads, so `pnpm --filter @sparx/blueprints typecheck` and the package tests catch a malformed manifest, a dangling handle, or a missing asset id immediately.
+1. **It validates on build.** `parseBlueprint()` runs when the module loads, so `pnpm --filter @wizeworks/blueprints typecheck` and the package tests catch a malformed manifest, a dangling handle, or a missing asset id immediately.
 2. **Install onto a scratch property.** From the dashboard, switch the active site to a throwaway property, open **Templates**, and click **Install**. Everything lands as drafts.
 3. **Review the drafts.** Walk the pages in the Builder, the products in Commerce, the posts in CMS, the emails in Email. Fix anything that looks off in the manifest and re-test.
 4. **Go live.** Click **Go live** — it publishes every page, activates the layout, sets products live, and publishes content. Open the site and confirm it renders.
@@ -567,4 +567,4 @@ A few rules that aren't obvious but will bite you:
 **Built-in content types:** `page` · `blog_post`
 **Record types for collection pages:** `commerce.product` · `cms.blog_post` · `cms.page`
 
-For the full schema, read [`packages/blueprints/src/manifest.ts`](../../packages/blueprints/src/manifest.ts). For a complete worked example, read [`packages/blueprints/src/blueprints/retail-store-blog.ts`](../../packages/blueprints/src/blueprints/retail-store-blog.ts). The design model behind it all is [docs/54 — Tenant Blueprints](../54-tenant-blueprints.md) and [docs/40 — Site Builder composition model](../40-sitebuilder-composition-model.md).
+For the full schema, read [`wizeworks/packages/blueprints/src/manifest.ts`](../../packages/blueprints/src/manifest.ts). For a complete worked example, read [`wizeworks/packages/blueprints/src/blueprints/retail-store-blog.ts`](../../packages/blueprints/src/blueprints/retail-store-blog.ts). The design model behind it all is [docs/54 — Tenant Blueprints](../54-tenant-blueprints.md) and [docs/40 — Site Builder composition model](../40-sitebuilder-composition-model.md).

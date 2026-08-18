@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-pt-ortho',
-    version: '1.3.0',
-    name: 'sparx — Physical Therapy (Ortho & Sports)',
-    summary:
-        'An active, results-driven orthopedic & sports physical therapy site — a confident teal palette with an energetic orange accent on a crisp near-white ground. Installs a working booking flow: evaluations, follow-ups, sports rehab, manual therapy, dry needling and post-op rehab, with three therapists AND treatment rooms as multi-requirement resources. Ships as "Momentum Physical Therapy", an ortho & sports rehab clinic that books evaluations online from day one.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-pt-ortho',
+  version: '1.3.0',
+  name: 'sparx — Physical Therapy (Ortho & Sports)',
+  summary:
+    'An active, results-driven orthopedic & sports physical therapy site — a confident teal palette with an energetic orange accent on a crisp near-white ground. Installs a working booking flow: evaluations, follow-ups, sports rehab, manual therapy, dry needling and post-op rehab, with three therapists AND treatment rooms as multi-requirement resources. Ships as "Momentum Physical Therapy", an ortho & sports rehab clinic that books evaluations online from day one.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Momentum Physical Therapy',
+    tagline: 'Fix the cause. Build it back.',
+    colors: {
+      primary: '#008e95',
+      primaryForeground: '#020e0e',
+      accent: '#ee7a1f',
+      secondary: '#293b45',
+    },
+    fonts: {
+      heading: 'Outfit',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'momentum',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Momentum Physical Therapy',
-        tagline: 'Fix the cause. Build it back.',
-        colors: {
-            primary: '#008e95',
-            primaryForeground: '#020e0e',
-            accent: '#ee7a1f',
-            secondary: '#293b45',
-        },
-        fonts: {
-            heading: 'Outfit',
-            body: 'Inter',
-        },
+      colorPrimary: '#008e95',
+      colorAccent: '#ee7a1f',
+      colorSecondary: '#293b45',
+      fontHeading: 'Outfit',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'momentum',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#008e95',
-            colorAccent: '#ee7a1f',
-            colorSecondary: '#293b45',
-            fontHeading: 'Outfit',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

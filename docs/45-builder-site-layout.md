@@ -5,7 +5,7 @@ Author: Brandon Korous
 Last Updated: 2026-08-02
 
 > **SUPERSEDED for the storefront render path (2026-08-02).** The chrome a visitor sees is the
-> **silica frame** (`builder_layouts.silica_published_tree`), read by `apps/site/app/layout.tsx`.
+> **silica frame** (`builder_layouts.silica_published_tree`), read by `wizeworks/apps/site/app/layout.tsx`.
 > The sparx-Builder chrome renderer described below was deleted with `<SiteHeader>`/`<SiteFooter>`,
 > so the `draft_tree` / `published_tree` columns this doc specifies no longer reach a page. The MCP
 > tools that wrote them (`list` / `get` / `create` / `update` / `publish_builder_layout`,

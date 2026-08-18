@@ -34,7 +34,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -53,6 +52,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -177,19 +177,22 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New booking actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Take booking
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New booking actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Take booking
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -383,7 +386,19 @@ function serviceLabel(service: ServiceLite): string {
    MANAGE AN EXISTING BOOKING
    ══════════════════════════════════════════════════════════════════════════ */
 
-function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking }) {
+function BookingManage({
+  ctx,
+  booking,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  booking: Booking;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const toast = useToast();
   const confirmDialog = useConfirm();
   const id = booking.id;
@@ -505,82 +520,85 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Booking actions" wrap>
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-
-        {booking.status === 'requested' ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={confirm.isPending}
-            disabled={lifecycleBusy}
-            onClick={() => {
-              confirm.mutate(undefined, {
-                onSuccess: () => {
-                  toast.add({ title: 'Booking confirmed', type: 'success' });
-                },
-              });
-            }}
-          >
-            <Icon glyph={faCheckCircle} className="size-4" aria-hidden />
-            Confirm
-          </Button>
-        ) : null}
-
-        {booking.status === 'confirmed' ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={checkIn.isPending}
-            disabled={lifecycleBusy}
-            onClick={() => {
-              checkIn.mutate(undefined, {
-                onSuccess: () => {
-                  toast.add({ title: 'Checked in', type: 'success' });
-                },
-              });
-            }}
-          >
-            <Icon glyph={faRightToBracket} className="size-4" aria-hidden />
-            Check in
-          </Button>
-        ) : null}
-
-        {booking.status === 'confirmed' || booking.status === 'in_progress' ? (
-          <Button
-            color="success"
-            variant={booking.status === 'in_progress' ? 'solid' : 'outline'}
-            size="sm"
-            className={booking.status === 'in_progress' ? 'ml-auto' : undefined}
-            loading={complete.isPending}
-            disabled={lifecycleBusy}
-            onClick={() => {
-              complete.mutate(undefined, {
-                onSuccess: () => {
-                  toast.add({ title: 'Booking completed', type: 'success' });
-                },
-              });
-            }}
-          >
-            <Icon glyph={faCheckDouble} className="size-4" aria-hidden />
-            Complete
-          </Button>
-        ) : null}
-      </PaneToolbar>
+      <PaneToolbar
+        label="Booking actions"
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+        status={
+          <Badge color={meta.tone} variant="soft" size="sm">
+            {meta.label}
+          </Badge>
+        }
+        primary={
+          <>
+            {booking.status === 'requested' ? (
+              <Button
+                color="module"
+                size="sm"
+                className="ml-auto"
+                loading={confirm.isPending}
+                disabled={lifecycleBusy}
+                onClick={() => {
+                  confirm.mutate(undefined, {
+                    onSuccess: () => {
+                      toast.add({ title: 'Booking confirmed', type: 'success' });
+                    },
+                  });
+                }}
+              >
+                <Icon glyph={faCheckCircle} className="size-4" aria-hidden />
+                Confirm
+              </Button>
+            ) : null}
+            {booking.status === 'confirmed' ? (
+              <Button
+                color="module"
+                size="sm"
+                className="ml-auto"
+                loading={checkIn.isPending}
+                disabled={lifecycleBusy}
+                onClick={() => {
+                  checkIn.mutate(undefined, {
+                    onSuccess: () => {
+                      toast.add({ title: 'Checked in', type: 'success' });
+                    },
+                  });
+                }}
+              >
+                <Icon glyph={faRightToBracket} className="size-4" aria-hidden />
+                Check in
+              </Button>
+            ) : null}
+            {booking.status === 'confirmed' || booking.status === 'in_progress' ? (
+              <Button
+                color="success"
+                variant={booking.status === 'in_progress' ? 'solid' : 'outline'}
+                size="sm"
+                className={booking.status === 'in_progress' ? 'ml-auto' : undefined}
+                loading={complete.isPending}
+                disabled={lifecycleBusy}
+                onClick={() => {
+                  complete.mutate(undefined, {
+                    onSuccess: () => {
+                      toast.add({ title: 'Booking completed', type: 'success' });
+                    },
+                  });
+                }}
+              >
+                <Icon glyph={faCheckDouble} className="size-4" aria-hidden />
+                Complete
+              </Button>
+            ) : null}
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* Identity: the pane opens by saying WHAT this is — the service, when it
-              is, and who it is with. */}
+          {/* The service names the pane's TAB, so the body opens with the rest of
+              it — when this is, and who it is with. */}
           <div className="flex flex-col gap-1">
-            <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-              <Icon glyph={faCalendarClock} className="size-5 shrink-0" aria-hidden />
-              <span className="min-w-0 break-words">{booking.service.name}</span>
-            </Heading>
             <Text className="text-base">
               {bookingTypeLabel(booking.bookingType)} ·{' '}
               {formatWhen(booking.startAt, booking.timezone)}
@@ -800,7 +818,18 @@ export function BookingDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // `key` remounts the editor when the pane is pointed at a different booking, so
   // notes state re-seeds from the new row — the replace hop after create needs this.
-  return <BookingManage key={booking.data.id} ctx={ctx} booking={booking.data} />;
+  return (
+    <BookingManage
+      key={booking.data.id}
+      ctx={ctx}
+      booking={booking.data}
+      isFetching={booking.isFetching}
+      updatedAt={booking.dataUpdatedAt}
+      onRefresh={() => {
+        void booking.refetch();
+      }}
+    />
+  );
 }
 
 export default BookingDetailSurface;

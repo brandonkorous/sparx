@@ -4,7 +4,7 @@ import { type ReactNode } from 'react';
 import { Button, FieldStatus, Heading, Text } from '@wizeworks/silicaui-react';
 import { faCheckCircle } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { industryOf, type StoryState } from '@sparx/story-schemas';
+import { industryOf, type StoryState } from '@wizeworks/story-schemas';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
 

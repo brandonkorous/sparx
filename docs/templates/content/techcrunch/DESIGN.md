@@ -66,7 +66,7 @@ Captured to `./images/` (manual visual pass).
 
 ## 6. The sparx translation
 
-- **Theme:** **bespoke — `dispatch`** (closest shipped: `press` / `wire`). A **pure-white, one-accent, high-density** news theme. **Built + AA-verified** in `packages/silica-catalog/src/content-themes.ts` (the name `signal` was taken by a shipped shelf).
+- **Theme:** **bespoke — `dispatch`** (closest shipped: `press` / `wire`). A **pure-white, one-accent, high-density** news theme. **Built + AA-verified** in `wizeworks/packages/silica-catalog/src/content-themes.ts` (the name `signal` was taken by a shipped shelf).
   - **Grounds (4 surfaces):** `base-100` page = `#FFFFFF`; `base-200` muted card/list ground = `#F6F7F8`; `base-300` hairline dividers = `#E7E9EC`; `base-content` ink = `#121212`.
   - **Primary / accent strategy:** **one saturated accent** — an emerald `oklch(52% 0.13 158)` (light) / `oklch(60% 0.14 158)` (dark), verified AA-clean through silica's own contrast engine, used ONLY on category tags, links, "See More," and the newsletter/subscribe CTA. Everything else monochrome.
   - **Fonts:** display + body = a single **clean grotesque** (Inter/Söhne feel); category tags uppercase + tracked; timestamps in a lighter grey but still ≥ the readable ink floor (RULE #3 — timestamps are meta, not decoration, so keep them legible, not faded to nothing).

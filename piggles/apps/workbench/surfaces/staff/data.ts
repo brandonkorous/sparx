@@ -12,8 +12,8 @@
 // below is how a surface tells "you may not see this" apart from "there is
 // nothing to see".
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
-import { ApiError } from '@sparx/api-client';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
 import { getTokenState, resolveToken } from '../../lib/api/token';
 
@@ -725,7 +725,7 @@ export async function downloadPayrollHours(params: {
 
 /* ── Errors ────────────────────────────────────────────────────────────────── */
 
-/** The server's own sentence for a 4xx, verbatim — @sparx/staff writes those
+/** The server's own sentence for a 4xx, verbatim — @wizeworks/staff writes those
  *  messages for a business owner ("End the existing rate first, or pick a start
  *  date after it"), and nothing this side could infer beats them. */
 export function staffErrorMessage(error: unknown, fallback: string): string {

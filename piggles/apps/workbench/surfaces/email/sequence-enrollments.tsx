@@ -20,23 +20,23 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
-  EmptyState,
   Field,
   FieldLabel,
   Input,
   SearchInput,
   Select,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCheck, faUserPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -51,6 +51,10 @@ import {
   useUnenrollFromSequence,
   type EnrollmentRow,
 } from './sequences-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'email';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -103,7 +107,18 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`People in ${sequenceName}`}>
+      <PaneToolbar
+        label={`People in ${sequenceName}`}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      >
         <span className="inline-flex min-w-0 items-center gap-2">
           <Icon glyph={faUsers} className="text-module size-4 shrink-0" aria-hidden />
           <span className="truncate font-medium">{sequenceName}</span>
@@ -138,38 +153,23 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
           <Icon glyph={faUserPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Enrol someone</span>
         </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
       </PaneToolbar>
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
             title="Could not load who is enrolled"
             description="Something went wrong reaching the server. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={filtering}
             noResults={{
               icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,

@@ -75,13 +75,13 @@ undoing is in the wrong tree.
 | Services        | all ~18 — `api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, the worker fleet            |
 | Apps            | `admin` (the WizeWorks staff console — ours by name), `site` (the tenant site renderer) |
 
-**`apps/site` is here on purpose.** It paints the _tenant's_ brand, never ours,
+**`wizeworks/apps/site` is here on purpose.** It paints the _tenant's_ brand, never ours,
 so it is indifferent to whether the tenant signed up through sparx or Piggles.
 A tenant site must render identically under either. This is also why the sparx
 design restraints (no shadows, no gradients, RULE #3) do **not** reach it —
 builder output is tenant content with full design freedom.
 
-**`apps/admin` is here because it is literally the WizeWorks staff console**, not
+**`wizeworks/apps/admin` is here because it is literally the WizeWorks staff console**, not
 a tenant surface. It administers both brands and belongs to neither.
 
 ### Scope rename in flight
@@ -194,12 +194,12 @@ leaving them in a file that will read as sparx's would have been misleading.
   event-driven via `module.activated`.
 - **Event-driven side effects via Pub/Sub.** Don't inline side effects in
   request handlers. The catalog is the `EventType` union in
-  `packages/events/src/types.ts` and **topic name == event type**. Use the real
+  `wizeworks/packages/events/src/types.ts` and **topic name == event type**. Use the real
   names (`order.placed`, `order.paid`, `email.send`, `email.domain.verified`,
   `search.entity.changed`). There is **no** `order.created` and no
   `customer.updated`.
 - **The worker fleet is THREE Deployments, and a new handler is a package — not
-  a service.** `services/event-worker` runs every broker subscription in one
+  a service.** `wizeworks/services/event-worker` runs every broker subscription in one
   process; each handler lives in `packages/<name>-worker` and exports
   `createSubscription(logger)`. Only `media-worker` and `import-worker` keep
   their own pods. A handler's JetStream `durable` name is **permanent once

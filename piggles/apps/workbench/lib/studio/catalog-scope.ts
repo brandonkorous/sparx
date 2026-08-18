@@ -17,7 +17,7 @@
 import type { PaletteGroup, PaletteItem } from '@wizeworks/silicaui-builder/react';
 import type { CatalogScope } from '@wizeworks/studio/react';
 import type { DocumentKind } from '@wizeworks/studio';
-import { HOST_COMPONENTS, SITE_CATALOG, SPARX_CATALOG, hostCore } from '@sparx/silica-catalog';
+import { HOST_COMPONENTS, SITE_CATALOG, SPARX_CATALOG, hostCore } from '@wizeworks/silica-catalog';
 
 /**
  * The sparx-catalog blocks a LAYOUT may use, by group.

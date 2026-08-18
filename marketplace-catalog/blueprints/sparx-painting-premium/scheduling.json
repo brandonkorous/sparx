@@ -1,283 +1,250 @@
 {
-    "policies": [
+  "policies": [
+    {
+      "handle": "heritage-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and two hours ahead."
+    },
+    {
+      "handle": "project-deposit",
+      "name": "Project deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 15000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Booked engagements hold a $150 deposit that is credited toward your project. Reschedule with 48 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "thomas",
+      "name": "Thomas Ainsley",
+      "kind": "staff",
+      "skillTags": ["interior", "finishes", "general"],
+      "windows": [
         {
-            "handle": "heritage-standard",
-            "name": "Standard booking",
-            "depositType": "none",
-            "cancellationWindowHours": 48,
-            "reminderOffsetsMin": [
-                2880,
-                120
-            ],
-            "policyText": "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and two hours ahead."
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
         },
         {
-            "handle": "project-deposit",
-            "name": "Project deposit",
-            "depositType": "deposit",
-            "depositAmountCents": 15000,
-            "cancellationWindowHours": 48,
-            "reminderOffsetsMin": [
-                2880,
-                1440,
-                120
-            ],
-            "policyText": "Booked engagements hold a $150 deposit that is credited toward your project. Reschedule with 48 hours’ notice and it carries over."
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
         }
-    ],
-    "resources": [
+      ]
+    },
+    {
+      "handle": "marguerite",
+      "name": "Marguerite Fell",
+      "kind": "staff",
+      "skillTags": ["cabinets", "woodwork", "general"],
+      "windows": [
         {
-            "handle": "thomas",
-            "name": "Thomas Ainsley",
-            "kind": "staff",
-            "skillTags": [
-                "interior",
-                "finishes",
-                "general"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                }
-            ]
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
         },
         {
-            "handle": "marguerite",
-            "name": "Marguerite Fell",
-            "kind": "staff",
-            "skillTags": [
-                "cabinets",
-                "woodwork",
-                "general"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 540,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 540,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 540,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 540,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 1080
-                }
-            ]
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
         },
         {
-            "handle": "edmund",
-            "name": "Edmund Rourke",
-            "kind": "staff",
-            "skillTags": [
-                "historic",
-                "finishes",
-                "general"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 510,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 510,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 510,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 510,
-                    "endMinute": 1050
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 510,
-                    "endMinute": 1050
-                }
-            ]
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
         }
-    ],
-    "services": [
+      ]
+    },
+    {
+      "handle": "edmund",
+      "name": "Edmund Rourke",
+      "kind": "staff",
+      "skillTags": ["historic", "finishes", "general"],
+      "windows": [
         {
-            "handle": "design-consultation",
-            "name": "Design consultation",
-            "description": "A complimentary walk-through of your rooms to talk through color, finish and how we can help.",
-            "durationMinutes": 45,
-            "priceCents": 0,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "heritage-standard"
+          "dayOfWeek": 1,
+          "startMinute": 510,
+          "endMinute": 1050
         },
         {
-            "handle": "fine-interior-consult",
-            "name": "Fine interior consultation",
-            "description": "A considered plan for a high-end interior — color, sheen, meticulous prep and a flawless finish.",
-            "durationMinutes": 60,
-            "priceCents": 12000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "project-deposit"
+          "dayOfWeek": 2,
+          "startMinute": 510,
+          "endMinute": 1050
         },
         {
-            "handle": "cabinet-refinishing-consult",
-            "name": "Cabinet refinishing consultation",
-            "description": "For kitchens and built-ins — we assess the joinery and plan a durable, hand-finished refinish.",
-            "durationMinutes": 60,
-            "priceCents": 12000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "cabinets"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "project-deposit"
+          "dayOfWeek": 3,
+          "startMinute": 510,
+          "endMinute": 1050
         },
         {
-            "handle": "specialty-finish-consult",
-            "name": "Specialty finish consultation",
-            "description": "Limewash, Venetian plaster, metallics and hand-glazing — we plan the technique your room calls for.",
-            "durationMinutes": 75,
-            "priceCents": 15000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "project-deposit"
+          "dayOfWeek": 4,
+          "startMinute": 510,
+          "endMinute": 1050
         },
         {
-            "handle": "historic-home-consult",
-            "name": "Historic-home consultation",
-            "description": "Period-sensitive work on older homes — careful stripping, repair and finishes true to the era.",
-            "durationMinutes": 90,
-            "priceCents": 18000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "historic"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "project-deposit"
-        },
-        {
-            "handle": "woodwork-refinishing-consult",
-            "name": "Woodwork refinishing consultation",
-            "description": "Trim, staircases, doors and panelling — stripped, repaired and refinished with a hand-rubbed touch.",
-            "durationMinutes": 60,
-            "priceCents": 12000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "project-deposit"
-        },
-        {
-            "handle": "color-finish-consult",
-            "name": "Color & finish consultation",
-            "description": "An in-home session on palette, sheen and finish — samples on your walls, in your light.",
-            "durationMinutes": 60,
-            "priceCents": 10000,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "craftsman",
-                    "kind": "staff",
-                    "skillTags": [
-                        "general"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "heritage-standard"
+          "dayOfWeek": 5,
+          "startMinute": 510,
+          "endMinute": 1050
         }
-    ],
-    "locations": [
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "design-consultation",
+      "name": "Design consultation",
+      "description": "A complimentary walk-through of your rooms to talk through color, finish and how we can help.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
         {
-            "handle": "premises",
-            "name": "Heritage Painters",
-            "timezone": "UTC"
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
         }
-    ]
+      ],
+      "policyHandle": "heritage-standard"
+    },
+    {
+      "handle": "fine-interior-consult",
+      "name": "Fine interior consultation",
+      "description": "A considered plan for a high-end interior — color, sheen, meticulous prep and a flawless finish.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-deposit"
+    },
+    {
+      "handle": "cabinet-refinishing-consult",
+      "name": "Cabinet refinishing consultation",
+      "description": "For kitchens and built-ins — we assess the joinery and plan a durable, hand-finished refinish.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["cabinets"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-deposit"
+    },
+    {
+      "handle": "specialty-finish-consult",
+      "name": "Specialty finish consultation",
+      "description": "Limewash, Venetian plaster, metallics and hand-glazing — we plan the technique your room calls for.",
+      "durationMinutes": 75,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-deposit"
+    },
+    {
+      "handle": "historic-home-consult",
+      "name": "Historic-home consultation",
+      "description": "Period-sensitive work on older homes — careful stripping, repair and finishes true to the era.",
+      "durationMinutes": 90,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["historic"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-deposit"
+    },
+    {
+      "handle": "woodwork-refinishing-consult",
+      "name": "Woodwork refinishing consultation",
+      "description": "Trim, staircases, doors and panelling — stripped, repaired and refinished with a hand-rubbed touch.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-deposit"
+    },
+    {
+      "handle": "color-finish-consult",
+      "name": "Color & finish consultation",
+      "description": "An in-home session on palette, sheen and finish — samples on your walls, in your light.",
+      "durationMinutes": 60,
+      "priceCents": 10000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "craftsman",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "heritage-standard"
+    }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Heritage Painters",
+      "timezone": "UTC"
+    }
+  ]
 }

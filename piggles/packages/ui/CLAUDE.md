@@ -10,7 +10,7 @@ Reach for `@wizeworks/silicaui-react` first, always. If silicaui ships it —
 Card, Button, Badge, Input, Select, Tabs, Dialog, Alert — it does not belong
 here, at any size, for any reason.
 
-`@sparx/ui` is the cautionary precedent: it grew into a component library, and
+`@wizeworks/ui` is the cautionary precedent: it grew into a component library, and
 undoing that meant deleting most of it. The root file now carries an explicit
 "must not be grown back into one". Same rule here, from day one.
 
@@ -26,7 +26,7 @@ content and it stays in `apps/<app>/components/`.
 
 A second condition: it is used by more than one app, or copy-pasted more than
 twice inside one. `Section` qualified on the second — five hand-rolled copies of
-the same panel chrome across `apps/web`.
+the same panel chrome across `sparx/apps/web`.
 
 ## Two footguns, both silent
 
@@ -34,7 +34,7 @@ the same panel chrome across `apps/web`.
 app needs a line in its own `globals.css`:
 
 ```css
-@source '../../../packages/ui/src/**/*.{ts,tsx}';
+@source '../../../sparx/packages/ui/src/**/*.{ts,tsx}';
 ```
 
 Three `../` reaches `piggles/packages`; four reaches the repo-root `packages`.

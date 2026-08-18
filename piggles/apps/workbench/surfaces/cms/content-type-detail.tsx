@@ -11,7 +11,7 @@
 //
 // The schema this authors is exactly what surfaces/cms/schema-form.tsx renders a
 // form from — the two share the FieldDef vocabulary through content-types-data.ts
-// (a mirror of @sparx/cms-schemas, validated server-side). Nothing here can author
+// (a mirror of @wizeworks/cms-schemas, validated server-side). Nothing here can author
 // a field the editor cannot show.
 //
 // Built-in types are platform-owned and read-only. When one is opened it renders
@@ -37,7 +37,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Switch,
@@ -276,30 +275,28 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New content type actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={Boolean(problem)}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Create
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New content type actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={Boolean(problem)}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Create
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Define a kind of content
-            </Heading>
-            <Text>
-              Name it, then give it the fields it needs. Once you save it, you can start creating
-              content of this kind straight away.
-            </Text>
-          </div>
+          <Text>
+            Name it, then give it the fields it needs. Once you save it, you can start creating
+            content of this kind straight away.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -482,19 +479,24 @@ function EditType({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Content type actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!dirty || Boolean(problem)}
-          loading={save.isPending}
-          onClick={onSave}
-        >
-          Save
-        </Button>
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Content type actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!dirty || Boolean(problem)}
+            loading={save.isPending}
+            onClick={onSave}
+          >
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -556,20 +558,22 @@ function BuiltInType({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Content type actions">
-        <Badge color="info" variant="soft" size="sm">
-          Built-in
-        </Badge>
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Content type actions"
+        status={
+          <Badge color="info" variant="soft" size="sm">
+            Built-in
+          </Badge>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
             <span className="flex flex-wrap items-center gap-2">
-              <Heading level={1} className="text-2xl font-semibold">
-                {type.name}
-              </Heading>
               <span className="font-mono text-sm">{type.key}</span>
               {type.is_singleton ? (
                 <Badge color="info" variant="soft" size="sm">

@@ -5,7 +5,7 @@
 **Last Updated:** 2026-08-04
 
 The ten design studies independently converged on a small set of **reusable catalog
-additions**. Building these once (in `@sparx/silica-catalog` sections + `SPARX_CATALOG`,
+additions**. Building these once (in `@wizeworks/silica-catalog` sections + `SPARX_CATALOG`,
 and where interactivity is needed, `@wizeworks/silicaui-behaviors`) unlocks all ten
 templates AND serves real tenants — never inline a hero per bundle. This is the Phase-2a
 work that Phase-2b (the 10 blueprints) builds on top of.

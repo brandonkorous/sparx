@@ -44,22 +44,22 @@ Confirmed by reading the code, not docs:
 - **11 tokens**, all hex / font-name strings: `colorPrimary, colorPrimaryForeground,
 colorAccent, colorBackground, colorForeground, colorMuted, colorBorder, fontHeading,
 fontBody, radiusBase, containerWidth`
-  ([packages/site-themes/src/tokens.ts](../packages/site-themes/src/tokens.ts)).
+  ([wizeworks/packages/site-themes/src/tokens.ts](../packages/site-themes/src/tokens.ts)).
 - **Shape is one knob.** `--st-radius: 14px` with `-sm`/`-lg` _computed_ off it. No
   per-component radius.
-- **Rhythm doesn't exist.** [apps/site/app/site.css](../apps/site/app/site.css)
+- **Rhythm doesn't exist.** [wizeworks/apps/site/app/site.css](../apps/site/app/site.css)
   hardcodes every gap, pad and `clamp()` as magic numbers. There is no spacing scale a
   tenant could shift.
 - **Effects hardcoded.** `--st-shadow-sm/md/lg`, `--st-ease` live in CSS.
-- **Status colors not themeable.** `--color-success/warning/danger` come from @sparx/ui
+- **Status colors not themeable.** `--color-success/warning/danger` come from @wizeworks/ui
   globals, not the tenant theme.
-- **Two CSS layers**, bridged by aliasing: `--sparx-*` / `--color-*` (@sparx/ui) → `--st-*`
-  (site). @sparx/ui already ships `--space-1..16` and `--radius-sm..full` — the
+- **Two CSS layers**, bridged by aliasing: `--sparx-*` / `--color-*` (@wizeworks/ui) → `--st-*`
+  (site). @wizeworks/ui already ships `--space-1..16` and `--radius-sm..full` — the
   site just doesn't consume them.
 - **Storage:** brand identity on `TenantBrand` columns; presentation overlay is JSONB (Site
   Builder) write-through to 3 `SiteTheme` columns as the no-snapshot SSR fallback. The
   public `/v1/public/tenants/:slug` `theme` object reads those columns
-  ([apps/site/lib/tenant.ts](../apps/site/lib/tenant.ts) → [lib/theme.ts](../apps/site/lib/theme.ts)).
+  ([wizeworks/apps/site/lib/tenant.ts](../apps/site/lib/tenant.ts) → [lib/theme.ts](../apps/site/lib/theme.ts)).
 
 ---
 
@@ -79,13 +79,13 @@ Every color slot is a base color the tenant can set (hex). Each has a `-content`
 | Brand   | `secondary` _(new)_         | `secondary-content`     | **brand**    | — (derived from primary if unset)         |
 | Brand   | `accent`                    | `accent-content`        | **brand**    | `colorAccent`                             |
 | UI      | `neutral` _(new)_           | `neutral-content`       | presentation | `--st-text` used as dark fill today       |
-| Status  | `info` _(new themeable)_    | `info-content`          | presentation | @sparx/ui global                          |
-| Status  | `success` _(new themeable)_ | `success-content`       | presentation | @sparx/ui global                          |
-| Status  | `warning` _(new themeable)_ | `warning-content`       | presentation | @sparx/ui global                          |
-| Status  | `danger` _(new themeable)_  | `danger-content`        | presentation | @sparx/ui global `--color-danger`         |
+| Status  | `info` _(new themeable)_    | `info-content`          | presentation | @wizeworks/ui global                      |
+| Status  | `success` _(new themeable)_ | `success-content`       | presentation | @wizeworks/ui global                      |
+| Status  | `warning` _(new themeable)_ | `warning-content`       | presentation | @wizeworks/ui global                      |
+| Status  | `danger` _(new themeable)_  | `danger-content`        | presentation | @wizeworks/ui global `--color-danger`     |
 | Line    | `border`                    | —                       | presentation | `colorBorder`                             |
 
-Naming note: DaisyUI's `error` is our `danger` (consistent with @sparx/ui's `--color-danger`);
+Naming note: DaisyUI's `error` is our `danger` (consistent with @wizeworks/ui's `--color-danger`);
 `base-content` is our text color (replaces the standalone `colorForeground`). Secondary text /
 muted text tiers (`--st-text-secondary`, `--st-text-muted`) are **derived** from `base-content`
 × `base-100` via `color-mix`, not separate slots.
@@ -175,7 +175,7 @@ OKLCH space (perceptually uniform), so a single hex pick yields a coherent set:
 **`-content` auto-derivation.** Default rule: choose `base-content`-dark or `base-100`-light
 against the slot's perceptual lightness so contrast clears WCAG AA. Where `relative-color`
 syntax is available (`oklch(from var(--st-primary) …)`) we read lightness directly; otherwise
-we compute the content color **at compile time** (server-side, in `@sparx/site-themes`)
+we compute the content color **at compile time** (server-side, in `@wizeworks/site-themes`)
 using a small OKLCH helper and emit a concrete hex, so SSR is deterministic and we don't depend
 on browser `relative-color` support. Either way, a tenant may **override** any `-content` slot
 (full-parity escape hatch); an explicit value wins over the derived one.
@@ -242,7 +242,7 @@ the section-render path and the chrome read path can't drift.
 
 ## 6. CSS layer plan
 
-v2 does **not** refactor @sparx/ui's `--color-*` / `--space-*` tokens — the dashboard depends
+v2 does **not** refactor @wizeworks/ui's `--color-*` / `--space-*` tokens — the dashboard depends
 on them and that's out of scope. Instead:
 
 - The site's `--st-*` layer becomes the single canonical surface for site chrome +
@@ -252,7 +252,7 @@ on them and that's out of scope. Instead:
 - The existing `--st-* : var(--color-*)` aliases stay as _fallback seeds_ (so an un-themed
   site still renders), but a compiled token always overrides them.
 
-Net: one place (`@sparx/site-themes`) owns the site token vocabulary; @sparx/ui is
+Net: one place (`@wizeworks/site-themes`) owns the site token vocabulary; @wizeworks/ui is
 untouched; the dashboard inspector and the site read the same compiled doc.
 
 ---
@@ -271,7 +271,7 @@ path that depends on data nothing writes.
 **Foundation — done:**
 
 1. ✅ **Token core** — v2 types + `compileTokensV2` + derivation helpers + the CSS emitter in
-   `@sparx/site-themes`; unit tests for compile + derivation + override precedence.
+   `@wizeworks/site-themes`; unit tests for compile + derivation + override precedence.
 2. ✅ **Presets** — the 6 presets migrated to the v2 schema (base-100/200/300, neutral, status,
    shape/rhythm/effect defaults). Snapshot + AA tests lock the compiled defaults.
 
@@ -287,7 +287,7 @@ path that depends on data nothing writes.
 
    > **Amended 2026-08-02.** This step originally resolved the preset by KEY, from a
    > six-entry registry (`getThemePresetV2`). Both the registry and the six legacy themes
-   > behind it are deleted — the themes sparx ships are code in `@sparx/silica-catalog`
+   > behind it are deleted — the themes sparx ships are code in `@wizeworks/silica-catalog`
    > and carry their own presets, so a key resolved nothing while still reading as though
    > it did. A theme is now PASSED to the compiler, never named to it.
 

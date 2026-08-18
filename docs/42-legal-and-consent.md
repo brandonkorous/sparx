@@ -37,11 +37,11 @@ Legal content on the platform splits into three independent concerns. Keeping th
 separate is the central design decision — they have different owners, audiences, and
 storage.
 
-| Layer                       | Whose docs   | Audience              | Storage                                                     | Editor                    |
-| --------------------------- | ------------ | --------------------- | ----------------------------------------------------------- | ------------------------- |
-| **L1 — Tenant legal pages** | The tenant's | The tenant's shoppers | CMS `content_entries` on the tenant                         | Tenant (templates seeded) |
-| **L2 — Cookie consent**     | The tenant's | The tenant's shoppers | `consent_settings` / `consent_records`                      | Tenant configures         |
-| **L3 — Platform legal**     | sparx's      | Tenants (the tenants) | Versioned pages on `apps/web` + `platform_legal_acceptance` | sparx (WizeWorks)         |
+| Layer                       | Whose docs   | Audience              | Storage                                                           | Editor                    |
+| --------------------------- | ------------ | --------------------- | ----------------------------------------------------------------- | ------------------------- |
+| **L1 — Tenant legal pages** | The tenant's | The tenant's shoppers | CMS `content_entries` on the tenant                               | Tenant (templates seeded) |
+| **L2 — Cookie consent**     | The tenant's | The tenant's shoppers | `consent_settings` / `consent_records`                            | Tenant configures         |
+| **L3 — Platform legal**     | sparx's      | Tenants (the tenants) | Versioned pages on `sparx/apps/web` + `platform_legal_acceptance` | sparx (WizeWorks)         |
 
 L1 and L2 share the site and the seeded **cookie-policy** page (the consent
 preference center links to it). L3 lives entirely on the marketing/dashboard side and
@@ -69,15 +69,15 @@ seed/instantiate path sets it directly, the CMS editor never touches it (so it s
 edits unconditionally), and it is indexable for the checklist's `GROUP BY legalKind`.
 A nullable column add on Postgres is a metadata-only change — no table rewrite, no RLS
 change (the table's policy is unchanged). `pageType`
-([packages/cms-schemas/src/builtins/page.ts](../packages/cms-schemas/src/builtins/page.ts))
+([wizeworks/packages/cms-schemas/src/builtins/page.ts](../packages/cms-schemas/src/builtins/page.ts))
 is left untouched. Shipped in migration `20260619000000_legal_and_consent`.
 
 ### 3.2 The legal pages registry
 
-A code-first, platform-authored catalog (a new `packages/legal-templates/` package,
-dependency-free — no `@sparx/db`, no React — so both api-rest and any worker can
+A code-first, platform-authored catalog (a new `wizeworks/packages/legal-templates/` package,
+dependency-free — no `@wizeworks/db`, no React — so both api-rest and any worker can
 import it) mirrors the `PAGE_TEMPLATES` pattern
-([packages/sitebuilder-schemas/src/page-templates.ts](../packages/sitebuilder-schemas/src/page-templates.ts)).
+([wizeworks/packages/sitebuilder-schemas/src/page-templates.ts](../packages/sitebuilder-schemas/src/page-templates.ts)).
 
 ```
 LEGAL_TEMPLATES: readonly LegalTemplate[]
@@ -106,10 +106,10 @@ drives an "unreviewed starter text" badge until the tenant acknowledges it.
 ### 3.3 Seeding on store creation
 
 There is no tenant-lifecycle event today; tenant rows are created directly inside the
-`signUpMerchant` transaction ([packages/auth/src/sign-up.ts](../packages/auth/src/sign-up.ts)),
+`signUpMerchant` transaction ([wizeworks/packages/auth/src/sign-up.ts](../packages/auth/src/sign-up.ts)),
 whose only side-effect is publishing a welcome email. This doc introduces a
 `tenant.created` event in the `EventType` union
-([packages/events/src/types.ts](../packages/events/src/types.ts)), published
+([wizeworks/packages/events/src/types.ts](../packages/events/src/types.ts)), published
 fire-and-forget after the transaction commits (same swallow-on-failure ethos as the
 welcome email, so a Pub/Sub outage never rolls back sign-up). It carries the matching
 Terraform topic + subscriber addition.
@@ -122,7 +122,7 @@ disclaimer set) plus `site_doc_placements` rows. It is idempotent on the
 **Seed as draft, not published.** Nothing unreviewed goes live; the footer simply omits
 unpublished pages (already strictly better than today's 404 links), and the dashboard
 checklist makes publishing one click. Synchronous in-transaction seeding is a stopgap
-only — it couples `@sparx/auth` to legal content — and is used solely if the event
+only — it couples `@wizeworks/auth` to legal content — and is used solely if the event
 plumbing is not yet available.
 
 ### 3.4 Versioning
@@ -135,7 +135,7 @@ never overwritten.
 ### 3.5 Dashboard Legal surface
 
 A `{ id: 'legal', label: 'Legal', href: '/cms/legal' }` entry added to
-`cmsManifest.sections` ([packages/cms-editor/src/manifest.ts](../packages/cms-editor/src/manifest.ts))
+`cmsManifest.sections` ([wizeworks/packages/cms-editor/src/manifest.ts](../packages/cms-editor/src/manifest.ts))
 appears automatically in the CMS contextual rail, the overview grid, and favorites —
 with the CMS teal module color — and needs zero shell changes. The page is a
 [34-dashboard-working-area-standard.md](34-dashboard-working-area-standard.md)
@@ -157,7 +157,7 @@ from the navigation menu editor.
 The placements table (§5) is the source of truth for legal footer links, intentionally
 separate from the Site Builder `FooterConfig` (which owns copyright / social / tagline)
 so the two never fight. The default footer in
-[apps/site/app/layout.tsx](../apps/site/app/layout.tsx) drops its broken
+[wizeworks/apps/site/app/layout.tsx](../apps/site/app/layout.tsx) drops its broken
 hardcoded `/shipping-policy` and `/returns-policy` links in favor of a
 placements-driven "Legal" column resolved server-side; unpublished or deleted entries
 are dropped exactly like dead nav items are in the public content route. The render
@@ -209,7 +209,7 @@ is the source of legal truth.
 
 ### 4.4 The script-gating contract
 
-A site client registry (`apps/site/lib/consent.ts`) exposes the single seam
+A site client registry (`wizeworks/apps/site/lib/consent.ts`) exposes the single seam
 every future tracker uses:
 
 - `getConsent()` — reads `sparx_consent_state`.
@@ -258,10 +258,10 @@ a future checkout terms gate uses `placement='terms_gate'`.
 
 ### 6.1 Where sparx's own docs live
 
-Real, statically-rendered, indexable pages on the marketing site (`apps/web`) replace
+Real, statically-rendered, indexable pages on the marketing site (`sparx/apps/web`) replace
 the `ComingSoon` stubs at `app/legal/{terms,privacy,dpa,aup}` and `app/security`. A
-single `legal-versions` constant (`apps/web/lib/legal-versions.ts`, or a tiny
-`@sparx/legal` package) is the one source of doc versions, imported by both the pages
+single `legal-versions` constant (`sparx/apps/web/lib/legal-versions.ts`, or a tiny
+`@wizeworks/legal` package) is the one source of doc versions, imported by both the pages
 and the acceptance recorder so the version recorded is exactly the version rendered.
 The CMS-on-a-sparx-tenant option is rejected — it would couple platform legal to tenant
 infra and complicate versioning.
@@ -328,7 +328,7 @@ cookie-policy page (L1) that the consent preference center (L2) links to.
    `LEGAL_TEMPLATES` catalog + `legalKind` on `pageType`; the `legal-versions` constant;
    authenticated `GET / PATCH /v1/tenant/consent`.
 2. **High-value low-risk fixes:** public placements API + the site footer fix
-   (broken links gone); replace the `apps/web` `ComingSoon` legal stubs with real pages.
+   (broken links gone); replace the `sparx/apps/web` `ComingSoon` legal stubs with real pages.
 3. **Seeding + consent API:** the `tenant.created` event (+ Terraform topic/sub) + the
    seed consumer; public consent `POST` + config fanout into `/v1/public/tenants/:slug`.
 4. **Site consent UX:** the gating contract + the consent island (banner /
@@ -349,7 +349,7 @@ cookie-policy page (L1) that the consent preference center (L2) links to.
   per tenant — `sparx_owner` is a non-superuser in prod and sees zero rows otherwise.
   This is the single biggest migration-correctness risk.
 - **`tenant.created` event needs Terraform** (topic + subscriber). The synchronous-seed
-  stopgap couples `@sparx/auth` to legal content; prefer the event.
+  stopgap couples `@wizeworks/auth` to legal content; prefer the event.
 - **No uniform api-rest module gate exists.** The dashboard Legal surface inherits CMS's
   layer-level gating; consent is intentionally always-on. A server-enforced
   `requireModule` plugin is a separate cross-cutting effort if wanted.

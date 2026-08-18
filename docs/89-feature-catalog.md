@@ -16,7 +16,7 @@ It exists for two reasons:
    here, with a status, not in a slack thread.
 2. **Marketing fuel.** The marketing site historically sells the **8 headline
    modules**. We actually ship _hundreds_ of discrete capabilities. The
-   `/features` page on `apps/web` and the `apps/web/lib/capabilities.ts` dataset
+   `/features` page on `sparx/apps/web` and the `sparx/apps/web/lib/capabilities.ts` dataset
    are derived from this catalog — keep them in sync when status changes here.
 
 ## Status legend
@@ -33,7 +33,7 @@ It exists for two reasons:
 
 ## Module map
 
-Eleven activatable modules (`packages/modules` canonical slugs) plus the
+Eleven activatable modules (`wizeworks/packages/modules` canonical slugs) plus the
 cross-cutting platform that every module shares.
 
 | #   | Module                  | Slug         | Headline                                                                                                                                          | Status      |
@@ -281,7 +281,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Dunning ladder** — pre-due/due/overdue reminders, credit-hold @14d, suspend @30d (configurable).
 - ✅ **Approval workflows** — spend caps, manager approval over threshold, pending-approval state.
 - ✅ **Service scheduling** — service types, bookable appointments, fleet-vehicle snapshot, parts, reminders.
-- 🔨 **B2B buyer portal** — separate login, order/invoice/quote/appointment history (`apps/b2b-portal` + site `/account/b2b`).
+- 🔨 **B2B buyer portal** — separate login, order/invoice/quote/appointment history (`sparx/apps/b2b-portal` + site `/account/b2b`).
 
 ---
 
@@ -345,7 +345,7 @@ surface — **337 endpoints** — is listed in [docs/150](150-inventory-api-refe
 - ✅ **Planning intelligence** (Phase 7) — demand velocity and forecasts, stockout risk, slow movers, holding cost, ABC value classes and XYZ predictability, computed reorder points with an explanation of every input. Turning ON automatic reorder-point management is deliberately a person's decision.
 - ✅ **Supplier performance and procurement discipline** (Phase 8) — scorecards (on-time, fill rate, price variance, lead-time reliability), quantity price breaks, purchase-order approval rules and queue, advance ship notices, and supplier returns with the credits still owed.
 - ✅ **Demand-side commitments** (Phase 9) — backorders with a real queue position and promised dates, consignment and customer-owned stock excluded from what the business is worth, and expiring-batch management. Batches with no expiry date are surfaced as a finding rather than hidden.
-- ✅ **Reporting, portability and accounting** (Phase 10) — one report registry shared by the export button, the scheduler and an assistant, so the three cannot disagree; scheduled delivery; inventory journals; GL reconciliation splitting the difference into received-not-invoiced, invoiced-not-received and genuine discrepancy; QuickBooks and Xero connectors — **written, but not connectable on this installation**: a direct connection needs an OAuth app registered with each vendor and neither `SPARX_QBO_CLIENT_ID` nor `SPARX_XERO_CLIENT_ID` is set in any deploy target, so `accountingProviderAvailability()` reports `coming_soon` and the panel offers the export instead. `apps/web/lib/capabilities.ts` carries this as `building`, not `live` (corrected 2026-08-13).
+- ✅ **Reporting, portability and accounting** (Phase 10) — one report registry shared by the export button, the scheduler and an assistant, so the three cannot disagree; scheduled delivery; inventory journals; GL reconciliation splitting the difference into received-not-invoiced, invoiced-not-received and genuine discrepancy; QuickBooks and Xero connectors — **written, but not connectable on this installation**: a direct connection needs an OAuth app registered with each vendor and neither `SPARX_QBO_CLIENT_ID` nor `SPARX_XERO_CLIENT_ID` is set in any deploy target, so `accountingProviderAvailability()` reports `coming_soon` and the panel offers the export instead. `sparx/apps/web/lib/capabilities.ts` carries this as `building`, not `live` (corrected 2026-08-13).
 - ✅ **Onboarding — beat the spreadsheet** (Phase 11) — a five-step guided setup measured against a 30-minute target (hands-on time AND how many sittings, so a lunch break is neither counted nor silently discarded), spreadsheet import with fuzzy column mapping that reports a match it is unsure of as _unmatched_ rather than guessing, saved mappings, opening-balance counts posted as `opening` (not `recount`, which would read day one as the worst day of shrinkage), a spreadsheet-grade stock grid, and tenant-defined columns that ride the CSV as `cf_*`.
 - ✅ **Tenant-configurable webhooks on inventory events** (Phase 12) — 25 events across stock, warehouse work, supply and feed health, each described in the words a business owner would use, HMAC-signed with retry and backoff.
 
@@ -468,7 +468,7 @@ surface — **337 endpoints** — is listed in [docs/150](150-inventory-api-refe
 ## 16. Auth & security (cross-cutting)
 
 - ✅ **Better Auth (self-hosted)** — staff email/password, magic link, OAuth; rotating refresh tokens.
-- ✅ **Customer auth tier** — separate `@sparx/customer-auth`, Argon2id, opaque rotating sessions, enumeration-safe reset.
+- ✅ **Customer auth tier** — separate `@wizeworks/customer-auth`, Argon2id, opaque rotating sessions, enumeration-safe reset.
 - ✅ **Row-level security** — Postgres RLS + FORCE-RLS on every tenant-scoped table.
 - ✅ **API keys** — hashed, scoped, expirable, revocable, usage-tracked.
 - ✅ **Role-based access** — owner/admin/editor/viewer/builder, module-gated.
@@ -576,7 +576,7 @@ When a feature's status changes, update **three** places so the marketing site n
 overstates or understates what ships:
 
 1. This catalog (the row's status marker).
-2. `apps/web/lib/capabilities.ts` (the `status` field on the matching capability).
+2. `sparx/apps/web/lib/capabilities.ts` (the `status` field on the matching capability).
 3. The relevant module PRD (docs/08–14, etc.) if the change is material.
 
 The `/features` page renders entirely from `capabilities.ts`, so a status change

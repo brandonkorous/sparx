@@ -2,11 +2,11 @@
 
 // The Piggles console's dock — its own, not sparx's.
 //
-// ── WHY THIS FILE EXISTS ────────────────────────────────────────────────────
-//
 // The PANELS are shared and must never be forked (piggles/CLAUDE.md RULE #0):
 // every surface, the controller that resolves them, the descriptor format and
-// the layout persistence all come from the platform, imported below untouched.
+// the layout persistence are platform, imported below untouched. A Piggles copy
+// of any of them would mean two consoles losing people's arrangements in two
+// different ways.
 //
 // The CHROME is not shared and is not related to sparx at all. How panes are
 // presented — tiled or floating, gapped or flush, what a title bar looks like,
@@ -15,48 +15,25 @@
 // sparx's dock for a prop every time the two disagree is how one component
 // slowly becomes a switch statement over two products.
 //
-// So the split is presentation vs plumbing, and the line is drawn here:
+// So the split is presentation vs plumbing, and this file is where the two are
+// wired together. Each Piggles decision carries its reasoning in the file that
+// owns it rather than here:
 //
-//   PLATFORM, imported untouched — a Piggles copy would be a real fork, and the
-//   failure mode is two consoles losing people's arrangements in two different
-//   ways:
-//     • `Pane`                      — the pane renderer (how a surface mounts)
-//     • `DockPaneHost`              — the controller ⇄ dockview bridge
-//     • `loadLayout` / `saveLayout` — the persistence format
-//     • the controller + descriptor types
+//   PaneTab · GroupActions      what a window's title bar looks like and offers
+//   dock-theme.ts               the gap, and why it cannot be CSS
+//   dock-wiring.ts              the theme prop dockview silently discards
+//   window-mode.ts              windows vs tabs, and why windows has no grid
+//   use-window-canvas.ts        the desk, and why only the clip layer resizes
+//   window-zoom.ts              zoom, and why it is not a transform
 //
-//   PIGGLES, in this directory — presentation and product decisions, all of
-//   which sparx answers differently for a different audience:
-//     • `PaneTab`        — what a window's title bar looks like
-//     • `GroupActions`   — what its buttons do
-//     • `DEFAULT_LAYOUT` — what a fresh workspace opens with
-//     • the theme + skin — gap, radius, surfaces
-//
-// ── WHAT IS DIFFERENT HERE ──────────────────────────────────────────────────
-//
-//   • A THEME with a real `gap`, so groups read as separate windows. `gap` is
-//     read by dockview's layout engine — it positions every group and derives
-//     drop targets, sash hit-areas and drag previews from those rectangles — so
-//     it cannot be done in CSS. Three attempts proved that the hard way.
-//   • The theme is applied through `api.updateOptions({ theme })` rather than
-//     the `theme` prop. `<DockviewReact theme={…}>` TYPECHECKS (the props
-//     interface extends DockviewOptions) and the React wrapper never reads it:
-//     its compiled source contains no reference to `theme` at all. A prop that
-//     compiles, lints and is silently discarded.
-//   • Windows-vs-tabs lives HERE rather than in the shell. The shell owns the
-//     CHOICE (a button, a stored preference); acting on it needs the api, the
-//     controller and the site key, all three of which are already in this file.
-//     Handing the api outward instead meant the shell reached back in.
-//   • WINDOWS MODE HAS NO GRID. dockview answers a tab dropped into empty space
-//     with a new GRID group — a docked pane behind every window, which reads as
-//     the drag having failed. `evictFromGrid` lifts it back out, at the point it
-//     was released, so a dragged-out tab simply becomes a window.
+// What stays HERE is the wiring itself. Windows-vs-tabs is acted on in this file
+// rather than the shell because it needs the api, the controller and the site
+// key, and all three are already here — handing the api outward meant the shell
+// reached back in.
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DockviewReact, type DockviewApi, type DockviewReadyEvent } from 'dockview';
 import { useWorkbench } from '@/lib/workbench/context';
-import { saveLayout } from '@/lib/workbench/persistence';
-import { saveModeLayout } from '../mode-layouts';
 // Platform plumbing — the controller bridge and the pane renderer. Forking any
 // of these would mean two consoles losing arrangements in two different ways.
 import { DockPaneHost } from '@/lib/dock/dock-host';
@@ -67,7 +44,15 @@ import { Pane } from '@/lib/dock/pane';
 import { GroupActions } from './group-actions';
 import { PaneTab } from './pane-tab';
 import { configureDock, restoreOrDefault, subscribeDock } from './dock-wiring';
+import { usePersistLayout } from './use-persist-layout';
+import { useCanvasCommands } from './use-canvas-commands';
+import { useCanvasScroll } from './use-canvas-scroll';
+import { CanvasTools } from '@/components/canvas-tools';
+import { EmptyWorkspace } from '@/components/empty-workspace';
+import { stepZoom, type ZoomLevel } from '../window-zoom';
+import type { FloatBox } from '../window-placement';
 import { useDropAnchor } from './use-drop-anchor';
+import { WindowCanvas, useWindowCanvas } from './window-canvas';
 import { useUnloadGuard } from './use-unload-guard';
 import { applyWindowMode, evictFromGrid, switchWindowMode, type WindowMode } from '../window-mode';
 import { WindowModeProvider } from '../window-mode-context';
@@ -80,12 +65,11 @@ import 'dockview/dist/styles/dockview.css';
 const components = { surface: Pane };
 const tabComponents = { surface: PaneTab };
 
-/** Debounce layout writes — dragging a splitter fires continuously. */
-const SAVE_DEBOUNCE_MS = 400;
-
 export function ConsoleDock({
   siteKey,
   mode,
+  zoom,
+  onChangeZoom,
 }: {
   siteKey: string;
   /**
@@ -98,6 +82,10 @@ export function ConsoleDock({
    * A presentation nobody has chosen yet is not 'tabs'; it is unknown.
    */
   mode: WindowMode | null;
+  /** How much of the workspace fits on screen — see lib/window-zoom.ts. The
+   *  shell owns the preference; the control that changes it is on the canvas. */
+  zoom: ZoomLevel;
+  onChangeZoom: (zoom: ZoomLevel) => void;
 }) {
   const { controller } = useWorkbench();
   const apiRef = useRef<DockviewApi | null>(null);
@@ -108,34 +96,46 @@ export function ConsoleDock({
   // rebuild the callback for a value it only ever samples.
   const modeRef = useRef<WindowMode | null>(mode);
   modeRef.current = mode;
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const disposables = useRef<ReturnType<typeof subscribeDock>>([]);
-  const { rootRef, takeDropPoint } = useDropAnchor();
+  /** Each window's box at 100%, so zooming out and back is exact. Dropped the
+   *  moment somebody moves a window themselves — see rescaleWindows. */
+  const zoomBases = useRef(new Map<string, FloatBox>());
+  const forgetZoomBases = useCallback(() => {
+    zoomBases.current.clear();
+  }, []);
+  // What happens when a drag finishes needs the canvas, and the canvas needs to
+  // be told what happens when a drag finishes. The ref breaks that circle and
+  // always holds the current one.
+  const dragEnded = useRef<(moved: HTMLElement | null) => void>(() => undefined);
+  const canvas = useWindowCanvas({
+    zoom,
+    onDragEnd: (moved) => dragEnded.current(moved),
+    onZoomStep: (direction) => {
+      onChangeZoom(stepZoom(zoom, direction));
+    },
+  });
+  const { frameRef, canvasRef, readViewport, fit } = canvas;
+  const { takeDropPoint } = useDropAnchor(canvasRef);
+  useCanvasScroll(frameRef, siteKey, mode);
+  const commands = useCanvasCommands({
+    api: apiRef,
+    canvas: canvasRef,
+    readViewport,
+    zoom,
+    fit,
+    bases: zoomBases,
+    forget: forgetZoomBases,
+  });
+  dragEnded.current = commands.dragEnded;
 
+  const write = usePersistLayout({ api: apiRef, controller, siteKey, appliedMode, fit });
+  /** Nothing open at all — a state the canvas has to answer for, since an empty
+   *  desk with no explanation reads as a console that failed to load. */
+  const [bare, setBare] = useState(false);
   const persist = useCallback(() => {
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      const api = apiRef.current;
-      if (!api) return;
-      const grid = api.toJSON();
-      saveLayout(siteKey, grid, controller.snapshotDescriptors());
-
-      // ── AND INTO THE PRESENTATION IT BELONGS TO ─────────────────────────
-      //
-      // A per-mode snapshot used to be written in ONE place: the moment you
-      // left that mode. So nothing done INSIDE a presentation was recorded
-      // until you left it, and that built a trap. Docked view came back as one
-      // pile, you switched straight back to windows to get out of it — and the
-      // way out saved that pile over the good arrangement. One bad restore
-      // locked itself in permanently, and no amount of tidying could correct it
-      // because tidying was never what got saved.
-      //
-      // `appliedMode`, not the prop: this is the arrangement ON SCREEN, and it
-      // belongs to the presentation currently painting it.
-      const showing = appliedMode.current;
-      if (showing) saveModeLayout(siteKey, showing, grid);
-    }, SAVE_DEBOUNCE_MS);
-  }, [controller, siteKey]);
+    write();
+    setBare((apiRef.current?.panels.length ?? 0) === 0);
+  }, [write]);
 
   const onReady = useCallback(
     (event: DockviewReadyEvent) => {
@@ -154,7 +154,7 @@ export function ConsoleDock({
         // drag-out case — put it where it was dropped.
         onGroupSettled: () => {
           if (modeRef.current !== 'windows') return;
-          evictFromGrid(api, takeDropPoint());
+          evictFromGrid(api, takeDropPoint(), readViewport());
         },
       });
 
@@ -166,11 +166,11 @@ export function ConsoleDock({
       // applied and then saved.
       const known = modeRef.current;
       if (known) {
-        applyWindowMode(api, known);
+        applyWindowMode(api, known, readViewport());
         appliedMode.current = known;
       }
     },
-    [controller, persist, siteKey, takeDropPoint]
+    [controller, persist, readViewport, siteKey, takeDropPoint]
   );
 
   // The presentation, applied and re-applied.
@@ -186,17 +186,16 @@ export function ConsoleDock({
     const previous = appliedMode.current;
     appliedMode.current = mode;
     if (!previous) {
-      applyWindowMode(api, mode);
+      applyWindowMode(api, mode, readViewport());
       return;
     }
-    switchWindowMode(api, controller, siteKey, previous, mode);
-  }, [mode, controller, siteKey]);
+    switchWindowMode(api, controller, siteKey, previous, mode, readViewport());
+    fit();
+  }, [mode, controller, fit, readViewport, siteKey]);
 
   useEffect(() => {
-    const timer = saveTimer;
     const subs = disposables;
     return () => {
-      if (timer.current) clearTimeout(timer.current);
       for (const sub of subs.current) sub.dispose();
       subs.current = [];
       controller.detach();
@@ -206,9 +205,22 @@ export function ConsoleDock({
   useUnloadGuard(controller);
 
   return (
-    // The wrapper is what the drop anchor measures against — dockview reports
-    // the group a drop created, never the pointer that created it.
-    <div ref={rootRef} className="h-full">
+    // Three layers — scrolling frame, scroll extent, and the desk dockview
+    // positions windows on. See window-canvas.
+    <WindowCanvas
+      handle={canvas}
+      mode={mode}
+      zoom={zoom}
+      empty={bare ? <EmptyWorkspace /> : null}
+      tools={
+        <CanvasTools
+          mode={mode}
+          zoom={zoom}
+          onChangeZoom={onChangeZoom}
+          onArrange={commands.arrange}
+        />
+      }
+    >
       {/* Inside, so the title bars dockview mounts can read the presentation
           they are being asked to offer actions for. */}
       <WindowModeProvider mode={mode}>
@@ -232,6 +244,6 @@ export function ConsoleDock({
           disableTabsOverflowList
         />
       </WindowModeProvider>
-    </div>
+    </WindowCanvas>
   );
 }

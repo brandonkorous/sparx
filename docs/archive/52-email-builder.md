@@ -42,12 +42,12 @@ tree**, closest to `/builder/page`'s catalog model:
 
 ## 2. The two models, and the decision
 
-|           | Website (legacy)                      | Website (current)                                    | Email (legacy)                                   | **Email (this doc)**                               |
-| --------- | ------------------------------------- | ---------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------- |
-| Model     | `@sparx/sitebuilder-schemas` sections | `@sparx/builder-schemas` node tree                   | `@sparx/email-sections` flat section list        | **`@sparx/builder-schemas` node tree**             |
-| Editor    | `/sitebuilder`                        | `/builder/page` + `/builder/site`                    | `/email/templates`, `/email/broadcasts` composer | **`/builder/email`**                               |
-| Renderer  | —                                     | `apps/site` `builder-renderer.tsx` (HTML + `--st-*`) | `@sparx/email` `renderSections` (React Email)    | **`@sparx/email` `renderEmailTree` (React Email)** |
-| Persisted | `sitebuilder_*`                       | `BuilderPage` / `BuilderLayout`                      | `EmailTemplate.body` / `Broadcast.body` JSON     | **`BuilderEmail` (draft/published tree)**          |
+|           | Website (legacy)                          | Website (current)                                              | Email (legacy)                                    | **Email (this doc)**                                   |
+| --------- | ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| Model     | `@wizeworks/sitebuilder-schemas` sections | `@wizeworks/builder-schemas` node tree                         | `@sparx/email-sections` flat section list         | **`@wizeworks/builder-schemas` node tree**             |
+| Editor    | `/sitebuilder`                            | `/builder/page` + `/builder/site`                              | `/email/templates`, `/email/broadcasts` composer  | **`/builder/email`**                                   |
+| Renderer  | —                                         | `wizeworks/apps/site` `builder-renderer.tsx` (HTML + `--st-*`) | `@wizeworks/email` `renderSections` (React Email) | **`@wizeworks/email` `renderEmailTree` (React Email)** |
+| Persisted | `sitebuilder_*`                           | `BuilderPage` / `BuilderLayout`                                | `EmailTemplate.body` / `Broadcast.body` JSON      | **`BuilderEmail` (draft/published tree)**              |
 
 **Decision (locked):** the node tree is THE email authoring model. Broadcasts and
 authored templates move to reference a published `BuilderEmail`; `@sparx/email-sections`
@@ -58,12 +58,12 @@ out of scope for the section retirement.
 ## 3. The one hard part: the renderer
 
 Editor reuse is cheap (§4). The renderer is the real work. The site renderer
-([apps/site/components/builder-renderer.tsx](../../apps/site/components/builder-renderer.tsx))
+([wizeworks/apps/site/components/builder-renderer.tsx](../../apps/site/components/builder-renderer.tsx))
 emits `<div>` + flexbox + `--st-*` CSS variables — which mail clients won't render.
 The Email Builder needs a **parallel renderer that walks the same `BuilderNode`
 tree but emits table-based React Email components with inline styles**, reusing
 the shared binding runtime (`resolvePath` / `cardinalityOf` from
-`@sparx/builder-schemas/runtime`) so iterate/scope semantics never drift between
+`@wizeworks/builder-schemas/runtime`) so iterate/scope semantics never drift between
 the site and email.
 
 Email is **fixed-width and non-interactive**, which collapses most of the box
@@ -76,7 +76,7 @@ model:
   `align` (→ `text-align`), and `layout` `direction`/`gap`/`columns` (stack = block
   children; row/grid = `<Row>`/`<Column>` at fixed column widths).
 - **Leaves** map to the existing brand-aware email primitives
-  ([packages/email/src/components/primitives.tsx](../../packages/email/src/components/primitives.tsx)):
+  ([wizeworks/packages/email/src/components/primitives.tsx](../../packages/email/src/components/primitives.tsx)):
   `Heading→EmailHeading`, `Text→EmailParagraph`, `Button→EmailButton`,
   `Divider→EmailDivider`, `Spacer→EmailSpacer`, `Image→<Img>`.
 
@@ -126,7 +126,7 @@ BuilderEmail
   @@index([tenantId, position]); @@map("builder_emails")
 ```
 
-`emailService` (`packages/builder/src/services/email-service.ts`) mirrors
+`emailService` (`wizeworks/packages/builder/src/services/email-service.ts`) mirrors
 `pageService` exactly: `listOrSeed / get / create / update / remove / reorder /
 publish`, plus `getPublishedById` (the broadcast read). Routes mount at
 `/v1/builder/emails` next to pages/layouts. Publish snapshots draft → published and
@@ -145,15 +145,15 @@ the per-send data (products/promotion/posts) is resolved once and the same body
 fans out. Per-recipient emails **defer**: `treeIsEmailPersonalized(tree)` (true when
 any node binds `recipient`/`order`/`cart`/`loyalty`) makes `enqueueAndMark` write a
 `defer.builderEmailId` payload instead of a rendered body; the email-dispatch tick
-([services/api-rest/src/lib/email-dispatch.ts](../../services/api-rest/src/lib/email-dispatch.ts))
+([wizeworks/services/api-rest/src/lib/email-dispatch.ts](../../services/api-rest/src/lib/email-dispatch.ts))
 reloads the published tree, resolves THIS recipient's data via the injected
 `resolveEmailData`, and renders per recipient — exactly the branch the section
-`defer.templateId` path already takes. `@sparx/email-platform` stays commerce-free:
-api-rest injects `emailDataResolver(ctx)` (which has `@sparx/commerce`).
+`defer.templateId` path already takes. `@wizeworks/email-platform` stays commerce-free:
+api-rest injects `emailDataResolver(ctx)` (which has `@wizeworks/commerce`).
 
 ## 7. Binding catalog (`EMAIL_CATALOG`)
 
-`EMAIL_SOURCES` (`@sparx/builder-schemas/binding`) fixes the code-defined sources:
+`EMAIL_SOURCES` (`@wizeworks/builder-schemas/binding`) fixes the code-defined sources:
 **recipient** (personalized), **order / cart / loyalty** (personalized), **products
 / active promotion** (per-send). Email products carry DISPLAY-ready fields
 (`priceLabel`/`imageUrl`/`url`) rather than the page catalog's raw numeric `price`,
@@ -210,7 +210,7 @@ Builder arrives"):
    transactional templates only; the dispatch tick's section-defer branch is gone;
    the `/email/templates` "Marketing" tab + authored editor are replaced by a link
    to `/builder/email`; the MCP `send_broadcast` tool takes a `builderEmailId`.
-3. **Deleted** `@sparx/email-sections`, `@sparx/email`'s `sections/*`
+3. **Deleted** `@sparx/email-sections`, `@wizeworks/email`'s `sections/*`
    (`renderSections`/`SECTION_COMPONENTS`), and api-rest's section resolver
    (`lib/email-sections.ts`); pruned the dep from every `package.json`/Dockerfile.
 4. **Untouched:** built-in transactional templates (OTP / password-reset / welcome
@@ -220,7 +220,7 @@ Builder arrives"):
 editor was the only place to write free-form rich text in an email. The `Prose`
 node now carries an authored TipTap/CMS document (a `richtext` inspector control
 wrapping `ContentBlockEditor`), and the email renderer serializes it to sanitised,
-inline-safe HTML via the audited `@sparx/cms-editor/serialize` path — so the
+inline-safe HTML via the audited `@wizeworks/cms-editor/serialize` path — so the
 Builder covers BOTH structured blocks and free-form prose. `EmailTemplate.body` /
 `Broadcast.templateId` columns are left in place (nullable, unused) — no
 destructive migration.
@@ -234,13 +234,13 @@ Transactional code builtins are untouched throughout.
   - event) · editor surface (`'email'` palette, `EmailBuilderApp`, route, manifest,
     `EmailSettings`, dashboard actions/api). End-to-end author → autosave → publish,
     static primitives + brand chrome. **Deployable.**
-- **Phase 2 — Renderer + preview + test-send.** `renderEmailTree` in `@sparx/email`;
+- **Phase 2 — Renderer + preview + test-send.** `renderEmailTree` in `@wizeworks/email`;
   Preview iframe (server-rendered real HTML); Test-send-to-me. **Deployable.**
 - **Phase 3 — Broadcast send.** `Broadcast.builderEmailId`; `broadcastService` render
   branch; worker raw path; composer picks a Builder email; send to a segment.
   **Deployable.**
 - **Phase 4 — Data-aware. _(Built 2026-06-04.)_** The email `DataSources` resolver
-  ([services/api-rest/src/lib/email-data.ts](../../services/api-rest/src/lib/email-data.ts),
+  ([wizeworks/services/api-rest/src/lib/email-data.ts](../../services/api-rest/src/lib/email-data.ts),
   `resolveEmailData`/`emailDataResolver`) reads commerce + CRM + CMS and resolves
   only the sources a tree binds (`bindingSourceKey` over its paths). The editor
   receives the real `EMAIL_CATALOG` (`/v1/builder/email-binding-schema` =
@@ -268,13 +268,13 @@ Transactional code builtins are untouched throughout.
   edited via a new `richtext` inspector control wrapping
   [`ContentBlockEditor`](../../packages/cms-editor/src/editor.tsx) — the same editor CMS
   pages use. The email renderer's `Prose` leaf serializes the doc to sanitised,
-  inline-safe HTML through [`@sparx/cms-editor/serialize`](../../packages/cms-editor/src/serialize.ts)
+  inline-safe HTML through [`@wizeworks/cms-editor/serialize`](../../packages/cms-editor/src/serialize.ts)
   (the audited path — a hostile `javascript:` link is stripped) and inlines it under
   the email's base typography; the canvas previews the same HTML, and `Prose` joins
-  `EMAIL_TYPES`. `@sparx/email` gains a `@sparx/cms-editor` dependency (the React-free
-  `/serialize` subpath only) — so every image carrying `@sparx/email` must also COPY
-  `packages/cms-editor` ([api-graphql](../../services/api-graphql/Dockerfile) was the
-  one gap, now fixed); `@sparx/ui` (cms-editor's only workspace dep) stays a dangling,
+  `EMAIL_TYPES`. `@wizeworks/email` gains a `@wizeworks/cms-editor` dependency (the React-free
+  `/serialize` subpath only) — so every image carrying `@wizeworks/email` must also COPY
+  `wizeworks/packages/cms-editor` ([api-graphql](../../services/api-graphql/Dockerfile) was the
+  one gap, now fixed); `@wizeworks/ui` (cms-editor's only workspace dep) stays a dangling,
   unused symlink, exactly as in api-rest. Migration-free. **Deployable.**
 
 ## 10. Non-obvious commitments
@@ -283,10 +283,10 @@ Transactional code builtins are untouched throughout.
   default (§4); an interactive control in an email is a defect.
 - **One renderer, one binding runtime** — the email renderer reuses
   `resolvePath`/`cardinalityOf`; it must never fork iterate/scope semantics (§3).
-- **`@sparx/email` gains `@sparx/builder-schemas` + `@sparx/cms-editor` dependencies**
+- **`@wizeworks/email` gains `@wizeworks/builder-schemas` + `@wizeworks/cms-editor` dependencies**
   — add them to the package and to **every consumer Dockerfile** (api-rest,
   api-mcp, email-worker, api-graphql, dashboard) per the workspace-wiring rule. The
-  index re-exports the Builder renderer, which loads `@sparx/cms-editor/serialize` at
+  index re-exports the Builder renderer, which loads `@wizeworks/cms-editor/serialize` at
   import time, so a missing COPY crashes the service at boot — not at build.
 - **The legal footer stays fixed chrome** — the "Sent with sparx" line + the
   marketing compliance nodes (physical address + unsubscribe) are not author-

@@ -6,8 +6,8 @@
 // EventType names and 22 CrmTopic names on 2026-07-24).
 //
 // THE NON-OBVIOUS PART: there are TWO parallel event catalogs, not one.
-//   - `EventType`  in packages/events/src/types.ts  (the main platform bus)
-//   - `CrmTopic`   in packages/crm/src/events.ts    (the CRM `crm-pubsub` bus)
+//   - `EventType`  in wizeworks/packages/events/src/types.ts  (the main platform bus)
+//   - `CrmTopic`   in wizeworks/packages/crm/src/events.ts    (the CRM `crm-pubsub` bus)
 // Both bridge to the SAME Pub/Sub project. A drift check that reads only the
 // first passes while 22 CRM topics are unprovisioned — which is precisely how
 // the 2026-07-24 gap survived the first fix. This check unions BOTH. If a third
@@ -29,8 +29,8 @@ const read = (rel) => readFileSync(join(repoRoot, rel), 'utf8');
 
 // --- The code-side catalogs. Each is a TS string-literal union. -------------
 const CATALOGS = [
-  { name: 'EventType', file: 'packages/events/src/types.ts', type: 'EventType' },
-  { name: 'CrmTopic', file: 'packages/crm/src/events.ts', type: 'CrmTopic' },
+  { name: 'EventType', file: 'wizeworks/packages/events/src/types.ts', type: 'EventType' },
+  { name: 'CrmTopic', file: 'wizeworks/packages/crm/src/events.ts', type: 'CrmTopic' },
 ];
 
 // Extract every string literal from `export type <Type> =` up to the `;` that

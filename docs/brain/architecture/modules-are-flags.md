@@ -4,9 +4,9 @@ node: architecture
 type: rule
 status: active
 sources:
-  - packages/modules/src/index.ts
-  - packages/auth/src/module-gate.ts
-  - services/api-rest/src/routes/v1/tenant.ts
+  - wizeworks/packages/modules/src/index.ts
+  - wizeworks/packages/auth/src/module-gate.ts
+  - wizeworks/services/api-rest/src/routes/v1/tenant.ts
 ---
 
 A module is gated by a **flag**, never by a subscription/plan row. The flag lives at `tenants.settings.modules.<slug>.enabled` (JSON on the RLS-exempt `tenants` row), **default-deny**. `isModuleEnabled(tenantId, slug)` reads it with a 60s in-process cache.

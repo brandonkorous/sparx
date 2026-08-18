@@ -11,10 +11,10 @@
 // one renders the published site while claiming to be a preview — which is the worst
 // possible failure for a screen whose whole job is showing unsaved work.
 
-import { useMutation } from '@sparx/query';
-import { recordAddressAt, recordPreviewPath } from '@sparx/silica-catalog';
+import { useMutation } from '@wizeworks/query';
+import { recordAddressAt, recordPreviewPath } from '@wizeworks/silica-catalog';
 import { api } from '../api/client';
-import type { SitePreviewTarget } from '../../surfaces/builder/studio/data';
+import type { SitePreviewTarget } from './site-data';
 
 export type { SitePreviewTarget };
 

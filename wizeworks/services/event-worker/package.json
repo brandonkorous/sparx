@@ -1,0 +1,44 @@
+{
+  "name": "@wizeworks/event-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The sparx event worker: one process running every broker subscription that does not need its own runtime. Twelve former worker services are libraries under packages/*-worker; media-worker and import-worker stay separate. See src/index.ts for why.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@wizeworks/automation-worker": "workspace:*",
+    "@wizeworks/channel-sync-worker": "workspace:*",
+    "@wizeworks/commerce-indexer": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/domain-worker": "workspace:*",
+    "@wizeworks/dropship-worker": "workspace:*",
+    "@wizeworks/email-worker": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/finance-worker": "workspace:*",
+    "@wizeworks/staff-worker": "workspace:*",
+    "@wizeworks/inventory-worker": "workspace:*",
+    "@wizeworks/legal-seed-worker": "workspace:*",
+    "@wizeworks/markup-recompute-worker": "workspace:*",
+    "@wizeworks/platform-crm-worker": "workspace:*",
+    "@wizeworks/push-worker": "workspace:*",
+    "@wizeworks/social-worker": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

@@ -1,0 +1,31 @@
+// Sparx's OWN platform legal docs — the acceptance record. docs/42 §6.
+//
+// Tenants (their staff owner) accept Sparx's ToS/Privacy/AUP at sign-up; the
+// DPA later for EU tenants. The docs themselves are versioned pages on the
+// marketing site (sparx/apps/web); this table records WHO accepted WHICH version,
+// WHEN, and from WHERE.
+//
+// RLS: ENABLE only, NO FORCE — matches the staff auth tables (users/sessions/
+// accounts). This is read by the owner connection during sign-up / dashboard
+// boot, BEFORE any tenant context is set on the sparx_app connection, so a
+// FORCE policy keyed on current_tenant_id() would hide every row. Queries pin
+// tenant_id / user_id explicitly (the same belt-and-suspenders the tenant
+// routes use against the RLS-exempt tenants table).
+
+model PlatformLegalAcceptance {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  docType    String   @map("doc_type") @db.VarChar(20) // terms | privacy | dpa | aup
+  docVersion String   @map("doc_version") @db.VarChar(20)
+  ipAddress  String?  @map("ip_address") @db.Inet
+  userAgent  String?  @map("user_agent") @db.Text
+  acceptedAt DateTime @default(now()) @map("accepted_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, userId])
+  @@index([tenantId, docType, docVersion])
+  @@map("platform_legal_acceptance")
+}

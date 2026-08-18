@@ -42,12 +42,11 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Tabs,
   TabsList,
@@ -57,13 +56,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import {
-  faFloppyDisk,
-  faLanguage,
-  faPlus,
-  faServer,
-  faTrashCan,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faFloppyDisk, faPlus, faServer, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -83,9 +76,13 @@ import {
   type Product,
   type ProductTranslation,
 } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const LABEL = 'Translations';
+/** Registry module for this pane, so the brand draws Content's own picture
+ *  rather than the generic one. */
+const MODULE = 'cms';
 
 /** The four fields a language carries, as the editor holds them. Strings
  *  throughout — empty means "cleared", which the save turns into the NULL the
@@ -343,18 +340,13 @@ function TranslationEditor({
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          {product.title}
-        </Heading>
-        <Text className="text-sm">
-          {locales.length === 0
-            ? 'Written in one language. Add another and shoppers reading your site in it will see your words, not a machine translation.'
-            : locales.length === 1
-              ? 'Written in one other language as well as your own.'
-              : `Written in ${String(locales.length)} other languages as well as your own.`}
-        </Text>
-      </div>
+      <Text className="text-sm">
+        {locales.length === 0
+          ? 'Written in one language. Add another and shoppers reading your site in it will see your words, not a machine translation.'
+          : locales.length === 1
+            ? 'Written in one other language as well as your own.'
+            : `Written in ${String(locales.length)} other languages as well as your own.`}
+      </Text>
 
       <FormSection
         title="What you wrote"
@@ -541,70 +533,71 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
   }>({ dirty: false, saving: false, save: null, label: 'Save' });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${LABEL} actions`}>
-        <Icon glyph={faLanguage} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {scope.product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-        {saveState.save ? (
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto"
-            disabled={!saveState.dirty}
-            loading={saveState.saving}
-            onClick={saveState.save}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            {saveState.label}
-          </Button>
-        ) : null}
-        <RefreshButton
-          className={saveState.save ? undefined : 'ml-auto'}
-          isFetching={translations.isFetching}
-          updatedAt={translations.dataUpdatedAt}
-          onRefresh={() => {
-            void translations.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label={`${LABEL} actions`}
+        status={
+          scope.isFollowing ? (
+            <Badge color="info" variant="soft" size="sm">
+              Following
+            </Badge>
+          ) : null
+        }
+        primary={
+          saveState.save ? (
+            <Button
+              size="sm"
+              color="module"
+              className="ml-auto"
+              disabled={!saveState.dirty}
+              loading={saveState.saving}
+              onClick={saveState.save}
+            >
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+              {saveState.label}
+            </Button>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={translations.isFetching}
+            updatedAt={translations.dataUpdatedAt}
+            onRefresh={() => {
+              void translations.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <FollowingNotice scope={scope} />
 
+          {/* Carded on both non-ready branches, because the editor beside them is
+              a stack of FormSections — each already a card. */}
           {translations.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load the translations"
-              description={productErrorMessage(
-                translations.error,
-                'This is a problem reaching the server. None of your wording has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void translations.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load the translations"
+                description={productErrorMessage(
+                  translations.error,
+                  'This is a problem reaching the server. None of your wording has been lost.'
+                )}
+                onRetry={() => {
+                  void translations.refetch();
+                }}
+              />
+            </Card>
           ) : translations.data === undefined ? (
-            <InlineWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : (
             <TranslationEditor
               product={scope.product}

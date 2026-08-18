@@ -10,7 +10,7 @@
 //
 // A text scan cannot answer that, because the thing that breaks you is never the
 // import you wrote. It is the one four packages down: `@piggles/console` imports
-// `@sparx/cms-editor`, which imported `@sparx/ui`, which imported
+// `@wizeworks/cms-editor`, which imported `@wizeworks/ui`, which imported
 // `@sparx/brand`. Nothing in `piggles/` mentioned `@sparx/brand`, the boundary
 // check was green, and sparx's mascot was in the Piggles container image.
 //
@@ -42,17 +42,25 @@ const ROOT = process.cwd();
  * brand-blind ones under `packages/`. After A4 this collapses to `sparx/`, and
  * the shape of the check does not change: only this array does.
  *
- * `apps/admin` and `apps/site` are NOT here. Admin is the WizeWorks staff
+ * `wizeworks/apps/admin` and `wizeworks/apps/site` are NOT here. Admin is the WizeWorks staff
  * console and site is the tenant site renderer — both serve either brand, so
  * neither is sparx's to delete.
  */
-const SPARX_OWNED = ['apps/web', 'apps/market', 'apps/workbench', 'packages/brand', 'packages/ui'];
+const SPARX_OWNED = ['sparx'];
 
 /** The roots the closure is walked FROM: everything Piggles ships. */
 const PIGGLES_GLOBS = ['piggles/apps', 'piggles/packages'];
 
 /** Workspace globs, kept in step with pnpm-workspace.yaml. */
-const WORKSPACE_GLOBS = ['apps', 'packages', 'services', 'piggles/apps', 'piggles/packages'];
+const WORKSPACE_GLOBS = [
+  'wizeworks/packages',
+  'wizeworks/services',
+  'wizeworks/apps',
+  'sparx/packages',
+  'sparx/apps',
+  'piggles/apps',
+  'piggles/packages',
+];
 
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
 
@@ -126,6 +134,22 @@ function checkClosure() {
   if (roots.length === 0) {
     console.error('✗ no Piggles packages found — the walk would trivially pass.');
     console.error('  Check PIGGLES_GLOBS against pnpm-workspace.yaml.\n');
+    return 1;
+  }
+
+  // The workspace roots must exist too, and this is not belt-and-braces: after
+  // the tree move these still read `apps` / `packages` / `services`, so the walk
+  // found only Piggles' own eight packages, reached nothing else, and reported
+  // "none of them sparx's" — a green tick over a search that had been performed
+  // on an empty set. Exactly the failure this file was written to catch,
+  // committed by this file.
+  const missingRoots = WORKSPACE_GLOBS.filter((p) => !fs.existsSync(path.join(ROOT, p)));
+  if (missingRoots.length > 0) {
+    console.error('✗ these workspace roots do not exist:\n');
+    for (const p of missingRoots) console.error(`    ${p}`);
+    console.error('\n  The closure would be walked over a partial workspace, so a pass');
+    console.error('  would mean nothing. Update WORKSPACE_GLOBS to match');
+    console.error('  pnpm-workspace.yaml.\n');
     return 1;
   }
 

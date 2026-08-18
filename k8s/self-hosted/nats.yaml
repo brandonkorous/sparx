@@ -12,7 +12,7 @@
 # path written for local development: `fetch()` to each worker, not awaited,
 # failures logged at warn and dropped. No queue, no retry, no acknowledgement,
 # no dead-letter. An event published while a worker was rolling was simply gone,
-# and every publish reported success. See packages/events/src/transport.ts.
+# and every publish reported success. See wizeworks/packages/events/src/transport.ts.
 #
 # STORAGE. File-backed, so the stream survives a pod restart — an in-memory
 # stream would reproduce the exact failure this exists to fix, just with more

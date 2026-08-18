@@ -14,7 +14,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faCubes, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -24,6 +25,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './products-data';
 import { useBundles, type Bundle, type BundleSort, type SortDir } from './bundles-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -116,39 +121,52 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Bundle list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search bundles"
-            placeholder="Search bundles…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+      <PaneToolbar
+        label="Bundle list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search bundles"
+              placeholder="Search bundles…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Add a bundle',
+          icon: faPlus,
+          onClick: (event) => {
+            ctx.open('commerce.bundle.detail', { id: 'new' }, { target: targetFor(event) });
+          },
+          title: 'Add a bundle — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/commerce/bundles',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as BundleSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a bundle — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('commerce.bundle.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add a bundle</span>
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -160,6 +178,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(search.trim())}
             noResults={{
               icon: <Icon glyph={faCubes} className="size-6" aria-hidden />,

@@ -21,7 +21,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
@@ -35,7 +34,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Switch,
@@ -143,30 +141,28 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New taxonomy actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!canCreate}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Create
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New taxonomy actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!canCreate}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Create
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              A new way to file content
-            </Heading>
-            <Text>
-              Give it a name — like Category or Tag. Once you create it, you can add the individual
-              labels that go inside it.
-            </Text>
-          </div>
+          <Text>
+            Give it a name — like Category or Tag. Once you create it, you can add the individual
+            labels that go inside it.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -337,7 +333,8 @@ function ManageTaxonomy({ ctx, taxKey }: { ctx: SurfaceContext; taxKey: string }
   if (!isPending && !taxonomy) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneEmpty
+        <PaneLoadError
+          reason="missing"
           icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
           title="This no longer exists"
           description="The way to file content you opened has been removed. Open another from the list."
@@ -470,35 +467,40 @@ function ManageBody({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Taxonomy actions">
-        {kind ? (
-          <Badge color="info" variant="soft" size="sm" title={kind.detail}>
-            {kind.label}
-          </Badge>
-        ) : null}
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!canSave}
-          loading={update.isPending}
-          onClick={save}
-        >
-          Save
-        </Button>
-
-        {/* This pane reads TWO queries — the taxonomy's settings and its terms —
-            so one refresh reloads both. */}
-        <RefreshButton
-          isFetching={isFetching || termsFetching}
-          updatedAt={terms ? termsUpdatedAt : undefined}
-          onRefresh={() => {
-            refetchTaxonomy();
-            void refetchTerms();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Taxonomy actions"
+        status={
+          kind ? (
+            <Badge color="info" variant="soft" size="sm" title={kind.detail}>
+              {kind.label}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!canSave}
+            loading={update.isPending}
+            onClick={save}
+          >
+            Save
+          </Button>
+        }
+        refresh={
+          /* This pane reads TWO queries — the taxonomy's settings and its terms —
+            so one refresh reloads both. */
+          <RefreshButton
+            isFetching={isFetching || termsFetching}
+            updatedAt={terms ? termsUpdatedAt : undefined}
+            onRefresh={() => {
+              refetchTaxonomy();
+              void refetchTerms();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

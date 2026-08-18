@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-tutoring-academic',
-    version: '1.3.0',
-    name: 'sparx — Tutoring (Academic)',
-    summary:
-        'A warm, encouraging K–12 tutoring center — math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as "Summit Learning", built to book.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-tutoring-academic',
+  version: '1.3.0',
+  name: 'sparx — Tutoring (Academic)',
+  summary:
+    'A warm, encouraging K–12 tutoring center — math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as "Summit Learning", built to book.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Summit Learning',
+    tagline: 'Where kids find their confidence.',
+    colors: {
+      primary: '#1b84b4',
+      primaryForeground: '#040c12',
+      accent: '#e7b551',
+      secondary: '#354452',
+    },
+    fonts: {
+      heading: 'Nunito',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'summit',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Summit Learning',
-        tagline: 'Where kids find their confidence.',
-        colors: {
-            primary: '#1b84b4',
-            primaryForeground: '#040c12',
-            accent: '#e7b551',
-            secondary: '#354452',
-        },
-        fonts: {
-            heading: 'Nunito',
-            body: 'Inter',
-        },
+      colorPrimary: '#1b84b4',
+      colorAccent: '#e7b551',
+      colorSecondary: '#354452',
+      fontHeading: 'Nunito',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'summit',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#1b84b4',
-            colorAccent: '#e7b551',
-            colorSecondary: '#354452',
-            fontHeading: 'Nunito',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

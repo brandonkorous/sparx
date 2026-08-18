@@ -1,0 +1,134 @@
+// CRM report builder + dashboards (docs/144 §8).
+//
+// THE POINT OF THIS IS THAT NOBODY HAS TO ASK US. A business owner can already
+// read the seven reports we wrote; what they cannot do is answer the eighth
+// question — the one specific to how they work. These three tables are the
+// difference between "reporting" meaning "the reports sparx shipped" and it
+// meaning "whatever you want to know".
+//
+// A report is a DEFINITION, never a result. Nothing here caches numbers: the
+// compiler turns the definition into one parameterised query at read time, so a
+// report is always as true as the database. Storing rollups would mean deciding
+// when they go stale, which is a second product.
+//
+// The definition columns are Json rather than a modelled sub-table on purpose.
+// `filters` is the automation ConditionGroup verbatim (one filter DSL across the
+// platform — a second one is a second thing to learn and a second thing to get
+// wrong), and measures/groupBy are small closed shapes that are validated by zod
+// at the boundary and never queried BY. A relational shredding of them would buy
+// nothing and cost a join per measure.
+
+model CrmReport {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // Site-scoped when the business runs more than one (docs/131). Null = the
+  // whole tenant, which is what a single-site business always gets.
+  propertyId String? @map("property_id") @db.Uuid
+
+  name        String  @db.VarChar(160)
+  description String? @db.Text
+
+  // Any registered object, built-in or custom — the registry is the authority,
+  // so a tenant's own "service contract" object is reportable the day they
+  // invent it. Not an enum for exactly that reason.
+  objectKey String @map("object_key") @db.VarChar(63)
+
+  // ConditionGroup (@wizeworks/automation-schemas). Empty group = no filter.
+  filters  Json  @default("{\"logic\":\"AND\",\"conditions\":[]}")
+  // { field } for a property, or { field, bucket: day|week|month|quarter|year }
+  // for a date. Null = one row, which is how a plain "how many?" is expressed.
+  groupBy  Json? @map("group_by")
+  // [{ fn: count|sum|avg|min|max, field?, label? }] — `field` omitted only for
+  // count. At least one, validated at the boundary.
+  measures Json  @default("[]")
+
+  // table | bar | line | pie | funnel | number
+  visualization String @default("table") @map("visualization") @db.VarChar(24)
+
+  // { kind: 'all' } | { kind: 'last_n_days', days } | { kind: 'between', from, to }
+  // Resolved against the object's own time column by the compiler.
+  dateRange Json @default("{\"kind\":\"all\"}") @map("date_range")
+
+  // A built-in is one of the seven sparx wrote, seeded per tenant so it can be
+  // DUPLICATED and edited — which is how a non-technical person actually learns
+  // a builder. Built-ins are read-only in place; the slug is what lets the fast
+  // path in reporting-service recognise one.
+  builtinSlug String? @map("builtin_slug") @db.VarChar(63)
+
+  // Whose it is, and whether the rest of the team sees it. A private report is
+  // somebody working something out; sharing is a deliberate act.
+  ownerId String? @map("owner_id") @db.Uuid
+  shared  Boolean @default(false)
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  widgets CrmDashboardWidget[]
+
+  @@index([tenantId, objectKey])
+  @@index([tenantId, ownerId])
+  @@index([tenantId, archivedAt])
+  @@map("crm_reports")
+}
+
+model CrmDashboard {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+
+  name        String  @db.VarChar(160)
+  description String? @db.Text
+
+  // The one a person lands on. At most one per (tenant, site) — enforced by a
+  // partial unique index, the same shape the default SLA policy uses.
+  isDefault Boolean @default(false) @map("is_default")
+
+  ownerId String? @map("owner_id") @db.Uuid
+  shared  Boolean @default(false)
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  widgets CrmDashboardWidget[]
+
+  @@index([tenantId, archivedAt])
+  @@map("crm_dashboards")
+}
+
+model CrmDashboardWidget {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  dashboardId String @map("dashboard_id") @db.Uuid
+  reportId    String @map("report_id") @db.Uuid
+
+  // Grid placement. A 12-column grid, like every dashboard grid; `w`/`h` are
+  // spans, not pixels, so the layout survives a phone.
+  x Int @default(0)
+  y Int @default(0)
+  w Int @default(6)
+  h Int @default(4)
+
+  // Overrides the report's own name on this dashboard only — the same report
+  // can legitimately be "This month" on one board and "Revenue" on another.
+  title String? @db.VarChar(160)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dashboard CrmDashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  // Cascade, not SetNull: a widget whose report is gone has nothing to draw.
+  report    CrmReport    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, dashboardId])
+  @@index([tenantId, reportId])
+  @@map("crm_dashboard_widgets")
+}

@@ -1,0 +1,21 @@
+import type { MetadataRoute } from 'next';
+
+// PWA manifest for the marketing site. Served at /manifest.webmanifest and
+// auto-linked by Next from the metadata layer. The android-chrome icons live
+// in sparx/apps/web/public/.
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'sparx',
+    short_name: 'sparx',
+    description: 'A modular content and commerce operating system by WizeWorks.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#e04631',
+    icons: [
+      { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  };
+}

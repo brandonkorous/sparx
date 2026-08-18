@@ -17,25 +17,25 @@ export type RampStep = (typeof RAMP_STEPS)[number];
  * a dark version of the color you chose.
  */
 const RAMP: Record<RampStep, { l: number; sMul: number }> = {
-    50: { l: 97, sMul: 0.55 },
-    100: { l: 94, sMul: 0.7 },
-    200: { l: 87, sMul: 0.82 },
-    300: { l: 78, sMul: 0.9 },
-    400: { l: 67, sMul: 0.96 },
-    500: { l: 56, sMul: 1 },
-    600: { l: 47, sMul: 1 },
-    700: { l: 39, sMul: 0.96 },
-    800: { l: 31, sMul: 0.9 },
-    900: { l: 24, sMul: 0.84 },
-    950: { l: 15, sMul: 0.78 },
+  50: { l: 97, sMul: 0.55 },
+  100: { l: 94, sMul: 0.7 },
+  200: { l: 87, sMul: 0.82 },
+  300: { l: 78, sMul: 0.9 },
+  400: { l: 67, sMul: 0.96 },
+  500: { l: 56, sMul: 1 },
+  600: { l: 47, sMul: 1 },
+  700: { l: 39, sMul: 0.96 },
+  800: { l: 31, sMul: 0.9 },
+  900: { l: 24, sMul: 0.84 },
+  950: { l: 15, sMul: 0.78 },
 };
 
 export function ramp(base: Rgb): Record<RampStep, string> {
-    const { h, s } = rgbToHsl(base);
-    const out = {} as Record<RampStep, string>;
-    for (const step of RAMP_STEPS) {
-        const { l, sMul } = RAMP[step];
-        out[step] = toHex(hslToRgb({ h, s: clamp(s * sMul, 0, 100), l }));
-    }
-    return out;
+  const { h, s } = rgbToHsl(base);
+  const out = {} as Record<RampStep, string>;
+  for (const step of RAMP_STEPS) {
+    const { l, sMul } = RAMP[step];
+    out[step] = toHex(hslToRgb({ h, s: clamp(s * sMul, 0, 100), l }));
+  }
+  return out;
 }

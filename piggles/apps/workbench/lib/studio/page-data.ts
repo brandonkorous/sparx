@@ -6,7 +6,7 @@
 // lets three page panes stay open at once without any two of them holding rival
 // copies of the same draft.
 
-import { useMutation, useQuery, useQueryClient } from '@sparx/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import type { Node } from '@wizeworks/silicaui-html';
 import { api } from '../api/client';
 

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Badge } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
+import { StatusFigure } from '@/components/marketing/hero/status-figure';
 
 // /status — the page /trust promises in writing.
 //
@@ -145,7 +146,14 @@ export default async function StatusPage() {
               ? 'Something is not answering.'
               : 'Here is what is running.'
         }
-        lede={`Checked when you loaded this page, at ${checkedAt.toUTCString()}. Reload it for a fresh answer — nothing on this page is cached.`}
+        lede="Reload for a fresh answer. Every row is a real request made at the moment you asked for this page, not a value somebody typed in after an incident."
+        figure={
+          <StatusFigure
+            answering={results.filter((r) => r.state === 'answering').length}
+            total={results.length}
+            checkedAt={checkedAt}
+          />
+        }
       />
 
       <Section>

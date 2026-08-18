@@ -5,7 +5,7 @@
 **Last Updated:** 2026-07-22
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the shipped
-> `DEFAULT_EMAIL_TEMPLATES` (`packages/builder-schemas/src/default-emails.ts`) now
+> `DEFAULT_EMAIL_TEMPLATES` (`wizeworks/packages/builder-schemas/src/default-emails.ts`) now
 > carries **21** keyed trees, not 13. The original 13 enumerated in §4 remain; eight
 > more landed since — `invoicing-receipt`, `order-confirmation`,
 > `shipping-confirmation`, the four `booking-*` (`booking-confirmation`,
@@ -53,19 +53,19 @@ against the published field vocabulary + node palette — the four new node type
 placed with **provisional** `props`/`binding`, finalized against the
 `invoicing-overdue` reference template when Step 2 lands. The `BuilderEmail` _table_
 change (§6) is **mine alone** — the automation agent's node work lives in
-`@sparx/builder-schemas`' node registry + `renderEmailTree`, not the `BuilderEmail`
+`@wizeworks/builder-schemas`' node registry + `renderEmailTree`, not the `BuilderEmail`
 Prisma model — so there is **no shared-table collision**; §6/§7 are unblocked and
 sequence only behind the node-JSON finalization (so provisioned trees ship final).
 
 **Current-state map** (verified 2026-06-12): `BuilderEmail`
-([packages/db/prisma/schema/51-builder.prisma](../packages/db/prisma/schema/51-builder.prisma))
+([wizeworks/packages/db/prisma/schema/51-builder.prisma](../packages/db/prisma/schema/51-builder.prisma))
 has no `property_id` and no `key`; `emailService.getPublishedById`
-([packages/builder/src/services/email-service.ts](../packages/builder/src/services/email-service.ts))
+([wizeworks/packages/builder/src/services/email-service.ts](../packages/builder/src/services/email-service.ts))
 looks up by id only; `resolveEmailData`
-([services/api-rest/src/lib/email-data.ts](../services/api-rest/src/lib/email-data.ts))
+([wizeworks/services/api-rest/src/lib/email-data.ts](../services/api-rest/src/lib/email-data.ts))
 exposes `recipient/order/cart/loyalty/commerce.product/promotion/cms.*` as **labels**
 and is missing `quote`/`invoice`/`b2bAccount` and every `*Url` token; the email node
-registry ([packages/email/src/builder/render-email-tree.tsx](../packages/email/src/builder/render-email-tree.tsx))
+registry ([wizeworks/packages/email/src/builder/render-email-tree.tsx](../packages/email/src/builder/render-email-tree.tsx))
 has `Heading/Text/Prose/Button/Image/ImageDisplay/Divider` + `Section/Stack/Grid/Card`
 but **no** `line_item_table`, `conditional_block`, unsubscribe, or address node;
 provisioning seeds only `EmailAutomation` rows, never Builder email trees; the
@@ -75,7 +75,7 @@ compliance gate is greenfield.
 
 ## 1. Why Builder-authored, not coded
 
-Coded templates (the `@sparx/email` `TemplateSend` union) cannot be edited by a
+Coded templates (the `@wizeworks/email` `TemplateSend` union) cannot be edited by a
 tenant, can't render a working CTA without bespoke prop plumbing, and don't carry a
 per-site identity. The default emails become **Builder node-trees** so that:
 
@@ -395,7 +395,7 @@ node it defines). Recorded here for the template side. Three pieces:
 2. **`unsubscribe_link` + `physical_address` nodes** (their node registry +
    renderer). The unsubscribe node renders a working one-click link (and feeds the
    `List-Unsubscribe` header); the address node renders `EmailSettings.physicalAddress`
-   ([packages/db/prisma/schema/50-email.prisma](../packages/db/prisma/schema/50-email.prisma)).
+   ([wizeworks/packages/db/prisma/schema/50-email.prisma](../packages/db/prisma/schema/50-email.prisma)).
 3. **`List-Unsubscribe` header** for marketing sends, pairing with the existing
    Mailgun `unsubscribed` → `EmailSuppression` webhook path.
 
@@ -410,15 +410,15 @@ node it defines). Recorded here for the template side. Three pieces:
 
 ## 9. Build sequence
 
-| Step | Work                                                                                                       | Owner / blocked on                             |
-| ---- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1 ✅ | All 13 trees authored — `DEFAULT_EMAIL_TEMPLATES` in `@sparx/builder-schemas` (`default-emails.ts` + test) | mine — **done**                                |
-| 2 ✅ | Resolver/`DataSource` reaches the §3 vocabulary (`quote`/`invoice`/`b2bAccount` + every `*Url`)            | automation module — **done**                   |
-| 3 ✅ | The 4 node types render + `{{token}}` interpolation + the `invoicing-overdue` reference (e2e-verified)     | automation module — **done**                   |
-| 4    | `BuilderEmail.property_id` + `key` migration (§6) + partial uniques                                        | mine — **unblocked** (no shared table, see §0) |
-| 5    | `emailService.getPublishedByKey` + per-site authoring scope + "Customize for this site"                    | mine — after step 4                            |
-| 6    | Provision the 13 trees on activation (§7) — the provisional shapes are already FINAL (see below)           | mine — **unblocked** (node JSON delivered)     |
-| 7    | Wire `DEFAULT_AUTOMATIONS` to the provisioned trees by `key` (§7) — send-by-`key` join                     | automation module (engine) + mine (templates)  |
+| Step | Work                                                                                                           | Owner / blocked on                             |
+| ---- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1 ✅ | All 13 trees authored — `DEFAULT_EMAIL_TEMPLATES` in `@wizeworks/builder-schemas` (`default-emails.ts` + test) | mine — **done**                                |
+| 2 ✅ | Resolver/`DataSource` reaches the §3 vocabulary (`quote`/`invoice`/`b2bAccount` + every `*Url`)                | automation module — **done**                   |
+| 3 ✅ | The 4 node types render + `{{token}}` interpolation + the `invoicing-overdue` reference (e2e-verified)         | automation module — **done**                   |
+| 4    | `BuilderEmail.property_id` + `key` migration (§6) + partial uniques                                            | mine — **unblocked** (no shared table, see §0) |
+| 5    | `emailService.getPublishedByKey` + per-site authoring scope + "Customize for this site"                        | mine — after step 4                            |
+| 6    | Provision the 13 trees on activation (§7) — the provisional shapes are already FINAL (see below)               | mine — **unblocked** (node JSON delivered)     |
+| 7    | Wire `DEFAULT_AUTOMATIONS` to the provisioned trees by `key` (§7) — send-by-`key` join                         | automation module (engine) + mine (templates)  |
 
 **Steps 2–3 delivered 2026-06-12** (automation module): `renderEmailTree` renders all
 four node types and interpolates `{{ source.path ?? "fallback" }}`; `resolveEmailData`

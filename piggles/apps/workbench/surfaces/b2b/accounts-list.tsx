@@ -20,9 +20,9 @@ import {
   EmptyState,
   SearchInput,
   Select,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBuilding, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -31,6 +31,10 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { accountState, formatCents, useAccounts, type AccountRow } from './accounts-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'b2b';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined },
@@ -80,52 +84,76 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Trade account controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Trade account controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search trade accounts"
+              placeholder="Company name or tax number…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            data-tour="b2b-add-account"
+            color="module"
             size="sm"
-            aria-label="Search trade accounts"
-            placeholder="Company name or tax number…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+            className="ml-auto"
+            title="Add a trade account — hold Shift to open alongside, Alt for a new window"
+            onClick={(event) => {
+              ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add a trade account
+          </Button>
+        }
+        controls={
+          <div className="w-44 shrink-0">
+            <Select
+              size="sm"
+              aria-label="Show which accounts"
+              value={filter}
+              items={FILTERS.map((entry) => ({ value: entry.value, label: entry.label }))}
+              onValueChange={(next) => {
+                setFilter((next as FilterValue | null) ?? 'all');
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        // The standing picker rides `controls`, so it is this surface's job to
+        // put it in the snapshot under its real name — "who is on credit hold"
+        // is a question worth keeping.
+        views={{
+          target: '/b2b/accounts',
+          params: { q: search.trim(), status: filter === 'all' ? '' : filter },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const status = next.status ?? '';
+            setFilter(
+              FILTERS.some((entry) => entry.value === status) ? (status as FilterValue) : 'all'
+            );
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <div className="hidden w-44 shrink-0 @md:block">
-          <Select
-            size="sm"
-            aria-label="Show which accounts"
-            value={filter}
-            items={FILTERS.map((entry) => ({ value: entry.value, label: entry.label }))}
-            onValueChange={(next) => {
-              setFilter((next as FilterValue | null) ?? 'all');
-              resetWindow();
-            }}
-          />
-        </div>
-        <Button
-          data-tour="b2b-add-account"
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a trade account — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a trade account
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -138,6 +166,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,

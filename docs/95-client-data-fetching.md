@@ -5,7 +5,7 @@ Author: Brandon Korous
 Last Updated: 2026-06-13
 
 This is the binding convention for fetching server data on the client. It defines
-when to reach for TanStack Query (`@sparx/query`) and — just as importantly — when
+when to reach for TanStack Query (`@wizeworks/query`) and — just as importantly — when
 **not** to. Read it before adding any client-side `fetch`, `useEffect`-fetch, or
 `useQuery`.
 
@@ -42,17 +42,17 @@ TanStack Query **cache** — i.e. there is a live `useQuery` to invalidate or
 optimistically patch. A mutation whose only effect is `router.refresh()` of a
 server-rendered view gains nothing from `useMutation`; keep it plain.
 
-## 3. The package — `@sparx/query`
+## 3. The package — `@wizeworks/query`
 
-One import source. Feature code imports hooks from `@sparx/query`, never
+One import source. Feature code imports hooks from `@wizeworks/query`, never
 `@tanstack/react-query` directly (the barrel re-exports the full surface).
 
-| Entry                   | Use from               | Contents                                                                                                                                             |
-| ----------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@sparx/query`          | anywhere (RSC-safe)    | `useQuery`, `useMutation`, `keepPreviousData`, `QueryClient`, `dehydrate`, `HydrationBoundary`, … + `queryKeys`, `getQueryClient`, `makeQueryClient` |
-| `@sparx/query/provider` | client root            | `<QueryProvider>` (carries `'use client'`; owns the browser client + devtools)                                                                       |
-| `@sparx/query/server`   | Server Components only | `getServerQueryClient` (per-request via `cache()`), `dehydrate`, `HydrationBoundary` (`import 'server-only'`)                                        |
-| `@sparx/query/keys`     | anywhere               | `queryKeys` factory                                                                                                                                  |
+| Entry                       | Use from               | Contents                                                                                                                                             |
+| --------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@wizeworks/query`          | anywhere (RSC-safe)    | `useQuery`, `useMutation`, `keepPreviousData`, `QueryClient`, `dehydrate`, `HydrationBoundary`, … + `queryKeys`, `getQueryClient`, `makeQueryClient` |
+| `@wizeworks/query/provider` | client root            | `<QueryProvider>` (carries `'use client'`; owns the browser client + devtools)                                                                       |
+| `@wizeworks/query/server`   | Server Components only | `getServerQueryClient` (per-request via `cache()`), `dehydrate`, `HydrationBoundary` (`import 'server-only'`)                                        |
+| `@wizeworks/query/keys`     | anywhere               | `queryKeys` factory                                                                                                                                  |
 
 Defaults (`makeQueryClient`): `staleTime` 60s, `gcTime` 5m, `retry` 2 on queries,
 `retry` 0 on mutations, refetch on focus + reconnect. The non-zero `staleTime` is
@@ -63,7 +63,7 @@ it in `apps/dashboard/app/layout.tsx`.
 
 ## 4. Query keys
 
-Every key comes from the `queryKeys` factory in `packages/query/src/keys.ts` — the
+Every key comes from the `queryKeys` factory in `wizeworks/packages/query/src/keys.ts` — the
 single greppable registry. A query and the mutation that invalidates it MUST share
 the same factory call. Never hand-write a key array at a call site.
 
@@ -79,8 +79,8 @@ prefetch on the server and hand off via `<HydrationBoundary>`:
 
 ```tsx
 // page.tsx (Server Component)
-import { getServerQueryClient, dehydrate, HydrationBoundary } from '@sparx/query/server';
-import { queryKeys } from '@sparx/query/keys';
+import { getServerQueryClient, dehydrate, HydrationBoundary } from '@wizeworks/query/server';
+import { queryKeys } from '@wizeworks/query/keys';
 
 export default async function Page() {
   const qc = getServerQueryClient();

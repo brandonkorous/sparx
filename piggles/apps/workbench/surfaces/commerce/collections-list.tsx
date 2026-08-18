@@ -16,17 +16,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faLayerGroup, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -41,6 +32,10 @@ import {
   type CollectionType,
   type SortDir,
 } from './collections-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 const TYPE_FILTERS = [
   { value: 'all', label: 'All' },
@@ -142,60 +137,64 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Collection list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search collections"
-            placeholder="Search collections…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
+      <PaneToolbar
+        label="Collection list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search collections"
+              placeholder="Search collections…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Add a collection',
+          icon: faPlus,
+          onClick: (event) => {
+            ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
+          },
+          title: 'Add a collection — hold Shift to open alongside, Alt for a new window',
+        }}
+        filters={[
+          {
+            label: 'How it fills',
+            key: 'type',
+            value: type,
+            onValueChange: (next) => {
+              setType(next ?? 'all');
               resetWindow();
+            },
+            options: TYPE_FILTERS,
+          },
+        ]}
+        views={{
+          target: '/commerce/collections',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as CollectionSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <Filter
-          color="module"
-          value={type}
-          onValueChange={(next) => {
-            setType(next ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by how the collection fills"
-        >
-          {TYPE_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a collection — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add a collection</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -207,6 +206,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={anyFilter}
             noResults={{
               icon: <Icon glyph={faLayerGroup} className="size-6" aria-hidden />,

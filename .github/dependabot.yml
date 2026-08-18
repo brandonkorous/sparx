@@ -69,7 +69,7 @@ updates:
         update-types: ['version-update:semver-major']
 
       # Design-system primitives — visible UI churn risk. Coordinate with
-      # the @sparx/ui component pass.
+      # the @wizeworks/ui component pass.
       - dependency-name: 'tailwind-merge'
         update-types: ['version-update:semver-major']
       - dependency-name: 'lucide-react'

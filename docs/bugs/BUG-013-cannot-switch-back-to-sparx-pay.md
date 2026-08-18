@@ -4,7 +4,7 @@ Status: **FIXED (code) 2026-07-25 — awaiting deploy**
 Severity: **Medium** — a merchant who tries another gateway is stranded off sparx Pay;
 the platform also silently stops earning its 0.5% because the merchant can't return
 Found: 2026-07-25, prod payment-provider verification on `keen-cedar-6433` (v1.167.0)
-Surface: `services/api-rest/src/lib/payments-onboarding.ts` (`getPaymentConfig`)
+Surface: `wizeworks/services/api-rest/src/lib/payments-onboarding.ts` (`getPaymentConfig`)
 
 ## Symptom
 

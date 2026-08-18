@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-acupuncture-tcm',
-    version: '1.3.0',
-    name: 'sparx — Acupuncture (Traditional)',
-    summary:
-        'An earthy, serene template for a traditional Chinese-medicine acupuncture clinic — warm clay and gold on a soft sand ground, with a calm serif display. Installs a working booking flow: acupuncture, cupping, herbal and fertility treatments; three licensed acupuncturists booked by name with their own hours; and two treatment rooms as bookable resources. Ships as "Five Elements Acupuncture", a grounded, holistic healing space rooted in TCM tradition.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-acupuncture-tcm',
+  version: '1.3.0',
+  name: 'sparx — Acupuncture (Traditional)',
+  summary:
+    'An earthy, serene template for a traditional Chinese-medicine acupuncture clinic — warm clay and gold on a soft sand ground, with a calm serif display. Installs a working booking flow: acupuncture, cupping, herbal and fertility treatments; three licensed acupuncturists booked by name with their own hours; and two treatment rooms as bookable resources. Ships as "Five Elements Acupuncture", a grounded, holistic healing space rooted in TCM tradition.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Five Elements Acupuncture',
+    tagline: 'Traditional healing, calmly done.',
+    colors: {
+      primary: '#a16241',
+      primaryForeground: '#fff7f3',
+      accent: '#b39357',
+      secondary: '#4a3d35',
+    },
+    fonts: {
+      heading: 'Cormorant Garamond',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'fiveelements',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Five Elements Acupuncture',
-        tagline: 'Traditional healing, calmly done.',
-        colors: {
-            primary: '#a16241',
-            primaryForeground: '#fff7f3',
-            accent: '#b39357',
-            secondary: '#4a3d35',
-        },
-        fonts: {
-            heading: 'Cormorant Garamond',
-            body: 'Inter',
-        },
+      colorPrimary: '#a16241',
+      colorAccent: '#b39357',
+      colorSecondary: '#4a3d35',
+      fontHeading: 'Cormorant Garamond',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'fiveelements',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#a16241',
-            colorAccent: '#b39357',
-            colorSecondary: '#4a3d35',
-            fontHeading: 'Cormorant Garamond',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

@@ -50,23 +50,11 @@ export function PreviewEmail({ emailId, name }: { emailId: string; name: string 
 
   return (
     <div className="bg-base-200 flex h-full min-h-0 flex-col">
-      <div className="border-base-300 flex shrink-0 flex-wrap items-center gap-2 border-b px-3 py-2">
-        <span className="text-base-content min-w-0 truncate text-sm">
-          {preview?.subject ?? name}
-        </span>
-        <Button
-          size="sm"
-          shape="square"
-          className="ml-auto"
-          aria-label="Refresh"
-          title="Show the latest saved version"
-          disabled={render.isPending}
-          onClick={() => void load()}
-        >
-          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-        </Button>
-      </div>
-
+      <Subject
+        subject={preview?.subject ?? name}
+        busy={render.isPending}
+        onRefresh={() => void load()}
+      />
       <PreviewFrame
         srcDoc={failed ? undefined : (preview?.html ?? undefined)}
         width={width}
@@ -74,22 +62,54 @@ export function PreviewEmail({ emailId, name }: { emailId: string; name: string 
         label={`${name} as a recipient sees it`}
         onRetry={() => void load()}
       >
-        {problems.length ? (
-          <div className="border-base-300 flex shrink-0 flex-col gap-2 border-b p-3">
-            {problems.map((check) => (
-              <Alert key={check.id} color={toneOf(check.level)} variant="soft">
-                <span className="flex flex-wrap items-baseline gap-2">
-                  <Badge color={toneOf(check.level)} variant="soft">
-                    {check.level === 'error' ? 'Fix this' : 'Worth a look'}
-                  </Badge>
-                  <span className="font-medium">{check.title}</span>
-                  <span>{check.detail}</span>
-                </span>
-              </Alert>
-            ))}
-          </div>
-        ) : null}
+        <Problems checks={problems} />
       </PreviewFrame>
+    </div>
+  );
+}
+
+function Subject({
+  subject,
+  busy,
+  onRefresh,
+}: {
+  subject: string;
+  busy: boolean;
+  onRefresh: () => void;
+}) {
+  return (
+    <div className="border-base-300 flex shrink-0 flex-wrap items-center gap-2 border-b px-3 py-2">
+      <span className="text-base-content min-w-0 truncate text-sm">{subject}</span>
+      <Button
+        size="sm"
+        shape="square"
+        className="ml-auto"
+        aria-label="Refresh"
+        title="Show the latest saved version"
+        disabled={busy}
+        onClick={onRefresh}
+      >
+        <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+      </Button>
+    </div>
+  );
+}
+
+function Problems({ checks }: { checks: EmailCheck[] }) {
+  if (!checks.length) return null;
+  return (
+    <div className="border-base-300 flex shrink-0 flex-col gap-2 border-b p-3">
+      {checks.map((check) => (
+        <Alert key={check.id} color={toneOf(check.level)} variant="soft">
+          <span className="flex flex-wrap items-baseline gap-2">
+            <Badge color={toneOf(check.level)} variant="soft">
+              {check.level === 'error' ? 'Fix this' : 'Worth a look'}
+            </Badge>
+            <span className="font-medium">{check.title}</span>
+            <span>{check.detail}</span>
+          </span>
+        </Alert>
+      ))}
     </div>
   );
 }

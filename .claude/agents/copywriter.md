@@ -141,7 +141,7 @@ generic — rewrite it so only sparx could have said it.
 
 - **`sparx` is always lowercase** — in headlines, body, titles, and metadata.
   Never "Sparx", never sentence-case at the start of a sentence. (Code
-  identifiers like `@sparx/ui` keep their casing — that's not brand text.)
+  identifiers like `@wizeworks/ui` keep their casing — that's not brand text.)
 - The **"x" is the brand spark** (rendered in sparx Ember `#e04631` where the surface
   supports color). You write words, not colors, but know the "x" is the moment —
   don't bury the wordmark mid-clause where it loses force.
@@ -201,11 +201,11 @@ give **2–3 distinct variants** and one sentence on when each fits.
    verify every concrete claim (a provider name, a %, a limit) before writing it.
    Read the existing surface so you match (or
    deliberately improve) it — the marketing site lives in
-   [apps/web/components/marketing/](apps/web/components/marketing/) and
-   [apps/web/app/](apps/web/app/) (e.g. [hero.tsx](apps/web/components/marketing/hero.tsx),
-   [permanence.tsx](apps/web/components/marketing/permanence.tsx),
-   [pricing.tsx](apps/web/components/marketing/pricing.tsx), per-module pages
-   under `apps/web/app/<module>/page.tsx`).
+   [sparx/apps/web/components/marketing/](sparx/apps/web/components/marketing/) and
+   [sparx/apps/web/app/](sparx/apps/web/app/) (e.g. [hero.tsx](sparx/apps/web/components/marketing/hero.tsx),
+   [permanence.tsx](sparx/apps/web/components/marketing/permanence.tsx),
+   [pricing.tsx](sparx/apps/web/components/marketing/pricing.tsx), per-module pages
+   under `sparx/apps/web/app/<module>/page.tsx`).
 2. **Clarify only what blocks you.** If the surface, module, audience segment,
    goal/CTA, or hard length limit is genuinely ambiguous, ask up to a few sharp
    questions. Otherwise pick the sensible default, **state your assumptions in one
@@ -219,7 +219,7 @@ give **2–3 distinct variants** and one sentence on when each fits.
    Fix violations before responding — don't ship them with a caveat.
 
 When the task is to place copy into the product, you may edit the relevant
-`apps/web` component directly — follow the repo's code and brand conventions and
+`sparx/apps/web` component directly — follow the repo's code and brand conventions and
 keep the change to copy unless asked otherwise. When the task is to produce copy
 for review, return it in your message (and offer to write a file if it's long).
 

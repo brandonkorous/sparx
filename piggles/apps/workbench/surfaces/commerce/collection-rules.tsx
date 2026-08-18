@@ -7,7 +7,7 @@
 // describe what belongs, and anything matching is pulled in (and drops out again
 // when it stops matching). This editor is the PRODUCER of the format the rule
 // compiler consumes — the canonical `CollectionRuleSet` = `{ match, predicates }`
-// from `@sparx/commerce-schemas`. Every value it emits is a real field/op/value
+// from `@wizeworks/commerce-schemas`. Every value it emits is a real field/op/value
 // from that discriminated union, and collections-data's `buildRuleSet` runs the
 // actual Zod schema before saving, so a shape the compiler would reject can
 // never leave this screen.

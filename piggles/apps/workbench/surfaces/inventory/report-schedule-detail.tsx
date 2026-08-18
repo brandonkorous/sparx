@@ -33,16 +33,17 @@ import {
   Input,
   NativeSelect,
   Switch,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faFloppyDisk, faPaperPlane, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -225,103 +226,121 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Scheduled report actions">
-        {!isNew && existing.data ? (
-          <Badge
-            color={
-              existing.data.pausedByFailures ? 'danger' : form.isActive ? 'success' : 'neutral'
-            }
-            variant="soft"
-            size="sm"
-          >
-            {existing.data.pausedByFailures
-              ? 'Stopped after repeated failures'
-              : form.isActive
-                ? 'Sending'
-                : 'Switched off'}
-          </Badge>
-        ) : null}
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!canSave || saving}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {isNew ? 'Start sending it' : 'Save'}
-        </Button>
-
-        {!isNew ? (
-          <>
-            <Button
-              color="neutral"
-              variant="outline"
-              size="sm"
-              disabled={run.isPending}
-              onClick={() => {
-                run.mutate(undefined, {
-                  onSuccess: (result) => {
-                    afterCommit(() => {
-                      toast.add({
-                        title:
-                          result.status === 'skipped'
-                            ? 'Nothing to send'
-                            : result.status === 'failed'
-                              ? 'Could not send it'
-                              : `Sent to ${plural(result.recipients, 'person', 'people')}`,
-                        ...(result.error ? { description: result.error } : {}),
-                        type:
-                          result.status === 'failed'
-                            ? 'error'
-                            : result.status === 'skipped'
-                              ? 'info'
-                              : 'success',
-                      });
-                    });
-                  },
-                });
+      <PaneToolbar
+        label="Scheduled report actions"
+        refresh={
+          // Nothing is loaded for a schedule that does not exist yet, so the new
+          // form has nothing to re-read.
+          !isNew ? (
+            <RefreshButton
+              isFetching={existing.isFetching}
+              updatedAt={existing.data ? existing.dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void existing.refetch();
               }}
-            >
-              <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
-              Send now
-            </Button>
-            <Button
-              color="danger"
-              variant="outline"
+            />
+          ) : undefined
+        }
+        status={
+          !isNew && existing.data ? (
+            <Badge
+              color={
+                existing.data.pausedByFailures ? 'danger' : form.isActive ? 'success' : 'neutral'
+              }
+              variant="soft"
               size="sm"
-              onClick={() => {
-                void (async () => {
-                  const ok = await confirm({
-                    title: `Stop sending "${form.name}"?`,
-                    description: `Nobody will receive this report again. The ${plural(
-                      existing.data?.deliveries.length ?? 0,
-                      'record',
-                      'records'
-                    )} of what was already sent will go with it.`,
-                    confirmLabel: 'Delete it',
-                    cancelLabel: 'Keep it',
-                    color: 'danger',
-                  });
-                  if (!ok) return;
-                  remove.mutate(id, {
-                    onSuccess: () => {
+            >
+              {existing.data.pausedByFailures
+                ? 'Stopped after repeated failures'
+                : form.isActive
+                  ? 'Sending'
+                  : 'Switched off'}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!canSave || saving}
+            onClick={save}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {isNew ? 'Start sending it' : 'Save'}
+          </Button>
+        }
+        controls={
+          !isNew ? (
+            <>
+              <Button
+                color="neutral"
+                variant="outline"
+                size="sm"
+                disabled={run.isPending}
+                onClick={() => {
+                  run.mutate(undefined, {
+                    onSuccess: (result) => {
                       afterCommit(() => {
-                        toast.add({ title: 'Deleted', type: 'success' });
+                        toast.add({
+                          title:
+                            result.status === 'skipped'
+                              ? 'Nothing to send'
+                              : result.status === 'failed'
+                                ? 'Could not send it'
+                                : `Sent to ${plural(result.recipients, 'person', 'people')}`,
+                          ...(result.error ? { description: result.error } : {}),
+                          type:
+                            result.status === 'failed'
+                              ? 'error'
+                              : result.status === 'skipped'
+                                ? 'info'
+                                : 'success',
+                        });
                       });
-                      ctx.close();
                     },
                   });
-                })();
-              }}
-            >
-              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-              Delete
-            </Button>
-          </>
-        ) : null}
-      </PaneToolbar>
+                }}
+              >
+                <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
+                Send now
+              </Button>
+              <Button
+                color="danger"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  void (async () => {
+                    const ok = await confirm({
+                      title: `Stop sending "${form.name}"?`,
+                      description: `Nobody will receive this report again. The ${plural(
+                        existing.data?.deliveries.length ?? 0,
+                        'record',
+                        'records'
+                      )} of what was already sent will go with it.`,
+                      confirmLabel: 'Delete it',
+                      cancelLabel: 'Keep it',
+                      color: 'danger',
+                    });
+                    if (!ok) return;
+                    remove.mutate(id, {
+                      onSuccess: () => {
+                        afterCommit(() => {
+                          toast.add({ title: 'Deleted', type: 'success' });
+                        });
+                        ctx.close();
+                      },
+                    });
+                  })();
+                }}
+              >
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+                Delete
+              </Button>
+            </>
+          ) : null
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">

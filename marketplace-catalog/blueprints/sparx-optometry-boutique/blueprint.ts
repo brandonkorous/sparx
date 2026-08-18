@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-optometry-boutique',
-    version: '1.3.0',
-    name: 'sparx — Optometry (Boutique)',
-    summary:
-        'A sleek, design-forward optical & eye-care studio site — a deep charcoal palette, a warm brass accent and a refined modern display, with online booking live from day one. Installs a working booking flow: comprehensive and contact-lens exams that pair an optometrist with an exam room, plus personal eyewear-styling appointments with a stylist — real hours, resources and a no-show policy. Ships as "Iris Optical", a boutique eyewear studio.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-optometry-boutique',
+  version: '1.3.0',
+  name: 'sparx — Optometry (Boutique)',
+  summary:
+    'A sleek, design-forward optical & eye-care studio site — a deep charcoal palette, a warm brass accent and a refined modern display, with online booking live from day one. Installs a working booking flow: comprehensive and contact-lens exams that pair an optometrist with an exam room, plus personal eyewear-styling appointments with a stylist — real hours, resources and a no-show policy. Ships as "Iris Optical", a boutique eyewear studio.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Iris Optical',
+    tagline: 'Eyewear, considered.',
+    colors: {
+      primary: '#212730',
+      primaryForeground: '#f5f9ff',
+      accent: '#c19658',
+      secondary: '#3e434a',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'iris',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Iris Optical',
-        tagline: 'Eyewear, considered.',
-        colors: {
-            primary: '#212730',
-            primaryForeground: '#f5f9ff',
-            accent: '#c19658',
-            secondary: '#3e434a',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Inter',
-        },
+      colorPrimary: '#212730',
+      colorAccent: '#c19658',
+      colorSecondary: '#3e434a',
+      fontHeading: 'Fraunces',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'iris',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#212730',
-            colorAccent: '#c19658',
-            colorSecondary: '#3e434a',
-            fontHeading: 'Fraunces',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

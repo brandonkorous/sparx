@@ -8,10 +8,11 @@
 // (⇧-click), tears off to a second monitor, survives in a saved layout, and can
 // be favourited — none of which an overlay can do.
 
-import { Button, Card, EmptyState, Table } from '@wizeworks/silicaui-react';
-import { PaneEmpty } from '../../components/pane-empty';
+import { Button, Card, EmptyState } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { faArrowsRotate, faMessagePlus } from '@fortawesome/pro-solid-svg-icons';
+import { faMessagePlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { describeAgo } from '../../lib/api/activity';
 import { useMyFeedback, type FeedbackSubmission } from '../../lib/api/feedback';
@@ -19,6 +20,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { CATEGORY_ICON, FeedbackStatusBadge, deriveTitle } from '../../components/feedback/format';
 import { useFeedback } from '../../components/feedback/provider';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 
 /** Same modifier contract as the launcher and every other list. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -29,7 +31,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
   const feedback = useFeedback();
-  const { data, isPending, isError, refetch } = useMyFeedback();
+  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMyFeedback();
 
   const open = (submission: FeedbackSubmission, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('platform.feedback.thread', { id: submission.id }, { target: targetFor(event) });
@@ -38,22 +40,13 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneEmpty
+        <PaneLoadError
           icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
           title="Could not load your feedback"
           description="This is a problem reaching the server, not a problem with anything you sent. Nothing was lost."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-              Try again
-            </Button>
-          }
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </Card>
     );
@@ -63,27 +56,42 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Feedback list controls">
-        <p className="shrink-0 text-sm whitespace-nowrap">
-          {rows.length === 1 ? '1 message' : `${String(rows.length)} messages`}
-          {data && data.unreadCount > 0 ? ` · ${String(data.unreadCount)} with a new reply` : ''}
-        </p>
-        <div className="flex-1" />
-        <Button
-          color="module"
-          size="sm"
-          onClick={() => {
-            feedback.openSend({ source: 'button' });
-          }}
-        >
-          <Icon glyph={faMessagePlus} className="size-4" aria-hidden />
-          Send feedback
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Feedback list controls"
+        status={
+          <p className="shrink-0 text-sm whitespace-nowrap">
+            {rows.length === 1 ? '1 message' : `${String(rows.length)} messages`}
+            {data && data.unreadCount > 0 ? ` · ${String(data.unreadCount)} with a new reply` : ''}
+          </p>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            onClick={() => {
+              feedback.openSend({ source: 'button' });
+            }}
+          >
+            <Icon glyph={faMessagePlus} className="size-4" aria-hidden />
+            Send feedback
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         {isPending ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}

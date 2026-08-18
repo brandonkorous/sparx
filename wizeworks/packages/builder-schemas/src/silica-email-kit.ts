@@ -1,0 +1,646 @@
+// The authoring vocabulary for silica-native email bodies (docs/120 slice 6) — the
+// email twin of `catalog/_kit.ts`. It exists so the ~24 provisioned defaults read as
+// COPY, not as node literals: `heading('Your order is confirmed')` rather than fifteen
+// lines of `{ id, kind: 'text', align, color, colorAuto, fontSize, … }`.
+//
+// Three constraints from silica's CLOSED email schema shape everything here:
+//
+//   1. A `body` holds ONLY sections; a section holds columns-or-content. A section
+//      can NOT nest in a section — so anything that repeats or toggles is a
+//      TOP-LEVEL section, never an inline wrapper.
+//   2. `collection` repeats a container's CHILDREN once per item, so a line-item
+//      table's header row must live in its own section OUTSIDE the repeating one.
+//   3. A bound node with no `attr` fills its kind's DEFAULT field — but `section` has
+//      no default field, so a bound section fills nothing and acts as a pure
+//      show/hide wrapper. That is `when()`: the replacement for the legacy
+//      `conditional_block` node type.
+//
+// Colors are authored as silica's neutral defaults WITH the `*Auto` flags set, so
+// they repaint from the tenant's brand — live in the editor (silica's own
+// `setColorDefaults`) and at send (`@wizeworks/email/silica`'s brand pass). An author who
+// picks a color by hand freezes that field, exactly as silica intends.
+
+import type {
+  ButtonNode,
+  ColumnNode,
+  ColumnsNode,
+  ContentNode,
+  DividerNode,
+  EmailDocument,
+  ImageNode,
+  LayoutChild,
+  LinkNode,
+  SectionNode,
+  SpacerNode,
+  TextNode,
+} from '@wizeworks/silicaui-builder/email';
+
+/** silica's neutral palette (`DEFAULT_EMAIL_COLORS`), which it doesn't export. Every
+ *  value here is paired with its `*Auto` flag, so these are the pre-brand fallbacks —
+ *  what a document looks like before a tenant theme touches it, never a final color. */
+const C = {
+  primary: '#111827',
+  primaryContent: '#ffffff',
+  baseContent: '#18181b',
+  base100: '#ffffff',
+  base200: '#f4f4f5',
+  base300: '#e4e4e7',
+} as const;
+
+/** The body's type scale. 16px is the floor for anything a reader reads as prose;
+ *  14px is reserved for the table column captions. */
+const SIZE = { heading: 28, body: 16, caption: 14 } as const;
+
+// Authored, deterministic ids — a `def-` prefix keeps them clear of the editor's
+// runtime `makeId` scheme. The counter runs once at module load, so every provisioned
+// document gets a stable id sequence (cf. `default-emails.ts`).
+let n = 0;
+const sid = (kind: string): string => `def-s-${kind}-${(n += 1)}`;
+
+// ── Leaves ───────────────────────────────────────────────────────────────────
+
+interface TextOptions {
+  size?: number;
+  weight?: TextNode['fontWeight'];
+  align?: TextNode['align'];
+  /** Which theme role this text tracks (silicaui 0.33). Omitted → `baseContent`.
+   *  Use `primary` for the ONE key datum, or a semantic role (`success` / `warning`
+   *  / `info` / `error`) for a status. Repaints per tenant. */
+  colorRole?: TextNode['colorRole'];
+  /** Color for `<a>` inside `html`, by theme role — replaces the client-default
+   *  hyperlink blue with a brand-adaptive link color (no more `color:inherit`). */
+  linkColorRole?: TextNode['linkColorRole'];
+  /** Bind this node's copy to a data path; the resolver fills it and, when the value
+   *  is absent, DROPS the node (see `when()`). */
+  ref?: string;
+}
+
+/** A text block. `html` is inline-safe HTML (`<b>`, `<i>`, `<a href>`, `<br>`) and may
+ *  carry `{{tokens}}` — silica interpolates those natively at resolve time. */
+export function text(html: string, opts: TextOptions = {}): TextNode {
+  const fontSize = opts.size ?? SIZE.body;
+  return {
+    id: sid('text'),
+    kind: 'text',
+    html,
+    align: opts.align ?? 'left',
+    color: C.baseContent,
+    colorAuto: true,
+    ...(opts.colorRole ? { colorRole: opts.colorRole } : {}),
+    ...(opts.linkColorRole ? { linkColorAuto: true, linkColorRole: opts.linkColorRole } : {}),
+    fontSize,
+    fontWeight: opts.weight ?? 'normal',
+    // Tighter leading on a heading, roomy on prose — both derived so a resized
+    // block never ends up with leading that fights its size.
+    lineHeight: Math.round(fontSize * (fontSize >= SIZE.heading ? 1.3 : 1.6)),
+    ...(opts.ref ? { data: { kind: 'value' as const, ref: opts.ref } } : {}),
+  };
+}
+
+export const heading = (html: string): TextNode =>
+  text(html, { size: SIZE.heading, weight: 'bold' });
+
+export const para = (html: string): TextNode => text(html);
+
+/** A column caption in the line-item table — the one place 14px is right, because it
+ *  labels the data rather than being read as prose. */
+const caption = (html: string, align: TextNode['align'] = 'left'): TextNode =>
+  text(html, { size: SIZE.caption, weight: 'semibold', align });
+
+export function button(
+  label: string,
+  href: string,
+  align: ButtonNode['align'] = 'left'
+): ButtonNode {
+  return {
+    id: sid('button'),
+    kind: 'button',
+    label,
+    href,
+    bg: C.primary,
+    bgAuto: true,
+    color: C.primaryContent,
+    colorAuto: true,
+    radius: 6,
+    align,
+    paddingX: 24,
+    paddingY: 12,
+  };
+}
+
+/** A secondary, low-emphasis action rendered as a TEXT LINK beneath the primary
+ *  button, so a confirmation has ONE clear primary and a quiet "and also…" under it.
+ *  `linkColorRole:'primary'` paints the `<a>` in the brand color (theme-adaptive)
+ *  instead of the client's default hyperlink blue. */
+export const actionLink = (
+  label: string,
+  href: string,
+  align: TextNode['align'] = 'center'
+): TextNode =>
+  text(`<a href="${href}">${label}</a>`, { align, weight: 'semibold', linkColorRole: 'primary' });
+
+export const divider = (): DividerNode => ({
+  id: sid('divider'),
+  kind: 'divider',
+  color: C.base300,
+  colorAuto: true,
+  thickness: 1,
+});
+
+/** Vertical breathing room between blocks. The schema's own `spacer` — cheaper than
+ *  an empty section and it survives the projector as a real gap. */
+export const spacer = (height = 16): SpacerNode => ({ id: sid('spacer'), kind: 'spacer', height });
+
+// ── Containers ───────────────────────────────────────────────────────────────
+
+export function section(children: LayoutChild[], paddingY = 24): SectionNode {
+  return {
+    id: sid('section'),
+    kind: 'section',
+    bg: C.base100,
+    bgAuto: true,
+    paddingX: 24,
+    paddingY,
+    children,
+  };
+}
+
+const column = (widthPct: number, children: LayoutChild[]): ColumnNode => ({
+  id: sid('column'),
+  kind: 'column',
+  widthPct,
+  children,
+});
+
+const columns = (cols: ColumnNode[]): ColumnsNode => ({
+  id: sid('columns'),
+  kind: 'columns',
+  children: cols,
+  // A three-column line-item row is a TABLE, not a layout: stacking it on mobile
+  // would tear each item's name away from its price. Kept side-by-side.
+  stackOnMobile: false,
+});
+
+/** A block shown only when `ref` resolves to something. The `conditional_block`
+ *  replacement: a bound section fills no field (section has no default bindable
+ *  field), so resolution either passes it through untouched or — when the value is
+ *  absent and the resolver runs with `hideWhenEmpty` — drops it whole. */
+export function when(ref: string, children: LayoutChild[]): SectionNode {
+  return { ...section(children, 8), data: { kind: 'value', ref } };
+}
+
+/** A line-item table over a bound collection (`order.items` / `cart.items` /
+ *  `quote.items` / `invoice.items` — all four share the same item vocabulary:
+ *  `name` · `quantity` · `unitPrice` · `lineTotal`).
+ *
+ *  TWO sections, because `collection` repeats a container's children: the header row
+ *  sits in its own section so it prints once, and the row section repeats. The item
+ *  refs are bare field keys — inside a collection scope the resolver reads them off
+ *  the current item.
+ *
+ *  The authored cell copy is not filler: silica renders the authored children once
+ *  when a collection resolves empty, so this is what an item-less email shows. */
+export function itemsTable(ref: string, opts: { thumbnails?: boolean } = {}): SectionNode[] {
+  // Column widths sum to 93%, NOT 100%: the projector renders columns as
+  // `display:inline-block`, and the whitespace between them adds a space's worth of
+  // width — three columns at a full 100% overflow and the last wraps, tearing each
+  // item's price onto its own centred line. The 7% slack absorbs the inter-column
+  // whitespace so the row stays intact. `align:'left'` hugs the row to the left edge
+  // (the section's `<td>` is otherwise `align:center`, same fix `detailPanel` uses).
+  //
+  // `thumbnails` prepends a product-image column (bound to each item's `imageUrl`) —
+  // the single biggest lift on a commerce receipt: a customer recognises what they
+  // bought by its picture before they read a word. It's OPT-IN because an item with no
+  // image (a wholesale line, a service) would leave a dead column; the commerce order
+  // emails set it, invoices/quotes don't. Widths still sum to ~93% for the same slack.
+  const thumbs = opts.thumbnails ?? false;
+  const COL = thumbs
+    ? ({ thumb: 15, item: 40, qty: 12, amount: 26 } as const)
+    : ({ thumb: 0, item: 54, qty: 13, amount: 26 } as const);
+  const headerCols = [
+    ...(thumbs ? [column(COL.thumb, [])] : []),
+    column(COL.item, [caption('Item')]),
+    column(COL.qty, [caption('Qty', 'right')]),
+    column(COL.amount, [caption('Amount', 'right')]),
+  ];
+  const rowCols = [
+    ...(thumbs ? [column(COL.thumb, [image('imageUrl', { width: 44 })])] : []),
+    column(COL.item, [text('Item', { ref: 'name' })]),
+    column(COL.qty, [text('1', { align: 'right', ref: 'quantity' })]),
+    column(COL.amount, [text('—', { align: 'right', ref: 'lineTotal' })]),
+  ];
+  const header: SectionNode = {
+    ...section([columns(headerCols), divider()], 8),
+    align: 'left',
+  };
+  const rows: SectionNode = {
+    ...section([columns(rowCols)], 8),
+    align: 'left',
+    data: { kind: 'collection', ref },
+  };
+  return [header, rows];
+}
+
+/** One line of a cost summary — the money math under a receipt. `strong` marks the
+ *  ONE total row: it gets a rule above it and renders large in the brand color, so
+ *  the eye lands on the number that matters. `ref` drops an optional line (a discount,
+ *  a tax that doesn't apply) cleanly, same `hideWhenEmpty` mechanism as `when()`. */
+export interface SummaryRow {
+  label: string;
+  value: string;
+  ref?: string;
+  strong?: boolean;
+}
+
+/**
+ * A right-aligned label→value cost summary — subtotal · shipping · tax · total — that
+ * sits under `itemsTable` and makes the math legible at a glance instead of buried in a
+ * detail panel. Each row is a two-column `label | value` line (value right-aligned, the
+ * accountant's convention); the `strong` total row is set off by a rule and painted in
+ * the brand color. Columns sum to ~95% for the same inline-block slack `itemsTable`
+ * leaves (one gap, so less slack needed than the three-column table).
+ */
+export function costSummary(rows: SummaryRow[]): SectionNode {
+  const COL = { label: 60, value: 35 } as const;
+  const line = (r: SummaryRow): ColumnsNode => {
+    const label = text(r.label, {
+      size: r.strong ? 17 : SIZE.body,
+      weight: r.strong ? 'bold' : 'normal',
+    });
+    const value = text(r.value, {
+      align: 'right',
+      size: r.strong ? 20 : SIZE.body,
+      weight: r.strong ? 'semibold' : 'normal',
+      ...(r.strong ? { colorRole: 'primary' as const } : {}),
+    });
+    const cols = columns([column(COL.label, [label]), column(COL.value, [value])]);
+    return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
+  };
+  const children: LayoutChild[] = [];
+  rows.forEach((r, i) => {
+    if (i > 0) children.push(r.strong ? divider() : spacer(6));
+    if (r.strong && i > 0) children.push(spacer(10));
+    children.push(line(r));
+  });
+  return { ...section(children, 8), align: 'left' };
+}
+
+// ── Detail panel ───────────────────────────────────────────────────────────────
+
+/** One label→value line in a detail panel. `value` is inline-safe HTML and may
+ *  carry `{{tokens}}`. `ref` marks an OPTIONAL row: when that data path resolves
+ *  empty the whole row drops (same `hideWhenEmpty` mechanism as `when()`), so a
+ *  booking with no location never shows a dangling "Location" label. `emphasize`
+ *  marks the ONE datum that matters most (a booking's date/time) — rendered large
+ *  and in the brand color so the eye lands on it first. */
+export interface DetailRow {
+  label: string;
+  value: string;
+  ref?: string;
+  emphasize?: boolean;
+}
+
+/** An optional status shown at the top of the card — a semantic-colored state on
+ *  the record (`success` Confirmed · `info` Upcoming · `warning` Rescheduled …). */
+export interface DetailStatus {
+  label: string;
+  role: TextNode['colorRole'];
+}
+
+/**
+ * A scannable label→value panel — the centrepiece of a confirmation/receipt email,
+ * and the single biggest lift over a run of prose paragraphs: the reader finds the
+ * "what / when / where" at a glance instead of parsing a sentence. It renders as a
+ * rounded, bordered, INSET card (silicaui 0.33 section box-decoration) that stands
+ * off the body and tints to the tenant theme.
+ *
+ * Two projector facts still shape the rows:
+ *   · a section renders with `align` (here `left`); inline-block `columns` wrap when
+ *     their widths sum to ~100%, so a label|value row is a single FULL-WIDTH `column`
+ *     holding a stacked tag-over-value pair, never a 2-column row.
+ *   · the card fill/border track the `base200`/`base300` roles (`bgRole` /
+ *     `borderColorRole`), so they follow each tenant's palette instead of a frozen
+ *     hex. Outlook ignores `radius` → square corners, the accepted degradation.
+ *
+ * An OPTIONAL row (`ref`) still drops whole — label, value, and trailing gap — via
+ * the same `hideWhenEmpty` mechanism as `when()`, never leaving a dangling label.
+ */
+/** The shared "inset card" box-decoration (silicaui 0.33 section fields): a rounded,
+ *  hairline-bordered panel whose fill + border track the theme roles, inset from the
+ *  email edges. Both the label→value `detailPanel` and the free-content `calloutCard`
+ *  wear it, so the card look is defined ONCE. `satisfies` keeps the role/align values
+ *  as their narrow literal types while checking the shape against `SectionNode`. */
+const CARD = {
+  paddingX: 20,
+  bg: C.base200,
+  bgAuto: true,
+  bgRole: 'base200',
+  borderColor: C.base300,
+  borderColorAuto: true,
+  borderColorRole: 'base300',
+  borderWidth: 1,
+  radius: 16,
+  marginX: 24,
+  marginY: 8,
+  align: 'left',
+} satisfies Partial<SectionNode>;
+
+export function detailPanel(
+  rows: DetailRow[],
+  opts: { status?: DetailStatus; ref?: string } = {}
+): SectionNode {
+  const row = (r: DetailRow): ColumnsNode => {
+    const value = r.emphasize
+      ? text(r.value, { size: 20, weight: 'semibold', colorRole: 'primary' })
+      : text(r.value, { size: SIZE.body });
+    const cols = columns([
+      column(100, [text(r.label, { size: SIZE.caption, weight: 'semibold' }), value, spacer(12)]),
+    ]);
+    return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
+  };
+  const children: LayoutChild[] = [];
+  if (opts.status) {
+    children.push(
+      text(opts.status.label, {
+        size: SIZE.caption,
+        weight: 'semibold',
+        colorRole: opts.status.role,
+      }),
+      spacer(10)
+    );
+  }
+  children.push(...rows.map(row));
+  const panel: SectionNode = { ...section(children, 18), ...CARD };
+  // `ref` gates the WHOLE card: a single-fact panel (a ship-to on a digital order)
+  // drops entirely when its data is absent, rather than rendering an empty inset box.
+  // A section fills no default field, so a bound section is pure show/hide (like when()).
+  return opts.ref ? { ...panel, data: { kind: 'value', ref: opts.ref } } : panel;
+}
+
+/** A tinted, bordered card wrapping FREE content (a heading, prose, a button) — the
+ *  marketing twin of `detailPanel`'s data card. It's the "draw the eye to one
+ *  message" block: a promo, a notice, a highlighted next step. Same inset card chrome
+ *  as `detailPanel` (shared `CARD`), with the children spaced apart so they breathe. */
+export function calloutCard(children: ContentNode[]): SectionNode {
+  return { ...section(spaced(children), 18), ...CARD };
+}
+
+/** A vertical list of title→description pairs inside the inset card — the "here's
+ *  what you can do" / benefits block that gives a lifecycle email (welcome, win-back)
+ *  real substance instead of a lone prose line. Each item is a strong title over a
+ *  readable line of prose (real ink, never muted — it's meant to be read), with a
+ *  tight gap inside a pair and a wider one between pairs so the list scans. Same inset
+ *  card chrome as `detailPanel` / `calloutCard` (shared `CARD`). */
+export function featureList(items: { title: string; body: string }[]): SectionNode {
+  const children: LayoutChild[] = [];
+  items.forEach((it, i) => {
+    if (i > 0) children.push(spacer(18));
+    children.push(
+      text(it.title, { size: 17, weight: 'bold' }),
+      spacer(4),
+      text(it.body, { size: 15 })
+    );
+  });
+  return { ...section(children, 22), ...CARD };
+}
+
+/** A single feature card shown only when a MODULE is active — the module-aware twin of
+ *  `featureList` for orientation copy ("here's what you can do") that must reflect what
+ *  the business actually offers: a `commerce` card for a seller, a `scheduling` card for
+ *  one that takes bookings, a `cms` card for a publisher. It's one `featureList` item
+ *  wearing the same inset CARD, with a `modules.<slug>` value-gate on the section — and
+ *  because a section fills no default field, that gate acts as pure show/hide via the
+ *  same `hideWhenEmpty` drop as `when()`, so the card vanishes for a tenant without the
+ *  module. `slug` is a `@wizeworks/modules` `ModuleSlug` (mirrored in the `modules` email
+ *  source, binding.ts); the resolver (`resolveModules`) fills '' for an inactive module,
+ *  which is what triggers the drop. Stacking several reads as one grouped list. */
+export function moduleFeature(slug: string, title: string, body: string): SectionNode {
+  return { ...featureList([{ title, body }]), data: { kind: 'value', ref: `modules.${slug}` } };
+}
+
+/** A module-gated cross-sell callout — the "keep going" nudge at the tail of an email:
+ *  a centered heading, a line of copy, and one button, inside the shared inset CARD, all
+ *  shown only when `slug`'s module is active (the same `modules.<slug>` value-gate as
+ *  `moduleFeature`). It carries NO product/entity data of its own — just `{{site.*}}`
+ *  tokens in the copy/href — so it drops cleanly into any email (transactional or
+ *  marketing) without adding a data dependency: for a non-commerce tenant the whole card
+ *  vanishes. Whether it belongs in a given email is a COMPLIANCE decision, not a
+ *  rendering one — in a marketing send (win-back / abandoned-cart / post-purchase-review)
+ *  it rides under the unsubscribe footer; in a transactional send it's only ever a single
+ *  incidental block under genuinely transactional content (CAN-SPAM primary-purpose). */
+export function crossSell(
+  slug: string,
+  title: string,
+  body: string,
+  ctaLabel: string,
+  href: string
+): SectionNode {
+  const card = calloutCard([
+    text(title, { size: 20, weight: 'bold', align: 'center' }),
+    text(body, { align: 'center' }),
+    button(ctaLabel, href, 'center'),
+  ]);
+  return { ...card, data: { kind: 'value', ref: `modules.${slug}` } };
+}
+
+/** A bound image — its `src` fills from `ref` (an image node's default bindable field),
+ *  so inside a `collection` repeat `image('imageUrl')` shows each item's own picture. An
+ *  empty value drops the node (`hideWhenEmpty`), so an item with no image leaves no broken
+ *  frame. `width` is pixels (the projector clamps to the body width). */
+export function image(
+  ref: string,
+  opts: { width?: number; align?: ImageNode['align'] } = {}
+): ImageNode {
+  return {
+    id: sid('image'),
+    kind: 'image',
+    src: '',
+    alt: '',
+    width: opts.width ?? 120,
+    align: opts.align ?? 'left',
+    data: { kind: 'value', ref },
+  };
+}
+
+/** A clickable GROUP (silicaui 0.38 `LinkNode`) — one destination shared by its children,
+ *  so a repeated product card can deep-link to its OWN record. `hrefRef` binds the target
+ *  per item (`link`'s default bindable field IS `href`, so a bare `value` bind fills it):
+ *  inside a `commerce.product` repeat, `link('url', […])` sends each card to that product's
+ *  page. The projector distributes the anchor onto each child (image → `<a><img>`, text →
+ *  wrapped `<a>`) rather than one block-level `<a>` — the only form Outlook honours. */
+export function link(hrefRef: string, children: ContentNode[]): LinkNode {
+  return {
+    id: sid('link'),
+    kind: 'link',
+    href: '',
+    children,
+    data: { kind: 'value', ref: hrefRef },
+  };
+}
+
+/**
+ * A product rail — a heading, a repeating grid of clickable product cards (image · title ·
+ * price, each linking to its own PDP), and a "shop all" button. The commerce twin of
+ * `itemsTable`: it binds the `commerce.product` collection the send resolves once
+ * (`resolveProducts`, display-ready title/priceLabel/imageUrl/url), and each card is a
+ * `link` bound to the item's `url` so every card goes to the right place.
+ *
+ * THREE sections, for the same reason `itemsTable` splits: a `collection` repeats its
+ * section's children per item, so the heading and the button live in their OWN
+ * (non-repeating) sections and only the middle card section repeats. The card is an
+ * image column beside a title/price column, both wrapped in the per-item `link`.
+ *
+ * Only ever placed in emails a selling tenant sends (order confirmation, delivered, review)
+ * — where an order guarantees the catalog is non-empty — so it needs no module gate and
+ * never renders the empty-collection placeholder.
+ */
+export function productRail(opts: {
+  heading: string;
+  ctaLabel: string;
+  ctaHref: string;
+  ref?: string;
+}): SectionNode[] {
+  const ref = opts.ref ?? 'commerce.product';
+  // Two columns summing to 96%, NOT 100% — the projector renders columns as
+  // inline-block and the whitespace between them adds a space's width, so a full 100%
+  // wraps the price column onto its own line (same slack `itemsTable` leaves). A compact
+  // thumbnail (a cart-line rhythm, not a full-bleed hero) keeps a rail of several
+  // products scannable rather than a screen-height stack.
+  const COL = { image: 16, text: 80 } as const;
+  const headingSection = section([text(opts.heading, { size: 20, weight: 'bold' })], 16);
+  // The row AND a trailing spacer are BOTH children of the collection section, so the
+  // repeat emits `[row, gap]` per product — giving each card breathing room. Without the
+  // spacer the square thumbnails stack edge-to-edge and read as one continuous strip.
+  const cardRow: SectionNode = {
+    ...section(
+      [
+        columns([
+          column(COL.image, [link('url', [image('imageUrl', { width: 64 })])]),
+          column(COL.text, [
+            link('url', [
+              text('', { ref: 'title', weight: 'semibold', size: 16 }),
+              spacer(4),
+              text('', { ref: 'priceLabel', size: 15, colorRole: 'primary' }),
+            ]),
+          ]),
+        ]),
+        spacer(18),
+      ],
+      10
+    ),
+    align: 'left',
+    data: { kind: 'collection', ref },
+  };
+  const cta = section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8);
+  return [headingSection, cardRow, cta];
+}
+
+/**
+ * A CONTENT rail — the editorial twin of `productRail`. A heading, a repeating list of
+ * the tenant's latest published content (image · title · excerpt, each linking to the
+ * article), and a "read more" button. This is how a business that PUBLISHES turns email
+ * into engagement: a content-and-commerce store features its journal under an order, and
+ * a content-only publisher (no products to rail) still has something to cross-promote.
+ *
+ * Bound to a `cms.<type>` collection the send resolves (`resolveCmsCollection` →
+ * title/excerpt/imageUrl/url/dateLabel), `blog_post` by default. Same three-section
+ * split as `productRail` (a collection repeats its section's children, so heading + CTA
+ * live in their own non-repeating sections). The whole rail is gated on CONTENT
+ * PRESENCE: the heading + CTA value-bind the SAME collection ref, and an empty array
+ * (`isEmptyValue`) or an absent CMS drops them — so a tenant with no published posts
+ * (or no CMS module at all) sees no rail, no dangling heading, no empty button. The card
+ * section's own text is authored empty, so the placeholder repeat renders nothing.
+ */
+export function contentRail(opts: {
+  heading: string;
+  ctaLabel: string;
+  ctaHref: string;
+  ref?: string;
+}): SectionNode[] {
+  const ref = opts.ref ?? 'cms.blog_post';
+  // Gate on the content itself: an empty collection resolves to `[]`, which
+  // `isEmptyValue` counts as absent, so the heading + CTA drop when there's nothing
+  // to show (and a non-CMS tenant, where the ref is unknown, drops too).
+  const contentGate = { kind: 'value' as const, ref };
+  const COL = { image: 26, text: 70 } as const;
+  const headingSection: SectionNode = {
+    ...section([text(opts.heading, { size: 20, weight: 'bold' })], 16),
+    data: contentGate,
+  };
+  const cardRow: SectionNode = {
+    ...section(
+      [
+        columns([
+          column(COL.image, [link('url', [image('imageUrl', { width: 96 })])]),
+          column(COL.text, [
+            link('url', [
+              text('', { ref: 'title', weight: 'semibold', size: 16 }),
+              spacer(4),
+              text('', { ref: 'excerpt', size: 14 }),
+            ]),
+          ]),
+        ]),
+        spacer(18),
+      ],
+      10
+    ),
+    align: 'left',
+    data: { kind: 'collection', ref },
+  };
+  const cta: SectionNode = {
+    ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
+    data: contentGate,
+  };
+  return [headingSection, cardRow, cta];
+}
+
+// ── The document ─────────────────────────────────────────────────────────────
+
+/** Wrap authored sections in an email body. The brand wordmark header and the legal
+ *  footer are NOT here — the send composes both (`@wizeworks/email/silica`), so an author
+ *  edits only their own copy and can't delete the compliance footer off a marketing
+ *  email. */
+export function emailDoc(subject: string, preheader: string, body: SectionNode[]): EmailDocument {
+  return {
+    version: '1',
+    subject,
+    preheader,
+    root: {
+      id: sid('body'),
+      kind: 'body',
+      width: 600,
+      bg: C.base200,
+      bgAuto: true,
+      contentBg: C.base100,
+      contentBgAuto: true,
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      // Declare both schemes so Apple Mail / Outlook-for-Mac render the light design
+      // as authored instead of force-inverting it; Gmail/Outlook.com ignore it.
+      colorScheme: 'light dark',
+      children: body,
+    },
+  };
+}
+
+/** Separate a run of stacked blocks with a real gap. The projector gives sibling
+ *  content nodes NO vertical rhythm of their own, so a heading, its lead paragraph
+ *  and a CTA button stacked in one section render TOUCHING. A `spacer` between each
+ *  pair is the schema's own way to space blocks — it survives projection as a true
+ *  gap (same device `detailPanel` uses between its rows). Edges are left to the
+ *  section's own `paddingY`, so a spacer only ever goes BETWEEN two blocks. */
+function spaced(children: ContentNode[], gap = 16): LayoutChild[] {
+  const out: LayoutChild[] = [];
+  children.forEach((child, i) => {
+    if (i > 0) out.push(spacer(gap));
+    out.push(child);
+  });
+  return out;
+}
+
+/** A one-section body — the shape almost every default takes: a heading, some copy,
+ *  and a call to action, with any conditionals appended as their own sections. The
+ *  blocks are spaced apart (`spaced`) so the heading, lead and CTA breathe instead of
+ *  colliding. */
+export function copyBlock(children: ContentNode[]): SectionNode {
+  return section(spaced(children));
+}

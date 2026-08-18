@@ -16,4 +16,4 @@ The persistence layer — Prisma against Cloud SQL Postgres, with RLS as the ten
 
 ## Sources of truth
 
-`packages/db/prisma/schema/**` (85 numbered files) · `packages/db/CLAUDE.md` · `packages/db/src/tenant-context.ts` · the `db-migration` skill.
+`wizeworks/packages/db/prisma/schema/**` (85 numbered files) · `wizeworks/packages/db/CLAUDE.md` · `wizeworks/packages/db/src/tenant-context.ts` · the `db-migration` skill.

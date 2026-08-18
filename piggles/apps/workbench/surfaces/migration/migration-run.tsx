@@ -55,7 +55,7 @@ import {
   type CanonicalEntity,
   type MappedEntity,
   type ValidationIssue,
-} from '@sparx/migration';
+} from '@wizeworks/migration';
 import { ColumnMapper } from './column-mapper';
 import { LiveConnection, type LivePull } from './live-connection';
 import { ReportProblemButton } from '../../components/feedback/report-problem-button';
@@ -488,36 +488,41 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Migration run controls">
-        {runId !== null ? (
-          <Button variant="ghost" size="sm" onClick={reset}>
-            <Icon glyph={faRotate} className="size-4" aria-hidden />
-            Move something else
-          </Button>
-        ) : null}
-        {staged && runId === null ? (
+      <PaneToolbar
+        label="Migration run controls"
+        controls={
           <>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={importable.length === 0 || start.isPending}
-              onClick={() => void begin(true)}
-            >
-              <Icon glyph={faPlay} className="size-4" aria-hidden />
-              Practice run
-            </Button>
-            <Button
-              color="primary"
-              size="sm"
-              disabled={importable.length === 0 || start.isPending}
-              onClick={() => void begin(false)}
-            >
-              <Icon glyph={faUpload} className="size-4" aria-hidden />
-              Bring in {totalReady.toLocaleString()}
-            </Button>
+            {runId !== null ? (
+              <Button variant="ghost" size="sm" onClick={reset}>
+                <Icon glyph={faRotate} className="size-4" aria-hidden />
+                Move something else
+              </Button>
+            ) : null}
+            {staged && runId === null ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={importable.length === 0 || start.isPending}
+                  onClick={() => void begin(true)}
+                >
+                  <Icon glyph={faPlay} className="size-4" aria-hidden />
+                  Practice run
+                </Button>
+                <Button
+                  color="primary"
+                  size="sm"
+                  disabled={importable.length === 0 || start.isPending}
+                  onClick={() => void begin(false)}
+                >
+                  <Icon glyph={faUpload} className="size-4" aria-hidden />
+                  Bring in {totalReady.toLocaleString()}
+                </Button>
+              </>
+            ) : null}
           </>
-        ) : null}
-      </PaneToolbar>
+        }
+      />
 
       <div className={COLUMN}>
         {runId !== null ? (

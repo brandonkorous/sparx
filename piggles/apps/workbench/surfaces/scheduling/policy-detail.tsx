@@ -25,7 +25,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -33,9 +32,10 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faFloppyDisk, faShieldCheck, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { faFloppyDisk, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -235,11 +235,18 @@ function PolicyEditor({
   id,
   initial,
   existing,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   initial: Draft;
   existing: BookingPolicy | null;
+  /** Absent on a brand-new rule set — there is nothing loaded to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -362,31 +369,30 @@ function PolicyEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={isNew ? 'New rule set actions' : 'Rule set actions'}>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          disabled={!canSave}
-          loading={busy}
-          onClick={submit}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {isNew ? 'Create rule set' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label={isNew ? 'New rule set actions' : 'Rule set actions'}
+        refresh={
+          onRefresh ? (
+            <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+          ) : undefined
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            disabled={!canSave}
+            loading={busy}
+            onClick={submit}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {isNew ? 'Create rule set' : 'Save'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {existing ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Icon glyph={faShieldCheck} className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
-            </div>
-          ) : null}
-
           {saveError ? (
             <Alert color="error" variant="soft">
               <AlertContent>
@@ -670,6 +676,11 @@ export function PolicyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       id={id}
       initial={draftFrom(policy.data)}
       existing={policy.data}
+      isFetching={policy.isFetching}
+      updatedAt={policy.dataUpdatedAt}
+      onRefresh={() => {
+        void policy.refetch();
+      }}
     />
   );
 }

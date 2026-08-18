@@ -10,7 +10,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, EmptyState, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faFileText, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -59,17 +60,19 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Quote controls">
-        <Text className="text-sm font-medium">Quotes</Text>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Quote controls"
+        status={<Text className="text-sm font-medium">Quotes</Text>}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {accountId && accountName ? (
         <div className="flex items-center gap-2">

@@ -19,7 +19,6 @@ import {
   Badge,
   Button,
   Card,
-  Heading,
   Text,
 } from '@wizeworks/silicaui-react';
 import { faArrowUpRightFromSquare, faBuilding } from '@fortawesome/pro-solid-svg-icons';
@@ -28,6 +27,7 @@ import { ModuleScope } from '../../components/module-scope';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import {
   formatDate,
   formatMoney,
@@ -82,7 +82,17 @@ export function QuoteDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  return <QuoteView ctx={ctx} quote={quoteQuery.data} />;
+  return (
+    <QuoteView
+      ctx={ctx}
+      quote={quoteQuery.data}
+      isFetching={quoteQuery.isFetching}
+      updatedAt={quoteQuery.dataUpdatedAt}
+      onRefresh={() => {
+        void quoteQuery.refetch();
+      }}
+    />
+  );
 }
 
 function MoneyRow({
@@ -108,39 +118,54 @@ function MoneyRow({
   );
 }
 
-function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
+function QuoteView({
+  ctx,
+  quote,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  quote: QuoteRow;
+  isFetching: boolean;
+  updatedAt: number | undefined;
+  onRefresh: () => void;
+}) {
   const expired = isExpired(quote) && quote.stage.stageType === 'draft';
   const tone = expired ? 'warning' : quoteTone(quote.stage.stageType);
   const stageLabel = expired ? 'Expired' : quote.stage.name;
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Quote actions">
-        <Badge color={tone} variant="soft" size="sm">
-          {stageLabel}
-        </Badge>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Open this quote to price its lines and accept or decline it"
-          onClick={(event) => {
-            ctx.open('invoicing.invoice.edit', { id: quote.id }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
-          Price &amp; respond
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Quote actions"
+        status={
+          <Badge color={tone} variant="soft" size="sm">
+            {stageLabel}
+          </Badge>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            title="Open this quote to price its lines and accept or decline it"
+            onClick={(event) => {
+              ctx.open('invoicing.invoice.edit', { id: quote.id }, { target: targetFor(event) });
+            }}
+          >
+            <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
+            Price &amp; respond
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {quote.number ? `Quote ${quote.number}` : 'Draft quote'}
-            </Heading>
-            <Text>For {quoteParty(quote)}</Text>
-          </div>
+          <Text>For {quoteParty(quote)}</Text>
 
           {expired ? (
             <Alert color="warning" variant="soft">

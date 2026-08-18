@@ -9,7 +9,7 @@
 // the saving of it, exactly like the product editor's category picker.
 
 import { useMemo, useState } from 'react';
-import { useQuery } from '@sparx/query';
+import { useQuery } from '@wizeworks/query';
 import { Badge, Button, Checkbox, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { faBox, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';

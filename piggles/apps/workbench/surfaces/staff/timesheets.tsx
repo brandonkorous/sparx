@@ -30,12 +30,11 @@ import {
   Button,
   Card,
   Checkbox,
-  EmptyState,
   Heading,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowsRotate,
   faCalendarDays,
@@ -62,6 +61,10 @@ import {
 } from './data';
 import { formatCostOrNothing, formatMinutes, monthRange, monthShift, periodLabel } from './format';
 import { productCopy } from '../../lib/product';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'staff';
 
 function PersonRow({
   row,
@@ -277,94 +280,97 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Timesheet controls" wrap>
-        <div className="flex items-center gap-1">
+      <PaneToolbar
+        label="Timesheet controls"
+        primary={
           <Button
             size="sm"
-            variant="ghost"
-            color="neutral"
-            aria-label="Previous month"
-            onClick={() => {
-              setSelected(new Set());
-              setRange((current) => monthShift(current, -1));
-            }}
+            color="module"
+            className="ml-auto"
+            disabled={!anySelected}
+            loading={approve.isPending}
+            onClick={doApprove}
           >
-            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
+            {anySelected
+              ? `Approve ${String(selected.size)} ${selected.size === 1 ? 'person' : 'people'}`
+              : 'Approve'}
           </Button>
-          <Text as="span" className="min-w-32 text-center text-sm font-medium">
-            {periodLabel(range.from, range.to)}
-          </Text>
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            aria-label="Next month"
-            onClick={() => {
-              setSelected(new Set());
-              setRange((current) => monthShift(current, 1));
+        }
+        controls={
+          <>
+            <div className="flex items-center gap-1">
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                aria-label="Previous month"
+                onClick={() => {
+                  setSelected(new Set());
+                  setRange((current) => monthShift(current, -1));
+                }}
+              >
+                <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
+              </Button>
+              <Text as="span" className="min-w-32 text-center text-sm font-medium">
+                {periodLabel(range.from, range.to)}
+              </Text>
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                aria-label="Next month"
+                onClick={() => {
+                  setSelected(new Set());
+                  setRange((current) => monthShift(current, 1));
+                }}
+              >
+                <Icon glyph={faChevronRight} className="size-4" aria-hidden />
+              </Button>
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              onClick={() => {
+                setSelected(new Set());
+                setRange(monthRange(new Date()));
+              }}
+            >
+              This month
+            </Button>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={timesheet.isFetching}
+            updatedAt={data ? timesheet.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void timesheet.refetch();
             }}
-          >
-            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
-          </Button>
-        </div>
-
-        <Button
-          size="sm"
-          variant="ghost"
-          color="neutral"
-          onClick={() => {
-            setSelected(new Set());
-            setRange(monthRange(new Date()));
-          }}
-        >
-          This month
-        </Button>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto"
-          disabled={!anySelected}
-          loading={approve.isPending}
-          onClick={doApprove}
-        >
-          {anySelected
-            ? `Approve ${String(selected.size)} ${selected.size === 1 ? 'person' : 'people'}`
-            : 'Approve'}
-        </Button>
-
-        <RefreshButton
-          isFetching={timesheet.isFetching}
-          updatedAt={data ? timesheet.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void timesheet.refetch();
-          }}
-        />
-      </PaneToolbar>
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {timesheet.isError ? (
-          <EmptyState
-            icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
-            title="Could not load this period"
-            description="The server could not be reached. No hours are affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void timesheet.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
+              title="Could not load this period"
+              description="The server could not be reached. No hours are affected."
+              onRetry={() => {
+                void timesheet.refetch();
+              }}
+            />
+          </Card>
         ) : timesheet.isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : rows.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
               title="No hours in this period"
               description="Once people clock in, or somebody types in the time they worked, it appears here for you to check and approve."

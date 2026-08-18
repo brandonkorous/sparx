@@ -23,6 +23,7 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -32,10 +33,8 @@ import {
   Button,
   Card,
   EmptyState,
-  Filter,
-  FilterItem,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faChartColumn } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -91,32 +90,32 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Page results controls" wrap>
-        <Filter
-          color="module"
-          value={String(days)}
-          onValueChange={(next) => {
-            setDays((Number(next ?? 30) || 30) as ResultWindow);
-          }}
-          showReset={false}
-          aria-label="How far back to look"
-        >
-          {RESULT_WINDOWS.map((window) => (
-            <FilterItem key={window.days} value={String(window.days)}>
-              {window.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Page results controls"
+        filters={[
+          {
+            label: 'How far back',
+            value: String(days),
+            onValueChange: (next) => {
+              setDays((Number(next ?? 30) || 30) as ResultWindow);
+            },
+            // RESULT_WINDOWS keys its entries by `days`, not `value`.
+            options: RESULT_WINDOWS.map((window) => ({
+              value: String(window.days),
+              label: window.label,
+            })),
+          },
+        ]}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {staleAfterFailure ? (
@@ -142,21 +141,13 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
 
         {error && !staleAfterFailure ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
             title="Could not load your page results"
             description="This is a problem reaching the server. Nothing about your site or your figures has changed."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting label="Adding up your pages…" />

@@ -22,10 +22,10 @@ Last Updated: 2026-07-22
 
 `POST /v1/sitebuilder/publish` (and `/rollback`, `/schedule`) call
 `requireVerifiedEmail(request)` after the role + module gates
-(`services/api-rest/src/routes/v1/sitebuilder/publish.ts:41,82,91`). That guard:
+(`wizeworks/services/api-rest/src/routes/v1/sitebuilder/publish.ts:41,82,91`). That guard:
 
 ```ts
-// services/api-rest/src/lib/verified-email-guard.ts:39
+// wizeworks/services/api-rest/src/lib/verified-email-guard.ts:39
 const [user, tenant] = await Promise.all([
   prisma.user.findUnique({ where: { id: auth.actorId }, select: { emailVerified: true } }),
   prisma.tenant.findUnique({ where: { id: auth.tenantId }, select: { settings: true } }),
@@ -37,8 +37,8 @@ throw forbidden(VERIFY_EMAIL_MESSAGE);
 
 `prisma` here is the **base client**, with no tenant GUC set. The `users` table is
 `ENABLE` RLS (auth tables are `ENABLE`-only, not `FORCE` —
-[packages/db/CLAUDE.md](../../packages/db/CLAUDE.md)). In local dev api-rest
-connects as **`sparx_app`** (a non-owner role; see `services/api-rest/.env`
+[wizeworks/packages/db/CLAUDE.md](../../packages/db/CLAUDE.md)). In local dev api-rest
+connects as **`sparx_app`** (a non-owner role; see `wizeworks/services/api-rest/.env`
 `DATABASE_URL`). For a non-owner under `ENABLE`-only RLS with no permissive
 policy, the row read returns **null** → `user?.emailVerified` is `undefined` →
 falsy → if onboarding is finished, `forbidden()` is thrown.
@@ -76,12 +76,12 @@ is read_. No change to who is gated or the onboarding exemption.
 
 ## 3. Work breakdown
 
-| Step | File(s)                                             | Change                                                                                                                                                                           |
-| ---- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | `services/api-rest/src/lib/verified-email-guard.ts` | Source `emailVerified` from `auth` (or a scoped read); drop the base-client `prisma.user.findUnique`.                                                                            |
-| 2    | auth context / session plumbing                     | Ensure `emailVerified` is on the authenticated identity (add the claim if missing; verify Better Auth session carries it).                                                       |
-| 3    | `services/api-rest/test/integration/…`              | New test: verified user under the `sparx_app` role can publish; unverified + onboarding-finished is still blocked; unverified + onboarding-unfinished is allowed.                |
-| 4    | (verify)                                            | Drive the browser: `/builder/brand` → Publish on a post-onboarding tenant succeeds; check a new `sitebuilder_versions` row + `published_version_id` set for the active property. |
+| Step | File(s)                                                       | Change                                                                                                                                                                           |
+| ---- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | `wizeworks/services/api-rest/src/lib/verified-email-guard.ts` | Source `emailVerified` from `auth` (or a scoped read); drop the base-client `prisma.user.findUnique`.                                                                            |
+| 2    | auth context / session plumbing                               | Ensure `emailVerified` is on the authenticated identity (add the claim if missing; verify Better Auth session carries it).                                                       |
+| 3    | `wizeworks/services/api-rest/test/integration/…`              | New test: verified user under the `sparx_app` role can publish; unverified + onboarding-finished is still blocked; unverified + onboarding-unfinished is allowed.                |
+| 4    | (verify)                                                      | Drive the browser: `/builder/brand` → Publish on a post-onboarding tenant succeeds; check a new `sitebuilder_versions` row + `published_version_id` set for the active property. |
 
 ## 4. Acceptance criteria
 

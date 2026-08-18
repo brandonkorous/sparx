@@ -1,0 +1,259 @@
+// CRM customers — list / get / create / update / delete / bulk + queries.
+//
+//   GET    /v1/crm/customers                   → list (filterable)
+//   POST   /v1/crm/customers                   → create
+//   GET    /v1/crm/customers/:id               → fetch one
+//   PATCH  /v1/crm/customers/:id               → update
+//   DELETE /v1/crm/customers/:id               → soft delete
+//   POST   /v1/crm/customers/:id/addresses     → add an address
+//   PATCH  /v1/crm/customers/:id/addresses/:aid → edit an address
+//   DELETE /v1/crm/customers/:id/addresses/:aid → remove an address
+//   GET    /v1/crm/customers/:id/documents      → list attached files
+//   POST   /v1/crm/customers/:id/documents      → attach an uploaded file
+//   DELETE /v1/crm/customers/:id/documents/:did → detach a file
+//   POST   /v1/crm/customers/bulk-assign       → bulk reassign rep
+//   POST   /v1/crm/customers/bulk-tag          → bulk add/remove tag
+//   GET    /v1/crm/customers/top               → top by spend
+//   GET    /v1/crm/customers/inactive          → no order in N days
+//   GET    /v1/crm/customers/duplicates        → likely duplicate clusters
+//   POST   /v1/crm/customers/merge             → merge two customers
+//
+// Routes are intentionally thin — every write goes through customerService,
+// which owns Zod validation, audit logs, and event publishing. The transport
+// here is responsible only for parsing the URL/query, gating the module, and
+// rendering the success envelope (locked decision #7).
+
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import { queryBool } from '@wizeworks/api-core/query';
+import { CustomerType, LeadStatus, LifecycleStage } from '@wizeworks/crm-schemas';
+import { customerService } from '@wizeworks/crm';
+import { ok, paged } from '@wizeworks/api-core/envelope';
+import { requireRole } from '@wizeworks/api-core/auth';
+import { withRequestTenant } from '@wizeworks/api-core/db';
+import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { resolveListScope, resolvePropertyId } from '../../../lib/property.js';
+
+const PathId = z.object({ id: z.string().uuid() });
+const AddressPath = z.object({
+  id: z.string().uuid(),
+  addressId: z.string().uuid(),
+});
+const DocumentPath = z.object({
+  id: z.string().uuid(),
+  documentId: z.string().uuid(),
+});
+
+const ListQuery = z.object({
+  type: CustomerType.optional(),
+  lifecycle_stage: LifecycleStage.optional(),
+  lead_status: LeadStatus.optional(),
+  assigned_rep_id: z.string().uuid().nullable().optional(),
+  b2b_account_id: z.string().uuid().nullable().optional(),
+  // Membership site filter (docs/58 D2). Omitted → the site the caller is
+  // working in; `all` → every site. A null-property customer is a tenant-level
+  // contact and stays visible from every site either way.
+  property: z.string().min(1).optional(),
+  tag: z.string().max(64).optional(),
+  q: z.string().max(255).optional(),
+  include_deleted: queryBool.optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+  sort_by: z.enum(['score', 'lastOrderAt', 'totalSpent', 'updatedAt', 'createdAt']).optional(),
+});
+
+const TopQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  type: z.enum(['retail', 'b2b']).optional(),
+});
+
+const InactiveQuery = z.object({
+  days: z.coerce.number().int().min(1).max(3650),
+  limit: z.coerce.number().int().min(1).max(500).optional(),
+});
+
+const customerRoutes: FastifyPluginAsync = (app) => {
+  app.get('/v1/crm/customers', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const q = ListQuery.parse(request.query);
+    const ctx = toCrmContext(request);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
+    const { items, total } = await customerService.list(ctx, {
+      type: q.type,
+      lifecycleStage: q.lifecycle_stage,
+      leadStatus: q.lead_status,
+      assignedRepId: q.assigned_rep_id ?? undefined,
+      companyId: q.b2b_account_id ?? undefined,
+      propertyId,
+      tag: q.tag,
+      q: q.q,
+      includeDeleted: q.include_deleted,
+      take: q.take,
+      skip: q.skip,
+      sortBy: q.sort_by,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
+  });
+
+  app.get('/v1/crm/customers/top', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const q = TopQuery.parse(request.query);
+    const rows = await customerService.getTopBySpend(toCrmContext(request), q);
+    return ok(rows);
+  });
+
+  app.get('/v1/crm/customers/inactive', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const q = InactiveQuery.parse(request.query);
+    const rows = await customerService.getInactive(toCrmContext(request), q);
+    return ok(rows);
+  });
+
+  app.get('/v1/crm/customers/duplicates', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const groups = await customerService.findLikelyDuplicates(toCrmContext(request));
+    return ok(groups);
+  });
+
+  app.get('/v1/crm/customers/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const customer = await customerService.get(toCrmContext(request), id);
+    return ok(customer);
+  });
+
+  app.post('/v1/crm/customers', async (request, reply) => {
+    const auth = requireRole(request, 'editor');
+    await requireCrmModule(request);
+    // docs/58 D2: default a dashboard-created customer to the ACTIVE site for
+    // multi-site tenants (the `x-sparx-property-id` the site switcher sets) —
+    // mirrors the content-entries create — so the customer shows in that site's
+    // scoped list instead of being a property-less (global) row hidden from it.
+    // An explicit `propertyId` in the body is honored; single-site tenants leave
+    // it null. null stays "global" (visible from every site) on the read side.
+    const body = { ...((request.body as Record<string, unknown>) ?? {}) };
+    if (body.propertyId === undefined) {
+      const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
+      if (siteCount > 1) {
+        const header = request.headers['x-sparx-property-id'];
+        body.propertyId = await resolvePropertyId(auth, typeof header === 'string' ? header : null);
+      }
+    }
+    const customer = await customerService.create(toCrmContext(request), body);
+    reply.code(201);
+    return ok(customer);
+  });
+
+  app.patch('/v1/crm/customers/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const customer = await customerService.update(toCrmContext(request), id, request.body);
+    return ok(customer);
+  });
+
+  app.delete('/v1/crm/customers/:id', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    await customerService.softDelete(toCrmContext(request), id);
+    reply.code(204);
+  });
+
+  app.post('/v1/crm/customers/bulk-assign', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const result = await customerService.bulkAssign(toCrmContext(request), request.body);
+    return ok(result);
+  });
+
+  app.post('/v1/crm/customers/bulk-tag', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const result = await customerService.bulkTag(toCrmContext(request), request.body);
+    return ok(result);
+  });
+
+  app.post('/v1/crm/customers/merge', async (request) => {
+    requireRole(request, 'admin');
+    await requireCrmModule(request);
+    const result = await customerService.merge(toCrmContext(request), request.body);
+    return ok(result);
+  });
+
+  app.get('/v1/crm/customers/:id/addresses', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const items = await customerService.listAddresses(toCrmContext(request), id);
+    return paged(items, { total: items.length, per_page: items.length || 1 });
+  });
+
+  app.post('/v1/crm/customers/:id/addresses', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const address = await customerService.addAddress(toCrmContext(request), id, request.body);
+    reply.code(201);
+    return ok(address);
+  });
+
+  app.patch('/v1/crm/customers/:id/addresses/:addressId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, addressId } = AddressPath.parse(request.params);
+    const address = await customerService.updateAddress(
+      toCrmContext(request),
+      id,
+      addressId,
+      request.body
+    );
+    return ok(address);
+  });
+
+  app.delete('/v1/crm/customers/:id/addresses/:addressId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, addressId } = AddressPath.parse(request.params);
+    await customerService.removeAddress(toCrmContext(request), id, addressId);
+    return ok({ id: addressId });
+  });
+
+  app.get('/v1/crm/customers/:id/documents', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const items = await customerService.listDocuments(toCrmContext(request), id);
+    return ok(items);
+  });
+
+  app.post('/v1/crm/customers/:id/documents', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const document = await customerService.addDocument(toCrmContext(request), id, request.body);
+    reply.code(201);
+    return ok(document);
+  });
+
+  app.delete('/v1/crm/customers/:id/documents/:documentId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, documentId } = DocumentPath.parse(request.params);
+    await customerService.removeDocument(toCrmContext(request), id, documentId);
+    return ok({ id: documentId });
+  });
+
+  return Promise.resolve();
+};
+
+export default customerRoutes;

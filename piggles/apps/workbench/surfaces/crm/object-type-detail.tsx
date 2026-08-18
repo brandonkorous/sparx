@@ -42,6 +42,7 @@ import {
 import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -138,7 +139,14 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
 
-  const { data: type, isPending, isError } = useObjectType(objectKey);
+  const {
+    data: type,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useObjectType(objectKey);
   const create = useCreateObjectType();
   const update = useUpdateObjectType(objectKey);
   const archive = useArchiveObjectType(objectKey);
@@ -303,49 +311,67 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Record type actions">
-        {isBuiltin ? (
-          <Badge color="info" variant="soft" size="sm">
-            {productCopy('crm.objectType.builtIn', 'Comes with sparx')}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          disabled={blocked !== null || saving}
-          title={blocked ?? undefined}
-          onClick={() => {
-            void save();
-          }}
-        >
-          {saving ? 'Saving…' : 'Save'}
-        </Button>
-        {isBuiltin || isNew ? null : (
+      <PaneToolbar
+        label="Record type actions"
+        status={
+          isBuiltin ? (
+            <Badge color="info" variant="soft" size="sm">
+              {productCopy('crm.objectType.builtIn', 'Comes with sparx')}
+            </Badge>
+          ) : null
+        }
+        primary={
           <Button
-            color="danger"
-            variant="ghost"
+            color="module"
             size="sm"
+            className="ml-auto shrink-0"
+            disabled={blocked !== null || saving}
+            title={blocked ?? undefined}
             onClick={() => {
-              void (async () => {
-                const ok = await confirm({
-                  title: `Put away ${draft.labelPlural || draft.label}?`,
-                  description:
-                    'It stops appearing in your sidebar and search. Everything already recorded is kept and comes back if you restore it.',
-                  confirmLabel: 'Put it away',
-                  cancelLabel: 'Keep it',
-                  color: 'warning',
-                });
-                if (!ok) return;
-                await archive.mutateAsync();
-                toast.add({ title: 'Put away', type: 'success' });
-              })();
+              void save();
             }}
           >
-            Put away
+            {saving ? 'Saving…' : 'Save'}
           </Button>
-        )}
-      </PaneToolbar>
+        }
+        controls={
+          isBuiltin || isNew ? null : (
+            <Button
+              color="danger"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                void (async () => {
+                  const ok = await confirm({
+                    title: `Put away ${draft.labelPlural || draft.label}?`,
+                    description:
+                      'It stops appearing in your sidebar and search. Everything already recorded is kept and comes back if you restore it.',
+                    confirmLabel: 'Put it away',
+                    cancelLabel: 'Keep it',
+                    color: 'warning',
+                  });
+                  if (!ok) return;
+                  await archive.mutateAsync();
+                  toast.add({ title: 'Put away', type: 'success' });
+                })();
+              }}
+            >
+              Put away
+            </Button>
+          )
+        }
+        refresh={
+          isNew ? undefined : (
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={type ? dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void refetch();
+              }}
+            />
+          )
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">

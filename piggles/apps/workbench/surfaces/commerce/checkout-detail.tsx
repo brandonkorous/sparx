@@ -107,9 +107,12 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, refetch } = useCheckoutSession(id);
   const expire = useExpireCheckoutSession(id);
 
+  // A session has no name of its own, so the tab carries the shopper plus the
+  // noun — "Guest shopper" alone would say nothing about which pane this is.
+  const shopperName = data ? (data.customerEmail ?? 'Guest shopper') : null;
   useEffect(() => {
-    ctx.setTitle('Checkout');
-  }, [ctx]);
+    if (shopperName) ctx.setTitle(`${shopperName} · checkout`);
+  }, [ctx, shopperName]);
 
   if (isError) {
     return (
@@ -148,7 +151,6 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const session: CheckoutDetail = data;
   const state = checkoutState(session.step);
   const live = isCheckoutLive(session.step);
-  const shopper = session.customerEmail ?? 'Guest shopper';
   const facts = [checkoutChannelLabel(session.channel), `Reached: ${stepLabel(session.step)}`];
 
   const onExpire = async () => {
@@ -179,24 +181,24 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Checkout actions" wrap>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        <div className="flex-1" />
-        <Text className="text-sm tabular-nums">
-          {money(session.totals.totalCents, session.currency)}
-        </Text>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Checkout actions"
+        status={
+          <>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            <div className="flex-1" />
+            <Text className="text-sm tabular-nums">
+              {money(session.totals.totalCents, session.currency)}
+            </Text>
+          </>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {shopper}
-            </Heading>
-            <Text className="text-sm">{facts.join(' · ')}</Text>
-          </div>
+          <Text className="text-sm">{facts.join(' · ')}</Text>
 
           <Alert color={state.tone} variant="soft">
             <AlertContent>

@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-candle-apothecary',
-    version: '1.4.0',
-    name: 'sparx — Candle Apothecary (Retail)',
-    summary:
-        'A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme — warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-candle-apothecary',
+  version: '1.4.0',
+  name: 'sparx — Candle Apothecary (Retail)',
+  summary:
+    'A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme — warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Ember & Ash',
+    tagline: 'A room, and then a mood.',
+    colors: {
+      primary: '#f9aa60',
+      primaryForeground: '#110904',
+      accent: '#f57e4d',
+      secondary: '#d7b79e',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Karla',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-candle-apothecary',
+    basePresetKey: 'retail-candle-apothecary',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Ember & Ash',
-        tagline: 'A room, and then a mood.',
-        colors: {
-            primary: '#f9aa60',
-            primaryForeground: '#110904',
-            accent: '#f57e4d',
-            secondary: '#d7b79e',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Karla',
-        },
+      colorPrimary: '#f9aa60',
+      colorAccent: '#f57e4d',
+      colorSecondary: '#d7b79e',
+      fontHeading: 'Fraunces',
+      fontBody: 'Karla',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-candle-apothecary',
-        basePresetKey: 'retail-candle-apothecary',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#f9aa60',
-            colorAccent: '#f57e4d',
-            colorSecondary: '#d7b79e',
-            fontHeading: 'Fraunces',
-            fontBody: 'Karla',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

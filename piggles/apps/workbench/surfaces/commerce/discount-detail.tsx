@@ -30,7 +30,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Switch,
@@ -45,6 +44,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -211,7 +211,14 @@ export function DiscountDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function DiscountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: discount, isPending, isError, refetch } = useDiscount(id);
+  const {
+    data: discount,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useDiscount(id);
 
   if (isError) {
     return (
@@ -233,17 +240,35 @@ function DiscountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <DiscountEditor ctx={ctx} id={id} discount={discount} />;
+  return (
+    <DiscountEditor
+      ctx={ctx}
+      id={id}
+      discount={discount}
+      isFetching={isFetching}
+      updatedAt={discount ? dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function DiscountEditor({
   ctx,
   id,
   discount,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   discount?: Discount;
+  /** Only the saved-discount state has a query behind it; "new" has none. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -420,41 +445,52 @@ function DiscountEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Discount actions">
-        {state ? (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        ) : null}
-        {discount && discount.usageCount > 0 ? (
-          <Text as="span" className="hidden shrink-0 text-sm @md:inline">
-            Used {discount.usageCount === 1 ? 'once' : `${String(discount.usageCount)} times`}
-          </Text>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create discount' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Discount actions"
+        status={
+          <>
+            {state ? (
+              <Badge color={state.tone} variant="soft" size="sm">
+                {state.label}
+              </Badge>
+            ) : null}
+            {discount && discount.usageCount > 0 ? (
+              <Text as="span" className="hidden shrink-0 text-sm @md:inline">
+                Used {discount.usageCount === 1 ? 'once' : `${String(discount.usageCount)} times`}
+              </Text>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(blocked) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create discount' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a discount
-              </Heading>
-              <Text>
-                A discount lowers what a shopper pays. Give it a code they type at checkout, or make
-                it automatic so it applies on its own to every order that qualifies.
-              </Text>
-            </div>
+            <Text>
+              A discount lowers what a shopper pays. Give it a code they type at checkout, or make
+              it automatic so it applies on its own to every order that qualifies.
+            </Text>
           ) : null}
 
           {failure ? (

@@ -13,7 +13,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faPlus, faTicket } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -29,6 +30,10 @@ import {
   type GiftCardSort,
   type SortDir,
 } from './giftcards-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -127,41 +132,52 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Gift card list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search gift cards"
-            placeholder="Search by code or recipient…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+      <PaneToolbar
+        label="Gift card list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search gift cards"
+              placeholder="Search by code or recipient…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Issue a gift card',
+          icon: faPlus,
+          onClick: (event) => {
+            ctx.open('commerce.giftcard.detail', { id: 'new' }, { target: targetFor(event) });
+          },
+          title: 'Issue a gift card — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/commerce/giftcards',
+          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as GiftCardSort, dir });
+            }
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Issue a gift card — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('commerce.giftcard.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Issue a gift card</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
@@ -174,6 +190,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading gift cards…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(search.trim())}
             noResults={{
               icon: <Icon glyph={faTicket} className="size-6" aria-hidden />,

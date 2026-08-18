@@ -21,6 +21,7 @@
 
 import { useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, Filter, FilterItem, Heading, Text } from '@wizeworks/silicaui-react';
 import { faTableLayout } from '@fortawesome/pro-solid-svg-icons';
@@ -31,6 +32,10 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { contentsSummary, installState, useBlueprints, type Blueprint } from './blueprints-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'builder';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -148,64 +153,71 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Blueprints controls">
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
+      <PaneToolbar
+        label="Blueprints controls"
+        status={
+          typeof total === 'number' ? (
+            <Text className="ml-auto hidden shrink-0 text-sm whitespace-nowrap @md:block">
+              {total === 1 ? '1 design' : `${String(total)} designs`}
+            </Text>
+          ) : null
+        }
+        controls={
+          <Filter
+            color="module"
+            value={filter}
+            onValueChange={(next) => {
+              setFilter((next as FilterValue | null) ?? 'all');
+              resetWindow();
+            }}
+            showReset={false}
+            aria-label="Which designs to show"
+          >
+            <FilterItem value="all">All designs</FilterItem>
+            <FilterItem value="installed">Added to this site</FilterItem>
+          </Filter>
+        }
+        views={{
+          target: '/builder/blueprints',
+          params: { installed: installedOnly ? '1' : '' },
+          onApply: (next) => {
+            setFilter(next.installed === '1' ? 'installed' : 'all');
             resetWindow();
-          }}
-          showReset={false}
-          aria-label="Which designs to show"
-        >
-          <FilterItem value="all">All designs</FilterItem>
-          <FilterItem value="installed">Added to this site</FilterItem>
-        </Filter>
-
-        {typeof total === 'number' ? (
-          <Text className="ml-auto hidden shrink-0 text-sm whitespace-nowrap @md:block">
-            {total === 1 ? '1 design' : `${String(total)} designs`}
-          </Text>
-        ) : null}
-
-        <RefreshButton
-          className={typeof total === 'number' ? undefined : 'ml-auto'}
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           // A failed load REPLACES the gallery — "no designs yet" over a
           // connection failure is the wrong story to tell.
           <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneEmpty
+            <PaneLoadError
               icon={<Icon glyph={faTableLayout} className="size-6" aria-hidden />}
               title="Could not load the designs"
               description="This is a problem reaching the server. Your site and anything you have already added are unaffected."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
           </Card>
         ) : isLoading ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : rows.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faTableLayout} className="size-6" aria-hidden />}
               title={installedOnly ? 'Nothing added to this site yet' : 'No designs available'}
               description={

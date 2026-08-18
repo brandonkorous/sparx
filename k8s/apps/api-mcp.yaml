@@ -1,4 +1,4 @@
-# services/api-mcp — production manifest. Mirrors api-rest.yaml; the
+# wizeworks/services/api-mcp — production manifest. Mirrors api-rest.yaml; the
 # differences are:
 #   - Image tag `api-mcp`
 #   - Hosts mcp.sparx.works via the Caddy reverse-proxy (configmap.yaml)

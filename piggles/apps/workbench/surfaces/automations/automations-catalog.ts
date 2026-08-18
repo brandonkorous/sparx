@@ -15,14 +15,14 @@
 // Pure and client-safe: no server imports, no hooks. Built from scratch for the
 // workbench; it does not depend on the dashboard's copy.
 
-import type { ActionType, ConditionOperator } from '@sparx/automation-schemas';
+import type { ActionType, ConditionOperator } from '@wizeworks/automation-schemas';
 import { productCopy } from '../../lib/product';
 
 /** The feature modules an automation can touch — the keys used for the module
  *  tags on a rule row. Matches the workbench module hues.
  *
  *  HAND-KEPT, and deliberately NOT the platform-wide `ModuleSlug` from
- *  `@sparx/modules`: this lists only the modules that actually contribute a
+ *  `@wizeworks/modules`: this lists only the modules that actually contribute a
  *  trigger or an action, so the filter row above the catalog is not padded with
  *  headings that match nothing. The cost is that a module which GAINS a trigger
  *  has to be added here too — `staff` and `finance` both shipped events with no

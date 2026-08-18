@@ -39,9 +39,9 @@ import {
     bind,
     el,
     type Node,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
-import { bindAttr } from '../../../packages/silica-catalog/src/attr-binding';
-import { visibleWhen } from '../../../packages/silica-catalog/src/conditional';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+import { bindAttr } from '../../../wizeworks/packages/silica-catalog/src/attr-binding';
+import { visibleWhen } from '../../../wizeworks/packages/silica-catalog/src/conditional';
 
 /** Where the details come from — the per-site contact block a business types once. */
 const REF = {

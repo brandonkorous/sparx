@@ -6,7 +6,7 @@ Copy everything below the line. Change **only** the `FEATURE` block at the top.
 
 ## FEATURE
 
-Build the **`<SURFACE NAME>`** surface in `apps/workbench` (e.g. "Notifications settings",
+Build the **`<SURFACE NAME>`** surface in `sparx/apps/workbench` (e.g. "Notifications settings",
 "Modules", "Integrations", "Security").
 
 - Registry key(s): `<platform.settings.foo>` — and `<platform.settings.foo.detail>` if it needs one.
@@ -20,13 +20,13 @@ Everything below is fixed. Do not treat it as suggestions.
 ## Read these first, in this order
 
 1. `CLAUDE.md` (root) — RULE #1 silicaui-first, RULE #2 no eyebrows, RULE #3 soft is a signal.
-2. `apps/workbench/CLAUDE.md` — build from scratch, never port dashboard code; plus the pane/modal rule.
+2. `sparx/apps/workbench/CLAUDE.md` — build from scratch, never port dashboard code; plus the pane/modal rule.
 3. `docs/123-workbench.md` — architecture, and the **"Pane or modal?"** section. Read it before you
    choose a shape. Getting this wrong is the single most common mistake on this app.
 4. **The exemplars.** Read them properly, don't skim — they are the house style:
-   - `apps/workbench/surfaces/domains/` — list + detail + data layer, the current best reference
-   - `apps/workbench/surfaces/sites/site-detail.tsx` — create-and-manage as ONE surface
-   - `apps/workbench/surfaces/invoicing/` — the oldest and richest module
+   - `sparx/apps/workbench/surfaces/domains/` — list + detail + data layer, the current best reference
+   - `sparx/apps/workbench/surfaces/sites/site-detail.tsx` — create-and-manage as ONE surface
+   - `sparx/apps/workbench/surfaces/invoicing/` — the oldest and richest module
 
 ## Non-negotiables
 
@@ -142,7 +142,7 @@ Note the scoping rule: list/read endpoints resolve the site from `x-sparx-proper
 If your surface shows ONE NAMED entity's data while the user may be working in a different site, add
 an explicit `?property=<id>` and resolve it with `requireTenantProperty` (404 on unknown) — **never**
 a silent fallback to primary, because the failure mode is showing real data under the wrong name.
-See `toBuilderContextFor` in `services/api-rest/src/lib/builder-context.ts`.
+See `toBuilderContextFor` in `wizeworks/services/api-rest/src/lib/builder-context.ts`.
 
 ## Hard constraints — violating these breaks the user's environment
 
@@ -163,7 +163,7 @@ See `toBuilderContextFor` in `services/api-rest/src/lib/builder-context.ts`.
 
 1. `npx prettier --write` on your files.
 2. `npx eslint <your dirs>` — clean. An `eslint-disable` needs a comment saying why it is correct.
-3. `cd apps/workbench && npx tsc --noEmit` — clean apart from other agents' files.
+3. `cd sparx/apps/workbench && npx tsc --noEmit` — clean apart from other agents' files.
 4. **Drive it in a browser** and look at it. `playwright-cli`, sign in at `http://localhost:3011`
    with `e2e-staff@sparx.test` / `e2e-test-password`, open your surface via the ⌘K palette. Exercise
    the real paths: empty state, error state, a create, a destructive confirm. Screenshot it and

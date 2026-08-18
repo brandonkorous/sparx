@@ -15,10 +15,13 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Button, Card, EmptyState, SearchInput, Table, useToast } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faPuzzlePiece, faSparkles } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { EmptyStateActions } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -74,65 +77,69 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Compatibility list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Compatibility list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search compatibility lists"
+              placeholder="Search lists…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        controls={
+          <Button
             size="sm"
-            aria-label="Search compatibility lists"
-            placeholder="Search lists…"
-            value={search}
-            onValueChange={setSearch}
+            variant="outline"
+            className="shrink-0 whitespace-nowrap"
+            title="Start from a ready-made list"
+            onClick={() => {
+              setPickerOpen(true);
+            }}
+          >
+            <Icon glyph={faSparkles} className="size-4" aria-hidden />
+            <span>Starter library</span>
+          </Button>
+        }
+        // Save is `primary`, never `controls`: `controls` relocates into the
+        // overflow popover under 672px, and a commit action must be reachable
+        // at every width. Enforced by scripts/check-toolbar-primary.mjs.
+        primaryAction={{
+          label: 'Add a list',
+          icon: faPlus,
+          onClick: create,
+          title: 'Build a list from scratch — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/commerce/fitment',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
           />
-        </div>
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Start from a ready-made list"
-          onClick={() => {
-            setPickerOpen(true);
-          }}
-        >
-          <Icon glyph={faSparkles} className="size-4" aria-hidden />
-          <span className="hidden @xl:inline">Starter library</span>
-        </Button>
-        <Button
-          color="module"
-          size="sm"
-          className="shrink-0 whitespace-nowrap"
-          title="Build a list from scratch — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @xl:inline">Add a list</span>
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="Could not load your compatibility lists"
             description="This is a problem reaching the server. Your lists are unaffected — nothing has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -151,7 +158,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             title="No compatibility lists yet"
             description="A compatibility list lets shoppers filter to just the products that fit what they own — a vehicle, a phone, a machine. Start from a ready-made list, or build your own."
             actions={
-              <div className="flex flex-wrap justify-center gap-2">
+              <EmptyStateActions>
                 <Button
                   size="sm"
                   color="module"
@@ -165,7 +172,6 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Button
                   size="sm"
                   variant="outline"
-                  color="neutral"
                   onClick={() => {
                     create({ shiftKey: false, altKey: false });
                   }}
@@ -173,7 +179,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Build one from scratch
                 </Button>
-              </div>
+              </EmptyStateActions>
             }
           />
         ) : (

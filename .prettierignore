@@ -11,7 +11,7 @@ pnpm-lock.yaml
 **/.terraform/**
 
 # Prisma-generated SQL migrations
-packages/db/prisma/migrations/**
+wizeworks/packages/db/prisma/migrations/**
 
 # Auto-generated Next.js declaration
 **/next-env.d.ts
@@ -21,7 +21,7 @@ packages/db/prisma/migrations/**
 
 # Delivered art batches. `piggles/images/` is a DROP ZONE, not source: raw PNG /
 # WebP / JPG / .ai from the illustrator, plus the manifest, character map and
-# usage matrix that ship alongside each batch. `packages/mascot/scripts/ingest.mjs`
+# usage matrix that ship alongside each batch. `piggles/packages/mascot/scripts/ingest.mjs`
 # READS this directory; nothing builds from it.
 #
 # It is here because it was blocking pushes. Every new batch lands as ~5
@@ -30,7 +30,7 @@ packages/db/prisma/migrations/**
 # formatting of a vendor's manifest. Reformatting a delivery also puts our diff
 # noise between us and the thing we were sent.
 #
-# Scoped to the drop zone only. Anything under packages/mascot — the code that
+# Scoped to the drop zone only. Anything under piggles/packages/mascot — the code that
 # reads these — is ordinary source and stays formatted.
 piggles/images/**
 

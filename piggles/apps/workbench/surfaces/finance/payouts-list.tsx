@@ -14,16 +14,9 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  Table,
-  ToolbarSeparator,
-} from '@wizeworks/silicaui-react';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { Badge, Card, EmptyState, Filter, FilterItem } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -172,70 +165,77 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Payouts list controls" wrap>
-        <Filter
-          color="module"
-          value={status}
-          onValueChange={(next) => {
-            setStatus(next ?? 'all');
+      <PaneToolbar
+        label="Payouts list controls"
+        controls={
+          <>
+            <Filter
+              color="module"
+              value={status}
+              onValueChange={(next) => {
+                setStatus(next ?? 'all');
+                resetWindow();
+              }}
+              showReset={false}
+              aria-label="Filter by whether the deposit has arrived"
+            >
+              {STATUS_FILTERS.map((filter) => (
+                <FilterItem key={filter.value} value={filter.value}>
+                  {filter.label}
+                </FilterItem>
+              ))}
+            </Filter>
+            <Filter
+              color="module"
+              value={processor}
+              onValueChange={(next) => {
+                setProcessor(next ?? 'all');
+                resetWindow();
+              }}
+              showReset={false}
+              aria-label="Filter by funding source"
+            >
+              {PROCESSOR_FILTERS.map((filter) => (
+                <FilterItem key={filter.value} value={filter.value}>
+                  {filter.label}
+                </FilterItem>
+              ))}
+            </Filter>
+          </>
+        }
+        views={{
+          target: '/finance/payouts',
+          params: { status, processor, sort: `${sort.key}:${sort.dir}` },
+          onApply: (next) => {
+            setStatus(next.status ?? 'all');
+            setProcessor(next.processor ?? 'all');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if ((key === 'arrivalDate' || key === 'amount') && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key, dir });
+            }
             resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by whether the deposit has arrived"
-        >
-          {STATUS_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <Filter
-          color="module"
-          value={processor}
-          onValueChange={(next) => {
-            setProcessor(next ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by funding source"
-        >
-          {PROCESSOR_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
             title="Could not load payouts"
             description="Something went wrong reaching the server. Your deposits are unaffected — try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting label="Loading payouts…" />

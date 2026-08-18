@@ -2,37 +2,35 @@
 
 // The stack — the mobile counterpart to the dock.
 //
-// One surface fills the screen; the open panes live in a switcher along the
-// bottom. That is the same idiom every phone browser uses for tabs, which is
-// the point: the gesture is already known, so nothing has to be taught.
+// One surface fills the screen. The open panes used to live in a switcher strip
+// pinned along the bottom of this component; they now live behind the Open tab
+// in the shell's nav bar (./compact-console.tsx), which is the same idiom stated
+// properly — a phone browser puts its tabs behind a button with a count, not in
+// a permanent strip. Two bars stacked at the bottom of a phone was the thing the
+// status strip was already dropped for.
 //
-// It mirrors lib/dock/dock.tsx exactly — own a host, attach it to the
-// controller, hydrate from storage, persist on change — and differs in the one
-// way that matters: it persists the pane SET only, never an arrangement. See
-// persistence.savePanes for why that is not an optimisation but a safety rule.
+// It mirrors lib/dock/dock.tsx exactly — attach to the controller, hydrate from
+// storage, persist on change — and differs in the one way that matters: it
+// persists the pane SET only, never an arrangement. See persistence.savePanes.
+//
+// The HOST belongs to the shell, not to this component. The nav bar has to be
+// able to switch panes, so whoever renders both has to own it.
 
-import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { Badge, Button } from '@wizeworks/silicaui-react';
-import { faXmark } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
-import { getSurface, titleFor } from '../lib/surfaces/registry';
+import { useEffect, useSyncExternalStore } from 'react';
+import { titleFor } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
-import { StackPaneHost } from '../lib/workbench/stack-host';
+import type { StackPaneHost } from '../lib/workbench/stack-host';
 import { loadPanes, savePanes } from '../lib/workbench/persistence';
 import { DEFAULT_LAYOUT } from '../lib/dock/default-layout';
 import { SurfaceMount } from './surface-mount';
 import { EmptyWorkbench } from './empty-workbench';
 
-export function MobileStack({ siteKey }: { siteKey: string }) {
+export function MobileStack({ siteKey, host }: { siteKey: string; host: StackPaneHost }) {
   const { controller } = useWorkbench();
-  const hostRef = useRef<StackPaneHost | null>(null);
-  hostRef.current ??= new StackPaneHost();
-  const host = hostRef.current;
 
-  // One subscription is enough: every controller change that the switcher can
-  // SEE (a retitle, a retarget, an open, a close) reaches the host and emits
-  // from there. Subscribing to the controller as well would re-render on
-  // changes the switcher cannot show — and made an unbound-method call besides.
+  // One subscription is enough: every controller change the stack can SEE (a
+  // retitle, a retarget, an open, a close) reaches the host and emits from
+  // there.
   const stack = useSyncExternalStore(host.subscribe, host.getSnapshot, host.getServerSnapshot);
 
   useEffect(() => {
@@ -58,9 +56,8 @@ export function MobileStack({ siteKey }: { siteKey: string }) {
   }, [controller, host, siteKey]);
 
   // Tell the controller what the operator is looking at. Chrome outside the
-  // stack (the header's title, the launcher's context) asks the controller, not
-  // the host — the dock reports this from dockview's active-panel event, and
-  // without the same report here the header sat on "sparx" forever.
+  // stack (the header's title, the launcher's context, the nav bar's hue) asks
+  // the controller, not the host.
   useEffect(() => {
     controller.setActivePane(stack.activeId);
   }, [controller, stack.activeId]);
@@ -89,7 +86,10 @@ export function MobileStack({ siteKey }: { siteKey: string }) {
   }, [controller]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    // The floating bar hovers over the bottom of this box, so the surface inside
+    // it needs room to scroll clear of one. A surface cannot know that, and it
+    // must not have to.
+    <div className="flex min-h-0 flex-1 flex-col pb-24">
       <main className="min-h-0 flex-1">
         {stack.activeId ? (
           <SurfaceMount
@@ -103,85 +103,6 @@ export function MobileStack({ siteKey }: { siteKey: string }) {
           <EmptyWorkbench />
         )}
       </main>
-
-      {stack.order.length > 0 ? (
-        <PaneSwitcher host={host} order={stack.order} activeId={stack.activeId} />
-      ) : null}
-    </div>
-  );
-}
-
-/**
- * The open panes, as a scrollable strip.
- *
- * Only the ACTIVE chip carries a close button. A row of × targets beside a row
- * of switch targets on a thumb-sized control is a mis-tap generator — and
- * closing a pane you are not looking at is rare enough that costing it one
- * extra tap is the right trade.
- */
-function PaneSwitcher({
-  host,
-  order,
-  activeId,
-}: {
-  host: StackPaneHost;
-  order: readonly string[];
-  activeId: string | null;
-}) {
-  const { controller } = useWorkbench();
-
-  return (
-    <div
-      className="border-base-300 bg-base-200 flex shrink-0 items-center gap-1 overflow-x-auto border-t p-1"
-      role="tablist"
-      aria-label="Open panels"
-    >
-      {order.map((paneId) => {
-        const descriptor = controller.getDescriptor(paneId);
-        const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-        const glyph = definition?.icon;
-        const active = paneId === activeId;
-
-        return (
-          <div key={paneId} className="flex shrink-0 items-center">
-            <Button
-              role="tab"
-              aria-selected={active}
-              color={active ? 'module' : 'neutral'}
-              variant={active ? 'soft' : 'ghost'}
-              size="sm"
-              // 44px minimum on the cross axis — the floor for a thumb target.
-              className="min-h-11 gap-2"
-              onClick={() => {
-                host.show(paneId);
-              }}
-            >
-              {glyph ? <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden /> : null}
-              <span className="max-w-32 truncate">{host.titleOf(paneId)}</span>
-            </Button>
-
-            {active ? (
-              <Button
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                shape="square"
-                className="min-h-11"
-                aria-label={`Close ${host.titleOf(paneId)}`}
-                onClick={() => {
-                  void controller.requestClose(paneId);
-                }}
-              >
-                <Icon glyph={faXmark} className="size-4" aria-hidden />
-              </Button>
-            ) : null}
-          </div>
-        );
-      })}
-
-      <Badge color="neutral" variant="soft" size="sm" className="ml-auto shrink-0">
-        {order.length}
-      </Badge>
     </div>
   );
 }

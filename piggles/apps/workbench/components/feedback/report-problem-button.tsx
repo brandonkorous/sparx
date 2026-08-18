@@ -16,7 +16,7 @@
 // is why this needs no props about where it is.
 //
 // The `source` stays `button`. A new one would have to be added to the API's enum,
-// to the `feedback.submitted` event payload in @sparx/events and to the admin inbox
+// to the `feedback.submitted` event payload in @wizeworks/events and to the admin inbox
 // that renders it — a published contract widened for a label that the context payload
 // (`workbench:platform.migrate.run`) already carries more precisely.
 

@@ -1,455 +1,401 @@
 {
-    "policies": [
+  "policies": [
+    {
+      "handle": "dental-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "dental-no-show",
+      "name": "Reserved-chair hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer visits reserve a chair and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-osei",
+      "name": "Dr. Amara Osei",
+      "kind": "staff",
+      "skillTags": ["exam", "filling", "cosmetic", "emergency"],
+      "windows": [
         {
-            "handle": "dental-standard",
-            "name": "Standard booking",
-            "depositType": "none",
-            "cancellationWindowHours": 24,
-            "reminderOffsetsMin": [
-                1440,
-                120
-            ],
-            "policyText": "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
         },
         {
-            "handle": "dental-no-show",
-            "name": "Reserved-chair hold",
-            "depositType": "card_hold",
-            "cancellationWindowHours": 48,
-            "reminderOffsetsMin": [
-                2880,
-                1440,
-                120
-            ],
-            "policyText": "Longer visits reserve a chair and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
         }
-    ],
-    "resources": [
+      ]
+    },
+    {
+      "handle": "nora",
+      "name": "Nora Bishop",
+      "kind": "staff",
+      "skillTags": ["cleaning", "exam", "xray"],
+      "windows": [
         {
-            "handle": "dr-osei",
-            "name": "Dr. Amara Osei",
-            "kind": "staff",
-            "skillTags": [
-                "exam",
-                "filling",
-                "cosmetic",
-                "emergency"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 480,
-                    "endMinute": 1020
-                }
-            ]
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 960
         },
         {
-            "handle": "nora",
-            "name": "Nora Bishop",
-            "kind": "staff",
-            "skillTags": [
-                "cleaning",
-                "exam",
-                "xray"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 480,
-                    "endMinute": 960
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 480,
-                    "endMinute": 960
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 480,
-                    "endMinute": 960
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 480,
-                    "endMinute": 960
-                }
-            ]
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
         },
         {
-            "handle": "priya",
-            "name": "Priya Anand",
-            "kind": "staff",
-            "skillTags": [
-                "cleaning",
-                "kids",
-                "xray"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 540,
-                    "endMinute": 1020
-                }
-            ]
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
         },
         {
-            "handle": "operatory-1",
-            "name": "Operatory 1",
-            "kind": "space",
-            "skillTags": [
-                "operatory"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 840
-                }
-            ]
-        },
-        {
-            "handle": "operatory-2",
-            "name": "Operatory 2",
-            "kind": "space",
-            "skillTags": [
-                "operatory"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 840
-                }
-            ]
-        },
-        {
-            "handle": "operatory-3",
-            "name": "Operatory 3",
-            "kind": "space",
-            "skillTags": [
-                "operatory"
-            ],
-            "windows": [
-                {
-                    "dayOfWeek": 1,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 2,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 3,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 4,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 5,
-                    "startMinute": 480,
-                    "endMinute": 1080
-                },
-                {
-                    "dayOfWeek": 6,
-                    "startMinute": 540,
-                    "endMinute": 840
-                }
-            ]
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
         }
-    ],
-    "services": [
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["cleaning", "kids", "xray"],
+      "windows": [
         {
-            "handle": "new-patient-exam",
-            "name": "New patient exam",
-            "description": "A warm welcome, a full check of your teeth and gums, gentle X-rays and a plan built around you. The best first step for anyone new to the practice — every age welcome.",
-            "durationMinutes": 60,
-            "priceCents": 8900,
-            "bufferAfterMin": 10,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "exam"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-standard"
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "cleaning-checkup",
-            "name": "Cleaning & checkup",
-            "description": "Your regular six-month visit — a thorough, gentle clean and polish with one of our hygienists, plus a quick check to keep everything on track.",
-            "durationMinutes": 60,
-            "priceCents": 11900,
-            "bufferAfterMin": 10,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "cleaning"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-standard"
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "kids-checkup",
-            "name": "Kids’ checkup",
-            "description": "A friendly, unhurried visit made just for little ones — a gentle clean, a count of the teeth and lots of encouragement, so kids leave smiling and keen to come back.",
-            "durationMinutes": 45,
-            "priceCents": 7900,
-            "bufferAfterMin": 10,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "kids"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-standard"
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
         },
         {
-            "handle": "whitening-consult",
-            "name": "Teeth-whitening consult",
-            "description": "A relaxed, no-pressure chat about brightening your smile — we’ll look at your teeth, talk through the options and what to expect, and answer every question. The consult is free.",
-            "durationMinutes": 30,
-            "priceCents": 0,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "cosmetic"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-standard"
-        },
-        {
-            "handle": "filling",
-            "name": "Filling",
-            "description": "A tooth-colored filling to fix a small cavity — quick, comfortable and gentle, with numbing whenever you need it and no rushing. We’ll confirm the exact cost before we begin.",
-            "durationMinutes": 60,
-            "priceCents": 18500,
-            "bufferAfterMin": 10,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "filling"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-no-show"
-        },
-        {
-            "handle": "emergency-visit",
-            "name": "Emergency visit",
-            "description": "In pain, chipped a tooth or lost a filling? Request a same-day visit and we’ll get you seen quickly, ease the pain and sort out a plan. We keep time set aside every day for emergencies.",
-            "durationMinutes": 45,
-            "priceCents": 12500,
-            "bufferAfterMin": 10,
-            "assignmentStrategy": "any_available",
-            "requiresApproval": true,
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "emergency"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-no-show"
-        },
-        {
-            "handle": "cosmetic-consult",
-            "name": "Cosmetic consult",
-            "description": "Thinking about veneers, straightening or a smile makeover? Sit down with Dr. Osei for an honest, friendly conversation about what’s possible and what it involves. Free, with no obligation.",
-            "durationMinutes": 30,
-            "priceCents": 0,
-            "assignmentStrategy": "customer_choice",
-            "resourceRequirements": [
-                {
-                    "role": "provider",
-                    "kind": "staff",
-                    "skillTags": [
-                        "cosmetic"
-                    ],
-                    "count": 1
-                },
-                {
-                    "role": "room",
-                    "kind": "space",
-                    "skillTags": [
-                        "operatory"
-                    ],
-                    "count": 1
-                }
-            ],
-            "policyHandle": "dental-standard"
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
         }
-    ],
-    "locations": [
+      ]
+    },
+    {
+      "handle": "operatory-1",
+      "name": "Operatory 1",
+      "kind": "space",
+      "skillTags": ["operatory"],
+      "windows": [
         {
-            "handle": "premises",
-            "name": "Maple Grove Dental",
-            "timezone": "UTC"
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 840
         }
-    ]
+      ]
+    },
+    {
+      "handle": "operatory-2",
+      "name": "Operatory 2",
+      "kind": "space",
+      "skillTags": ["operatory"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 840
+        }
+      ]
+    },
+    {
+      "handle": "operatory-3",
+      "name": "Operatory 3",
+      "kind": "space",
+      "skillTags": ["operatory"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 840
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "new-patient-exam",
+      "name": "New patient exam",
+      "description": "A warm welcome, a full check of your teeth and gums, gentle X-rays and a plan built around you. The best first step for anyone new to the practice — every age welcome.",
+      "durationMinutes": 60,
+      "priceCents": 8900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-standard"
+    },
+    {
+      "handle": "cleaning-checkup",
+      "name": "Cleaning & checkup",
+      "description": "Your regular six-month visit — a thorough, gentle clean and polish with one of our hygienists, plus a quick check to keep everything on track.",
+      "durationMinutes": 60,
+      "priceCents": 11900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["cleaning"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-standard"
+    },
+    {
+      "handle": "kids-checkup",
+      "name": "Kids’ checkup",
+      "description": "A friendly, unhurried visit made just for little ones — a gentle clean, a count of the teeth and lots of encouragement, so kids leave smiling and keen to come back.",
+      "durationMinutes": 45,
+      "priceCents": 7900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["kids"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-standard"
+    },
+    {
+      "handle": "whitening-consult",
+      "name": "Teeth-whitening consult",
+      "description": "A relaxed, no-pressure chat about brightening your smile — we’ll look at your teeth, talk through the options and what to expect, and answer every question. The consult is free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["cosmetic"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-standard"
+    },
+    {
+      "handle": "filling",
+      "name": "Filling",
+      "description": "A tooth-colored filling to fix a small cavity — quick, comfortable and gentle, with numbing whenever you need it and no rushing. We’ll confirm the exact cost before we begin.",
+      "durationMinutes": 60,
+      "priceCents": 18500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["filling"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-no-show"
+    },
+    {
+      "handle": "emergency-visit",
+      "name": "Emergency visit",
+      "description": "In pain, chipped a tooth or lost a filling? Request a same-day visit and we’ll get you seen quickly, ease the pain and sort out a plan. We keep time set aside every day for emergencies.",
+      "durationMinutes": 45,
+      "priceCents": 12500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "requiresApproval": true,
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["emergency"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-no-show"
+    },
+    {
+      "handle": "cosmetic-consult",
+      "name": "Cosmetic consult",
+      "description": "Thinking about veneers, straightening or a smile makeover? Sit down with Dr. Osei for an honest, friendly conversation about what’s possible and what it involves. Free, with no obligation.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["cosmetic"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["operatory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dental-standard"
+    }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Maple Grove Dental",
+      "timezone": "UTC"
+    }
+  ]
 }

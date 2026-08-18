@@ -44,7 +44,7 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
@@ -84,7 +84,12 @@ import {
   type ProductPriceListEntry,
   type Variant,
 } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+
+/** Registry module for this tab, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 
 /* ── Drafts ─────────────────────────────────────────────────────────────── */
 
@@ -331,42 +336,44 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
   };
 
   // A failed load REPLACES the tab rather than rendering empty money fields
-  // beside a Save that would write zeroes over real prices.
+  // beside a Save that would write zeroes over real prices. All three non-ready
+  // states are carded like the ready one — a stack of per-version cards — so the
+  // tab does not jump as the prices arrive. The empty-state shape rather than an
+  // Alert: there is no content behind it for a banner to sit over.
   if (variantsQuery.isError) {
     return (
-      <Alert color="error" variant="soft">
-        <AlertContent>
-          <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing about your prices has changed — they just
-            could not be read just now.
-          </AlertDescription>
-        </AlertContent>
-        <Button
-          size="sm"
-          color="error"
-          variant="soft"
-          onClick={() => {
+      <Card>
+        <PaneLoadError
+          module={MODULE}
+          icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
+          title="Could not load this product’s prices"
+          description="This is a problem reaching the server. Nothing about your prices has changed — they just could not be read just now."
+          onRetry={() => {
             void variantsQuery.refetch();
           }}
-        >
-          Try again
-        </Button>
-      </Alert>
+        />
+      </Card>
     );
   }
 
   if (variantsQuery.isPending) {
-    return <InlineWaiting />;
+    return (
+      <Card>
+        <PaneWaiting module={MODULE} />
+      </Card>
+    );
   }
 
   if (variants.length === 0) {
     return (
-      <EmptyState
-        icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
-        title="This product has no versions to price"
-        description="Every product is sold as at least one version, and that is what carries a price. Add one on the Variants tab and its price will appear here."
-      />
+      <Card>
+        <PaneEmpty
+          module={MODULE}
+          icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
+          title="This product has no versions to price"
+          description="Every product is sold as at least one version, and that is what carries a price. Add one on the Variants tab and its price will appear here."
+        />
+      </Card>
     );
   }
 

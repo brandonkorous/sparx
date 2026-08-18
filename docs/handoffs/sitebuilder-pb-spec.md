@@ -30,7 +30,7 @@ or §8 layout-driven authoring — those stay deferred.
     `cms:taxonomy`, `b2b:*`.
 - **Registration mechanism (resolves §12.4).** Code-level provider (the doc's lean). A
   `STATIC_LAYOUT_TARGETS` catalog constant + a `cmsContentTypeTarget(id, label)` factory for data-driven
-  targets, all in `@sparx/sitebuilder-schemas`. No runtime/DB registry — added later only if modules deploy
+  targets, all in `@wizeworks/sitebuilder-schemas`. No runtime/DB registry — added later only if modules deploy
   independently of SB (§12.5-style additive step).
 - **Section availability.** Drop `SectionDefinition.scopes: Scope[]`. Availability derives from the existing
   `binding?: 'product' | 'collection'`: a **static** section (no binding) is allowed in **every** target; a

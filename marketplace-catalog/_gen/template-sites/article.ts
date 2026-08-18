@@ -12,13 +12,13 @@
 // resolve to the post. This kit owns the binds + the `repeat('blog_post')` scoping + the
 // pinned article-body core, and each template composes them into its own shell.
 //
-// This mirrors `packages/silica-catalog/src/cms.ts` `blogPostPage()` — the same
+// This mirrors `wizeworks/packages/silica-catalog/src/cms.ts` `blogPostPage()` — the same
 // `repeat('blog_post')` scope, the same field keys, the same `cms.article-body` host core
 // for the written body — so a bespoke article resolves exactly like the starter's, only in
 // the template's own layout.
 //
 // THE BYLINE IS REAL NOW. The storefront projects a post's author + taxonomy onto the
-// bound record (`apps/site/lib/builder-data.ts` `projectByline`): `authorName`,
+// bound record (`wizeworks/apps/site/lib/builder-data.ts` `projectByline`): `authorName`,
 // `authorAvatar`, `authorBio`, `category`, `categorySlug`, `tags`. Every byline primitive
 // here is `visibleWhen`-gated on its own field, so a post with no author or no category
 // renders NOTHING for that line rather than a blank — the same discipline `pdpStockBadge`
@@ -40,11 +40,11 @@ import {
     el,
     repeat,
     type Node,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { visibleWhen } from '../../../packages/silica-catalog/src/conditional';
-import { HOST_KEYS, hostCore } from '../../../packages/silica-catalog/src/host-nodes';
-import { PLACEHOLDER_IMAGE } from '../../../packages/silica-catalog/src/placeholder';
+import { visibleWhen } from '../../../wizeworks/packages/silica-catalog/src/conditional';
+import { HOST_KEYS, hostCore } from '../../../wizeworks/packages/silica-catalog/src/host-nodes';
+import { PLACEHOLDER_IMAGE } from '../../../wizeworks/packages/silica-catalog/src/placeholder';
 
 // ── Bound field primitives ────────────────────────────────────────────────────
 //

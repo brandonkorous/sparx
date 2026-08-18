@@ -38,7 +38,7 @@ header is **not** trusted (several are stale, e.g. 48 says "nothing built" but m
 | 19-testing-strategy.md                | Testing strategy (k6 load scenarios aspirational).                                          |
 | 20-operational-runbook.md             | Living ops runbook.                                                                         |
 | 21-cost-scaling-guide.md              | Living cost/scaling guide.                                                                  |
-| 23-frontend-component-architecture.md | `@sparx/ui` architecture reference.                                                         |
+| 23-frontend-component-architecture.md | `@wizeworks/ui` architecture reference.                                                     |
 | 25-monorepo-structure.md              | Monorepo layout reference.                                                                  |
 | 34-dashboard-working-area-standard.md | Working-area standard (compliance sweep ongoing).                                           |
 | 34-platform-glossary.md               | Canonical terminology.                                                                      |
@@ -71,20 +71,20 @@ header is **not** trusted (several are stale, e.g. 48 says "nothing built" but m
 
 ## ARCHIVE — done (work fully shipped, negligible tail) — 12
 
-| File                              | Evidence                                                                            |
-| --------------------------------- | ----------------------------------------------------------------------------------- |
-| 24-domain-purchase-management.md  | GoDaddy purchase/renewal/transfer flow + MCP tools + onboarding step all live.      |
-| 27-customer-accounts-site-auth.md | `@sparx/customer-auth` shipped (hash/session/service + RLS); only browser E2E left. |
-| 41-builder-page-model.md          | `BuilderPage` table + `/v1/builder/pages/*` + service + schema validation shipped.  |
-| 43-builder-binding-schema.md      | Binding contract + `bindingService.getSchema()` + CMS introspection shipped.        |
-| 44-builder-site-render.md         | Public render path (`/v1/public/builder/page` + `BuilderRenderer`) shipped.         |
-| 49-multi-site-per-tenant.md       | All phases 1–8 shipped incl. per-site theme/email/blueprint/legal (2026-06-12).     |
-| 52-email-builder.md               | Phases 1–6 all built/deployed.                                                      |
-| 59-responsive-rendering.md        | Three-tier collapse renderer + canvas parity shipped.                               |
-| 62-responsive-site-chrome.md      | v2.0 `CollapsibleNav` live on both site + canvas.                                   |
-| 70-live-chat-module.md            | **CORRECTED** — Live Chat shipped (widget, websocket, inbox, push).                 |
-| 72-sparx-market-architecture.md   | Marketplace Phase 1 shipped; opt-in UI + category pages live.                       |
-| 93-one-tenant-email-system.md     | S1–S6 landed 2026-06-12.                                                            |
+| File                              | Evidence                                                                                |
+| --------------------------------- | --------------------------------------------------------------------------------------- |
+| 24-domain-purchase-management.md  | GoDaddy purchase/renewal/transfer flow + MCP tools + onboarding step all live.          |
+| 27-customer-accounts-site-auth.md | `@wizeworks/customer-auth` shipped (hash/session/service + RLS); only browser E2E left. |
+| 41-builder-page-model.md          | `BuilderPage` table + `/v1/builder/pages/*` + service + schema validation shipped.      |
+| 43-builder-binding-schema.md      | Binding contract + `bindingService.getSchema()` + CMS introspection shipped.            |
+| 44-builder-site-render.md         | Public render path (`/v1/public/builder/page` + `BuilderRenderer`) shipped.             |
+| 49-multi-site-per-tenant.md       | All phases 1–8 shipped incl. per-site theme/email/blueprint/legal (2026-06-12).         |
+| 52-email-builder.md               | Phases 1–6 all built/deployed.                                                          |
+| 59-responsive-rendering.md        | Three-tier collapse renderer + canvas parity shipped.                                   |
+| 62-responsive-site-chrome.md      | v2.0 `CollapsibleNav` live on both site + canvas.                                       |
+| 70-live-chat-module.md            | **CORRECTED** — Live Chat shipped (widget, websocket, inbox, push).                     |
+| 72-sparx-market-architecture.md   | Marketplace Phase 1 shipped; opt-in UI + category pages live.                           |
+| 93-one-tenant-email-system.md     | S1–S6 landed 2026-06-12.                                                                |
 
 ---
 
@@ -152,7 +152,7 @@ dashboard authoring tail), **90-ADR-automation-migration.md** + **94-ADR-payment
 | 68-wizards-import-export-bulk.md      | **CORRECTED** — wizards/import/bulk shipped; confirm B6 Excel/remaining entities |
 | 69-tier4-build-plan.md                | **CORRECTED** — Track A done, Track B mostly done; verify residue                |
 | 74-business-formation-integration.md  | entirely unbuilt (FileForms diligence gate)                                      |
-| 76-admin-portal-spec.md               | no `apps/admin` — unbuilt                                                        |
+| 76-admin-portal-spec.md               | no `wizeworks/apps/admin` — unbuilt                                              |
 | 78-consultant-partner-program.md      | only schema scaffolded; shell/free-tier unbuilt                                  |
 | 79-scheduling.md                      | draft notes only — no spec/code                                                  |
 | 80-marketing-attribution-analytics.md | L-PLAT shipped; Phases 2–6 + L-TEN deferred                                      |

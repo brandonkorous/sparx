@@ -11,7 +11,7 @@
 //
 // The schema this authors is exactly what surfaces/commerce/product-attributes.tsx
 // renders a form from — the two share the FieldDef vocabulary through
-// product-types-data.ts (a mirror of @sparx/field-schema, validated server-side).
+// product-types-data.ts (a mirror of @wizeworks/field-schema, validated server-side).
 // Nothing here can author an attribute the product form cannot show.
 //
 // ── Built-ins fork on edit ────────────────────────────────────────────────
@@ -38,7 +38,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Switch,
@@ -259,31 +258,29 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New product type actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={Boolean(problem)}
-          loading={create.isPending}
-          onClick={submit}
-        >
-          Create
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New product type actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={Boolean(problem)}
+            loading={create.isPending}
+            onClick={submit}
+          >
+            Create
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Define a kind of product
-            </Heading>
-            <Text>
-              Name it, then list the extra details it carries beyond price and photos — fabric and
-              care for clothing, ingredients for food, specs for a gadget. Once you save it, you can
-              set those details on any product of this kind.
-            </Text>
-          </div>
+          <Text>
+            Name it, then list the extra details it carries beyond price and photos — fabric and
+            care for clothing, ingredients for food, specs for a gadget. Once you save it, you can
+            set those details on any product of this kind.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">
@@ -464,24 +461,31 @@ function EditType({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Product type actions">
-        {builtIn ? (
-          <Badge color="info" variant="soft" size="sm">
-            Built-in
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className={builtIn ? undefined : 'ml-auto'}
-          disabled={!dirty || Boolean(problem)}
-          loading={save.isPending}
-          onClick={onSave}
-        >
-          {builtIn ? 'Save as my copy' : 'Save'}
-        </Button>
-        <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Product type actions"
+        status={
+          builtIn ? (
+            <Badge color="info" variant="soft" size="sm">
+              Built-in
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className={builtIn ? undefined : 'ml-auto'}
+            disabled={!dirty || Boolean(problem)}
+            loading={save.isPending}
+            onClick={onSave}
+          >
+            {builtIn ? 'Save as my copy' : 'Save'}
+          </Button>
+        }
+        refresh={
+          <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refetch} />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

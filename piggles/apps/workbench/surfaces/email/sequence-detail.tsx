@@ -48,12 +48,13 @@ import {
   faUsers,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { SequenceStep } from '@sparx/email-sequences/schemas';
+import type { SequenceStep } from '@wizeworks/email-sequences/schemas';
 import { useActiveSiteId, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -164,7 +165,14 @@ export function SequenceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function LoadSequence({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: sequence, isPending, isError, refetch } = useSequence(id);
+  const {
+    data: sequence,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useSequence(id);
 
   if (isError) {
     return (
@@ -186,12 +194,36 @@ function LoadSequence({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <SequenceEditor ctx={ctx} sequence={sequence} />;
+  return (
+    <SequenceEditor
+      ctx={ctx}
+      sequence={sequence}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 /* ── The editor ───────────────────────────────────────────────────────────── */
 
-function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: SequenceRow }) {
+function SequenceEditor({
+  ctx,
+  sequence,
+  isFetching,
+  updatedAt,
+  onRefresh,
+}: {
+  ctx: SurfaceContext;
+  sequence?: SequenceRow;
+  /** The loader's query, threaded down. Absent while creating — a sequence that
+   *  does not exist yet has nothing to re-read. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
+}) {
   const isNew = !sequence;
   const toast = useToast();
   const confirm = useConfirm();
@@ -433,87 +465,105 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Sequence actions" wrap>
-        {!isNew ? (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        ) : null}
-        {dirty && !isNew ? (
-          <Badge color="info" variant="soft" size="sm">
-            Unsaved changes
-          </Badge>
-        ) : null}
-
-        {sequence ? (
-          <>
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              className="ml-auto shrink-0"
-              title="See who is enrolled"
-              onClick={(event) => {
-                ctx.open(
-                  'email.sequences.enrollments',
-                  { sequenceId: sequence.id },
-                  { target: targetFor(event) }
-                );
+      <PaneToolbar
+        label="Sequence actions"
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={Boolean(isFetching) || builderEmails.isFetching}
+              updatedAt={sequence ? updatedAt : undefined}
+              onRefresh={() => {
+                onRefresh();
+                void builderEmails.refetch();
               }}
-            >
-              <Icon glyph={faUsers} className="size-4" aria-hidden />
-              <span className="hidden @md:inline">Enrolled</span>
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              color={status === 'active' ? 'neutral' : 'module'}
-              className="shrink-0"
-              loading={statusMut.isPending}
-              onClick={onToggleStatus}
-            >
-              <Icon glyph={faPowerOff} className="size-4" aria-hidden />
-              {status === 'active' ? 'Pause' : 'Turn on'}
-            </Button>
+            />
+          ) : undefined
+        }
+        status={
+          <>
+            {!isNew ? (
+              <Badge color={state.tone} variant="soft" size="sm">
+                {state.label}
+              </Badge>
+            ) : null}
+            {dirty && !isNew ? (
+              <Badge color="info" variant="soft" size="sm">
+                Unsaved changes
+              </Badge>
+            ) : null}
+          </>
+        }
+        primary={
+          sequence ? (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                className="ml-auto shrink-0"
+                title="See who is enrolled"
+                onClick={(event) => {
+                  ctx.open(
+                    'email.sequences.enrollments',
+                    { sequenceId: sequence.id },
+                    { target: targetFor(event) }
+                  );
+                }}
+              >
+                <Icon glyph={faUsers} className="size-4" aria-hidden />
+                <span className="hidden @md:inline">Enrolled</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                color={status === 'active' ? 'neutral' : 'module'}
+                className="shrink-0"
+                loading={statusMut.isPending}
+                onClick={onToggleStatus}
+              >
+                <Icon glyph={faPowerOff} className="size-4" aria-hidden />
+                {status === 'active' ? 'Pause' : 'Turn on'}
+              </Button>
+              <Button
+                size="sm"
+                color="module"
+                className="shrink-0"
+                loading={update.isPending && !statusMut.isPending}
+                disabled={!dirty || busy}
+                onClick={onSave}
+              >
+                Save
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                color="danger"
+                shape="square"
+                className="shrink-0"
+                aria-label="Delete this sequence"
+                title="Delete this sequence"
+                loading={remove.isPending}
+                onClick={() => {
+                  void onDelete();
+                }}
+              >
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+              </Button>
+            </>
+          ) : (
             <Button
               size="sm"
               color="module"
-              className="shrink-0"
-              loading={update.isPending && !statusMut.isPending}
-              disabled={!dirty || busy}
-              onClick={onSave}
+              className="ml-auto shrink-0"
+              loading={create.isPending}
+              disabled={busy}
+              onClick={onCreate}
             >
-              Save
+              Create
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              color="danger"
-              shape="square"
-              className="shrink-0"
-              aria-label="Delete this sequence"
-              title="Delete this sequence"
-              loading={remove.isPending}
-              onClick={() => {
-                void onDelete();
-              }}
-            >
-              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-            </Button>
-          </>
-        ) : (
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto shrink-0"
-            loading={create.isPending}
-            disabled={busy}
-            onClick={onCreate}
-          >
-            Create
-          </Button>
-        )}
-      </PaneToolbar>
+          )
+        }
+      />
 
       {error ? (
         <Alert color="error" variant="soft" className="shrink-0">

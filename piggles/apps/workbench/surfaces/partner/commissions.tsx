@@ -18,10 +18,10 @@ import {
   Badge,
   Button,
   Heading,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCoins, faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -191,20 +191,18 @@ export function CommissionsSurface(_props: { ctx: SurfaceContext }) {
 
   const shell = (children: React.ReactNode) => (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Commissions controls">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faCoins} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            Your earnings
-          </Text>
-        </span>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={busy}
-          updatedAt={updatedAt}
-          onRefresh={refetchAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Commissions controls"
+        status={
+          <span className="inline-flex items-center gap-1.5">
+            <Icon glyph={faCoins} className="size-4" aria-hidden />
+            <Text as="span" className="text-sm font-medium">
+              Your earnings
+            </Text>
+          </span>
+        }
+        refresh={<RefreshButton isFetching={busy} updatedAt={updatedAt} onRefresh={refetchAll} />}
+      />
       {children}
     </div>
   );
@@ -233,15 +231,10 @@ export function CommissionsSurface(_props: { ctx: SurfaceContext }) {
   return shell(
     <div className="min-h-0 flex-1 overflow-y-auto">
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            Commissions
-          </Heading>
-          <Text>
-            What you have earned bringing businesses onto sparx, what is still accruing, and every
-            deposit that has settled it.
-          </Text>
-        </div>
+        <Text>
+          What you have earned bringing businesses onto sparx, what is still accruing, and every
+          deposit that has settled it.
+        </Text>
 
         <div className="grid gap-3 @md:grid-cols-3">
           <Stat

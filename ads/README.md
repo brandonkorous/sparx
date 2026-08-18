@@ -6,7 +6,7 @@ LinkedIn all accept.
 
 Every creative uses only the real brand tokens (`@sparx/brand`): ink navy
 `#0c1433`, ember `#e04631`, paper white — plus the real wordmark and mascot
-geometry from [`packages/brand/src/marks.ts`](../packages/brand/src/marks.ts). No
+geometry from [`sparx/packages/brand/src/marks.ts`](../packages/brand/src/marks.ts). No
 invented colors, no gradients, no drop-shadow-as-device.
 
 ## Creatives
@@ -20,7 +20,7 @@ invented colors, no gradients, no drop-shadow-as-device.
 ## Per-module set (`modules/<ratio>/sparx-ad-module-<slug>-<ratio>.png`)
 
 Thirteen type-led creatives — one per activatable module (the `ALL_MODULES` set in
-[`packages/modules/src/index.ts`](../packages/modules/src/index.ts)) — built on the
+[`wizeworks/packages/modules/src/index.ts`](../packages/modules/src/index.ts)) — built on the
 lead creative's template but **without the mascot**, so the headline carries the
 whole frame:
 

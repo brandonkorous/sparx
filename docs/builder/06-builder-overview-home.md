@@ -63,7 +63,7 @@ plumbing:
 KPI strip + Traffic + Top pages need per-site web analytics, which the platform
 doesn't have yet (attribution L-PLAT, [80](../80-marketing-attribution-analytics.md), is
 acquisition-funnel, not per-site pageview analytics). Options, in order of
-preference: (a) a lightweight first-party pageview collector on `apps/site` →
+preference: (a) a lightweight first-party pageview collector on `wizeworks/apps/site` →
 aggregate endpoint; (b) defer the analytics cards behind a clear "Connect
 analytics" empty state and ship the rest of the home now. **Do not fake metrics.**
 Ship the home with the available cards live and the analytics cards in an honest

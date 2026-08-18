@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { auth } from '@sparx/auth';
+import { auth } from '@wizeworks/auth';
 import { accountOrigin, clearedSessionCookie } from '@piggles/auth-handoff';
 
 // Signing out, from the console side.

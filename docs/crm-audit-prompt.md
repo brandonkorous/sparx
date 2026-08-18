@@ -7,9 +7,9 @@ Do NOT mark a page or component as passing if it has UX slop. "Renders without c
 ## Context you need
 
 - Repo root: `g:\code\@wizeworks\sparx.works`
-- The dashboard CRM lives in `apps/dashboard/app/(dashboard)/crm/`. Backend REST is `services/api-rest`. GraphQL is `services/api-graphql`. MCP is `services/api-mcp`. Service layer is `packages/crm`. Shared schemas: `packages/crm-schemas`.
+- The dashboard CRM lives in `apps/dashboard/app/(dashboard)/crm/`. Backend REST is `wizeworks/services/api-rest`. GraphQL is `wizeworks/services/api-graphql`. MCP is `wizeworks/services/api-mcp`. Service layer is `wizeworks/packages/crm`. Shared schemas: `wizeworks/packages/crm-schemas`.
 - The plan that was implemented is at `C:\Users\brand\.claude\plans\swift-enchanting-puffin.md` — read the seven locked decisions and the per-phase deliverables so you know what was _supposed_ to ship. The plan and the actual implementation map 1:1 for Phases 1–6.
-- Project rules in `g:\code\@wizeworks\sparx.works\CLAUDE.md` are binding — especially: no raw Tailwind in app code, every Card carries the module stripe via `<Card variant="module">`, ModuleProvider wraps the route group, Tailwind tokens come from `packages/ui/src/tokens.css`, **CRM color is Cyan `#06B6D4`** (per the brand guide). Verify the active module color resolves to cyan on every CRM page via `getComputedStyle(node).getPropertyValue('--module-active')`.
+- Project rules in `g:\code\@wizeworks\sparx.works\CLAUDE.md` are binding — especially: no raw Tailwind in app code, every Card carries the module stripe via `<Card variant="module">`, ModuleProvider wraps the route group, Tailwind tokens come from `sparx/packages/ui/src/tokens.css`, **CRM color is Cyan `#06B6D4`** (per the brand guide). Verify the active module color resolves to cyan on every CRM page via `getComputedStyle(node).getPropertyValue('--module-active')`.
 - Read the user's `MEMORY.md` at `C:\Users\brand\.claude\projects\g--code--wizeworks-sparx-works\memory\MEMORY.md` before starting — there are CORE rules (no git stash, no --no-verify, no Co-Authored-By, no manual kubectl, respect architectural boundaries) that bind your behavior. Open the linked memory files for full context on any rule you're about to brush against.
 - The CRM is the module that _introduces_ the customer / B2B / deal / pipeline / activity / task / segment spine — every other module (Commerce, B2B, Email) hangs off these tables later. Test under that assumption: customers and B2B accounts already exist before Commerce attaches orders.
 - **Known parked state:** `api-mcp` is scaled to 0 replicas until the SSD_TOTAL_GB quota is bumped (see `k8s/apps/api-mcp.yaml` header). `mcp.sparx.works` therefore returns 502 from Caddy. Do NOT flag this as a bug — flag it under Notes if you find any UI in the dashboard that points at MCP without explaining the parked state.
@@ -126,7 +126,7 @@ The `CrmTabs` sub-nav is at the top of every top-level CRM page. Confirm every t
 
 These are not browser flows but they ARE part of the CRM module and must work for the audit to pass.
 
-29. **REST API at `/v1/crm/*`** — confirm against `services/api-rest/src/routes/v1/crm/*`:
+29. **REST API at `/v1/crm/*`** — confirm against `wizeworks/services/api-rest/src/routes/v1/crm/*`:
     - `GET /v1/crm/customers` with JWT, with API key (`Bearer sk_live_...`) — both must work
     - `GET /v1/crm/customers/{id}`, `POST /v1/crm/customers`, `PATCH`, `DELETE` (soft), `POST /v1/crm/customers/merge`, `POST /v1/crm/customers/{id}/assign`, `POST /v1/crm/customers/{id}/tag`
     - `GET /v1/crm/pipelines`, `POST`, `PATCH`, `DELETE`, `POST /v1/crm/pipelines/{id}/stages`, `POST /v1/crm/pipelines/{id}/stages/reorder`, `PATCH /v1/crm/pipelines/{id}/stages/{stageId}`
@@ -139,7 +139,7 @@ These are not browser flows but they ARE part of the CRM module and must work fo
     - For each: **module gate** — with CRM off, every endpoint returns the documented 404 envelope `{ success:false, error:{ code:'MODULE_DISABLED', details:{ module:'crm' } } }`
     - **OpenAPI** — `GET /v1/openapi.json` must include every path above and tag them under `crm`
 30. **GraphQL surface at `/v1/graphql`** — exercise `crmCustomers`, `crmCustomer`, `createCustomer`, `updateCustomer`, `crmDeals`, `moveDealStage`, `crmPipelines`, `crmSegments`, `crmActivities`, `crmReports*` (one query per resolver group is enough — the resolvers all share the service layer so this is a wiring check). Confirm MODULE_DISABLED bubbles as a GraphQL `errors[]` entry, statusCode 200 (Mercurius lifts resolver throws).
-31. **MCP transport (local dev only — prod is parked)** — boot `pnpm --filter @sparx/api-mcp dev`, run `tools/list`, run `tools/call` for `get_customers`, `get_top_customers`, `get_pipeline`, `add_crm_activity` (write), `move_deal_stage` (write). Authenticate with both JWT and an issued API key. Confirm:
+31. **MCP transport (local dev only — prod is parked)** — boot `pnpm --filter @wizeworks/api-mcp dev`, run `tools/list`, run `tools/call` for `get_customers`, `get_top_customers`, `get_pipeline`, `add_crm_activity` (write), `move_deal_stage` (write). Authenticate with both JWT and an issued API key. Confirm:
     - Read tools work with `read:crm` only
     - Write tools rejected without `write:crm`
     - Write tools require confirmation flag (`destructiveHint: true`)
@@ -230,12 +230,12 @@ For the dev environment, you'll typically need three services running:
 
 ```
 pnpm --filter @sparx/dashboard dev          # http://localhost:3000
-pnpm --filter @sparx/api-rest dev           # http://localhost:3100
-pnpm --filter @sparx/api-mcp dev            # http://localhost:3200
-pnpm --filter @sparx/api-graphql dev        # http://localhost:3300  (if testing GraphQL)
-pnpm --filter @sparx/db db:up               # local Postgres
-pnpm --filter @sparx/db db:migrate          # apply migrations
-pnpm --filter @sparx/db db:seed             # seed the e2e tenant
+pnpm --filter @wizeworks/api-rest dev           # http://localhost:3100
+pnpm --filter @wizeworks/api-mcp dev            # http://localhost:3200
+pnpm --filter @wizeworks/api-graphql dev        # http://localhost:3300  (if testing GraphQL)
+pnpm --filter @wizeworks/db db:up               # local Postgres
+pnpm --filter @wizeworks/db db:migrate          # apply migrations
+pnpm --filter @wizeworks/db db:seed             # seed the e2e tenant
 ```
 
 For an authenticated session, the seed creates `e2e-staff@sparx.test` / `e2e-test-password` against the `e2e-store` tenant with all platform modules enabled.
@@ -244,8 +244,8 @@ For the non-browser checks (REST, GraphQL, MCP, webhooks, cron):
 
 - Use `curl` against the local dev servers
 - Use `kubectl -n sparx-prod get cronjobs` to confirm the four CronJobs exist (read-only; do NOT mutate the cluster)
-- For partition checks, run `pnpm --filter @sparx/db db:up` then `docker exec sparx-postgres psql -U sparx_owner -d sparx -c "..."`
-- For Pub/Sub event flow, use the in-process `resetPlatformBusForTesting()` helper from `@sparx/crm` and call `publish()` directly — no external Pub/Sub needed for the audit
+- For partition checks, run `pnpm --filter @wizeworks/db db:up` then `docker exec sparx-postgres psql -U sparx_owner -d sparx -c "..."`
+- For Pub/Sub event flow, use the in-process `resetPlatformBusForTesting()` helper from `@wizeworks/crm` and call `publish()` directly — no external Pub/Sub needed for the audit
 
 **Do NOT touch Cloud SQL.** That's prod and migrations only go through the GitHub workflow. Do NOT run raw `kubectl apply` against prod — cluster mutations go through `bootstrap.yml` / `deploy-prod.yml` / `db-migrate.yml`. Reads (`kubectl get`, `kubectl logs`) are fine.
 

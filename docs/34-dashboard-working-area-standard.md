@@ -18,11 +18,11 @@
 >
 > **1.5 (2026-05-31):** Two consistency gaps closed. **(1) Create surface follows the detail-view preference** (§13.1) — "New X" no longer varies per page (some inline forms, some `/new` routes, some buttons). A new `EntityCreateButton` resolves the user's `defaultDetailView` to the same surface used for _viewing_ a record: drawer/modal open the create form in the `@detail` overlay (token `?drawer=type:new`), `fullPage`/`newTab` route to `/{resource}/new`. Reuses the entire detail substrate — same chrome, same registry — so creating and viewing a record share one experience. **(2) Toolbar visibility no longer depends on data** (§8) — a list either always shows its `ListToolbar` (when it has any control) or never does; the empty/zero-record state never toggles the toolbar off. Piloted on `commerce/collections`.
 >
-> **1.4 (2026-05-31):** Review feedback after the toolbar pilot. **Collection/List pages move to Full width** (§3) — a data table is a work surface that should use the viewport, not a reading column; **overviews and detail pages stay bound** (their KPI/section/panel grids would sprawl). Shipped the `ListToolbar` (`@sparx/ui`) + dashboard URL-sync wrapper — live quick-filters/search/sort, no Apply, rolled across all module list pages (§7.1). Card/grid views use the new `Grid minItemWidth` auto-fill so cards stay a tidy width on full-bleed pages instead of stretching. Search is shown only where the list's endpoint supports text search (`q`); filter-only lists hide it.
+> **1.4 (2026-05-31):** Review feedback after the toolbar pilot. **Collection/List pages move to Full width** (§3) — a data table is a work surface that should use the viewport, not a reading column; **overviews and detail pages stay bound** (their KPI/section/panel grids would sprawl). Shipped the `ListToolbar` (`@wizeworks/ui`) + dashboard URL-sync wrapper — live quick-filters/search/sort, no Apply, rolled across all module list pages (§7.1). Card/grid views use the new `Grid minItemWidth` auto-fill so cards stay a tidy width on full-bleed pages instead of stretching. Search is shown only where the list's endpoint supports text search (`q`); filter-only lists hide it.
 >
 > **1.3 (2026-05-31):** Post-rollout review feedback. Content width gains a third tier — **Full** (§3) for canvas/builder workspaces (Site Builder editor, the pipeline Kanban board) where the work surface itself wants the whole viewport. The drawer/modal detail view now adopts the record's **module color** (the `@detail` slot wraps content in the owning `ModuleProvider` — previously it inherited the `:root` indigo). Commerce primary CTAs corrected to `color="module"`. Next: the list **filter/search toolbar** redesign (§7) and a `defaultListView` (table/cards) preference mirroring `defaultDetailView`.
 >
-> **1.2 (2026-05-31):** Rollout landed (§17). `PageHeader` / `FilterBar` / `FormActionBar` built; in-content section tabs (cms/crm/email) and the in-content "← Back to X" links removed platform-wide (the breadcrumb owns up-nav). **Trend charts** added to @sparx/ui (`LineChart`/`BarChart`/`AreaChart`/`Sparkline`, token + `--color-module` themed, `--chart-1..6` palette) and onto the overviews (sample-labeled until reporting timeseries exists). **Landings converted to overview dashboards** — CRM list → `/crm/customers`, CMS Pages list → `/cms/pages`, each with a new `/{module}` overview; Email/Commerce already overview-shaped.
+> **1.2 (2026-05-31):** Rollout landed (§17). `PageHeader` / `FilterBar` / `FormActionBar` built; in-content section tabs (cms/crm/email) and the in-content "← Back to X" links removed platform-wide (the breadcrumb owns up-nav). **Trend charts** added to @wizeworks/ui (`LineChart`/`BarChart`/`AreaChart`/`Sparkline`, token + `--color-module` themed, `--chart-1..6` palette) and onto the overviews (sample-labeled until reporting timeseries exists). **Landings converted to overview dashboards** — CRM list → `/crm/customers`, CMS Pages list → `/cms/pages`, each with a new `/{module}` overview; Email/Commerce already overview-shaped.
 >
 > **1.1 (2026-05-31):** Locked intra-module navigation as a **rail + contextual sidebar** (§11) — module sections move out of in-content tab strips and card-grid-as-nav into the shell's contextual panel; in-content tabs are now reserved for record facets only. Shell-side detail in [doc 24](24-dashboard-shell.md) §5.
 
@@ -32,7 +32,7 @@
 
 The [Dashboard Shell](24-dashboard-shell.md) defines the **chrome** — the sidebar, the header breadcrumb, the `…` menu, the theme toggle. This document defines the **working area**: everything rendered inside `<main>`, below the breadcrumb/control bar, where the actual module work happens.
 
-Today that working area is improvised per page. A live audit of 19 representative pages (every module × every archetype, 2026-05-31) found four different module-landing layouts, four list-rendering styles, three empty-state treatments, three page-header anatomies, two back-link placements, and Commerce primary buttons rendering in the wrong color. This standard collapses those into one set of archetypes built from the primitives that already exist in `@sparx/ui`.
+Today that working area is improvised per page. A live audit of 19 representative pages (every module × every archetype, 2026-05-31) found four different module-landing layouts, four list-rendering styles, three empty-state treatments, three page-header anatomies, two back-link placements, and Commerce primary buttons rendering in the wrong color. This standard collapses those into one set of archetypes built from the primitives that already exist in `@wizeworks/ui`.
 
 **In scope:** page header, content width, list/table rendering, empty states, stat cards, section/nav-card grids, in-content tabs, forms and their save affordance, module-overview composition, the module-preview ("coming online") template, and the placement of primary/secondary actions.
 
@@ -43,7 +43,7 @@ Today that working area is improvised per page. A live audit of 19 representativ
 ## 2. Core Principles
 
 1. **Archetype, not improvisation.** Every working-area page is exactly one of six archetypes (§4). The archetype dictates the layout; pages do not invent their own.
-2. **Compose primitives, never restyle them.** The building blocks live in `@sparx/ui` (`Container`, `Card`, `Stat`, `DataTable`, `EmptyState`, `Tabs`, `Grid`, `Stack`, `Form`). Feature code arranges them; it never reaches for raw Tailwind or one-off colors. (Per [doc 23](23-frontend-component-architecture.md) §1.)
+2. **Compose primitives, never restyle them.** The building blocks live in `@wizeworks/ui` (`Container`, `Card`, `Stat`, `DataTable`, `EmptyState`, `Tabs`, `Grid`, `Stack`, `Form`). Feature code arranges them; it never reaches for raw Tailwind or one-off colors. (Per [doc 23](23-frontend-component-architecture.md) §1.)
 3. **The module color is automatic — let it be.** Every surface is wrapped in `<ModuleProvider>`, which sets `--color-module`. Primary actions (`color="module"`), card tints (`bg-module bg-soft`), tab underlines, and stat icons all read that variable. A page should never hardcode indigo (or any hue) — if it looks indigo on a Commerce page, the primary action is missing `color="module"`. This holds in the drawer/modal too: the `@detail` slot renders outside the module layout, so it wraps content in the record's owning `ModuleProvider` (keyed by entity type) — never assume the route's layout supplies the color.
 4. **One primary action per header, top-right.** Actions live in the page header, right-aligned. Never below the header, never duplicated into the body, never a second competing primary.
 5. **The breadcrumb is the back button.** The shell breadcrumb already provides up-navigation. The working area carries no in-content "← Back to X" link.
@@ -54,7 +54,7 @@ Today that working area is improvised per page. A live audit of 19 representativ
 
 ## 3. Content Width
 
-The shell applies no max-width; each page wraps its content in the shared `Container` (`packages/ui/src/components/layout/container.tsx`). There are exactly **three** allowed widths, chosen by what the page _is_ — a canvas tool, a workspace you survey and navigate, or a focused task you fill one thing out:
+The shell applies no max-width; each page wraps its content in the shared `Container` (`sparx/packages/ui/src/components/layout/container.tsx`). There are exactly **three** allowed widths, chosen by what the page _is_ — a canvas tool, a workspace you survey and navigate, or a focused task you fill one thing out:
 
 | Width       | `Container size` | Max    | Used by                                                                         |
 | ----------- | ---------------- | ------ | ------------------------------------------------------------------------------- |
@@ -83,7 +83,7 @@ Everything below specifies the shared pieces these archetypes are built from.
 
 ---
 
-## 5. Page Header — `PageHeader` (built, `@sparx/ui`)
+## 5. Page Header — `PageHeader` (built, `@wizeworks/ui`)
 
 There is no shared `PageHeader` today; every page hand-rolls `Stack + Heading + Text`, which is why the anatomy drifts. Build one component and route every archetype (1, 2, 3, 5, 6) through it.
 
@@ -120,16 +120,16 @@ A **complex tabbed record** (a product, and in time customer / B2B) also carries
 
 ## 7. Collection / List (Archetype 2)
 
-**One rendering, responsive** (the locked decision): `DataTable` (`packages/ui/src/components/data/data-table.tsx`) on desktop, collapsing to a stacked card list below the `md` breakpoint. Same data, same source, one component — not "products is a table but segments is a card stack and pages is a different card."
+**One rendering, responsive** (the locked decision): `DataTable` (`sparx/packages/ui/src/components/data/data-table.tsx`) on desktop, collapsing to a stacked card list below the `md` breakpoint. Same data, same source, one component — not "products is a table but segments is a card stack and pages is a different card."
 
 - **Table style:** the single `Table` primitive (uppercase muted column headers, borderless rows, hover highlight). Kill the competing bordered-table style from the products page.
 - **Row → detail:** the whole row is the link to the record's detail page. No per-row "Edit"/"Open" button when the row itself navigates (drop the CMS-pages "Edit" button and the segments "Open" link in favor of row-click; keep an explicit affordance only where a row has multiple distinct destinations).
 - **Mobile cards:** title + key metadata + status badge per card; tapping the card navigates. This is the _only_ sanctioned card-list — it is the responsive form of the table, not a separate design choice.
 - **Browse/library views** (e.g. CMS Media) are the documented exception: a thumbnail grid is appropriate where the content _is_ visual. Everything record-shaped uses the table.
 
-### 7.1 ListToolbar (to build, `@sparx/ui`)
+### 7.1 ListToolbar (to build, `@wizeworks/ui`)
 
-The audit found three filter styles (labeled inputs + an "Apply" button on products; pill toggles + search + sort on customers; a lone dropdown on pages), all hand-rolled inside a `Card` + `<form>`. The 2026-05-31 review judged the whole surface "sloppy." Replace it with one toolbar component above the list — a proper `@sparx/ui` primitive (`ListToolbar`), **not** a re-style of the per-page form. `FilterBar` (the earlier layout-only container) is superseded by it.
+The audit found three filter styles (labeled inputs + an "Apply" button on products; pill toggles + search + sort on customers; a lone dropdown on pages), all hand-rolled inside a `Card` + `<form>`. The 2026-05-31 review judged the whole surface "sloppy." Replace it with one toolbar component above the list — a proper `@wizeworks/ui` primitive (`ListToolbar`), **not** a re-style of the per-page form. `FilterBar` (the earlier layout-only container) is superseded by it.
 
 Anatomy (left → right), wrapping responsively:
 
@@ -153,9 +153,9 @@ Mirror `defaultDetailView` exactly ([doc 24](24-dashboard-shell.md) §4.6): a si
 
 ---
 
-## 8. Empty States — `EmptyState` (exists, `@sparx/ui`)
+## 8. Empty States — `EmptyState` (exists, `@wizeworks/ui`)
 
-The audit found three treatments (an inline icon-left card on Home; a bare gray box with no CTA on Orders; a module-card-wrapping-a-gray-box with a _duplicated_ CTA on Discounts and Media). Use the single `EmptyState` component (`packages/ui/src/components/data/empty-state.tsx`) everywhere:
+The audit found three treatments (an inline icon-left card on Home; a bare gray box with no CTA on Orders; a module-card-wrapping-a-gray-box with a _duplicated_ CTA on Discounts and Media). Use the single `EmptyState` component (`sparx/packages/ui/src/components/data/empty-state.tsx`) everywhere:
 
 - Centered: icon-in-circle, title, **one-line** description, **one** action.
 - Rendered **directly** in the content region (or as the `DataTable` zero-row fallback) — **never** double-nested (module Card → gray box → content).
@@ -166,9 +166,9 @@ The audit found three treatments (an inline icon-left card on Home; a bare gray 
 
 ---
 
-## 9. Stat Cards — `Stat` + `Grid` (exists, `@sparx/ui`)
+## 9. Stat Cards — `Stat` + `Grid` (exists, `@wizeworks/ui`)
 
-Three KPI surfaces today (4 bordered cards on Home; 4 gray cards 2×2 on Commerce; 6 inline metrics in one card on Email). Standardize on the `Stat` component (`packages/ui/src/components/data/stat.tsx`: label + value + optional delta + module-tinted icon) laid out in a `Grid`:
+Three KPI surfaces today (4 bordered cards on Home; 4 gray cards 2×2 on Commerce; 6 inline metrics in one card on Email). Standardize on the `Stat` component (`sparx/packages/ui/src/components/data/stat.tsx`: label + value + optional delta + module-tinted icon) laid out in a `Grid`:
 
 - One surface treatment (the `Stat` card), one icon style (module-tinted), deltas rendered consistently.
 - Grid columns: up to 4 across on wide, responsive down to 1. Overview pages use this grid as the first body block.
@@ -276,22 +276,22 @@ The not-yet-built modules (B2B, AI, Dropship) already share one template via `ap
 
 ## 15. Components: build vs. reuse
 
-| Need                        | Status   | Location                                                                                                                                             |
-| --------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Container` (widths)        | ✅ reuse | `packages/ui/src/components/layout/container.tsx`                                                                                                    |
-| `Card` + `variant="module"` | ✅ reuse | `packages/ui/src/components/layout/card.tsx`                                                                                                         |
-| `Stat` (KPI card)           | ✅ reuse | `packages/ui/src/components/data/stat.tsx`                                                                                                           |
-| `DataTable` / `Table`       | ✅ reuse | `packages/ui/src/components/data/{data-table,table}.tsx`                                                                                             |
-| `EmptyState`                | ✅ reuse | `packages/ui/src/components/data/empty-state.tsx`                                                                                                    |
-| `Tabs variant="default"`    | ✅ reuse | `packages/ui/src/components/navigation/tabs.tsx`                                                                                                     |
-| `Grid` / `Stack`            | ✅ reuse | `packages/ui/src/components/layout/{grid,stack}.tsx`                                                                                                 |
-| `Form*` primitives          | ✅ reuse | `packages/ui/src/components/form/form.tsx`                                                                                                           |
-| `ModuleStub` (preview)      | ✅ reuse | `apps/dashboard/components/module-stub.tsx`                                                                                                          |
-| **`PageHeader`**            | ✅ built | `packages/ui/src/components/layout/page-header.tsx` — the §5 anatomy                                                                                 |
-| **`FilterBar`**             | ✅ built | `packages/ui/src/components/data/filter-bar.tsx` — the §7.1 toolbar                                                                                  |
-| **`FormActionBar`**         | ✅ built | `packages/ui/src/components/form/form-action-bar.tsx` — the §13 bar                                                                                  |
-| **Trend charts**            | ✅ built | `packages/ui/src/components/data/chart/*` — `LineChart`/`BarChart`/`AreaChart`/`Sparkline` (Recharts, encapsulated; token + `--color-module` themed) |
-| **`OverviewChartCard`**     | ✅ built | `apps/dashboard/.../_components/overview-charts.tsx` — overview chart wrapper + the `SAMPLE_*` datasets (sample-labeled until live timeseries)       |
+| Need                        | Status   | Location                                                                                                                                                   |
+| --------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Container` (widths)        | ✅ reuse | `sparx/packages/ui/src/components/layout/container.tsx`                                                                                                    |
+| `Card` + `variant="module"` | ✅ reuse | `sparx/packages/ui/src/components/layout/card.tsx`                                                                                                         |
+| `Stat` (KPI card)           | ✅ reuse | `sparx/packages/ui/src/components/data/stat.tsx`                                                                                                           |
+| `DataTable` / `Table`       | ✅ reuse | `sparx/packages/ui/src/components/data/{data-table,table}.tsx`                                                                                             |
+| `EmptyState`                | ✅ reuse | `sparx/packages/ui/src/components/data/empty-state.tsx`                                                                                                    |
+| `Tabs variant="default"`    | ✅ reuse | `sparx/packages/ui/src/components/navigation/tabs.tsx`                                                                                                     |
+| `Grid` / `Stack`            | ✅ reuse | `sparx/packages/ui/src/components/layout/{grid,stack}.tsx`                                                                                                 |
+| `Form*` primitives          | ✅ reuse | `sparx/packages/ui/src/components/form/form.tsx`                                                                                                           |
+| `ModuleStub` (preview)      | ✅ reuse | `apps/dashboard/components/module-stub.tsx`                                                                                                                |
+| **`PageHeader`**            | ✅ built | `sparx/packages/ui/src/components/layout/page-header.tsx` — the §5 anatomy                                                                                 |
+| **`FilterBar`**             | ✅ built | `sparx/packages/ui/src/components/data/filter-bar.tsx` — the §7.1 toolbar                                                                                  |
+| **`FormActionBar`**         | ✅ built | `sparx/packages/ui/src/components/form/form-action-bar.tsx` — the §13 bar                                                                                  |
+| **Trend charts**            | ✅ built | `sparx/packages/ui/src/components/data/chart/*` — `LineChart`/`BarChart`/`AreaChart`/`Sparkline` (Recharts, encapsulated; token + `--color-module` themed) |
+| **`OverviewChartCard`**     | ✅ built | `apps/dashboard/.../_components/overview-charts.tsx` — overview chart wrapper + the `SAMPLE_*` datasets (sample-labeled until live timeseries)             |
 
 The three layout primitives (built 2026-05-31 — pure layout containers; actions/filters are slots, decoupled from the Button API) + the chart components + targeted prop fixes (mostly `color="module"`) cover the standard. No primitive needs restyling. **Charts need a real data source:** today only point-in-time `/v1/{module}/reports/*` summaries exist — no timeseries endpoints — so the trend cards render `SAMPLE_*` data behind a "Sample data" badge until `*-timeseries` endpoints land.
 
@@ -325,7 +325,7 @@ The three layout primitives (built 2026-05-31 — pure layout containers; action
 
 ## 17. Rollout
 
-1. **Build the three new primitives** (`PageHeader`, `FilterBar`, `FormActionBar`) in `@sparx/ui` with the specs above. Ship behind nothing — they're additive.
+1. **Build the three new primitives** (`PageHeader`, `FilterBar`, `FormActionBar`) in `@wizeworks/ui` with the specs above. Ship behind nothing — they're additive.
 2. **Sweep by archetype, not by module** — fix all Forms, then all Lists, then all Overviews. Same-archetype pages share the same diff, so batching by archetype is faster and keeps the standard honest.
 3. **Quick wins first:** the Commerce `color="module"` button fixes (§6) and the back-link deletions (§5/§13) are one-line changes with immediate visible payoff — do them in the first pass.
 4. Each archetype's compliance is verifiable live with the same Playwright capture used for the audit; re-shoot the working area and diff against this doc.

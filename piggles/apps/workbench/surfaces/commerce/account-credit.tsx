@@ -28,11 +28,11 @@ import {
   Input,
   SearchInput,
   Select,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowDown,
   faArrowUp,
@@ -156,39 +156,46 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Account credit controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
+      <PaneToolbar
+        label="Account credit controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search customers with store credit"
+              placeholder="Search customers with credit…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primary={
+          <Button
+            color="module"
             size="sm"
-            aria-label="Search customers with store credit"
-            placeholder="Search customers with credit…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+            className="ml-auto"
+            onClick={() => {
+              setFinding(true);
+              setSelected(null);
+            }}
+          >
+            <Icon glyph={faUserPlus} className="size-4" aria-hidden />
+            Grant credit
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          onClick={() => {
-            setFinding(true);
-            setSelected(null);
-          }}
-        >
-          <Icon glyph={faUserPlus} className="size-4" aria-hidden />
-          Grant credit
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

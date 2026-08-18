@@ -6,11 +6,11 @@ status: active
 
 # components
 
-If [[design]] is the *language*, this node is the *library and the layouts*. Appearance lives here so feature code never reinvents it — the partner pages proved that when the library is used right, the surface is mostly right. The dashboard library runs on **silicaui**: styled primitives come from `@wizeworks/silicaui-react`, and `@sparx/ui` holds the sparx compositions built on them (see [[appearance-lives-in-ui]]).
+If [[design]] is the *language*, this node is the *library and the layouts*. Appearance lives here so feature code never reinvents it — the partner pages proved that when the library is used right, the surface is mostly right. The dashboard library runs on **silicaui**: styled primitives come from `@wizeworks/silicaui-react`, and `@wizeworks/ui` holds the sparx compositions built on them (see [[appearance-lives-in-ui]]).
 
 ## The two rules that prevent most drift
 
-- [[appearance-lives-in-ui]] — feature code composes `@sparx/ui`, never re-skins a control.
+- [[appearance-lives-in-ui]] — feature code composes `@wizeworks/ui`, never re-skins a control.
 - [[four-axis-variants]] — every control is `color × variant × size × shape`, never a flat enum.
 
 ## Surfaces — forms, details, pages
@@ -28,7 +28,7 @@ If [[design]] is the *language*, this node is the *library and the layouts*. App
 
 ## Sources of truth
 
-`packages/ui/` (the components + `packages/ui/CLAUDE.md`) · `docs/23-frontend-component-architecture.md` (contract) · `docs/35-ui-variant-system.md` (variants) · `docs/86-surface-frame-pattern.md` + the `form-surface` skill (surfaces) · `docs/34-dashboard-working-area-standard.md` (archetypes).
+`sparx/packages/ui/` (the components + `sparx/packages/ui/CLAUDE.md`) · `docs/23-frontend-component-architecture.md` (contract) · `docs/35-ui-variant-system.md` (variants) · `docs/86-surface-frame-pattern.md` + the `form-surface` skill (surfaces) · `docs/34-dashboard-working-area-standard.md` (archetypes).
 
 ## Migration status
 

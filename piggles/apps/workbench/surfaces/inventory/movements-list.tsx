@@ -34,14 +34,12 @@ import {
   Card,
   EmptyState,
   Input,
-  NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
-  ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faClockRotateLeft,
   faMagnifyingGlass,
@@ -50,8 +48,8 @@ import {
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import type { ToolbarFilter } from '../../components/pane-toolbar-filters';
 import { RefreshButton } from '../../components/refresh-button';
-import { SavedViewsBar } from '../../components/saved-views';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { movementReason, useStockLocations } from './data';
 import {
@@ -90,13 +88,10 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
 
-  // What this list is showing, as plain strings — the shape a saved view stores
-  // and re-applies (docs/146 Phase 10.2). "Everything written off last month",
-  // saved once, is the whole point of the feature on this particular list.
-  const viewParams = useMemo(
-    () => ({ q: search.trim(), warehouse: locationId, reason, from, to }),
-    [search, locationId, reason, from, to]
-  );
+  // The half the toolbar does not hold — place and reason ride the `filters`
+  // slot. "Everything written off last month", saved once, is the whole point of
+  // the feature on this particular list.
+  const viewParams = useMemo(() => ({ q: search.trim(), from, to }), [search, from, to]);
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -127,6 +122,41 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
     setPage(1);
     setTake(pageSize);
   };
+
+  // Both are open-ended sets — a business can have twenty locations — so both
+  // present as pickers rather than chip rows.
+  const filters: ToolbarFilter[] = [
+    {
+      label: 'Show changes at',
+      key: 'warehouse',
+      present: 'select',
+      value: locationId,
+      neutralValue: '',
+      options: [
+        { value: '', label: 'Every location' },
+        ...activeLocations.map((location) => ({ value: location.id, label: location.name })),
+      ],
+      onValueChange: (next) => {
+        setLocationId(next);
+        resetWindow();
+      },
+    },
+    {
+      label: 'Show only this kind of change',
+      key: 'reason',
+      present: 'select',
+      value: reason,
+      neutralValue: '',
+      options: [
+        { value: '', label: 'Any reason' },
+        ...MOVEMENT_REASONS.map((value) => ({ value, label: movementReason(value) })),
+      ],
+      onValueChange: (next) => {
+        setReason(next);
+        resetWindow();
+      },
+    },
+  ];
 
   const open = (movement: Movement, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open(
@@ -299,11 +329,9 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      {/* Genuinely more filters than a bar can hold on one line — search, place,
-          reason and a two-ended date range — so this is one of the rare bars that
-          earns `wrap`. */}
-      <PaneToolbar label="Movements filters" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
+      <PaneToolbar
+        label="Movements filters"
+        search={
           <SearchInput
             size="sm"
             aria-label="Search movements by item"
@@ -314,101 +342,65 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
               resetWindow();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show changes at"
-          value={locationId}
-          onChange={(event) => {
-            setLocationId(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Every location</option>
-          {activeLocations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-44 shrink"
-          aria-label="Show only this kind of change"
-          value={reason}
-          onChange={(event) => {
-            setReason(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Any reason</option>
-          {MOVEMENT_REASONS.map((value) => (
-            <option key={value} value={value}>
-              {movementReason(value)}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <label className="flex items-center gap-1.5">
-          <span className="text-sm whitespace-nowrap">From</span>
-          <Input
-            size="sm"
-            type="date"
-            aria-label="Changes on or after"
-            className="max-w-40"
-            value={from}
-            max={to || undefined}
-            onChange={(event) => {
-              setFrom(event.target.value);
-              resetWindow();
-            }}
-          />
-        </label>
-
-        <label className="flex items-center gap-1.5">
-          <span className="text-sm whitespace-nowrap">To</span>
-          <Input
-            size="sm"
-            type="date"
-            aria-label="Changes on or before"
-            className="max-w-40"
-            value={to}
-            min={from || undefined}
-            onChange={(event) => {
-              setTo(event.target.value);
-              resetWindow();
-            }}
-          />
-        </label>
-
-        <SavedViewsBar
-          target="/inventory/movements"
-          params={viewParams}
-          className="ml-auto"
-          onApply={(next) => {
+        }
+        filters={filters}
+        // A two-ended range is one question asked with two controls, which is
+        // the case the values slot cannot express.
+        controls={
+          <>
+            <label className="flex items-center gap-1.5">
+              <span className="text-sm whitespace-nowrap">From</span>
+              <Input
+                size="sm"
+                type="date"
+                aria-label="Changes on or after"
+                className="max-w-40"
+                value={from}
+                max={to || undefined}
+                onChange={(event) => {
+                  setFrom(event.target.value);
+                  resetWindow();
+                }}
+              />
+            </label>
+            <label className="flex items-center gap-1.5">
+              <span className="text-sm whitespace-nowrap">To</span>
+              <Input
+                size="sm"
+                type="date"
+                aria-label="Changes on or before"
+                className="max-w-40"
+                value={to}
+                min={from || undefined}
+                onChange={(event) => {
+                  setTo(event.target.value);
+                  resetWindow();
+                }}
+              />
+            </label>
+          </>
+        }
+        activeControls={(from ? 1 : 0) + (to ? 1 : 0)}
+        views={{
+          target: '/inventory/movements',
+          params: viewParams,
+          onApply: (next) => {
             setSearch(next.q ?? '');
-            setLocationId(next.warehouse ?? '');
-            setReason(next.reason ?? '');
             setFrom(next.from ?? '');
             setTo(next.to ?? '');
             resetWindow();
-          }}
-        />
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 

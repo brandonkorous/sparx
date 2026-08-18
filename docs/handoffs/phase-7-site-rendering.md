@@ -1,14 +1,14 @@
 # Handoff — Phase 7: Site rendering of the Site Builder snapshot
 
-**To:** the site agent (owns `apps/site`)
-**From:** the Site Builder build (owns `packages/sitebuilder*`, `packages/site-themes`, `services/api-rest/.../sitebuilder/*`)
+**To:** the site agent (owns `wizeworks/apps/site`)
+**From:** the Site Builder build (owns `wizeworks/packages/sitebuilder*`, `wizeworks/packages/site-themes`, `wizeworks/services/api-rest/.../sitebuilder/*`)
 **Status of the backend you depend on:** DONE + green. The public read endpoint, the
 compiled-token contract, the section registry, and the dashboard live-preview transport are
 all built, tested, and stable. Nothing below is speculative — it's the shipped contract.
 
 Your job is to make a published Site Builder config actually render on the site:
 themed tokens (light **and** dark), composed sections, and config-driven header/footer.
-Today `apps/site` has a single hardcoded design and ignores all of this.
+Today `wizeworks/apps/site` has a single hardcoded design and ignores all of this.
 
 ---
 
@@ -21,14 +21,14 @@ GET /v1/public/site/site?tenant=<slug>
 - Unauthenticated, read-only, returns **only the published** snapshot.
 - `tenant` is the site subdomain slug (resolve it from the request host upstream, same
   way the existing public commerce endpoints do — see `resolveTenantId` in
-  `services/api-rest/src/routes/v1/lib/public-commerce-context.ts`).
+  `wizeworks/services/api-rest/src/routes/v1/lib/public-commerce-context.ts`).
 - 404 (`MODULE_DISABLED`) when the `site` module is off for that tenant — render your
   existing fallback, don't crash.
 - Returns `null` when nothing has been published yet → **keep the current commerce homepage
   as the empty-store fallback.** Do not show a blank page.
 
 Response `data` shape (`PublishedSnapshot`, defined in
-`packages/sitebuilder/src/services/publish-internals.ts`):
+`wizeworks/packages/sitebuilder/src/services/publish-internals.ts`):
 
 ```ts
 {
@@ -65,12 +65,12 @@ Keep your existing preview-token gate; just swap which URL it fetches.
 
 ## 2. Tokens → CSS (light + dark) — use the shared helpers, don't re-derive
 
-`@sparx/site-themes` already owns the token→CSS-var mapping. **Do not hardcode a second
+`@wizeworks/site-themes` already owns the token→CSS-var mapping. **Do not hardcode a second
 copy of the variable names** — import the helpers so light/dark and the dashboard preview all
 stay in lockstep:
 
 ```ts
-import { tokensToCss } from '@sparx/site-themes';
+import { tokensToCss } from '@wizeworks/site-themes';
 
 const lightBody = tokensToCss(snapshot.compiledTokens.light); // "--st-primary:#…;--st-bg:#…;…"
 const darkBody = tokensToCss(snapshot.compiledTokens.dark);
@@ -84,12 +84,12 @@ Inject two blocks in the site `<head>` / root layout:
 ```
 
 The light set maps onto the same `--st-*` / `--color-*` variables the current
-`apps/site/lib/theme.ts` `themeToCss()` already emits (that path stays working via
+`wizeworks/apps/site/lib/theme.ts` `themeToCss()` already emits (that path stays working via
 publish write-through to `SiteTheme`). The **new** work is the `[data-theme="dark"]`
 block — add a `darkThemeToCss()` companion in `lib/theme.ts` (or just call `tokensToCss` on
 the dark map; prefer the shared helper).
 
-`TOKEN_CSS_VARS` in `packages/site-themes/src/tokens.ts` is the authoritative list of
+`TOKEN_CSS_VARS` in `wizeworks/packages/site-themes/src/tokens.ts` is the authoritative list of
 which `--st-*` vars each token drives — read it, don't guess.
 
 ### Appearance policy → which theme is active (no-flash)
@@ -102,7 +102,7 @@ the dashboard's `THEME_INIT_SCRIPT` pattern in `apps/dashboard/app/layout.tsx`):
 - `auto` → `prefers-color-scheme: dark` ? `dark` : `light`
 - `toggle` → read a cookie (default `light`), and render the shopper-facing toggle island
 
-The toggle (`apps/site/components/mode-toggle.tsx`, new client island) flips
+The toggle (`wizeworks/apps/site/components/mode-toggle.tsx`, new client island) flips
 `document.documentElement.dataset.theme` and persists the choice in a cookie so SSR stays
 correct on the next request. Render it in the header **only** when
 `appearancePolicy === 'toggle'`.
@@ -111,9 +111,9 @@ correct on the next request. Render it in the header **only** when
 
 ## 3. Sections — render against the registry
 
-The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas`
+The 7 section types and their config schemas live in `@wizeworks/sitebuilder-schemas`
 (`SECTION_REGISTRY`, `SECTION_TYPES`). Build one site component per type under
-`apps/site/components/sections/*` plus a `section-renderer.tsx` that maps
+`wizeworks/apps/site/components/sections/*` plus a `section-renderer.tsx` that maps
 `sectionType → component`:
 
 | `sectionType`       | renders                                             |
@@ -126,7 +126,7 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
 | `testimonials`      | customer quotes, optional ratings                   |
 | `email-signup`      | inline newsletter form                              |
 
-- Import the per-section config types from `@sparx/sitebuilder-schemas` (each section file
+- Import the per-section config types from `@wizeworks/sitebuilder-schemas` (each section file
   exports its Zod schema + `fields`); the `config` you receive is already validated +
   defaulted at publish time, so you can trust it, but parse defensively at the boundary.
 - Render in `position` order, **skip `visible === false`**.
@@ -134,7 +134,7 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
   through the existing public commerce read path; the section `config` carries the selector
   (collection id, limit, etc.), not the products themselves.
 - **Brand rule:** site section components are themeable via `--st-*` tokens only — no
-  raw Tailwind color classes in `apps/site`. Follow the existing site component
+  raw Tailwind color classes in `wizeworks/apps/site`. Follow the existing site component
   conventions.
 
 `SectionRenderer` consumes `sections` for the relevant `pageKey`:
@@ -148,7 +148,7 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
 
 ## 4. Layout (header / footer / announcement)
 
-`layout[]` replaces the hardcoded nav/footer in `apps/site/app/layout.tsx`:
+`layout[]` replaces the hardcoded nav/footer in `wizeworks/apps/site/app/layout.tsx`:
 
 - Each block has a `slot`, a nullable `navigationMenuId`, and a `config`.
 - `navigationMenuId` is a **reference** into a `NavigationMenu` (now Site-Builder-owned, but
@@ -206,7 +206,7 @@ reflect the latest draft via the preview endpoint. Guard the listener to the exp
 - **Don't** write `NavigationMenu`/`NavigationItem` rows from the site — reference only
   (navigation is edited in the Site Builder dashboard via `/v1/navigation/*`).
 - **Don't** fork the token→CSS mapping — import `tokensToCss` / `TOKEN_CSS_VARS` from
-  `@sparx/site-themes`.
+  `@wizeworks/site-themes`.
 - Live store zone is **`slug.sparx.zone`** (not `wizeworks.com` / `sparx.works`).
 
 Ping me (the Site Builder owner) if the snapshot shape doesn't give you something you need —

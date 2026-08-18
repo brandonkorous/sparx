@@ -1,0 +1,317 @@
+// Sitebuilder — theme selection, page/section composition, layout slots,
+// and the draft → publish → schedule → rollback lifecycle (docs/29).
+//
+// SiteConfig is the editable source of truth (one per tenant). Publishing
+// snapshots it into an immutable SiteVersion and write-through-compiles the
+// light token subset into the commerce-owned CommerceSiteTheme row (the
+// storefront's existing themeToCss() read path is unchanged). Sitebuilder
+// never adds columns to commerce_site_themes and never writes CMS
+// navigation rows — SiteLayoutBlock only *references* a NavigationMenu.
+//
+// Tenant-scoped + FORCE RLS so a callsite that forgets withTenant() returns
+// nothing rather than leaking cross-tenant site config.
+
+// One row per (tenant, PROPERTY) — each site's working draft + pointer to its
+// live version (docs/49 Phase 6). Pre-Phase-6 this was one row per tenant; the
+// migration adds property_id, backfills to the primary, and swaps the PK to the
+// composite (mirroring builder_layouts going per-property). property_id is NOT a
+// security boundary — tenant_id (the RLS GUC) is.
+model SiteConfig {
+  tenantId   String @map("tenant_id") @db.Uuid
+  // A property has exactly one config, so property_id is globally unique (a
+  // property belongs to one tenant) — @unique makes the Property↔SiteConfig
+  // back-relation one-to-one.
+  propertyId String @unique @map("property_id") @db.Uuid
+
+  themeKey         String @default("apex") @map("theme_key") @db.VarChar(63)
+  // light-only | dark-only | auto | toggle
+  appearancePolicy String @default("light-only") @map("appearance_policy") @db.VarChar(20)
+  // Tenant overlay: { colors: { light, dark }, typography, layout, customCss }.
+  // Shape validated by @wizeworks/sitebuilder-schemas, not the DB.
+  draftSettings    Json   @default("{}") @map("draft_settings")
+
+  publishedVersionId String? @unique @map("published_version_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant           Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property         Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  publishedVersion SiteVersion? @relation("PublishedVersion", fields: [publishedVersionId], references: [id], onDelete: SetNull)
+
+  @@id([tenantId, propertyId])
+  @@map("sitebuilder_configs")
+}
+
+// Immutable published snapshot. Rollback = copy a snapshot back into the
+// draft and republish (creating a new version). compiledTokens holds the
+// exact { light, dark } maps so a rollback re-writes CommerceSiteTheme
+// deterministically without recompiling.
+model SiteVersion {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this version belongs to (docs/49 Phase 6). Version
+  // numbers run per (tenant, property); each site has its own publish history.
+  propertyId String @map("property_id") @db.Uuid
+
+  versionNumber    Int    @map("version_number")
+  themeKey         String @map("theme_key") @db.VarChar(63)
+  appearancePolicy String @map("appearance_policy") @db.VarChar(20)
+
+  settingsSnapshot    Json @map("settings_snapshot")
+  sectionsSnapshot    Json @map("sections_snapshot")
+  layoutSnapshot      Json @map("layout_snapshot")
+  compiledTokens      Json @map("compiled_tokens")
+  // Pinned custom-section definitions (docs/38 Phase C) the snapshot's sections
+  // reference, keyed by slug — so a `custom:<slug>` section renders deterministically
+  // from the template AST as it was at publish, surviving later edits/deletes.
+  // Defaults to [] (no custom sections / pre-Phase-C versions).
+  definitionsSnapshot Json @default("[]") @map("definitions_snapshot")
+
+  publishedById String? @map("published_by_id") @db.Uuid
+  note          String? @db.VarChar(500)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant            Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property          Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  // Back-relation for SiteConfig.publishedVersion (the currently-live snapshot).
+  publishedByConfig SiteConfig? @relation("PublishedVersion")
+
+  @@unique([tenantId, propertyId, versionNumber])
+  @@index([tenantId, propertyId, createdAt(sort: Desc)])
+  @@map("sitebuilder_versions")
+}
+
+// PageLayout — a reusable page layout for a layout TARGET (docs/30 §4, docs/36
+// PageLayout tier; docs/handoffs/sitebuilder-pb-spec.md). Sections (SiteSection)
+// hang off a layout. `targetId` is the data-driven layout-target id (docs/36 §4 —
+// `commerce:product`, `cms:content-page`, `cms:content-type:<id>`, …) that
+// determines the layout's data context + allowed section types; it replaced the
+// old fixed `scope` enum (P-B). `key` is stable within (tenant, targetId) —
+// "default" for a target's single layout, a slug for cms:content-page standalone
+// pages. Tenant-scoped, ENABLE+FORCE RLS.
+model PageLayout {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  targetId String @map("target_id") @db.VarChar(63)
+  key      String @db.VarChar(255)
+  name     String @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sections    SiteSection[]
+  defaults    SiteLayoutDefault[]
+  assignments SiteLayoutAssignment[]
+
+  @@unique([tenantId, targetId, key])
+  @@index([tenantId, targetId])
+  @@map("sitebuilder_page_layouts")
+}
+
+// Draft page composition — one row per section instance, hanging off a
+// PageLayout. Published copies are denormalized into SiteVersion.sectionsSnapshot
+// (which also carries the owning layout's targetId/key so old + new snapshots
+// both resolve).
+model SiteSection {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  pageLayoutId String @map("page_layout_id") @db.Uuid
+
+  sectionType String  @map("section_type") @db.VarChar(63)
+  position    Int
+  visible     Boolean @default(true)
+  config      Json    @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pageLayout PageLayout @relation(fields: [pageLayoutId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, pageLayoutId, position])
+  @@map("sitebuilder_sections")
+}
+
+// Header / footer / announcement composition. navigationMenuId points at a
+// CMS-owned NavigationMenu (reference only — CMS stays the sole writer of
+// nav rows). config carries slot extras (announcement text, footer social
+// links, logo placement, container width).
+model SiteLayoutBlock {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // header | footer | announcement
+  slot             String  @db.VarChar(31)
+  navigationMenuId String? @map("navigation_menu_id") @db.Uuid
+  config           Json    @default("{}")
+  visible          Boolean @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  navigationMenu NavigationMenu? @relation(fields: [navigationMenuId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, slot])
+  @@index([tenantId])
+  @@map("sitebuilder_layout_blocks")
+}
+
+// Scheduled publish records. The in-process tick scans (status, scheduled_at)
+// via a SECURITY DEFINER function and runs publish-service.publishNow per
+// due tenant.
+model SitePublishSchedule {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this scheduled publish targets (docs/49 Phase 6). The
+  // cross-tenant scan stays keyed by (status, scheduled_at); the per-row publish
+  // reads property_id off the schedule to scope the snapshot to that site.
+  propertyId String @map("property_id") @db.Uuid
+
+  scheduledAt DateTime @map("scheduled_at") @db.Timestamptz
+  // pending | published | cancelled | failed
+  status      String   @default("pending") @db.VarChar(20)
+  note        String?  @db.VarChar(500)
+  createdById String?  @map("created_by_id") @db.Uuid
+
+  // Optional saved theme to apply to the draft before this scheduled publish
+  // snapshots — seasonal/holiday theme swaps (docs/36). SET NULL if the saved
+  // theme is later deleted (the publish then just uses the current draft theme).
+  themeId String? @map("theme_id") @db.Uuid
+
+  processedAt     DateTime? @map("processed_at") @db.Timestamptz
+  resultVersionId String?   @map("result_version_id") @db.Uuid
+  error           String?   @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  theme    SiteTheme? @relation(fields: [themeId], references: [id], onDelete: SetNull)
+
+  @@index([status, scheduledAt])
+  // Explicit name — the default (table + all three columns + _idx) exceeds
+  // Postgres's 63-char identifier limit and would truncate (drift risk; cf.
+  // builder_page_assignments_property_record_item_key).
+  @@index([tenantId, propertyId, scheduledAt(sort: Desc)], map: "sitebuilder_schedules_tenant_property_scheduled_idx")
+  @@map("sitebuilder_publish_schedules")
+}
+
+// A tenant-saved theme variant (docs/36 Brand+Theme tier). The tenant's own
+// NAMED presentation snapshots — distinct from the read-only platform presets
+// (THEME_LIST in @wizeworks/site-themes, which stay code-first). `presentation`
+// is the Token-Model-v2 presentation overlay only (brand identity/feel stay
+// brand-owned); `basePresetKey` is the preset it layers on. Applied to the draft
+// (theme_key + draftSettings presentation) on "Use this theme" or by a scheduled
+// publish that points at it. Tenant-scoped, ENABLE+FORCE RLS.
+model SiteTheme {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name          String @db.VarChar(120)
+  basePresetKey String @map("base_preset_key") @db.VarChar(63)
+  presentation  Json   @default("{}") @db.JsonB
+  // The theme's captured brand "look": identity colors, fonts, and shape/feel
+  // tokens (docs/33). Null on legacy rows saved before themes carried a brand
+  // snapshot. Applying the theme writes these onto the tenant brand.
+  brand         Json?  @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  schedules SitePublishSchedule[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("sitebuilder_themes")
+}
+
+// Per-target tenant default layout (docs/36 §6, docs/handoffs/sitebuilder-pc-spec.md).
+// Which PageLayout renders by default for a layout target when an item has no
+// per-item override. Absent → the target's `key='default'` layout, then the code
+// default. Tenant-scoped, ENABLE+FORCE RLS.
+model SiteLayoutDefault {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  targetId     String @map("target_id") @db.VarChar(63)
+  pageLayoutId String @map("page_layout_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pageLayout PageLayout @relation(fields: [pageLayoutId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, targetId])
+  @@index([tenantId])
+  @@map("sitebuilder_layout_defaults")
+}
+
+// Per-item layout override (docs/36 §6). Pins one record (a product, collection,
+// or content entry — by its STABLE id) to a specific PageLayout, overriding the
+// per-target default. `itemRef` is the owning module's record id; SB references
+// it without a cross-module FK (the module owns its data). Tenant-scoped, RLS.
+model SiteLayoutAssignment {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  targetId     String @map("target_id") @db.VarChar(63)
+  itemRef      String @map("item_ref") @db.VarChar(255)
+  pageLayoutId String @map("page_layout_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pageLayout PageLayout @relation(fields: [pageLayoutId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, targetId, itemRef])
+  @@index([tenantId, targetId])
+  @@map("sitebuilder_layout_assignments")
+}
+
+// A tenant-defined custom section TYPE (docs/38 Phase C;
+// docs/handoffs/sitebuilder-custom-section-template-spec.md). This is the
+// data-defined analogue of a code-first SECTION_REGISTRY entry: `fieldSpec` is
+// the editor form spec (a SectionField[] — same shape the dashboard already
+// auto-renders) and `template` is the validated render-template AST the
+// storefront interpreter walks. Merged into the registry under the `custom:`
+// namespace as `custom:<slug>`; both halves are validated by
+// @wizeworks/sitebuilder-schemas (fieldSpecToZod + validateTemplate), never by the
+// DB. `binding` mirrors the registry's data binding (null | "product" |
+// "collection"); `version` bumps on every edit so publish snapshots can pin
+// `custom:<slug>@<version>` for deterministic rollback. Tenant-scoped,
+// ENABLE+FORCE RLS — a callsite that forgets withTenant() sees no definitions.
+model TenantSectionDefinition {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  slug        String  @db.VarChar(63)
+  label       String  @db.VarChar(120)
+  description String? @db.VarChar(500)
+  icon        String? @db.VarChar(63)
+  // null (static) | "product" | "collection" — gates the binding scope the
+  // template may read (validateTemplate enforces it).
+  binding     String? @db.VarChar(31)
+
+  fieldSpec Json   @default("[]") @map("field_spec") @db.JsonB
+  template  Json   @db.JsonB
+  version   Int    @default(1)
+  // active | archived (archived defs stop appearing in the editor library but
+  // still resolve for already-published pages via the pinned snapshot).
+  status    String @default("active") @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("sitebuilder_section_definitions")
+}

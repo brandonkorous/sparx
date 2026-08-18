@@ -10,17 +10,9 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  Heading,
-  Progress,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { Card, EmptyState, Heading, Progress, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faShop } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -52,52 +44,45 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Channel breakdown controls">
-        <Filter
-          color="module"
-          value={range}
-          onValueChange={(next) => {
-            setRange(next ?? '90');
-          }}
-          showReset={false}
-          aria-label="Time range"
-        >
-          {RANGES.map((r) => (
-            <FilterItem key={r.value} value={r.value}>
-              {r.label}
-            </FilterItem>
-          ))}
-        </Filter>
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Channel breakdown controls"
+        filters={[
+          {
+            label: 'Time range',
+            value: range,
+            onValueChange: (next) => {
+              setRange(next ?? '90');
+            },
+            options: RANGES,
+          },
+        ]}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
-            title="Could not load your channels"
-            description="Something went wrong reaching the server. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
+              title="Could not load your channels"
+              description="Something went wrong reaching the server. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faShop} className="size-6" aria-hidden />}

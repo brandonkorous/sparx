@@ -13,7 +13,7 @@
 // silently renders placeholders. So this kit owns the binds + the `repeat('product')`
 // scoping + the add-to-cart form, and each template composes them into its own shell.
 //
-// This mirrors `packages/silica-catalog/src/commerce.ts` `buyBox()` / `productDetailPage()`
+// This mirrors `wizeworks/packages/silica-catalog/src/commerce.ts` `buyBox()` / `productDetailPage()`
 // — the same binds, the same `repeat('product')`, the same `visibleWhen(compareAtPrice)`
 // sale guard, the same exported `addToCartForm()` — so a bespoke PDP is guaranteed to
 // resolve exactly like the starter's, only dressed in the template's own layout.
@@ -28,16 +28,16 @@ import {
     el,
     repeat,
     type Node,
-} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+} from '../../../wizeworks/packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
-import { bindAttr } from '../../../packages/silica-catalog/src/attr-binding';
-import { visibleWhen } from '../../../packages/silica-catalog/src/conditional';
+import { bindAttr } from '../../../wizeworks/packages/silica-catalog/src/attr-binding';
+import { visibleWhen } from '../../../wizeworks/packages/silica-catalog/src/conditional';
 import {
     addToCartForm,
     productsBlock,
     type ProductsSource,
-} from '../../../packages/silica-catalog/src/commerce';
-import { PLACEHOLDER_IMAGE } from '../../../packages/silica-catalog/src/placeholder';
+} from '../../../wizeworks/packages/silica-catalog/src/commerce';
+import { PLACEHOLDER_IMAGE } from '../../../wizeworks/packages/silica-catalog/src/placeholder';
 
 // ── Bound field primitives ────────────────────────────────────────────────────
 //
@@ -172,7 +172,7 @@ export function pdpAttributes(opts: {
 /**
  * The shipping/returns trust line — LINKS to the site's real legal pages instead of
  * reprinting a policy the template can't possibly know. `/shipping-policy` and
- * `/returns-policy` are the canonical legal slugs (@sparx/legal-templates `LegalKind`
+ * `/returns-policy` are the canonical legal slugs (@wizeworks/legal-templates `LegalKind`
  * shipping / returns). No fabricated copy: a policy is authored once, in the legal page,
  * and every PDP points at it.
  */

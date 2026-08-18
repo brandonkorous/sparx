@@ -1,6 +1,6 @@
 # CRM scheduled jobs
 
-Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. Each job runs once per day in a small `curlimages/curl` container and is the production wiring for the schedulers under [packages/crm/src/schedulers/](../../packages/crm/src/schedulers/).
+Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. Each job runs once per day in a small `curlimages/curl` container and is the production wiring for the schedulers under [wizeworks/packages/crm/src/schedulers/](../../packages/crm/src/schedulers/).
 
 | CronJob                   | Schedule    | Endpoint                                 | Why this time                              |
 | ------------------------- | ----------- | ---------------------------------------- | ------------------------------------------ |
@@ -11,7 +11,7 @@ Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. 
 
 ## Commerce scheduled jobs
 
-Wiring for the schedulers under [packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/).
+Wiring for the schedulers under [wizeworks/packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/).
 
 | CronJob                            | Schedule      | Endpoint                                          | Why this time                                            |
 | ---------------------------------- | ------------- | ------------------------------------------------- | -------------------------------------------------------- |
@@ -37,7 +37,7 @@ an in-flight completion.
 
 ## Invoicing scheduled jobs
 
-Wiring for the invoicing schedulers under [packages/crm/src/schedulers/](../../packages/crm/src/schedulers/) (invoicing lives on the CRM customer spine, gated on its own `invoicing` module flag).
+Wiring for the invoicing schedulers under [wizeworks/packages/crm/src/schedulers/](../../packages/crm/src/schedulers/) (invoicing lives on the CRM customer spine, gated on its own `invoicing` module flag).
 
 | CronJob                      | Schedule     | Endpoint                                    | Why this time                                          |
 | ---------------------------- | ------------ | ------------------------------------------- | ------------------------------------------------------ |
@@ -52,7 +52,7 @@ days correct.
 ## Dropship scheduled jobs
 
 Wiring for the dropship reconcile, which lives on the commerce scheduler spine
-([packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/)) —
+([wizeworks/packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/)) —
 `reportingService` owns the dropship margin/timeseries logic — but enumerates
 the dropship-active tenant set, gated on its own `dropship` module flag.
 
@@ -71,7 +71,7 @@ correct.
 
 Wiring for the automation run-activity reconcile, which lives on the automation
 engine's own scheduler spine
-([packages/automation/src/schedulers/](../../packages/automation/src/schedulers/)).
+([wizeworks/packages/automation/src/schedulers/](../../packages/automation/src/schedulers/)).
 Automations are a platform capability, not a gated module, so it enumerates
 tenants that own ≥1 automation rather than a module-flag set.
 

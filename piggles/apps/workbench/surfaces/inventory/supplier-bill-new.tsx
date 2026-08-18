@@ -33,10 +33,10 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FormSection } from '../../components/form-section';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { afterCommit } from '../../lib/defer';

@@ -33,11 +33,10 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowRight, faArrowRightArrowLeft, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -54,6 +53,10 @@ import {
   type TransferStatus,
 } from './transfers-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -142,6 +145,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faArrowRightArrowLeft} className="size-6" aria-hidden />,
@@ -244,77 +248,86 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Transfer list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search transfers"
-            placeholder="Reference or location…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+      <PaneToolbar
+        label="Transfer list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search transfers"
+              placeholder="Reference or location…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New transfer',
+          icon: faPlus,
+          onClick: openNew,
+        }}
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              className="max-w-44 shrink"
+              aria-label="Show transfers in state"
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value as TransferStatus | '');
+                resetWindow();
+              }}
+            >
+              <option value="">Any state</option>
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Show transfers touching"
+              value={locationId}
+              onChange={(event) => {
+                setLocationId(event.target.value);
+                resetWindow();
+              }}
+            >
+              <option value="">Any location</option>
+              {activeLocations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </>
+        }
+        views={{
+          target: '/inventory/transfers',
+          params: { q: search.trim(), status, warehouse: locationId },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus((next.status ?? '') as TransferStatus | '');
+            setLocationId(next.warehouse ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <NativeSelect
-          size="sm"
-          className="max-w-44 shrink"
-          aria-label="Show transfers in state"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value as TransferStatus | '');
-            resetWindow();
-          }}
-        >
-          <option value="">Any state</option>
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show transfers touching"
-          value={locationId}
-          onChange={(event) => {
-            setLocationId(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Any location</option>
-          {activeLocations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          onClick={openNew}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New transfer</span>
-        </Button>
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>

@@ -1,0 +1,331 @@
+// Builder — the Email Builder catalog and draft/publish lifecycle (docs/52).
+// Mirrors the page catalog (pages.ts); an email is ONE self-contained body tree.
+//
+//   GET    /v1/builder/emails              → list the tenant's emails (seeds the
+//                                            curated starter set on first call)
+//   POST   /v1/builder/emails              → create an email (from a tree or blank)
+//   POST   /v1/builder/emails/reorder      → reorder the catalog
+//   GET    /v1/builder/emails/:id          → one email
+//   PATCH  /v1/builder/emails/:id          → rename / set subject·preheader / save tree
+//   DELETE /v1/builder/emails/:id          → remove
+//   POST   /v1/builder/emails/:id/publish  → snapshot draft → published
+//   GET    /v1/builder/emails/:id/versions → publish history, newest first
+//   POST   …/:id/versions/:versionId/restore → load a version back into the draft
+//   GET    /v1/builder/emails/:id/preview  → render the DRAFT body to inlined HTML
+//   POST   /v1/builder/emails/:id/test-send→ render the draft + queue delivery via
+//                                            email-worker (the single egress path)
+//   GET    /v1/builder/email-blocks        → the tenant's saved-block library
+//   POST   /v1/builder/email-blocks        → save a block (returns the server row)
+//   PATCH  /v1/builder/email-blocks/:blockId  → rename a saved block
+//   DELETE /v1/builder/email-blocks/:blockId  → delete a saved block
+//
+// Bodies are validated by the service-layer Zod schemas (the established route ↔
+// service boundary), so api-rest keeps no @wizeworks/builder-schemas dependency. The
+// render path loads the tree here (@wizeworks/builder) and injects it into
+// @wizeworks/email-platform's builderEmailService — keeping that package free of a
+// @wizeworks/builder dependency (docs/52 §6, the section-resolver injection pattern).
+
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import { emailService, emailVersionService, savedEmailBlockService } from '@wizeworks/builder';
+import { builderEmailService, emailTrackingService } from '@wizeworks/email-platform';
+import { ok } from '@wizeworks/api-core/envelope';
+import { notFound } from '@wizeworks/api-core/errors';
+import { requireRole } from '@wizeworks/api-core/auth';
+import { publish } from '@wizeworks/api-core/pubsub';
+import {
+  requireBuilderModule,
+  toBuilderContext,
+  toBuilderTenantContext,
+} from '../../../lib/builder-context.js';
+import { requireTenantProperty } from '../../../lib/property.js';
+import { resolveEmailFooterLinks, silicaEmailDataResolver } from '../../../lib/email-data.js';
+
+const IdParam = z.object({ id: z.string().uuid() });
+const RestoreVersionParam = z.object({ id: z.string().uuid(), versionId: z.string().uuid() });
+const BlockParam = z.object({ blockId: z.string().uuid() });
+const PropertyParam = z.object({ propertyId: z.string().uuid() });
+const CustomizeBody = z.object({ key: z.string().min(1).max(63) });
+
+const builderEmailRoutes: FastifyPluginAsync = (app) => {
+  app.get('/v1/builder/emails', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const emails = await emailService.listOrSeed(toBuilderTenantContext(request));
+    return ok({ emails });
+  });
+
+  app.post('/v1/builder/emails', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const email = await emailService.create(toBuilderTenantContext(request), request.body);
+    return ok(email);
+  });
+
+  // ── Per-site email authoring (docs/49 Phase 7b, docs/91 §6) ──────────────────
+  // A SITE's view of the catalog: the tenant-wide rows (13 defaults + tenant
+  // custom emails) with each default REPLACED by this site's override when one
+  // exists, plus the site's own custom emails. `requireTenantProperty` fails
+  // closed (404) on a foreign/unknown property id — unlike the header-scoped
+  // resolvePropertyId, an explicit path target must never silently fall back to
+  // the primary site.
+  app.get('/v1/builder/emails/site/:propertyId', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = toBuilderTenantContext(request);
+    const { propertyId } = PropertyParam.parse(request.params);
+    await requireTenantProperty(auth, propertyId);
+    const emails = await emailService.listForProperty(ctx, propertyId);
+    return ok({ emails });
+  });
+
+  // "Customize for this site": fork a tenant-wide default into a per-site DRAFT
+  // override the site edits independently. Idempotent — a repeat returns the
+  // existing override. The tenant default keeps sending for the site until the
+  // override is published (getPublishedByKey's per-site fallback).
+  app.post('/v1/builder/emails/site/:propertyId/customize', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const ctx = toBuilderTenantContext(request);
+    const { propertyId } = PropertyParam.parse(request.params);
+    const { key } = CustomizeBody.parse(request.body);
+    await requireTenantProperty(auth, propertyId);
+    const email = await emailService.customizeForSite(ctx, key, propertyId);
+    return ok(email);
+  });
+
+  app.post('/v1/builder/emails/reorder', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const emails = await emailService.reorder(toBuilderTenantContext(request), request.body);
+    return ok({ emails });
+  });
+
+  app.get('/v1/builder/emails/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.get(toBuilderTenantContext(request), id);
+    return ok(email);
+  });
+
+  app.patch('/v1/builder/emails/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.update(toBuilderTenantContext(request), id, request.body);
+    return ok(email);
+  });
+
+  app.delete('/v1/builder/emails/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    await emailService.remove(toBuilderTenantContext(request), id);
+    return ok({ id });
+  });
+
+  app.post('/v1/builder/emails/:id/publish', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.publish(toBuilderTenantContext(request), id);
+    return ok(email);
+  });
+
+  // ── Silica-authored email (docs/120) ─────────────────────────────────────────
+  // The silica `<EmailBuilder>` persistence seam: PUT the whole `EmailDocument` on
+  // every debounced edit; POST to snapshot draft → published. Body validated by the
+  // service (SyncSilicaEmailInput). Tenant-scoped — an email is tenant-wide; only
+  // the per-site fork (`/site/...`) is property-aware.
+  app.put('/v1/builder/emails/:id/silica', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.syncSilica(toBuilderTenantContext(request), id, request.body);
+    return ok(email);
+  });
+
+  app.post('/v1/builder/emails/:id/silica/publish', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.publishSilica(toBuilderTenantContext(request), id);
+    return ok(email);
+  });
+
+  // ── Version history / rollback (docs/impl transactional-email Slice 5) ─────────
+  // Every publish snapshots the document into an append-only history; restore loads a
+  // chosen version back into the DRAFT (non-destructive — the author reviews + re-publishes,
+  // never a silent republish to inboxes).
+  app.get('/v1/builder/emails/:id/versions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const versions = await emailVersionService.listEmailVersions(
+      toBuilderTenantContext(request),
+      id
+    );
+    return ok({ versions });
+  });
+
+  app.post('/v1/builder/emails/:id/versions/:versionId/restore', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id, versionId } = RestoreVersionParam.parse(request.params);
+    const email = await emailService.restoreEmailVersion(
+      toBuilderTenantContext(request),
+      id,
+      versionId
+    );
+    return ok(email);
+  });
+
+  // ── Saved blocks library (docs/impl transactional-email Slice 9) ───────────────
+  // The tenant's account-level, server-backed saved-block library that silica's
+  // `<EmailBuilder savedBlocks onSavedBlocksChange>` controlled prop renders,
+  // replacing its browser-localStorage default so a saved block follows the whole
+  // team across devices and is shared tenant-wide. Tenant-scoped (not per-email):
+  // a `/email-blocks` path, never under `/:id`, so it can't be a per-email nested
+  // resource and never collides with the email-id param route. Routes map 1:1 onto
+  // silica's SavedBlockChange intents (save / rename / delete).
+  app.get('/v1/builder/email-blocks', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const blocks = await savedEmailBlockService.listSavedEmailBlocks(
+      toBuilderTenantContext(request)
+    );
+    return ok({ blocks });
+  });
+
+  app.post('/v1/builder/email-blocks', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const block = await savedEmailBlockService.createSavedEmailBlock(
+      toBuilderTenantContext(request),
+      request.body
+    );
+    return ok(block);
+  });
+
+  app.patch('/v1/builder/email-blocks/:blockId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { blockId } = BlockParam.parse(request.params);
+    const renamed = await savedEmailBlockService.renameSavedEmailBlock(
+      toBuilderTenantContext(request),
+      blockId,
+      request.body
+    );
+    if (!renamed) throw notFound('saved block', blockId);
+    return ok({ id: blockId });
+  });
+
+  app.delete('/v1/builder/email-blocks/:blockId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { blockId } = BlockParam.parse(request.params);
+    const removed = await savedEmailBlockService.deleteSavedEmailBlock(
+      toBuilderTenantContext(request),
+      blockId
+    );
+    if (!removed) throw notFound('saved block', blockId);
+    return ok({ id: blockId });
+  });
+
+  // The studio canvas's chrome + color map (docs/impl transactional-email §7): the
+  // brand bar + wordmark + tiered legal footer rendered as inert frame around the body
+  // (silicaui 0.34 `<EmailBuilder frame>`), AND the role→hex color map the send paints
+  // with — so the edit canvas repaints in the exact colors + shows the exact chrome
+  // the inbox gets. Both from the SAME per-site brand + published footer links the real
+  // send composes. A static (`/frame`) route, so Fastify matches it ahead of `/:id`.
+  app.get('/v1/builder/emails/frame', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const footerLinks = await resolveEmailFooterLinks(ctx, ctx.propertyId);
+    const chrome = await builderEmailService.buildChrome(ctx, ctx.propertyId, footerLinks);
+    return ok(chrome);
+  });
+
+  // Render the DRAFT body to inlined HTML + plain text for the editor preview.
+  // `emailService.get` returns the draft tree (and throws a mapped 404 if the
+  // email doesn't exist); builderEmailService resolves the brand + renders. We use
+  // the per-PROPERTY ctx (the active site from the `x-sparx-property-id` header)
+  // and pass its propertyId so the preview paints the SAME per-site brand the real
+  // send does (docs/49 Phase 7) — emails themselves stay tenant-wide, only the
+  // brand resolution is site-scoped, matching the editor canvas.
+  app.get('/v1/builder/emails/:id/preview', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const { id } = IdParam.parse(request.params);
+    const [email, footerLinks] = await Promise.all([
+      emailService.get(ctx, id),
+      resolveEmailFooterLinks(ctx, ctx.propertyId),
+    ]);
+    // The same tracking the send uses — so the preview shows the real tagged links
+    // AND the "your clicks are counted" check reads this email's campaign (docs/impl
+    // transactional-email Slice 10).
+    const tracking = await emailTrackingService.resolveEmailTracking(
+      ctx,
+      { key: email.key, name: email.name, trackingCampaign: email.trackingCampaign },
+      ctx.propertyId
+    );
+    const preview = await builderEmailService.renderPreview(
+      ctx,
+      { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
+      silicaEmailDataResolver(ctx, ctx.propertyId),
+      ctx.propertyId,
+      footerLinks,
+      tracking
+    );
+    return ok(preview);
+  });
+
+  // Staff smoke test: render the DRAFT here, then hand delivery to the
+  // email-worker via an `email.send` event. Email egress goes through the worker
+  // (Mailgun in prod) — direct provider sends are an OTP-only escape hatch
+  // (CLAUDE.md). The worker delivers the pre-rendered `raw` body as-is.
+  app.post('/v1/builder/emails/:id/test-send', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    // Per-PROPERTY ctx (active site) so the test copy is branded EXACTLY as a real
+    // send for that site — the same per-site brand as the preview + canvas (docs/49).
+    const ctx = await toBuilderContext(request);
+    const { id } = IdParam.parse(request.params);
+    const [email, footerLinks] = await Promise.all([
+      emailService.get(ctx, id),
+      resolveEmailFooterLinks(ctx, ctx.propertyId),
+    ]);
+    const tracking = await emailTrackingService.resolveEmailTracking(
+      ctx,
+      { key: email.key, name: email.name, trackingCampaign: email.trackingCampaign },
+      ctx.propertyId
+    );
+    const prepared = await builderEmailService.prepareTestSend(
+      ctx,
+      { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
+      request.body,
+      silicaEmailDataResolver(ctx, ctx.propertyId),
+      ctx.propertyId,
+      footerLinks,
+      tracking
+    );
+    await publish(request.log, 'email.send', ctx.tenantId, null, {
+      kind: 'raw',
+      to: prepared.to,
+      from: prepared.from,
+      ...(prepared.replyTo ? { replyTo: prepared.replyTo } : {}),
+      subject: prepared.subject,
+      html: prepared.html,
+      text: prepared.text,
+      variables: { test_send: 'true' },
+    });
+    return ok({ queued: true, to: prepared.to });
+  });
+
+  return Promise.resolve();
+};
+
+export default builderEmailRoutes;

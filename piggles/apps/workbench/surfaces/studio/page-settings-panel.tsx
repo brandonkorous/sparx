@@ -78,8 +78,7 @@ function SearchWording({ doc }: { doc: PageDoc }) {
           placeholder={doc.name}
           onBlur={(event) => {
             const value = event.currentTarget.value.trim() || null;
-            if (value === doc.seo.title) return;
-            setSeo({ title: value });
+            if (value !== doc.seo.title) setSeo({ title: value });
           }}
         />
         <FieldDescription>Leave it empty and the page name is used.</FieldDescription>
@@ -94,23 +93,31 @@ function SearchWording({ doc }: { doc: PageDoc }) {
           placeholder="A sentence or two about what someone finds on this page."
           onBlur={(event) => {
             const value = event.currentTarget.value.trim() || null;
-            if (value === doc.seo.description) return;
-            setSeo({ description: value });
+            if (value !== doc.seo.description) setSeo({ description: value });
           }}
         />
       </Field>
 
-      <Field>
-        <FieldLabel>Keep this page out of search</FieldLabel>
-        <Switch
-          checked={doc.seo.noindex}
-          onCheckedChange={(checked: boolean) => setSeo({ noindex: checked })}
-        />
-        <FieldDescription>
-          Anyone with the link can still open it — it just won’t come up in Google.
-        </FieldDescription>
-      </Field>
+      <HideFromSearch hidden={doc.seo.noindex} onChange={(noindex) => setSeo({ noindex })} />
     </>
+  );
+}
+
+function HideFromSearch({
+  hidden,
+  onChange,
+}: {
+  hidden: boolean;
+  onChange: (hidden: boolean) => void;
+}) {
+  return (
+    <Field>
+      <FieldLabel>Keep this page out of search</FieldLabel>
+      <Switch checked={hidden} onCheckedChange={onChange} />
+      <FieldDescription>
+        Anyone with the link can still open it — it just won’t come up in Google.
+      </FieldDescription>
+    </Field>
   );
 }
 

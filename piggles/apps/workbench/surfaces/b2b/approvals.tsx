@@ -21,7 +21,6 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTitle,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -40,8 +39,15 @@ import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 import { MoneyInput } from '../invoicing/money-input';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+
+/** Registry module for this pane, so the brand draws Trade's own picture rather
+ *  than the generic one. */
+const MODULE = 'b2b';
 import {
   approvalErrorMessage,
   formatCents,
@@ -78,24 +84,29 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Approval controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search held orders"
-            placeholder="Order number or company…"
-            value={search}
-            onValueChange={setSearch}
+      <PaneToolbar
+        label="Approval controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search held orders"
+              placeholder="Order number or company…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={queue.isFetching}
+            updatedAt={queue.data ? queue.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void queue.refetch();
+            }}
           />
-        </div>
-        <RefreshButton
-          isFetching={queue.isFetching}
-          updatedAt={queue.data ? queue.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void queue.refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
@@ -103,26 +114,39 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
             title="Waiting for sign-off"
             description="Orders held because they went over a limit. Approve to place them, or reject to cancel."
           >
+            {/* No Card here: the FormSection around this IS one, and nesting a
+                second would double the resting shadow (DESIGN.md §4). What was
+                missing is the house wrappers — a failed load and an empty queue
+                were drawing the same picture as each other. */}
             {queue.isError ? (
-              <Text className="text-sm">
-                The queue could not be loaded just now. Your orders are unaffected.
-              </Text>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
+                title="Could not load the queue"
+                description="This is a problem reaching the server. Your orders are unaffected — the queue just could not be read just now."
+                onRetry={() => {
+                  void queue.refetch();
+                }}
+              />
             ) : queue.isPending ? (
-              <Text className="text-sm" role="status">
-                Loading…
-              </Text>
+              <PaneWaiting module={MODULE} />
             ) : items.length === 0 ? (
-              <div className="py-2">
-                <EmptyState
-                  icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
-                  title={search.trim() ? 'Nothing matches that' : 'Nothing waiting'}
-                  description={
-                    search.trim()
-                      ? 'No held order matches that. Clear the search to see the whole queue.'
-                      : 'No orders are held for sign-off right now. When one goes over a limit you set below, it lands here.'
-                  }
-                />
-              </div>
+              <ListEmptyState
+                module={MODULE}
+                filtered={search.trim() !== ''}
+                noResults={{
+                  icon: <Icon glyph={faCheckCircle} className="size-6" aria-hidden />,
+                  title: 'Nothing matches that',
+                  description:
+                    'No held order matches that. Clear the search to see the whole queue.',
+                }}
+                firstRun={{
+                  icon: <Icon glyph={faCheckCircle} className="size-6" aria-hidden />,
+                  title: 'Nothing waiting',
+                  description:
+                    'No orders are held for sign-off right now. When one goes over a limit you set below, it lands here.',
+                }}
+              />
             ) : (
               <ul className="flex flex-col gap-2">
                 {items.map((item) => (

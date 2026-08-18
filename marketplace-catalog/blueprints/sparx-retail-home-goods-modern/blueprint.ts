@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-home-goods-modern',
-    version: '1.4.0',
-    name: 'sparx — Home Goods (Modern Design)',
-    summary:
-        'A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-home-goods-modern',
+  version: '1.4.0',
+  name: 'sparx — Home Goods (Modern Design)',
+  summary:
+    'A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Form & Field',
+    tagline: 'Objects with a point of view.',
+    colors: {
+      primary: '#1b1f28',
+      primaryForeground: '#f5f9ff',
+      accent: '#8f5300',
+      secondary: '#464e58',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-home-goods-modern',
+    basePresetKey: 'retail-home-goods-modern',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Form & Field',
-        tagline: 'Objects with a point of view.',
-        colors: {
-            primary: '#1b1f28',
-            primaryForeground: '#f5f9ff',
-            accent: '#8f5300',
-            secondary: '#464e58',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#1b1f28',
+      colorAccent: '#8f5300',
+      colorSecondary: '#464e58',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-home-goods-modern',
-        basePresetKey: 'retail-home-goods-modern',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#1b1f28',
-            colorAccent: '#8f5300',
-            colorSecondary: '#464e58',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

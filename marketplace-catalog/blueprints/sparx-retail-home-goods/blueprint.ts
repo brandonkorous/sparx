@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-retail-home-goods',
-    version: '1.4.0',
-    name: 'sparx — Home Goods (Homeware)',
-    summary:
-        'A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme — a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.',
-    vertical: 'retail',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+  key: 'sparx-retail-home-goods',
+  version: '1.4.0',
+  name: 'sparx — Home Goods (Homeware)',
+  summary:
+    'A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme — a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.',
+  vertical: 'retail',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Hearth & Hollow',
+    tagline: 'Things you’ll keep for years.',
+    colors: {
+      primary: '#904527',
+      primaryForeground: '#fff6f3',
+      accent: '#446845',
+      secondary: '#5e5042',
+    },
+    fonts: {
+      heading: 'Fraunces',
+      body: 'Manrope',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — the bespoke template
+  // look as a tenant-editable saved theme (base preset = the template's own theme key,
+  // plus its brand snapshot).
+  theme: {
+    name: 'retail-home-goods',
+    basePresetKey: 'retail-home-goods',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Hearth & Hollow',
-        tagline: 'Things you’ll keep for years.',
-        colors: {
-            primary: '#904527',
-            primaryForeground: '#fff6f3',
-            accent: '#446845',
-            secondary: '#5e5042',
-        },
-        fonts: {
-            heading: 'Fraunces',
-            body: 'Manrope',
-        },
+      colorPrimary: '#904527',
+      colorAccent: '#446845',
+      colorSecondary: '#5e5042',
+      fontHeading: 'Fraunces',
+      fontBody: 'Manrope',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — the bespoke template
-    // look as a tenant-editable saved theme (base preset = the template's own theme key,
-    // plus its brand snapshot).
-    theme: {
-        name: 'retail-home-goods',
-        basePresetKey: 'retail-home-goods',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#904527',
-            colorAccent: '#446845',
-            colorSecondary: '#5e5042',
-            fontHeading: 'Fraunces',
-            fontBody: 'Manrope',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
+  authors,
+  content,
+  commerce,
 
-    assets,
-    contentTypes: [],
-    authors,
-    content,
-    commerce,
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
+  sequences: [],
 
-    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-    // templates ship an empty set.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + a template-specific home + standard commerce/
-    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-    site,
+  // The composed distinct site (frame + a template-specific home + standard commerce/
+  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+  site,
 };
 
 export default blueprint;

@@ -1,4 +1,4 @@
-# @sparx/ui Variant System (multi-axis)
+# @wizeworks/ui Variant System (multi-axis)
 
 **Version:** 1.5.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Purpose & scope
 
-`@sparx/ui` is mature (~50 components) but most color-bearing components conflate
+`@wizeworks/ui` is mature (~50 components) but most color-bearing components conflate
 **color and style into a single `variant` axis**. Button's `variant` mixes
 `primary | secondary | outline | soft | ghost | link | danger | warning | module |
 module-outline` — you cannot ask for a "soft danger" or an "outline success" because
@@ -29,20 +29,20 @@ without enumerating the cartesian product by hand.
 > Tailwind v4 plugin) — it emits the `color × variant × size × shape` classes
 > (`btn-<color> btn-<variant> btn-<size> btn-<shape>`) directly, and the semantic palette lives
 > in **`@sparx/brand/theme.css`** (`--color-primary/secondary/accent/neutral/info/success/warning/
-error/danger` + `-content`) rather than `@sparx/ui`'s `tokens.css`. `sparx` and `silica` are the
+error/danger` + `-content`) rather than `@wizeworks/ui`'s `tokens.css`. `sparx` and `silica` are the
 > same design language, so the API here is API-identical to what silica ships. §3–§4 below are
 > updated to the silica mechanism; the axis semantics (§2) are unchanged.
 
 ### Decisions locked (2026-05-31)
 
-| #   | Decision            | Choice                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| --- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                                                                                                                                                                                                               |
-| 2   | **Token layer**     | **Bring v2 palette into @sparx/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                                                                                                                                                                                                         |
-| 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                                                                                                                                                                                                                   |
-| 4   | **Color mechanism** | **Superseded → silicaui plugin classes.** Originally role-variable indirection (`.sx-c-*` remapping `--c-bg`/`--c-content`/…). As shipped, silicaui's Tailwind plugin statically emits `btn-<color>`/`bg-<color>`/`bg-soft`/… for every registered slot, so `color × variant` composes at the class level (§4). This now covers the selection controls too — they come from silicaui and take `checkbox-<color>`/`switch-<color>` directly; the `--sx-sel` custom property they briefly used in `@sparx/ui` is deleted. |
+| #   | Decision            | Choice                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 2   | **Token layer**     | **Bring v2 palette into @wizeworks/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                                                                                                                                                                                                         |
+| 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                                                                                                                                                                                                                       |
+| 4   | **Color mechanism** | **Superseded → silicaui plugin classes.** Originally role-variable indirection (`.sx-c-*` remapping `--c-bg`/`--c-content`/…). As shipped, silicaui's Tailwind plugin statically emits `btn-<color>`/`bg-<color>`/`bg-soft`/… for every registered slot, so `color × variant` composes at the class level (§4). This now covers the selection controls too — they come from silicaui and take `checkbox-<color>`/`switch-<color>` directly; the `--sx-sel` custom property they briefly used in `@wizeworks/ui` is deleted. |
 
-> **Relationship to Token Model v2 (doc 33).** Doc 33 §6 deliberately scoped `@sparx/ui`
+> **Relationship to Token Model v2 (doc 33).** Doc 33 §6 deliberately scoped `@wizeworks/ui`
 > _out_ of the v2 token refactor ("the dashboard depends on them and that's out of scope").
 > Decision #2 here **reverses that for the palette only**: we adopt v2's _color vocabulary_
 > (semantic slots + `-content` pairs + OKLCH derivation) in the dashboard token layer so the
@@ -152,8 +152,8 @@ are `border-base-300` (default) / `border-base-content/30` (strong). The old `--
 ### 3.4 What lives elsewhere / is unchanged
 
 - Non-color tokens (`--space-*`, `--radius-*`, `--shadow-*`, type, motion, `--chart-*`) stay in
-  `packages/ui/src/tokens.css`. Shape/rhythm is unchanged in the dashboard.
-- No change to the `--st-*` layer or `@sparx/site-themes` (the site system is untouched — its
+  `sparx/packages/ui/src/tokens.css`. Shape/rhythm is unchanged in the dashboard.
+- No change to the `--st-*` layer or `@wizeworks/site-themes` (the site system is untouched — its
   `--st-*` bridge now simply targets silica base tokens: `colorBackground → --color-base-200`,
   `colorForeground → --color-base-content`, `colorPrimary → --color-primary`).
 
@@ -185,9 +185,9 @@ codegen, and no per-component Tailwind authoring. The same holds for `badge-*`, 
 
 The **selection controls** (Checkbox/Radio/Switch/Slider/Progress) resolve the same way, straight
 from `@wizeworks/silicaui-react`: `checkbox-<color>`, `switch-<color>`, `progress-<color>`. They
-were briefly hand-rolled in `@sparx/ui` on Radix, where a plugin color class can't attach, and each
+were briefly hand-rolled in `@wizeworks/ui` on Radix, where a plugin color class can't attach, and each
 set a per-instance `--sx-sel` / `--sx-sel-fg` via a `colorVars(color)` helper. Once silicaui shipped
-real versions there were two vocabularies for one accent, so the `@sparx/ui` copies and the helper
+real versions there were two vocabularies for one accent, so the `@wizeworks/ui` copies and the helper
 were **deleted 2026-07-31** — see
 [implementation/st-token-retirement.md](implementation/st-token-retirement.md) §7.
 
@@ -226,7 +226,7 @@ share the API.
 ## 5. Components
 
 **Framing.** The styled primitives are silicaui's (`@wizeworks/silicaui-react`), their appearance
-emitted by the silica plugin; the few interactive controls `@sparx/ui` keeps are Radix-backed
+emitted by the silica plugin; the few interactive controls `@wizeworks/ui` keeps are Radix-backed
 shells that emit silica classes. Each component carries the axes that fit its semantics, backed by
 the `@sparx/brand` palette and the plugin classes (§4). Not every component takes a full color
 palette: action/status components do; structural ones take a relevant subset (size, a
@@ -278,12 +278,12 @@ existing call sites are unaffected.
 > (→ silica `Join`), `Accordion`, `Kbd`, `Skeleton`, `Stat`, `Timeline`, `Divider`,
 > `ScrollArea`, `Breadcrumb`, `Pagination`, `Stepper` (→ silica `Steps`),
 > `NavigationMenu`, `Alert`, `Popover`, `ContextMenu`, `CommandPalette`, `AlertDialog`
-> and `Drawer` are **silicaui's** and are no longer exported from `@sparx/ui` — each
+> and `Drawer` are **silicaui's** and are no longer exported from `@wizeworks/ui` — each
 > already carries these axes natively, so the planned work was overtaken rather than
 > done. Import them from `@wizeworks/silicaui-react` and read their real props with
 > `get_component`. Note `Tabs` takes `variant="pills"` for the filled selection
-> DESIGN.md §5 requires. What remains in `@sparx/ui` is compositions only:
-> [packages/ui/CLAUDE.md](../packages/ui/CLAUDE.md).
+> DESIGN.md §5 requires. What remains in `@wizeworks/ui` is compositions only:
+> [sparx/packages/ui/CLAUDE.md](../packages/ui/CLAUDE.md).
 
 ### 5.4 Unchanged (single-axis where `variant` is genuinely not a color)
 
@@ -363,8 +363,8 @@ not guessed, and fixed by hand.
    matrix**: every color × every variant for Button/Badge/Tag/Alert, all sizes, all shapes,
    and each net-new component. The showcase is the acceptance surface — if a cell is missing
    it's a gap.
-6. **Verify** — `pnpm --filter @sparx/ui typecheck && pnpm --filter dashboard typecheck`,
-   lint (ESLint Tailwind rule still green — raw classes only inside `@sparx/ui`), and a
+6. **Verify** — `pnpm --filter @wizeworks/ui typecheck && pnpm --filter dashboard typecheck`,
+   lint (ESLint Tailwind rule still green — raw classes only inside `@wizeworks/ui`), and a
    visual pass of `/showcase` in light + dark.
 
 Mobile: the showcase and every new component follow the existing responsive rule — the
@@ -408,11 +408,11 @@ status appears):
    partial), `info` (in motion), `danger` (failure / terminal-bad), or `neutral`
    (inert / retired). Green = good, amber = attention, red = problem, grey = inert.
 2. **Use the canonical resolver.** `statusTone(status)` and `statusLabel(status)`
-   are exported from `@sparx/ui` (`utils/statusTone.ts`); `Badge` is the silica primitive.
+   are exported from `@wizeworks/ui` (`utils/statusTone.ts`); `Badge` is the silica primitive.
    The dictionary covers the universal business-status vocabulary, so the default is one line:
    ```tsx
    import { Badge } from '@wizeworks/silicaui-react';
-   import { statusTone, statusLabel } from '@sparx/ui';
+   import { statusTone, statusLabel } from '@wizeworks/ui';
    <Badge color={statusTone(s)} variant="soft" size="sm">
      {statusLabel(s)}
    </Badge>;

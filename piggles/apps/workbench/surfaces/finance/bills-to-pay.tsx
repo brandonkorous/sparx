@@ -19,19 +19,18 @@
 import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
   Card,
   EmptyState,
-  Filter,
-  FilterItem,
   Heading,
   Progress,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faCheck, faCircleCheck, faReceipt } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -40,6 +39,10 @@ import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { spendErrorMessage, useExpenses, useSetExpensePaid, type Expense } from './spend-data';
 import { daysPastDue, formatCents, formatDay, kindColor } from './format';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'finance';
 
 /** The aging bands, worst first. Mirrors the receivables buckets exactly. */
 type BucketKey = 'overdue_90' | 'overdue_60' | 'overdue_30' | 'overdue_1' | 'due_soon' | 'no_date';
@@ -238,56 +241,49 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Bills list controls" wrap>
-        <Filter
-          color="module"
-          value={band}
-          onValueChange={(next) => {
-            setBand(typeof next === 'string' ? next : 'all');
-          }}
-          showReset={false}
-          aria-label="Filter by how late"
-        >
-          {FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Bills list controls"
+        filters={[
+          {
+            label: 'How late',
+            value: band,
+            onValueChange: (next) => {
+              setBand(typeof next === 'string' ? next : 'all');
+            },
+            options: FILTERS,
+          },
+        ]}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
-            title="Could not load what you owe"
-            description="The server could not be reached. Nothing you have recorded is affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
+              title="Could not load what you owe"
+              description="The server could not be reached. Nothing you have recorded is affected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : allSettled ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
               title="Nothing outstanding"
               description="Every cost you have recorded is marked as paid. When you record one that is not yet settled, it will appear here — sorted by how late it is."

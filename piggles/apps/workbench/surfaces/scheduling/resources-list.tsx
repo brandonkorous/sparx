@@ -17,11 +17,11 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faEyeSlash, faPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -36,6 +36,10 @@ import {
   type ResourceKind,
   type SchedulingResource,
 } from './setup-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'scheduling';
 
 const DETAIL_KEY = 'scheduling.resources.detail';
 
@@ -110,6 +114,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,
@@ -194,62 +199,70 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="People & equipment list controls">
-        <NativeSelect
-          size="sm"
-          className="max-w-52 shrink"
-          aria-label="Show only one kind"
-          value={kind}
-          onChange={(event) => {
-            setKind(event.target.value);
-          }}
-        >
-          <option value="">Every kind</option>
-          {RESOURCE_KINDS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <ToggleGroup
-          size="sm"
-          color="module"
-          className="shrink-0"
-          value={activeOnly ? ['active'] : []}
-          onValueChange={(next: unknown[]) => {
-            setActiveOnly(next.includes('active'));
-          }}
-        >
-          <ToggleGroupItem
-            value="active"
-            aria-label="Hide switched-off ones"
-            title="Hide switched-off ones"
-          >
-            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">In use only</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add one — hold Shift to open alongside, Alt for a new window"
-          onClick={openNew}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add one</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="People & equipment list controls"
+        primaryAction={{
+          label: 'Add one',
+          icon: faPlus,
+          onClick: openNew,
+          title: 'Add one — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              className="max-w-52 shrink"
+              aria-label="Show only one kind"
+              value={kind}
+              onChange={(event) => {
+                setKind(event.target.value);
+              }}
+            >
+              <option value="">Every kind</option>
+              {RESOURCE_KINDS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <ToggleGroup
+              size="sm"
+              color="module"
+              className="shrink-0"
+              value={activeOnly ? ['active'] : []}
+              onValueChange={(next: unknown[]) => {
+                setActiveOnly(next.includes('active'));
+              }}
+            >
+              <ToggleGroupItem
+                value="active"
+                aria-label="Hide switched-off ones"
+                title="Hide switched-off ones"
+              >
+                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+                <span>In use only</span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </>
+        }
+        views={{
+          target: '/scheduling/resources',
+          params: { kind, active: activeOnly ? '1' : '' },
+          onApply: (next) => {
+            setKind(next.kind ?? '');
+            setActiveOnly(next.active === '1');
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
 

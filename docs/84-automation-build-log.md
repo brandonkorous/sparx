@@ -8,9 +8,9 @@
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the automations operator UI is
 > **fully built and real (not stubs)**, now living at
-> `apps/workbench/surfaces/automations/*` — the operator app was rebuilt from the
-> deleted `apps/dashboard` into `apps/workbench`, so every `apps/dashboard/.../automations/*`
-> path below now resolves under `apps/workbench`. **However, the EMAIL management
+> `sparx/apps/workbench/surfaces/automations/*` — the operator app was rebuilt from the
+> deleted `apps/dashboard` into `sparx/apps/workbench`, so every `apps/dashboard/.../automations/*`
+> path below now resolves under `sparx/apps/workbench`. **However, the EMAIL management
 > surfaces (broadcasts, domains, suppressions, settings) REGRESSED to stubs in that
 > rebuild** — the email backend + pipeline are complete (see docs/13) but the operator
 > UI for them is currently a placeholder, a known gap to rebuild. The "▶ RESUME HERE"
@@ -43,7 +43,7 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 > (the code is deploy-safe without it; the seed fires once the topic lands). See the Steps 4–6 entry below for the
 > full verify tally.
 >
-> - **Step 1a — legacy delete DONE** (this session): removed `@sparx/email-platform` `DEFAULT_AUTOMATIONS` +
+> - **Step 1a — legacy delete DONE** (this session): removed `@wizeworks/email-platform` `DEFAULT_AUTOMATIONS` +
 >   `automationService` (`evaluateTrigger`/`provisionDefaults`/`list`/`get`/`update`) + `schemas/automations` +
 >   the 3 email-automation MCP tools (`get_automation_list`/`pause_automation`/`resume_automation`) + the
 >   `/v1/email/automations` REST + `/v1/email/bootstrap` + `/internal/email/trigger` route + the api-rest
@@ -73,7 +73,7 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 >   existing `crm.b2b_account.created`; `chat-satisfaction` → resolved-conversation scan; `chat-unresponded` →
 >   scan (cart `recoveredAt:null` excludes purchased carts — checkout-service stamps it). **Verify:** typecheck
 >   clean across automation/-schemas/-actions/events/dashboard; new `scanners.test.ts` **3/3** on docker (interval
->   once-per-entity dedupe + billing scanner resolves due-in-3 fields + excludes paid). `@sparx/automation` suite
+>   once-per-entity dedupe + billing scanner resolves due-in-3 fields + excludes paid). `@wizeworks/automation` suite
 >   45/46 (the 1 = the documented pre-existing durable-wait flake).
 > - **Step 2 — Builder email DataSource layer COMPLETE** (this session). The keystone that unblocks the parallel
 >   template agent. (a) **Pure token layer** `builder-schemas/email-tokens.ts` — `{{ source.path ?? "fallback" }}`
@@ -102,7 +102,7 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   email-tokens **10/10**, render-email-tree **10/10** (incl. real `invoicing-overdue` e2e), builder-schemas
 >   **70/70**, email-sends **4/4**, new api-rest `email-data` integration **4/4** (invoice hydrate w/ computed
 >   overdueDays + items + payUrl; customer+tenant; selective load; snapshot fallback). NEW dep: automation-actions →
->   `@sparx/builder-schemas` (zod-only; Dockerfile COPY added).
+>   `@wizeworks/builder-schemas` (zod-only; Dockerfile COPY added).
 > - **Step 3 — the 9 no-email seeds COMPLETE** (this session). The per-module seed catalog is now real per-module
 >   files (`seeds/{crm,commerce,b2b,invoicing,chat}.ts`) wired into `SYSTEM_AUTOMATIONS`. The 9 that need NO email
 >   template (so they ship now, ahead of the template-provision join): **CRM** — `auto-tag-vip` (daily scan, drops
@@ -123,7 +123,7 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 > - **Steps 4–6 — the 13 email seeds + send-by-key + compliance gate + dashboard COMPLETE** (this session). The
 >   email agent's half had landed (`getPublishedByKey`, all 13 `DEFAULT_EMAIL_TEMPLATES` with `key`/`type`/`sources`/
 >   `refs`, `provisionDefaultEmails`, the per-site override join), so the join unblocked. **(a) Send-by-key plumbing:**
->   `ScheduledSendBody.defer` (`@sparx/email-sends`) gained `builderEmailKey` + `emailType` + optional `subject`/
+>   `ScheduledSendBody.defer` (`@wizeworks/email-sends`) gained `builderEmailKey` + `emailType` + optional `subject`/
 >   `preheader`; `email.send_campaign` got a 3rd config variant (`builderEmailKey` + `emailType`) whose **scope is
 >   derived from `emailType`** (transactional sends — welcome, invoice, dunning — are NOT withheld by a marketing
 >   unsubscribe; only `marketing` is), and the do-not-contact skip is now **marketing-only**. **(b) Dispatch
@@ -151,7 +151,7 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   unified Automations list** — an "Email" filter chip (`hasEmailAction` = any `send_campaign`/`send_internal`) +
 >   `/automations?focus=email` deep-link from a new **Automations surface card** on the Email overview. **(g) Template
 >   reconcile is the email agent's lane** (docs/91 §7) — `provisionDefaultEmails` fires only on `module.activated(email)`
->   today; the nightly backfill for tenants that missed activation needs `@sparx/builder` (absent from the lean
+>   today; the nightly backfill for tenants that missed activation needs `@wizeworks/builder` (absent from the lean
 >   automation-worker) so it belongs in api-rest, theirs to add. **Verify:** automation-actions **27/27** (new
 >   `seeds-email.test.ts` 3/3 — welcome enqueues `defer.builderEmailKey` w/ entityRefs + transactional emailType, email
 >   module gate records `gated`, transactional ignores a marketing unsubscribe while marketing honors it); api-rest
@@ -160,7 +160,7 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   email-data **3/3**); automation-worker **6/6** (reconcile backfill now asserts the full 6-seed B2B catalog +
 >   locked dunning); typecheck (email-sends/automation-actions/api-rest/dashboard) + lint + format all clean.
 > - **Step 6 addendum — template-provisioning reconcile BUILT** (this session). The automation-seed reconcile is in
->   the lean automation-worker; the TEMPLATE reconcile needs `@sparx/builder`'s `emailService.provisionDefaultEmails`,
+>   the lean automation-worker; the TEMPLATE reconcile needs `@wizeworks/builder`'s `emailService.provisionDefaultEmails`,
 >   so it lives in **api-rest** as an in-process loop — `reconcileEmailProvisioning` + `startEmailProvisioningReconcileLoop`
 >   in [email-provisioning.ts](../services/api-rest/src/lib/email-provisioning.ts), wired into the bootstrap next to
 >   `startEmailDispatchLoop` (advisory key `4242_4246`, 6h cadence, idempotent — provisions only missing keys). It
@@ -178,7 +178,7 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 > - **Post-migration audit — the `order.paid` trigger gap FIXED** (this session). A full sweep of all 23 seeds'
 >   triggers (do they actually FIRE in prod, not just in tests) found 22 wired end-to-end — CRM events tee via the
 >   CRM bus, `order.fulfilled`/`order.refunded` are in the platform-bus `ORDER_TEE_TOPICS` allow-list, `inventory.low`
->   tees via `@sparx/events`' publisher, and every scan seed needs no event — but **`high-value-order-alert` was
+>   tees via `@wizeworks/events`' publisher, and every scan seed needs no event — but **`high-value-order-alert` was
 >   inert**: `order.paid` was a declared `EventType` that was never finished — no publisher (the Stripe webhook sets
 >   `paymentStatus:'paid'` + publishes `payment.captured`; `recordPayment` publishes `order.payment.recorded`; neither
 >   emits `order.paid`), no Pub/Sub topic, and absent from the tee allow-list. Fixed in four parts: **(1)** TF topic
@@ -212,7 +212,7 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   `draft` JSONB. New `automation_versions` table (immutable snapshots, own `tenant_id` + ENABLE/FORCE
 >   RLS + `tenant_isolation`). `automation_runs` += `automation_version` (run-stamp). The
 >   `find_active_scheduled_automations()` SECURITY DEFINER fn DROP+CREATE'd to also return `version`.
-> - **Service (`@sparx/automation`):** `createAutomation`/`cloneAutomation` auto-publish v1 + snapshot;
+> - **Service (`@wizeworks/automation`):** `createAutomation`/`cloneAutomation` auto-publish v1 + snapshot;
 >   `updateAutomation` now STAGES document edits in `draft` (status still applies live; a status-only
 >   patch never fabricates a phantom draft); new `publishAutomation` / `discardDraft` /
 >   `restoreAutomationVersion` (→ stages a snapshot back as the draft; history stays append-only) /
@@ -230,7 +230,7 @@ discard-draft`; `app.ts` maps `AUTOMATION_NO_DRAFT` (409) + `AutomationVersionNo
 >   the right pane to the version list — `history-panel.tsx`; Restore + Discard, both confirm-guarded).
 >   Detail page gains an "unpublished changes" banner + per-run `vN` stamp.
 > - **Verified:** automation 46/46 + automation-actions 15/15 + automation-worker 6/6 (docker);
->   typecheck clean (`@sparx/automation`, `-schemas`, `api-rest`, `dashboard`); lint 0 errors; prettier ✓;
+>   typecheck clean (`@wizeworks/automation`, `-schemas`, `api-rest`, `dashboard`); lint 0 errors; prettier ✓;
 >   migration 0-drift. ⚠ `api-mcp`/`sitebuilder` typecheck fails on PRE-EXISTING errors from ANOTHER
 >   agent's uncommitted multi-property `propertyId` schema work (08/47/49-\*.prisma) — unmasked by my
 >   `prisma generate`, NOT this slice (my only schema change is 71-automation + the 02-tenant relation).
@@ -249,7 +249,7 @@ discard-draft`; `app.ts` maps `AUTOMATION_NO_DRAFT` (409) + `AutomationVersionNo
 >
 > **NEXT (still user-sequenced, unchanged):** (1) the **Default Builder-emails library + per-tenant
 > provisioning** (decision B — unblocks the email-driven CRM-sweep seeds; reconcile/retire the coded
-> `@sparx/email-platform` DEFAULT_AUTOMATIONS) and (2) **Slice I — Phase 5 external** (Zapier/Make/inbound
+> `@wizeworks/email-platform` DEFAULT_AUTOMATIONS) and (2) **Slice I — Phase 5 external** (Zapier/Make/inbound
 > `webhook.received`). Commerce executors stay deferred (no product/variant resolver). The G-UI v2 +
 > versioning editor wants a **live click-through of the publish/restore flow** against a running stack
 > (backend is exhaustively unit/integration-tested; the UI is typecheck/lint-clean but not yet
@@ -269,7 +269,7 @@ inspector-primitives,action-config-editor,node-icons,history-panel,automation-ed
 automation-editor.css}`. Now extended with the versioning toolbar/history above.
 >
 > **(prior)** **Slice G-UI — DONE.** The dashboard automations surface
-> (`apps/workbench/surfaces/automations/*`) is built: **list** (status-filter chips + per-row module tags +
+> (`sparx/apps/workbench/surfaces/automations/*`) is built: **list** (status-filter chips + per-row module tags +
 > run stats + inline enable/pause), **detail/review** (trigger + conditions + ordered actions, runs
 > preview), the full **builder** (event/schedule trigger editor, **nested AND/OR condition editor** —
 > mixed precedence like `A AND (B OR C)`, depth-bounded — and a drag-to-reorder ordered action editor
@@ -283,18 +283,18 @@ automation-editor.css}`. Now extended with the versioning toolbar/history above.
 > seeding every module-active tenant, the sole dunning impl, and now fully observable.** Remaining
 > tracked work, both still user-sequenced: (1) the **Default Builder-emails library + per-tenant
 > provisioning** (user decision B — unblocks the email-driven CRM-sweep seeds; must reconcile/retire the
-> coded `@sparx/email-platform` DEFAULT_AUTOMATIONS, not a third system) and (2) **Slice I — Phase 5
+> coded `@wizeworks/email-platform` DEFAULT_AUTOMATIONS, not a third system) and (2) **Slice I — Phase 5
 > external** (Zapier/Make/inbound `webhook.received`). **Commerce executors** stay deferred (no
 > product/variant resolver, `create_invoice` collides with in-flight `billing_documents`, no consuming
 > automation). Slices A–H + G-API + **G-UI** all done.
 > **Slice H DONE** this session: `automationMcpTools` (9 tools — `list/get/create/update/clone/delete/
-set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published by `services/api-mcp`;
+set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published by `wizeworks/services/api-mcp`;
 > `read:automations`/`write:automations` scopes; LOCKED→error-result + "clone to edit" enforced over
 > MCP exactly as REST; reachable on an `ai`-only tenant (platform capability, no feature module). ⚠ It
 > ALSO unblocked TWO pre-existing latent bugs in `api-mcp` (both masked because the whole suite was
-> dormant-red): (1) the vitest config lacked the `@vitejs/plugin-react` JSX transform `@sparx/email`'s
+> dormant-red): (1) the vitest config lacked the `@vitejs/plugin-react` JSX transform `@wizeworks/email`'s
 > raw `.tsx` needs (the documented api-rest PR#41 issue, never applied here) and (2) a **duplicate MCP
-> tool name** — `get_top_customers` defined in BOTH `@sparx/crm` and `@sparx/commerce` — which made the
+> tool name** — `get_top_customers` defined in BOTH `@wizeworks/crm` and `@wizeworks/commerce` — which made the
 > SDK throw at registration so **the MCP server could not boot a single session**. Fixed both;
 > renamed the commerce tool → `get_top_customers_by_revenue` (the date-ranged sales-report variant;
 > CRM owns the lifetime-spend name). api-mcp suite now **12/12** (4 new automation + the unblocked
@@ -307,7 +307,7 @@ set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published b
 >
 > **F2 backfill (this session):** SECURITY DEFINER `find_tenants_with_active_module(p_module)`
 > (migration `20260805000000`, REVOKE PUBLIC / GRANT sparx_app) → `reconcileSystemSeeds(db)` in
-> `@sparx/automation-actions` (distinct owning modules → scan module-active tenants → idempotent
+> `@wizeworks/automation-actions` (distinct owning modules → scan module-active tenants → idempotent
 > `seedSystemAutomations` per tenant) → worker `POST /internal/cron/reconcile-seeds` (same
 > tick-auth) → a DAILY Cloud Scheduler job (`automation-reconcile-seeds`, 02:07 UTC, automation.tf).
 > Self-healing: also covers any dropped `module.activated` event. Tests: automation-actions
@@ -341,7 +341,7 @@ set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published b
 > as later work). See memory `project_email_defaults_builder_authored`.
 >
 > **⚠ Reconciliation finding (don't build a THIRD parallel system):** a coded email-automation system
-> ALREADY exists — `@sparx/email-platform` `DEFAULT_AUTOMATIONS` (11 defaults: order-confirmed/shipped/
+> ALREADY exists — `@wizeworks/email-platform` `DEFAULT_AUTOMATIONS` (11 defaults: order-confirmed/shipped/
 > delivered, cart-abandoned, **win-back**, welcome-customer, b2b-account-approved, quote-received,
 > invoice-due/overdue) seeded by `automationService.provisionDefaults` on email activation, content via
 > coded `templateKey`, with its OWN `evaluateTrigger` engine. Its win-back triggers on
@@ -354,10 +354,10 @@ set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published b
 > **(historical) F2-a (B2B dunning ladder) done** — the riskiest piece (docs/81 §3.1's canonical
 > Locked behavior) is built, tested, and live-able on the schedule tick.
 >
-> **F2-a delivered:** a reusable `b2bEscalationService.escalateAccount` in `@sparx/crm` (the
+> **F2-a delivered:** a reusable `b2bEscalationService.escalateAccount` in `@wizeworks/crm` (the
 > escalation logic that previously lived ONLY inline in `b2b-overdue-worker/cron.ts` — the
 > "no reusable service" risk this log flagged, now closed); a `b2b_account` scanner + the
-> `b2b.escalate_overdue` executor in `@sparx/automation-actions` (calls the service, publishes
+> `b2b.escalate_overdue` executor in `@wizeworks/automation-actions` (calls the service, publishes
 > the same `b2b.*` notifications the cron did); a `seedSystemAutomations` catalog with the
 > **Locked** dunning automation; and a 4/4 engine-path test mirroring the escalation parity
 > oracle (invoice→overdue, account→credit_hold@14d / suspended@30d, monotonic). The worker
@@ -370,7 +370,7 @@ set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published b
 >
 > **Next:** (F2 wiring) call `seedSystemAutomations` per tenant. ARCH FORK: it must run where
 > `module.activated` is published in-process → either an api-rest consumer (adds an
-> api-rest → `@sparx/automation-actions` dep + Dockerfile closure) OR a worker-native reconcile
+> api-rest → `@wizeworks/automation-actions` dep + Dockerfile closure) OR a worker-native reconcile
 > pass (needs a cross-tenant "tenants with b2b active" SECURITY DEFINER scan) OR Slice E's
 > Pub/Sub fan-in to the worker. Plus an existing-tenant backfill. (F2 cont.) the CRM-sweep +
 > email-driven seeds (inactivity/win-back/quote-expiry/deal-closing) — these need the email
@@ -403,9 +403,9 @@ So the build order front-loads the self-contained, testable core and **defers th
 Phase-0 fan-in surgery** (which touches three shared publish paths + Terraform,
 the highest cross-agent-collision risk) until the engine exists to validate it:
 
-1. **Slice A — schemas** (`@sparx/automation-schemas`) — net-new, zero collision.
+1. **Slice A — schemas** (`@wizeworks/automation-schemas`) — net-new, zero collision.
 2. **Slice B — data model** (Prisma + RLS migration) — net-new tables.
-3. **Slice C — engine core** (`@sparx/automation`) — registries, evaluator, gates,
+3. **Slice C — engine core** (`@wizeworks/automation`) — registries, evaluator, gates,
    executor, run state machine, service layer. Tested against docker DB with
    synthetic events.
 4. **Slice D — worker** (`services/automation-worker`) — Cloud Run push + tick.
@@ -420,31 +420,31 @@ reconciles them into the one canonical registry. No build blocker from deferring
 
 ### Package / service inventory (what this feature introduces)
 
-| Artifact                                                    | Purpose                                                                                                                                                                                     | Status |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                                                                                                                              | ☑      |
-| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer                                                                                                            | ☑      |
-| `packages/automation-actions` (`@sparx/automation-actions`) | Module executors + scanners + seed catalog (composition root) — calls existing services via `registerAction`. CRM + B2B + email-send done; email sequence + commerce pending                | ◐      |
-| `packages/email-sends` (`@sparx/email-sends`)               | Lean email enqueue primitive (`enqueueSend`: suppression + `ScheduledSend` write). `@sparx/db` only — NO render/React deps, so the worker can enqueue without the email-platform UI closure | ☑      |
-| `packages/crm` `b2bEscalationService`                       | Reusable per-account dunning ladder (extracted from the cron); publisher-agnostic, tx-aware                                                                                                 | ☑      |
-| `packages/db` RLS GUC fix (`20260801000000`)                | Corrects 8 b2b/import tables' `tenant_isolation` policy (`app.current_tenant_id` → `current_tenant_id()` + WITH CHECK)                                                                      | ☑      |
-| `packages/modules` (`@sparx/modules`)                       | Module-enablement primitives (extracted from `@sparx/auth` so lean backends probe flags without the auth/email/UI closure)                                                                  | ☑      |
-| `services/automation-worker`                                | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`                                                                                            | ☑      |
-| `packages/db` scan helpers                                  | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery)                                                                                  | ☑      |
-| `packages/db` backfill scan (`20260805000000`)              | `find_tenants_with_active_module(p_module)` SECURITY DEFINER — discovers module-active tenants for the seed reconcile pass                                                                  | ☑      |
-| `reconcileSystemSeeds` + worker reconcile endpoint          | Daily backfill: seed system automations for already-module-active tenants (`POST /internal/cron/reconcile-seeds` + Cloud Scheduler `automation-reconcile-seeds`)                            | ☑      |
-| `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                                                               | ☑      |
-| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
-| `services/api-rest` routes                                  | `/v1/automations` CRUD + clone + status + run-history reads (trigger/tick live in the worker, not api-rest)                                                                                 | ☑      |
-| `packages/automation` run reads                             | `listAutomationRuns` / `getAutomationRun` (tenant-scoped run-history read path for REST/MCP/UI)                                                                                             | ☑      |
-| `apps/workbench` surface (`/automations/*`)                 | List / detail / builder / run history (docs/34 standard) — platform-level full-page routes, pure consumer of the G-API REST surface via Server Actions                                      | ☑      |
-| `packages/automation/src/mcp` (`automationMcpTools`)        | AI authoring path — 9 MCP tools wrapping the service layer; published by `services/api-mcp` (mirrors crm `mcp/`). `read:automations` / `write:automations` scopes                           | ☑      |
+| Artifact                                                                  | Purpose                                                                                                                                                                                         | Status |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `wizeworks/packages/automation-schemas` (`@wizeworks/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                                                                                                                                  | ☑      |
+| `wizeworks/packages/automation` (`@wizeworks/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer                                                                                                                | ☑      |
+| `wizeworks/packages/automation-actions` (`@wizeworks/automation-actions`) | Module executors + scanners + seed catalog (composition root) — calls existing services via `registerAction`. CRM + B2B + email-send done; email sequence + commerce pending                    | ◐      |
+| `wizeworks/packages/email-sends` (`@wizeworks/email-sends`)               | Lean email enqueue primitive (`enqueueSend`: suppression + `ScheduledSend` write). `@wizeworks/db` only — NO render/React deps, so the worker can enqueue without the email-platform UI closure | ☑      |
+| `wizeworks/packages/crm` `b2bEscalationService`                           | Reusable per-account dunning ladder (extracted from the cron); publisher-agnostic, tx-aware                                                                                                     | ☑      |
+| `wizeworks/packages/db` RLS GUC fix (`20260801000000`)                    | Corrects 8 b2b/import tables' `tenant_isolation` policy (`app.current_tenant_id` → `current_tenant_id()` + WITH CHECK)                                                                          | ☑      |
+| `wizeworks/packages/modules` (`@wizeworks/modules`)                       | Module-enablement primitives (extracted from `@wizeworks/auth` so lean backends probe flags without the auth/email/UI closure)                                                                  | ☑      |
+| `services/automation-worker`                                              | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`                                                                                                | ☑      |
+| `wizeworks/packages/db` scan helpers                                      | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery)                                                                                      | ☑      |
+| `wizeworks/packages/db` backfill scan (`20260805000000`)                  | `find_tenants_with_active_module(p_module)` SECURITY DEFINER — discovers module-active tenants for the seed reconcile pass                                                                      | ☑      |
+| `reconcileSystemSeeds` + worker reconcile endpoint                        | Daily backfill: seed system automations for already-module-active tenants (`POST /internal/cron/reconcile-seeds` + Cloud Scheduler `automation-reconcile-seeds`)                                | ☑      |
+| `terraform/envs/prod/automation.tf`                                       | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                                                                   | ☑      |
+| `wizeworks/packages/db` (3 tables)                                        | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                                | ☑      |
+| `wizeworks/services/api-rest` routes                                      | `/v1/automations` CRUD + clone + status + run-history reads (trigger/tick live in the worker, not api-rest)                                                                                     | ☑      |
+| `wizeworks/packages/automation` run reads                                 | `listAutomationRuns` / `getAutomationRun` (tenant-scoped run-history read path for REST/MCP/UI)                                                                                                 | ☑      |
+| `sparx/apps/workbench` surface (`/automations/*`)                         | List / detail / builder / run history (docs/34 standard) — platform-level full-page routes, pure consumer of the G-API REST surface via Server Actions                                          | ☑      |
+| `wizeworks/packages/automation/src/mcp` (`automationMcpTools`)            | AI authoring path — 9 MCP tools wrapping the service layer; published by `wizeworks/services/api-mcp` (mirrors crm `mcp/`). `read:automations` / `write:automations` scopes                     | ☑      |
 
 ---
 
 ## 2. Phase checklist (mirrors docs/81 §12, annotated with build reality)
 
-### Slice A — `@sparx/automation-schemas` ☑
+### Slice A — `@wizeworks/automation-schemas` ☑
 
 - ☑ Package scaffold (package.json, tsconfig, vitest, eslint inherited)
 - ☑ Trigger schema (event vs schedule kinds; `triggerToColumns`/`triggerFromColumns`)
@@ -469,7 +469,7 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 - ☑ RLS form: `current_tenant_id()` + `WITH CHECK` (per push_subscriptions), quoted idents.
 - ☑ Tenant relations declared on all 3 (3 inverse fields added to `Tenant` in `02-tenant.prisma`).
 - ☑ Applied to docker (`migrate deploy`, 89/89), drift-check shows **0 automation drift**,
-  client regenerated, `@sparx/db` typecheck clean.
+  client regenerated, `@wizeworks/db` typecheck clean.
 - ☑ Indexes incl. owner-scoped tick scan `(status, resume_at)`.
 
 > **Note — pre-existing repo index-name drift:** `migrate diff` reports ~dozens of cosmetic
@@ -477,7 +477,7 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 > auto names). Not ours — the 3 automation tables used Prisma-exact names → 0 added drift.
 > A repo-wide cleanup is a separate sweep, out of scope here.
 
-### Slice C — engine core (`@sparx/automation`) — Phase 1 ☑
+### Slice C — engine core (`@wizeworks/automation`) — Phase 1 ☑
 
 - ☑ Trigger/entity resolver registry (event resolvers + schedule scanners; `registerResolver`/`registerScanner` seam; built-ins for customer/deal/order + customer scanner)
 - ☑ Condition evaluator (all 12 operators, AND/OR, numeric/date coercion, against resolved fields) — pure, unit-tested
@@ -498,7 +498,7 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 >   Slice E reconciles the registry.
 > - **Module action executors (crm/email/commerce/b2b) register via the `registerAction`
 >   seam in a later slice**, where the engine is wired with those service packages — keeps
->   `@sparx/automation` deps lean (`@sparx/db` + `@sparx/events` + schemas). Slice C ships
+>   `@wizeworks/automation` deps lean (`@wizeworks/db` + `@wizeworks/events` + schemas). Slice C ships
 >   the platform-level `platform.webhook` as the one real built-in effect; the integration
 >   suite exercises the machinery via stand-in executors registered through the same seam.
 > - **`dispatch` throws `UnregisteredActionError` for an unwired action** — a loud failure,
@@ -560,11 +560,11 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 
 **E1 — canonical registry ☑**
 
-- ☑ `@sparx/events` is now the single superset (`+module.activated/deactivated`,
+- ☑ `@wizeworks/events` is now the single superset (`+module.activated/deactivated`,
   `search.reindex.requested`, `chat.message.received`, `push.send` — the api-core-only events
   folded in). `api-core/pubsub.ts` deleted its local `EventType` union and re-exports the
   canonical one (type-only ⇒ no runtime dep; every service that COPYs api-core already COPYs
-  `@sparx/events`, so zero Dockerfile-closure risk). Full workspace typecheck 35/35.
+  `@wizeworks/events`, so zero Dockerfile-closure risk). Full workspace typecheck 35/35.
 
 **E2 — fan-in topic + subscription ☑**
 
@@ -575,11 +575,11 @@ validate` clean. (`module.activated`/`deactivated` topics already existed — em
 
 **E3 — fan-in tee ☑**
 
-- ☑ Tee installed in all THREE publish paths: `@sparx/events` `CloudPubSubPublisher`, api-core
+- ☑ Tee installed in all THREE publish paths: `@wizeworks/events` `CloudPubSubPublisher`, api-core
   `CloudPubSubPublisher`, and the CRM bridge's BOTH bus wrappers (`CrmPubSubPublisher` for
   `crm.*` + `PubSubTeePlatformBus` for `order.*` — the two-bus footgun, docs/82 §3.3). Shared
-  `teeToFanIn` helper (`@sparx/events/fan-in`); inlined in the CRM bridge to keep `@sparx/crm`
-  off an `@sparx/events` dep. Carries `__automationDepth` from the envelope (default 0) for the
+  `teeToFanIn` helper (`@wizeworks/events/fan-in`); inlined in the CRM bridge to keep `@wizeworks/crm`
+  off an `@wizeworks/events` dep. Carries `__automationDepth` from the envelope (default 0) for the
   loop-guard. Unit test 3/3; best-effort (a tee failure never fails the per-type publish).
 
 **E4 — `module.activated` publish + consumers ☑**
@@ -597,10 +597,10 @@ slug, enabled)` publishes `module.{activated,deactivated}` to BOTH buses: api-co
   redundant announce harmless.
 - ☑ **CRM** in-process consumer was already wired (`registerModuleActivationConsumers`) — now
   actually driven by the publish above (it was dead before: no publisher existed).
-- ☑ **Email** in-process consumer — `services/api-rest/src/lib/email-module-activation.ts`
+- ☑ **Email** in-process consumer — `wizeworks/services/api-rest/src/lib/email-module-activation.ts`
   (`registerEmailModuleActivationConsumer`, wired in `index.ts`): on `module.activated` for
   `email`, calls `automationService.provisionDefaults`. Lives at the api-rest composition root
-  (not in `@sparx/email-platform`) because the platform bus is owned by `@sparx/crm` and email
+  (not in `@wizeworks/email-platform`) because the platform bus is owned by `@wizeworks/crm` and email
   must not depend on CRM. Unit test 2/2 (mock email service + real in-memory bus; CI-safe, no DB).
 - ☑ **Dashboard cleanup** — the redundant `POST /v1/crm/bootstrap` follow-up in
   `settings/modules/actions.ts` is removed (the toggle's publish seeds CRM synchronously now). The
@@ -623,21 +623,21 @@ isn't silently skipped.
 
 **F1 — module action executors ◐ (CRM + B2B + email send done; email sequence\_\* + commerce pending)**
 
-- ☑ `@sparx/automation-actions` package (the module-effect composition root) — keeps the
+- ☑ `@wizeworks/automation-actions` package (the module-effect composition root) — keeps the
   engine lean; the worker calls `installModuleActions()` at boot.
 - ☑ **6 CRM executors** — `crm.add_tag` / `remove_tag` / `add_note` / `update_field` /
-  `create_task` / `update_deal_stage`, each CALLING `@sparx/crm/services` (never
+  `create_task` / `update_deal_stage`, each CALLING `@wizeworks/crm/services` (never
   re-implementing). 7/7 e2e green: trigger → match → resolve → gated dispatch → executor →
   real CRM service → DB effect, run on the `sparx_app` client.
 - ☑ **B2B `escalate_overdue` executor + `b2b_account` scanner** — calls the new reusable
   `b2bEscalationService.escalateAccount`, then publishes the same `b2b.invoice.overdue` /
   `b2b.account.credit_hold` / `b2b.account.suspended` events the cron emitted (on the
-  `@sparx/events` bus via `ctx.deps.publisher`). The scanner resolves per-account
+  `@wizeworks/events` bus via `ctx.deps.publisher`). The scanner resolves per-account
   `hasOverdueInvoices` / `maxDaysPastDue` / `utilization` (one aggregate query), so the dunning
   predicate AND a future credit-utilization predicate both read off it.
 - ☑ Worker wiring: `installModuleActions()` (now CRM + B2B) + `installCrmPubSubBridge()` at boot;
-  closure UNCHANGED (b2b lives in `@sparx/crm` + `@sparx/automation-actions`, both already
-  COPY'd; `@sparx/events` promoted dev→prod dep but already in the closure).
+  closure UNCHANGED (b2b lives in `@wizeworks/crm` + `@wizeworks/automation-actions`, both already
+  COPY'd; `@wizeworks/events` promoted dev→prod dep but already in the closure).
 - ☑ **2 email executors — `email.send_campaign` + `email.send_internal`** (`automation-actions/src/email.ts`,
   `installEmailActions`). Both PUBLISH a send (never direct-deliver, docs/81 §5.4): they call
   `enqueueSend`, which writes a `ScheduledSend` (`automationId: null`) that the api-rest `email-dispatch`
@@ -645,23 +645,23 @@ isn't silently skipped.
   is the trigger's `customer.email`, skips a do-not-contact contact, body is a published Builder email
   (`defer`, personalized at dispatch) OR a coded template. `send_internal` is a staff notification (raw
   body, transactional scope, configured `to`).
-  - **⚠ Closure decision (changed from the original plan):** `@sparx/email-platform` pulls in
-    `@sparx/email` + `@sparx/ui` + `lucide-react` + React (peer) — importing it into the worker would
+  - **⚠ Closure decision (changed from the original plan):** `@wizeworks/email-platform` pulls in
+    `@wizeworks/email` + `@wizeworks/ui` + `lucide-react` + React (peer) — importing it into the worker would
     blow up the deliberately-lean image (its Dockerfile is proud of "no React/UI/auth"). So instead of
-    `automationService.enqueueSend`, the enqueue primitive lives in a NEW lean **`@sparx/email-sends`**
-    (deps: `@sparx/db` only — no render libs): `enqueueSend(ctx, spec)` = suppression-check +
+    `automationService.enqueueSend`, the enqueue primitive lives in a NEW lean **`@wizeworks/email-sends`**
+    (deps: `@wizeworks/db` only — no render libs): `enqueueSend(ctx, spec)` = suppression-check +
     `scheduledSend.createMany({skipDuplicates})`. The executor calls it; the worker COPYs only
-    `packages/email-sends`. The render half stays in api-rest's dispatch tick (which has the email/builder
+    `wizeworks/packages/email-sends`. The render half stays in api-rest's dispatch tick (which has the email/builder
     libs). This still honors "executors call a service" while keeping the worker React-free.
   - Recipient/flag reads off the resolved `fields` via `entity.ts` (`requireStringField` for
     `customer.email`, `optionalBoolField` for `customer.doNotContact`). `installEmailActions()` wired into
     `installModuleActions()`; worker closure now 10 packages (added `email-sends`).
-  - **Tests (docker DB):** `@sparx/email-sends` enqueue 4/4 (enqueue/payload/dueAt, marketing
+  - **Tests (docker DB):** `@wizeworks/email-sends` enqueue 4/4 (enqueue/payload/dueAt, marketing
     suppression skip, transactional-through-marketing-suppression, dedupe idempotency — on the sparx_app
     FORCE-RLS client); `automation-actions` email engine-path 2/2 (event → handleTrigger →
     runAutomationTick → ScheduledSend for `customer.email`; do-not-contact skip). Suite 13/13.
 - ⃠ `email.sequence_add` / `email.sequence_remove` — DEFERRED (aspirational, like the schema notes):
-  NO email-sequence/drip subsystem exists in `@sparx/email-platform`, so these aren't an
+  NO email-sequence/drip subsystem exists in `@wizeworks/email-platform`, so these aren't an
   executor-over-existing-service — they'd require building the whole sequence-membership system first.
 - ⃠ Commerce executors (`commerce.*`) — DEFERRED (not cleanly buildable yet, verified 2026-06-11): the
   resolver catalog has `order` but **no product/variant** resolver, so `commerce.update_inventory` has
@@ -698,7 +698,7 @@ isn't silently skipped.
   Author a solid starter set of default **Builder emails** (node-trees) and provision them per tenant
   on `module.activated(email)` (their theme, fully editable); these become the content source the
   unified-engine email seeds `defer` to. **Must reconcile/retire the existing coded
-  `@sparx/email-platform` `DEFAULT_AUTOMATIONS`** (see the RESUME reconciliation finding) — not a third
+  `@wizeworks/email-platform` `DEFAULT_AUTOMATIONS`** (see the RESUME reconciliation finding) — not a third
   parallel system. Render half exists (`builderEmailService` → `renderEmailTree` with brand); the
   default node-trees + provisioning step do not. Its own design+build slice (memory
   `project_email_defaults_builder_authored`).
@@ -746,14 +746,14 @@ isn't silently skipped.
 > - **Missing required entity field → loud `failed` step** (not a silent no-op): an action wired
 >   to an entity its trigger can't resolve (e.g. a customer tag on a customer-less deal event)
 >   throws, recording a `failed` step.
-> - **`@sparx/crm` slimmed so the worker stays lean (FIXED 2026-06-11).** `@sparx/crm` had only
+> - **`@wizeworks/crm` slimmed so the worker stays lean (FIXED 2026-06-11).** `@wizeworks/crm` had only
 >   TWO things pulling its heavy deps: `manifest.ts` (a dashboard UI manifest — the only
->   `@sparx/ui`/`lucide-react`/React importer) and the event consumers' use of `@sparx/auth`'s
+>   `@wizeworks/ui`/`lucide-react`/React importer) and the event consumers' use of `@wizeworks/auth`'s
 >   `isModuleEnabled`/`invalidateModuleCache` (which dragged in `auth → email → cms-editor`).
 >   Both were misplaced. Fix: (1) `manifest.ts` → `apps/dashboard/.../crm/manifest.ts` (mirrors
 >   the email-platform manifest split); (2) the session-free module-gate core → new
->   **`@sparx/modules`** package (deps: just `@sparx/db`); `@sparx/auth` re-exports it for its
->   ~40 importers (zero blast radius), `requireModule(session)` stays in auth. `@sparx/crm` now
+>   **`@wizeworks/modules`** package (deps: just `@wizeworks/db`); `@wizeworks/auth` re-exports it for its
+>   ~40 importers (zero blast radius), `requireModule(session)` stays in auth. `@wizeworks/crm` now
 >   deps = pubsub + commerce-schemas + crm-schemas + db + modules + zod — **no auth/ui/email/
 >   cms-editor/react**. Worker COPY closure: **15 → 9 packages, no React**. Verified: db /
 >   modules / auth / crm / dashboard / api-rest typecheck + crm 82/82 green.
@@ -762,14 +762,14 @@ isn't silently skipped.
 >
 > - **Escalation logic extracted to a reusable service, NOT left inline.** The dunning ladder
 >   lived only in `b2b-overdue-worker/cron.ts` (the "no reusable service" risk this log flagged).
->   It now lives in `b2bEscalationService.escalateAccount` (`@sparx/crm`), which the executor
+>   It now lives in `b2bEscalationService.escalateAccount` (`@wizeworks/crm`), which the executor
 >   calls. The cron can delegate to it until F3 retires it — no third copy.
 > - **Per-account, not per-tenant batch.** The cron did one tenant-wide bulk UPDATE; the engine
 >   runs one resumable run per scanned account, so the service escalates a SINGLE account. Same
 >   observable outcome (every account with past-due invoices is processed), smaller commits.
 > - **Service is publisher-agnostic; the executor publishes.** `escalateAccount` does pure DB
 >   work and RETURNS the transition + freshly-overdue invoices; the executor emits the `b2b.*`
->   events on `@sparx/events` (via `ctx.deps.publisher`). Pushing those topics into a CRM service
+>   events on `@wizeworks/events` (via `ctx.deps.publisher`). Pushing those topics into a CRM service
 >   that only knows the CRM two-bus would cross a bus boundary — and keeping it pure lets the
 >   cron reuse the same method. The escalation commits atomically with the run-step (tx-injection:
 >   the executor passes `ctx.tx`).
@@ -806,7 +806,7 @@ current_setting('app.current_tenant_id')::uuid)`. That GUC name is **wrong** (`w
 > 46/46 · automation-actions 15/15 · automation-worker 6/6.
 
 **G-API — `/v1/automations` REST surface ☑** (the API-first spine; the dashboard UI + MCP are
-consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
+consumers of these). New `wizeworks/services/api-rest/src/routes/v1/automations/index.ts`:
 
 - ☑ `GET /v1/automations` (filter status/triggerType/origin) · `POST` (create, always user-origin
   draft) · `GET/PATCH/DELETE /:id` · `POST /:id/clone` ("Duplicate to edit") · `POST /:id/status`
@@ -818,21 +818,21 @@ consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
   `AutomationNotFoundError`; added `automationErrorMapper` to `app.ts` (→ `409 AUTOMATION_LOCKED` with a
   distinct code so the dashboard can offer "Duplicate to edit", and `404 NOT_FOUND`). A tenant can
   never create a `system`/`locked` rule — origin/locked are service-set, never accepted from the body.
-- ☑ **Run-history reads** added to `@sparx/automation` (`listAutomationRuns` / `getAutomationRun`,
+- ☑ **Run-history reads** added to `@wizeworks/automation` (`listAutomationRuns` / `getAutomationRun`,
   tenant-scoped via `withTenant`, run scoped to its automation so a cross-automation run id 404s). The
   engine already WROTE runs/steps (`history/log.ts`); this is the read side for REST/MCP/UI.
-- ☑ **Wiring:** `@sparx/automation` + `@sparx/automation-schemas` added to api-rest deps + Dockerfile
+- ☑ **Wiring:** `@wizeworks/automation` + `@wizeworks/automation-schemas` added to api-rest deps + Dockerfile
   COPY closure (the route needs only the service layer → closure is just those two; db/events already
   present, NO executor/CRM/commerce closure pulled in). `pnpm install` lockfile change scoped to the
   two new links.
 - ☑ **Tests (docker DB, real Fastify via `app.inject`):** `automations-routes.test.ts` 7/7 — 401
   no-token, full lifecycle (create→list→get→update→status), RBAC (viewer 403 on create), 404 + 422,
   LOCKED guard (edit/status/delete 409 + clone 201), delete, run-history (empty list, seeded
-  run-with-steps, cross-automation 404). typecheck + lint + prettier clean; `@sparx/automation` 35/35.
+  run-with-steps, cross-automation 404). typecheck + lint + prettier clean; `@wizeworks/automation` 35/35.
 
 **G-UI — dashboard surface ☑** (this session) — the platform-level authoring + observability surface
 at `apps/dashboard/.../automations/*`, a pure CONSUMER of the G-API REST surface (no api-rest/engine
-change). New `@sparx/automation-schemas` dashboard dep (canonical types + `triggerToColumns`/
+change). New `@wizeworks/automation-schemas` dashboard dep (canonical types + `triggerToColumns`/
 `triggerFromColumns` + the zod parsers → no vocab drift vs REST/MCP) + Dockerfile COPY.
 
 > **NOTE — the BUILDER below was redesigned in G-UI v2** (see RESUME). The "Builder" +
@@ -885,13 +885,13 @@ change). New `@sparx/automation-schemas` dashboard dep (canonical types + `trigg
   new/edit pages redirect a viewer; the REST also 403s). Automations are a platform capability.
 - ☑ **Verify** — `@sparx/dashboard` typecheck clean, lint **0 errors / 0 warnings**, prettier clean,
   and the **`next build` production build passes (exit 0)** with all six `/automations/*` routes
-  compiled. No change to api-rest, `@sparx/automation`, or the engine; the other agent's in-flight
+  compiled. No change to api-rest, `@wizeworks/automation`, or the engine; the other agent's in-flight
   invoicing files were left untouched.
 
 ### Slice H — Phase 4 AI assistant ☑ (MCP authoring tools)
 
 The AI path onto the SAME service layer the REST routes use (one service, three transports). New
-`packages/automation/src/mcp/` exports `automationMcpTools`, published by `services/api-mcp` exactly
+`wizeworks/packages/automation/src/mcp/` exports `automationMcpTools`, published by `wizeworks/services/api-mcp` exactly
 like `crmMcpTools` (registry barrel pattern). The AI **authors rules**, it never fires an effect —
 the gated dispatcher stays the sole path to an effect; the engine's `dispatch` is not exported here.
 
@@ -900,7 +900,7 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
   `clone_automation`, `delete_automation`). Writes carry `confirmation: true` → the MCP server emits
   the `destructiveHint` so clients prompt. Reads open.
 - ☑ **Same schemas as REST, no drift** — the write tools reuse `CreateAutomationInput` /
-  `UpdateAutomationInput` / `CloneAutomationInput` from `@sparx/automation-schemas`, so the authoring
+  `UpdateAutomationInput` / `CloneAutomationInput` from `@wizeworks/automation-schemas`, so the authoring
   vocabulary the AI sees (trigger kinds, the 12 condition operators, the typed action catalog) is
   exactly what the dashboard + SDKs see. (Verified all 9 inputs convert to JSON-schema cleanly — the
   recursive `ConditionGroup` + discriminated-union `Trigger`/`Action` derive fine under zod v4.)
@@ -912,10 +912,10 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
   editor write, viewer reads) + `WRITE_SCOPES` (rate-limiter write-classification). Automations are a
   PLATFORM capability, so the tools are reachable whenever MCP itself is — the `ai`-module gate in
   `auth.ts`, not any feature module. The test proves this on an **`ai`-only tenant** (no crm/commerce).
-- ☑ **Closure** — `@sparx/automation` + `@sparx/automation-schemas` added to api-mcp deps + Dockerfile
+- ☑ **Closure** — `@wizeworks/automation` + `@wizeworks/automation-schemas` added to api-mcp deps + Dockerfile
   COPY (db/events already present). The MCP tools call only the SERVICE layer, so the executor closure
-  (`@sparx/automation-actions` + crm/commerce/b2b) is NOT pulled into the image.
-- ☑ **Tests** — `services/api-mcp/test/automation-tools.test.ts` 4/4 driving the real Fastify MCP app
+  (`@wizeworks/automation-actions` + crm/commerce/b2b) is NOT pulled into the image.
+- ☑ **Tests** — `wizeworks/services/api-mcp/test/automation-tools.test.ts` 4/4 driving the real Fastify MCP app
   over JSON-RPC: tools published + reachable on an ai-only tenant; authoring lifecycle (create → list →
   get → set status → empty run history); LOCKED clone-not-edit; scope enforcement (a read-only key
   reads but a write is denied naming `write:automations`). Full api-mcp suite **12/12**.
@@ -925,12 +925,12 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
 > surfaced two latent failures that had nothing to do with this slice:
 >
 > 1. **Missing JSX transform.** The api-mcp `vitest.config.ts` lacked `@vitejs/plugin-react`, but its
->    tool-registry graph pulls in `@sparx/email-platform` → `@sparx/email` (raw React-Email `.tsx`).
+>    tool-registry graph pulls in `@wizeworks/email-platform` → `@wizeworks/email` (raw React-Email `.tsx`).
 >    Without the transform, vite's import-analysis can't parse the JSX and **every** suite fails at
 >    import time. This is the exact issue PR#41 fixed for api-rest; the fix was never mirrored here.
 >    Applied the same one-line config (`plugins: [react()]`) + the devDep. Test-only — prod runs tsx.
-> 2. **Duplicate MCP tool name `get_top_customers`** — defined in BOTH `@sparx/crm`
->    (lifetime-spend list) AND `@sparx/commerce` (date-ranged revenue report). MCP tool names are
+> 2. **Duplicate MCP tool name `get_top_customers`** — defined in BOTH `@wizeworks/crm`
+>    (lifetime-spend list) AND `@wizeworks/commerce` (date-ranged revenue report). MCP tool names are
 >    GLOBAL across modules, so the SDK throws `Tool ... is already registered` during
 >    `buildServerForRequest` → **the server could not boot a single MCP session** (every request 500'd,
 >    including `initialize`). It went unseen because the JSX issue kept the suite from ever running.
@@ -963,7 +963,7 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
 ## 4. Test status
 
 - Outcome-level tests already guard the behaviors Slice F will replace (cron→engine swap):
-  `packages/crm/test/integration/automation-triggers.test.ts` (7),
+  `wizeworks/packages/crm/test/integration/automation-triggers.test.ts` (7),
   `overdue-task-reminders.test.ts` (3),
   `services/b2b-overdue-worker/test/integration/escalation.test.ts` (4). These are the
   **parity oracle** for Slice F — they must stay green through the swap.
@@ -971,13 +971,13 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
 ## 5. Session log
 
 - **2026-06-10** — Build log created. Sequencing decided (engine-core before Phase-0
-  fan-in). **Slice A `@sparx/automation-schemas` DONE + committed** (`25164b9`) —
+  fan-in). **Slice A `@wizeworks/automation-schemas` DONE + committed** (`25164b9`) —
   trigger/condition/action/automation/run schemas + column-mapping helpers, 7/7
   tests, typecheck + lint clean. Grounded the Slice B RLS form (`current_tenant_id()`
   per push_subscriptions). **Slice B data model DONE** — 3 Prisma models + 3 Tenant
   inverses + migration `20260730000000_automation_engine` (Prisma-exact DDL + hand-added
   RLS), applied to docker (89/89), 0 drift, client regenerated, db typecheck clean.
-  **Slice C engine core DONE** — `@sparx/automation` (`packages/automation`): condition
+  **Slice C engine core DONE** — `@wizeworks/automation` (`wizeworks/packages/automation`): condition
   evaluator (12 ops), entity-resolver + schedule-scanner registries (built-ins for
   customer/deal/order), gated dispatcher (global chain + per-action manifest +
   allow/deny/transform/defer), `platform.webhook` built-in + SSRF egress gate +
@@ -992,7 +992,7 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
   Cloud Run worker: `POST /internal/cron/tick` (Cloud Scheduler) → schedule tick +
   run tick; `POST /` (Pub/Sub push, Slice-E-ready) → `handleTrigger`; `GET /healthz`.
   Side-effect-free `server.ts` + thin `index.ts`; `runtime.ts` builds the engine
-  deps on the shared `@sparx/db` `prisma` (sparx_app) for one pool across ticks +
+  deps on the shared `@wizeworks/db` `prisma` (sparx_app) for one pool across ticks +
   ingest. **Caught + fixed a prod-correctness bug:** the Slice C ticks assumed a
   BYPASSRLS owner connection that prod does NOT grant (Decision F3) — they'd return
   0 due runs silently in prod. Replaced the cross-tenant `findMany`s with two new
@@ -1008,9 +1008,9 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
   Slice F (module executors + seed system automations + retire crons) — the
   schedule tick is now live so this needs no Slice E fan-in.
 - **2026-06-11** — **Slice F1 (CRM action executors) DONE.** New package
-  `@sparx/automation-actions` (the module-effect composition root) with 6 CRM executors
+  `@wizeworks/automation-actions` (the module-effect composition root) with 6 CRM executors
   (`add_tag` / `remove_tag` / `add_note` / `update_field` / `create_task` /
-  `update_deal_stage`), each CALLING `@sparx/crm/services` — never re-implementing, so the
+  `update_deal_stage`), each CALLING `@wizeworks/crm/services` — never re-implementing, so the
   service's audit row + `crm.*` event (two-bus) happen once at the source. 7/7 e2e green
   driving the full engine path (handleTrigger → runAutomationTick) against docker on the
   `sparx_app` client, incl. the loud `failed`-step path when a required entity field is absent.
@@ -1026,20 +1026,20 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
   executors pass `ctx.tx`, so an effect commits ATOMICALLY with its `automation_run_steps` row +
   cursor advance — no duplicate `create_task`/`add_note` on an ungraceful crash mid-step. Opt-in
   (default `withTenant` path unchanged); verified CRM 82/82 (+ RLS isolation), automation 35/35,
-  automation-actions 7/7. (2) **`@sparx/crm` slim-down:** found the only two heavy-dep culprits
+  automation-actions 7/7. (2) **`@wizeworks/crm` slim-down:** found the only two heavy-dep culprits
   were misplaced — `manifest.ts` (dashboard UI) → moved to `apps/dashboard/.../crm/manifest.ts`;
-  the session-free module-gate core → new **`@sparx/modules`** pkg (deps: just `@sparx/db`), with
-  `@sparx/auth` re-exporting for its ~40 importers (zero blast radius). `@sparx/crm` dropped
+  the session-free module-gate core → new **`@wizeworks/modules`** pkg (deps: just `@wizeworks/db`), with
+  `@wizeworks/auth` re-exporting for its ~40 importers (zero blast radius). `@wizeworks/crm` dropped
   `auth`/`ui`/`lucide-react`/`react`; the worker COPY closure went **15 → 9 packages, no React**.
   Verified db/modules/auth/crm/**dashboard**/**api-rest** typecheck + crm 82/82; worker 4/4 +
   lean Dockerfile. typecheck + lint + prettier clean across all touched packages.
 - **2026-06-11 (cont.)** — **Slice F2-a (B2B dunning ladder) DONE.** The riskiest seed (docs/81
   §3.1's canonical Locked behavior) end-to-end on the unified engine: (1) extracted the
   escalation logic from `b2b-overdue-worker/cron.ts` into reusable
-  `b2bEscalationService.escalateAccount` (`@sparx/crm`) — per-account, publisher-agnostic,
+  `b2bEscalationService.escalateAccount` (`@wizeworks/crm`) — per-account, publisher-agnostic,
   tx-aware (closes the "no reusable service" risk); (2) `b2b_account` scanner +
-  `b2b.escalate_overdue` executor in `@sparx/automation-actions` (calls the service, publishes
-  the cron's `b2b.*` events on `@sparx/events`); (3) `seedSystemAutomations` catalog with the
+  `b2b.escalate_overdue` executor in `@wizeworks/automation-actions` (calls the service, publishes
+  the cron's `b2b.*` events on `@wizeworks/events`); (3) `seedSystemAutomations` catalog with the
   **Locked** dunning automation; (4) `b2b.escalate_overdue` added to the `ActionType` enum.
   4/4 engine-path test mirrors the parity oracle (invoice→overdue, credit_hold@14d /
   suspended@30d, fresh-overdue reminder event, monotonic re-run) on the `sparx_app` client.
@@ -1054,12 +1054,12 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
 - **2026-06-11 (cont.)** — **Slice E (event-bus unification, docs/82) E1–E3 + E4-worker DONE.**
   The seed-wiring arch-fork resolved to "do it right via Pub/Sub" (user call), which is exactly
   Slice E — so built it. **E1:** consolidated the two drifted `EventType` unions into one
-  `@sparx/events` superset (folded in the 3 api-core-only events + `module.activated/deactivated`);
+  `@wizeworks/events` superset (folded in the 3 api-core-only events + `module.activated/deactivated`);
   `api-core` deletes its local union and re-exports the canonical one (type-only, zero
   Dockerfile-closure risk — verified every api-core-COPYing service already COPYs events). Full
   typecheck 35/35. **E2:** `automation.trigger` topic + Cloud Run push subscription to the worker
   (DLQ + OIDC); `terraform validate` clean. **E3:** the fan-in tee in all three publish paths
-  (`@sparx/events` + api-core `CloudPubSubPublisher`, CRM bridge's BOTH bus wrappers — the
+  (`@wizeworks/events` + api-core `CloudPubSubPublisher`, CRM bridge's BOTH bus wrappers — the
   two-bus footgun), shared `teeToFanIn` helper carrying `__automationDepth`; unit test 3/3,
   best-effort so a tee failure never fails the per-type publish. Updated the CRM bridge unit test
   for the new tee (82/82). **E4 (worker):** the worker dispatches `module.activated` →
@@ -1076,7 +1076,7 @@ the gated dispatcher stays the sole path to an effect; the engine's `dispatch` i
   `publish()` (per-type topic + webhook enqueue + fan-in tee → worker) and `publishPlatformEvent()`
   (in-process → CRM/Email, awaited). Called from the per-slug `PATCH` AND the bulk `PUT
 /v1/tenant/modules` (onboarding), transition-gated (only on a real on/off change). Added the
-  **Email** in-process consumer `services/api-rest/src/lib/email-module-activation.ts`
+  **Email** in-process consumer `wizeworks/services/api-rest/src/lib/email-module-activation.ts`
   (`registerEmailModuleActivationConsumer`, wired in `index.ts`) → `automationService.
 provisionDefaults` on `module.activated` for `email`; placed at the api-rest composition root so
   email doesn't depend on CRM (which owns the bus). Retired the dashboard's redundant `POST
@@ -1091,10 +1091,10 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   - F3 (retire the b2b cron). Parity test still deferred.
 - **2026-06-11 (cont.)** — **F1 email send executors DONE.** With dev killed I regenerated the
   Prisma client (clearing the stale-invoicing-client noise; api-rest tsc 0) and built the email
-  effects. Traced the send pipeline end-to-end and hit the key fork: `@sparx/email-platform` drags
-  `@sparx/email` + `@sparx/ui` + React into anything that imports it — fatal for the deliberately
+  effects. Traced the send pipeline end-to-end and hit the key fork: `@wizeworks/email-platform` drags
+  `@wizeworks/email` + `@wizeworks/ui` + React into anything that imports it — fatal for the deliberately
   React-free automation-worker. So instead of `automationService.enqueueSend`, I created a NEW lean
-  **`@sparx/email-sends`** (deps: `@sparx/db` only): `enqueueSend(ctx, spec)` = suppression-check +
+  **`@wizeworks/email-sends`** (deps: `@wizeworks/db` only): `enqueueSend(ctx, spec)` = suppression-check +
   `scheduledSend.createMany({skipDuplicates})` with `automationId: null`, riding the existing
   email-dispatch tick. Built `email.send_campaign` (customer `customer.email`, do-not-contact skip,
   Builder-email `defer` or coded template, marketing scope) + `email.send_internal` (raw staff note,
@@ -1104,7 +1104,7 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   the sparx_app FORCE-RLS client), automation-actions 13/13 (incl. the new 2 engine-path email tests
   — caught + fixed a `ConditionGroup.logic` casing bug, it's `'AND'` not `'and'`), worker 4/4;
   typecheck (email-sends/automation-actions/worker) 0, lint 0, prettier clean. Full `pnpm typecheck`:
-  all 35 typecheck tasks pass (only `@sparx/db#build` prisma-generate EPERMs — the user restarted
+  all 35 typecheck tasks pass (only `@wizeworks/db#build` prisma-generate EPERMs — the user restarted
   `pnpm dev`, re-locking the Windows query_engine DLL; the client is already current, so it's a
   no-op env flake, not a code issue). **Next:** F2 cont. email-driven seeds (win-back / inactivity /
   quote-expiry / deal-closing) on top of these executors; backfill; F3.
@@ -1118,7 +1118,7 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   backfill** (also the safe precondition for F3 — retiring the cron before back-filling existing b2b
   tenants would stop their dunning). Built: SECURITY DEFINER `find_tenants_with_active_module(p_module)`
   (migration `20260805000000`, REVOKE PUBLIC / GRANT sparx_app; applied to docker, 94 migrations, only
-  mine pending) → `reconcileSystemSeeds(db)` in `@sparx/automation-actions` (distinct owning modules
+  mine pending) → `reconcileSystemSeeds(db)` in `@wizeworks/automation-actions` (distinct owning modules
   → cross-tenant scan → idempotent `seedSystemAutomations` per tenant; warns on an unsupported
   null-module seed) → worker `reconcileSeeds(logger)` + `POST /internal/cron/reconcile-seeds`
   (reuses `tickAuthorized`) → a DAILY Cloud Scheduler job `automation-reconcile-seeds` (02:07 UTC,
@@ -1160,50 +1160,50 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   the in-flight `billing_documents`, `create_order`/`apply_discount` lack a trigger semantic/spec, none
   has a consuming automation → not cleanly buildable, deferred with reasons (NOT half-built). (2)
   **`email.sequence_*`** — no sequence subsystem exists, deferred. **⚠ Reconciliation finding:** a
-  PARALLEL coded email-automation system already exists (`@sparx/email-platform` `DEFAULT_AUTOMATIONS` +
+  PARALLEL coded email-automation system already exists (`@wizeworks/email-platform` `DEFAULT_AUTOMATIONS` +
   its own `evaluateTrigger`, 11 coded-`templateKey` defaults incl. a dead `crm.customer.inactive`
   win-back) that the unified engine must subsume, not run beside. **Repointed RESUME → `/v1/automations`
   REST API (Slice G backend)** as the next slice: clean, additive, API-first (CLAUDE.md), unblocks the
   Custom tier + dashboard UI + MCP, no product gaps, no cross-agent collision (new route file; only the
   shared route-registration line is touched).
 - **2026-06-11 (cont.)** — **Slice G-API (`/v1/automations` REST surface) DONE.** New
-  `services/api-rest/src/routes/v1/automations/index.ts`: list (filter status/triggerType/origin),
+  `wizeworks/services/api-rest/src/routes/v1/automations/index.ts`: list (filter status/triggerType/origin),
   create (user-origin draft), get/patch/delete, `:id/clone` ("Duplicate to edit"), `:id/status`
   (draft|active|paused), `:id/runs` + `:id/runs/:runId` (run + ordered steps w/ gate_log). RBAC only
   (`requireRole` viewer-read / editor-write) — automations are a PLATFORM capability, NOT a module, so
-  no `requireModule`. Added run-history reads to `@sparx/automation` (`listAutomationRuns` /
+  no `requireModule`. Added run-history reads to `@wizeworks/automation` (`listAutomationRuns` /
   `getAutomationRun`, tenant-scoped, run scoped to its automation). Added `automationErrorMapper` to
   `app.ts` mapping `LockedAutomationError`→`409 AUTOMATION_LOCKED` (distinct code → dashboard offers
-  "Duplicate to edit") + `AutomationNotFoundError`→`404`. Wiring: `@sparx/automation` +
-  `@sparx/automation-schemas` added to api-rest deps + Dockerfile COPY closure (route needs only the
+  "Duplicate to edit") + `AutomationNotFoundError`→`404`. Wiring: `@wizeworks/automation` +
+  `@wizeworks/automation-schemas` added to api-rest deps + Dockerfile COPY closure (route needs only the
   service layer → no executor/CRM/commerce closure pulled in); `pnpm install` lockfile change scoped to
   the two new links. **Verify:** automation + api-rest typecheck clean, lint 0, prettier clean;
   `automations-routes.test.ts` 7/7 (401, lifecycle, RBAC 403, 404+422, LOCKED 409 + clone 201, delete,
-  run-history) + `@sparx/automation` 35/35. Purely additive — no existing route/behavior changed; the
+  run-history) + `@wizeworks/automation` 35/35. Purely additive — no existing route/behavior changed; the
   other agent's in-flight invoicing files in the working tree were left untouched. **Next:** Slice G-UI
   (dashboard surface) or Slice H (MCP write-tool) — both consume this API.
-- **2026-06-11 (cont.)** — **Slice H (MCP authoring tools) DONE.** New `packages/automation/src/mcp/`
+- **2026-06-11 (cont.)** — **Slice H (MCP authoring tools) DONE.** New `wizeworks/packages/automation/src/mcp/`
   (registry + read-tools + write-tools + barrel) exporting `automationMcpTools` — 9 tools wrapping the
-  SAME service layer as the REST routes (one service, three transports), published by `services/api-mcp`
+  SAME service layer as the REST routes (one service, three transports), published by `wizeworks/services/api-mcp`
   via the established `crmMcpTools` registry pattern. Reads (`list_automations` / `get_automation` /
   `get_automation_runs` / `get_automation_run`, `read:automations`, open) + writes (`create` / `update`
   / `set_status` / `clone` / `delete`, `write:automations`, `confirmation:true` → destructiveHint). The
   AI authors rules only — `dispatch` is not exported, the gated dispatcher stays the sole effect path.
-  Write tools reuse `Create/Update/CloneAutomationInput` from `@sparx/automation-schemas` (no vocab
+  Write tools reuse `Create/Update/CloneAutomationInput` from `@wizeworks/automation-schemas` (no vocab
   drift vs REST/dashboard). Tier model enforced over MCP exactly as REST (origin/locked service-set;
   LOCKED update/status/delete → error result; clone = "Duplicate to edit"). Scopes added to api-mcp
-  `auth.ts` (owner/admin/editor write, viewer read) + `WRITE_SCOPES`. Closure: `@sparx/automation` +
-  `@sparx/automation-schemas` → api-mcp deps + Dockerfile COPY (service layer only, no executor
+  `auth.ts` (owner/admin/editor write, viewer read) + `WRITE_SCOPES`. Closure: `@wizeworks/automation` +
+  `@wizeworks/automation-schemas` → api-mcp deps + Dockerfile COPY (service layer only, no executor
   closure). **⚠ Fixed two pre-existing api-mcp bugs the dormant suite had hidden:** (1) added the
   missing `@vitejs/plugin-react` JSX transform to api-mcp's vitest config (the api-rest PR#41 issue,
-  never mirrored — `@sparx/email`'s raw `.tsx` in the graph made EVERY suite fail at import); (2)
+  never mirrored — `@wizeworks/email`'s raw `.tsx` in the graph made EVERY suite fail at import); (2)
   **duplicate MCP tool name** `get_top_customers` (CRM lifetime-spend AND commerce date-ranged report)
   → the SDK threw at registration so the server couldn't boot a session (every request 500'd, incl.
   `initialize`). Renamed the commerce tool → `get_top_customers_by_revenue` (CRM owns the customer-spine
   name); found via a throwaway dup-name diagnostic (109 tools → 0 dupes). **Verify:** automation +
   api-mcp + commerce typecheck clean, lint 0, prettier clean; `automation-tools.test.ts` 4/4 (published
   - reachable on an ai-only tenant; lifecycle; LOCKED clone-not-edit; scope denial) — full api-mcp
-    suite now **12/12** (was unrunnable), `@sparx/automation` 35/35. Lockfile scoped to the two links +
+    suite now **12/12** (was unrunnable), `@wizeworks/automation` 35/35. Lockfile scoped to the two links +
     the `@vitejs/plugin-react` devDep; the other agent's invoicing files (dashboard `invoicing/` +
     `_shell/registry.ts`) left untouched. **Next:** Slice G-UI (dashboard surface) — the last consumer of
     the now-two-transport (REST + MCP) service layer; or Slice I (external/inbound webhooks). Email-driven
@@ -1221,7 +1221,7 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   limited to executor-backed + active-module actions), and run history + per-step `gate_log` run detail.
   Tier model surfaced as the service enforces it (LOCKED → "Duplicate to edit" + View runs only; edit
   route bounces locked → detail; 409 AUTOMATION_LOCKED → friendly copy). RBAC viewer-read / editor-write.
-  **No-drift:** added `@sparx/automation-schemas` as a dashboard dep (canonical types +
+  **No-drift:** added `@wizeworks/automation-schemas` as a dashboard dep (canonical types +
   `triggerToColumns`/`triggerFromColumns` + zod parsers) + Dockerfile COPY (closure = just zod, already
   present); `pnpm install` lockfile scoped to the one link. **Verify:** `@sparx/dashboard` typecheck
   clean, lint **0/0**, prettier clean, and the **`next build` production build passes (exit 0)** with all
@@ -1237,19 +1237,19 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   selects stay usable) + a `KeyboardSensor` for a11y; stable per-action ids keep each card's state with
   the item across a drag. Memory `feedback_drag_whole_element_not_handle`.
   (2) **Nested AND/OR condition groups** (the real expressiveness upgrade — flat AND/OR can't express
-  `A AND (B OR C)`). Cross-package: **schema** (`@sparx/automation-schemas` `condition.ts`) — `ConditionGroup`
+  `A AND (B OR C)`). Cross-package: **schema** (`@wizeworks/automation-schemas` `condition.ts`) — `ConditionGroup`
   now accepts leaf conditions OR nested sub-groups, built as **explicit finite levels (depth 3), NOT
   `z.lazy`** so it stays a finite `$ref`-free JSON-Schema (verified the MCP tool registration still boots —
   the prior 500-risk area) and over-deep trees are REJECTED, not silently accepted; backward compatible (a
   flat all-leaf group is unchanged) → existing stored automations parse as-is. Added `isConditionGroup`
-  guard + `ConditionNode`/`MAX_CONDITION_DEPTH` exports. **Evaluator** (`@sparx/automation` `evaluate.ts`)
+  guard + `ConditionNode`/`MAX_CONDITION_DEPTH` exports. **Evaluator** (`@wizeworks/automation` `evaluate.ts`)
   recurses into sub-groups. **Dashboard** `ConditionEditor` is now recursive (per-group All/Any + Add
   condition / Add group, "Add group" hidden at max depth) and `ConditionGroupView` renders the tree indented.
   **Verify:** automation-schemas typecheck + **10/10** (+3 nested: parse / backward-compat / depth-reject);
   automation evaluator typecheck + **13/13** (+4 nested: mixed precedence / failing sub-group / 3-level /
   empty sub-group); **api-mcp 4/4** (JSON-schema conversion still clean — finite-level design paid off);
   **api-rest 7/7** (backward compat); dashboard typecheck + lint **0/0** + prettier + **`next build` exit 0**.
-  Bumped docs/81 §5.3 (v1.5→1.6). ⚠ **Pre-existing, UNRELATED failure surfaced:** `@sparx/automation` full
+  Bumped docs/81 §5.3 (v1.5→1.6). ⚠ **Pre-existing, UNRELATED failure surfaced:** `@wizeworks/automation` full
   suite is 38/39 — `engine.test.ts > parks a durable wait and resumes it on a later tick` fails (`waiting` vs
   `completed`). It's in the run-tick RESUME path (untouched by this work) and **fails identically on the
   pre-change HEAD files** (verified by reverting condition.ts/evaluate.ts and re-running) — a flaky

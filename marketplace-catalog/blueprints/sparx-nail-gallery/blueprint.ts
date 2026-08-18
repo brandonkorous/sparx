@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-nail-gallery',
-    version: '1.3.0',
-    name: 'sparx — Nail Studio (Gallery)',
-    summary:
-        'A gallery-chic nail-studio site — a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as "Lacquer", a calm daylight studio.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-nail-gallery',
+  version: '1.3.0',
+  name: 'sparx — Nail Studio (Gallery)',
+  summary:
+    'A gallery-chic nail-studio site — a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as "Lacquer", a calm daylight studio.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Lacquer',
+    tagline: 'Nails as a small work of art.',
+    colors: {
+      primary: '#df7f78',
+      primaryForeground: '#130807',
+      accent: '#177f8e',
+      secondary: '#534b48',
+    },
+    fonts: {
+      heading: 'Space Grotesk',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'lacquer',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Lacquer',
-        tagline: 'Nails as a small work of art.',
-        colors: {
-            primary: '#df7f78',
-            primaryForeground: '#130807',
-            accent: '#177f8e',
-            secondary: '#534b48',
-        },
-        fonts: {
-            heading: 'Space Grotesk',
-            body: 'Inter',
-        },
+      colorPrimary: '#df7f78',
+      colorAccent: '#177f8e',
+      colorSecondary: '#534b48',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'lacquer',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#df7f78',
-            colorAccent: '#177f8e',
-            colorSecondary: '#534b48',
-            fontHeading: 'Space Grotesk',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

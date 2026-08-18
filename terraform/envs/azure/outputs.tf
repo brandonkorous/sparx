@@ -22,7 +22,7 @@ output "postgres_fqdn" {
 #
 # `sparx_owner` is the Azure admin login, used for migrations and the hand-edited
 # RLS SQL. `sparx_app` does NOT exist yet — it is created by
-# packages/db/docker/init/01-roles.sql, which Azure will never run for us (that
+# wizeworks/packages/db/docker/init/01-roles.sql, which Azure will never run for us (that
 # script is a Docker-image entrypoint convention, not a Postgres feature). It has
 # to be applied once by hand against this server before the apps can connect.
 # See README.md in this directory.
@@ -60,7 +60,7 @@ output "media_storage_account" {
   description = <<-EOT
     AZURE_STORAGE_ACCOUNT — the media blob account. Set this, and the key below,
     in the repo secret that feeds `sparx-app-secrets`; api-rest, media-worker and
-    packages/media each select the Azure backend only when BOTH are present, and
+    wizeworks/packages/media each select the Azure backend only when BOTH are present, and
     fall back to local disk otherwise.
   EOT
   value       = azurerm_storage_account.media.name

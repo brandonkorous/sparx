@@ -1,179 +1,146 @@
 {
-    "categories": [
+  "categories": [
+    {
+      "handle": "objects",
+      "name": "Objects",
+      "description": "For the made world.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "The finishing pieces.",
+      "featured": true
+    },
+    {
+      "handle": "prints",
+      "name": "Prints",
+      "description": "From the portfolio.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "The Edit",
+      "description": "What the desk is pointing at this issue — shop the look.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["the-everyday-scarf", "studio-carafe", "acetate-sunglasses"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "the-everyday-scarf",
+      "title": "The Everyday Scarf",
+      "description": "A generous square of heavyweight silk twill, hand-rolled at the edge, in a single quiet color. The one accessory the wardrobe story kept coming back to — it finishes a coat and asks for nothing.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Mode & Object",
+      "tags": ["accessory", "silk", "the-edit"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Everyday Scarf — hand-rolled silk twill | Mode & Object",
+      "seoDescription": "A heavyweight silk twill scarf in a single quiet color, hand-rolled at the edge.",
+      "variants": [
         {
-            "handle": "objects",
-            "name": "Objects",
-            "description": "For the made world.",
-            "featured": true
-        },
-        {
-            "handle": "accessories",
-            "name": "Accessories",
-            "description": "The finishing pieces.",
-            "featured": true
-        },
-        {
-            "handle": "prints",
-            "name": "Prints",
-            "description": "From the portfolio.",
-            "featured": false
+          "sku": "MO-ACC-SCARF",
+          "priceCents": 12000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
         }
-    ],
-    "collections": [
+      ],
+      "images": [
         {
-            "handle": "featured",
-            "name": "The Edit",
-            "description": "What the desk is pointing at this issue — shop the look.",
-            "type": "manual",
-            "featured": true,
-            "productHandles": [
-                "the-everyday-scarf",
-                "studio-carafe",
-                "acetate-sunglasses"
-            ]
+          "assetId": "product-scarf",
+          "isPrimary": true,
+          "alt": "A folded silk scarf"
         }
-    ],
-    "products": [
+      ]
+    },
+    {
+      "handle": "studio-carafe",
+      "title": "The Studio Carafe",
+      "description": "A hand-thrown stoneware carafe from the atelier we visited this issue — matte, off-white, a little uneven on purpose. Made in small runs, so no two are quite the same. Water, wine, or a single stem.",
+      "status": "active",
+      "productType": "Object",
+      "vendor": "Mode & Object",
+      "tags": ["object", "ceramic", "the-edit"],
+      "categoryHandles": ["objects"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Studio Carafe — hand-thrown stoneware | Mode & Object",
+      "seoDescription": "A hand-thrown matte stoneware carafe, made in small runs — no two the same.",
+      "variants": [
         {
-            "handle": "the-everyday-scarf",
-            "title": "The Everyday Scarf",
-            "description": "A generous square of heavyweight silk twill, hand-rolled at the edge, in a single quiet color. The one accessory the wardrobe story kept coming back to — it finishes a coat and asks for nothing.",
-            "status": "active",
-            "productType": "Accessory",
-            "vendor": "Mode & Object",
-            "tags": [
-                "accessory",
-                "silk",
-                "the-edit"
-            ],
-            "categoryHandles": [
-                "accessories"
-            ],
-            "collectionHandles": [
-                "featured"
-            ],
-            "seoTitle": "The Everyday Scarf — hand-rolled silk twill | Mode & Object",
-            "seoDescription": "A heavyweight silk twill scarf in a single quiet color, hand-rolled at the edge.",
-            "variants": [
-                {
-                    "sku": "MO-ACC-SCARF",
-                    "priceCents": 12000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "product-scarf",
-                    "isPrimary": true,
-                    "alt": "A folded silk scarf"
-                }
-            ]
-        },
-        {
-            "handle": "studio-carafe",
-            "title": "The Studio Carafe",
-            "description": "A hand-thrown stoneware carafe from the atelier we visited this issue — matte, off-white, a little uneven on purpose. Made in small runs, so no two are quite the same. Water, wine, or a single stem.",
-            "status": "active",
-            "productType": "Object",
-            "vendor": "Mode & Object",
-            "tags": [
-                "object",
-                "ceramic",
-                "the-edit"
-            ],
-            "categoryHandles": [
-                "objects"
-            ],
-            "collectionHandles": [
-                "featured"
-            ],
-            "seoTitle": "The Studio Carafe — hand-thrown stoneware | Mode & Object",
-            "seoDescription": "A hand-thrown matte stoneware carafe, made in small runs — no two the same.",
-            "variants": [
-                {
-                    "sku": "MO-OBJ-CARAFE",
-                    "priceCents": 8800,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "product-carafe",
-                    "isPrimary": true,
-                    "alt": "A hand-thrown ceramic carafe"
-                }
-            ]
-        },
-        {
-            "handle": "acetate-sunglasses",
-            "title": "The Acetate Sunglasses",
-            "description": "A rounded acetate frame in a warm tortoise, cut from a single sheet and polished by hand. The shape the beauty desk keeps recommending because it flatters almost everyone and dates almost never.",
-            "status": "active",
-            "productType": "Accessory",
-            "vendor": "Mode & Object",
-            "tags": [
-                "accessory",
-                "eyewear",
-                "the-edit"
-            ],
-            "categoryHandles": [
-                "accessories"
-            ],
-            "collectionHandles": [
-                "featured"
-            ],
-            "seoTitle": "The Acetate Sunglasses — hand-polished frame | Mode & Object",
-            "seoDescription": "A rounded acetate sunglass frame in warm tortoise, cut and polished by hand.",
-            "variants": [
-                {
-                    "sku": "MO-ACC-SUN",
-                    "priceCents": 16500,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "product-sunglasses",
-                    "isPrimary": true,
-                    "alt": "A pair of acetate sunglasses"
-                }
-            ]
-        },
-        {
-            "handle": "studio-print-no-4",
-            "title": "Studio Print No. 4",
-            "description": "An archival giclée print from our contributing photographer Iris Blum — a still life from the design portfolio, editioned and signed. Ships flat, unframed, in a run of one hundred.",
-            "status": "active",
-            "productType": "Print",
-            "vendor": "Mode & Object",
-            "tags": [
-                "print",
-                "photography"
-            ],
-            "categoryHandles": [
-                "prints"
-            ],
-            "collectionHandles": [],
-            "seoTitle": "Studio Print No. 4 — signed archival giclée | Mode & Object",
-            "seoDescription": "A signed, editioned archival giclée still life by Iris Blum, in a run of one hundred.",
-            "variants": [
-                {
-                    "sku": "MO-PRINT-04",
-                    "priceCents": 22000,
-                    "isDefault": true,
-                    "inventoryPolicy": "continue"
-                }
-            ],
-            "images": [
-                {
-                    "assetId": "product-print",
-                    "isPrimary": true,
-                    "alt": "A framed studio print"
-                }
-            ]
+          "sku": "MO-OBJ-CARAFE",
+          "priceCents": 8800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
         }
-    ]
+      ],
+      "images": [
+        {
+          "assetId": "product-carafe",
+          "isPrimary": true,
+          "alt": "A hand-thrown ceramic carafe"
+        }
+      ]
+    },
+    {
+      "handle": "acetate-sunglasses",
+      "title": "The Acetate Sunglasses",
+      "description": "A rounded acetate frame in a warm tortoise, cut from a single sheet and polished by hand. The shape the beauty desk keeps recommending because it flatters almost everyone and dates almost never.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Mode & Object",
+      "tags": ["accessory", "eyewear", "the-edit"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Acetate Sunglasses — hand-polished frame | Mode & Object",
+      "seoDescription": "A rounded acetate sunglass frame in warm tortoise, cut and polished by hand.",
+      "variants": [
+        {
+          "sku": "MO-ACC-SUN",
+          "priceCents": 16500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "product-sunglasses",
+          "isPrimary": true,
+          "alt": "A pair of acetate sunglasses"
+        }
+      ]
+    },
+    {
+      "handle": "studio-print-no-4",
+      "title": "Studio Print No. 4",
+      "description": "An archival giclée print from our contributing photographer Iris Blum — a still life from the design portfolio, editioned and signed. Ships flat, unframed, in a run of one hundred.",
+      "status": "active",
+      "productType": "Print",
+      "vendor": "Mode & Object",
+      "tags": ["print", "photography"],
+      "categoryHandles": ["prints"],
+      "collectionHandles": [],
+      "seoTitle": "Studio Print No. 4 — signed archival giclée | Mode & Object",
+      "seoDescription": "A signed, editioned archival giclée still life by Iris Blum, in a run of one hundred.",
+      "variants": [
+        {
+          "sku": "MO-PRINT-04",
+          "priceCents": 22000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "product-print",
+          "isPrimary": true,
+          "alt": "A framed studio print"
+        }
+      ]
+    }
+  ]
 }

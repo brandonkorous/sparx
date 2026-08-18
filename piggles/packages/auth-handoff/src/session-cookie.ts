@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto';
-import { auth } from '@sparx/auth';
+import { auth } from '@wizeworks/auth';
 import { getCookies } from 'better-auth/cookies';
 
 // Writing the session cookie on the OTHER domain.

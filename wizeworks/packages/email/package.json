@@ -1,0 +1,63 @@
+{
+  "name": "@wizeworks/email",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Platform email infrastructure — React Email templates, provider abstraction (Mailgun in prod, console in dev), and the high-level sendEmail() called by Better Auth, signup flows, and api-rest event consumers. Brand-blind: the sending product's name and palette arrive per send from @wizeworks/brand-core.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./template-ids": {
+      "types": "./src/template-ids.ts",
+      "default": "./src/template-ids.ts"
+    },
+    "./template-fixtures": {
+      "types": "./src/template-fixtures.ts",
+      "default": "./src/template-fixtures.ts"
+    },
+    "./templates": {
+      "types": "./src/templates/index.ts",
+      "default": "./src/templates/index.ts"
+    },
+    "./providers": {
+      "types": "./src/providers/index.ts",
+      "default": "./src/providers/index.ts"
+    },
+    "./silica": {
+      "types": "./src/silica/index.ts",
+      "default": "./src/silica/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.0.8",
+    "@wizeworks/brand-core": "workspace:*",
+    "@wizeworks/builder-schemas": "workspace:*",
+    "@wizeworks/cms-editor": "workspace:*",
+    "@wizeworks/site-themes": "workspace:*",
+    "@wizeworks/silicaui-builder": "catalog:",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "react": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

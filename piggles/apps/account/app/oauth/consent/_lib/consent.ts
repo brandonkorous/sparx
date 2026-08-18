@@ -10,7 +10,7 @@
 // standing between somebody's business data and an app that asked for it.
 
 import 'server-only';
-import { getRegisteredMcpClient, type RegisteredMcpClient } from '@sparx/auth';
+import { getRegisteredMcpClient, type RegisteredMcpClient } from '@wizeworks/auth';
 
 export interface AuthorizeParams {
   responseType: string;

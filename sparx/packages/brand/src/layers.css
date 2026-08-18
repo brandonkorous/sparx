@@ -1,0 +1,25 @@
+/* Cascade-layer ORDER — must be the FIRST stylesheet an app loads.
+ *
+ * CSS layer precedence is set by the order in which layer names are FIRST seen.
+ * silicaui emits ALL of its output — design tokens AND component rules (`.btn`,
+ * `.card`, `.alert`, …) — through Tailwind's `addBase`, so it lands in `@layer
+ * base` (NOT `components`, the way the pre-migration @wizeworks/ui did). `components`
+ * is kept in the order as a harmless slot for any future `addComponents` output.
+ *
+ * The `sparx` theme block (@sparx/brand/theme.css) is UNLAYERED, so its
+ * `[data-theme]` tokens outrank silicaui's base-layer `:root`/`[data-theme]`
+ * defaults — the sparx brand values always win. Likewise an app's unlayered
+ * `html, body` paint beats silicaui's base-layer surface paint, so each app keeps
+ * its own canvas.
+ *
+ * This lives in its own plain-CSS file (NOT the app's globals.css) because
+ * globals.css is the Tailwind v4 entry — Tailwind's compiler rewrites a top-level
+ * `@layer` statement to its own canonical `theme, base, components, utilities`,
+ * dropping any custom order declared there. A standalone file imported first
+ * survives. Import it before `tailwindcss` in the app entry:
+ *
+ *   @import '@sparx/brand/layers.css';
+ *   @import 'tailwindcss';
+ *   @import '@sparx/brand/theme.css';
+ *   @plugin '@wizeworks/silicaui' { colors: primary, …, danger; } */
+@layer theme, base, components, utilities;

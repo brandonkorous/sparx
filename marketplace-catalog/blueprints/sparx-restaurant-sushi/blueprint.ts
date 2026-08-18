@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-restaurant-sushi',
-    version: '1.3.0',
-    name: 'sparx — Sushi & omakase',
-    summary:
-        'A complete, working site for a sushi & omakase counter: a real omakase and à-la-carte menu, and a live reservations flow (counter seats and tables as bookable resources, an "Omakase counter" plus "Table for two/four" reservation services, two nightly seatings, a card-hold deposit and a cancellation policy) on the /reserve page. Minimal near-white paper theme, cool ink, a quiet indigo accent, a refined serif over a clean sans. Pages: Home, Menu, Reserve, About, Visit. Shipped as Nori.',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-restaurant-sushi',
+  version: '1.3.0',
+  name: 'sparx — Sushi & omakase',
+  summary:
+    'A complete, working site for a sushi & omakase counter: a real omakase and à-la-carte menu, and a live reservations flow (counter seats and tables as bookable resources, an "Omakase counter" plus "Table for two/four" reservation services, two nightly seatings, a card-hold deposit and a cancellation policy) on the /reserve page. Minimal near-white paper theme, cool ink, a quiet indigo accent, a refined serif over a clean sans. Pages: Home, Menu, Reserve, About, Visit. Shipped as Nori.',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Nori',
+    tagline: 'A ten-seat sushi counter.',
+    colors: {
+      primary: '#1c1f25',
+      primaryForeground: '#f5f9ff',
+      accent: '#3456a3',
+      secondary: '#49505b',
+    },
+    fonts: {
+      heading: 'Spectral',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'nori-omakase',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Nori',
-        tagline: 'A ten-seat sushi counter.',
-        colors: {
-            primary: '#1c1f25',
-            primaryForeground: '#f5f9ff',
-            accent: '#3456a3',
-            secondary: '#49505b',
-        },
-        fonts: {
-            heading: 'Spectral',
-            body: 'Inter',
-        },
+      colorPrimary: '#1c1f25',
+      colorAccent: '#3456a3',
+      colorSecondary: '#49505b',
+      fontHeading: 'Spectral',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'nori-omakase',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#1c1f25',
-            colorAccent: '#3456a3',
-            colorSecondary: '#49505b',
-            fontHeading: 'Spectral',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

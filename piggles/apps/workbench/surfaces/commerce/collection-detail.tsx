@@ -30,7 +30,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Switch,
@@ -46,6 +45,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaField } from './media-field';
@@ -143,7 +143,14 @@ export function CollectionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function CollectionLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: collection, isPending, isError, refetch } = useCollection(id);
+  const {
+    data: collection,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useCollection(id);
 
   if (isError) {
     return (
@@ -165,17 +172,35 @@ function CollectionLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <CollectionEditor ctx={ctx} id={id} collection={collection} />;
+  return (
+    <CollectionEditor
+      ctx={ctx}
+      id={id}
+      collection={collection}
+      isFetching={isFetching}
+      updatedAt={collection ? dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function CollectionEditor({
   ctx,
   id,
   collection,
+  isFetching,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   collection?: CollectionDetail;
+  /** Only the saved-collection state has a query behind it; "new" has none. */
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -394,37 +419,46 @@ function CollectionEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Collection actions">
-        {!isNew ? (
-          <Badge color={isRules ? 'info' : 'neutral'} variant="soft" size="sm">
-            {isRules ? 'Automatic' : 'Hand-picked'}
-          </Badge>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          loading={saving}
-          disabled={Boolean(nameError) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Create collection' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Collection actions"
+        status={
+          !isNew ? (
+            <Badge color={isRules ? 'info' : 'neutral'} variant="soft" size="sm">
+              {isRules ? 'Automatic' : 'Hand-picked'}
+            </Badge>
+          ) : null
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            loading={saving}
+            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            onClick={submit}
+          >
+            {isNew ? 'Create collection' : 'Save'}
+          </Button>
+        }
+        refresh={
+          onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a collection
-              </Heading>
-              <Text>
-                A collection is a themed group of products you show together — a summer sale, a gift
-                guide, this month&apos;s arrivals. Unlike a category, it is not part of your menu:
-                it is a set you can place anywhere on your site.
-              </Text>
-            </div>
+            <Text>
+              A collection is a themed group of products you show together — a summer sale, a gift
+              guide, this month&apos;s arrivals. Unlike a category, it is not part of your menu: it
+              is a set you can place anywhere on your site.
+            </Text>
           ) : null}
 
           {failure ? (

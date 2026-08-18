@@ -1,0 +1,9 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // The React half (src/react) compiles as JSX; the headless half imports no
+    // framework at all and stays consumable from api-rest and the workers.
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*"]
+}

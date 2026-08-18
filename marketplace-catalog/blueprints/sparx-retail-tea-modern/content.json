@@ -1,206 +1,206 @@
 [
-    {
-        "typeKey": "blog_post",
-        "slug": "how-to-whisk-a-perfect-bowl",
-        "status": "published",
-        "body": {
-            "title": "How to whisk a perfect bowl",
-            "excerpt": "Clumpy, bitter matcha almost always comes down to three fixable things: heat, sifting, and the whisk. Get them right and every bowl is smooth.",
-            "featuredImage": {
-                "$asset": "post-whisk"
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-whisk-a-perfect-bowl",
+    "status": "published",
+    "body": {
+      "title": "How to whisk a perfect bowl",
+      "excerpt": "Clumpy, bitter matcha almost always comes down to three fixable things: heat, sifting, and the whisk. Get them right and every bowl is smooth.",
+      "featuredImage": {
+        "$asset": "post-whisk"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A smooth, frothy bowl of matcha is not a matter of luck or expensive powder — it’s technique, and there’s barely any of it to learn. If your matcha comes out clumpy, bitter or thin, it’s almost always one of three things: the water was too hot, the powder wasn’t sifted, or a spoon was standing in for a whisk. Fix those and you’ll make a café-grade bowl at home every time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A smooth, frothy bowl of matcha is not a matter of luck or expensive powder — it’s technique, and there’s barely any of it to learn. If your matcha comes out clumpy, bitter or thin, it’s almost always one of three things: the water was too hot, the powder wasn’t sifted, or a spoon was standing in for a whisk. Fix those and you’ll make a café-grade bowl at home every time."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Sift, cool, whisk"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Start by sifting one teaspoon of matcha through a small strainer into your bowl — this breaks up the clumps that no amount of whisking will fully undo. Add a splash of water just off the boil, around 70°C: boiling water scorches matcha and turns it bitter, so let the kettle rest a minute first. Then whisk briskly in a W or M motion, from the wrist, not in circles — you’re whipping air in, not stirring. Ten to fifteen seconds and you’ll have a fine, even froth."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Then build your cup"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Once it’s frothed, you have a base for anything. Top it with hot water for a straight usucha, pour it over ice and cold milk for a latte, or drop it into a smoothie. Use ceremonial grade when you’re drinking it plain and want it sweet and delicate; reach for daily grade when milk and ice are involved and you want the matcha to stand up. Same technique, different cup — and none of it takes longer than the kettle."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "matcha-without-the-crash",
-        "status": "published",
-        "body": {
-            "title": "Matcha, without the crash",
-            "excerpt": "Same caffeine as a shot of espresso, none of the jitters or the mid-morning cliff. The difference is a quiet amino acid called L-theanine.",
-            "featuredImage": {
-                "$asset": "post-focus"
+            "content": [
+              {
+                "type": "text",
+                "text": "Sift, cool, whisk"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start by sifting one teaspoon of matcha through a small strainer into your bowl — this breaks up the clumps that no amount of whisking will fully undo. Add a splash of water just off the boil, around 70°C: boiling water scorches matcha and turns it bitter, so let the kettle rest a minute first. Then whisk briskly in a W or M motion, from the wrist, not in circles — you’re whipping air in, not stirring. Ten to fifteen seconds and you’ll have a fine, even froth."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
             },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "People who switch to matcha often describe the same thing: they feel awake and clear for hours, but without the racing, jittery lift of coffee and without the cliff-edge crash that follows it. That’s not marketing — it comes down to how matcha delivers its caffeine, and to a second compound that coffee simply doesn’t have."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Slow caffeine, plus L-theanine"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Because you drink the whole ground leaf rather than a quick water extraction, matcha’s caffeine is released more gradually as it digests — a steadier curve instead of a spike. Alongside it, matcha is rich in L-theanine, an amino acid that promotes calm, focused alertness and takes the sharp edge off caffeine’s stimulation. The two together are why matcha feels like “calm energy”: awake and even, rather than wired and then wrung out."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "How to use it"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "A bowl of matcha carries roughly the caffeine of a single espresso, so treat it like one: it’s a brilliant morning and early-afternoon drink, and a poor idea at 9pm. If you’re sensitive, start with our Focus blend, which pairs matcha with a lighter dose of leaf, and keep your last cup before mid-afternoon. Used that way, matcha gives you the steady end of the caffeine spectrum — and none of the part everyone complains about."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "typeKey": "blog_post",
-        "slug": "what-ceremonial-grade-means",
-        "status": "published",
-        "body": {
-            "title": "What “ceremonial grade” actually means",
-            "excerpt": "It isn’t a legal term, so it gets slapped on anything. Here’s what really separates a ceremonial matcha from a daily one — and when to buy which.",
-            "featuredImage": {
-                "$asset": "post-grade"
-            },
-            "body": {
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "“Ceremonial grade” is on nearly every tin of matcha sold, which is a problem, because it isn’t a regulated term — no one is stopping a brand from printing it on a dull, bitter powder. But there is a real difference between grades, and once you know what to look for you can taste it in the bowl and see it in the color."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Harvest, leaf and grind"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "The best matcha comes from the first spring harvest, from young leaves grown under shade for weeks before picking — the shade drives up the chlorophyll and L-theanine that make matcha vivid green and sweet. Those leaves are de-veined and stone-ground slowly into an ultra-fine powder. Later harvests, coarser grinds and more mature leaves give a matcha that’s more astringent, duller in color and cheaper to make. That’s the honest line between a ceremonial and a daily grade: not a label, but the leaf and the care behind it."
-                            }
-                        ]
-                    },
-                    {
-                        "type": "heading",
-                        "attrs": {
-                            "level": 2
-                        },
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "So which should you buy?"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Buy ceremonial when you’re drinking matcha plain — whisked with just water — and want it smooth, sweet and delicate; that’s where the quality is unmistakable. Buy daily grade for lattes, smoothies and iced cups, where milk and ice would drown the subtlety anyway and you want a bolder matcha that punches through. Most regular drinkers keep both: a ceremonial tin for the morning bowl, a daily tin for everything else."
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+            "content": [
+              {
+                "type": "text",
+                "text": "Then build your cup"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Once it’s frothed, you have a base for anything. Top it with hot water for a straight usucha, pour it over ice and cold milk for a latte, or drop it into a smoothie. Use ceremonial grade when you’re drinking it plain and want it sweet and delicate; reach for daily grade when milk and ice are involved and you want the matcha to stand up. Same technique, different cup — and none of it takes longer than the kettle."
+              }
+            ]
+          }
+        ]
+      }
     }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "matcha-without-the-crash",
+    "status": "published",
+    "body": {
+      "title": "Matcha, without the crash",
+      "excerpt": "Same caffeine as a shot of espresso, none of the jitters or the mid-morning cliff. The difference is a quiet amino acid called L-theanine.",
+      "featuredImage": {
+        "$asset": "post-focus"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People who switch to matcha often describe the same thing: they feel awake and clear for hours, but without the racing, jittery lift of coffee and without the cliff-edge crash that follows it. That’s not marketing — it comes down to how matcha delivers its caffeine, and to a second compound that coffee simply doesn’t have."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Slow caffeine, plus L-theanine"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Because you drink the whole ground leaf rather than a quick water extraction, matcha’s caffeine is released more gradually as it digests — a steadier curve instead of a spike. Alongside it, matcha is rich in L-theanine, an amino acid that promotes calm, focused alertness and takes the sharp edge off caffeine’s stimulation. The two together are why matcha feels like “calm energy”: awake and even, rather than wired and then wrung out."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How to use it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A bowl of matcha carries roughly the caffeine of a single espresso, so treat it like one: it’s a brilliant morning and early-afternoon drink, and a poor idea at 9pm. If you’re sensitive, start with our Focus blend, which pairs matcha with a lighter dose of leaf, and keep your last cup before mid-afternoon. Used that way, matcha gives you the steady end of the caffeine spectrum — and none of the part everyone complains about."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-ceremonial-grade-means",
+    "status": "published",
+    "body": {
+      "title": "What “ceremonial grade” actually means",
+      "excerpt": "It isn’t a legal term, so it gets slapped on anything. Here’s what really separates a ceremonial matcha from a daily one — and when to buy which.",
+      "featuredImage": {
+        "$asset": "post-grade"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Ceremonial grade” is on nearly every tin of matcha sold, which is a problem, because it isn’t a regulated term — no one is stopping a brand from printing it on a dull, bitter powder. But there is a real difference between grades, and once you know what to look for you can taste it in the bowl and see it in the color."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Harvest, leaf and grind"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best matcha comes from the first spring harvest, from young leaves grown under shade for weeks before picking — the shade drives up the chlorophyll and L-theanine that make matcha vivid green and sweet. Those leaves are de-veined and stone-ground slowly into an ultra-fine powder. Later harvests, coarser grinds and more mature leaves give a matcha that’s more astringent, duller in color and cheaper to make. That’s the honest line between a ceremonial and a daily grade: not a label, but the leaf and the care behind it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "So which should you buy?"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy ceremonial when you’re drinking matcha plain — whisked with just water — and want it smooth, sweet and delicate; that’s where the quality is unmistakable. Buy daily grade for lattes, smoothies and iced cups, where milk and ice would drown the subtlety anyway and you want a bolder matcha that punches through. Most regular drinkers keep both: a ceremonial tin for the morning bowl, a daily tin for everything else."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 ]

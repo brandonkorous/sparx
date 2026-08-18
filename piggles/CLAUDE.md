@@ -10,19 +10,21 @@ Piggles is WizeWorks' second brand: the same platform, a different product. Not 
 ## RULE #0 — Piggles and sparx are two applications. Neither may touch the other.
 
 **Either product must be deletable tomorrow without affecting the other.**
-Delete `apps/` and Piggles keeps working. Delete `piggles/` and sparx keeps
-working. That is the test, and it is the whole rule.
+Delete `sparx/` and Piggles keeps working. Delete `piggles/` and sparx keeps
+working. That is the test, and it is the whole rule — and since the tree move it
+is **proven** rather than asserted: `pnpm check:deletability` walks Piggles'
+real dependency closure and fails if anything in it lives under `sparx/`.
 
 `piggles/apps/workbench` therefore contains its **own copy** of everything it
 renders — the surfaces, the dock plumbing, the controller, the registry, the
-API routes. It imports nothing from `apps/workbench`, there is no `@workbench/*`
-alias, and no path in `piggles/` climbs out into `apps/`.
+API routes. It imports nothing from `sparx/apps/workbench`, there is no `@workbench/*`
+alias, and no path in `piggles/` climbs out into `sparx/`.
 
-| Layer                                                 | Owner           | Piggles may                                                 |
-| ----------------------------------------------------- | --------------- | ----------------------------------------------------------- |
-| `packages/*`, `services/*`, `packages/db`             | shared platform | import — libraries, not an app. **But see the scope note.** |
-| `apps/**` (sparx web, site, market, admin, workbench) | sparx           | **nothing. Never read, never edit.**                        |
-| `piggles/**`                                          | Piggles         | own outright                                                |
+| Layer                                                   | Owner           | Piggles may                          |
+| ------------------------------------------------------- | --------------- | ------------------------------------ |
+| `wizeworks/**` (packages, services, admin, site)        | shared platform | import — libraries, not an app       |
+| `sparx/**` (its brand package + web, market, workbench) | sparx           | **nothing. Never read, never edit.** |
+| `piggles/**`                                            | Piggles         | own outright                         |
 
 Both brands run on **one database and one tenant pool**. A tenant belongs to the
 brand it signed up under, recorded on **`Tenant.platformBrand`** (a `String`,
@@ -46,7 +48,7 @@ plan, its phases and the running checklist are in
 - **Do not add a new `@sparx/*` dependency from `piggles/`.** The
   `check:boundaries` script counts them per package against a recorded baseline
   and fails the push if any count rises. Falling is the only permitted direction.
-- **`@sparx/brand` and `@sparx/ui` are OFF LIMITS entirely.** Those two genuinely
+- **`@sparx/brand` and `@wizeworks/ui` are OFF LIMITS entirely.** Those two genuinely
   carry sparx — its marks, its mascot, its token values — and Piggles has
   `@piggles/brand`, `@piggles/mascot` and `@piggles/ui` of its own. Both were
   dropped from the console on 2026-08-16 along with the five places it was
@@ -56,7 +58,7 @@ plan, its phases and the running checklist are in
 
 ### Why this was not always the rule, and what it cost
 
-The console was originally built to MOUNT `apps/workbench` through a tsconfig
+The console was originally built to MOUNT `sparx/apps/workbench` through a tsconfig
 alias — 84 imports, with `piggles/CLAUDE.md` telling you to "mount them, never
 fork them". It looked like the disciplined choice and it was the expensive one:
 
@@ -65,7 +67,7 @@ fork them". It looked like the disciplined choice and it was the expensive one:
 - A build error in Piggles surfaced as a build error in sparx.
 - Deleting either product would have broken the other.
 
-That was undone on 2026-08-14. `apps/workbench` was restored to its committed
+That was undone on 2026-08-14. `sparx/apps/workbench` was restored to its committed
 state, the tree was copied into `piggles/`, and every import was repointed at
 `@/`. **Do not reintroduce it.** If a fix is needed in both products, make it
 twice — that cost is real, and it is smaller than the coupling.
@@ -98,8 +100,8 @@ in order of how bad they are:
 
 The seams exist, so use them: `hiddenSurfaces` for a whole surface,
 `hiddenFeatures` for a block inside one — both in
-[lib/product.ts](apps/workbench/lib/product.ts), both declared in
-[lib/console/product.tsx](apps/workbench/lib/console/product.tsx). Both files are
+[lib/product.ts](sparx/apps/workbench/lib/product.ts), both declared in
+[lib/console/product.tsx](sparx/apps/workbench/lib/console/product.tsx). Both files are
 Piggles' own; nothing here reaches into another application.
 
 **The one genuine exception, which must be argued rather than assumed:** a

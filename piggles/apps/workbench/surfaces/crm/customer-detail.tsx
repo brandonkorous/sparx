@@ -72,6 +72,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { ScrollStrip } from '../../components/scroll-strip';
 import { CustomPropertiesPanel } from './custom-properties-panel';
@@ -224,7 +225,14 @@ export function CustomerDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function CustomerLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: customer, isPending, isError, refetch } = useCustomer(id);
+  const {
+    data: customer,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useCustomer(id);
 
   if (isError) {
     return (
@@ -246,17 +254,34 @@ function CustomerLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return <PaneWaiting />;
   }
 
-  return <CustomerEditor ctx={ctx} id={id} customer={customer} />;
+  return (
+    <CustomerEditor
+      ctx={ctx}
+      id={id}
+      customer={customer}
+      isFetching={isFetching}
+      updatedAt={dataUpdatedAt}
+      onRefresh={() => {
+        void refetch();
+      }}
+    />
+  );
 }
 
 function CustomerEditor({
   ctx,
   id,
   customer,
+  isFetching = false,
+  updatedAt,
+  onRefresh,
 }: {
   ctx: SurfaceContext;
   id: string;
   customer?: Customer;
+  isFetching?: boolean;
+  updatedAt?: number;
+  onRefresh?: () => void;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -772,64 +797,71 @@ function CustomerEditor({
   /* ── Toolbar (shared) ─────────────────────────────────────────────────── */
 
   const toolbar = (
-    <PaneToolbar label="Customer actions">
-      {/* The toolbar leads with the lifecycle stage — the primary "where are
-          they" signal; the relationship + lead status sit on the rail/form. */}
-      <Badge color={lifecycleMeta.color} variant="soft" size="sm">
-        {lifecycleMeta.label}
-      </Badge>
-      {/* The things you DO to a customer live in the toolbar, not on the profile
-          card: start a deal or a task pre-linked to them. The label gives way to
-          the icon on a narrow pane; the aria-label carries the full name always. */}
-      {!isNew && customer ? (
+    <PaneToolbar
+      label="Customer actions"
+      status={
+        /* The toolbar leads with the lifecycle stage — the primary "where are
+          they" signal; the relationship + lead status sit on the rail/form. */
+        <Badge color={lifecycleMeta.color} variant="soft" size="sm">
+          {lifecycleMeta.label}
+        </Badge>
+      }
+      {...(!isNew && customer
+        ? {
+            // The things you DO to a customer, as values rather than markup —
+            // two icon buttons whose labels vanished below @md were two bare `+`
+            // glyphs side by side on a phone, identical and unexplained. As
+            // actions they keep their names wherever the bar puts them.
+            actions: [
+              {
+                label: 'New deal',
+                icon: faPlus,
+                onClick: () => {
+                  ctx.open(
+                    'crm.deal.detail',
+                    { id: 'new', customerId: customer.id },
+                    { target: 'tab' }
+                  );
+                },
+              },
+              {
+                label: 'New task',
+                icon: faPlus,
+                onClick: () => {
+                  ctx.open(
+                    'crm.task.detail',
+                    { id: 'new', customerId: customer.id },
+                    { target: 'tab' }
+                  );
+                },
+              },
+            ],
+          }
+        : {})}
+      primary={
         <>
           <Button
-            size="sm"
-            variant="ghost"
             color="module"
-            className="ml-auto shrink-0"
-            aria-label="New deal for this customer"
-            onClick={() => {
-              ctx.open(
-                'crm.deal.detail',
-                { id: 'new', customerId: customer.id },
-                { target: 'tab' }
-              );
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Deal</span>
-          </Button>
-          <Button
             size="sm"
-            variant="ghost"
-            color="module"
             className="shrink-0"
-            aria-label="New task for this customer"
-            onClick={() => {
-              ctx.open(
-                'crm.task.detail',
-                { id: 'new', customerId: customer.id },
-                { target: 'tab' }
-              );
-            }}
+            loading={saving}
+            disabled={Boolean(blocked) || (!isNew && !dirty)}
+            onClick={submit}
           >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Task</span>
+            {isNew ? 'Add customer' : 'Save'}
           </Button>
         </>
-      ) : null}
-      <Button
-        color="module"
-        size="sm"
-        className={!isNew && customer ? 'shrink-0' : 'ml-auto shrink-0'}
-        loading={saving}
-        disabled={Boolean(blocked) || (!isNew && !dirty)}
-        onClick={submit}
-      >
-        {isNew ? 'Add customer' : 'Save'}
-      </Button>
-    </PaneToolbar>
+      }
+      refresh={
+        onRefresh ? (
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={customer ? updatedAt : undefined}
+            onRefresh={onRefresh}
+          />
+        ) : undefined
+      }
+    />
   );
 
   /* ── Add: one focused column ──────────────────────────────────────────── */
@@ -841,15 +873,10 @@ function CustomerEditor({
         <div className="min-h-0 flex-1 overflow-y-auto p-3 @lg:p-4">
           <div className={COLUMN}>
             {isNew ? (
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Add a customer
-                </Heading>
-                <Text>
-                  Everyone you work with or keep in touch with lives here. Fill in what you know — a
-                  name or an email is enough to start.
-                </Text>
-              </div>
+              <Text>
+                Everyone you work with or keep in touch with lives here. Fill in what you know — a
+                name or an email is enough to start.
+              </Text>
             ) : null}
             {failureAlert}
             {detailsForm}

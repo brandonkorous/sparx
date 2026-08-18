@@ -1,0 +1,37 @@
+{
+  "name": "@wizeworks/import-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx import worker. Receives import.job.created events via Pub/Sub push (Cloud Run HTTP entrypoint), processes CSV rows from the import_jobs.raw_rows JSONB column, and writes per-row results to import_job_rows. Supports products and customers with upsert-by-natural-key semantics.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/cms": "workspace:*",
+    "@wizeworks/commerce": "workspace:*",
+    "@wizeworks/crm": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/inventory": "workspace:*",
+    "@wizeworks/media": "workspace:*",
+    "@wizeworks/migration": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

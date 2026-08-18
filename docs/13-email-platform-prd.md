@@ -9,7 +9,7 @@
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the email **backend** is complete —
 > the `email.send` → Pub/Sub → `email-worker` → Mailgun pipeline, per-tenant domain
 > provisioning/verification, suppression handling, and the MCP tools (§10) all ship and
-> run. **The operator UI, however, is currently STUBBED in `apps/workbench`** (the
+> run. **The operator UI, however, is currently STUBBED in `sparx/apps/workbench`** (the
 > operator app rebuilt from the deleted `apps/dashboard`): the broadcasts, domains,
 > suppressions, and settings surfaces are placeholders pending rebuild. So the pipeline
 > works end to end while the tenant-facing management screens described below are not
@@ -35,7 +35,7 @@ What we gain by going Mailgun-direct:
 - **Zero infrastructure for outbound** — no GKE pods, no MariaDB, no PVC, no admin UI to keep secure. The `email-worker` Cloud Run service makes a `POST /v3/{domain}/messages` call and Mailgun handles everything downstream.
 - **Multi-tenant by API** — Mailgun supports up to 1,000 verified sending domains per account (Foundation tier). Per-tenant domain provisioning is a `POST /v4/domains` + `PUT /v4/domains/{name}/verify` flow.
 - **Reputation is theirs** — clean IPs, established warmup, ongoing blocklist monitoring, FBL registration with major ISPs, Google Postmaster Tools / Microsoft SNDS. None of which we have to operate.
-- **Templates stay ours** — React Email components render inside `@sparx/email` and we pass the rendered HTML/text to Mailgun. No vendor lock-in on content.
+- **Templates stay ours** — React Email components render inside `@wizeworks/email` and we pass the rendered HTML/text to Mailgun. No vendor lock-in on content.
 
 Cost trajectory:
 
@@ -58,7 +58,7 @@ Pub/Sub topic: email.send
         │ (push subscription with OIDC)
         ▼
 Cloud Run: email-worker
-  ├── renders React Email template via @sparx/email
+  ├── renders React Email template via @wizeworks/email
   ├── selects tenant sending domain
   └── POST https://api.mailgun.net/v3/{domain}/messages
         │

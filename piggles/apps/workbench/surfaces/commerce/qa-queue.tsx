@@ -11,29 +11,29 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
+  Card,
   Checkbox,
-  EmptyState,
   Heading,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import {
-  faCheck,
-  faCircleQuestion,
-  faEyeSlash,
-  faReply,
-  faServer,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faCheck, faEyeSlash, faReply } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, questionState } from './products-data';
+
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
 import {
   useAnswerQueueQuestion,
   useBulkModerateQuestions,
@@ -42,8 +42,6 @@ import {
   useQueueQuestion,
   type QueueQuestion,
 } from './moderation-data';
-
-const LABEL = 'Questions & answers';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -327,61 +325,67 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Questions queue controls">
-        <Icon glyph={faCircleQuestion} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {LABEL}
-        </Heading>
-        {rows.length > 0 ? (
-          <Badge color="warning" variant="soft" size="sm">
-            {rows.length === 1 ? '1 waiting' : `${String(rows.length)} waiting`}
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={questions.isFetching}
-          updatedAt={questions.data ? questions.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void questions.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Questions queue controls"
+        status={
+          rows.length > 0 ? (
+            <Badge color="warning" variant="soft" size="sm">
+              {rows.length === 1 ? '1 waiting' : `${String(rows.length)} waiting`}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            className="ml-auto"
+            isFetching={questions.isFetching}
+            updatedAt={questions.data ? questions.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void questions.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {/* All three non-ready states are carded, matching the queue itself — a
+              stack of question cards. Card one and not the others and the pane
+              jumps as the queue arrives. */}
           {questions.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load the questions queue"
-              description={productErrorMessage(
-                questions.error,
-                'This is a problem reaching the server. Nothing customers asked has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void questions.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
+                title="Could not load the questions queue"
+                description={productErrorMessage(
+                  questions.error,
+                  'This is a problem reaching the server. Nothing customers asked has been lost.'
+                )}
+                onRetry={() => {
+                  void questions.refetch();
+                }}
+              />
+            </Card>
           ) : questions.isLoading ? (
-            <PaneWaiting />
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           ) : rows.length === 0 && !focused && !focusPending ? (
-            <EmptyState
-              icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
-              title="No questions waiting"
-              description="When a shopper asks something on one of your product pages, it appears here for you to answer and show. Nothing goes on a page until you show it."
-            />
+            /* A queue with nothing in it — no filter narrowing it, so this is
+               <PaneEmpty> rather than <ListEmptyState>'s two-branch choice. */
+            <Card>
+              <PaneEmpty
+                module={MODULE}
+                icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
+                title="No questions waiting"
+                description="When a shopper asks something on one of your product pages, it appears here for you to answer and show. Nothing goes on a page until you show it."
+              />
+            </Card>
           ) : (
             <>
               {focused ? (
                 <div ref={focusRef} className="flex flex-col gap-2">
-                  <Heading level={1} className="text-2xl font-semibold">
+                  <Heading level={2} className="text-2xl font-semibold">
                     This question
                   </Heading>
                   <QuestionCard
@@ -402,7 +406,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : (
                 <>
                   <div className="flex flex-col gap-1">
-                    <Heading level={1} className="text-2xl font-semibold">
+                    <Heading level={2} className="text-2xl font-semibold">
                       Questions waiting for you
                     </Heading>
                     <Text className="text-sm">

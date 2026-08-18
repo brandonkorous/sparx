@@ -37,13 +37,13 @@ in any one means no email arrives — the audit in §3 checks all three.
 ### Two body systems
 
 - **Bucket A — tenant-editable Builder defaults (silica).** Now **37** keyed templates in
-  [`packages/builder-schemas/src/default-emails.ts`](../../packages/builder-schemas/src/default-emails.ts)
+  [`wizeworks/packages/builder-schemas/src/default-emails.ts`](../../packages/builder-schemas/src/default-emails.ts)
   (registry) + [`default-emails-silica.ts`](../../packages/builder-schemas/src/default-emails-silica.ts)
   (bodies). Provisioned per-tenant on `module.activated`, per-site overridable, fully
   editable in `/builder/email`. **These are the ones the §2 redesign covers.** Adding
   one = a body factory in `SILICA_EMAIL_BODIES` + a registry entry in `TEMPLATES`.
 - **Bucket B — platform React-Email templates.** ~16 coded templates in
-  [`packages/email/src/templates/`](../../packages/email/src/templates/) composed in
+  [`wizeworks/packages/email/src/templates/`](../../packages/email/src/templates/) composed in
   `<EmailLayout>`. Auth (OTP/magic-link/verification/reset), team-invite, welcome-merchant,
   partner-welcome, domain-renewal, forms ×2, jobs ×2, feedback-response, chat-notification,
   market-settlement-report, **+ the three sparx-billing templates (P4)**. **Not
@@ -53,12 +53,12 @@ in any one means no email arrives — the audit in §3 checks all three.
 
 A provisioned body **does nothing on its own** — something must fire it. Two paths:
 
-- **System-automation seed** ([`packages/automation-actions/src/seeds/`](../../packages/automation-actions/src/seeds/)):
+- **System-automation seed** ([`wizeworks/packages/automation-actions/src/seeds/`](../../packages/automation-actions/src/seeds/)):
   a row installed on module activation whose action is `email.send_campaign` with a
   `builderEmailKey`. This is how abandoned-cart, post-purchase-review, the invoicing
   dunning ladder, B2B nudges, chat-satisfaction, win-back all send. Event- or
   schedule-triggered; the `module:'email'` gate holds the send until email is on.
-- **Direct send** (`sendTenantEmailByKey`, [`services/api-rest/src/lib/tenant-email.ts`](../../services/api-rest/src/lib/tenant-email.ts)):
+- **Direct send** (`sendTenantEmailByKey`, [`wizeworks/services/api-rest/src/lib/tenant-email.ts`](../../services/api-rest/src/lib/tenant-email.ts)):
   a hard-coded call at the moment of the action. Used by order-confirmation
   (on payment, [`payment-webhook-reconcile.ts`](../../services/api-rest/src/lib/payment-webhook-reconcile.ts))
   and all of scheduling (bookings, waitlist, owner-notify).
@@ -80,17 +80,17 @@ and one **emphasized hero datum** (large, brand-primary) → ONE centered primar
 
 **What shipped (all uncommitted, in the working tree):**
 
-| Area                                                           | File                                                                                                     |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| The 22 redesigned bodies                                       | `packages/builder-schemas/src/default-emails-silica.ts`                                                  |
-| Authoring kit (`detailPanel`/`button(align)`/`itemsTable` fix) | `packages/builder-schemas/src/silica-email-kit.ts`                                                       |
-| Frame (brand bar + wordmark + tiered footer)                   | `packages/email/src/silica/frame.ts`                                                                     |
-| Role-aware brand colors                                        | `packages/email/src/silica/brand-colors.ts`                                                              |
-| Tenant webfont `<link>`                                        | `packages/email/src/silica/render-silica-email.ts`, `packages/site-themes/src/fonts.ts`                  |
-| Footer-link resolution                                         | `services/api-rest/src/lib/email-data.ts`                                                                |
-| Fingerprint refresh ("migration")                              | `packages/builder/src/services/email-default-refresh.ts`                                                 |
-| Refresh wiring                                                 | `packages/builder/src/services/email-service.ts`, `services/api-rest/src/lib/email-provisioning.ts`      |
-| Tests                                                          | `default-emails-silica.test.ts`, `email-default-refresh.test.ts`, `email-provisioning-reconcile.test.ts` |
+| Area                                                           | File                                                                                                                    |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| The 22 redesigned bodies                                       | `wizeworks/packages/builder-schemas/src/default-emails-silica.ts`                                                       |
+| Authoring kit (`detailPanel`/`button(align)`/`itemsTable` fix) | `wizeworks/packages/builder-schemas/src/silica-email-kit.ts`                                                            |
+| Frame (brand bar + wordmark + tiered footer)                   | `wizeworks/packages/email/src/silica/frame.ts`                                                                          |
+| Role-aware brand colors                                        | `wizeworks/packages/email/src/silica/brand-colors.ts`                                                                   |
+| Tenant webfont `<link>`                                        | `wizeworks/packages/email/src/silica/render-silica-email.ts`, `wizeworks/packages/site-themes/src/fonts.ts`             |
+| Footer-link resolution                                         | `wizeworks/services/api-rest/src/lib/email-data.ts`                                                                     |
+| Fingerprint refresh ("migration")                              | `wizeworks/packages/builder/src/services/email-default-refresh.ts`                                                      |
+| Refresh wiring                                                 | `wizeworks/packages/builder/src/services/email-service.ts`, `wizeworks/services/api-rest/src/lib/email-provisioning.ts` |
+| Tests                                                          | `default-emails-silica.test.ts`, `email-default-refresh.test.ts`, `email-provisioning-reconcile.test.ts`                |
 
 **The refresh mechanism** (why existing tenants pick up the redesign): `bodyFingerprint`
 is an id-stripped canonical sha256 of a body's `root.children`. `PRIOR_DEFAULT_BODY_FINGERPRINTS`
@@ -170,11 +170,11 @@ registry entry + legacy tree + trigger seed; `resolveOrder` extended with the th
 tokens they need; tests green (builder-schemas 250, email 30, automation-actions 53),
 typecheck + lint + prettier clean. Files touched:
 
-- `packages/builder-schemas/src/default-emails-silica.ts` — 4 silica bodies + `SILICA_EMAIL_BODIES`
-- `packages/builder-schemas/src/default-emails.ts` — 4 legacy trees + 4 `TEMPLATES` registry entries
-- `services/api-rest/src/lib/email-data.ts` — `resolveOrder` now returns `refundTotal` · `deliveredAt` · `cancelReason`
-- `packages/automation-actions/src/seeds/commerce.ts` — 4 `email.send_campaign` seeds (transactional)
-- `packages/automation-actions/src/seeds/index.ts` — registered under `commerce`
+- `wizeworks/packages/builder-schemas/src/default-emails-silica.ts` — 4 silica bodies + `SILICA_EMAIL_BODIES`
+- `wizeworks/packages/builder-schemas/src/default-emails.ts` — 4 legacy trees + 4 `TEMPLATES` registry entries
+- `wizeworks/services/api-rest/src/lib/email-data.ts` — `resolveOrder` now returns `refundTotal` · `deliveredAt` · `cancelReason`
+- `wizeworks/packages/automation-actions/src/seeds/commerce.ts` — 4 `email.send_campaign` seeds (transactional)
+- `wizeworks/packages/automation-actions/src/seeds/index.ts` — registered under `commerce`
 - tests: `default-emails.test.ts` (22→26), `default-emails-silica.test.ts` (+2 order-lifecycle tests)
 
 **Design as built** (matches the table below):
@@ -206,12 +206,12 @@ Keys: `subscription-confirmed` (`subscription.created`), `subscription-renewed`,
 `subscription-payment-failed`, `subscription-paused`, `subscription-resumed`,
 `subscription-cancelled`. Files:
 
-- `packages/automation/src/resolvers/builtins.ts` — `hydrateSubscription` + `SUBSCRIPTION_EVENTS` (hydrates the sub + its customer so `customer.email` resolves)
-- `packages/automation-actions/src/email.ts` — `entityRefsFromFields` now carries `subscriptionId`
-- `services/api-rest/src/lib/email-dispatch.ts` — passes `subscriptionId` into the dispatch `EmailRecipientRef`
-- `services/api-rest/src/lib/email-data.ts` — `EmailRecipientRef.subscriptionId` + `resolveSubscription` data source (status · interval · amount · nextOrderDate · pausedUntil · currentPeriodEnd · manageUrl)
-- `packages/builder-schemas/src/default-emails-silica.ts` + `default-emails.ts` — 6 bodies + trees + registry entries (`category: 'subscription'`)
-- `packages/automation-actions/src/seeds/subscriptions.ts` (new) — 6 `email.send_campaign` seeds, `module:'commerce'`, registered in `seeds/index.ts`
+- `wizeworks/packages/automation/src/resolvers/builtins.ts` — `hydrateSubscription` + `SUBSCRIPTION_EVENTS` (hydrates the sub + its customer so `customer.email` resolves)
+- `wizeworks/packages/automation-actions/src/email.ts` — `entityRefsFromFields` now carries `subscriptionId`
+- `wizeworks/services/api-rest/src/lib/email-dispatch.ts` — passes `subscriptionId` into the dispatch `EmailRecipientRef`
+- `wizeworks/services/api-rest/src/lib/email-data.ts` — `EmailRecipientRef.subscriptionId` + `resolveSubscription` data source (status · interval · amount · nextOrderDate · pausedUntil · currentPeriodEnd · manageUrl)
+- `wizeworks/packages/builder-schemas/src/default-emails-silica.ts` + `default-emails.ts` — 6 bodies + trees + registry entries (`category: 'subscription'`)
+- `wizeworks/packages/automation-actions/src/seeds/subscriptions.ts` (new) — 6 `email.send_campaign` seeds, `module:'commerce'`, registered in `seeds/index.ts`
 - tests: `default-emails.test.ts` (26→32), `default-emails-silica.test.ts` (+1 subscription test)
 
 Note: the Subscription model has no `propertyId`, so brand resolves from the customer's
@@ -246,18 +246,18 @@ B2B approval flow first; tracked as a follow-up rather than faked.
 **Shipped 2026-07-26** — three sparx-branded bucket-B React templates + webhook
 publishes. Closes the "the Stripe billing webhook sends no email" gap.
 
-- Templates (`packages/email/src/templates/`): `billing-receipt.tsx`,
+- Templates (`wizeworks/packages/email/src/templates/`): `billing-receipt.tsx`,
   `billing-payment-failed.tsx`, `billing-trial-ending.tsx`, exported from `index.ts`.
 - Registered across the three coded-template surfaces: `send.tsx` (union + render
   switch), `email-worker/handler.ts` (`TemplateSendSchema` zod variants), and the
-  `EmailSendPayload.template` union in `packages/events/src/types.ts`.
+  `EmailSendPayload.template` union in `wizeworks/packages/events/src/types.ts`.
 - Webhook (`stripe-billing.ts`): resolves the tenant by `stripeCustomerId` (unique,
   non-RLS root) → billing email, then publishes `email.send` on
   `invoice.payment_succeeded` (receipt), `invoice.payment_failed` (dunning), and
   `customer.subscription.trial_will_end` (trial ending). Amounts formatted from the
   Stripe invoice; CTA is the hosted invoice page (receipt/failed) or the dashboard
   billing settings (trial).
-- Tests: `packages/email/src/__tests__/templates.test.ts` (+3 render tests).
+- Tests: `wizeworks/packages/email/src/__tests__/templates.test.ts` (+3 render tests).
 
 **Deferred:** card-expiring (Stripe doesn't emit a reliable event without extra
 config) and plan-changed (lower value) — both are additive later. Long-tail
@@ -265,7 +265,7 @@ config) and plan-changed (lower value) — both are additive later. Long-tail
 
 ### Phase 5 — unify bucket B onto the new frame 🟡 (code-complete, uncommitted)
 
-**Shipped 2026-07-26** — done in ONE place: `packages/email/src/templates/_layout.tsx`,
+**Shipped 2026-07-26** — done in ONE place: `wizeworks/packages/email/src/templates/_layout.tsx`,
 the shared frame every bucket-B template (all ~19, incl. the new billing ones) composes.
 Added the **thin brand-color top bar** and a **tiered footer** (tagline line over a
 `WizeWorks · sparx.works` legal line) matching the silica redesign's frame, so a
@@ -316,7 +316,7 @@ first deploy.
   `https://sparx.works` (the _marketing_ site — api-rest's `SPARX_DASHBOARD_URL` has no
   default, so the fallback was wrong) **and** no such route existed. Fixed: the fallback
   now defaults to `https://app.sparx.works` (matching `services/domain-worker`), and a new
-  redirect route `apps/workbench/app/settings/billing/page.tsx` translates `/settings/billing`
+  redirect route `sparx/apps/workbench/app/settings/billing/page.tsx` translates `/settings/billing`
   → the `finance.subscription` pane ("Your sparx bill"), per the readable-path convention.
 - **P2 subscription CTA → `/account/subscriptions` (storefront) 404'd** — no such page.
   Repointed to `/account` (exists) as a non-dead interim. **Follow-up:** a real customer
@@ -349,7 +349,7 @@ silica's `EmailBuilder` runs `editor.setColorDefaults(resolveEmailColorDefaults(
 on every `theme` change, which **repaints every node still on its default** (`<field>Auto
 === true`), resolving each node's role via `AUTO_COLOR_FIELDS` (button bg → `primary`,
 section bg → `base100`, …). Those defaults are **identical** to the send's
-`applyBrandColors` (`@sparx/email/silica/brand-colors.ts`) role map. So canvas color ==
+`applyBrandColors` (`@wizeworks/email/silica/brand-colors.ts`) role map. So canvas color ==
 send color **iff** `resolveEmailColorDefaults(canvasTheme)` == `roleMap(sendBrand)`.
 `resolveEmailColorDefaults` reads `--color-{primary,base-100/200/300,base-content,success,
 warning,info,error,…}` off the theme tokens (`silicaui-html` `colorValue`), and
@@ -368,10 +368,10 @@ its own `PaneToolbar` **above** `<EmailBuilder>` (two headers). silica's `EmailB
 exposes `toolbarSlot` for exactly this (added to mirror the site `<Builder toolbarSlot>`);
 the switcher, lifecycle (rename/new/delete/customize), status badge, and Preview/Publish/
 Save now ride in silica's own editor header — structurally identical to
-`studio-surface.tsx`. `apps/workbench/surfaces/builder/email/email-editor.tsx`.
+`studio-surface.tsx`. `sparx/apps/workbench/surfaces/builder/email/email-editor.tsx`.
 
 **Fix 3 — the FRAME, now CLOSED (silicaui 0.34).** The brand bar + wordmark + tiered
-legal footer are composed at **send** by `composeSendDocument` (`@sparx/email/silica`),
+legal footer are composed at **send** by `composeSendDocument` (`@wizeworks/email/silica`),
 deliberately **outside** the editable body (so an author can't delete the compliance
 footer and the frame always reflects the current per-site brand). Originally the email
 `EmailBuilder` had **no frame concept at all** and no locked/pinned section, so the canvas
@@ -382,14 +382,14 @@ authored body as **inert, un-editable chrome** (no selection/drag/edit, never en
 document, re-supplied every mount), plus `composeEmailDocument(doc, frame)` for the send
 path. Wired in:
 
-- `packages/email/src/silica/frame.ts` — extracted **`buildEmailFrame(opts): EmailFrame`**
+- `wizeworks/packages/email/src/silica/frame.ts` — extracted **`buildEmailFrame(opts): EmailFrame`**
   as the SINGLE source of truth (brand bar + wordmark → `header`, tiered footer →
   `footer`); `composeSendDocument` now splices that same frame, so send and canvas can't
-  diverge. Exported from `@sparx/email/silica` (+ `EmailFrame` type re-export).
-- `packages/email-platform/src/services/builder-email-service.ts` — `buildFrame(ctx,
+  diverge. Exported from `@wizeworks/email/silica` (+ `EmailFrame` type re-export).
+- `wizeworks/packages/email-platform/src/services/builder-email-service.ts` — `buildFrame(ctx,
 propertyId, footerLinks)` resolves the active site's brand (`resolveEmailBrand`, same as
   the preview/send) → `buildEmailFrame`.
-- `services/api-rest/src/routes/v1/builder/emails.ts` — `GET /v1/builder/emails/frame`
+- `wizeworks/services/api-rest/src/routes/v1/builder/emails.ts` — `GET /v1/builder/emails/frame`
   (static route, matched ahead of `/:id`) resolves footer links (`resolveEmailFooterLinks`)
   - returns the frame.
 - workbench `email-data.ts` `useEmailFrame()` + `email-editor.tsx` passes
@@ -410,13 +410,13 @@ a real Playwright screenshot (ember-brand tenant, full compliance) before shippi
    one section with NO gap between blocks — the projector gives siblings no rhythm of
    their own, so they rendered touching. Fixed: a `spaced()` helper interleaves a
    `spacer(16)` between every pair of `copyBlock` children (edges left to the section's
-   `paddingY`). `packages/builder-schemas/src/silica-email-kit.ts`.
+   `paddingY`). `wizeworks/packages/builder-schemas/src/silica-email-kit.ts`.
 2. **Bare footer ("business name" and nothing else) on test-send + preview.** The footer
    chrome composed, but the account/contact/legal `footerLinks` were only passed on the
    live automation path — `renderPreview` + `prepareTestSend` called the renderer without
    them. Fixed: both now take `footerLinks`, and the routes resolve them
    (`resolveEmailFooterLinks`) and pass them through. `builder-email-service.ts` +
-   `services/api-rest/src/routes/v1/builder/emails.ts`.
+   `wizeworks/services/api-rest/src/routes/v1/builder/emails.ts`.
 3. **Canvas colors fell to silica's neutral defaults entirely** (black button, dark
    status — not just the button). Root cause: the canvas theme came from the site PAGE
    theme (`compileThemeForTenant`), which for this site resolved to nothing → silica's
@@ -453,7 +453,7 @@ The Preview dialog became **Preview & check**: a device toggle (desktop 600px / 
 375px), a **plain-text view** (the `text` part was rendered but never shown), and a
 collapsible **pre-send checklist**.
 
-- New `@sparx/email/silica` export `lintEmailRender({ doc, html, subject, preheader })`
+- New `@wizeworks/email/silica` export `lintEmailRender({ doc, html, subject, preheader })`
   → `EmailCheck[]` ([lint.ts](../../packages/email/src/silica/lint.ts)). Six always-on
   categories (so it reads as a checklist, green when clean): subject, preview text,
   links (dead `#`/empty → error; `example.com` → warning), image descriptions (missing
@@ -671,7 +671,7 @@ The studio already guards navigation loss (explicit Save + dirty leave-guard), s
 server draft and is a separate, deliberate follow-up.
 
 **Verified.** `prisma generate` run (user-authorized; dev down) so the new model's types
-resolve. @sparx/db, @sparx/builder, @sparx/api-rest, @sparx/workbench typecheck clean;
+resolve. @wizeworks/db, @wizeworks/builder, @wizeworks/api-rest, @sparx/workbench typecheck clean;
 builder 68 tests + builder-schemas 252 + email 42 pass; lint + prettier clean. **Operational
 note:** the migration is authored as a file (applies in prod via the DB Migrate workflow);
 the migration was ALSO applied to LOCAL docker (`prisma migrate deploy`, user-authorized) —
@@ -868,7 +868,7 @@ configuration for the owner.
 
 **How it works (two sides).**
 
-- **Send tags on-site links.** New `@sparx/email/silica` `link-tracking.ts` (`tagEmailHtmlLinks` /
+- **Send tags on-site links.** New `@wizeworks/email/silica` `link-tracking.ts` (`tagEmailHtmlLinks` /
   `tagEmailTextLinks` / `tagTrackedUrl`) rewrites every link to the tenant's own site with
   `utm_source=<email key/slug>` · `utm_medium=email` · `utm_campaign=<the email's name>`, over the
   final post-interpolation URLs. **On-site only** — a carrier/social/partner link can't be measured
@@ -879,7 +879,7 @@ configuration for the owner.
   (email-platform): the tenant's verified custom domains + the `SPARX_SITE_BASE` host; campaign =
   the author override (`BuilderEmail.trackingCampaign`) else the email's name; `undefined` (no-op)
   when there's no site host (dev).
-- **Analytics reads it.** The storefront beacon (`apps/site`) forwards the landing URL's
+- **Analytics reads it.** The storefront beacon (`wizeworks/apps/site`) forwards the landing URL's
   `utm_medium`/`utm_campaign` on the **first** pageview only; the collect route accepts them; the
   classifier (`site-analytics.ts`) returns `source='email'` on `utm_medium=email` (ahead of the
   referrer) and stores the campaign (new `site_analytics_events.campaign` column). Orders inherit it
@@ -960,7 +960,7 @@ The docs' "abandoned-cart **3-email sequence**" was, in reality, a single nudge 
 reusable multi-touch journey object** (the `email.sequence_add/remove` actions were enum entries
 with no executor). Built greenfield:
 
-- **Data** (`packages/db/prisma/schema/88-email-sequences.prisma`, migration
+- **Data** (`wizeworks/packages/db/prisma/schema/88-email-sequences.prisma`, migration
   `20270124000000_email_sequences`): `EmailSequence` (name, **site-optional `propertyId`** —
   null = tenant-wide, set = one site, exactly like an automation; `reentryPolicy` once|always;
   `exitOnPurchase`; ordered JSON `steps` like `automations.actions`) + `EmailSequenceEnrollment`
@@ -969,8 +969,8 @@ with no executor). Built greenfield:
   person per sequence, `sourceRefs` for the designed email's DataSources). Both FORCE-RLS +
   `tenant_isolation`; a `find_due_sequence_enrollments` SECURITY DEFINER scan for cross-tenant
   drain discovery (mirrors `find_due_automation_runs`).
-- **`@sparx/email-sequences`** — a new LEAN, backend-safe package (deps: `@sparx/db` +
-  `@sparx/email-sends` only, no render/React — same rationale as email-sends, so the worker stays
+- **`@wizeworks/email-sequences`** — a new LEAN, backend-safe package (deps: `@wizeworks/db` +
+  `@wizeworks/email-sends` only, no render/React — same rationale as email-sends, so the worker stays
   lean), with a client-safe `./schemas` subpath (zod only) the workbench editor imports. It owns
   CRUD, `enroll`/`unenroll` (re-entry policy + a marketing do-not-contact opt-out honored at
   enroll), `listEnrollments`, and **`drainDueEnrollments`** — the tick that advances each due
@@ -1001,7 +1001,7 @@ Blueprint version bumped `1.0.0 → 1.1.0` (payload changed).
 ### Hand-off (DB-adjacent — deliberately NOT run this session)
 
 Per the standing DB rule, the migration + new-model code are authored as files only. To bring it
-live, in order: **(1)** `pnpm install` (registers the new `@sparx/email-sequences` workspace
+live, in order: **(1)** `pnpm install` (registers the new `@wizeworks/email-sequences` workspace
 package + the api-rest / automation-worker / automation-actions dep links); **(2)** apply
 migration `20270124000000_email_sequences` (docker locally, then the DB Migrate pipeline for prod);
 **(3)** `prisma generate` (creates the `EmailSequence` / `EmailSequenceEnrollment` client models).

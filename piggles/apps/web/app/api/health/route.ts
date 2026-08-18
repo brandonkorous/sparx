@@ -1,6 +1,6 @@
 // Liveness for meetpiggles.com, and the thing /status checks for this surface.
 //
-// Deliberately dependency-free, matching apps/workbench's. It has to answer even
+// Deliberately dependency-free, matching sparx/apps/workbench's. It has to answer even
 // when the database, api-rest or auth are down: a health check that fails
 // because a DOWNSTREAM service is unwell gets the pod rolled, which turns a
 // partial outage into a total one.

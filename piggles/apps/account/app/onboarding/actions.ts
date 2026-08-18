@@ -1,8 +1,7 @@
 'use server';
 
-import { redirect } from 'next/navigation';
-import { requireSession } from '@sparx/auth';
-import { withTenant } from '@sparx/db';
+import { requireSession } from '@wizeworks/auth';
+import { withTenant } from '@wizeworks/db';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
 import { APPS } from '@piggles/config';
 import { furnishTenant } from '@/lib/furnish';
@@ -64,6 +63,27 @@ import { text, textAll } from '@/lib/form';
 
 export interface OnboardingState {
   error: string | null;
+  /**
+   * Where to send the browser once setup has finished — `/handoff`, the one door
+   * across to the console.
+   *
+   * ── WHY THIS IS RETURNED AND NOT `redirect()`ed ─────────────────────────────
+   *
+   * `redirect()` inside a server action does not send an HTTP redirect to the
+   * browser; it tells the Next CLIENT ROUTER to navigate, and the client router
+   * fetches an RSC payload for the target before going there. `/handoff` answers
+   * 303 to another ORIGIN, so that fetch dies on CORS and the router falls back
+   * to a real navigation — hitting `/handoff` TWICE.
+   *
+   * `/handoff` mints a SINGLE-USE token. Two hits means the second one arrives
+   * after the first has been spent, which is the `GET /handoff 303` followed by
+   * `GET /handoff 307` in the server log, and a brand-new customer bounced back
+   * to the sign-in page at the end of setting up their business.
+   *
+   * So the action reports where to go and the client goes there with a document
+   * load. Same destination, one request, no cache carried across the boundary.
+   */
+  done?: string;
 }
 
 /**
@@ -236,5 +256,8 @@ export async function completeOnboarding(
   // Straight into the workbench — not to an account home. Somebody who has just
   // finished setting up wants to see their business, and the account app's job
   // is done until they need to change something about their subscription.
-  redirect('/handoff');
+  //
+  // Handed back rather than `redirect`ed — see the note on `done` above. The
+  // destination is unchanged; only who performs the navigation has moved.
+  return { error: null, done: '/handoff' };
 }

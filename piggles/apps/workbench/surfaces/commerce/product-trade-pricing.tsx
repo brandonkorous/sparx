@@ -41,19 +41,18 @@ import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
-  EmptyState,
+  Card,
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faBuilding, faPlus, faServer, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { faPlus, faServer, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -73,9 +72,13 @@ import {
   type TradePricing,
   type TradePricingVariant,
 } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const LABEL = 'Trade pricing';
+/** Registry module for this pane, so the brand draws Trade's own picture rather
+ *  than the generic one. */
+const MODULE = 'b2b';
 
 const MODE_ITEMS = {
   percent: 'A percentage off the normal price',
@@ -428,15 +431,10 @@ function TradePricingBody({
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          {product.title}
-        </Heading>
-        <Text className="text-sm">
-          What businesses you sell to pay for this, and how that compares with the price everyone
-          else sees.
-        </Text>
-      </div>
+      <Text className="text-sm">
+        What businesses you sell to pay for this, and how that compares with the price everyone else
+        sees.
+      </Text>
 
       {blanketTiers.length > 0 ? (
         <FormSection
@@ -617,30 +615,30 @@ export function ProductTradePricingSurface({ ctx }: { ctx: SurfaceContext }) {
   const pricing = useTradePricing(productId);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
   }
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${LABEL} actions`}>
-        <Icon glyph={faBuilding} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {scope.product.title}
-        </Heading>
-        {scope.isFollowing ? (
-          <Badge color="info" variant="soft" size="sm">
-            Following
-          </Badge>
-        ) : null}
-        <RefreshButton
-          className="ml-auto"
-          isFetching={pricing.isFetching}
-          updatedAt={pricing.dataUpdatedAt}
-          onRefresh={() => {
-            void pricing.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label={`${LABEL} actions`}
+        status={
+          scope.isFollowing ? (
+            <Badge color="info" variant="soft" size="sm">
+              Following
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={pricing.isFetching}
+            updatedAt={pricing.dataUpdatedAt}
+            onRefresh={() => {
+              void pricing.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
@@ -650,25 +648,20 @@ export function ProductTradePricingSurface({ ctx }: { ctx: SurfaceContext }) {
               list that could not be read would let someone set a second price
               on top of one they cannot see. */}
           {pricing.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load trade pricing"
-              description={productErrorMessage(
-                pricing.error,
-                'This is a problem reaching the server. Nothing about your prices has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void pricing.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
-            />
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load trade pricing"
+                description={productErrorMessage(
+                  pricing.error,
+                  'This is a problem reaching the server. Nothing about your prices has changed.'
+                )}
+                onRetry={() => {
+                  void pricing.refetch();
+                }}
+              />
+            </Card>
           ) : pricing.data ? (
             <TradePricingBody
               product={scope.product}
@@ -676,7 +669,11 @@ export function ProductTradePricingSurface({ ctx }: { ctx: SurfaceContext }) {
               productId={scope.productId}
             />
           ) : (
-            <InlineWaiting />
+            /* Carded like the branches either side of it — the ready body is a
+               stack of FormSections, each already a card. */
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
           )}
         </div>
       </div>

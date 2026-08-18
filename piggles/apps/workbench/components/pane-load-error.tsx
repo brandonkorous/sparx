@@ -75,112 +75,112 @@ import { Button, EmptyState } from '@wizeworks/silicaui-react';
 import { hasStateArt, StateArt } from './state-art';
 
 export function PaneLoadError({
-    icon,
-    module,
-    title,
-    description,
-    reason = 'unreachable',
-    onRetry,
-    retryLabel = 'Try again',
-    actions,
+  icon,
+  module,
+  title,
+  description,
+  reason = 'unreachable',
+  onRetry,
+  retryLabel = 'Try again',
+  actions,
 }: {
-    /** Which module's pane this is, so a brand with per-app artwork can draw the
-     *  right picture. */
-    module?: string;
-    /** The surface's own glyph, reused — so a pane that failed still looks like
-     *  the pane it is. Defaults to a warning triangle, which is the honest answer
-     *  when a surface has no glyph to lend: an empty chip, or none at all, leaves
-     *  the state with no anchor and makes it read as a stray paragraph. */
-    icon?: ReactNode;
-    /** What could not be loaded, in the person's terms: "Could not load your
-     *  customers", never "Request failed" or a status code. ReactNode rather than
-     *  string because a detail pane names the record it could not reach. */
-    title: ReactNode;
-    /** What it means and what it does NOT mean. The most valuable sentence here
-     *  is usually the reassurance — a load failure looks identical to data loss
-     *  from the outside, and only this message can tell them which it was. */
-    description?: ReactNode;
-    /**
-     * WHY there is nothing to show — two different facts that were being told in
-     * the same voice.
-     *
-     *   'unreachable' — the server could not be reached. The data still exists;
-     *                   this is a blip. Retrying is exactly the right move.
-     *   'missing'     — the record is gone (a 404). Retrying cannot help, and
-     *                   offering it invites someone to press a button that will
-     *                   fail every time; the way out is back to the list.
-     *
-     * The tone follows: error for a failure, warning for something that simply is
-     * not there any more. A deleted record is not a fault, and painting it red
-     * tells somebody their data broke when it was probably them who deleted it.
-     *
-     * `onRetry` is IGNORED when the reason is 'missing' — the component owns that
-     * rule, so a caller cannot accidentally offer a retry that cannot work.
-     */
-    reason?: 'unreachable' | 'missing';
-    /** Re-runs the query. Omitted only where nothing can be retried from here. */
-    onRetry?: () => void;
-    /** Overridden only when "Try again" would be the wrong verb. */
-    retryLabel?: string;
-    /** Extra recovery beyond retrying — a way to reach the thing another way.
-     *  Rendered after the retry button, so retry stays the obvious move. */
-    actions?: ReactNode;
+  /** Which module's pane this is, so a brand with per-app artwork can draw the
+   *  right picture. */
+  module?: string;
+  /** The surface's own glyph, reused — so a pane that failed still looks like
+   *  the pane it is. Defaults to a warning triangle, which is the honest answer
+   *  when a surface has no glyph to lend: an empty chip, or none at all, leaves
+   *  the state with no anchor and makes it read as a stray paragraph. */
+  icon?: ReactNode;
+  /** What could not be loaded, in the person's terms: "Could not load your
+   *  customers", never "Request failed" or a status code. ReactNode rather than
+   *  string because a detail pane names the record it could not reach. */
+  title: ReactNode;
+  /** What it means and what it does NOT mean. The most valuable sentence here
+   *  is usually the reassurance — a load failure looks identical to data loss
+   *  from the outside, and only this message can tell them which it was. */
+  description?: ReactNode;
+  /**
+   * WHY there is nothing to show — two different facts that were being told in
+   * the same voice.
+   *
+   *   'unreachable' — the server could not be reached. The data still exists;
+   *                   this is a blip. Retrying is exactly the right move.
+   *   'missing'     — the record is gone (a 404). Retrying cannot help, and
+   *                   offering it invites someone to press a button that will
+   *                   fail every time; the way out is back to the list.
+   *
+   * The tone follows: error for a failure, warning for something that simply is
+   * not there any more. A deleted record is not a fault, and painting it red
+   * tells somebody their data broke when it was probably them who deleted it.
+   *
+   * `onRetry` is IGNORED when the reason is 'missing' — the component owns that
+   * rule, so a caller cannot accidentally offer a retry that cannot work.
+   */
+  reason?: 'unreachable' | 'missing';
+  /** Re-runs the query. Omitted only where nothing can be retried from here. */
+  onRetry?: () => void;
+  /** Overridden only when "Try again" would be the wrong verb. */
+  retryLabel?: string;
+  /** Extra recovery beyond retrying — a way to reach the thing another way.
+   *  Rendered after the retry button, so retry stays the obvious move. */
+  actions?: ReactNode;
 }) {
-    const missing = reason === 'missing';
-    // Suppressed HERE rather than trusted to every call site: a retry against a
-    // record that no longer exists fails every single time, and a button that
-    // cannot work is worse than no button.
-    const retry = missing ? undefined : onRetry;
-    const branded = hasStateArt();
+  const missing = reason === 'missing';
+  // Suppressed HERE rather than trusted to every call site: a retry against a
+  // record that no longer exists fails every single time, and a button that
+  // cannot work is worse than no button.
+  const retry = missing ? undefined : onRetry;
+  const branded = hasStateArt();
 
-    return (
-        <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
-            {/* A brand that draws its own states says which one this is with a POSE —
+  return (
+    <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
+      {/* A brand that draws its own states says which one this is with a POSE —
           which carries further than a red glyph, and does not need reading. The
           tone below is the platform's answer and stays exactly as it was for
           anyone who supplies no art. */}
-            <StateArt state={missing ? 'missing' : 'unreachable'} module={module} />
-            <EmptyState
-                // ── THE GLYPH IS RED, AND THAT IS THE WHOLE POINT ──────────────────────
-                //
-                // silica's EmptyState is colorless by design and its icon chip paints a
-                // 55%-faded base-content glyph on base-200. So a list that FAILED and a
-                // list that is EMPTY drew the identical grey picture, and the only thing
-                // telling them apart was a sentence you had to stop and read. Two
-                // different facts cannot share one appearance (DESIGN.md RULE #4) — and a
-                // faded glyph is not readable ink either (RULE #3).
-                //
-                // The tone is decided HERE rather than at the call site precisely because
-                // there are a hundred call sites: the caller passes its own glyph, this
-                // decides what a failure looks like, and changing that decision is one
-                // edit. Wrapping works because the glyph fills `currentColor` — no prop to
-                // reach the chip with, and re-skinning silica's chip from out here would
-                // be the RULE #1 violation this is avoiding.
-                icon={
-                    branded ? undefined : (
-                        <span className={missing ? 'text-warning' : 'text-error'}>
-                            {icon ?? <Icon glyph={faExclamationTriangle} className="size-6" aria-hidden />}
-                        </span>
-                    )
-                }
-                title={title}
-                description={description}
-                actions={
-                    retry || actions ? (
-                        <>
-                            {retry ? (
-                                // `module`, not `error`. The picture already said it failed;
-                                // this button's job is to try again, and coloring recovery as
-                                // danger tells somebody the safe move is the risky one.
-                                <Button size="sm" color="module" onClick={retry}>
-                                    {retryLabel}
-                                </Button>
-                            ) : null}
-                            {actions}
-                        </>
-                    ) : undefined
-                }
-            />
-        </div>
-    );
+      <StateArt state={missing ? 'missing' : 'unreachable'} module={module} />
+      <EmptyState
+        // ── THE GLYPH IS RED, AND THAT IS THE WHOLE POINT ──────────────────────
+        //
+        // silica's EmptyState is colorless by design and its icon chip paints a
+        // 55%-faded base-content glyph on base-200. So a list that FAILED and a
+        // list that is EMPTY drew the identical grey picture, and the only thing
+        // telling them apart was a sentence you had to stop and read. Two
+        // different facts cannot share one appearance (DESIGN.md RULE #4) — and a
+        // faded glyph is not readable ink either (RULE #3).
+        //
+        // The tone is decided HERE rather than at the call site precisely because
+        // there are a hundred call sites: the caller passes its own glyph, this
+        // decides what a failure looks like, and changing that decision is one
+        // edit. Wrapping works because the glyph fills `currentColor` — no prop to
+        // reach the chip with, and re-skinning silica's chip from out here would
+        // be the RULE #1 violation this is avoiding.
+        icon={
+          branded ? undefined : (
+            <span className={missing ? 'text-warning' : 'text-error'}>
+              {icon ?? <Icon glyph={faExclamationTriangle} className="size-6" aria-hidden />}
+            </span>
+          )
+        }
+        title={title}
+        description={description}
+        actions={
+          retry || actions ? (
+            <>
+              {retry ? (
+                // `module`, not `error`. The picture already said it failed;
+                // this button's job is to try again, and coloring recovery as
+                // danger tells somebody the safe move is the risky one.
+                <Button size="sm" color="module" onClick={retry}>
+                  {retryLabel}
+                </Button>
+              ) : null}
+              {actions}
+            </>
+          ) : undefined
+        }
+      />
+    </div>
+  );
 }

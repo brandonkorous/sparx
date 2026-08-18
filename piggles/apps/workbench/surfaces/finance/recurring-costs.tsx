@@ -19,6 +19,7 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -551,61 +552,63 @@ export function RecurringCostsSurface() {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Repeating cost actions" wrap>
-        <Button
-          size="sm"
-          color="module"
-          onClick={() => {
-            setAdding(true);
-            setEditing(null);
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a repeating cost
-        </Button>
-
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          loading={generate.isPending}
-          disabled={templates.length === 0}
-          onClick={runGenerate}
-        >
-          <Icon glyph={faPlay} className="size-4" aria-hidden />
-          Catch up now
-        </Button>
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Repeating cost actions"
+        // A commit action is always `primary`: `controls` relocates into the
+        // overflow popover under 672px. Enforced by scripts/check-toolbar-primary.mjs.
+        primary={
+          <>
+            <Button
+              size="sm"
+              variant="outline"
+              color="neutral"
+              loading={generate.isPending}
+              disabled={templates.length === 0}
+              onClick={runGenerate}
+            >
+              <Icon glyph={faPlay} className="size-4" aria-hidden />
+              Catch up now
+            </Button>
+            <Button
+              size="sm"
+              color="module"
+              onClick={() => {
+                setAdding(true);
+                setEditing(null);
+              }}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              Add a repeating cost
+            </Button>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
-            title="Could not load your repeating costs"
-            description="The server could not be reached. Your schedules are unaffected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
+              title="Could not load your repeating costs"
+              description="The server could not be reached. Your schedules are unaffected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending || !data ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
             {templates.length > 0 ? (

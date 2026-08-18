@@ -17,7 +17,8 @@
 // never works"; what is true is that nothing has been measured, and the surface
 // says so and offers to fix it.
 
-import { Badge, Card, Heading, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowTrendDown, faBullseye } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { actionLabel } from './automations-catalog';

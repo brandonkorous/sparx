@@ -48,11 +48,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import {
   faFloppyDisk,
@@ -403,83 +403,94 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Recipe actions">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faPotFood} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            {isNew ? 'New recipe' : (bom.data?.name ?? 'Recipe')}
-          </Text>
-        </span>
-        {isNew ? null : (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        )}
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!canSave || !dirty}
-          loading={saveBom.isPending}
-          onClick={save}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save
-        </Button>
-
-        {!isNew && status === 'draft' ? (
+      <PaneToolbar
+        label="Recipe actions"
+        status={
+          <>
+            <span className="inline-flex items-center gap-1.5">
+              <Icon glyph={faPotFood} className="size-4" aria-hidden />
+              <Text as="span" className="text-sm font-medium">
+                {isNew ? 'New recipe' : (bom.data?.name ?? 'Recipe')}
+              </Text>
+            </span>
+            {isNew ? null : (
+              <Badge color={state.tone} variant="soft" size="sm">
+                {state.label}
+              </Badge>
+            )}
+          </>
+        }
+        primary={
           <Button
             size="sm"
-            variant="outline"
-            color="success"
-            className="shrink-0"
-            loading={setStatus.isPending}
-            onClick={() => {
-              changeStatus('active');
-            }}
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={!canSave || !dirty}
+            loading={saveBom.isPending}
+            onClick={save}
           >
-            Start using it
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save
           </Button>
-        ) : null}
-        {!isNew && status === 'active' ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="shrink-0"
-            loading={setStatus.isPending}
-            onClick={() => {
-              changeStatus('archived');
-            }}
-          >
-            Retire it
-          </Button>
-        ) : null}
-        {!isNew ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            color="danger"
-            shape="square"
-            aria-label="Delete this recipe"
-            onClick={() => {
-              void remove();
-            }}
-          >
-            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-          </Button>
-        ) : null}
-        {isNew ? null : (
-          <RefreshButton
-            isFetching={bom.isFetching}
-            updatedAt={bom.dataUpdatedAt}
-            onRefresh={() => {
-              void bom.refetch();
-            }}
-          />
-        )}
-      </PaneToolbar>
+        }
+        controls={
+          <>
+            {!isNew && status === 'draft' ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="success"
+                className="shrink-0"
+                loading={setStatus.isPending}
+                onClick={() => {
+                  changeStatus('active');
+                }}
+              >
+                Start using it
+              </Button>
+            ) : null}
+            {!isNew && status === 'active' ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                className="shrink-0"
+                loading={setStatus.isPending}
+                onClick={() => {
+                  changeStatus('archived');
+                }}
+              >
+                Retire it
+              </Button>
+            ) : null}
+            {!isNew ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                color="danger"
+                shape="square"
+                aria-label="Delete this recipe"
+                onClick={() => {
+                  void remove();
+                }}
+              >
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+              </Button>
+            ) : null}
+          </>
+        }
+        refresh={
+          isNew ? null : (
+            <RefreshButton
+              isFetching={bom.isFetching}
+              updatedAt={bom.dataUpdatedAt}
+              onRefresh={() => {
+                void bom.refetch();
+              }}
+            />
+          )
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>

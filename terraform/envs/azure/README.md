@@ -51,7 +51,7 @@ That single difference is most of why this environment is affordable.
 
 **Postgres is VNet-private**, mirroring the private-IP Cloud SQL it replaces. So
 you cannot reach it from a laptop — migrations run as an in-cluster Job, exactly
-as [packages/db/CLAUDE.md](../../../packages/db/CLAUDE.md) already describes.
+as [wizeworks/packages/db/CLAUDE.md](../../../packages/db/CLAUDE.md) already describes.
 
 ## Apply
 
@@ -72,7 +72,7 @@ az aks get-credentials --resource-group rg-sparx-prod-eus2 --name aks-sparx-prod
 **The apps cannot connect until this is done.** Terraform creates the
 `sparx_owner` admin login, but `sparx_app` — the unprivileged, `NOBYPASSRLS` role
 every application connection uses — comes from
-[packages/db/docker/init/01-roles.sql](../../../packages/db/docker/init/01-roles.sql).
+[wizeworks/packages/db/docker/init/01-roles.sql](../../../packages/db/docker/init/01-roles.sql).
 That file is a **Docker image entrypoint convention**, not a Postgres feature, so
 a managed server will never run it.
 

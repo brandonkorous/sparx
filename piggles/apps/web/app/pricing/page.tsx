@@ -5,6 +5,7 @@ import { Table } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl, PRODUCT } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
+import { PriceFigure } from '@/components/marketing/hero/price-figure';
 import { WhatYouPay } from '@/components/marketing/what-you-pay';
 import { CloseBand } from '@/components/marketing/close-band';
 
@@ -117,14 +118,20 @@ export default function PricingPage() {
       <PageHero
         heading="$49 a month. All fifteen apps. No upgrade buttons."
         lede="You are not charged for what the software is allowed to do. You are charged when your business needs more room — more people, more storage, more email going out."
+        figure={<PriceFigure />}
+        assurances={['Free for 14 days', 'No card needed', 'Cancel by not carrying on']}
       >
+        {/* `block` came off both. It was making a full-width stack of two
+            buttons, which is a phone layout that had been left running on
+            desktop because the hero's right-hand column was empty and there was
+            nothing to balance them against. */}
         <a
-          className={buttonClasses({ color: 'primary', size: 'lg', block: true })}
+          className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', 'pricing-hero')}
         >
           Start free for 14 days
         </a>
-        <Link className={buttonClasses({ size: 'lg', block: true })} href="/apps">
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
           See the fifteen apps
         </Link>
       </PageHero>

@@ -1,0 +1,59 @@
+// layoutService — header / footer / announcement composition.
+//
+// A layout block points at an existing NavigationMenu by id and carries slot
+// extras in `config`, validated against the slot's schema in
+// @wizeworks/sitebuilder-schemas. Navigation is Site-Builder-owned; the menu rows
+// are written through the module-neutral /v1/navigation API.
+
+import { UpsertLayoutInput, parseLayoutConfig } from '@wizeworks/sitebuilder-schemas';
+import type { Prisma, SiteLayoutBlock } from '@wizeworks/db';
+import { withTenant } from '@wizeworks/db';
+
+import { writeAuditLog } from '../audit';
+import type { ServiceContext } from '../errors';
+import { getOrCreatePrimaryConfig } from './_config';
+
+export function list(ctx: ServiceContext): Promise<SiteLayoutBlock[]> {
+  return withTenant(ctx, (tx) => tx.siteLayoutBlock.findMany({ orderBy: { slot: 'asc' } }));
+}
+
+export function get(ctx: ServiceContext, slot: string): Promise<SiteLayoutBlock | null> {
+  return withTenant(ctx, (tx) =>
+    tx.siteLayoutBlock.findUnique({ where: { tenantId_slot: { tenantId: ctx.tenantId, slot } } })
+  );
+}
+
+export async function upsert(ctx: ServiceContext, rawInput: unknown): Promise<SiteLayoutBlock> {
+  const input = UpsertLayoutInput.parse(rawInput);
+  const config = parseLayoutConfig(input.slot, input.config ?? {});
+
+  return withTenant(ctx, async (tx) => {
+    await getOrCreatePrimaryConfig(tx, ctx.tenantId);
+    const block = await tx.siteLayoutBlock.upsert({
+      where: { tenantId_slot: { tenantId: ctx.tenantId, slot: input.slot } },
+      create: {
+        tenantId: ctx.tenantId,
+        slot: input.slot,
+        navigationMenuId: input.navigationMenuId ?? null,
+        config: config as Prisma.InputJsonValue,
+        visible: input.visible ?? true,
+      },
+      update: {
+        navigationMenuId: input.navigationMenuId ?? null,
+        config: config as Prisma.InputJsonValue,
+        ...(input.visible !== undefined ? { visible: input.visible } : {}),
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'sitebuilder.layout.upserted',
+      entityType: 'SiteLayoutBlock',
+      entityId: block.id,
+      diff: { after: { slot: block.slot, navigationMenuId: block.navigationMenuId } },
+    });
+    return block;
+  });
+}

@@ -5,7 +5,7 @@
 **Last Updated:** 2026-08-16
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the operator UI now lives in the workbench
-> (`apps/workbench/surfaces/dropship/`), not the deleted `apps/dashboard`; the §2 table row was
+> (`sparx/apps/workbench/surfaces/dropship/`), not the deleted `apps/dashboard`; the §2 table row was
 > corrected. Adapters, the `dropship-worker`, and the margin report are all built. POD **authoring**
 > remains the one locked deferral (§12).
 
@@ -31,16 +31,16 @@ The dropship stack is **built and live** (docs/64 Ph1–Ph5). The pieces:
 
 | Layer       | Where                                                                 | What                                                                                                      |
 | ----------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Adapters    | [`@sparx/dropship`](../packages/dropship)                             | `SupplierAdapter` interface + `createAdapter()` registry + `applyPricingRule()` + the `VENDOR_CATALOG`    |
+| Adapters    | [`@wizeworks/dropship`](../packages/dropship)                         | `SupplierAdapter` interface + `createAdapter()` registry + `applyPricingRule()` + the `VENDOR_CATALOG`    |
 | Data        | [65-dropship.prisma](../packages/db/prisma/schema/65-dropship.prisma) | `DropshipSupplier`, `DropshipProduct`, `DropshipProductLink`, `DropshipOrder`, `DropshipSupplierProperty` |
 | API         | [v1/dropship](../services/api-rest/src/routes/v1/dropship)            | `suppliers` (connect/configure/sync/catalog/import) + `orders` + `analytics` + `vendors`                  |
 | Operator UI | [workbench dropship surface](../apps/workbench/surfaces/dropship)     | Suppliers, products, analytics; the vendor picker + per-vendor connect form                               |
 
-> **One dropship abstraction, not two.** `@sparx/integration-framework` also declares a
+> **One dropship abstraction, not two.** `@wizeworks/integration-framework` also declares a
 > `DropshipProvider` interface (so `ProviderBundle.dropship` type-checks). It is **dead** — the
-> built path is `@sparx/dropship`, which has its own table and routes rather than riding the
+> built path is `@wizeworks/dropship`, which has its own table and routes rather than riding the
 > provider/marketplace install flow. The framework interface is annotated deprecated; new
-> dropship work extends `@sparx/dropship`. (Supersedes the docs/88 §5 "framework speced" note.)
+> dropship work extends `@wizeworks/dropship`. (Supersedes the docs/88 §5 "framework speced" note.)
 
 ---
 
@@ -85,7 +85,7 @@ storefront, not the reverse. Offering a vendor we can't actually fulfill would b
 ## 4. Supplier adapter contract
 
 Each adapter implements the `SupplierAdapter` interface
-([packages/dropship/src/types.ts](../packages/dropship/src/types.ts)):
+([wizeworks/packages/dropship/src/types.ts](../packages/dropship/src/types.ts)):
 
 ```typescript
 interface SupplierAdapter {
@@ -255,14 +255,14 @@ Do not block the deferred work: when POD authoring lands, it is additive.
 
 ## 13. Decisions (locked)
 
-| #   | Decision                       | Choice                                                                                         |
-| --- | ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| D1  | Dropship abstraction           | Extend the built `@sparx/dropship` `SupplierAdapter`; the framework `DropshipProvider` is dead |
-| D2  | Which vendors                  | Only self-serve documented APIs: Printify, Printful, DSers, Spocket, CSV                       |
-| D3  | No-API vendors                 | Hidden from the picker (not stubbed): Tapstitch, PODPartner, Zendrop, AutoDS, Faire            |
-| D4  | POD pick (replacing Tapstitch) | Printify + Printful (both real APIs)                                                           |
-| D5  | Connection ↔ site              | Tenant-wide connection, enabled per site; empty scope = all sites                              |
-| D6  | POD authoring                  | Deferred; catalog + order routing now; seams kept open (§12)                                   |
+| #   | Decision                       | Choice                                                                                             |
+| --- | ------------------------------ | -------------------------------------------------------------------------------------------------- |
+| D1  | Dropship abstraction           | Extend the built `@wizeworks/dropship` `SupplierAdapter`; the framework `DropshipProvider` is dead |
+| D2  | Which vendors                  | Only self-serve documented APIs: Printify, Printful, DSers, Spocket, CSV                           |
+| D3  | No-API vendors                 | Hidden from the picker (not stubbed): Tapstitch, PODPartner, Zendrop, AutoDS, Faire                |
+| D4  | POD pick (replacing Tapstitch) | Printify + Printful (both real APIs)                                                               |
+| D5  | Connection ↔ site              | Tenant-wide connection, enabled per site; empty scope = all sites                                  |
+| D6  | POD authoring                  | Deferred; catalog + order routing now; seams kept open (§12)                                       |
 
 ---
 

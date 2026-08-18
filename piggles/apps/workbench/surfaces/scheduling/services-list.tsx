@@ -22,12 +22,11 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faBriefcase, faEyeSlash, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -45,6 +44,10 @@ import {
   type BookingType,
   type SchedulingService,
 } from './setup-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'scheduling';
 
 const DETAIL_KEY = 'scheduling.services.detail';
 
@@ -130,6 +133,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faBriefcase} className="size-6" aria-hidden />,
@@ -224,79 +228,88 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Services list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search services"
-            placeholder="Service name…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+      <PaneToolbar
+        label="Services list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search services"
+              placeholder="Service name…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New service',
+          icon: faPlus,
+          onClick: openNew,
+          title: 'New service — hold Shift to open alongside, Alt for a new window',
+        }}
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              className="max-w-44 shrink"
+              aria-label="Show only one kind of booking"
+              value={type}
+              onChange={(event) => {
+                setType(event.target.value);
+                resetWindow();
+              }}
+            >
+              <option value="">Every kind</option>
+              {BOOKING_TYPES.map((kind) => (
+                <option key={kind.value} value={kind.value}>
+                  {kind.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <ToggleGroup
+              size="sm"
+              color="module"
+              className="shrink-0"
+              value={activeOnly ? ['active'] : []}
+              onValueChange={(next: unknown[]) => {
+                setActiveOnly(next.includes('active'));
+                resetWindow();
+              }}
+            >
+              <ToggleGroupItem
+                value="active"
+                aria-label="Hide switched-off services"
+                title="Hide switched-off services"
+              >
+                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+                <span>Active only</span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </>
+        }
+        views={{
+          target: '/scheduling/services',
+          params: { q: search.trim(), type, active: activeOnly ? '1' : '' },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setType(next.type ?? '');
+            setActiveOnly(next.active === '1');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <NativeSelect
-          size="sm"
-          className="max-w-44 shrink"
-          aria-label="Show only one kind of booking"
-          value={type}
-          onChange={(event) => {
-            setType(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Every kind</option>
-          {BOOKING_TYPES.map((kind) => (
-            <option key={kind.value} value={kind.value}>
-              {kind.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <ToggleGroup
-          size="sm"
-          color="module"
-          className="shrink-0"
-          value={activeOnly ? ['active'] : []}
-          onValueChange={(next: unknown[]) => {
-            setActiveOnly(next.includes('active'));
-            resetWindow();
-          }}
-        >
-          <ToggleGroupItem
-            value="active"
-            aria-label="Hide switched-off services"
-            title="Hide switched-off services"
-          >
-            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">Active only</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="New service — hold Shift to open alongside, Alt for a new window"
-          onClick={openNew}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New service</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
 

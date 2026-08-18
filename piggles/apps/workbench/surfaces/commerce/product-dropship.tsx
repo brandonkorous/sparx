@@ -29,16 +29,17 @@
 
 import { useState } from 'react';
 import {
-    Badge,
-    Button,
-    EmptyState,
-    Heading,
-    Text,
-    Timestamp,
-    useToast,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Heading,
+  Text,
+  Timestamp,
+  useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faArrowsRotate, faBoxCheck, faServer, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { faArrowsRotate, faBoxCheck, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -46,348 +47,347 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
 import {
-    formatCents,
-    productErrorMessage,
-    useProductDropship,
-    useReimportFromSupplier,
-    type DropshipLink,
-    type Product,
-    type ProductDropship,
-    type ProductDropshipVariant,
+  formatCents,
+  productErrorMessage,
+  useProductDropship,
+  useReimportFromSupplier,
+  type DropshipLink,
+  type Product,
+  type ProductDropship,
+  type ProductDropshipVariant,
 } from './products-data';
-import { InlineWaiting } from '../../components/inline-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const LABEL = 'Dropshipping';
+/** Registry module for this pane, so the brand draws Dropshipping's own picture
+ *  rather than the generic one. */
+const MODULE = 'dropship';
 
 /** What a supplier connection is doing, in words a person can act on. */
 function supplierState(link: DropshipLink): {
-    label: string;
-    tone: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+  label: string;
+  tone: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 } {
-    if (link.supplier.disconnected) return { label: 'No longer connected', tone: 'danger' };
-    if (link.status === 'discontinued') {
-        return { label: 'They stopped making it', tone: 'danger' };
-    }
-    switch (link.supplier.status) {
-        case 'active':
-            return { label: 'Connected', tone: 'success' };
-        case 'error':
-            return { label: 'Connection has a problem', tone: 'danger' };
-        case 'connecting':
-            return { label: 'Still connecting', tone: 'info' };
-        default:
-            return { label: 'Disconnected', tone: 'neutral' };
-    }
+  if (link.supplier.disconnected) return { label: 'No longer connected', tone: 'danger' };
+  if (link.status === 'discontinued') {
+    return { label: 'They stopped making it', tone: 'danger' };
+  }
+  switch (link.supplier.status) {
+    case 'active':
+      return { label: 'Connected', tone: 'success' };
+    case 'error':
+      return { label: 'Connection has a problem', tone: 'danger' };
+    case 'connecting':
+      return { label: 'Still connecting', tone: 'info' };
+    default:
+      return { label: 'Disconnected', tone: 'neutral' };
+  }
 }
 
 /** Profit on one variant against the supplier's cost, as cash and as a share of
  *  the selling price. Null when we have no cost to compare against — showing
  *  "100% margin" because a cost is missing would be a lie with a number on it. */
 function margin(
-    variant: ProductDropshipVariant,
-    fallbackCostCents: number | null
+  variant: ProductDropshipVariant,
+  fallbackCostCents: number | null
 ): { cents: number; percent: number; costCents: number } | null {
-    const cost = variant.costCents ?? fallbackCostCents;
-    if (cost === null || variant.priceCents <= 0) return null;
-    const cents = variant.priceCents - cost;
-    return { cents, percent: Math.round((cents / variant.priceCents) * 100), costCents: cost };
+  const cost = variant.costCents ?? fallbackCostCents;
+  if (cost === null || variant.priceCents <= 0) return null;
+  const cents = variant.priceCents - cost;
+  return { cents, percent: Math.round((cents / variant.priceCents) * 100), costCents: cost };
 }
 
 function SupplierCard({
-    link,
-    data,
-    product,
-    productId,
+  link,
+  data,
+  product,
+  productId,
 }: {
-    link: DropshipLink;
-    data: ProductDropship;
-    product: Product;
-    productId: string;
+  link: DropshipLink;
+  data: ProductDropship;
+  product: Product;
+  productId: string;
 }) {
-    const toast = useToast();
-    const confirm = useConfirm();
-    const reimport = useReimportFromSupplier(productId);
-    const [busyId, setBusyId] = useState<string | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
+  const reimport = useReimportFromSupplier(productId);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
-    const state = supplierState(link);
-    const sourcedVariants = data.variants.filter((v) => v.dropshipSourceId !== null);
-    const unsourced = data.variants.filter((v) => v.dropshipSourceId === null);
+  const state = supplierState(link);
+  const sourcedVariants = data.variants.filter((v) => v.dropshipSourceId !== null);
+  const unsourced = data.variants.filter((v) => v.dropshipSourceId === null);
 
-    const onReimport = () => {
-        void (async () => {
-            const ok = await confirm({
-                title: `Pull ${product.title} from ${link.supplier.name} again?`,
-                description: `Their name, description, photos and cost for this product are copied over the top of what is here now. Anything you have rewritten yourself — a better description, your own photos — is replaced. Your selling price is worked out again from their new cost using the rule you set for this supplier.`,
-                confirmLabel: 'Pull it again',
-                cancelLabel: 'Leave it as it is',
-                color: 'warning',
+  const onReimport = () => {
+    void (async () => {
+      const ok = await confirm({
+        title: `Pull ${product.title} from ${link.supplier.name} again?`,
+        description: `Their name, description, photos and cost for this product are copied over the top of what is here now. Anything you have rewritten yourself — a better description, your own photos — is replaced. Your selling price is worked out again from their new cost using the rule you set for this supplier.`,
+        confirmLabel: 'Pull it again',
+        cancelLabel: 'Leave it as it is',
+        color: 'warning',
+      });
+      if (!ok) return;
+      setBusyId(link.id);
+      reimport.mutate(
+        { supplierId: link.supplier.id, sourceId: link.source.id },
+        {
+          onSuccess: () => {
+            setBusyId(null);
+            toast.add({ title: `Pulled again from ${link.supplier.name}`, type: 'success' });
+          },
+          onError: (error) => {
+            setBusyId(null);
+            toast.add({
+              title: 'Could not pull it again',
+              description: productErrorMessage(error, 'Nothing was changed.'),
+              type: 'error',
             });
-            if (!ok) return;
-            setBusyId(link.id);
-            reimport.mutate(
-                { supplierId: link.supplier.id, sourceId: link.source.id },
-                {
-                    onSuccess: () => {
-                        setBusyId(null);
-                        toast.add({ title: `Pulled again from ${link.supplier.name}`, type: 'success' });
-                    },
-                    onError: (error) => {
-                        setBusyId(null);
-                        toast.add({
-                            title: 'Could not pull it again',
-                            description: productErrorMessage(error, 'Nothing was changed.'),
-                            type: 'error',
-                        });
-                    },
-                }
-            );
-        })();
-    };
+          },
+        }
+      );
+    })();
+  };
 
-    return (
-        <FormSection
-            title={link.supplier.name}
-            description={`They hold the stock and post it to your customer. Their code for this product is ${link.supplierSku}.`}
-            action={
-                <Badge color={state.tone} variant="soft">
-                    {state.label}
-                </Badge>
-            }
-        >
-            {link.supplier.disconnected ? (
-                <Text className="text-sm">
-                    This supplier has been disconnected, so nothing here updates any more and orders will not
-                    reach them. {product.title} is still on sale — take it off sale, or connect the supplier
-                    again, before someone buys something nobody will ship.
-                </Text>
-            ) : null}
+  return (
+    <FormSection
+      title={link.supplier.name}
+      description={`They hold the stock and post it to your customer. Their code for this product is ${link.supplierSku}.`}
+      action={
+        <Badge color={state.tone} variant="soft">
+          {state.label}
+        </Badge>
+      }
+    >
+      {link.supplier.disconnected ? (
+        <Text className="text-sm">
+          This supplier has been disconnected, so nothing here updates any more and orders will not
+          reach them. {product.title} is still on sale — take it off sale, or connect the supplier
+          again, before someone buys something nobody will ship.
+        </Text>
+      ) : null}
 
-            <div className="flex flex-col gap-3">
-                <div className="border-base-300 flex flex-wrap items-baseline justify-between gap-2 border-b pb-3">
-                    <Text className="text-sm">They charge you</Text>
+      <div className="flex flex-col gap-3">
+        <div className="border-base-300 flex flex-wrap items-baseline justify-between gap-2 border-b pb-3">
+          <Text className="text-sm">They charge you</Text>
+          <Text as="span" className="text-lg font-semibold">
+            {formatCents(link.source.costPriceCents)}
+          </Text>
+        </div>
+        {link.source.msrpCents !== null ? (
+          <div className="border-base-300 flex flex-wrap items-baseline justify-between gap-2 border-b pb-3">
+            <Text className="text-sm">The price they suggest you sell at</Text>
+            <Text as="span" className="font-medium">
+              {formatCents(link.source.msrpCents)}
+            </Text>
+          </div>
+        ) : null}
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <Text className="text-sm">Their details last changed</Text>
+          <Text as="span" className="font-medium">
+            <Timestamp value={link.source.updatedAt} format="relative" />
+          </Text>
+        </div>
+      </div>
+
+      <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
+        <Heading level={3} className="text-base font-semibold">
+          What you make on it
+        </Heading>
+        {data.variants.length === 0 ? (
+          <Text className="text-sm">This product has no versions to price yet.</Text>
+        ) : (
+          data.variants.map((variant) => {
+            const result = margin(variant, link.source.costPriceCents);
+            const losing = result !== null && result.cents <= 0;
+            return (
+              <div
+                key={variant.id}
+                className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-3 last:border-b-0 last:pb-0"
+              >
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <Text as="span" className="font-medium">
+                    {variant.title ?? variant.sku}
+                  </Text>
+                  <Text className="text-sm">
+                    You sell it for {formatCents(variant.priceCents, variant.currency)}
+                    {result ? ` · they charge you ${formatCents(result.costCents)}` : ''}
+                  </Text>
+                </div>
+                {result ? (
+                  <div className="text-right">
                     <Text as="span" className="text-lg font-semibold">
-                        {formatCents(link.source.costPriceCents)}
+                      {formatCents(result.cents, variant.currency)}
                     </Text>
-                </div>
-                {link.source.msrpCents !== null ? (
-                    <div className="border-base-300 flex flex-wrap items-baseline justify-between gap-2 border-b pb-3">
-                        <Text className="text-sm">The price they suggest you sell at</Text>
-                        <Text as="span" className="font-medium">
-                            {formatCents(link.source.msrpCents)}
-                        </Text>
-                    </div>
-                ) : null}
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <Text className="text-sm">Their details last changed</Text>
-                    <Text as="span" className="font-medium">
-                        <Timestamp value={link.source.updatedAt} format="relative" />
-                    </Text>
-                </div>
-            </div>
-
-            <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
-                <Heading level={3} className="text-base font-semibold">
-                    What you make on it
-                </Heading>
-                {data.variants.length === 0 ? (
-                    <Text className="text-sm">This product has no versions to price yet.</Text>
+                    <Badge
+                      color={losing ? 'danger' : result.percent < 15 ? 'warning' : 'success'}
+                      variant="soft"
+                      size="sm"
+                      className="ml-2"
+                    >
+                      {losing
+                        ? 'You lose money on this'
+                        : `${String(result.percent)}% of the price`}
+                    </Badge>
+                  </div>
                 ) : (
-                    data.variants.map((variant) => {
-                        const result = margin(variant, link.source.costPriceCents);
-                        const losing = result !== null && result.cents <= 0;
-                        return (
-                            <div
-                                key={variant.id}
-                                className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-3 last:border-b-0 last:pb-0"
-                            >
-                                <div className="flex min-w-0 flex-col gap-0.5">
-                                    <Text as="span" className="font-medium">
-                                        {variant.title ?? variant.sku}
-                                    </Text>
-                                    <Text className="text-sm">
-                                        You sell it for {formatCents(variant.priceCents, variant.currency)}
-                                        {result ? ` · they charge you ${formatCents(result.costCents)}` : ''}
-                                    </Text>
-                                </div>
-                                {result ? (
-                                    <div className="text-right">
-                                        <Text as="span" className="text-lg font-semibold">
-                                            {formatCents(result.cents, variant.currency)}
-                                        </Text>
-                                        <Badge
-                                            color={losing ? 'danger' : result.percent < 15 ? 'warning' : 'success'}
-                                            variant="soft"
-                                            size="sm"
-                                            className="ml-2"
-                                        >
-                                            {losing
-                                                ? 'You lose money on this'
-                                                : `${String(result.percent)}% of the price`}
-                                        </Badge>
-                                    </div>
-                                ) : (
-                                    <Text className="text-sm">No cost recorded, so this cannot be worked out.</Text>
-                                )}
-                            </div>
-                        );
-                    })
+                  <Text className="text-sm">No cost recorded, so this cannot be worked out.</Text>
                 )}
-            </div>
+              </div>
+            );
+          })
+        )}
+      </div>
 
-            {/* Sourcing is per-version, so a product can be half dropshipped. Saying
+      {/* Sourcing is per-version, so a product can be half dropshipped. Saying
           nothing about that would let someone assume the supplier ships all of
           it — and then not pack the ones they actually still hold. */}
-            {sourcedVariants.length > 0 && unsourced.length > 0 ? (
-                <div className="border-base-300 flex flex-col gap-2 border-t pt-4">
-                    <Text className="text-sm">
-                        {unsourced.length === 1
-                            ? '1 version of this product is not sourced from this supplier, so you ship that one yourself:'
-                            : `${String(unsourced.length)} versions of this product are not sourced from this supplier, so you ship those yourself:`}
-                    </Text>
-                    <div className="flex flex-wrap gap-2">
-                        {unsourced.map((variant) => (
-                            <Badge key={variant.id} color="info" variant="soft" size="sm">
-                                {variant.title ?? variant.sku}
-                            </Badge>
-                        ))}
-                    </div>
-                </div>
-            ) : null}
+      {sourcedVariants.length > 0 && unsourced.length > 0 ? (
+        <div className="border-base-300 flex flex-col gap-2 border-t pt-4">
+          <Text className="text-sm">
+            {unsourced.length === 1
+              ? '1 version of this product is not sourced from this supplier, so you ship that one yourself:'
+              : `${String(unsourced.length)} versions of this product are not sourced from this supplier, so you ship those yourself:`}
+          </Text>
+          <div className="flex flex-wrap gap-2">
+            {unsourced.map((variant) => (
+              <Badge key={variant.id} color="info" variant="soft" size="sm">
+                {variant.title ?? variant.sku}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
-            <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-                <Text className="text-sm">
-                    Pull their current details and cost over the top of what is here now. Anything you have
-                    rewritten yourself is replaced.
-                </Text>
-                <Button
-                    size="sm"
-                    variant="outline"
-                    color="neutral"
-                    disabled={link.supplier.disconnected}
-                    loading={busyId === link.id && reimport.isPending}
-                    onClick={onReimport}
-                >
-                    <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-                    Pull it again
-                </Button>
-            </div>
-        </FormSection>
-    );
+      <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <Text className="text-sm">
+          Pull their current details and cost over the top of what is here now. Anything you have
+          rewritten yourself is replaced.
+        </Text>
+        <Button
+          size="sm"
+          variant="outline"
+          color="neutral"
+          disabled={link.supplier.disconnected}
+          loading={busyId === link.id && reimport.isPending}
+          onClick={onReimport}
+        >
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+          Pull it again
+        </Button>
+      </div>
+    </FormSection>
+  );
 }
 
 export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
-    const scope = useProductScope(ctx, { label: LABEL });
-    const productId = scope.productId ?? 'new';
-    const dropship = useProductDropship(productId);
+  const scope = useProductScope(ctx, { label: LABEL });
+  const productId = scope.productId ?? 'new';
+  const dropship = useProductDropship(productId);
 
-    if (scope.state !== 'ready') {
-        return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
-    }
+  if (scope.state !== 'ready') {
+    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+  }
 
-    const product = scope.product;
-    const data = dropship.data;
-    const orphanedStamp =
-        data !== undefined && data.stampedSupplierId !== null && data.links.length === 0;
+  const product = scope.product;
+  const data = dropship.data;
+  const orphanedStamp =
+    data !== undefined && data.stampedSupplierId !== null && data.links.length === 0;
 
-    return (
-        <div className={PANE_SHELL}>
-            <PaneToolbar label={`${LABEL} actions`}>
-                <Icon glyph={faTruck} className="size-4 shrink-0" aria-hidden />
-                <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-                    {product.title}
-                </Heading>
-                {scope.isFollowing ? (
-                    <Badge color="info" variant="soft" size="sm">
-                        Following
-                    </Badge>
-                ) : null}
-                <RefreshButton
-                    className="ml-auto"
-                    isFetching={dropship.isFetching}
-                    updatedAt={dropship.dataUpdatedAt}
-                    onRefresh={() => {
-                        void dropship.refetch();
-                    }}
-                />
-            </PaneToolbar>
+  return (
+    <div className={PANE_SHELL}>
+      <PaneToolbar
+        label={`${LABEL} actions`}
+        status={
+          scope.isFollowing ? (
+            <Badge color="info" variant="soft" size="sm">
+              Following
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={dropship.isFetching}
+            updatedAt={dropship.dataUpdatedAt}
+            onRefresh={() => {
+              void dropship.refetch();
+            }}
+          />
+        }
+      />
 
-            <div className="min-h-0 flex-1 overflow-y-auto">
-                <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-                    <FollowingNotice scope={scope} />
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          <FollowingNotice scope={scope} />
 
-                    {dropship.isError ? (
-                        <EmptyState
-                            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-                            title="Could not load who ships this"
-                            description={productErrorMessage(
-                                dropship.error,
-                                'This is a problem reaching the server. Nothing about your suppliers has changed.'
-                            )}
-                            actions={
-                                <Button
-                                    size="sm"
-                                    color="module"
-                                    onClick={() => {
-                                        void dropship.refetch();
-                                    }}
-                                >
-                                    Try again
-                                </Button>
-                            }
-                        />
-                    ) : data === undefined ? (
-                        <InlineWaiting />
-                    ) : (
-                        <>
-                            <div className="flex flex-col gap-1">
-                                <Heading level={1} className="text-2xl font-semibold">
-                                    {product.title}
-                                </Heading>
-                                <Text className="text-sm">
-                                    {data.links.length === 0
-                                        ? 'You hold this stock and ship it yourself.'
-                                        : data.links.length === 1
-                                            ? 'A supplier holds this stock and ships it for you.'
-                                            : `${String(data.links.length)} suppliers can ship this for you.`}
-                                </Text>
-                            </div>
+          {/* Both non-ready states are carded, because the ready one is a stack
+              of FormSections — each already a card. Card one and not the others
+              and the pane jumps as the data lands. */}
+          {dropship.isError ? (
+            <Card>
+              <PaneLoadError
+                module={MODULE}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                title="Could not load who ships this"
+                description={productErrorMessage(
+                  dropship.error,
+                  'This is a problem reaching the server. Nothing about your suppliers has changed.'
+                )}
+                onRetry={() => {
+                  void dropship.refetch();
+                }}
+              />
+            </Card>
+          ) : data === undefined ? (
+            <Card>
+              <PaneWaiting module={MODULE} />
+            </Card>
+          ) : (
+            <>
+              <Text className="text-sm">
+                {data.links.length === 0
+                  ? 'You hold this stock and ship it yourself.'
+                  : data.links.length === 1
+                    ? 'A supplier holds this stock and ships it for you.'
+                    : `${String(data.links.length)} suppliers can ship this for you.`}
+              </Text>
 
-                            {data.links.length === 0 ? (
-                                <FormSection title="Who ships this">
-                                    <EmptyState
-                                        size="sm"
-                                        icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
-                                        title="You ship this one yourself"
-                                        description={`${product.title} is not linked to any supplier, so when someone buys it you pick it, pack it and post it. That is how most products work — nothing is missing here.`}
-                                    />
-                                    {orphanedStamp ? (
-                                        <Text className="text-sm">
-                                            This product was originally brought in from a supplier, but the link to them
-                                            has since been removed. Nothing updates from them any more, and orders will
-                                            not reach them.
-                                        </Text>
-                                    ) : null}
-                                    <Text className="text-sm">
-                                        To have someone else ship it, connect that supplier and bring the product in
-                                        from their catalog — a product becomes dropshipped by being imported, not by
-                                        being flagged.
-                                    </Text>
-                                </FormSection>
-                            ) : (
-                                data.links.map((link) => (
-                                    <SupplierCard
-                                        key={link.id}
-                                        link={link}
-                                        data={data}
-                                        product={product}
-                                        productId={scope.productId}
-                                    />
-                                ))
-                            )}
-                        </>
-                    )}
-                </div>
-            </div>
+              {data.links.length === 0 ? (
+                <FormSection title="Who ships this">
+                  <EmptyState
+                    size="sm"
+                    icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
+                    title="You ship this one yourself"
+                    description={`${product.title} is not linked to any supplier, so when someone buys it you pick it, pack it and post it. That is how most products work — nothing is missing here.`}
+                  />
+                  {orphanedStamp ? (
+                    <Text className="text-sm">
+                      This product was originally brought in from a supplier, but the link to them
+                      has since been removed. Nothing updates from them any more, and orders will
+                      not reach them.
+                    </Text>
+                  ) : null}
+                  <Text className="text-sm">
+                    To have someone else ship it, connect that supplier and bring the product in
+                    from their catalog — a product becomes dropshipped by being imported, not by
+                    being flagged.
+                  </Text>
+                </FormSection>
+              ) : (
+                data.links.map((link) => (
+                  <SupplierCard
+                    key={link.id}
+                    link={link}
+                    data={data}
+                    product={product}
+                    productId={scope.productId}
+                  />
+                ))
+              )}
+            </>
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 }

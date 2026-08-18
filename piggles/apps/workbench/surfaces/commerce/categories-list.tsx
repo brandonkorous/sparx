@@ -20,7 +20,8 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faPlus, faTags } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -28,6 +29,10 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { flattenCategories, useCategoryTree, type CategoryChoice } from './categories-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'commerce';
 
 // Sorting is CLIENT-SIDE over the full tree (see the file header). `null` is the
 // natural tree order — depth-first, parents before children — which is the
@@ -109,36 +114,50 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Category list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search categories"
-            placeholder="Search categories…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="Add a category — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Category list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search categories"
+              placeholder="Search categories…"
+              value={search}
+              onValueChange={setSearch}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'Add a category',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">Add a category</span>
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'Add a category — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/commerce/categories',
+          params: { q: search.trim(), sort: sort ? `${sort.key}:${sort.dir}` : '' },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            const [key, dir] = (next.sort ?? '').split(':');
+            // No stored sort means the natural tree order, which is this list's
+            // neutral — not "keep whatever was on".
+            setSort(
+              key && (dir === 'asc' || dir === 'desc') ? { key: key as CatSortKey, dir } : null
+            );
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
@@ -150,6 +169,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <ListEmptyState
+            module={MODULE}
             filtered={Boolean(search)}
             noResults={{
               icon: <Icon glyph={faTags} className="size-6" aria-hidden />,

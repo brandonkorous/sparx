@@ -3,7 +3,7 @@
  *
  *   node scripts/generate-brand-icons.mjs
  *
- * The ONE source of truth is packages/brand/src/marks.ts — this script parses the
+ * The ONE source of truth is sparx/packages/brand/src/marks.ts — this script parses the
  * field path + brand hexes straight out of it, so the static files can never
  * drift from the vector components. Change the artwork there, re-run this, done.
  * Nothing here is generated on the fly at build time: favicons must be byte-stable
@@ -28,7 +28,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 // sharp ships prebuilt platform binaries, so it is never hoisted to the root of a
 // pnpm workspace. Resolve it from the one package that depends on it.
-const require = createRequire(join(ROOT, 'services/media-worker/package.json'));
+const require = createRequire(join(ROOT, 'wizeworks/services/media-worker/package.json'));
 let sharp;
 try {
     sharp = require('sharp');
@@ -39,11 +39,11 @@ try {
     process.exit(1);
 }
 
-// ── Geometry + color, read from packages/brand/src/marks.ts ──────────────────
+// ── Geometry + color, read from sparx/packages/brand/src/marks.ts ──────────────────
 // Parsed rather than imported: marks.ts is TypeScript, and this script must run
 // under a bare `node` with no build step or loader in the way.
 
-const marks = readFileSync(join(ROOT, 'packages/brand/src/marks.ts'), 'utf8');
+const marks = readFileSync(join(ROOT, 'sparx/packages/brand/src/marks.ts'), 'utf8');
 
 /** Pull a `export const NAME = '…'` (or a `+`-concatenated string) out of marks.ts. */
 function constant(name) {
@@ -140,7 +140,7 @@ async function png(svg, size) {
  *
  * 6-byte header, one 16-byte directory entry per image, then the PNG blobs — the
  * same container the public favicon tool builds (see
- * apps/web/components/marketing/tools/lib/ico.ts). Modern browsers and Windows
+ * sparx/apps/web/components/marketing/tools/lib/ico.ts). Modern browsers and Windows
  * (Vista+) read PNG inside .ico, so there is no BMP fallback to write.
  */
 function ico(images) {
@@ -185,25 +185,25 @@ async function main() {
     const maskable512 = await png(maskableSvg(), 512);
 
     // Apps whose icons Next serves from the app/ directory convention.
-    for (const app of ['apps/web', 'apps/workbench']) {
+    for (const app of ['sparx/apps/web', 'sparx/apps/workbench']) {
         write(`${app}/app/icon.svg`, OPAQUE_TILE);
         write(`${app}/app/favicon.ico`, faviconIco);
         write(`${app}/app/apple-icon.png`, await png(OPAQUE_TILE, 180));
     }
 
-    // apps/web additionally ships the explicit PWA + legacy-link set that
+    // sparx/apps/web additionally ships the explicit PWA + legacy-link set that
     // app/manifest.ts and the head links reference by name.
-    write('apps/web/app/apple-touch-icon.png', await png(OPAQUE_TILE, 180));
-    write('apps/web/app/favicon-16x16.png', await png(OPAQUE_TILE, 16));
-    write('apps/web/app/favicon-32x32.png', await png(OPAQUE_TILE, 32));
-    write('apps/web/app/favicon-48x48.png', await png(OPAQUE_TILE, 48));
-    write('apps/web/app/icon-192.png', await png(OPAQUE_TILE, 192));
-    write('apps/web/app/icon-512.png', await png(OPAQUE_TILE, 512));
-    write('apps/web/app/maskable-512.png', maskable512);
-    write('apps/web/public/android-chrome-192x192.png', await png(OPAQUE_TILE, 192));
-    write('apps/web/public/android-chrome-512x512.png', await png(OPAQUE_TILE, 512));
-    write('apps/web/public/maskable-512.png', maskable512);
-    write('apps/web/public/icon.png', await png(OPAQUE_TILE, 512));
+    write('sparx/apps/web/app/apple-touch-icon.png', await png(OPAQUE_TILE, 180));
+    write('sparx/apps/web/app/favicon-16x16.png', await png(OPAQUE_TILE, 16));
+    write('sparx/apps/web/app/favicon-32x32.png', await png(OPAQUE_TILE, 32));
+    write('sparx/apps/web/app/favicon-48x48.png', await png(OPAQUE_TILE, 48));
+    write('sparx/apps/web/app/icon-192.png', await png(OPAQUE_TILE, 192));
+    write('sparx/apps/web/app/icon-512.png', await png(OPAQUE_TILE, 512));
+    write('sparx/apps/web/app/maskable-512.png', maskable512);
+    write('sparx/apps/web/public/android-chrome-192x192.png', await png(OPAQUE_TILE, 192));
+    write('sparx/apps/web/public/android-chrome-512x512.png', await png(OPAQUE_TILE, 512));
+    write('sparx/apps/web/public/maskable-512.png', maskable512);
+    write('sparx/apps/web/public/icon.png', await png(OPAQUE_TILE, 512));
 
     // Press-ready artwork behind the /brand download page, in the same four-variant
     // scheme the wordmark uses (color / light-for-dark / one-color black / one-color
@@ -211,26 +211,26 @@ async function main() {
     //
     // The tile's two one-color variants keep a genuinely transparent counter — that
     // is what one-color MEANS for a knockout mark: the surface shows through the "x".
-    write('apps/web/public/brand/sparx-favicon.ico', faviconIco);
-    write('apps/web/public/brand/sparx-mark.svg', markSvg(EMBER));
-    write('apps/web/public/brand/sparx-mark-light.svg', markSvg(PAPER));
-    write('apps/web/public/brand/sparx-mark-black.svg', markSvg(INK));
-    write('apps/web/public/brand/sparx-mark-white.svg', markSvg(PAPER));
-    write('apps/web/public/brand/sparx-mark.png', await png(markSvg(EMBER), 512));
-    write('apps/web/public/brand/sparx-app-icon.svg', tileSvg({ field: EMBER, counter: INK }));
+    write('sparx/apps/web/public/brand/sparx-favicon.ico', faviconIco);
+    write('sparx/apps/web/public/brand/sparx-mark.svg', markSvg(EMBER));
+    write('sparx/apps/web/public/brand/sparx-mark-light.svg', markSvg(PAPER));
+    write('sparx/apps/web/public/brand/sparx-mark-black.svg', markSvg(INK));
+    write('sparx/apps/web/public/brand/sparx-mark-white.svg', markSvg(PAPER));
+    write('sparx/apps/web/public/brand/sparx-mark.png', await png(markSvg(EMBER), 512));
+    write('sparx/apps/web/public/brand/sparx-app-icon.svg', tileSvg({ field: EMBER, counter: INK }));
     write(
-        'apps/web/public/brand/sparx-app-icon-light.svg',
+        'sparx/apps/web/public/brand/sparx-app-icon-light.svg',
         tileSvg({ field: EMBER, counter: PAPER })
     );
-    write('apps/web/public/brand/sparx-app-icon-black.svg', tileSvg({ field: INK, counter: null }));
-    write('apps/web/public/brand/sparx-app-icon-white.svg', tileSvg({ field: PAPER, counter: null }));
-    write('apps/web/public/brand/sparx-app-icon.png', await png(OPAQUE_TILE, 512));
+    write('sparx/apps/web/public/brand/sparx-app-icon-black.svg', tileSvg({ field: INK, counter: null }));
+    write('sparx/apps/web/public/brand/sparx-app-icon-white.svg', tileSvg({ field: PAPER, counter: null }));
+    write('sparx/apps/web/public/brand/sparx-app-icon.png', await png(OPAQUE_TILE, 512));
 
     // market + site link their icons from public/ explicitly (see each app/layout.tsx).
-    // On apps/site these are the FALLBACK a tenant site wears until it uploads its
+    // On wizeworks/apps/site these are the FALLBACK a tenant site wears until it uploads its
     // own favicon — deliberately favicon-only, so sparx never brands a tenant's
     // home-screen install.
-    for (const app of ['apps/market', 'apps/site']) {
+    for (const app of ['sparx/apps/market', 'wizeworks/apps/site']) {
         write(`${app}/public/favicon.ico`, faviconIco);
         write(`${app}/public/sparx-icon.svg`, OPAQUE_TILE);
     }

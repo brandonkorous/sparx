@@ -42,41 +42,41 @@ type Named = [string, string, string | null];
  * goes on top, which is the question the whole tool exists to answer.
  */
 function named(palette: Palette, roles: Assignment): Named[] {
-    const slots = ROLE_ORDER.filter((_, i) => i < palette.length).flatMap((role): Named[] => {
-        const pair = contentFor(role, roles);
-        return [
-            [role, roles[role], ROLE_JOBS[role]],
-            [pair.name, pair.hex, `Text on ${role}`],
-        ];
-    });
-
+  const slots = ROLE_ORDER.filter((_, i) => i < palette.length).flatMap((role): Named[] => {
+    const pair = contentFor(role, roles);
     return [
-        ...slots,
-        ...palette
-            .slice(ROLE_ORDER.length)
-            .map((swatch, i): Named => [`color-${ROLE_ORDER.length + i + 1}`, swatch.hex, null]),
+      [role, roles[role], ROLE_JOBS[role]],
+      [pair.name, pair.hex, `Text on ${role}`],
     ];
+  });
+
+  return [
+    ...slots,
+    ...palette
+      .slice(ROLE_ORDER.length)
+      .map((swatch, i): Named => [`color-${ROLE_ORDER.length + i + 1}`, swatch.hex, null]),
+  ];
 }
 
 const line = (prefix: string, [name, hex, job]: Named): string =>
-    `  ${prefix}${name}: ${hex};${job ? `  /* ${job} */` : ''}`;
+  `  ${prefix}${name}: ${hex};${job ? `  /* ${job} */` : ''}`;
 
 export function cssVars(palette: Palette, roles: Assignment): string {
-    const body = named(palette, roles).map((n) => line('--', n));
-    return `:root {\n${body.join('\n')}\n}`;
+  const body = named(palette, roles).map((n) => line('--', n));
+  return `:root {\n${body.join('\n')}\n}`;
 }
 
 export function tailwindTheme(palette: Palette, roles: Assignment): string {
-    const body = named(palette, roles).map((n) => line('--color-', n));
-    return `@theme {\n${body.join('\n')}\n}`;
+  const body = named(palette, roles).map((n) => line('--color-', n));
+  return `@theme {\n${body.join('\n')}\n}`;
 }
 
 export function scssVars(palette: Palette, roles: Assignment): string {
-    return named(palette, roles)
-        .map(([name, hex, job]) => `$${name}: ${hex};${job ? ` // ${job}` : ''}`.trim())
-        .join('\n');
+  return named(palette, roles)
+    .map(([name, hex, job]) => `$${name}: ${hex};${job ? ` // ${job}` : ''}`.trim())
+    .join('\n');
 }
 
 export function plainList(palette: Palette): string {
-    return palette.map((s) => s.hex).join('\n');
+  return palette.map((s) => s.hex).join('\n');
 }

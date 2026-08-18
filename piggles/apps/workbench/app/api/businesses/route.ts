@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { auth, listMyMemberships, requireSession } from '@sparx/auth';
+import { auth, listMyMemberships, requireSession } from '@wizeworks/auth';
 
 // The businesses this person may act as, and the act of moving between them.
 //

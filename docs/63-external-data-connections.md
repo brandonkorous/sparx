@@ -86,7 +86,7 @@ it doesn't host the rest of the platform.
 
 ## 2. The core insight: an external source is just another `DataSource`
 
-The binding catalog (`packages/builder-schemas/src/binding.ts`) already abstracts
+The binding catalog (`wizeworks/packages/builder-schemas/src/binding.ts`) already abstracts
 _every_ bindable thing into one shape:
 
 ```ts
@@ -100,7 +100,7 @@ export interface DataSource {
 }
 ```
 
-`getSchema()` in `packages/builder/src/services/binding-service.ts` assembles the
+`getSchema()` in `wizeworks/packages/builder/src/services/binding-service.ts` assembles the
 page catalog by concatenating tenant CMS sources with the code-defined Commerce/CRM
 constants. **The entire integration on the authoring side is one more term in that
 concatenation:**
@@ -122,7 +122,7 @@ export function getSchema(ctx: ServiceContext): Promise<BindingCatalog> {
 machinery, and editor preview consume it with zero changes.
 
 The render side has the same shape of seam. `loadBuilderData` in
-`apps/site/lib/builder-data.ts` walks the tree, computes `neededSources`, and
+`wizeworks/apps/site/lib/builder-data.ts` walks the tree, computes `neededSources`, and
 fetches each in parallel into the resolver `root`. We add an `ext` branch:
 
 ```ts
@@ -140,8 +140,8 @@ for (const key of extKeys) {
 ```
 
 `resolveConnection` calls a **new public endpoint** (sibling of
-`services/api-rest/src/routes/v1/public/builder.ts`), which runs the proxy + cache
-server-side. The renderer (`apps/site/components/builder-renderer.tsx`) is
+`wizeworks/services/api-rest/src/routes/v1/public/builder.ts`), which runs the proxy + cache
+server-side. The renderer (`wizeworks/apps/site/components/builder-renderer.tsx`) is
 **untouched**: it already iterates any array and scopes any object via
 `resolvePath`/`cardinalityOf`.
 
@@ -349,7 +349,7 @@ proxy is built **allowlist-first** and runs in **isolation**:
 ## 7. Freshness: caching, render modes, and refresh
 
 Three render modes, mapping onto the existing Next.js 16 render path
-(`apps/site` already tags fetches, e.g. `publicGet(..., { tag })`):
+(`wizeworks/apps/site` already tags fetches, e.g. `publicGet(..., { tag })`):
 
 | Mode                   | `cache_ttl_secs` | How                                                                                                                                                                                               | Use for                                                                       |
 | ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -439,14 +439,14 @@ pattern from docs/53).
 ## 10. MCP surface
 
 Per MCP-native + API-first, AI authors Connections too. New write-tools alongside
-the page tools in `packages/builder/src/mcp/write-tools.ts`:
+the page tools in `wizeworks/packages/builder/src/mcp/write-tools.ts`:
 
 - `create_connection` / `update_connection` (`write:connections`)
 - `sample_connection` (`read:connections`) — infer schema from a live response
 - `activate_connection` (confirmation-gated)
 - `delete_connection` (confirmation-gated)
 
-The vocabulary guide (`packages/builder/src/mcp/vocabulary.ts`) gains a section on
+The vocabulary guide (`wizeworks/packages/builder/src/mcp/vocabulary.ts`) gains a section on
 binding `ext.*` sources so the model authors pages against external data correctly.
 This lets a prompt like _"add a live Kanban from this API to my homepage"_ become:
 create the Connection → sample → map → activate → author the bound subtree, all
@@ -550,17 +550,17 @@ that renders the Kanban demo, then widen.
 The concrete seams (all additive; the composition/render/theming layers are
 untouched):
 
-| Concern            | File                                                       | Change                                                                                          |
-| ------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| New source module  | `packages/builder-schemas/src/binding.ts`                  | `SourceModule` += `'external'`; a `mapConnection()` (external analogue of `mapCmsContentType`). |
-| Catalog assembly   | `packages/builder/src/services/binding-service.ts`         | `loadConnectionSources(tx)`; merge into `getSchema` (gated on module).                          |
-| Render-time fetch  | `apps/site/lib/builder-data.ts`                            | `neededSources` `ext.` branch + a resolve task in `loadBuilderData`.                            |
-| Public resolve     | `services/api-rest/src/routes/v1/public/`                  | New `connections.ts` resolve endpoint (sibling of `builder.ts`).                                |
-| Connector proxy    | `packages/` (new, e.g. `@sparx/connectors`)                | SSRF-safe fetch/SQL client, declarative mapper, cache, single-flight.                           |
-| Data model         | `packages/db`                                              | `connection`, `connection_secret`, `connection_run` + hand-written RLS migration SQL.           |
-| Authoring API      | `services/api-rest/src/routes/v1/connections.ts`           | CRUD + sample/test/activate + secret rotation.                                                  |
-| Refresh worker     | `services/` (Cloud Run) + Terraform topic/sub              | scheduled/webhook refresh; publishes `connection.refreshed`.                                    |
-| Renderer           | `apps/site/components/builder-renderer.tsx`                | **No change** — iterate/scope already generic.                                                  |
-| Client-live island | `apps/site/components/` (new)                              | polls the resolve endpoint for live mode.                                                       |
-| MCP                | `packages/builder/src/mcp/write-tools.ts`, `vocabulary.ts` | `*_connection` tools + `ext.*` authoring guidance.                                              |
-| Dashboard UI       | `apps/dashboard/app/(dashboard)/connections/` (new)        | Connections area; binding picker "External" group.                                              |
+| Concern            | File                                                                 | Change                                                                                          |
+| ------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| New source module  | `wizeworks/packages/builder-schemas/src/binding.ts`                  | `SourceModule` += `'external'`; a `mapConnection()` (external analogue of `mapCmsContentType`). |
+| Catalog assembly   | `wizeworks/packages/builder/src/services/binding-service.ts`         | `loadConnectionSources(tx)`; merge into `getSchema` (gated on module).                          |
+| Render-time fetch  | `wizeworks/apps/site/lib/builder-data.ts`                            | `neededSources` `ext.` branch + a resolve task in `loadBuilderData`.                            |
+| Public resolve     | `wizeworks/services/api-rest/src/routes/v1/public/`                  | New `connections.ts` resolve endpoint (sibling of `builder.ts`).                                |
+| Connector proxy    | `packages/` (new, e.g. `@sparx/connectors`)                          | SSRF-safe fetch/SQL client, declarative mapper, cache, single-flight.                           |
+| Data model         | `wizeworks/packages/db`                                              | `connection`, `connection_secret`, `connection_run` + hand-written RLS migration SQL.           |
+| Authoring API      | `wizeworks/services/api-rest/src/routes/v1/connections.ts`           | CRUD + sample/test/activate + secret rotation.                                                  |
+| Refresh worker     | `services/` (Cloud Run) + Terraform topic/sub                        | scheduled/webhook refresh; publishes `connection.refreshed`.                                    |
+| Renderer           | `wizeworks/apps/site/components/builder-renderer.tsx`                | **No change** — iterate/scope already generic.                                                  |
+| Client-live island | `wizeworks/apps/site/components/` (new)                              | polls the resolve endpoint for live mode.                                                       |
+| MCP                | `wizeworks/packages/builder/src/mcp/write-tools.ts`, `vocabulary.ts` | `*_connection` tools + `ext.*` authoring guidance.                                              |
+| Dashboard UI       | `apps/dashboard/app/(dashboard)/connections/` (new)                  | Connections area; binding picker "External" group.                                              |

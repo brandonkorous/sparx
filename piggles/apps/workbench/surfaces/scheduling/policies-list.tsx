@@ -11,7 +11,8 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Button, Card, EmptyState, SearchInput, Table, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faPlus, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -20,6 +21,10 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { policySummary, usePolicies, type BookingPolicy } from './setup-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'scheduling';
 
 const DETAIL_KEY = 'scheduling.policies.detail';
 
@@ -90,6 +95,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faShieldCheck} className="size-6" aria-hidden />,
@@ -157,39 +163,46 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Booking rules list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search booking rules"
-            placeholder="Rule set name…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+      <PaneToolbar
+        label="Booking rules list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search booking rules"
+              placeholder="Rule set name…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New rule set',
+          icon: faPlus,
+          onClick: openNew,
+          title: 'New rule set — hold Shift to open alongside, Alt for a new window',
+        }}
+        views={{
+          target: '/scheduling/policies',
+          params: { q: search.trim() },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="New rule set — hold Shift to open alongside, Alt for a new window"
-          onClick={openNew}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New rule set</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
 

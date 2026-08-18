@@ -25,10 +25,9 @@ import {
   Card,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faClipboardList, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -45,6 +44,10 @@ import {
   usePurchaseOrders,
   type PurchaseOrder,
 } from './purchase-orders-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -128,6 +131,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faClipboardList} className="size-6" aria-hidden />,
@@ -226,77 +230,86 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Purchase order list controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search purchase orders"
-            placeholder="Order number, reference or supplier…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
+      <PaneToolbar
+        label="Purchase order list controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search purchase orders"
+              placeholder="Order number, reference or supplier…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New order',
+          icon: faPlus,
+          onClick: () => {
+            ctx.open('inventory.purchase-orders.detail', { id: 'new' }, { target: 'tab' });
+          },
+        }}
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              className="max-w-36 shrink"
+              aria-label="Filter by state"
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value);
+                resetWindow();
+              }}
+            >
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Filter by supplier"
+              value={supplierId}
+              onChange={(event) => {
+                setSupplierId(event.target.value);
+                resetWindow();
+              }}
+            >
+              <option value="">Any supplier</option>
+              {supplierList.map((supplier) => (
+                <option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </>
+        }
+        views={{
+          target: '/inventory/purchase-orders',
+          params: { q: search.trim(), status, supplier: supplierId },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus(next.status ?? '');
+            setSupplierId(next.supplier ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-
-        <ToolbarSeparator className="hidden @2xl:block" />
-
-        <NativeSelect
-          size="sm"
-          className="max-w-36 shrink"
-          aria-label="Filter by state"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value);
-            resetWindow();
-          }}
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Filter by supplier"
-          value={supplierId}
-          onChange={(event) => {
-            setSupplierId(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Any supplier</option>
-          {supplierList.map((supplier) => (
-            <option key={supplier.id} value={supplier.id}>
-              {supplier.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          onClick={() => {
-            ctx.open('inventory.purchase-orders.detail', { id: 'new' }, { target: 'tab' });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New order</span>
-        </Button>
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 

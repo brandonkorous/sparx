@@ -11,24 +11,15 @@
 // finish, and if not, what stopped it? Open a row for the full step timeline and
 // the policy audit. Reached from a rule's toolbar, so it always knows its rule.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Heading,
-  Select,
-  Table,
-  Timestamp,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, Select, Timestamp } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   faArrowDown,
   faArrowUp,
   faBullseye,
   faClockRotateLeft,
-  faListCheck,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
@@ -131,64 +122,73 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('automations.run', { automationId, runId: run.id }, { target: targetFor(event) });
   };
 
+  // The tab said "Automation runs" whichever automation was loaded, so two of
+  // these docked side by side were indistinguishable. Identity belongs there.
+  useEffect(() => {
+    if (automation) ctx.setTitle(`${automation.name} · runs`);
+  }, [ctx, automation]);
+
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Run history controls">
-        <Icon glyph={faListCheck} className="size-4 shrink-0" aria-hidden />
-        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-          {automation ? `${automation.name} — runs` : 'Runs'}
-        </Heading>
-        <div className="ml-auto flex shrink-0 items-center gap-1">
-          <Button
-            size="sm"
-            variant={view === 'results' ? 'soft' : 'ghost'}
-            color={view === 'results' ? 'module' : 'neutral'}
-            onClick={() => {
-              setView('results');
-            }}
-          >
-            <Icon glyph={faBullseye} className="size-4" aria-hidden />
-            Results
-          </Button>
-          <Button
-            size="sm"
-            variant={view === 'runs' ? 'soft' : 'ghost'}
-            color={view === 'runs' ? 'module' : 'neutral'}
-            onClick={() => {
-              setView('runs');
-            }}
-          >
-            <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
-            Every run
-          </Button>
-        </div>
-        <div className={`w-40 shrink-0 ${view === 'runs' ? '' : 'hidden'}`}>
-          <Select
-            size="sm"
-            color="module"
-            aria-label="Filter by result"
-            value={status}
-            items={{
-              all: 'Any result',
-              completed: 'Finished',
-              failed: 'Failed',
-              running: 'Running',
-              waiting: 'Waiting',
-              skipped: 'Skipped',
-            }}
-            onValueChange={(next) => {
-              setStatus((next as string) || 'all');
+      <PaneToolbar
+        label="Run history controls"
+        controls={
+          <>
+            <div className="ml-auto flex shrink-0 items-center gap-1">
+              <Button
+                size="sm"
+                variant={view === 'results' ? 'soft' : 'ghost'}
+                color={view === 'results' ? 'module' : 'neutral'}
+                onClick={() => {
+                  setView('results');
+                }}
+              >
+                <Icon glyph={faBullseye} className="size-4" aria-hidden />
+                Results
+              </Button>
+              <Button
+                size="sm"
+                variant={view === 'runs' ? 'soft' : 'ghost'}
+                color={view === 'runs' ? 'module' : 'neutral'}
+                onClick={() => {
+                  setView('runs');
+                }}
+              >
+                <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
+                Every run
+              </Button>
+            </div>
+            <div className={`w-40 shrink-0 ${view === 'runs' ? '' : 'hidden'}`}>
+              <Select
+                size="sm"
+                color="module"
+                aria-label="Filter by result"
+                value={status}
+                items={{
+                  all: 'Any result',
+                  completed: 'Finished',
+                  failed: 'Failed',
+                  running: 'Running',
+                  waiting: 'Waiting',
+                  skipped: 'Skipped',
+                }}
+                onValueChange={(next) => {
+                  setStatus((next as string) || 'all');
+                }}
+              />
+            </div>
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={runs ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
             }}
           />
-        </div>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={runs ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+        }
+      />
 
       {/* "Results" is the DEFAULT view, and that is the point of the pair: the
           run list says a hundred things happened; the funnel says whether any of

@@ -37,7 +37,6 @@ import {
   Field,
   FieldDescription,
   FieldLabel,
-  Heading,
   NativeSelect,
   RadioGroup,
   RadioOption,
@@ -217,15 +216,10 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            How your stock is planned
-          </Heading>
-          <Text>
-            Four judgements the figures cannot make for you. Everything else on the planning screens
-            is measured from your own sales and your own deliveries.
-          </Text>
-        </div>
+        <Text>
+          Four judgements the figures cannot make for you. Everything else on the planning screens
+          is measured from your own sales and your own deliveries.
+        </Text>
 
         {policy.data && !policy.data.configured ? (
           <Alert color="info" variant="soft">
@@ -414,38 +408,46 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Planning settings actions">
-        <span className="inline-flex items-center gap-1.5">
-          <Icon glyph={faSliders} className="size-4" aria-hidden />
-          <Text as="span" className="text-sm font-medium">
-            Planning settings
-          </Text>
-        </span>
-        {policy.data ? (
-          <Badge color={policy.data.configured ? 'module' : 'neutral'} variant="soft" size="sm">
-            {policy.data.configured ? 'Your settings' : 'Standard settings'}
-          </Badge>
-        ) : null}
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0"
-          disabled={!dirty}
-          loading={save.isPending}
-          onClick={onSave}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          Save
-        </Button>
-        <RefreshButton
-          isFetching={policy.isFetching}
-          updatedAt={policy.dataUpdatedAt}
-          onRefresh={() => {
-            void policy.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Planning settings actions"
+        status={
+          <>
+            <span className="inline-flex items-center gap-1.5">
+              <Icon glyph={faSliders} className="size-4" aria-hidden />
+              <Text as="span" className="text-sm font-medium">
+                Planning settings
+              </Text>
+            </span>
+            {policy.data ? (
+              <Badge color={policy.data.configured ? 'module' : 'neutral'} variant="soft" size="sm">
+                {policy.data.configured ? 'Your settings' : 'Standard settings'}
+              </Badge>
+            ) : null}
+          </>
+        }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0"
+            disabled={!dirty}
+            loading={save.isPending}
+            onClick={onSave}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            Save
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={policy.isFetching}
+            updatedAt={policy.dataUpdatedAt}
+            onRefresh={() => {
+              void policy.refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>

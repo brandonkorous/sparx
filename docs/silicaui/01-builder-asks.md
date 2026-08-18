@@ -346,7 +346,7 @@ whole-site snapshot stack is discarded on every `applyRemoteOps` — which, in a
 an agent edits alongside the author over MCP, means the author's undo history quietly
 disappears mid-session. The host computes each action's inverse from the ops and the previous
 document, and 22 of the 24 op kinds invert cleanly against `Editor.applyOp`. (At the time this
-was written the host computed that itself, in `packages/builder-schemas/src/silica-op-invert.ts`;
+was written the host computed that itself, in `wizeworks/packages/builder-schemas/src/silica-op-invert.ts`;
 the engine answered with `editor.inverseOf(ops, before)` in `0.36.0`, so that module is GONE and
 the host just binds the engine's — see
 [undo-history.tsx](../../apps/workbench/surfaces/builder/studio/undo-history.tsx).)
@@ -391,7 +391,7 @@ threshold down to about 0.60.
 > **We adopted the other eleven answers from 0.36.0 and missed this one**, because it is a default
 > inside a CSS string rather than an API — nothing failed to compile. Two copies of `0.68` stayed
 > in the tree: `themes-ink.test.ts`, which then spent five releases failing 10 assertions against
-> **correctly authored themes**, and — the one that mattered — `@sparx/site-lint`'s `palette.ts`,
+> **correctly authored themes**, and — the one that mattered — `@wizeworks/site-lint`'s `palette.ts`,
 > the live pre-publish contrast check, which predicted WHITE ink for every color between 0.57 and
 > 0.68 where the site actually paints BLACK. A wrong verdict in whichever direction hurt more.
 >
@@ -411,7 +411,7 @@ oklch(from <color> clamp(0, (var(--silica-content-threshold, 0.68) - l) * 1000, 
 
 — white below `l = 0.68`, black above. That is a lightness comparison standing in for a contrast
 comparison, and the two part company across a wide band. Measured over the four shipped
-`THEME_PRESETS` by `@sparx/site-lint` (slice 10 of the builder audit, which reproduces this
+`THEME_PRESETS` by `@wizeworks/site-lint` (slice 10 of the builder audit, which reproduces this
 derivation exactly in order to check contrast without rendering):
 
 | preset | token     | `l`  | white (chosen) | black (rejected) |
@@ -970,7 +970,7 @@ Two details worth keeping in mind when contributing one, both from the shipped d
 The engine also hides the identity header and the Duplicate/Delete footer while a panel tab is
 open, so the rail reads as one surface, and a node-scoped tab that stops being returned while open
 falls back to Design rather than blanking. Adopted in
-[apps/workbench/surfaces/builder/studio/version-history.tsx](../../apps/workbench/surfaces/builder/studio/version-history.tsx)
+[sparx/apps/workbench/surfaces/builder/studio/version-history.tsx](../../apps/workbench/surfaces/builder/studio/version-history.tsx)
 — the drawer is gone.
 
 ---
@@ -1066,7 +1066,7 @@ Editing the list means the platform redeploys every time a merchant invents a co
    not as a preview limit.
 
 **What sparx shipped, and why it is a workaround rather than the fix.**
-`@sparx/silica-catalog/src/custom-colors.ts` runs the plugin itself against a stub
+`@wizeworks/silica-catalog/src/custom-colors.ts` runs the plugin itself against a stub
 Tailwind context — once with the custom names and once without — and keeps the
 difference. That recovers all 41 rules per name, serializes them into `@layer base`,
 and the storefront injects them beside the theme file. It also derives the measured
@@ -1196,7 +1196,7 @@ the distinction into the `label` string, because that is the only field that sur
 **What sparx did meanwhile.** Relabelled its bare cores (`Map` → `Map on its own`) because
 two of its host labels collided exactly with catalog blocks and there is no other lever
 (see §21), and rewrote its five `category` slugs as Title Case display copy. Pinned with
-`packages/silica-catalog/src/palette-names.test.ts`.
+`wizeworks/packages/silica-catalog/src/palette-names.test.ts`.
 
 ### ANSWERED — `0.51.0`
 

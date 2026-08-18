@@ -19,14 +19,14 @@ import {
   AlertTitle,
   Badge,
   Card,
-  Heading,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import { faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { GateLogEntry } from '@sparx/automation-schemas';
+import type { GateLogEntry } from '@wizeworks/automation-schemas';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { actionLabel } from './automations-catalog';
@@ -141,7 +141,14 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const runId = typeof ctx.params.runId === 'string' ? ctx.params.runId : '';
 
   const { data: automation } = useAutomation(automationId);
-  const { data: run, isPending, isError, refetch } = useAutomationRun(automationId, runId);
+  const {
+    data: run,
+    isPending,
+    isError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useAutomationRun(automationId, runId);
 
   useEffect(() => {
     if (run) ctx.setTitle(automation ? `${automation.name} — run` : 'Run');
@@ -172,23 +179,34 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Run details">
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-        {run.automationVersion !== null ? (
-          <Badge color="neutral" variant="outline" size="sm">
-            v{run.automationVersion}
-          </Badge>
-        ) : null}
-      </PaneToolbar>
+      <PaneToolbar
+        label="Run details"
+        status={
+          <>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+            {run.automationVersion !== null ? (
+              <Badge color="neutral" variant="outline" size="sm">
+                v{run.automationVersion}
+              </Badge>
+            ) : null}
+          </>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={run ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {automation ? automation.name : 'Automation run'}
-            </Heading>
             <Text className="text-sm">
               Started <Timestamp value={run.startedAt} format="absolute" />
               {run.completedAt ? (

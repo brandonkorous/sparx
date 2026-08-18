@@ -5,7 +5,7 @@
 **Last Updated:** 2026-06-26
 
 > **Implementation status (2026-06-25):** **P0 framework + P1 feed channels + P2 first order channel
-> (TikTok Shop) are BUILT.** P0/P1: the `@sparx/channels` adapter contract + registry, the
+> (TikTok Shop) are BUILT.** P0/P1: the `@wizeworks/channels` adapter contract + registry, the
 > `channel-sync-worker` (catalog/inventory push), OAuth connect/callback + AES-256-GCM token storage
 > (§4.6), Terraform, the Settings → Channels dashboard, and the **Google Shopping / Meta / Pinterest**
 > feed adapters.
@@ -21,7 +21,7 @@
 > **Channel-revenue analytics consolidation is now BUILT (2026-06-25).** `reportingService`
 > `channelComparison`/`channelRevenue`/`channelTopProducts` consolidate every channel by a _derived
 > key_ (marketplace orders split by `source` slug, native orders by `channel` bucket — primitive +
-> canonical labels in `@sparx/crm-schemas`), surfacing gross/fees/net-after-fees/AOV/share via
+> canonical labels in `@wizeworks/crm-schemas`), surfacing gross/fees/net-after-fees/AOV/share via
 > `GET /v1/commerce/reports/channel-revenue` + `/channel-top-products`, the `get_channel_revenue`/
 > `get_channel_comparison`/`get_channel_top_products` MCP tools, the Settings → Channels performance
 > surface (per-connection 30-day GMV/Orders/AOV + a Revenue-by-channel card + a top-products drill), and
@@ -54,7 +54,7 @@
 > audit**, not just app approval.
 >
 > **P5 sparx.market (the first-party channel) is now BUILT (2026-06-26).** It dropped onto the proven
-> spine: a new `apps/market` storefront (a single-host public Next.js app reading a GLOBAL, cross-tenant
+> spine: a new `sparx/apps/market` storefront (a single-host public Next.js app reading a GLOBAL, cross-tenant
 > `market_listings` / `market_merchants` Postgres projection — same global-read / tenant-write RLS as
 > `channel_shop_links`, no Typesense), a product-graph opt-in (`market_listed` / `market_category` on
 > products, projected synchronously), and a **merchant-of-record** checkout that REUSES the existing
@@ -91,7 +91,7 @@ cut across all of them:
 1. The **selling-surface taxonomy** (§2) — the three shapes a "channel" can take, why they install and
    sync differently, and which subsystem owns each.
 2. The **full platform set** (§3) — every surface we integrate, prioritized into a build sequence.
-3. The **shared framework** (§4) — `@sparx/channels` + one generic `channel-sync-worker`, modeled on the
+3. The **shared framework** (§4) — `@wizeworks/channels` + one generic `channel-sync-worker`, modeled on the
    already-built dropship adapter pattern, plus the exact data-model deltas and the inventory seam.
 4. The **phased build sequence** (§6) and the **partner applications to file immediately** (§7).
 
@@ -187,13 +187,13 @@ Build sequence is by **effort + partner-application lead time**, not scope. Tier
 ## 4. Architecture
 
 The pattern is **already built twice** — the dropship `SupplierAdapter`
-([packages/dropship](../packages/dropship), e.g.
+([wizeworks/packages/dropship](../packages/dropship), e.g.
 [printify.ts](../packages/dropship/src/adapters/printify.ts)) and the provider `ProviderBundle`
-([packages/integration-framework](../packages/integration-framework)). Channels reuse the same shape:
+([wizeworks/packages/integration-framework](../packages/integration-framework)). Channels reuse the same shape:
 an adapter interface, a registry, OAuth + `SecretReader` for tokens, a webhook router, and a worker.
 Nothing here is invented from scratch.
 
-### 4.1 `@sparx/channels` — the adapter contract
+### 4.1 `@wizeworks/channels` — the adapter contract
 
 A new contract package (zero module deps → acyclic), modeled on `SupplierAdapter`. Each platform is one
 adapter class implementing:
@@ -287,7 +287,7 @@ carries `channel` and `source`. The deltas:
   channels) — no columns on `ProductVariant`.
 
 All new tables follow the standard ENABLE+FORCE RLS + `tenant_isolation` pattern, hand-edited SQL via
-the DB Migrate pipeline ([packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
+the DB Migrate pipeline ([wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
 
 ### 4.5 Marketplace integration — the `shape` discriminator
 
@@ -308,7 +308,7 @@ Two distinct secret tiers, stored differently:
   `coming_soon` until its pair is set, lighting up with **no code change**.
 - **Per-tenant OAuth grants** (each tenant's access/refresh tokens) are **AES-256-GCM ciphertext on the
   `channel_connections` row** (`access_token_enc` / `refresh_token_enc`), keyed by `CHANNELS_TOKEN_KEY`, via
-  `@sparx/channels/crypto` — **not** Secret Manager refs. These rotate constantly (Google access tokens
+  `@wizeworks/channels/crypto` — **not** Secret Manager refs. These rotate constantly (Google access tokens
   expire hourly); a row cipher box rotates with a plain `UPDATE`, whereas a Secret-Manager ref would churn a
   billed, version-capped secret version per refresh per tenant. This mirrors the Search Console connector
   (the proven in-repo pattern). The CORE "never raw tokens on a row" rule is satisfied — the row holds
@@ -346,13 +346,13 @@ and sparx is **merchant-of-record**. Concretely (**as built, 2026-06-26**):
   net via a pluggable `MarketPayoutProvider` seam (the working default records the run for out-of-band ACH;
   a Stripe Treasury / Connect-Custom / third-party rail plugs in at go-live, gated on
   `MARKET_PAYOUTS_PROVIDER`), and emails a `market-settlement-report` (the standard `email.send` →
-  email-worker path). Bank details are AES-256-GCM ciphertext (the `@sparx/channels/crypto` box).
+  email-worker path). Bank details are AES-256-GCM ciphertext (the `@wizeworks/channels/crypto` box).
 - **Commission is a flat platform rate in basis points** (`MARKET_COMMISSION_BPS`, default 200 = 2%) **with
   an optional per-tenant override** (the "Enterprise: negotiated" case) — **NOT a plan tier**. This
   corrects docs/72 §4's plan-tiered commission table: the platform has modules, not subscription tiers
   ([[feedback_modules_not_plans]]), and `tenant.plan` is deprecated/never-read.
-- `apps/market` (the public shopping destination, `sparx.market`) is a new Next.js app (GKE Deployment +
-  Caddy host-match); the `/market` route on apps/web is the **add-on** marketplace (docs/60), a different
+- `sparx/apps/market` (the public shopping destination, `sparx.market`) is a new Next.js app (GKE Deployment +
+  Caddy host-match); the `/market` route on sparx/apps/web is the **add-on** marketplace (docs/60), a different
   surface — do not conflate.
 
 Shipping sparx.market last means the order spine, inventory push, and analytics breakdown were already
@@ -394,12 +394,12 @@ deploy order, not a scope cut).
 
 | Phase     | Theme                                  | Ships                                                                                                                                                                                                                  | Gated on            |
 | --------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| **P0**    | Framework                              | `@sparx/channels` + registry; `channel-sync-worker`; data-model deltas (§4.4); marketplace `shape` discriminator; OAuth/secrets wiring; channels dashboard (Settings → Channels)                                       | —                   |
+| **P0**    | Framework                              | `@wizeworks/channels` + registry; `channel-sync-worker`; data-model deltas (§4.4); marketplace `shape` discriminator; OAuth/secrets wiring; channels dashboard (Settings → Channels)                                   | —                   |
 | **P1**    | Feed channels                          | Google Shopping (auto-enroll), Meta catalog feed, Pinterest — catalog-out, no order ingest                                                                                                                             | P0                  |
 | **P2**    | First order channel — **TikTok Shop**  | Full bidirectional loop: connect → catalog sync → order ingest → fulfillment push → inventory sync → analytics ([docs/27](27-tiktok-shop-integration.md))                                                              | P0 (+ inventory ✅) |
 | **P3** ✅ | Order-channel breadth                  | Etsy, Walmart, eBay, Faire — each an adapter on the proven framework + the **polling ingest path** (the three webhook-less channels) **— BUILT 2026-06-25**                                                            | P2                  |
 | **P4** ✅ | **Amazon**                             | SP-API on the framework — LWA auth, **Feeds API** outbound (no seller-id), Orders-API **poll + Restricted Data Token** inbound (reuses the P3 poll cron). **BUILT 2026-06-26**; live-gated on the restricted-PII audit | P2                  |
-| **P5** ✅ | **sparx.market** (first-party channel) | `apps/market` destination + product-graph opt-in + sparx-MoR checkout + weekly ACH settlement run. **BUILT 2026-06-26**; live-gated on `MARKET_ENABLED` + a chosen ACH disbursement rail                               | P2 (proven spine)   |
+| **P5** ✅ | **sparx.market** (first-party channel) | `sparx/apps/market` destination + product-graph opt-in + sparx-MoR checkout + weekly ACH settlement run. **BUILT 2026-06-26**; live-gated on `MARKET_ENABLED` + a chosen ACH disbursement rail                         | P2 (proven spine)   |
 
 **Deploy gates:** P0 — connect a sandbox channel, see it in Settings → Channels. P1 — a product appears
 in Google Shopping / Meta catalog within the feed SLA. P2 — place a TikTok test order → sparx order
@@ -433,7 +433,7 @@ highest-leverage zero-code action.
 - **RLS:** `channel_connections` + `channel_product_mappings` are tenant-scoped, ENABLE+FORCE,
   `tenant_isolation`; hand-edited SQL via the DB Migrate pipeline (mind the FORCE-RLS backfill footgun).
 - **Secrets:** per-tenant OAuth grants are AES-256-GCM ciphertext on the `channel_connections` row
-  (`@sparx/channels/crypto`, keyed `CHANNELS_TOKEN_KEY`), never plaintext; platform app credentials are
+  (`@wizeworks/channels/crypto`, keyed `CHANNELS_TOKEN_KEY`), never plaintext; platform app credentials are
   env / Secret Manager (§4.6).
 - **Idempotency:** order ingest + inventory commit are idempotency-keyed on the channel's external id, so
   redelivered webhooks apply once — reusing the ledger's `idempotencyKey` (§4.3).

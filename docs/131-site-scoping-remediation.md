@@ -338,9 +338,9 @@ settled: add a nullable `property_id` to both; move the unique to
 with NULLS NOT DISTINCT; resolution reads the active site's row first and falls back
 to the tenant-wide (null) row — the same shared-null pattern `NavigationMenu` already
 uses. What blocks EXECUTION is not the decision but the ground: the resolution read
-path lives in `packages/builder/src/services/assignment-service.ts` — the NEW
+path lives in `wizeworks/packages/builder/src/services/assignment-service.ts` — the NEW
 package of the in-flight builder rebuild (docs/98), which coexists with legacy
-`packages/sitebuilder/` and took parallel commits this same session. A schema column
+`wizeworks/packages/sitebuilder/` and took parallel commits this same session. A schema column
 without the resolution change is this doc's own #1 anti-pattern ("the column exists
 ≠ the leak is closed"), and doing the resolution change means editing a subsystem
 that is actively being rebuilt by other work — a half-migration into a moving target.
@@ -360,7 +360,7 @@ exercises BOTH patterns in one place because its models genuinely differ:
   both businesses; a column would split them in two) and `scheduling_location_properties`
   (a location is a PLACE, and one place can host several sites — empty = every site,
   the ProductProperty convention, so existing rows need no backfill). Enforcement
-  lives in `packages/scheduling` (`booking-queries.ts`, `booking-service.ts`,
+  lives in `wizeworks/packages/scheduling` (`booking-queries.ts`, `booking-service.ts`,
   `services.ts`). The `BusinessLocation` shared-locations question the old TODO
   flagged was answered here, by the junction.
 
@@ -406,7 +406,7 @@ preview) the filter is skipped, so the default stays backward-compatible. Becaus
 wrong filter here over- or under-charges a real order AND it is migration-gated (the
 junction does not exist until 20270106 is applied), it MUST ship with
 `price-list-per-site.test.ts` RUN post-migration — never trusted from a typecheck.
-The remaining `@sparx/commerce` typecheck error (`propertyLinks` on the where) is the
+The remaining `@wizeworks/commerce` typecheck error (`propertyLinks` on the where) is the
 expected stale-client symptom, resolving on `prisma generate`.
 
 The only piece now genuinely open is **marketplace & channels** (the merchant-handle
@@ -884,7 +884,7 @@ migratable one.**
   private-IP only. Any backfill on a FORCE-RLS table must loop tenants and
   `set_config('app.tenant_id', …)`; `sparx_owner` is a non-superuser in prod and
   sees zero rows otherwise. Passes locally, fails in prod. See
-  [packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
+  [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
 - **The column is the easy half.** Every item here has an enforcement half —
   filtering the automation engine, checking the API key at dispatch, routing the
   chat, resolving the sender. **Shipping the column without the enforcement

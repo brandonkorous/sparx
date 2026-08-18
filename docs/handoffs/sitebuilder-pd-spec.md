@@ -46,7 +46,7 @@ service/route verbs it needs.
 
 ## 3. What shipped
 
-### 3.1 Schemas (`@sparx/sitebuilder-schemas`)
+### 3.1 Schemas (`@wizeworks/sitebuilder-schemas`)
 
 - **NEW `page-templates.ts`** — the code-first Page Template catalog (doc 36 §10):
   - `PageTemplate { id, name, description, binding: TargetBinding | null, sections: DefaultTemplateSection[] }`.
@@ -59,7 +59,7 @@ service/route verbs it needs.
 - **`inputs.ts`** — `InstantiateLayoutInput { targetId, templateId, name?, key? }`,
   `RenamePageLayoutInput { name }`.
 
-### 3.2 Service (`@sparx/sitebuilder`)
+### 3.2 Service (`@wizeworks/sitebuilder`)
 
 - `pageLayoutService`:
   - `getById(ctx, id)` → view | `NotFound` (RLS scopes to tenant).
@@ -78,7 +78,7 @@ service/route verbs it needs.
 
 - `page-layouts.ts`: `POST /instantiate` (→ `{ pageLayout, sections }`), `GET /:id`, `PATCH /:id`
   (rename), `DELETE /:id`. Bodies validated by the service-layer Zod schemas — api-rest keeps **zero**
-  `@sparx/sitebuilder-schemas` dep (the established route ↔ service boundary).
+  `@wizeworks/sitebuilder-schemas` dep (the established route ↔ service boundary).
 - `assignments.ts`: `GET /assignments/defaults`.
 
 ### 3.4 Site

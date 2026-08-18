@@ -44,7 +44,7 @@ None of that is a storage-shape problem. All of it is fixable now.
 ## 2. Fix the unselected `findMany` — highest ratio of impact to effort
 
 ```ts
-// packages/builder/src/services/site-service.ts:189
+// wizeworks/packages/builder/src/services/site-service.ts:189
 export function getPublishedPageBySlug(ctx, slug) {
   return withTenant(ctx, async (tx) => {
     const [pages, site] = await Promise.all([
@@ -88,7 +88,7 @@ Same at `site-service.ts:332`, `:480`, `:594`, `:629`, `:890`.
 ## 4. Fix the surface-CSS cache ordering
 
 ```ts
-// packages/builder/src/services/surface-css-service.ts:118
+// wizeworks/packages/builder/src/services/surface-css-service.ts:118
 const [trees, allowlist] = await Promise.all([readPublishedTrees(ctx), readAllowlistConfig(ctx)]);
 const classes = collectClasses(trees);
 const classHash = sheetCacheHash(classes, allowlist);
@@ -109,7 +109,7 @@ The file header calls this "a cheap DB read." It is every published tree in the 
 ## 5. TTL-cache the tenant lookup
 
 ```ts
-// services/api-rest/src/routes/v1/public/builder.ts:55
+// wizeworks/services/api-rest/src/routes/v1/public/builder.ts:55
 async function resolveTenantBySlug(slug: string): Promise<string> {
   const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
 ```
@@ -133,11 +133,11 @@ missing links — no real publisher, no consumer, no `builder` scope on
    `builder.page.published` / `builder.layout.published` / `builder.layout.activated` /
    `builder.email.published` reach Pub/Sub instead of `console.log`. The site-level
    publish and rollback endpoints emit `builder.published` / `builder.rolled_back`
-   directly through `@sparx/events`
+   directly through `@wizeworks/events`
    ([api-rest/lib/builder-events.ts](../services/api-rest/src/lib/builder-events.ts)).
 2. **Consumer.** `cache-revalidation-worker` maps `builder.*` **by prefix**, so all six
    names land on the `builder` scope and a seventh needs no worker change.
-3. **Scope.** `builder` is in `SCOPES` in `apps/site/app/api/revalidate/route.ts`, kept
+3. **Scope.** `builder` is in `SCOPES` in `wizeworks/apps/site/app/api/revalidate/route.ts`, kept
    separate from `site` because they change on different events.
 4. **Tenant resolution.** The worker looks the slug up from the envelope's `tenantId`
    and posts `{ tenant: slug, scopes: ['builder'] }`, so the tag it purges
@@ -148,7 +148,7 @@ missing links — no real publisher, no consumer, no `builder` scope on
 Every storefront route carried `export const dynamic = 'force-dynamic'`. That does two
 things, and only the first was wanted: it forces dynamic RENDERING, and it forces
 `cache: 'no-store'` on every `fetch` beneath it. The second silently overrode the
-policy each reader in `apps/site/lib/*` already declares — the `revalidate` windows and
+policy each reader in `wizeworks/apps/site/lib/*` already declares — the `revalidate` windows and
 the `builder:` / `tenant:` / `commerce:` tags were decorative for as long as the
 directive was there.
 
@@ -181,7 +181,7 @@ and CDN caching becomes possible.
 ## 7. Batch the CMS pins
 
 ```ts
-// apps/site/lib/builder-data.ts:152
+// wizeworks/apps/site/lib/builder-data.ts:152
 await Promise.all(
   ids.map((id) => getEntryById(tenantSlug, id).then(...))
 );
@@ -205,10 +205,10 @@ At the catalog sizes we are targeting this is the difference between a working s
 - **Shopper-facing** — real pagination or infinite scroll on collection-bound grids. Large catalogs are a Typesense query, not a `findMany`.
 
 > **Shopper-facing pagination: SHIPPED.** The collection detail page
-> ([apps/site/app/collections/[handle]/page.tsx](../apps/site/app/collections/[handle]/page.tsx))
+> ([wizeworks/apps/site/app/collections/[handle]/page.tsx](../apps/site/app/collections/[handle]/page.tsx))
 > now reads `?page=`, fetches that page at 24/page, binds only that window to the
 > template's `collection.products` grid, and renders the proven link-based SSR pager
-> ([apps/site/components/pagination.tsx](../apps/site/components/pagination.tsx)) beneath
+> ([wizeworks/apps/site/components/pagination.tsx](../apps/site/components/pagination.tsx)) beneath
 > the authored body — the same seam the category-detail core and the PLP already use. It
 > was the one navigable collection surface still stuck on a single page (the silica
 > composite is a bind-based grid, so it can't express a working pager itself — the route
@@ -221,7 +221,7 @@ At the catalog sizes we are targeting this is the difference between a working s
 
 ## 9. Parallelise the root layout
 
-[apps/site/app/layout.tsx](../apps/site/app/layout.tsx) sequentially awaits four independent reads — snapshot (`:263`), builder layout (`:272`), silica frame (`:280`), surface styles (`:308`) — before chrome renders. Four round-trips deep, serialised.
+[wizeworks/apps/site/app/layout.tsx](../apps/site/app/layout.tsx) sequentially awaits four independent reads — snapshot (`:263`), builder layout (`:272`), silica frame (`:280`), surface styles (`:308`) — before chrome renders. Four round-trips deep, serialised.
 
 **Fix.** `Promise.all` the independent ones. `resolveSite` and `resolveActivePropertySlug` must stay ordered; the rest need not.
 
@@ -230,7 +230,7 @@ At the catalog sizes we are targeting this is the difference between a working s
 ## 10. Make unknown node types visible
 
 ```ts
-// packages/builder-render/src/render-leaf.tsx:899
+// wizeworks/packages/builder-render/src/render-leaf.tsx:899
 default: {
   const atom = renderSiteUiAtom(node, {...});
   return atom === undefined ? null : atom;

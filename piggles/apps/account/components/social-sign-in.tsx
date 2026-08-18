@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@wizeworks/silicaui-react';
-import { signIn } from '@sparx/auth/client';
+import { signIn } from '@wizeworks/auth/client';
 
 // "Continue with Google", and the rule that separates it from the email form.
 //

@@ -1,4 +1,4 @@
-# services/api-graphql — production manifest. Mirrors api-rest.yaml; the
+# wizeworks/services/api-graphql — production manifest. Mirrors api-rest.yaml; the
 # differences are:
 #   - PORT 3200 (env default)
 #   - Image tag `api-graphql`

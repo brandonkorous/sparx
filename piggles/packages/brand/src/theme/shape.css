@@ -1,0 +1,141 @@
+/* Shape, motion, density and type tokens — everything non-color.
+ *
+ * Part of @piggles/brand/theme.css — imported from it, never directly.
+ * UNLAYERED on purpose: that is what outranks silicaui's `base` layer.
+ * See ../layers.css. */
+
+[data-theme='light'],
+[data-theme='dark'] {
+  /* ── silicaui shape + type tokens ──────────────────────────────────────────
+   * The radii are the loudest non-color difference between the two brands and
+   * come straight from the board (8 / 12 / 18 / 24, "roundness: high"). sparx runs
+   * 6px fields and 0.5rem boxes; Piggles runs 12 and 18. The mark is a squircle
+   * and the wordmark is a rounded geometric — the UI has to agree with it or the
+   * logo looks borrowed. */
+  --radius-selector: 9999px; /* Radio, Checkbox, Switch, Toggle */
+  --radius-field: 12px; /* Input, Select, Textarea, Button — board radiusMd */
+  --radius-box: 18px; /* Card, Dialog, Popover, panels — board radiusLg */
+  --border: 1px;
+
+  /* Board radiusXl, which silicaui has no slot for because nothing IT paints is
+   * this big. Piggles' marketing surfaces are built from inset rounded panels
+   * rather than full-bleed bands, and 18px on a 1280×600 panel reads as a
+   * rectangle with the corners knocked off — the radius has to grow with the
+   * shape for the roundness to still be roundness.
+   *
+   * Not `--radius-box` raised: that would re-shape every Card, Dialog and Popover
+   * in three apps to fix a section. Bridged into Tailwind as `rounded-section`
+   * per app (see each globals.css) because @theme cannot read a token declared
+   * inside `[data-theme]`. */
+  --radius-section: 24px;
+
+  /* ── MOTION ────────────────────────────────────────────────────────────────
+   * Tokens rather than a library, and tokens rather than numbers typed at call
+   * sites, for the same reason as every other value here: one edit re-times the
+   * whole brand.
+   *
+   * The easing is the brand argument. `--ease-piggles` overshoots slightly at the
+   * end — the settle a round, soft object has and a flat rectangle does not — and
+   * it is what stops motion here reading like sparx's. `--ease-out-soft` is the
+   * unremarkable one, for anything that should not draw attention to its own
+   * arrival. Durations are deliberately short: comfortable is a spacing decision,
+   * not a slow one, and a landing page that makes somebody wait for a heading to
+   * finish sliding is being decorative at their expense. */
+  --ease-piggles: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duration-quick: 160ms;
+  --duration-base: 320ms;
+  --duration-slow: 620ms;
+
+  /* Depth 1 — silicaui's own default: resting shadow + hover-lift on Card, inset
+     highlight on solid Buttons. sparx sets this to 0 because flat, sharp and cool
+     is sparx's identity; Piggles is soft and warm, where a hairline between
+     #fcf7f8 and #ffffff barely reads as an edge and shadow does the separating.
+
+     This token covers what SILICA paints, and nothing else. Piggles-owned chrome
+     — marketing panels, dock windows — is lifted with Tailwind's `shadow-*` scale
+     in feature code, which is sanctioned. The only mistake is using both on one
+     element: `shadow-*` on a Card doubles this and reads as a rendering fault.
+     DESIGN.md §4 and §8. */
+  --depth: 1;
+
+  /* ── COMFORT-FIRST DENSITY ─────────────────────────────────────────────────
+   *
+   * sparx can be a dense utility surface: its audience is a doer at a desk who
+   * wants everything on screen at once. Piggles is for somebody who did not
+   * choose to be in software today, and the feeling it has to produce is "I can
+   * breathe here" — larger controls, more room around them, nothing cramped.
+   *
+   * ── WHY THIS IS TWO TOKENS AND NOT A PROP ────────────────────────────────
+   *
+   * The obvious move is `size="xl"` on every control. It is wrong twice over.
+   * It cannot reach the ~500 SHARED workbench surfaces, which Piggles mounts
+   * and must never fork (piggles/CLAUDE.md RULE #0) — so the console would be
+   * comfortable in the chrome Piggles wrote and stock everywhere the actual work
+   * happens. And it is the call-site patch RULE #1 exists to stop: a decision
+   * repeated in a thousand places is a decision nobody can revise.
+   *
+   * silica sizes every field as `--size-field × N`, N being the size step
+   * (xs 6 · sm 8 · md 10 · lg 12 · xl 14). Move the multiplicand and the WHOLE
+   * ladder moves, in shared code and Piggles code alike, with no edit anywhere.
+   * That is the single point of change working exactly as intended.
+   *
+   *   --size-field   0.3rem  →  xs 29 · sm 38 · md 48 · lg 58 · xl 67 px
+   *
+   * ── WHY 0.3 AND NOT 0.35 ─────────────────────────────────────────────────
+   *
+   * 0.35 would put the DEFAULT control at 56px — the comfort target — with no
+   * call site stating a size at all. Tempting, and wrong: the default is what
+   * every toolbar, filter row and pane header in the shared surfaces renders,
+   * and 56px of chrome above a list is not comfort, it is a smaller list. The
+   * same lever also drives Alert, Toast, Progress and Meter, so 0.35 inflates
+   * all of those by 40% as well.
+   *
+   * 0.3 puts the ladder where both readings are true at once:
+   *
+   *   • the DEFAULT is 48px — a real step up from sparx's 40, comfortable
+   *     everywhere without anybody choosing it, including in all 500 shared
+   *     surfaces;
+   *   • `size="lg"` is 58px — inside the 56–60 comfort target — so a FORM asks
+   *     for `lg` and lands exactly on spec.
+   *
+   * That last line is the one trade this makes: Piggles' own forms carry a
+   * `size="lg"`. That is not the call-site patch RULE #1 bans — it bans
+   * patching SHARED code, and choosing a size on a form you own is what the
+   * prop is for. One decision per form, not one per control.
+   *
+   * `xl` (67px) is a marketing hero CTA and nothing else.
+   *
+   * ── SELECTORS ────────────────────────────────────────────────────────────
+   *
+   * `--size-selector` is a SEPARATE lever (silica's own words: "so a dense
+   * checkbox can sit next to a large input") and it drives Badge as well as
+   * Checkbox/Radio/Switch/Toggle — so it decides how big a status pill is in a
+   * table row, which is a different question from how big an input is. Matched
+   * to the field tier at 0.3 it gives a 29px checkbox and a 29px badge: a clear
+   * step up from sparx's 24, still recognisably a pill. If badges start reading
+   * heavy in dense lists, drop THIS one alone rather than touching fields.
+   *
+   * ── WHAT TO WATCH ────────────────────────────────────────────────────────
+   *
+   * `--size-field` also drives Alert, Toast, Progress, Meter, Toolbar, Menubar
+   * and NavigationMenu — not only inputs. If any of those reads bloated, pin
+   * that ONE family back with a rule in this file (`.alert { --size-field: …}`),
+   * never with a class at a call site. Table is NOT on this lever — its cell
+   * padding is its own — so a long list does not lose rows to this. Its own
+   * treatment is the Tables block further down. */
+  --size-field: 0.3rem;
+  --size-selector: 0.3rem;
+
+  /* Label → control, 8px. silica ships 6, which is a dense-form default and
+     reads as the label being stuck to the input. Named by silica as
+     `--field-gap` with a var() fallback, so this override simply wins. */
+  --field-gap: 0.5rem;
+
+  /* Fredoka carries the board's "very round, thick, friendly" direction and is
+     SIL OFL. Its wght axis stops at 700, so `font-extrabold` and `font-black`
+     clamp there. Body stays on Inter for legibility. */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Fredoka', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}

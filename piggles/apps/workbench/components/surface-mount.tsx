@@ -19,7 +19,7 @@ import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
+import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { productName } from '../lib/product';
 import { reportCrash } from '../lib/analytics';
 import { PaneModuleProvider } from './module-beta-notice';

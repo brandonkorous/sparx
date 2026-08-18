@@ -24,12 +24,11 @@ import {
   AlertTitle,
   Badge,
   Button,
-  Heading,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faArrowRight, faCircleCheck, faUpload } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -124,36 +123,36 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Bulk import actions">
-        <Text className="truncate px-1 text-sm">
-          {valid.length > 0
-            ? `${valid.length} ready${invalidCount > 0 ? ` · ${invalidCount} to fix` : ''}`
-            : 'Paste your list below'}
-        </Text>
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={bulk.isPending}
-          disabled={valid.length === 0}
-          onClick={runImport}
-        >
-          <Icon glyph={faUpload} className="size-4" aria-hidden />
-          {valid.length > 1 ? `Import ${valid.length}` : 'Import'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="Bulk import actions"
+        status={
+          <Text className="truncate px-1 text-sm">
+            {valid.length > 0
+              ? `${valid.length} ready${invalidCount > 0 ? ` · ${invalidCount} to fix` : ''}`
+              : 'Paste your list below'}
+          </Text>
+        }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            loading={bulk.isPending}
+            disabled={valid.length === 0}
+            onClick={runImport}
+          >
+            <Icon glyph={faUpload} className="size-4" aria-hidden />
+            {valid.length > 1 ? `Import ${valid.length}` : 'Import'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Import redirects
-            </Heading>
-            <Text>
-              Bringing over a lot of moved pages at once — after a site rebuild, say. Paste them all
-              in below and add them in one go, instead of one at a time.
-            </Text>
-          </div>
+          <Text>
+            Bringing over a lot of moved pages at once — after a site rebuild, say. Paste them all
+            in below and add them in one go, instead of one at a time.
+          </Text>
 
           {result ? (
             <ImportResult

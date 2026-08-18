@@ -32,7 +32,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Select,
   Switch,
@@ -371,7 +370,18 @@ function InstructionEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Instruction actions" wrap>
+      <PaneToolbar
+        label="Instruction actions"
+        refresh={
+          !isNew && onRefresh ? (
+            <RefreshButton
+              isFetching={isFetching ?? false}
+              updatedAt={updatedAt}
+              onRefresh={onRefresh}
+            />
+          ) : undefined
+        }
+      >
         {dirty ? (
           <Badge color="warning" variant="soft" size="sm">
             Unsaved changes
@@ -402,30 +412,17 @@ function InstructionEditor({
             </>
           )}
         </Button>
-
-        {!isNew && onRefresh ? (
-          <RefreshButton
-            isFetching={isFetching ?? false}
-            updatedAt={updatedAt}
-            onRefresh={onRefresh}
-          />
-        ) : null}
       </PaneToolbar>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                New instruction
-              </Heading>
-              <Text>
-                {productCopy(
-                  'ai.prompt.newIntro',
-                  'Tell Piggles something about your business for when it writes using your own AI account — how to sound, what to say, or what to avoid. You can turn it on or off any time.'
-                )}
-              </Text>
-            </div>
+            <Text>
+              {productCopy(
+                'ai.prompt.newIntro',
+                'Tell Piggles something about your business for when it writes using your own AI account — how to sound, what to say, or what to avoid. You can turn it on or off any time.'
+              )}
+            </Text>
           ) : null}
 
           {!canEdit ? (

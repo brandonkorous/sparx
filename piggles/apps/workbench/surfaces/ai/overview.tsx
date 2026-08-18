@@ -44,7 +44,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -154,21 +154,13 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
     if (summary.isError) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
-          <PaneEmpty
+          <PaneLoadError
             icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your AI usage"
             description="This is a problem reaching the server. Your connected apps and keys are unaffected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void summary.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void summary.refetch();
+            }}
           />
         </Card>
       );
@@ -186,16 +178,11 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
 
     return (
       <div className={COLUMN}>
-        <div className="flex flex-col gap-1">
-          <Heading level={1} className="text-2xl font-semibold">
-            AI overview
-          </Heading>
-          <Text>
-            Connect your own AI app — Claude, ChatGPT, or Microsoft Copilot — so it can work with
-            your live business data. This page shows how that connection is being used, and helps
-            you set one up.
-          </Text>
-        </div>
+        <Text>
+          Connect your own AI app — Claude, ChatGPT, or Microsoft Copilot — so it can work with your
+          live business data. This page shows how that connection is being used, and helps you set
+          one up.
+        </Text>
 
         {/* Headline usage — live from the summary; 0 is a real number, so no
             dashes here once the summary has loaded. */}
@@ -387,34 +374,41 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="AI overview controls">
-        <Badge color="success" variant="soft" size="sm">
-          <span className="bg-success mr-1 inline-block size-2 rounded-full" aria-hidden />
-          Bridge online
-        </Badge>
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          className="ml-auto shrink-0"
-          onClick={(event) => {
-            open(CONNECTIONS_SURFACE, event);
-          }}
-        >
-          <Icon glyph={faKey} className="size-4" aria-hidden />
-          AI connections
-        </Button>
-        <RefreshButton
-          isFetching={
-            summary.isFetching ||
-            timeseries.isFetching ||
-            topTools.isFetching ||
-            activity.isFetching
-          }
-          updatedAt={summary.data ? summary.dataUpdatedAt : undefined}
-          onRefresh={refreshAll}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="AI overview controls"
+        status={
+          <Badge color="success" variant="soft" size="sm">
+            <span className="bg-success mr-1 inline-block size-2 rounded-full" aria-hidden />
+            Bridge online
+          </Badge>
+        }
+        primary={
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            className="ml-auto shrink-0"
+            onClick={(event) => {
+              open(CONNECTIONS_SURFACE, event);
+            }}
+          >
+            <Icon glyph={faKey} className="size-4" aria-hidden />
+            AI connections
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={
+              summary.isFetching ||
+              timeseries.isFetching ||
+              topTools.isFetching ||
+              activity.isFetching
+            }
+            updatedAt={summary.data ? summary.dataUpdatedAt : undefined}
+            onRefresh={refreshAll}
+          />
+        }
+      />
       <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
     </div>
   );

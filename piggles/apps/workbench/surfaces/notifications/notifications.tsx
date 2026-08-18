@@ -22,7 +22,6 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Button,
   Card,
-  Heading,
   NativeSelect,
   RadioGroup,
   RadioOption,
@@ -176,42 +175,44 @@ export function NotificationsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Notification preference actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={!dirty || isPending || save.isPending}
-          onClick={onSave}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {save.isPending ? 'Saving…' : 'Save'}
-        </Button>
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Notification preference actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={!dirty || isPending || save.isPending}
+            onClick={onSave}
+          >
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {save.isPending ? 'Saving…' : 'Save'}
+          </Button>
+        }
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isPending || !form ? (
-          <PaneWaiting />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting />
+          </Card>
         ) : (
           <div className={COLUMN}>
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Notifications
-              </Heading>
-              <Text>
-                {productCopy(
-                  'notifications.intro',
-                  'Choose what Piggles tells you about, and whether it reaches you by email or only in your inbox here. These are your own choices — changing them affects nobody else on the team.'
-                )}
-              </Text>
-            </div>
+            <Text>
+              {productCopy(
+                'notifications.intro',
+                'Choose what Piggles tells you about, and whether it reaches you by email or only in your inbox here. These are your own choices — changing them affects nobody else on the team.'
+              )}
+            </Text>
 
             <FormSection
               title="What to tell you about"

@@ -23,6 +23,7 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -31,8 +32,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
-  Heading,
   NativeSelect,
   Text,
   useToast,
@@ -161,62 +160,52 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Legal pages controls">
-        {completeness ? (
-          <Badge
-            color={allRequiredReady ? 'success' : 'info'}
-            variant="soft"
-            size="sm"
-            className="whitespace-nowrap"
-          >
-            {allRequiredReady
-              ? 'All required pages ready'
-              : `${completeness.requiredComplete} of ${completeness.requiredTotal} required ready`}
-          </Badge>
-        ) : null}
-
-        <RefreshButton
-          className="ml-auto"
-          isFetching={checklist.isFetching}
-          updatedAt={checklist.data ? checklist.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void checklist.refetch();
-          }}
-        />
-      </PaneToolbar>
+      <PaneToolbar
+        label="Legal pages controls"
+        status={
+          completeness ? (
+            <Badge
+              color={allRequiredReady ? 'success' : 'info'}
+              variant="soft"
+              size="sm"
+              className="whitespace-nowrap"
+            >
+              {allRequiredReady
+                ? 'All required pages ready'
+                : `${completeness.requiredComplete} of ${completeness.requiredTotal} required ready`}
+            </Badge>
+          ) : null
+        }
+        refresh={
+          <RefreshButton
+            isFetching={checklist.isFetching}
+            updatedAt={checklist.data ? checklist.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void checklist.refetch();
+            }}
+          />
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {checklist.isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Icon glyph={faScaleBalanced} className="size-6" aria-hidden />}
             title="Could not load your legal pages"
             description="This is a problem reaching the server. None of your pages are affected — nothing has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void checklist.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void checklist.refetch();
+            }}
           />
         ) : checklist.isPending ? (
           <PaneWaiting />
         ) : (
           <div className="p-3 @lg:p-4">
             <div className={COLUMN}>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Legal pages
-                </Heading>
-                <Text>
-                  The policy pages people expect to find on your site. Add each one from a starter
-                  template, make the wording fit your business, then publish it.
-                </Text>
-              </div>
+              <Text>
+                The policy pages people expect to find on your site. Add each one from a starter
+                template, make the wording fit your business, then publish it.
+              </Text>
 
               {completeness ? (
                 <Alert color={allRequiredReady ? 'success' : 'info'} variant="soft">

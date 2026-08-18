@@ -1,0 +1,31 @@
+{
+  "name": "@wizeworks/legal-seed-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx legal-seed worker. Receives tenant.created events via Pub/Sub push (Cloud Run HTTP entrypoint) and seeds the new tenant's starter legal pages (privacy/terms/cookie-policy/returns/shipping/refund) as editable CMS drafts plus footer doc placements (docs/42 §3). Idempotent on redelivery.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "backfill": "node --import tsx scripts/backfill-tenants.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "@wizeworks/legal-seed": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

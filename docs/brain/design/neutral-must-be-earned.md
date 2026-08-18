@@ -7,7 +7,7 @@ applies-to: [platform]
 sources:
   - DESIGN.md
   - CLAUDE.md
-  - packages/brand/src/theme.css
+  - sparx/packages/brand/src/theme.css
 ---
 
 **A screen where everything is the same color is a design failure**, at the same severity as a
@@ -48,13 +48,13 @@ entry that feels un-wrong.
 
 **Footgun — registration drifts per app, and an unregistered color renders grey, silently.**
 `color="module-finance"` / `-partner` / `-platform` / `-storefront` are valid `ModuleScope`
-identities but are in **no** app's `@plugin` list. And `apps/market` never registers the `module`
+identities but are in **no** app's `@plugin` list. And `sparx/apps/market` never registers the `module`
 bridge at all, so bare `color="module"` is dead there. `workbench` and `web` register an identical
 15. Prefer `<ModuleScope module="…">` + `color="module"` over the literal.
 
-**Scope:** all sparx-owned surfaces — `apps/workbench`, `apps/web`, `apps/market`, `apps/admin`,
-`apps/b2b-portal`. Console and marketing are ONE system; the only platform-wide variance is
-`apps/web`'s `--radius-box: 1.5rem`. See [[two-design-systems]]. Tenant sites (`apps/site`) are the
+**Scope:** all sparx-owned surfaces — `sparx/apps/workbench`, `sparx/apps/web`, `sparx/apps/market`, `wizeworks/apps/admin`,
+`sparx/apps/b2b-portal`. Console and marketing are ONE system; the only platform-wide variance is
+`sparx/apps/web`'s `--radius-box: 1.5rem`. See [[two-design-systems]]. Tenant sites (`wizeworks/apps/site`) are the
 other system and are not governed here.
 
 ## The positive form: color IS the design

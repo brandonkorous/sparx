@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-    key: 'sparx-photo-wedding',
-    version: '1.3.0',
-    name: 'sparx — Wedding Photography',
-    summary:
-        'An imagery-led wedding & engagement photography site — a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as "Golden Hour Studio".',
-    vertical: 'services',
-    preview: 'media/preview.png',
-    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+  key: 'sparx-photo-wedding',
+  version: '1.3.0',
+  name: 'sparx — Wedding Photography',
+  summary:
+    'An imagery-led wedding & engagement photography site — a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as "Golden Hour Studio".',
+  vertical: 'services',
+  preview: 'media/preview.png',
+  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
-    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
+  brand: {
+    businessName: 'Golden Hour Studio',
+    tagline: 'Your love, in the golden hour.',
+    colors: {
+      primary: '#bb8e5d',
+      primaryForeground: '#110a04',
+      accent: '#bc938d',
+      secondary: '#4b4038',
+    },
+    fonts: {
+      heading: 'Cormorant Garamond',
+      body: 'Inter',
+    },
+  },
+
+  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+  // site.theme (the flat bespoke tokens), written last.
+  theme: {
+    name: 'goldenhour',
+    basePresetKey: 'apex',
+    presentation: {
+      v: 2,
+      containerWidth: '1152px',
+    },
     brand: {
-        businessName: 'Golden Hour Studio',
-        tagline: 'Your love, in the golden hour.',
-        colors: {
-            primary: '#bb8e5d',
-            primaryForeground: '#110a04',
-            accent: '#bc938d',
-            secondary: '#4b4038',
-        },
-        fonts: {
-            heading: 'Cormorant Garamond',
-            body: 'Inter',
-        },
+      colorPrimary: '#bb8e5d',
+      colorAccent: '#bc938d',
+      colorSecondary: '#4b4038',
+      fontHeading: 'Cormorant Garamond',
+      fontBody: 'Inter',
+      tokens: {},
     },
+    apply: true,
+  },
 
-    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-    // site.theme (the flat bespoke tokens), written last.
-    theme: {
-        name: 'goldenhour',
-        basePresetKey: 'apex',
-        presentation: {
-            v: 2,
-            containerWidth: '1152px',
-        },
-        brand: {
-            colorPrimary: '#bb8e5d',
-            colorAccent: '#bc938d',
-            colorSecondary: '#4b4038',
-            fontHeading: 'Cormorant Garamond',
-            fontBody: 'Inter',
-            tokens: {},
-        },
-        apply: true,
-    },
+  assets,
+  contentTypes: [],
 
-    assets,
-    contentTypes: [],
+  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+  // hours, and the service menu. The installer's scheduling slice replays it into a live
+  // booking flow that the site's /book page renders.
+  scheduling,
 
-    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-    // hours, and the service menu. The installer's scheduling slice replays it into a live
-    // booking flow that the site's /book page renders.
-    scheduling,
+  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+  // tenant switches on. The transactional booking sends — confirmation, reminder,
+  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+  // on email-module activation and are deliberately NOT duplicated here.
+  emails,
+  sequences: [],
 
-    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-    // tenant switches on. The transactional booking sends — confirmation, reminder,
-    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-    // on email-module activation and are deliberately NOT duplicated here.
-    emails,
-    sequences: [],
-
-    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-    // theme, fully stamped.
-    site,
+  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+  // theme, fully stamped.
+  site,
 };
 
 export default blueprint;

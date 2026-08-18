@@ -159,7 +159,7 @@ business for you tomorrow, which part would you hand over first? 👇
 - Pricing type: **Subscription** (with free trial).
 - Modular: **Builder $10/mo** (hosts/serves the site), then add modules — Commerce +$49, CMS $49, CRM +$49, Email +$29, B2B +$99, **AI/MCP +$49**, Dropship +$29.
 - Bundles: **Starter $79/mo · Content $79/mo · Growth $149/mo · Pro $299/mo · Business $449/mo**. (Pro/Business = 0% transaction fees.)
-  _(Verified against `apps/web/lib/modules.ts` on 2026-06-09 — re-confirm if the pricing page changed.)_
+  _(Verified against `sparx/apps/web/lib/modules.ts` on 2026-06-09 — re-confirm if the pricing page changed.)_
 - **PH-exclusive offer (optional but boosts ranking):** e.g. `PHLAUNCH` → 3 months 50% off, or AI/MCP module free for 90 days. Put the code in the first comment too.
 
 ---

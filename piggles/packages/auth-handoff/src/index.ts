@@ -1,5 +1,5 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto';
-import { prisma } from '@sparx/db';
+import { prisma } from '@wizeworks/db';
 import { PRODUCT } from '@piggles/config';
 
 // The getpiggles.com → mypiggles.com session handoff.

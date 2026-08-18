@@ -38,10 +38,9 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Timestamp,
-  ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faClipboardCheck, faClipboardList, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -57,6 +56,10 @@ import {
   type CountRow,
   type CountStatus,
 } from './counts-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'inventory';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -150,6 +153,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <ListEmptyState
+          module={MODULE}
           filtered={narrowed}
           noResults={{
             icon: <Icon glyph={faClipboardCheck} className="size-6" aria-hidden />,
@@ -256,85 +260,93 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Stock count controls">
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search counts"
-            placeholder="Count number or location…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        </div>
-
-        <ToolbarSeparator className="hidden @xl:block" />
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show counts that are"
-          value={status}
-          onChange={(event) => {
-            setStatus(event.target.value as '' | CountStatus);
-            resetWindow();
-          }}
-        >
-          <option value="">Any status</option>
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <NativeSelect
-          size="sm"
-          className="max-w-40 shrink"
-          aria-label="Show counts at"
-          value={locationId}
-          onChange={(event) => {
-            setLocationId(event.target.value);
-            resetWindow();
-          }}
-        >
-          <option value="">Every location</option>
-          {activeLocations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </NativeSelect>
-
-        <Button
-          size="sm"
-          color="module"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          aria-label="Start a new count"
-          title="Start a new count"
-          onClick={(event) => {
+      <PaneToolbar
+        label="Stock count controls"
+        search={
+          <div className="max-w-xs min-w-0 flex-1">
+            <SearchInput
+              size="sm"
+              aria-label="Search counts"
+              placeholder="Count number or location…"
+              value={search}
+              onValueChange={(next) => {
+                setSearch(next);
+                resetWindow();
+              }}
+            />
+          </div>
+        }
+        primaryAction={{
+          label: 'New count',
+          icon: faPlus,
+          onClick: (event) => {
             ctx.open(
               'inventory.counts.detail',
               { id: 'new' },
               { target: event.shiftKey ? 'beside' : 'tab' }
             );
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @md:inline">New count</span>
-        </Button>
-
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+          },
+          title: 'Start a new count',
+        }}
+        controls={
+          <>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Show counts that are"
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value as '' | CountStatus);
+                resetWindow();
+              }}
+            >
+              <option value="">Any status</option>
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <NativeSelect
+              size="sm"
+              className="max-w-40 shrink"
+              aria-label="Show counts at"
+              value={locationId}
+              onChange={(event) => {
+                setLocationId(event.target.value);
+                resetWindow();
+              }}
+            >
+              <option value="">Every location</option>
+              {activeLocations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </>
+        }
+        views={{
+          target: '/inventory/counts',
+          params: { q: search.trim(), status, warehouse: locationId },
+          onApply: (next) => {
+            setSearch(next.q ?? '');
+            setStatus((next.status ?? '') as '' | CountStatus);
+            setLocationId(next.warehouse ?? '');
+            resetWindow();
+          },
+        }}
+        refresh={
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={data ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+      />
 
       {/* Full width — the base-100 card lifted off the recessed pane. Matches the
           house list convention: the table fills the pane. */}

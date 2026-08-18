@@ -157,7 +157,7 @@ fields.
 
 ### 3.2 The channel contract already fits a delivery marketplace
 
-[`packages/channels/src/types.ts`](../../packages/channels/src/types.ts) defines `ChannelAdapter`
+[`wizeworks/packages/channels/src/types.ts`](../../packages/channels/src/types.ts) defines `ChannelAdapter`
 with three shapes; a delivery marketplace is `shape: 'order'`, the same as the retail marketplaces
 already modelled. The mapping is close to exact:
 
@@ -464,7 +464,7 @@ and to their **business profile listing**, which drives the "menu" panel custome
 search results. No partnership, no commission, no approval. For a food vendor, that listing is
 frequently their **highest-traffic surface**, and it is usually years out of date.
 
-sparx already emits JSON-LD from the site render path and audits it with `@sparx/seo-audit`
+sparx already emits JSON-LD from the site render path and audits it with `@wizeworks/seo-audit`
 ([50-seo-aio-discoverability.md](../50-seo-aio-discoverability.md)).
 Emitting menu structured data from the menu model is a small amount of work with an outsized,
 immediate, demonstrable payoff — the kind of thing a vendor can _see_ working in a week. It should
@@ -480,24 +480,24 @@ ship alongside the menu model, not wait for any of §5.
 
 No new top-level architecture. Every piece attaches to an existing seam.
 
-| Capability                        | Home                                                                        | Shape                                                     |
-| --------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Menu model + modifier reuse       | `@sparx/commerce` + `@sparx/commerce-schemas`, over `ConfigurationTemplate` | Shared modifier groups + a join; the rest is authoring UX |
-| Menu authoring surface            | `apps/workbench`                                                            | New panes; menu editor, modifier library                  |
-| Item availability / 86            | `@sparx/commerce`, event-published                                          | New availability state + a fan-out event                  |
-| Store hours, dayparting, prep     | `@sparx/scheduling` primitives, consumed by commerce                        | Second consumer of resource-hours + exceptions            |
-| Order throttling                  | `@sparx/scheduling` capacity windows                                        | Same primitive as booking slots                           |
-| Tips / gratuity                   | `@sparx/commerce` + `@sparx/payments`                                       | New non-revenue order line + settlement handling          |
-| Food order lifecycle              | Order spine, optional lifecycle                                             | New states; not a fork of `Order`                         |
-| Expo / kitchen screen             | New surface (own app or a dedicated workbench route)                        | Tablet-first, always-on, its own layout rules             |
-| Fulfillment method, pickup, zones | **107 Phase 2** — prerequisite, not built here                              | `Order.fulfillmentMethod`, pickup locations, zones        |
-| On-demand courier                 | `@sparx/integration-framework` — **new `DeliveryProvider` kind**            | quote / dispatch / cancel / status + webhooks             |
-| Courier provider implementations  | `packages/provider-*` (matching `provider-shippo`, `provider-easypost`)     | One package per network                                   |
-| Delivery marketplaces             | `@sparx/channels` — new `ChannelSlug`s + adapters                           | `shape: 'order'` + the §5.2 optional members              |
-| Marketplace sync + order ingest   | `services/channel-sync-worker`                                              | Existing worker; new job types only                       |
-| Menu structured data              | `apps/site` render path (JSON-LD), checked by `@sparx/seo-audit`            | Emit from the menu model                                  |
-| Allergens / nutrition             | `@sparx/commerce` product metadata                                          | Fields + ticket display                                   |
-| Ordering site surfaces            | `@sparx/builder-schemas` catalog + `@sparx/silica-catalog`                  | Menu blocks as composed node trees — never new node types |
+| Capability                        | Home                                                                                | Shape                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Menu model + modifier reuse       | `@wizeworks/commerce` + `@wizeworks/commerce-schemas`, over `ConfigurationTemplate` | Shared modifier groups + a join; the rest is authoring UX |
+| Menu authoring surface            | `sparx/apps/workbench`                                                              | New panes; menu editor, modifier library                  |
+| Item availability / 86            | `@wizeworks/commerce`, event-published                                              | New availability state + a fan-out event                  |
+| Store hours, dayparting, prep     | `@wizeworks/scheduling` primitives, consumed by commerce                            | Second consumer of resource-hours + exceptions            |
+| Order throttling                  | `@wizeworks/scheduling` capacity windows                                            | Same primitive as booking slots                           |
+| Tips / gratuity                   | `@wizeworks/commerce` + `@wizeworks/payments`                                       | New non-revenue order line + settlement handling          |
+| Food order lifecycle              | Order spine, optional lifecycle                                                     | New states; not a fork of `Order`                         |
+| Expo / kitchen screen             | New surface (own app or a dedicated workbench route)                                | Tablet-first, always-on, its own layout rules             |
+| Fulfillment method, pickup, zones | **107 Phase 2** — prerequisite, not built here                                      | `Order.fulfillmentMethod`, pickup locations, zones        |
+| On-demand courier                 | `@wizeworks/integration-framework` — **new `DeliveryProvider` kind**                | quote / dispatch / cancel / status + webhooks             |
+| Courier provider implementations  | `packages/provider-*` (matching `provider-shippo`, `provider-easypost`)             | One package per network                                   |
+| Delivery marketplaces             | `@wizeworks/channels` — new `ChannelSlug`s + adapters                               | `shape: 'order'` + the §5.2 optional members              |
+| Marketplace sync + order ingest   | `services/channel-sync-worker`                                                      | Existing worker; new job types only                       |
+| Menu structured data              | `wizeworks/apps/site` render path (JSON-LD), checked by `@wizeworks/seo-audit`      | Emit from the menu model                                  |
+| Allergens / nutrition             | `@wizeworks/commerce` product metadata                                              | Fields + ticket display                                   |
+| Ordering site surfaces            | `@wizeworks/builder-schemas` catalog + `@wizeworks/silica-catalog`                  | Menu blocks as composed node trees — never new node types |
 
 ### 6.1 Module strategy — no `food` module
 
@@ -510,7 +510,7 @@ they gate **capabilities**, never customer segments.
 The one genuinely food-only cluster is menu dayparting, allergen/nutrition disclosure and the expo
 surface. Two viable homes, to be decided when the work is live:
 
-- **Preferred: an industry starter plus commerce configuration.** `@sparx/modules` already has an
+- **Preferred: an industry starter plus commerce configuration.** `@wizeworks/modules` already has an
   `IndustryStarter` registry; "food service" becomes a starter that seeds a menu-shaped catalog,
   turns on the right commerce configuration, and installs the ordering blueprint. No new flag, no new
   billing line, and it composes with whatever else the tenant enables.

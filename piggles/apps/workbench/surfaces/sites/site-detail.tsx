@@ -24,7 +24,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   Text,
   useToast,
@@ -42,6 +41,7 @@ import { useActiveSiteId, useModuleStates, switchSite } from '../../lib/api/shel
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SiteTraffic, TRAFFIC_WINDOW_DAYS } from './traffic';
@@ -132,17 +132,20 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="New site actions">
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          disabled={Boolean(nameError) || create.isPending}
-          onClick={submit}
-        >
-          {create.isPending ? 'Creating…' : 'Create site'}
-        </Button>
-      </PaneToolbar>
+      <PaneToolbar
+        label="New site actions"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={Boolean(nameError) || create.isPending}
+            onClick={submit}
+          >
+            {create.isPending ? 'Creating…' : 'Create site'}
+          </Button>
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-xl flex-col gap-4">
@@ -223,7 +226,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
   const confirm = useConfirm();
   const { controller } = useWorkbench();
-  const { data: site, isError, isPending, refetch } = useSite(id);
+  const { data: site, isError, isPending, refetch, isFetching, dataUpdatedAt } = useSite(id);
   const { data: modules } = useModuleStates();
   const { data: activeSite } = useActiveSiteId();
   const { data: domains } = useDomains();
@@ -354,65 +357,80 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Site actions" wrap>
-        <div className="flex flex-wrap items-center gap-1">
-          {site.isPrimary ? (
-            <Badge color="module" variant="soft" size="sm">
-              Primary
-            </Badge>
-          ) : null}
-          {isActive ? (
-            <Badge color="success" variant="soft" size="sm">
-              You are here
-            </Badge>
-          ) : null}
-        </div>
-        <div className="flex-1" />
-        {isActive ? null : (
+      <PaneToolbar
+        label="Site actions"
+        refresh={
+          <RefreshButton
+            isFetching={isFetching}
+            updatedAt={site ? dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void refetch();
+            }}
+          />
+        }
+        status={
+          <>
+            <div className="flex flex-wrap items-center gap-1">
+              {site.isPrimary ? (
+                <Badge color="module" variant="soft" size="sm">
+                  Primary
+                </Badge>
+              ) : null}
+              {isActive ? (
+                <Badge color="success" variant="soft" size="sm">
+                  You are here
+                </Badge>
+              ) : null}
+            </div>
+            <div className="flex-1" />
+          </>
+        }
+        primary={
           <Button
+            color="module"
             size="sm"
-            variant="outline"
-            color="neutral"
+            disabled={!dirty || update.isPending}
             onClick={() => {
-              void onSwitch();
+              update.mutate(
+                { name: name.trim() },
+                {
+                  onSuccess: () => {
+                    toast.add({ title: 'Site name saved', type: 'success' });
+                  },
+                  onError: () => {
+                    toast.add({ title: 'Could not save the name', type: 'error' });
+                  },
+                }
+              );
             }}
           >
-            Work on this site
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+            {update.isPending ? 'Saving…' : 'Save'}
           </Button>
-        )}
-        <Button
-          color="module"
-          size="sm"
-          disabled={!dirty || update.isPending}
-          onClick={() => {
-            update.mutate(
-              { name: name.trim() },
-              {
-                onSuccess: () => {
-                  toast.add({ title: 'Site name saved', type: 'success' });
-                },
-                onError: () => {
-                  toast.add({ title: 'Could not save the name', type: 'error' });
-                },
-              }
-            );
-          }}
-        >
-          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-          {update.isPending ? 'Saving…' : 'Save'}
-        </Button>
-      </PaneToolbar>
+        }
+        controls={
+          isActive ? null : (
+            <Button
+              size="sm"
+              variant="outline"
+              color="neutral"
+              onClick={() => {
+                void onSwitch();
+              }}
+            >
+              Work on this site
+            </Button>
+          )
+        }
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-          {/* A site is a WEBSITE, so the pane opens by saying which one and where
-              it lives. The old version led with a rename box and never showed
-              the address at all — you could not tell from this screen what the
-              thing you were editing actually was. */}
+          {/* A site is a WEBSITE, so the pane opens by saying where it lives. Its
+              NAME is the pane's tab and the rename field below, so it is not
+              repeated here — but the address, which used to be missing from this
+              screen entirely, still leads. */}
           <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {site.name}
-            </Heading>
             {host ? (
               <a
                 href={`https://${host}`}

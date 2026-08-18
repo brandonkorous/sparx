@@ -38,23 +38,23 @@ anonymous browser at the site can already do.
 The site MCP is mostly _assembly_, because the platform is API-first:
 
 - **The entire data + action plane exists as public REST** under
-  `services/api-rest/src/routes/v1/public/` — catalog, search, scheduling (guest +
+  `wizeworks/services/api-rest/src/routes/v1/public/` — catalog, search, scheduling (guest +
   account), cart, checkout, content, reviews, account, B2B portal. Every route already
   enforces tenant isolation (RLS via `withTenant`), public visibility
   (`status='active'`/`published`, site-visibility), module gating, and
   enumeration-safety. **This is the contract the site MCP wraps.**
 - **An AI concierge already runs on the site** — the Live Chat module
   ([docs/56](56-live-chat-module.md)) answers shopper questions with Claude Haiku
-  (`services/api-rest/src/lib/chat/ai-handler.ts`). But it is **RAG-lite**: it stuffs
+  (`wizeworks/services/api-rest/src/lib/chat/ai-handler.ts`). But it is **RAG-lite**: it stuffs
   ~30 product titles + 20 page titles into the system prompt with a single `respond`
   tool. It cannot check real availability, search precisely, or book. The tool catalog
   below **upgrades the concierge to real tool use** at the same time.
-- **Per-site `llms.txt`** (`apps/site/app/llms.txt/route.ts`) already hands agents a
+- **Per-site `llms.txt`** (`wizeworks/apps/site/app/llms.txt/route.ts`) already hands agents a
   map of the store — the natural place to advertise the MCP endpoint.
 - **Customer accounts** exist (cookie session `sparx_customer_session`) for the
   returning-customer tier.
 - **Site resolution from Host** exists and is authoritative:
-  `resolveSiteByHost()` in `services/api-rest/src/lib/domain.ts` (structural for
+  `resolveSiteByHost()` in `wizeworks/services/api-rest/src/lib/domain.ts` (structural for
   `*.sparx.zone`, `domains`-table lookup for custom domains), surfaced at
   `GET /v1/public/site-by-host?host=`. **`mcp` is a reserved tenant slug**
   (`routes/v1/tenant.ts`), so `mcp.sparx.zone` can never collide with a store.
@@ -75,10 +75,10 @@ tool is a declarative adapter that:
 
 Consequences: reuses **all** existing public-safety logic (visibility, module gating,
 rate limits, projections); the new service's Docker closure is tiny (no `@sparx/*`
-module packages, no `@sparx/db`, no Prisma); and site/MCP parity is automatic —
+module packages, no `@wizeworks/db`, no Prisma); and site/MCP parity is automatic —
 a fix in a public route fixes the tool.
 
-### 3.2 New service — `services/mcp-site`
+### 3.2 New service — `wizeworks/services/mcp-site`
 
 Mirrors `api-mcp`'s transport pattern (Fastify + `@modelcontextprotocol/sdk`,
 **stateless per-request**: fresh `McpServer` + `StreamableHTTPServerTransport({
@@ -86,7 +86,7 @@ sessionIdGenerator: undefined })`, `reply.hijack()`), but with a different auth
 pipeline and **no module bundling**.
 
 - **Deps:** `fastify`, `fastify-plugin`, `@modelcontextprotocol/sdk`, `zod`, `pino`,
-  `@sparx/site-mcp` (the catalog), `@sparx/api-core` (envelope types). That's it.
+  `@wizeworks/site-mcp` (the catalog), `@wizeworks/api-core` (envelope types). That's it.
 - **Endpoints:**
   - `POST|GET|DELETE /mcp` — per-site (site from forwarded Host).
   - `POST|GET|DELETE /s/:tenant/:property?/mcp` — canonical (site from subpath, for
@@ -107,7 +107,7 @@ site-by-host?host=<x-forwarded-host>`. A 404 → MCP error result "unknown site"
 - **Rate limiting:** coarse per-(tenant, client-ip) token bucket in-process (the public
   routes are also rate-limited downstream); mirror `api-mcp/src/rate-limit.ts`.
 
-### 3.3 Shared tool catalog — `@sparx/site-mcp`
+### 3.3 Shared tool catalog — `@wizeworks/site-mcp`
 
 A new package holding the **single source of truth** for shopper tools, consumed by
 both the service and the concierge:
@@ -143,7 +143,7 @@ answers. The `respond`/confidence/escalation contract stays. Persona/tool-policy
 
 **Primary — per-site `/mcp` on the store's own origin.** `daisysalon.com/mcp` and
 `daisysalon.sparx.zone/mcp`. Caddy's catch-all `:443` (which already routes every
-`*.sparx.zone` + every custom domain to `apps/site`) gets a `/mcp*` carve-out **above**
+`*.sparx.zone` + every custom domain to `wizeworks/apps/site`) gets a `/mcp*` carve-out **above**
 the site fallback → `mcp-site`. Zero new DNS/TLS: those hosts are already
 authorized by the on-demand-TLS ask (`internal/domain-check.ts`). The store's MCP lives
 at the store's address and is advertised in its own `llms.txt`.
@@ -262,7 +262,7 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 
 ## 8. Discovery
 
-- **`llms.txt`** (`apps/site/app/llms.txt/route.ts`) gains an MCP pointer line, e.g.
+- **`llms.txt`** (`wizeworks/apps/site/app/llms.txt/route.ts`) gains an MCP pointer line, e.g.
   `## Assistant\n- [MCP endpoint](${origin}/mcp): Connect an AI assistant to shop, check availability, and book.`
 - **`.well-known`**: Phase 2 serves `oauth-protected-resource` from the service for the
   customer tier. Phase 1 needs none (anonymous).
@@ -273,13 +273,13 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 
 ### Phase 0 — shared catalog package
 
-1. `packages/site-mcp/` (`@sparx/site-mcp`): `SiteApiClient`,
+1. `wizeworks/packages/site-mcp/` (`@wizeworks/site-mcp`): `SiteApiClient`,
    `SiteTool` type, `SITE_TOOLS` (§6 read + guest_write), `toAnthropicTools()`,
    `toMcpRegistrations()`. Zod schemas per tool. Unit tests for schema + client URL/relay.
 
 ### Phase 1 — service + concierge + routing (anonymous/guest)
 
-2. `services/mcp-site/`: Fastify app mirroring `api-mcp` (`app.ts`, `server.ts`,
+2. `wizeworks/services/mcp-site/`: Fastify app mirroring `api-mcp` (`app.ts`, `server.ts`,
    `env.ts`, `rate-limit.ts`, `index.ts`), stateless transport, `/mcp` + `/s/:tenant/:property?/mcp`
    - `/health`. Site resolution via api-rest `site-by-host` / subpath.
 3. **New lean endpoint** `GET /v1/public/site-info` in api-rest (projected store
@@ -287,7 +287,7 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 4. **Concierge upgrade** — `ai-handler.ts` registers `SITE_TOOLS` (read +
    guest_write) as Anthropic tools + runs the tool loop via `SiteApiClient`.
 5. **Discovery** — add the MCP pointer to `llms.txt`.
-6. **Infra**: `services/mcp-site/Dockerfile` (tiny closure — no module packages);
+6. **Infra**: `wizeworks/services/mcp-site/Dockerfile` (tiny closure — no module packages);
    `k8s/apps/mcp-site.yaml` (Deployment+Service, port 3200, reuse `sparx-app-env`/
    `sparx-app-secrets`, `sparx-app` SA); add to `k8s/apps/kustomization.yaml`; Caddyfile
    `/mcp*` carve-out in the catch-all + explicit `mcp.sparx.zone` block; `'mcp.sparx.zone'`
@@ -301,7 +301,7 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 8. Customer-side OAuth on the customer Better Auth `mcp()` provider (docs/27 §6): the AS is served
    by api-rest under `<store>/v1/public/auth/*` on the store's OWN origin (Caddy carve-out, tenant
    from Host), with our own AS metadata (real shopper scope vocab), a `/mcp/authorize` consent guard,
-   and a store-branded `/account/authorize` consent page in `apps/site`. The bearer is **verified in
+   and a store-branded `/account/authorize` consent page in `wizeworks/apps/site`. The bearer is **verified in
    api-rest** (not the DB-less mcp-site): the `customer`-tier public routes accept
    `Authorization: Bearer`, verify it (`verifyCustomerMcpToken`), resolve the per-site membership,
    and scope-gate. mcp-site advertises `oauth-protected-resource` + challenges unauthenticated
@@ -322,7 +322,7 @@ tests.
 
 ## 11. Open decisions
 
-- **Service/package names** — `mcp-site` / `@sparx/site-mcp` (proposed).
+- **Service/package names** — `mcp-site` / `@wizeworks/site-mcp` (proposed).
 - **Canonical host shape** — `mcp.sparx.zone/s/<tenant>[/<property>]` vs `?tenant=`
   query. Subpath proposed (cleaner, cache-friendly).
 - **Phase 2 cut line** — build now vs immediately-next (see §5).

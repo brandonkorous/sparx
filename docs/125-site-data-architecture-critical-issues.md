@@ -7,9 +7,9 @@ Last Updated: 2026-07-19
 > **What this is.** A grounded audit of how site data is actually stored, written,
 > published, and read today — and the specific places where that structure is
 > fragile, lossy, or expensive. Findings are from a code read on 2026-07-19 across
-> `packages/db/prisma/schema`, `packages/builder-schemas`, `packages/builder`,
-> `packages/site-themes`, `packages/surface-compile`, `services/api-rest`,
-> `apps/site`, and `apps/dashboard/app/(dashboard)/builder`.
+> `wizeworks/packages/db/prisma/schema`, `wizeworks/packages/builder-schemas`, `wizeworks/packages/builder`,
+> `wizeworks/packages/site-themes`, `wizeworks/packages/surface-compile`, `wizeworks/services/api-rest`,
+> `wizeworks/apps/site`, and `apps/dashboard/app/(dashboard)/builder`.
 >
 > This is a **problem statement, not a plan.** Every issue below is written so it
 > can be argued with: what the code does, where, and why it matters. Fixes are
@@ -56,7 +56,7 @@ Universal convention, stated in the schema itself: **shape is validated by a TS 
 Every read site does the same thing:
 
 ```ts
-// packages/builder/src/services/page-service.ts:41
+// wizeworks/packages/builder/src/services/page-service.ts:41
 // Stored validated on write; the editor depends on a well-formed tree.
 tree: row.draftTree as unknown as BuilderNode,
 ```
@@ -68,7 +68,7 @@ Three holes in that:
 **2.1 — Silica trees are effectively unvalidated in both directions.** The write schema is:
 
 ```ts
-// packages/builder-schemas/src/site-sync.ts:69-71
+// wizeworks/packages/builder-schemas/src/site-sync.ts:69-71
 export const SilicaTreeInput = z.looseObject({
   kind: z.string(),
 }) as unknown as z.ZodType<SilicaNode>;
@@ -79,7 +79,7 @@ export const SilicaTreeInput = z.looseObject({
 **2.2 — Unknown node types render as `null`, silently.**
 
 ```ts
-// packages/builder-render/src/render-leaf.tsx:899
+// wizeworks/packages/builder-render/src/render-leaf.tsx:899
 default: {
   const atom = renderSiteUiAtom(node, {...});
   return atom === undefined ? null : atom;
@@ -130,7 +130,7 @@ Three limits sit on this path:
 
 1. **Next.js server-action body limit — 1 MB, unconfigured.** `apps/dashboard/next.config.mjs` sets no `experimental.serverActions.bodySizeLimit`, so the Next default applies. `syncBuilderSite` is a server action carrying the whole site.
 2. api-rest global `bodyLimit: 5 * 1024 * 1024` — [app.ts:711](../services/api-rest/src/app.ts#L711), commented "5 MiB — rich-text bodies, not media."
-3. MCP paths: 512 KiB (`services/mcp-site/src/app.ts:120`, `services/api-mcp/src/app.ts:54`).
+3. MCP paths: 512 KiB (`wizeworks/services/mcp-site/src/app.ts:120`, `wizeworks/services/api-mcp/src/app.ts:54`).
 
 The tuned 5 MiB limit **never applies from the dashboard** — Next caps first, at a fifth of it, implicitly.
 
@@ -147,7 +147,7 @@ Two editors on one site: both hold a full in-memory `Site`. B's 700ms autosave o
 The one existing guard is explicitly not a concurrency control:
 
 ```ts
-// packages/builder/src/services/site-service.ts:299-315
+// wizeworks/packages/builder/src/services/site-service.ts:299-315
 export function wouldClobberSite(
   storedPageIds: readonly string[],
   incomingPageIds: readonly string[]
@@ -216,7 +216,7 @@ What that broke:
 To serve one page, the silica read pulls every page in the property with all four tree columns:
 
 ```ts
-// packages/builder/src/services/site-service.ts:189
+// wizeworks/packages/builder/src/services/site-service.ts:189
 export function getPublishedPageBySlug(ctx, slug) {
   return withTenant(ctx, async (tx) => {
     const [pages, site] = await Promise.all([
@@ -239,14 +239,14 @@ The JS filter is unavoidable for the JSON NULL check (Prisma is a type-only impo
 **And none of it is cached.** Both active tiers are `no-store`:
 
 ```ts
-// apps/site/lib/builder.ts:53-58
+// wizeworks/apps/site/lib/builder.ts:53-58
 // INTERIM: uncached so a publish reflects immediately. Builder content changes on
 // publish, and no tag-purge is wired yet (that's the deferred Pub/Sub→cache-
 // revalidation-worker slice) — a TTL here would just serve stale pages. Restore
 // `next: { revalidate, tags: ['builder:<slug>'] }` once publish purges the tag.
 ```
 
-Everything traces back to the one missing event consumer in §7. Note also that `apps/site/app/api/revalidate/route.ts` has **no `builder` scope** in its `SCOPES` list, so adding tags alone would not be enough.
+Everything traces back to the one missing event consumer in §7. Note also that `wizeworks/apps/site/app/api/revalidate/route.ts` has **no `builder` scope** in its `SCOPES` list, so adding tags alone would not be enough.
 
 ---
 
@@ -281,7 +281,7 @@ Worth recording so a rewrite does not discard it.
 - **Binding resolution is a proper two-phase collect-then-batch**, not N+1. `collectBindingRefs` ([runtime.ts:213](../packages/builder-schemas/src/runtime.ts#L213)) walks the tree with zero I/O, dedupes by stable key, and the loader issues one batched fetch per kind, all in `Promise.all`. Results park under reserved `__pins` / `__sources` roots.
 - **`resolvePathEx` distinguishes missing from empty** using `in` (`runtime.ts:102-120`), specifically so a stale binding cannot silently delete authored content.
 - **`mergeDataRoots`** (`builder-data.ts:171`) deep-merges pin writers so commerce and CMS cannot clobber each other.
-- **Blueprint install deliberately does not re-stamp node ids** ([site-service.ts:817-835](../packages/builder/src/services/site-service.ts#L817)) — because the three-way merge in `packages/blueprints/src/merge.ts` keys on node id across versions. Page _row_ ids are minted; node ids are written through verbatim. That distinction is correct and subtle.
+- **Blueprint install deliberately does not re-stamp node ids** ([site-service.ts:817-835](../packages/builder/src/services/site-service.ts#L817)) — because the three-way merge in `wizeworks/packages/blueprints/src/merge.ts` keys on node id across versions. Page _row_ ids are minted; node ids are written through verbatim. That distinction is correct and subtle.
 - **Raw-element rendering is properly gated.** `safeElementAttrs` ([element.ts:589](../packages/builder-schemas/src/element.ts#L589)) enforces a per-tag allowlist, URL scheme checks, forced `rel="noopener noreferrer"` on `target=_blank`, and drops objects rather than stringifying.
 - **The class-policy floor is unrepresentable-if-insecure.** `createSilicaClassValidator` returns `undefined` when there are no custom rules, so the host can only tighten silica's floor, never loosen it (`silica-class-policy.ts:1-13`).
 - **The catalog contract is real.** `catalog/CONTRACT.md` plus a test suite that parses every entry through `BuilderNodeSchema`, asserts unique ids per tree, and pins the email surface to zero `el:*` types.
@@ -306,4 +306,4 @@ Worth recording so a rewrite does not discard it.
 - [120-email-builder-silica-adoption.md](120-email-builder-silica-adoption.md) — the email half, which _did_ get a converter
 - [47-class-first-authoring-model.md](47-class-first-authoring-model.md) — why `class` is the sole styling surface
 - [55-blueprint-updates.md](55-blueprint-updates.md) — the node-id-keyed three-way merge that constrains stamping
-- [packages/db/CLAUDE.md](../packages/db/CLAUDE.md) — migration pipeline and RLS mechanics
+- [wizeworks/packages/db/CLAUDE.md](../packages/db/CLAUDE.md) — migration pipeline and RLS mechanics
