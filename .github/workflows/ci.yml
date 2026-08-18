@@ -52,11 +52,22 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
+      # One shard per pnpm-workspace glob, so the union is the whole workspace
+      # by construction rather than by anyone remembering. These were
+      # `./packages/*`, `./services/*` and `./apps/*` until the three-tree move
+      # left all three matching NOTHING — turbo errors on an empty filter, so
+      # this failed loudly rather than quietly linting zero packages, which is
+      # the one mercy in it.
+      #
+      # `./*/apps/*` covers wizeworks/, sparx/ and piggles/ apps in one shard;
+      # the platform's packages and services are big enough to want their own.
       matrix:
         include:
-          - { name: packages, scope: './packages/*' }
-          - { name: services, scope: './services/*' }
-          - { name: apps, scope: './apps/*' }
+          - { name: platform-packages, scope: './wizeworks/packages/*' }
+          - { name: platform-services, scope: './wizeworks/services/*' }
+          - { name: apps, scope: './*/apps/*' }
+          - { name: sparx-packages, scope: './sparx/packages/*' }
+          - { name: piggles-packages, scope: './piggles/packages/*' }
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace

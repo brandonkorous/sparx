@@ -48,19 +48,42 @@ const BANNED = [
   'sparx',
 ];
 
-/** `'key': 'Name',` pairs out of a Record literal. */
-function pairs(src, start) {
-  const from = src.indexOf(start);
-  if (from < 0) return new Map();
+/**
+ * `'key': 'Name',` pairs out of a Record literal.
+ *
+ * THROWS when the named export is not in the file it was told to read, rather
+ * than returning an empty Map. Silence there does not read as "no renames" — it
+ * reads as "every section still wears sparx's name", so the check reports
+ * failures for renames that were made correctly and are sitting one file away.
+ * That is exactly what happened when PIGGLES_SECTIONS moved to its own module:
+ * `'What sparx does' → 'How Piggles is set up'` was already written, and this
+ * still failed CI naming the surfaces it had renamed.
+ */
+function pairs(src, file, start) {
+  // Anchored on the DECLARATION, not on the bare name: a plain indexOf matches
+  // any identifier the name is a prefix of, so renaming PIGGLES_SECTIONS to
+  // PIGGLES_SECTIONS_V2 would sail straight past a guard looking for the short
+  // form — which is how the first version of this guard passed its own test.
+  const from = src.search(new RegExp(`const\\s+${start}\\b`));
+  if (from < 0) {
+    throw new Error(
+      `check:nav-vocabulary — ${start} is not in ${file}. It has moved or been ` +
+        `renamed; point this at its new home. Carrying on would compare every name ` +
+        `against nothing and call correct renames leaks.`
+    );
+  }
   const body = src.slice(from, src.indexOf('\n};', from));
   return new Map(
     [...body.matchAll(/^\s*'?([\w.&' -]+?)'?:\s*'((?:[^'\\]|\\.)*)',/gm)].map((m) => [m[1], m[2]])
   );
 }
 
-const vocab = read('lib/console/vocabulary.ts');
-const surfaceNames = pairs(vocab, 'PIGGLES_SURFACES');
-const sectionNames = pairs(vocab, 'PIGGLES_SECTIONS');
+const VOCAB_FILE = 'lib/console/vocabulary.ts';
+// Section headings live in their own module — vocabulary.ts is the ~220 SURFACE
+// names, which is long enough on its own.
+const SECTION_FILE = 'lib/console/section-names.ts';
+const surfaceNames = pairs(read(VOCAB_FILE), VOCAB_FILE, 'PIGGLES_SURFACES');
+const sectionNames = pairs(read(SECTION_FILE), SECTION_FILE, 'PIGGLES_SECTIONS');
 const hidden = new Set(
   [...read('lib/console/product.tsx').matchAll(/^ {2}'([\w.-]+)',$/gm)].map((m) => m[1])
 );

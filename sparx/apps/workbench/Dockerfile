@@ -189,10 +189,10 @@ ENV APP_VERSION=$APP_VERSION
 RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/workbench/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/workbench/.next/static ./apps/workbench/.next/static
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/workbench/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/workbench/.next/static ./sparx/apps/workbench/.next/static
 # public/ is NOT bundled into standalone output — copy it explicitly.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/workbench/public ./apps/workbench/public
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/workbench/public ./sparx/apps/workbench/public
 
 USER nextjs
 

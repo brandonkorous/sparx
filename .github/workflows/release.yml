@@ -1194,6 +1194,21 @@ jobs:
           roll=true
           reason=''
 
+          # The paths the gate below diffs. Asserted to EXIST before they are
+          # used, because `git diff -- <pathspec>` reports no change for a path
+          # that is not there — so a rename turns this gate from "did the
+          # runtime change" into "no", silently, and the release goes green
+          # having deployed nothing. Every path is named once, here.
+          ROLL_PATHS='wizeworks sparx piggles k8s pnpm-lock.yaml pnpm-workspace.yaml marketplace-catalog'
+          for p in $ROLL_PATHS; do
+            if [ ! -e "$p" ]; then
+              echo "::error::rollout gate names '$p', which does not exist in this tree." \
+                   "Someone moved it and did not update this list; refusing to decide the" \
+                   "rollout from a pathspec that can only ever answer 'unchanged'."
+              exit 1
+            fi
+          done
+
           DEPLOYED=$(kubectl -n "$NAMESPACE" get deploy api-rest \
             -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null | sed 's/.*://' || true)
 
@@ -1217,11 +1232,20 @@ jobs:
               # Everything that can change what a container IS or how it runs.
               # NOT a build filter — the images were built regardless; this only
               # decides whether the CLUSTER needs to move.
+              #
+              # The three product trees, not `apps services packages`, which is
+              # what this read until the tree move deleted all three. `git diff`
+              # accepts a pathspec that matches nothing without complaint, so
+              # the gate would have compared FOUR of its seven paths, found no
+              # change in any release that only touched app code, and skipped
+              # the rollout while reporting success — a stage that succeeds
+              # while the thing it exists to do does not happen. The guard above
+              # this line is why it cannot come back.
               elif git diff --quiet "$DEPLOYED" '${{ github.sha }}' -- \
-                     apps services packages k8s pnpm-lock.yaml pnpm-workspace.yaml \
+                     wizeworks sparx piggles k8s pnpm-lock.yaml pnpm-workspace.yaml \
                      marketplace-catalog; then
                 roll=false
-                reason="nothing under apps/ services/ packages/ k8s/ changed since ${DEPLOYED:0:12}"
+                reason="nothing under wizeworks/ sparx/ piggles/ k8s/ changed since ${DEPLOYED:0:12}"
               else
                 reason="runtime paths changed since ${DEPLOYED:0:12}"
               fi ;;

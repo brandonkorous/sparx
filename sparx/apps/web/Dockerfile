@@ -87,11 +87,11 @@ RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs
 
 # Standalone bundle includes the minimal node_modules + server.js for the app.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/web/.next/static ./sparx/apps/web/.next/static
 # public/ is NOT bundled into standalone output — copy it explicitly so the
 # manifest icons (android-chrome-*.png) and schema logo (icon.png) serve.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/public ./apps/web/public
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/web/public ./sparx/apps/web/public
 
 USER nextjs
 

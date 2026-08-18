@@ -85,18 +85,18 @@ RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs
 
 # Standalone bundle includes the minimal node_modules + server.js for the app.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/market/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/market/.next/static ./apps/market/.next/static
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/market/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/market/.next/static ./sparx/apps/market/.next/static
 # public/ is NOT bundled into standalone output — copy it explicitly so the
 # default favicon fallback (favicon.ico, sparx-icon.svg) serves.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/market/public ./apps/market/public
+COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/market/public ./sparx/apps/market/public
 
 # Next's incremental data cache lives at <distDir>/cache (sparx/apps/market/.next/cache).
 # The standalone output ships .next/{standalone,static} but NOT a cache dir, so at
 # runtime the dir is absent — Next can't read/write the fetch Data Cache, which
 # silently degrades `next: { revalidate }` fetches. Create it writable up front.
-RUN mkdir -p ./apps/market/.next/cache \
- && chown -R nextjs:nodejs ./apps/market/.next
+RUN mkdir -p ./sparx/apps/market/.next/cache \
+ && chown -R nextjs:nodejs ./sparx/apps/market/.next
 
 USER nextjs
 

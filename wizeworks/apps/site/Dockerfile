@@ -98,18 +98,18 @@ RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs
 
 # Standalone bundle includes the minimal node_modules + server.js for the app.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/.next/static ./apps/site/.next/static
+COPY --from=builder --chown=nextjs:nodejs /repo/wizeworks/apps/site/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /repo/wizeworks/apps/site/.next/static ./wizeworks/apps/site/.next/static
 # public/ is NOT bundled into standalone output — copy it explicitly so the
 # default favicon fallback (favicon.ico, sparx-icon.svg) serves.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/public ./apps/site/public
+COPY --from=builder --chown=nextjs:nodejs /repo/wizeworks/apps/site/public ./wizeworks/apps/site/public
 
 # Next's incremental data cache lives at <distDir>/cache (wizeworks/apps/site/.next/cache).
 # The standalone output ships .next/{standalone,static} but NOT a cache dir, so
 # at runtime the dir is absent — Next can't read/write the fetch Data Cache, which
 # silently degrades `next: { revalidate }` fetches. Create it writable up front.
-RUN mkdir -p ./apps/site/.next/cache \
- && chown -R nextjs:nodejs ./apps/site/.next
+RUN mkdir -p ./wizeworks/apps/site/.next/cache \
+ && chown -R nextjs:nodejs ./wizeworks/apps/site/.next
 
 USER nextjs
 

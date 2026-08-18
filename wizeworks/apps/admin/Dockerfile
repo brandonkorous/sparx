@@ -72,8 +72,8 @@ ENV APP_VERSION=$APP_VERSION
 RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/admin/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/admin/.next/static ./apps/admin/.next/static
+COPY --from=builder --chown=nextjs:nodejs /repo/wizeworks/apps/admin/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /repo/wizeworks/apps/admin/.next/static ./wizeworks/apps/admin/.next/static
 
 USER nextjs
 
