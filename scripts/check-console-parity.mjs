@@ -113,6 +113,13 @@ const RENAMES = [
     sparx: 'components/mobile/modules-sheet',
     piggles: 'components/mobile/apps-sheet',
   },
+  // The same grid of tiles behind that sheet's first level, under each
+  // product's own word for the thing a tile opens.
+  {
+    canonical: 'components/mobile/~catalog-grid',
+    sparx: 'components/mobile/module-grid',
+    piggles: 'components/mobile/app-grid',
+  },
   { canonical: 'lib/~console-catalog', sparx: 'lib/product', piggles: 'lib/product' },
   // The guide. Both consoles teach the same two tiers; Piggles says App where
   // sparx says module, and calls the whole thing a guide because "tour" is a
@@ -435,6 +442,12 @@ const EXCEPTIONS = [
     only: 'piggles',
     path: 'components/toolbar-presentation',
     why: 'the bar-vs-menu constant those four share; part of the same split.',
+  },
+  {
+    axis: 'components',
+    only: 'piggles',
+    path: 'components/desktop-shell',
+    why: 'the desktop presentation, lifted out of console-shell.tsx under the 250-line rule. sparx has no line ceiling (CLAUDE.md: cohesion is the only rule), so workbench-shell.tsx keeps both presentations and the boot it owns in one piece. Same two presentations, one file boundary apart.',
   },
   {
     axis: 'lib',

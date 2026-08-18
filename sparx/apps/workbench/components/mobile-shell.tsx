@@ -94,6 +94,11 @@ export function MobileShell({
     if (!navOpen) setTab(null);
   }, [navOpen]);
 
+  const dismissSheet = () => {
+    setTab(null);
+    onNavOpenChange(false);
+  };
+
   return (
     <div className="bg-base-200 flex h-dvh w-full flex-col overflow-hidden">
       {/* Crash-isolated from the stack below, for the same reason as desktop:
@@ -156,18 +161,9 @@ export function MobileShell({
             host={host}
             order={stack.order}
             activeId={stack.activeId}
-            onOpenChange={(next) => {
-              setTab(next ? 'open' : null);
-              onNavOpenChange(next);
-            }}
+            onDismiss={dismissSheet}
           />
-          <ModulesSheet
-            open={tab === 'all'}
-            onOpenChange={(next) => {
-              setTab(next ? 'all' : null);
-              onNavOpenChange(next);
-            }}
-          />
+          <ModulesSheet open={tab === 'all'} onDismiss={dismissSheet} />
         </ChromeBoundary>
 
         <ChromeBoundary

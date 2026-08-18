@@ -11,10 +11,10 @@
 // so you can see where you are. A modal cannot do that; painting a bar on top of
 // one would make it visible and dead, which is worse than hiding it.
 //
-// So this is composed chrome, the same as the bar it belongs to: Piggles owns
-// the layer, silica owns everything inside it. `DrawerProps` exposes no `modal`
-// escape, so the alternative was changing silicaui — a bigger decision than this
-// needed.
+// So this is composed chrome, the same as the bar it belongs to: the workbench
+// owns the layer, silica owns everything inside it. `DrawerProps` exposes no
+// `modal` escape, so the alternative was changing silicaui — a bigger decision
+// than this needed.
 //
 // It is NOT a dialog. Nothing is trapped, nothing behind it is hidden, and the
 // work stays readable underneath — which is the point. Escape and the scrim both
@@ -62,11 +62,12 @@ export function Sheet({ open, title, hint, footer, children, onDismiss }: SheetP
 
       <section
         aria-label={title}
-        // Anchored to the BOTTOM EDGE, so it reads as rising from it rather
-        // than as a card hovering with a strip of page showing underneath. The
-        // bar floats ON it — which is why the content below reserves room for
-        // one. Piggles owns this panel, so Piggles lifts it (DESIGN.md §4).
-        className={`bg-base-200 border-base-300 rounded-box absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col rounded-b-none border border-b-0 shadow-2xl transition-transform duration-200 ease-out motion-reduce:transition-none ${
+        // Anchored to the BOTTOM EDGE, so it reads as rising from it rather than
+        // as a card hovering with a strip of page showing underneath. The bar
+        // floats ON it — which is why the content below reserves room for one.
+        // The workbench owns this panel, so it draws its own edge: a border and
+        // a base-tone shift, never a shadow (DESIGN.md).
+        className={`bg-base-200 border-base-300 rounded-box absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col rounded-b-none border border-b-0 transition-transform duration-200 ease-out motion-reduce:transition-none ${
           open ? 'translate-y-0' : 'pointer-events-none translate-y-[130%]'
         }`}
         // Shut, it is off-screen but still in the tree so the close animates —
@@ -76,7 +77,7 @@ export function Sheet({ open, title, hint, footer, children, onDismiss }: SheetP
         <SheetHandle />
 
         <header className="flex items-baseline gap-3 px-4 pt-1 pb-3">
-          <h2 className="font-display flex-1 text-lg font-semibold">{title}</h2>
+          <h2 className="flex-1 text-lg font-semibold">{title}</h2>
           {hint ? <span className="text-base-content text-sm">{hint}</span> : null}
         </header>
 
