@@ -62,14 +62,26 @@ export function Sheet({ open, title, hint, footer, children, onDismiss }: SheetP
 
       <section
         aria-label={title}
-        // Anchored to the BOTTOM EDGE, so it reads as rising from it rather
-        // than as a card hovering with a strip of page showing underneath. The
-        // bar floats ON it — which is why the content below reserves room for
-        // one. Piggles owns this panel, so Piggles lifts it (DESIGN.md §4).
-        className={`bg-base-200 border-base-300 rounded-box absolute inset-x-0 bottom-0 z-20 flex max-h-[78dvh] flex-col rounded-b-none border border-b-0 shadow-2xl transition-transform duration-200 ease-out motion-reduce:transition-none ${
-          open ? 'translate-y-0' : 'pointer-events-none translate-y-[130%]'
+        data-chrome="sheet"
+        // It GROWS OUT OF THE BAR, and folds back into it. Same gutter
+        // (`inset-x-3 bottom-3`) and same rounding, so the two share a footprint
+        // and the bar reads as this panel's own base rather than as something in
+        // front of it — what the desktop panel does sliding out of the rail
+        // (components/chrome-column.tsx).
+        //
+        // The animation is HEIGHT, not transform. Translating sent the whole
+        // panel off the bottom of the screen, which reads as a separate card
+        // being dismissed; collapsing its height pulls the top edge down onto the
+        // bar, so the panel visibly goes back into the thing it came out of. Its
+        // bottom edge never moves, because that edge IS the bar.
+        //
+        // No border: two floating objects that share an edge must not each draw
+        // one. The shadow separates them from the work, as it does up there.
+        className={`bg-neutral-dark text-neutral-dark-content rounded-box absolute inset-x-3 bottom-3 z-20 flex flex-col overflow-hidden transition-[max-height] duration-200 ease-out motion-reduce:transition-none ${
+          open ? 'max-h-[78dvh] shadow-lg' : 'pointer-events-none max-h-0'
         }`}
-        // Shut, it is off-screen but still in the tree so the close animates —
+        // Shut, it is collapsed to nothing but still in the tree so the close
+        // animates —
         // which is exactly when its rows must stop being reachable by keyboard.
         inert={!open}
       >
@@ -82,11 +94,11 @@ export function Sheet({ open, title, hint, footer, children, onDismiss }: SheetP
 
         {/* Whichever of these is LAST clears the floating bar. Reserving it on
             both would leave a hole above the footer. */}
-        <div className={`min-h-0 flex-1 overflow-y-auto px-2 ${footer ? 'pb-2' : 'pb-24'}`}>
+        <div className={`min-h-0 flex-1 overflow-y-auto px-2 ${footer ? 'pb-2' : 'pb-16'}`}>
           {children}
         </div>
 
-        {footer ? <div className="border-base-300 border-t p-3 pb-24">{footer}</div> : null}
+        {footer ? <div className="border-base-300 border-t p-3 pb-16">{footer}</div> : null}
       </section>
     </>
   );

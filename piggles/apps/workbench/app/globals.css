@@ -529,19 +529,22 @@ h6 {
   border-inline-end: 0;
 }
 
-/* ── THE CHROME COLUMN DERIVES FROM ITSELF ──────────────────────────────────
+/* ── CHROME DERIVES FROM ITSELF ─────────────────────────────────────────────
  *
- * `bg-neutral` and `bg-neutral-dark` paint the rail and the panel, but silica
- * mixes everything ELSE out of the base tokens — a ghost button's ink, a hover
- * wash, a header's hairline, the plan card's surface — and those were still the
- * page's. On a dark column that produced near-black ink on near-black ground and
- * white rectangles where a seam belonged.
+ * `bg-neutral` and `bg-neutral-dark` paint the chrome, but silica mixes
+ * everything ELSE out of the base tokens — a ghost button's ink, a hover wash, a
+ * header's hairline, a card's surface — and those were still the page's. On a
+ * dark surface that produced near-black ink on near-black ground and white
+ * rectangles where a seam belonged.
  *
  * Pointing the four base tokens at the chrome's own colours settles all of it at
  * once, and anything dropped in here later is right without being told. The
  * colours still come from `neutral` / `neutral-dark` — this only makes what
- * silica DERIVES agree with what is actually painted. */
-[data-chrome='column'] {
+ * silica DERIVES agree with what is actually painted.
+ *
+ * Any `data-chrome` value: the desktop column, the phone's bar, its sheets. They
+ * are one surface family and there is nothing per-instance to say. */
+[data-chrome] {
   --color-base-100: var(--color-neutral-dark);
   --color-base-200: var(--color-neutral);
   --color-base-300: var(--color-neutral);

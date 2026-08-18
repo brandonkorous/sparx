@@ -89,7 +89,7 @@ export function MobileStack({ siteKey, host }: { siteKey: string; host: StackPan
     // The floating bar hovers over the bottom of this box, so the surface inside
     // it needs room to scroll clear of one. A surface cannot know that, and it
     // must not have to.
-    <div className="flex min-h-0 flex-1 flex-col pb-24">
+    <div className="flex min-h-0 flex-1 flex-col pb-20">
       <main className="min-h-0 flex-1">
         {stack.activeId ? (
           <SurfaceMount

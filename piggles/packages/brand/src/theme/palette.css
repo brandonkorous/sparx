@@ -45,10 +45,10 @@
      sits on the ladder: a step lighter here, a step darker under `dark`, so the
      chrome keeps the same distance from the work either way.
 */
-  --color-neutral: #51474f;
+  --color-neutral: #514b52;
   --color-neutral-content: #ffffff;
 
-  --color-neutral-dark: #3e353d;
+  --color-neutral-dark: #403b41;
   --color-neutral-dark-content: #ffffff;
 
   /* Bases */

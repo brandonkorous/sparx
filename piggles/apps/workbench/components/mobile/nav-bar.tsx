@@ -30,9 +30,10 @@
 //
 // ── ICON-ONLY, IN CIRCLES ───────────────────────────────────────────────────
 //
-// Round buttons in a round bar. Four of them, so each is unambiguous by
-// position as well as glyph, and every one carries an `aria-label` because
-// there is no visible text to read. This is the one place Piggles drops labels —
+// Round buttons in a round bar, at the 44px tap floor and no larger — this sits
+// over the work permanently, so every pixel it takes is one the work does not
+// get. Four of them, so each is unambiguous by position as well as glyph, and
+// every one carries an `aria-label` because there is no visible text to read. This is the one place Piggles drops labels —
 // the rail keeps them, deliberately (components/app-rail.tsx).
 //
 // It FLOATS over the work and over the sheets, which anchor to the bottom edge
@@ -46,7 +47,7 @@ import {
   faMagnifyingGlass,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon, type PigglesIcon } from '@piggles/ui';
-import { Badge, Button } from '@wizeworks/silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { AppScope } from '@/components/app-scope';
 
 export type NavTab = 'home' | 'search' | 'open' | 'all';
@@ -82,27 +83,39 @@ export function NavBar({ active, openCount, activeApp, onSelect }: NavBarProps) 
   return (
     // `pointer-events-none` on the gutter so the strip either side of the bar
     // does not swallow taps meant for the surface underneath it.
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3.5 pb-4">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3 pb-3">
       <nav
         aria-label="Main"
+        data-chrome="bar"
         // Piggles owns this chrome, so Piggles lifts it — silica never sees it,
         // so there is no resting shadow to double (DESIGN.md §4).
-        className="border-base-300 bg-base-100 rounded-selector pointer-events-auto flex items-center justify-around border p-2 shadow-lg"
+        //
+        // No border. It shares an edge with the sheet growing out from behind it,
+        // and two floating objects that meet must not each draw their own.
+        className="bg-neutral text-neutral-content rounded-selector pointer-events-auto flex items-center justify-around p-1 shadow-lg"
       >
         {tabs.map((tab) => {
           const on = active === tab.key;
           return (
             <AppScope key={tab.key} app={tab.app} className="relative">
-              <Button
-                // Round buttons in a round bar. `lg` puts the circle at 58px,
-                // well over the 44px thumb floor.
-                shape="circle"
-                size="lg"
-                // Selection is a FILLED SHAPE (DESIGN.md RULE #4). Unselected
-                // tabs name NO colour: a colourless ghost resolves to
-                // base-content and stays right in both themes.
-                color={on ? 'module' : undefined}
-                variant={on ? 'soft' : 'ghost'}
+              <button
+                type="button"
+                // `dock-item`, not `btn`. A nav item is `color: inherit`, so the
+                // bar's own `text-neutral-content` reaches it; a `.btn` PAINTS
+                // itself from `--color-base-content` — the page's ink — and went
+                // near-black on the dark bar (1.79:1) in the light theme.
+                //
+                // `rounded-selector` and the padding keep the circle: dock-item
+                // ships square and flat, and round buttons in a round bar was the
+                // decision this bar was built on.
+                //
+                // `p-2.5` around a 24px glyph puts the target at exactly 44px —
+                // the floor, not a preference. Anything under it is a control
+                // people miss, and the screen this bar is trying to give back is
+                // worth less than a tap that lands.
+                className={`dock-item rounded-selector shrink-0 grow-0 p-2.5 ${
+                  on ? 'dock-item-active' : ''
+                }`}
                 aria-current={on ? 'true' : undefined}
                 // The only name this control has — there is no visible label.
                 aria-label={tab.label}
@@ -111,7 +124,7 @@ export function NavBar({ active, openCount, activeApp, onSelect }: NavBarProps) 
                 }}
               >
                 <Icon glyph={tab.glyph} className="size-6" aria-hidden />
-              </Button>
+              </button>
 
               {tab.key === 'open' && openCount > 0 ? (
                 // The ring is the bar's own surface, so the count separates from
@@ -119,8 +132,8 @@ export function NavBar({ active, openCount, activeApp, onSelect }: NavBarProps) 
                 // the two it is sitting on.
                 <Badge
                   color="primary"
-                  size="sm"
-                  className="ring-base-100 pointer-events-none absolute -top-0.5 -right-1 tabular-nums ring-2"
+                  size="xs"
+                  className="ring-base-100 pointer-events-none absolute -top-0.5 -right-2 tabular-nums ring-2"
                 >
                   {openCount}
                 </Badge>

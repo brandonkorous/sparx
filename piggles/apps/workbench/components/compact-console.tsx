@@ -49,6 +49,8 @@ interface CompactConsoleProps {
   siteKey: string | null;
   accountOrigin: string;
   navTab: NavTab | null;
+  /** The launcher is Search's destination, so the bar reads it to light that tab. */
+  launcherOpen: boolean;
   onNavTabChange: (tab: NavTab | null) => void;
   onSetTheme: (choice: ThemeChoice) => void;
   onOpenLauncher: () => void;
@@ -63,6 +65,7 @@ export function CompactConsole({
   siteKey,
   accountOrigin,
   navTab,
+  launcherOpen,
   onNavTabChange,
   onSetTheme,
   onOpenLauncher,
@@ -95,6 +98,15 @@ export function CompactConsole({
   // the only place a phone can carry module colour once the rail is gone.
   const activeSurface = active ? getSurface(active.surface) : undefined;
   const activeApp = activeSurface ? (MODULE_TO_APP[activeSurface.module] ?? 'home') : 'home';
+
+  // What the bar marks as current. `navTab` alone only ever knew about the two
+  // SHEETS, so Home and Search — which open a pane and an overlay instead —
+  // could be the thing you were looking at while the bar showed nothing
+  // selected. Each tab is read from whatever it actually opened.
+  //
+  // Ordered by what is in front: a sheet covers the launcher covers the stack.
+  const barTab: NavTab | null =
+    navTab ?? (launcherOpen ? 'search' : active?.surface === 'piggles.home' ? 'home' : null);
 
   return (
     <div className="bg-base-200 flex h-dvh w-full flex-col overflow-hidden">
@@ -160,7 +172,7 @@ export function CompactConsole({
           whatStopped="The menu along the bottom has stopped working."
         >
           <NavBar
-            active={navTab}
+            active={barTab}
             openCount={stack.order.length}
             activeApp={activeApp}
             onSelect={(next) => {

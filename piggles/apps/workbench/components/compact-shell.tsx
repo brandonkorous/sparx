@@ -75,6 +75,7 @@ export function CompactShell({
             siteKey={siteKey}
             accountOrigin={accountOrigin}
             navTab={navTab}
+            launcherOpen={launcherOpen}
             onNavTabChange={setNavTab}
             onSetTheme={setThemeChoice}
             onOpenLauncher={openLauncher}
