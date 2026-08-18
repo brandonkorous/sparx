@@ -414,7 +414,7 @@ export function WorkbenchShell({
           {/* First-run feature walkthrough — auto-starts once after onboarding is
               finished, and replays on demand from the account menu. Desktop only;
               the compact shell gets its own trimmed set later (docs/132). */}
-          <FirstRunTour enabled={isOnboardingFinished(onboarding)} theme={theme} />
+          <FirstRunTour enabled={isOnboardingFinished(onboarding)} />
 
           {/* Tier-2: the opt-in deep tour for each module, offered the first time
               an owner lands in that tool and replayable from the module panel.

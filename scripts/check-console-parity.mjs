@@ -125,6 +125,8 @@ const RENAMES = [
   // sparx says module, and calls the whole thing a guide because "tour" is a
   // word about the software rather than about the business.
   { canonical: 'lib/tour/~runtime', sparx: 'lib/tour/use-tour', piggles: 'lib/tour/use-guide' },
+  // The card that carries the words, and the chip it falls back to.
+  { canonical: 'lib/tour/~chip', sparx: 'lib/tour/tour-chip', piggles: 'lib/tour/guide-chip' },
   {
     canonical: 'lib/tour/~first-run',
     sparx: 'lib/tour/first-run-tour',
@@ -470,12 +472,6 @@ const EXCEPTIONS = [
   {
     axis: 'lib',
     only: 'piggles',
-    path: 'lib/tour/anchor',
-    why: 'TEMPORARY — delete this with the driver.js removal. The ring, and which side of it the card sits on, hand-rolled because Piggles dropped driver.js (its guide refuses the spotlight: no dimming, no cut-out, no keyboard trap). sparx still runs driver.js, which supplies both natively via TourStep.side, so this is one capability under two runtimes rather than a missing screen. It is not a resting state: sparx pays for that runtime with 249 lines of tour.css whose stated job is "driver.js dressed as a native silica surface" — a third-party control being re-skinned, which RULE #1 exists to stop.',
-  },
-  {
-    axis: 'lib',
-    only: 'piggles',
     path: 'lib/dock-theme',
     why: 'the dockview theme object; sparx themes the dock from CSS. Same dock, different expression.',
   },
@@ -686,18 +682,6 @@ const EXCEPTIONS = [
   },
 
   // ── The tour: one capability, two deliveries ────────────────────────────
-  {
-    axis: 'lib',
-    only: 'piggles',
-    path: 'lib/tour/guide-chip',
-    why: 'the guide’s delivery. sparx spotlights a step with driver.js; Piggles stands the whole guide in the status strip — offer, step, words and buttons — because a console whose premise is "you decide what is on screen" cannot explain itself by taking the screen away. Same two tiers, same persistence, same anchors; one has a library where the other has a chip.',
-  },
-  {
-    axis: 'deps',
-    only: 'sparx',
-    path: 'driver.js',
-    why: 'sparx spotlights a step with an overlay. Piggles teaches in place from the status bar, because its console’s premise is that the operator decides what occupies the screen — so it needs no overlay library. lib/tour exists in both.',
-  },
 ];
 
 /** Furniture that must be REACHABLE from the root layout, not merely present. */

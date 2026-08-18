@@ -66,6 +66,7 @@ import type { DetachedWindow } from '../lib/workbench/pane-host';
 import { useWorkbench } from '../lib/workbench/context';
 import { useAgoTick, useDetachedWindows, useDirtyPanes, useLastSaved } from './status-bar-signals';
 import { SentimentChip } from './feedback/sentiment-chip';
+import { TourChip } from '../lib/tour/tour-chip';
 
 function subscribeOnline(listener: () => void): () => void {
   window.addEventListener('online', listener);
@@ -306,6 +307,10 @@ export function StatusBar() {
       {/* The occasional "how's it going?" — self-hiding like every chip here,
           and on this shelf precisely so it never covers the work it is asking
           about. Renders nothing unless the server says this person is due. */}
+      {/* The tour's handle, and what its card falls back to on a step with
+          nothing to point at. Same shelf as the sentiment chip, for the same
+          reason: it is the one place that is never in the way. */}
+      <TourChip />
       <SentimentChip />
 
       {/* The pulse — the latest notable thing that happened, click-through to

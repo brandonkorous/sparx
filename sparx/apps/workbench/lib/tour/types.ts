@@ -1,7 +1,7 @@
 // Product-tour shared types + the persisted state shape.
 //
 // Kept separate from the runtime (use-tour.ts) and the content (steps.ts) so the
-// curriculum and the persistence contract can be read without pulling in driver.js.
+// curriculum and the persistence contract can be read without pulling in the runtime.
 // Full design: docs/132-workbench-product-tour.md.
 
 /** Bump when the tour materially changes what it teaches — a completed older
@@ -56,7 +56,8 @@ export interface TourStep {
   title: string;
   /** One or two sentences, full ink, ≥16px. What this is and why the owner cares. */
   body: string;
-  /** Which side of the anchor the popover sits (driver.js placement). */
+  /** Preferred side for the card. Usually left unset — ./anchor.ts derives it
+   *  from where the anchor actually IS, so a new `data-tour` needs no entry here. */
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
   /** Optional module hue — set on every tier-2 module-tour step. */

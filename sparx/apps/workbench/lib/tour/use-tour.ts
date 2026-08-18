@@ -1,156 +1,162 @@
 'use client';
 
-// The tour runtime — a thin, imperative wrapper over driver.js that applies the
-// silica theming and reports outcomes (and an art slot) back to the caller.
-// Content lives in steps.ts; persistence in data.ts; brand art is portalled in by
-// the caller (first-run-tour.tsx) into the container this file exposes.
+// The tour runtime — and the one design decision the whole feature turns on.
 //
-// Why imperative (drive/moveNext) rather than a declarative React tour: it keeps
-// the door open for Phase-2 steps that must open a pane and wait for it to mount
-// before advancing (docs/132 §6). Phase 1 needs none of that, but the shape does.
+// ── IT NEVER COVERS THE WORK ────────────────────────────────────────────────
+//
+// This was a wrapper over driver.js, which teaches by spotlight: dim the screen,
+// cut a hole over one control, float a card next to it, trap the keyboard until
+// somebody presses Next. It teaches well and it is the wrong shape here, because
+// this app's whole premise is that the OPERATOR decides what occupies the screen —
+// panes they placed, windows they tore off, a rail they arranged. A tour that
+// blacks all of that out to explain it is arguing with the product it explains.
+//
+// It also cost more than it looked. driver.js paints its own popover — white card,
+// drop shadow, blue buttons — so `tour.css` grew to 249 lines whose stated job was
+// "driver.js dressed as a native silica surface": a third-party control being
+// re-skinned at higher specificity, which is precisely what RULE #1 exists to stop.
+// The replacement composes silica's own Popover and Button, so a token change
+// reaches it with no edit here at all.
+//
+// So this one rings ONE thing at a time (./anchor.ts), says what it is for, and
+// waits. Nothing is dimmed, nothing is disabled, and every control on screen still
+// works — including the one being pointed at. Wandering off mid-tour is not an
+// escape from it; the chip is still on the status bar when you come back, on the
+// step you left.
+//
+// ── WHY A MODULE STORE AND NOT CONTEXT ──────────────────────────────────────
+//
+// Three unrelated places read this: the chip on the status bar, the first-run
+// driver in the shell, and the module-tour offers. A context would have to wrap
+// all three, which means wrapping the shell, which means the tour re-renders the
+// entire workbench on every step.
 
-import { driver, type Config, type Driver, type PopoverDOM } from 'driver.js';
-import 'driver.js/dist/driver.css';
-import './tour.css';
+import { useCallback, useSyncExternalStore } from 'react';
+import { clearRing } from './anchor';
 import type { TourStep } from './types';
-import { tourSelector } from './types';
 
-export interface RunTourOptions {
+export interface TourHandlers {
+  /** A step is now showing — used to persist the resume point. */
+  onStepShown?: (step: TourStep, index: number) => void;
+  /** Reached the end (pressed Got it on the last step). */
+  onCompleted?: () => void;
+  /** Left partway through, before the last step. */
+  onSkipped?: (step: TourStep, index: number) => void;
+}
+
+export interface RunTourOptions extends TourHandlers {
   steps: TourStep[];
   /** Resume position; defaults to 0. */
   startIndex?: number;
-  /** Fired each time a step is shown — used to persist resume position. */
-  onStepShown?: (step: TourStep, index: number) => void;
-  /** Reached the end (pressed Done on the last step). */
-  onCompleted?: () => void;
-  /** Left early (close / Esc / clicked outside) before the last step. */
-  onSkipped?: (step: TourStep, index: number) => void;
-  /** The popover's brand-art slot is ready for this step — portal into `container`. */
-  onArt?: (container: HTMLElement, step: TourStep) => void;
-  /** The tour ended; tear down any portalled art. */
-  onArtClear?: () => void;
-  /**
-   * Make a step's anchor exist before it is shown — open the surface it lives on
-   * and wait for the element to mount. Supplied by the tier-2 module tours, which
-   * walk controls across more than one surface; the tier-1 welcome tour omits it
-   * (every anchor is always-present shell chrome). When present, the runtime takes
-   * over Next/Back so the open+wait completes before driver measures the target.
-   */
-  ensureStep?: (step: TourStep) => Promise<void>;
 }
 
-// Buttons are styled from tokens in tour.css, NOT via silica `.btn` classes here:
-// driver's own `.driver-popover-footer button` rule (0,1,1) out-specifies silica's
-// single-class `.btn-primary` (0,1,0) and repaints it, so the classes never win.
-// tour.css paints the silica look at higher specificity instead.
+export type TourState = { phase: 'idle' } | { phase: 'running'; steps: TourStep[]; index: number };
 
-/** Ensure a brand-art container exists at the top of the popover and hand it to
- *  the caller to portal into. Also stamps the module hue for the CSS tint. */
-function mountArt(popover: PopoverDOM, step: TourStep | undefined, opts: RunTourOptions): void {
-  const { wrapper } = popover;
-  if (step?.module) wrapper.setAttribute('data-tour-module', step.module);
-  else wrapper.removeAttribute('data-tour-module');
-  // The mascot card lays out two-column (Sparky beside the text); the small-Spark
-  // steps stack. A wrapper flag drives the CSS so driver's DOM order is untouched.
-  if (step?.art === 'mascot') wrapper.setAttribute('data-tour-hero', '');
-  else wrapper.removeAttribute('data-tour-hero');
+const IDLE: TourState = { phase: 'idle' };
 
-  let container = wrapper.querySelector<HTMLElement>('.sparx-tour__art');
-  if (!container) {
-    container = document.createElement('div');
-    container.className = 'sparx-tour__art';
-    wrapper.insertBefore(container, wrapper.firstChild);
-  }
-  if (step) opts.onArt?.(container, step);
+let state: TourState = IDLE;
+let handlers: TourHandlers = {};
+const listeners = new Set<() => void>();
+
+function set(next: TourState): void {
+  state = next;
+  for (const listener of listeners) listener();
 }
 
-export function runTour(opts: RunTourOptions): Driver {
-  const { steps } = opts;
-
-  // `config`'s callbacks reference `d` below; that's a deferred self-reference —
-  // they only fire after `driver()` has returned and initialised `d`.
-  const config: Config = {
-    showProgress: steps.length > 1,
-    progressText: '{{current}} of {{total}}',
-    allowClose: true,
-    // A dark scrim reads correctly in both themes; the highlight cut-out matches
-    // the field radius so the spotlighted control looks intentional.
-    overlayColor: 'oklch(0% 0 0)',
-    overlayOpacity: 0.6,
-    stagePadding: 6,
-    stageRadius: 8,
-    smoothScroll: true,
-    popoverClass: 'sparx-tour',
-    nextBtnText: 'Next',
-    prevBtnText: 'Back',
-    doneBtnText: 'Done',
-    onPopoverRender: (popover, { state }) => {
-      mountArt(popover, steps[state.activeIndex ?? 0], opts);
-    },
-    // Report the shown step so the caller can persist a resume point.
-    onHighlighted: (_el, _step, o) => {
-      const index = o.state.activeIndex ?? 0;
-      const step = steps[index];
-      if (step) opts.onStepShown?.(step, index);
-    },
-    // Distinguish "finished" from "left early": on the last step there is no next.
-    onDestroyStarted: () => {
-      const index = d.getActiveIndex() ?? 0;
-      if (!d.hasNextStep()) {
-        opts.onCompleted?.();
-      } else {
-        const step = steps[index];
-        if (step) opts.onSkipped?.(step, index);
-      }
-      d.destroy();
-    },
-    onDestroyed: () => {
-      opts.onArtClear?.();
-    },
-    steps: steps.map((s) => ({
-      element: tourSelector(s),
-      popover: {
-        title: s.title,
-        description: s.body,
-        side: s.side,
-        align: s.align,
-      },
-    })),
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
   };
+}
 
-  // Orchestrated advance (tier-2 module tours only). Defining onNext/PrevClick
-  // makes driver hand US the click: we open the destination step's surface and
-  // wait for its anchor, THEN move — so driver never measures an element that
-  // hasn't mounted. A failed ensure (surface slow/gone) still advances, landing
-  // on driver's centered fallback rather than hanging the tour. Tier-1 leaves
-  // these undefined, so driver keeps its own instant advance.
-  if (opts.ensureStep) {
-    const settle = async (step: TourStep | undefined): Promise<void> => {
-      if (!step) return;
-      try {
-        await opts.ensureStep!(step);
-      } catch {
-        // Best effort — advance regardless of a missed anchor.
-      }
-    };
-    config.onNextClick = () => {
-      void settle(steps[(d.getActiveIndex() ?? 0) + 1]).then(() => d.moveNext());
-    };
-    config.onPrevClick = () => {
-      void settle(steps[(d.getActiveIndex() ?? 0) - 1]).then(() => d.movePrevious());
-    };
+/**
+ * Start a tour. Replaces whatever was running, which is what both callers want —
+ * "Take the tour" from the account menu and a module tour replayed from its panel
+ * are each an explicit request for THIS tour now.
+ */
+export function runTour(opts: RunTourOptions): void {
+  const { steps } = opts;
+  handlers = {
+    onStepShown: opts.onStepShown,
+    onCompleted: opts.onCompleted,
+    onSkipped: opts.onSkipped,
+  };
+  const index = Math.min(Math.max(opts.startIndex ?? 0, 0), Math.max(steps.length - 1, 0));
+  // Guarded rather than asserted: an empty tour would be a content mistake, and it
+  // should show nothing rather than crash the bar somebody is working under.
+  if (steps.length === 0) {
+    set(IDLE);
+    return;
   }
+  set({ phase: 'running', steps, index });
+  const step = steps[index];
+  if (step) handlers.onStepShown?.(step, index);
+}
 
-  const d: Driver = driver(config);
-  const start = opts.startIndex ?? 0;
-  // Ensure the FIRST step's anchor too — a module tour can be replayed while its
-  // landing surface is closed, so step one may itself need opening.
-  if (opts.ensureStep) {
-    void Promise.resolve(opts.ensureStep(steps[start]!))
-      .catch(() => undefined)
-      .then(() => d.drive(start));
-  } else {
-    d.drive(start);
+/** Advance. Past the last step this ENDS the tour as finished, which is the
+ *  difference between "they have seen this" and "they got partway and left". */
+export function nextStep(): void {
+  if (state.phase !== 'running') return;
+  const index = state.index + 1;
+  if (index >= state.steps.length) {
+    handlers.onCompleted?.();
+    stopTour();
+    return;
   }
-  return d;
+  const step = state.steps[index];
+  set({ phase: 'running', steps: state.steps, index });
+  if (step) handlers.onStepShown?.(step, index);
+}
+
+export function previousStep(): void {
+  if (state.phase !== 'running' || state.index === 0) return;
+  const index = state.index - 1;
+  const step = state.steps[index];
+  set({ phase: 'running', steps: state.steps, index });
+  if (step) handlers.onStepShown?.(step, index);
+}
+
+/** Leave partway through. The step reached is reported, so coming back later
+ *  starts where they stopped rather than at the beginning again. */
+export function leaveTour(): void {
+  if (state.phase === 'running') {
+    const step = state.steps[state.index];
+    if (step) handlers.onSkipped?.(step, state.index);
+  }
+  stopTour();
+}
+
+/**
+ * Tear down without reporting anything — the shell unmounting, or a caller
+ * replacing one tour with another. Distinct from `leaveTour` on purpose: a
+ * navigation away is not somebody deciding to stop, and recording it as a skip
+ * would mark a tour they never chose to leave as abandoned.
+ */
+export function stopTour(): void {
+  clearRing();
+  handlers = {};
+  set(IDLE);
+}
+
+export function useTourState(): TourState {
+  return useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => IDLE
+  );
+}
+
+/** The step showing right now, or null. */
+export function currentStep(value: TourState): TourStep | null {
+  return value.phase === 'running' ? (value.steps[value.index] ?? null) : null;
+}
+
+/** The three things the card can do, bound once so its buttons stay cheap. */
+export function useTourActions() {
+  return {
+    next: useCallback(nextStep, []),
+    back: useCallback(previousStep, []),
+    leave: useCallback(leaveTour, []),
+  };
 }

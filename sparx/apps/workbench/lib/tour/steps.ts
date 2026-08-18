@@ -1,7 +1,7 @@
 // The first-run product-tour catalog — WHAT we walk a new owner through.
 //
 // This file is intentionally just DATA + copy, decoupled from the tour runtime
-// (use-tour.ts / driver.js). A step names a stable `data-tour` anchor, the concept
+// (use-tour.ts). A step names a stable `data-tour` anchor, the concept
 // it teaches, and the words a non-technical owner reads. Keeping the content here
 // means the curriculum can be edited, reordered, and reviewed without touching any
 // runtime code.

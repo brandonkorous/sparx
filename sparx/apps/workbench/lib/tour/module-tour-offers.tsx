@@ -14,27 +14,20 @@
 //     the button before pointing at it. The controller re-focuses an already-open
 //     surface rather than duplicating it, so this is safe to run every step.
 //
-// Renders the offer card and portals the popover's brand art, nothing else.
+// Renders the offer card, nothing else. The running tour's card is the status
+// bar's TourChip — one card, one owner, whichever tour is running.
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { Button, Card } from '@wizeworks/silicaui-react';
-import { Spark, SparkMascot } from '@sparx/brand/react';
-import type { Driver } from 'driver.js';
+import { SparkMascot } from '@sparx/brand/react';
 import { ModuleScope } from '../../components/module-scope';
 import { getSurface } from '../surfaces/registry';
 import { useWorkbench } from '../workbench/context';
 import { getModuleTour, isTourableModule, moduleLabel } from './module-tours';
-import { runTour } from './use-tour';
+import { runTour, stopTour, useTourState } from './use-tour';
 import { useSaveModuleTourOutcome, useTourPrefs } from './data';
-import {
-  TOUR_VERSION,
-  isModuleTourAnswered,
-  isTourSettled,
-  type TourModule,
-  type TourStep,
-} from './types';
+import { TOUR_VERSION, isModuleTourAnswered, isTourSettled, type TourModule } from './types';
 import type { Theme } from '../theme';
 
 const LAUNCH_MODULE_EVENT = 'sparx:launch-module-tour';
@@ -46,31 +39,17 @@ export function launchModuleTour(module: TourModule): void {
   }
 }
 
-/** Poll for a tour anchor to mount after its surface is opened. Resolves when it
- *  appears, or gives up after `timeoutMs` (the step then lands on driver's
- *  centered fallback rather than hanging). */
-function waitForAnchor(anchor: string, timeoutMs = 4000): Promise<void> {
-  return new Promise((resolve) => {
-    const selector = `[data-tour="${anchor}"]`;
-    if (typeof document === 'undefined' || document.querySelector(selector)) return resolve();
-    const start = performance.now();
-    const tick = () => {
-      if (document.querySelector(selector) || performance.now() - start > timeoutMs)
-        return resolve();
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
-}
-
 export function ModuleTourOffers({ enabled, theme }: { enabled: boolean; theme: Theme }) {
   const { controller } = useWorkbench();
   const { data: prefs, isPending } = useTourPrefs();
   const save = useSaveModuleTourOutcome();
 
-  const activeDriverRef = useRef<Driver | null>(null);
-  const [running, setRunning] = useState(false);
-  const [art, setArt] = useState<{ el: HTMLElement; step: TourStep } | null>(null);
+  // Whether a tour is on screen right now. Read from the runtime rather than
+  // mirrored in local state: the tour can also end from the card's own "Stop
+  // here", and a second copy of that fact would let the offer reappear behind a
+  // tour that is still running.
+  const tourState = useTourState();
+  const running = tourState.phase === 'running';
   // Modules answered THIS session — hides the offer the instant it's clicked,
   // without waiting on the prefs cache write.
   const [answeredNow, setAnsweredNow] = useState<ReadonlySet<TourModule>>(() => new Set());
@@ -106,28 +85,17 @@ export function ModuleTourOffers({ enabled, theme }: { enabled: boolean; theme: 
   startRef.current = (module: TourModule) => {
     const tour = getModuleTour(module);
     if (!tour) return;
-    activeDriverRef.current?.destroy();
+    stopTour();
     const now = () => new Date().toISOString();
     setAnsweredNow((prev) => new Set(prev).add(module));
-    setRunning(true);
     // Starting counts as answered — a reload mid-tour must not re-nag.
     save.mutate({ module, outcome: { status: 'in-progress', version: TOUR_VERSION, at: now() } });
-    activeDriverRef.current = runTour({
+    runTour({
       steps: tour.steps,
       onCompleted: () =>
         save.mutate({ module, outcome: { status: 'completed', version: TOUR_VERSION, at: now() } }),
       onSkipped: () =>
         save.mutate({ module, outcome: { status: 'skipped', version: TOUR_VERSION, at: now() } }),
-      onArt: (el, step) => setArt({ el, step }),
-      onArtClear: () => {
-        setArt(null);
-        setRunning(false);
-      },
-      ensureStep: async (step) => {
-        if (!step.open) return;
-        controller.open(step.open.surface, step.open.params, { target: step.open.target ?? 'tab' });
-        if (step.anchor) await waitForAnchor(step.anchor);
-      },
     });
   };
 
@@ -142,7 +110,7 @@ export function ModuleTourOffers({ enabled, theme }: { enabled: boolean; theme: 
   }, []);
 
   // Tear down any running tour when the shell unmounts.
-  useEffect(() => () => activeDriverRef.current?.destroy(), []);
+  useEffect(() => () => stopTour(), []);
 
   const dismiss = (module: TourModule) => {
     setAnsweredNow((prev) => new Set(prev).add(module));
@@ -173,9 +141,6 @@ export function ModuleTourOffers({ enabled, theme }: { enabled: boolean; theme: 
           onDismiss={() => dismiss(settledModule)}
         />
       ) : null}
-      {/* The popover's brand art rides a portal, so it stays a real, theme-aware
-          @sparx/brand component instead of injected SVG (same as the welcome tour). */}
-      {art ? createPortal(<TourArt step={art.step} />, art.el) : null}
     </>
   );
 }
@@ -259,11 +224,4 @@ function OfferCard({
       </Card>
     </ModuleScope>
   );
-}
-
-/** The small Spark mark in the popover, in the step's module hue. The popover
- *  carries `--color-module` (set by the runtime from the step's `module`), so the
- *  var resolves to the right tool's color with no extra wiring. */
-function TourArt({ step }: { step: TourStep }) {
-  return <Spark size={22} color={step.module ? 'var(--color-module)' : 'var(--color-primary)'} />;
 }

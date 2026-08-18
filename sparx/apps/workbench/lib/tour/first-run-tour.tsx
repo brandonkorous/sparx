@@ -9,16 +9,17 @@
 //     so an interrupted tour resumes and a finished/skipped one never re-nags.
 //   • Listens for a launch event so "Take the tour" (account menu) can replay it
 //     from the top on demand.
+//
+// It used to hold a `Driver` and portal brand art into a slot driver.js handed it
+// per step. The runtime is a store now and the card renders its own art, so both
+// the ref and the portal are gone — this file is back to being only about timing
+// and persistence.
 
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import type { Driver } from 'driver.js';
-import { Spark, SparkMascot } from '@sparx/brand/react';
+import { useEffect, useRef } from 'react';
 import { buildTourSteps } from './steps';
-import { TOUR_VERSION, isTourSettled, type TourStep } from './types';
-import { runTour } from './use-tour';
+import { TOUR_VERSION, isTourSettled } from './types';
+import { runTour, stopTour } from './use-tour';
 import { useSaveTourOutcome, useTourPrefs } from './data';
-import type { Theme } from '../theme';
 
 const LAUNCH_EVENT = 'sparx:launch-tour';
 
@@ -27,20 +28,15 @@ export function launchTour(): void {
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(LAUNCH_EVENT));
 }
 
-export function FirstRunTour({ enabled, theme }: { enabled: boolean; theme: Theme }) {
+export function FirstRunTour({ enabled }: { enabled: boolean }) {
   const { data, isPending } = useTourPrefs();
   const save = useSaveTourOutcome();
-  const activeRef = useRef<Driver | null>(null);
   const autoStartedRef = useRef(false);
-  // The popover's brand-art slot: driver hands us a DOM container per step and we
-  // portal the real (theme-aware) brand component into it.
-  const [art, setArt] = useState<{ el: HTMLElement; step: TourStep } | null>(null);
 
   // Kept in a ref so the (empty-dep) launch listener always calls the current
   // starter without re-subscribing on every render.
   const startRef = useRef<(resumeFromId?: string) => void>(() => undefined);
   startRef.current = (resumeFromId?: string) => {
-    activeRef.current?.destroy();
     // Composed fresh each launch: core shell steps + a step per enabled module
     // (gated on its rail icon being present) + the close. Resume lands on the
     // saved step if it's still in the list, else the top.
@@ -48,7 +44,7 @@ export function FirstRunTour({ enabled, theme }: { enabled: boolean; theme: Them
     const found = resumeFromId ? steps.findIndex((s) => s.id === resumeFromId) : 0;
     const startIndex = found > 0 ? found : 0;
     const now = () => new Date().toISOString();
-    activeRef.current = runTour({
+    runTour({
       steps,
       startIndex,
       onStepShown: (step) =>
@@ -66,8 +62,6 @@ export function FirstRunTour({ enabled, theme }: { enabled: boolean; theme: Them
           lastStepId: step.id,
           at: now(),
         }),
-      onArt: (el, step) => setArt({ el, step }),
-      onArtClear: () => setArt(null),
     });
   };
 
@@ -88,22 +82,10 @@ export function FirstRunTour({ enabled, theme }: { enabled: boolean; theme: Them
     return () => window.removeEventListener(LAUNCH_EVENT, onLaunch);
   }, []);
 
-  // Tear down any running tour when the shell unmounts.
-  useEffect(() => () => activeRef.current?.destroy(), []);
+  // Tear down any running tour when the shell unmounts. `stopTour`, not
+  // `leaveTour`: navigating away is not somebody deciding to stop, and recording
+  // it as a skip would mark a tour they never left as abandoned.
+  useEffect(() => () => stopTour(), []);
 
-  // The brand art rides a portal into the popover's slot, so it stays a real,
-  // theme-aware React component instead of hand-injected SVG.
-  return art ? createPortal(<TourArt step={art.step} theme={theme} />, art.el) : null;
-}
-
-/** Brand art for a step's popover: Sparky greets on the welcome card; every other
- *  step wears the small Spark mark in the step's hue (module, else brand primary).
- *  Real @sparx/brand components — no re-inlined SVG, theme-aware via the portal. */
-function TourArt({ step, theme }: { step: TourStep; theme: Theme }) {
-  if (step.art === 'mascot') {
-    return (
-      <SparkMascot size={72} bob blink tone={theme === 'dark' ? 'dark' : 'light'} title="sparky" />
-    );
-  }
-  return <Spark size={22} color={step.module ? 'var(--color-module)' : 'var(--color-primary)'} />;
+  return null;
 }
