@@ -24,6 +24,7 @@
     "check:docker-paths": "node scripts/check-dockerfile-paths.mjs",
     "check:piggles-nav": "node piggles/scripts/check-nav-vocabulary.mjs",
     "check:piggles-toolbars": "node piggles/scripts/check-toolbar-primary.mjs",
+    "provision:piggles-stripe": "node piggles/scripts/provision-stripe.mjs",
     "check:webhooks": "node scripts/check-webhook-events.mjs",
     "check:inventory-api": "node scripts/check-inventory-api-docs.mjs",
     "gen:inventory-api": "node scripts/gen-inventory-api-reference.mjs",
