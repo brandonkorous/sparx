@@ -112,8 +112,24 @@ updates:
         update-types: ['version-update:semver-major']
 
   # ── Terraform ──────────────────────────────────────────────────────────
+  #
+  # `directories`, not `directory`. The terraform ecosystem reads ONE directory
+  # and does not recurse, and `terraform/` holds no `.tf` of its own — every
+  # root and module is a level or two down. So the single `/terraform` entry
+  # this replaces failed every run with `dependency_file_not_found: No files
+  # found in /terraform`, and had done since it was written: monthly, on a
+  # schedule nobody watches, reporting an error that looked like an outage
+  # rather than a typo. Provider versions have not been checked once.
+  #
+  # Enumerated by SHAPE rather than as a flat list, so a new module or a new
+  # environment is picked up without editing this file — which is the failure
+  # mode a hand-listed set would reintroduce the first time someone adds one.
   - package-ecosystem: terraform
-    directory: '/terraform'
+    directories:
+      - '/terraform/bootstrap'
+      - '/terraform/bootstrap-azure'
+      - '/terraform/envs/*'
+      - '/terraform/modules/*'
     schedule:
       interval: monthly
     open-pull-requests-limit: 3
