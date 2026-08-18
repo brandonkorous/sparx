@@ -22,7 +22,7 @@ catalog:
   '@wizeworks/silicaui-behaviors': ^0.52.0
   '@wizeworks/silicaui-mcp': ^0.52.0
   '@wizeworks/silicaui-editor': ^0.52.0
-  '@wizeworks/silicaui-dnd': ^0.52.0
+  '@wizeworks/silicaui-dnd': ^0.53.0
   '@wizeworks/silicaui-panels': ^0.52.0
   '@wizeworks/silicaui-charts': ^0.52.0
   '@wizeworks/silicaui-table': ^0.52.0
