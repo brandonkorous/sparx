@@ -102,6 +102,22 @@ export function createBrokerHandler<E, L extends PublisherLogger>(opts: {
 }
 
 /**
+ * Is this the "a durable by that name exists, with a different config" refusal?
+ *
+ * Matched on JetStream's `err_code` (10148) rather than the message text, which
+ * is server-version-dependent; the text is kept as a fallback for a broker that
+ * does not send the structured code.
+ */
+function isConsumerConfigDrift(err: unknown): boolean {
+  if (typeof err !== 'object' || err === null) return false;
+  const candidate = err as { api_error?: { err_code?: number }; message?: string };
+  if (candidate.api_error?.err_code === 10148) return true;
+  return (
+    typeof candidate.message === 'string' && candidate.message.includes('consumer already exists')
+  );
+}
+
+/**
  * Subscribe to this worker's subjects and dispatch to `handle`.
  *
  * Returns null when the configured transport is not NATS — under `http` or
@@ -138,19 +154,52 @@ export async function startConsumer(opts: ConsumerOptions): Promise<RunningConsu
   // publisher makes — whichever process gets there first creates it.
   await ensureStream(jsm, transport.stream);
 
-  // Idempotent: re-running with the same durable name updates the consumer in
-  // place rather than creating a second one. Two consumers on one durable would
-  // split the stream between them and each worker would see half its events.
-  await jsm.consumers.add(transport.stream, {
-    durable_name: opts.durable,
-    ack_policy: AckPolicy.Explicit,
-    // New pods pick up everything still unacknowledged, including what arrived
-    // while the worker was down. `DeliverNew` would skip precisely those.
-    deliver_policy: DeliverPolicy.All,
-    filter_subjects: subjects,
-    max_deliver: opts.maxDeliver ?? 5,
+  // ── ADD, THEN CONVERGE ────────────────────────────────────────────────────
+  //
+  // `consumers.add` is idempotent ONLY for a byte-identical config. Re-running
+  // it with a DIFFERENT one — most commonly a widened `filter_subjects`, which
+  // is what adding an event to a shipped handler's list does — is rejected with
+  // 400 / err_code 10148, "consumer already exists".
+  //
+  // This file and `@wizeworks/finance-worker` both used to claim add upserts. It
+  // does not, and the cost of believing it was the whole worker fleet:
+  // `finance-worker` gained `module.activated`, the add was refused on boot, and
+  // because every handler shares ONE process a single refused subscription took
+  // all fourteen down. It stayed hidden only because the release's rollout gate
+  // was itself broken and had been skipping the restart.
+  //
+  // So: add, and on that one error converge the existing consumer instead.
+  // `update` is the right verb rather than delete-and-recreate — it keeps the
+  // delivered/ack floor, which is the entire reason `services/CLAUDE.md` calls a
+  // durable name permanent. Only genuinely mutable fields are sent; `ack_policy`
+  // and `deliver_policy` are immutable by design and are not ours to change on a
+  // live cursor.
+  const desired = {
     ack_wait: 120_000_000_000, // 2 minutes in nanoseconds — matches the old HTTP timeout
-  });
+    max_deliver: opts.maxDeliver ?? 5,
+    filter_subjects: subjects,
+  };
+
+  try {
+    await jsm.consumers.add(transport.stream, {
+      durable_name: opts.durable,
+      ack_policy: AckPolicy.Explicit,
+      // New pods pick up everything still unacknowledged, including what arrived
+      // while the worker was down. `DeliverNew` would skip precisely those.
+      deliver_policy: DeliverPolicy.All,
+      ...desired,
+    });
+  } catch (err) {
+    if (!isConsumerConfigDrift(err)) throw err;
+    // Logged rather than silent: this is the moment a shipped consumer's shape
+    // changes, and "which release widened finance-worker" is a question someone
+    // will ask when a replay shows up.
+    opts.logger.info(
+      { durable: opts.durable, subjects: subjects.length, stream: transport.stream },
+      'events: durable exists with a different config — updating it in place, cursor kept'
+    );
+    await jsm.consumers.update(transport.stream, opts.durable, desired);
+  }
 
   const consumer = await js.consumers.get(transport.stream, opts.durable);
   const messages = await consumer.consume();

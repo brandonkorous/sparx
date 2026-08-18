@@ -22,13 +22,19 @@ export const EVENTS = [
   // finance flag of its own. Nothing listened for this, so no tenant had the
   // `wages` category and the staff labour deriver refused every run.
   //
-  // ADDING a subject to a shipped durable is safe: `consumers.add` upserts, so
-  // this updates `finance-worker` in place rather than minting a new cursor.
-  // With `DeliverPolicy.All` the widened filter then replays whatever
-  // `module.activated` is still inside the stream's retention window — a free
-  // partial backfill, harmless because the seed is create-only. It does NOT
-  // reach tenants whose activation has aged out; those are the ops task
-  // `backfill-finance-categories`.
+  // ADDING a subject to a shipped durable is safe, but NOT for the reason this
+  // comment used to give. `consumers.add` does not upsert: JetStream refuses a
+  // second add under an existing durable name with a different config (400,
+  // err_code 10148), and because every handler shares one process, that refusal
+  // took the entire event-worker fleet down the first time the pod actually
+  // restarted. `@wizeworks/events` now catches exactly that and calls
+  // `consumers.update`, which converges the filter and KEEPS the cursor.
+  //
+  // Given that, the rest holds: with `DeliverPolicy.All` the widened filter
+  // replays whatever `module.activated` is still inside the stream's retention
+  // window — a free partial backfill, harmless because the seed is create-only.
+  // It does NOT reach tenants whose activation has aged out; those are the ops
+  // task `backfill-finance-categories`.
   'module.activated',
 ];
 
