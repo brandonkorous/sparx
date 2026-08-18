@@ -21,7 +21,8 @@ import {
 import type { SurfaceDefinition } from '@/lib/surfaces/registry';
 import { resolveTitle } from '@/lib/surfaces/registry';
 import { FAVOURITES_LIST, type ShortcutList } from '@/lib/console/shortcut-lists';
-import { RECENT_ON_RAIL, SurfaceRow } from '../rail/shortcuts';
+import { RECENT_ON_RAIL } from '../rail/shortcuts';
+import { SurfaceRow } from '../rail/surface-row';
 
 interface ShortcutPanelProps {
   list: ShortcutList;

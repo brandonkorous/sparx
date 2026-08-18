@@ -26,31 +26,27 @@ The rewritten primitives map the sparx four-axis props onto silica classes rathe
 - `_recipes/variants.ts` is now pure vocabulary — `COLOR_KEYS`, `MODULE_COLOR_KEYS`, `TREATMENT_KEYS`, the `ColorKey` type, and `pluginColor()` (a slot name → its silicaui plugin color name, i.e. `commerce` → `module-commerce`). The old `colorClass` / `treatmentVariants` / `chipTreatmentVariants` / `colorVars` are deleted.
 - **`indeterminate` is a DOM property with no HTML attribute**, so a tri-state checkbox needs a callback ref (workbench's inventory reorder list is the live example). silicaui styles `:checked` but not `:indeterminate` (still true at 0.44; a fix is coming upstream), so such a checkbox paints as UNCHECKED. One rule closes it, in **`@sparx/brand/silica-gaps.css`** — read that file's header before adding anything to it. It lives in `@sparx/brand`, not here, because **workbench imports no `@wizeworks/ui` CSS at all** and workbench is where it bites; a rule added to `tokens.css` would silently miss the only app that needs it.
 
-### The one patched dependency
+### Base UI, and the patch that is no longer here
 
-`@base-ui-components/react@1.0.0-rc.0` is **patched**
-(`patches/@base-ui-components__react@1.0.0-rc.0.patch`, wired through `pnpm.patchedDependencies` in
-the root `package.json`). It is the only patched package in the repo, and it exists for one bug:
-`ToastRoot.recalculateHeight` wraps its state update in `ReactDOM.flushSync`, and two of its call
-sites are layout effects — its own, and `ToastContent`'s. React is already inside the commit phase
-there, refuses to flush, and logs _"flushSync was called from inside a lifecycle method"_ **once per
-toast, per render**. Three toasts, three errors; a busy surface buries its real errors under them.
+This package used to be the repo's only patched dependency. Recorded so nobody re-adds it:
+`@base-ui-components/react@1.0.0-rc.0` wrapped `ToastRoot.recalculateHeight`'s state update in
+`ReactDOM.flushSync` and called it from two layout effects, where React is already in the commit
+phase — so it refused to flush and logged _"flushSync was called from inside a lifecycle method"_
+**once per toast, per render**. A pnpm patch skipped the flush on those two paths and kept it on the
+`ResizeObserver` / `MutationObserver` ones, which fire after paint and genuinely need it.
 
-The patch adds a depth counter to `ToastRootContext.js` (the one module both files already import,
-so nothing gains a dependency edge), marks the two layout-effect paths, and skips the flush while
-the counter is set. **The observer paths keep it** — `ResizeObserver` and `MutationObserver` fire
-asynchronously after paint, where the flush is what stops the stack visibly jumping. Skipping it in
-a layout effect changes nothing observable: React already re-renders a layout-effect `setState`
-synchronously before paint, which is the whole thing the flush was buying. Both the `esm/` and CJS
-builds are patched; they ship as separate copies and Next resolves the ESM one.
+**Fixed upstream, and better.** `@base-ui/react@1.7.0` gives `recalculateHeight` an explicit
+`flushSync?: boolean`: bare from the layout effect, `recalculateHeight(true)` from the observers —
+the same distinction, without a patch. silicaui 0.55 moved to `@base-ui/react`, this package
+followed on **2026-08-18**, and `patches/` plus the root `pnpm.patchedDependencies` block are gone.
 
-**A patch is invisible until it silently stops applying** — a version bump, a lockfile
-regeneration, a merge that drops the `patchedDependencies` block.
-`src/components/overlay/toast.test.tsx` is what notices: it asserts nothing logs `flushSync` when a
-toast mounts, and it was proved red against the unpatched module before being accepted green. If it
-fails, check the patch still applies (`pnpm why @base-ui-components/react` should show a
-`_patch_hash=` segment) before touching the test. Delete the patch, the test and this section
-together when the fix lands upstream — `rc.0` was the newest published version on 2026-08-13.
+Note the package RENAME: it is `@base-ui/react` now, not `@base-ui-components/react`. Importing the
+old name pulls a second copy of Base UI into the tree, and its types will not unify with silicaui's
+— which is exactly how `toast.tsx` failed to compile during the bump.
+
+`src/components/overlay/toast.test.tsx` stays. It never really tested the patch: it asserts that a
+toast fired from outside React renders and logs nothing, which is the behaviour we want under any
+version, and it is the cheapest way to notice if a future bump puts the flush back.
 
 ### The `cn()` tailwind-merge footgun
 

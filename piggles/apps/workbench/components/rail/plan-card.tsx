@@ -72,7 +72,7 @@ export function PlanCard({ accountOrigin }: { accountOrigin: string }) {
   return (
     <div
       data-plan-tone={tone}
-      className="rounded-box border-base-300 bg-base-200 mx-1 mb-2 border p-3"
+      className="rounded-box border-base-300 bg-neutral-dark mx-1 mb-2 border p-3"
     >
       <div className="flex items-center gap-2">
         <Mark className="text-primary size-5 shrink-0" />
@@ -82,7 +82,12 @@ export function PlanCard({ accountOrigin }: { accountOrigin: string }) {
           business is about to stop working. */}
       <p className="mt-0.5 text-sm">{detail}</p>
       <Button
-        color={tone === 'neutral' ? 'neutral' : tone}
+        // NO color on the calm one. Uncolored, a `.btn` resolves to
+        // `base-content` and is right on this card in either theme; `neutral` is
+        // theme-stable now because it paints the rail, so pinning it here would
+        // put #52454f ink on a #1c212c card in dark. Same call close-band.tsx
+        // makes, for the same reason.
+        color={tone === 'neutral' ? undefined : tone}
         variant={tone === 'neutral' ? 'outline' : 'solid'}
         size="sm"
         block

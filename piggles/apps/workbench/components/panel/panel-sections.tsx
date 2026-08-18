@@ -121,22 +121,32 @@ export function PanelSections({
                 click to reveal six screens read as smaller print than the
                 screens. Same fix, same reason, as the rail's groups. */}
             <SidebarItem
-              className="bg-base-200 sticky top-0 z-10"
+              className="bg-neutral-dark sticky top-0 z-10"
               aria-expanded={!shut}
-              icon={
-                <Icon
-                  glyph={faChevronDown}
-                  className={`size-4 transition-transform ${shut ? '-rotate-90' : ''}`}
-                  aria-hidden
-                />
+              // Chevron on the RIGHT, and nothing on the left: the icon slot is
+              // where every row under this one keeps its subject, so a disclosure
+              // arrow sitting there made the heading name its own mechanism. The
+              // rail's Recent heading reads the same way now.
+              //
+              // The count comes FIRST: it is about the section, the chevron is
+              // about this control, so the outermost thing on the row is the one
+              // that belongs to the row. What it counts is what is WAITING inside,
+              // never how many rows are in there — a number on a nav row has
+              // exactly one job, and a list length in this slot reads identically
+              // to a queue (../rail/waiting.tsx). Shown folded AND open: folded
+              // because you cannot see the rows, open because a total that
+              // disappears when you expand is a different answer to the same
+              // question.
+              trailing={
+                <span className="flex items-center gap-2">
+                  <WaitingBadge count={sectionWaiting(section.surfaces, attention)} />
+                  <Icon
+                    glyph={faChevronDown}
+                    className={`size-4 transition-transform ${shut ? '-rotate-90' : ''}`}
+                    aria-hidden
+                  />
+                </span>
               }
-              // What is WAITING inside, never how many rows are in there. A number
-              // on a nav row has exactly one job, and a list length in this slot
-              // reads identically to a queue (../rail/waiting.tsx). Shown folded
-              // AND open, like the rail's own groups: folded because you cannot
-              // see the rows, open because a total that disappears when you
-              // expand is a different answer to the same question.
-              trailing={<WaitingBadge count={sectionWaiting(section.surfaces, attention)} />}
               onClick={() => {
                 setChoices(setSectionFolded(appId, title, !shut));
               }}

@@ -12,8 +12,8 @@
 //
 // Favourites lead and stay open; Recent follows, folded, because automatic
 // history does not get to push the product off the screen (./rail/shortcuts.tsx);
-// then the apps in folding named families (./rail/app-groups.tsx). Everything
-// else is behind All apps in the footer.
+// then every app, in colour families that no longer fold (./rail/app-groups.tsx).
+// Everything else is behind All apps in the footer.
 //
 // Selecting an app BROWSES it — see ./app-panel.tsx. It never changes what is
 // open: in a workbench there is no single "current" place to switch away from.
@@ -29,13 +29,8 @@ import {
   Tooltip,
   useSidebar,
 } from '@wizeworks/silicaui-react';
-import { useClearRecents, useFavorites, useRecents, useToggleFavorite } from '@/lib/api/shell-data';
-import { getSurface, type SurfaceDefinition } from '@/lib/surfaces/registry';
-import {
-  surfaceIsVisible,
-  useKnownModules,
-  useReachableModules,
-} from '@/lib/surfaces/use-visible-nav';
+import { useClearRecents, useToggleFavorite } from '@/lib/api/shell-data';
+import { useShortcutSurfaces } from '@/lib/console/use-shortcut-surfaces';
 import { useWorkbench } from '@/lib/workbench/context';
 import { useAttention } from '@/lib/console/home-data';
 import { AllAppsDialog } from './all-apps-dialog';
@@ -51,6 +46,7 @@ import {
   setGroupFolded,
   useGroupChoices,
 } from '@/lib/console/rail-groups';
+import { FAVOURITES_LIST, RECENT_LIST } from '@/lib/console/shortcut-lists';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 
 interface AppRailProps {
@@ -79,49 +75,19 @@ export function AppRail({
   // Null outside a provider, which is why the call below is optional.
   const sidebar = useSidebar();
 
-  // ── Favourites + recents ─────────────────────────────────────────────────
-  // Both ride the shared /v1/me spine with surface keys as actionIds — the same
-  // rows sparx writes, because they are the person's, not the brand's. The rail
-  // renders only the ids that name a surface THIS person can reach: unlisted
-  // child surfaces and restricted ones resolve to null and drop out.
-  const { data: favorites } = useFavorites();
-  const { data: recents } = useRecents();
+  // Both lists ride the shared /v1/me spine with surface keys as actionIds — the
+  // same rows sparx writes, because they are the person's, not the brand's. The
+  // reachability gate lives in the hook, shared with the panel that opens either
+  // list up (lib/console/use-shortcut-surfaces.ts).
+  const { favourites: favoriteSurfaces, recents: recentSurfaces } = useShortcutSurfaces();
   const toggleFavorite = useToggleFavorite();
   const clearRecents = useClearRecents();
-  const reachable = useReachableModules();
-  const known = useKnownModules();
   // Shares its queries with Home by query key, so the rail and Home can never
   // show two different numbers for the same thing.
   const attention = useAttention();
 
-  // The SHARED gate, not a second copy of it. This used to test `listed` and the
-  // module by hand and never asked `productHidesSurface`, so a surface Piggles
-  // does not have could still reach the rail by being favourited or simply opened
-  // once — which is how "Modules" came to sit under Recent on a product with no
-  // module pricing. One gate, and the launcher and rail cannot drift again.
-  const resolveVisible = (actionId: string): SurfaceDefinition | null => {
-    const definition = getSurface(actionId);
-    if (!definition || definition.listed === false) return null;
-    if (!surfaceIsVisible(definition, reachable, known)) return null;
-    return definition;
-  };
-
-  const favoriteSurfaces = (favorites ?? [])
-    .map((favorite) => resolveVisible(favorite.actionId))
-    .filter((definition): definition is SurfaceDefinition => definition !== null);
-
-  // A favourite is already pinned above; showing it again under Recent is
-  // noise, so recents exclude anything already favourited.
   const [folded, setFolded] = useGroupChoices();
   const [allAppsOpen, setAllAppsOpen] = useState(false);
-
-  const favoriteKeys = new Set(favoriteSurfaces.map((definition) => definition.key));
-  const recentSurfaces = (recents ?? [])
-    .map((recent) => resolveVisible(recent.actionId))
-    .filter(
-      (definition): definition is SurfaceDefinition =>
-        definition !== null && !favoriteKeys.has(definition.key)
-    );
 
   return (
     // The OUTER scope drives the ACTIVE item's accent: `.sidebar-module` declares
@@ -137,19 +103,23 @@ export function AppRail({
         // density, in the one mode a returning person sits in all day.
         // Set through the component's own documented CSS variable via a Tailwind
         // arbitrary property; never an inline style.
-        className="bg-base-100 shrink-0 rounded-lg [--sidebar-w-collapsed:3.75rem]"
+        className="bg-neutral text-neutral-content rounded-field shrink-0 [--sidebar-w-collapsed:3.75rem]"
       >
         {/* Padding tracks the width, so the row keeps a real hit area. */}
         {/* ── ORDER: yours, then the apps ──────────────────────────────────
             What somebody actually opens every day is five screens, not fifteen
             apps, and those five used to sit BELOW fifteen rows they did not
             choose. Favourites are theirs and stay put; recent is theirs and moves;
-            the apps are the whole product, folded into named families beneath
-            both. Everything not on this rail is behind All apps in the footer. */}
+            the apps are the whole product beneath both. Everything not on this
+            rail is behind All apps in the footer. */}
         <SidebarContent className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
           <Favourites
             surfaces={favoriteSurfaces}
             expanded={expanded}
+            browsing={browsing === FAVOURITES_LIST}
+            onBrowseList={() => {
+              onBrowse(FAVOURITES_LIST);
+            }}
             onOpen={(definition) => {
               controller.open(definition.key);
             }}
@@ -163,6 +133,10 @@ export function AppRail({
             expanded={expanded}
             shut={isGroupFolded(RECENT_GROUP, folded)}
             clearing={clearRecents.isPending}
+            browsing={browsing === RECENT_LIST}
+            onBrowseList={() => {
+              onBrowse(RECENT_LIST);
+            }}
             onToggle={() => {
               setFolded(setGroupFolded(RECENT_GROUP, !isGroupFolded(RECENT_GROUP, folded)));
             }}

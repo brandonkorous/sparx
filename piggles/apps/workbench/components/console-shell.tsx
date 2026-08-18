@@ -13,17 +13,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { mintWindowId, openBus } from '@/lib/bus';
-import { WorkbenchProvider } from '@/lib/workbench/context';
-import { StudioSessionProvider } from '@/lib/studio/provider';
-import { BackNavigation } from '@/lib/workbench/nav-history';
 import { readDeepLink, tidyLegacyParams } from '@/lib/workbench/deep-link';
 import { useIsCompact } from '@/lib/use-compact';
-import { ChromeBoundary } from '@/components/chrome-boundary';
-import { DeepLinkArrival } from '@/components/deep-link-arrival';
-import { FeedbackProvider } from '@/components/feedback/provider';
-import { Launcher } from '@/components/launcher';
-import { RecentsRecorder } from '@/components/recents-recorder';
-import { UpdateNotifier } from '@/components/update-notifier';
 // Order is load-bearing. The adapter first: surfaces read it at module scope,
 // and an unconfigured one silently answers with sparx's name and mascot. Then
 // the catalog, before the dock mounts — a restored arrangement resolves surface
@@ -34,13 +25,14 @@ import '@/lib/surfaces/catalog';
 // shadow them. Additions only — never a re-registration of a platform key.
 import '@/lib/surfaces/piggles-catalog';
 import { useConsoleTheme } from '@/lib/use-theme';
-import { useGuideBrowseRequests } from '@/lib/tour/use-guide';
+import { useGuideBrowseRequests } from '@/lib/tour/anchor';
 import { useUnclaimedModules } from '@/lib/console/nav';
 import { useRailNav } from '@/lib/console/apps';
 import { useSiteBoot } from '@/lib/console/use-site-boot';
 import { useShellPrefs } from '@/lib/console/use-shell-prefs';
+import { isShortcutList } from '@/lib/console/shortcut-lists';
 import { useModuleReconcile } from '@/lib/console/reconcile';
-import { CompactConsole } from './compact-console';
+import { CompactShell } from './compact-shell';
 import { DesktopShell } from './desktop-shell';
 import type { NavTab } from './mobile/nav-bar';
 
@@ -153,67 +145,41 @@ export function ConsoleShell({
     setLauncherOpen(true);
   }, []);
 
-  // The app the panel shows. Falls back to the first app in the rail rather than
-  // rendering an empty panel, which would look broken during the close
-  // animation if a saved `browsing` named an app this person cannot reach.
+  // What the panel shows: an app, or one of the person's own two lists. Both
+  // ride `panelApp` rather than `browsing`, which lags it by design so the panel
+  // keeps its contents while animating shut instead of blanking.
+  //
+  // Falls back to the first app in the rail rather than rendering an empty panel,
+  // which would look broken during the close animation if a saved `browsing`
+  // named an app this person cannot reach.
+  const panelList = isShortcutList(panelApp) ? panelApp : null;
   const panelEntry = nav.find((entry) => entry.app.id === panelApp) ?? nav[0];
 
   // Note: ⌘K/Ctrl+K is bound by the Launcher itself. Binding it here too would
   // toggle twice per press and the palette would never open.
 
   // Below 64rem the dock is not cramped, it is pointless — so the whole
-  // presentation swaps rather than the layout shrinking. Everything below this
-  // line is shared: same controller, same registry, same surfaces. Only the
-  // pane host differs, which is the entire reason full mobile parity is
-  // affordable at all.
+  // presentation swaps rather than the layout shrinking.
   if (isCompact) {
     return (
-      <WorkbenchProvider windowId={windowId} role="main">
-        <FeedbackProvider theme={theme} activeSite={activeSite}>
-          {/* ABOVE the pane host, in both presentations. A session held inside a
-              pane would be one session per pane — two drafts of one document, which
-              is the arrangement the per-document editor exists to replace. */}
-          <StudioSessionProvider>
-            <CompactConsole
-              nav={nav}
-              userName={userName}
-              userEmail={userEmail}
-              themeChoice={themeChoice}
-              theme={theme}
-              siteKey={siteKey}
-              accountOrigin={accountOrigin}
-              navTab={navTab}
-              onNavTabChange={setNavTab}
-              onSetTheme={setThemeChoice}
-              onOpenLauncher={openLauncher}
-            />
-            <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
-              <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
-            </ChromeBoundary>
-            {/* Teaches the browser Back button to walk the compact shell's own
-              navigation — the drawer and launcher close first, then focus steps
-              back through the stack — instead of leaving the app. */}
-            <BackNavigation
-              launcher={launcherOpen}
-              module={null}
-              nav={navTab !== null}
-              siteSlug={siteSlug}
-              onApply={(overlays) => {
-                setLauncherOpen(overlays.launcher);
-                // Back can only CLOSE a sheet; which one was up is still ours.
-                if (!overlays.nav) setNavTab(null);
-              }}
-            />
-            {/* Opens whatever the address bar asked for, once the stack is up.
-              Identical on both shells — a link has to work the same on a phone. */}
-            <DeepLinkArrival siteKey={siteKey} />
-            {/* Inside the provider: the notifier asks the controller what would be
-              lost before it offers to reload. */}
-            <UpdateNotifier />
-            <RecentsRecorder />
-          </StudioSessionProvider>
-        </FeedbackProvider>
-      </WorkbenchProvider>
+      <CompactShell
+        windowId={windowId}
+        userName={userName}
+        userEmail={userEmail}
+        accountOrigin={accountOrigin}
+        themeChoice={themeChoice}
+        theme={theme}
+        setThemeChoice={setThemeChoice}
+        siteKey={siteKey}
+        siteSlug={siteSlug}
+        activeSite={activeSite}
+        nav={nav}
+        navTab={navTab}
+        setNavTab={setNavTab}
+        launcherOpen={launcherOpen}
+        setLauncherOpen={setLauncherOpen}
+        openLauncher={openLauncher}
+      />
     );
   }
 
@@ -233,6 +199,7 @@ export function ConsoleShell({
       browsing={browsing}
       setBrowsing={setBrowsing}
       panelEntry={panelEntry}
+      panelList={panelList}
       pinned={pinned}
       setPinned={setPinned}
       railExpanded={railExpanded}

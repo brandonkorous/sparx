@@ -84,12 +84,6 @@ export function appWaiting(entry: ConsoleNavApp, attention: Attention): number |
   return total > 0 ? total : null;
 }
 
-/** What is waiting across a group — the sum of its apps. */
-export function groupWaiting(apps: ConsoleNavApp[], attention: Attention): number | null {
-  const total = apps.reduce((sum, entry) => sum + (appWaiting(entry, attention) ?? 0), 0);
-  return total > 0 ? total : null;
-}
-
 /** The badge itself. `soft` because a solid pill on a nav row competes with the
  *  row's own selected state. */
 export function WaitingBadge({ count }: { count: number | null }) {

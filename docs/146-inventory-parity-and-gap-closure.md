@@ -1,8 +1,8 @@
 # sparx Platform — Inventory: Market Parity & Gap Closure Plan
 
-**Version:** 1.17
+**Version:** 1.18
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-13
+**Last Updated:** 2026-08-18
 
 ---
 
@@ -1440,8 +1440,13 @@ appearing in the grid → edited → persisted through a server reload.
   sites mark themselves and the flush is skipped on them, because a `setState` in a layout effect
   is already re-rendered synchronously before paint. The ResizeObserver and MutationObserver paths
   KEEP the flush — they run after paint, and dropping it there would let the toast stack visibly
-  jump. Guarded by `sparx/packages/ui/src/components/overlay/toast.test.tsx`, which was proved red against
-  the unpatched module before it was accepted green. Delete both when the fix lands upstream.
+  jump. Guarded by `wizeworks/packages/ui/src/components/overlay/toast.test.tsx`, which was proved red
+  against the unpatched module before it was accepted green.
+  **RESOLVED 2026-08-18.** Fixed upstream: `@base-ui/react@1.7.0` gives `recalculateHeight` an
+  explicit `flushSync?: boolean` — bare from the layout effect, `true` from the observers, the same
+  distinction the patch drew. silicaui 0.55 moved to `@base-ui/react`, `@wizeworks/ui` followed, and
+  the patch plus `pnpm.patchedDependencies` are deleted. The test stays; it guards the behaviour, not
+  the patch.
 
 ### Phase 12 — Prove it ✅
 

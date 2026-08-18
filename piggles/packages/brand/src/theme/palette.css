@@ -39,8 +39,18 @@
   --color-danger: var(--color-error);
   --color-danger-content: var(--color-error-content);
 
+  /* The chrome: `neutral` is the rail, `neutral-dark` the app panel one step
+     below it — dark in BOTH themes, never inverting, because a frame that swaps
+     ends when the canvas does is not a frame. What DOES move is where the pair
+     sits on the ladder: a step lighter here, a step darker under `dark`, so the
+     chrome keeps the same distance from the work either way.
+
+     One ladder, ~11 L* a rung: #52454f · #3a2e37 · #241c22 · #150f14. */
   --color-neutral: #52454f;
   --color-neutral-content: #ffffff;
+
+  --color-neutral-dark: #3a2e37;
+  --color-neutral-dark-content: #ffffff;
 
   /* Bases */
   --color-base-100: #ffffff;
@@ -82,9 +92,12 @@
   --color-danger: var(--color-error);
   --color-danger-content: var(--color-error-content);
 
-  /* Neutral */
-  --color-neutral: #c2b1bc;
-  --color-neutral-content: #241d22;
+  /* Chrome — the same two rungs as light, moved one step DOWN the ladder. Still
+     dark, still rail-above-panel; it just sinks with the canvas. */
+  --color-neutral: #241c22;
+  --color-neutral-content: #ffffff;
+  --color-neutral-dark: #150f14;
+  --color-neutral-dark-content: #ffffff;
 
   /* Surface hierarchy */
   --color-base-100: #272d39;

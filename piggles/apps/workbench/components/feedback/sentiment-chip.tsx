@@ -113,8 +113,6 @@ export function SentimentChip() {
   if (phase === 'thanks') {
     return (
       <Button
-        color="neutral"
-        variant="ghost"
         size="xs"
         onClick={() => {
           setPhase('hidden');
@@ -143,8 +141,6 @@ export function SentimentChip() {
           {SENTIMENTS.map((sentiment) => (
             <Button
               key={sentiment.value}
-              color="neutral"
-              variant="ghost"
               size="lg"
               shape="square"
               aria-label={sentiment.label}
@@ -159,7 +155,7 @@ export function SentimentChip() {
             </Button>
           ))}
         </div>
-        <Button color="neutral" variant="ghost" size="sm" className="mt-2" onClick={dismiss}>
+        <Button size="sm" className="mt-2" onClick={dismiss}>
           Not now
         </Button>
       </PopoverContent>

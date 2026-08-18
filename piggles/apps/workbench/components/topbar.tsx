@@ -207,7 +207,7 @@ export function Topbar({
                       btn-<size> (btn-sm is 12px), which would render the site
                       name a size smaller than the business name sitting right
                       beside it. The bar speaks in one voice: 14px. */}
-                  <Button color="neutral" variant="ghost" /*size="sm"*/ className="gap-1.5 text-sm">
+                  <Button variant="ghost" className="gap-1.5 text-sm">
                     <Icon glyph={faGlobe} className="size-3.5" aria-hidden />
                     <span className="max-w-44 truncate">{activeSite?.name ?? 'Site'}</span>
                     <Icon glyph={faChevronDown} className="size-3" aria-hidden />
@@ -361,7 +361,7 @@ export function Topbar({
                 className="gap-2 pr-2 pl-1"
                 aria-label={`You — ${userName}`}
               >
-                <Avatar size="xs" color="neutral" alt={userName}>
+                <Avatar size="md" alt={userName}>
                   {initials(userName)}
                 </Avatar>
                 <span className="hidden min-w-0 flex-col items-start leading-tight md:flex">
@@ -517,7 +517,7 @@ function BusinessSwitcher({
     <DropdownMenu>
       <Tooltip content="Switch business — each one is completely separate">
         <DropdownMenuTrigger>
-          <Button color="neutral" variant="ghost" /*size="sm"*/ className="gap-1.5 text-sm">
+          <Button color="neutral" /*size="sm"*/ className="gap-1.5 text-sm">
             <Icon glyph={faBuilding} className="size-3.5" aria-hidden />
             <span className="max-w-44 truncate">{activeName ?? 'Business'}</span>
             <Icon glyph={faChevronDown} className="size-3" aria-hidden />

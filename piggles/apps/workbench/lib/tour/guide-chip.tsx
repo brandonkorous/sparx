@@ -1,22 +1,27 @@
 'use client';
 
-// The guide itself, as one control on the status strip.
+// The guide itself: a chip on the status strip, and a card next to whatever the
+// step is about.
 //
-// ── WHY IT LIVES DOWN HERE ──────────────────────────────────────────────────
+// ── WHY THE CHIP LIVES DOWN HERE AND THE CARD DOES NOT ──────────────────────
 //
-// Because the alternative covers the work. See lib/tour/use-guide.ts for the
-// argument in full; the short version is that a console whose premise is "you
-// decide what is on screen" cannot explain itself by taking the screen away.
+// The chip is a handle — where the offer arrives, where "3 of 7" lives, and the
+// thing still sitting there when somebody wanders off mid-guide and comes back.
+// The strip already does exactly that job for the occasional "how's it going?"
+// ask (components/feedback/sentiment-chip.tsx): it is the one shelf in the
+// product that is never in the way.
 //
-// The strip already does exactly this job for the occasional "how's it going?"
-// ask (components/feedback/sentiment-chip.tsx), and it works for the same reason
-// it works here: it is the one shelf in the product that is never in the way.
+// The CARD is not a handle, it is the sentence, and a sentence belongs beside the
+// thing it describes. Anchoring it here rather than to the chip is the whole
+// difference between reading about a nav row and hunting for it — see
+// ./anchor.ts, and lib/tour/use-guide.ts for why that costs the design nothing.
 //
 // ── WHAT IT LOOKS LIKE ──────────────────────────────────────────────────────
 //
-// Offering: one pink button — "New here? Show me around."
-// Running:  the step's own words in a popover ABOVE the chip, with where you are
-//           ("2 of 7"), Back, Next, and a way out that is a real button.
+// Offering: one pink button on the strip — "New here? Show me around."
+// Running:  the step's words in a card against the ringed element, with where you
+//           are ("2 of 7"), Back, Next, and a way out that is a real button.
+//           A step with no anchor keeps the card above the chip.
 // Idle:     nothing at all. Like every chip on this strip, it is either saying
 //           something or absent.
 
@@ -31,14 +36,17 @@ import {
 import { faWandMagicSparkles } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import './guide.css';
-import { currentStep, useGuideActions, useGuideAnchor, useGuideState } from './use-guide';
+import { guideSide, useGuideAnchor } from './anchor';
+import { currentStep, useGuideActions, useGuideState } from './use-guide';
 
 export function GuideChip() {
   const state = useGuideState();
   const step = currentStep(state);
   const { accept, decline, next, back, leave } = useGuideActions();
 
-  useGuideAnchor(step);
+  // The element this step is ringing, or null on the openings and handoffs.
+  // It is what the card is positioned against — see ./anchor.ts.
+  const anchor = useGuideAnchor(step);
 
   // Esc leaves — the one keyboard habit everybody already has for "I am done
   // with this". It does not close a popover here because the popover is not
@@ -89,8 +97,29 @@ export function GuideChip() {
           <span className="tabular-nums">{position}</span>
         </Button>
       </PopoverTrigger>
-      {/* Upward — it sits on the bottom edge, so a downward panel would clip. */}
-      <PopoverContent side="top" align="end" className="w-96">
+      {/* Beside the thing being explained, whenever there IS one. The card only
+          falls back to the strip on a step with no anchor — the openings and the
+          handoffs, which are about the product rather than about any one control.
+
+          `sticky` because a nav row can scroll under the card in a long panel and
+          the words should not sail off with it. `sideOffset` clears the ring,
+          which draws 2px outside the box with a 2px offset (./guide.css).
+
+          `piggles-guide-card` is a HOOK, not a paint: ./guide.css uses it to raise
+          the POSITIONER this popup sits in. The card has to clear the dock's
+          floating tools (`z-[9000]`, lib/dock/window-canvas.tsx) — without that,
+          an anchorless step lands in exactly their corner and Next cannot be
+          clicked, because the Tidy-up control is on top of it. The class cannot
+          carry the z-index itself: this element is `position: static`, so a
+          z-index on it does nothing at all. */}
+      <PopoverContent
+        side={anchor ? guideSide(anchor) : 'top'}
+        align={anchor ? 'center' : 'end'}
+        anchor={anchor ?? undefined}
+        sideOffset={anchor ? 10 : undefined}
+        sticky={anchor ? true : undefined}
+        className="piggles-guide-card w-96"
+      >
         <PopoverTitle>{step?.title}</PopoverTitle>
         {/* 16px, full ink. It is the only thing in this feature anybody reads. */}
         <p className="mt-2 text-base">{step?.body}</p>

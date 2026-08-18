@@ -116,8 +116,6 @@ export function NavRow({
       {surface.createSurface ? (
         <Tooltip content={surface.createLabel ?? 'New'}>
           <Button
-            color="neutral"
-            variant="ghost"
             size="xs"
             shape="square"
             aria-label={surface.createLabel ?? `New ${label}`}

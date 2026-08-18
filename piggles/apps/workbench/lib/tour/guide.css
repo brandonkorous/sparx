@@ -38,3 +38,22 @@
     animation: none;
   }
 }
+
+/* ── THE CARD HAS TO CLEAR THE DOCK'S FLOATING TOOLS ────────────────────────
+ *
+ * They sit at `z-[9000]` so they are above the windows and below the menus
+ * (lib/dock/window-canvas.tsx). The guide card resolves to 70, so on a step with
+ * no anchor — where it falls back to the corner the chip lives in — the Tidy-up
+ * control paints over the Next button and swallows the click.
+ *
+ * The rule targets the POSITIONER, not the popup: Base UI portals the popup
+ * inside an absolutely-positioned wrapper, and the popup itself is
+ * `position: static`, so a z-index on it is inert. `:has()` reaches the wrapper
+ * from the one thing we can put a class on.
+ *
+ * 9500 is deliberate — above the dock's tools, still below the 10000 that
+ * app/globals.css gives portalled overlays, so a dialog opened from a guide step
+ * still comes out on top. */
+[data-base-ui-portal] > *:has(> .piggles-guide-card) {
+  z-index: 9500;
+}

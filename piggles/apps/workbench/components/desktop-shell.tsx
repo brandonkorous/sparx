@@ -6,7 +6,6 @@
 // compact shell has to be swappable for it at any width, and two presentations
 // each keeping their own copy of "which app is browsed" is how they drift.
 
-import { SidebarProvider } from '@wizeworks/silicaui-react';
 import type { Dispatch, SetStateAction } from 'react';
 import { WorkbenchProvider } from '@/lib/workbench/context';
 import { StudioSessionProvider } from '@/lib/studio/provider';
@@ -26,8 +25,8 @@ import type { ThemeChoice, Theme } from '@/lib/theme';
 import type { WindowMode } from '@/lib/window-mode';
 import type { ZoomLevel } from '@/lib/window-zoom';
 import type { ConsoleNavApp } from '@/lib/console/nav';
-import { AppPanel } from './app-panel';
-import { AppRail } from './app-rail';
+import type { ShortcutList } from '@/lib/console/shortcut-lists';
+import { ChromeColumn } from './chrome-column';
 import { Topbar } from './topbar';
 
 interface DesktopShellProps {
@@ -45,6 +44,8 @@ interface DesktopShellProps {
   browsing: string | null;
   setBrowsing: Dispatch<SetStateAction<string | null>>;
   panelEntry: ConsoleNavApp | undefined;
+  /** Set when the panel is showing one of the person's own lists instead. */
+  panelList: ShortcutList | null;
   pinned: boolean;
   setPinned: Dispatch<SetStateAction<boolean>>;
   railExpanded: boolean;
@@ -73,6 +74,7 @@ export function DesktopShell({
   browsing,
   setBrowsing,
   panelEntry,
+  panelList,
   pinned,
   setPinned,
   railExpanded,
@@ -114,77 +116,19 @@ export function DesktopShell({
             </ChromeBoundary>
 
             <div className="relative flex min-h-0 flex-1">
-              <SidebarProvider
-                collapsed={!railExpanded}
-                onCollapsedChange={(collapsed) => {
-                  setRailExpanded(!collapsed);
-                }}
-              >
-                {/* `relative` anchors the rail's own absolute bits — but NO
-                  positive z-index, or the rail lifts above body-portalled
-                  popovers and the site switcher's dropdown paints behind it. */}
-                <div className="bg-base-200 relative flex rounded-r-lg p-1" data-guide="app-rail">
-                  {/* `compact`: collapsed, the rail is a 60px column with no room
-                    for a sentence, so the fallback is the icon and a tooltip. */}
-                  <ChromeBoundary
-                    region="app-rail"
-                    whatStopped="The menu down the side has stopped working."
-                    compact
-                  >
-                    <AppRail
-                      nav={nav}
-                      browsing={browsing}
-                      siteKey={siteKey ?? 'default'}
-                      expanded={railExpanded}
-                      accountOrigin={accountOrigin}
-                      onBrowse={(appId) => {
-                        // Clicking the app you are already browsing closes the
-                        // panel — the same toggle every icon rail teaches.
-                        setBrowsing((current) => (current === appId ? null : appId));
-                      }}
-                    />
-                  </ChromeBoundary>
-                </div>
-              </SidebarProvider>
-
-              {/* NORMAL FLOW, so opening it pushes the panes right exactly as
-                expanding the rail does — it never covers the work.
-
-                This wrapper owns the open/close animation, which is why the
-                panel stays MOUNTED while shut (width zero, clipped) — and why it
-                must be `inert` then, or its rows stay keyboard-reachable inside
-                a zero-width box. */}
-              <div
-                data-guide="app-panel"
-                inert={browsing === null}
-                aria-hidden={browsing === null}
-                // 20rem, not silica's 16: Piggles names screens by what you are
-                // DOING, so labels run longer, and nav rows are 16px not 14. At
-                // 18rem the longer names still ellipsised.
-                className={`bg-base-200 shrink-0 overflow-hidden rounded-r-xl transition-[width] duration-200 ease-in-out motion-reduce:transition-none ${
-                  browsing ? 'w-80' : 'w-0'
-                }`}
-              >
-                <ChromeBoundary
-                  region="app-panel"
-                  whatStopped="This app's menu has stopped working."
-                >
-                  {panelEntry ? (
-                    <AppPanel
-                      // Holds the LAST browsed app so the panel keeps its contents
-                      // while animating shut rather than blanking.
-                      entry={panelEntry}
-                      pinned={pinned}
-                      onTogglePin={() => {
-                        setPinned((value) => !value);
-                      }}
-                      onDismiss={() => {
-                        setBrowsing(null);
-                      }}
-                    />
-                  ) : null}
-                </ChromeBoundary>
-              </div>
+              <ChromeColumn
+                nav={nav}
+                browsing={browsing}
+                setBrowsing={setBrowsing}
+                panelEntry={panelEntry}
+                panelList={panelList}
+                siteKey={siteKey}
+                accountOrigin={accountOrigin}
+                pinned={pinned}
+                setPinned={setPinned}
+                railExpanded={railExpanded}
+                setRailExpanded={setRailExpanded}
+              />
 
               <main className="piggles-dock-host min-w-0 flex-1 p-1" data-guide="workspace">
                 {/* Waits for the site key AND the presentation: restoring Site

@@ -138,7 +138,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="Reports controls"
         controls={
-          <div className="ml-auto w-36">
+          <div className="w-36">
             <Select
               size="sm"
               color="module"

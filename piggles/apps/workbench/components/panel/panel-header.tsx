@@ -48,8 +48,6 @@ export function PanelHeader({
       {pinnable ? (
         <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
           <Button
-            color="neutral"
-            variant="ghost"
             size="xs"
             shape="square"
             aria-pressed={pinned}
@@ -70,7 +68,6 @@ export function PanelHeader({
       {guideKey ? (
         <Tooltip content={`A quick walk through ${label}`}>
           <Button
-            variant="ghost"
             size="xs"
             shape="square"
             aria-label={`Show me around ${label}`}

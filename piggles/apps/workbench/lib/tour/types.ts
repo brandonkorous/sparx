@@ -24,6 +24,7 @@ export const GUIDE_VERSION = 1;
  * app registry and never leaks into storage.
  */
 export type GuideKey =
+  | 'platform'
   | 'builder'
   | 'cms'
   | 'seo'
@@ -48,10 +49,20 @@ export type GuideKey =
  * both. The key is a place to write an answer, never a statement about what an
  * app is made of.
  *
- * Home is absent on purpose — the shell guide covers it. An app absent from this
- * map simply has no guide of its own, which changes nothing about how it works.
+ * Home keys on `platform`, the module it fronts — NOT on 'home', which is
+ * Piggles' word for it and must not reach storage (see the note on GuideKey).
+ * It used to be absent here, on the grounds that the shell guide covered it. It
+ * does not: the shell guide teaches the rail, the panel, the workspace and
+ * search, and Home is eighteen screens of business details, sites, domains,
+ * security and the setup checklist. The visible symptom was that Home's panel
+ * was the one panel with no "Show me around" wand, because ./panel-header.tsx
+ * renders that button only where this map resolves.
+ *
+ * An app absent from this map simply has no guide of its own, which changes
+ * nothing else about how it works.
  */
 export const GUIDE_KEY_BY_APP: Readonly<Record<string, GuideKey>> = {
+  home: 'platform',
   site: 'builder',
   content: 'cms',
   get_found: 'seo',

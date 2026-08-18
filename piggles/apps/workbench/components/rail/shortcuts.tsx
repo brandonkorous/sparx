@@ -3,127 +3,81 @@
 // Yours, above the product: the screens this person favourited, and the ones
 // they were just in.
 //
-// ── WHY RECENT NOW FOLDS, AND STARTS FOLDED ─────────────────────────────────
+// Favourites is ALWAYS here, empty or not — a heading that only exists once you
+// have used a feature cannot teach you the feature. Empty, it says how to fill
+// it. Recent still folds and still starts folded: automatic history does not get
+// to push the product off the screen.
 //
-// Putting both above the apps was right — what somebody opens on an ordinary day
-// is about five screens, and those five used to sit under fifteen app rows they
-// never chose. But it made the rail longer than the screen: favourites, five
-// recents, six group headings, fifteen apps and four footer rows is past thirty,
-// and the apps at the bottom fell off a 1080p display.
-//
-// Favourites are CURATED, so they stay open — a person who put something there
-// meant it. Recent is automatic, and automatic history does not get to push the
-// product off the screen. It costs one row until asked for, and an explicit open
-// is remembered (../../lib/console/rail-groups.ts).
+// COLLAPSED, neither list renders its rows. Five nameless icons above fifteen
+// more is where people lose the rail, so each becomes ONE row that browses its
+// list into the app panel — the same gesture, and the same destination, as
+// clicking an app.
 
 import { Icon } from '@piggles/ui';
-import { faChevronDown, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { faChevronDown, faClockRotateLeft, faStar } from '@fortawesome/pro-solid-svg-icons';
 import {
   Button,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarItem,
-  Tooltip,
+  Text,
 } from '@wizeworks/silicaui-react';
 import { resolveTitle, type SurfaceDefinition } from '@/lib/surfaces/registry';
-import { ModuleScope } from '@/components/module-scope';
+import { ListRow, SurfaceRow } from './surface-row';
 
 /** Recents shown on the rail. Even folded away this is a glance, not a log. */
 export const RECENT_ON_RAIL = 5;
 
-/**
- * One favourite or recent row. A launch shortcut, not a navigation position — it
- * never carries an `active` state; clicking opens the surface where any other
- * open would land it.
- *
- * The icon wears the SURFACE's hue rather than its app's, through the platform's
- * own `ModuleScope`: a shortcut list is mixed, and what a person needs at a
- * glance is which family each row belongs to. Under Piggles the module resolves
- * to the same six group hues the rail below uses, so a favourited Orders row is
- * the same burnt orange as the Sell icon — one signal, two names.
- *
- * The remove control is an absolute SIBLING, not silica's `trailing` slot:
- * SidebarItem renders as a <button> once it has an onClick, and `trailing` lives
- * INSIDE it — a real control there is a button-in-a-button. Only shown expanded;
- * the collapsed rail is for relaunching, not curating.
- */
-export function SurfaceRow({
-  definition,
-  expanded,
-  onOpen,
-  onRemove,
-  removeLabel,
-}: {
-  definition: SurfaceDefinition;
-  expanded: boolean;
-  onOpen: () => void;
-  onRemove?: () => void;
-  removeLabel?: string;
-}) {
-  const title = resolveTitle(definition, {});
-  return (
-    <ModuleScope module={definition.module}>
-      <div className="group relative">
-        <Tooltip content={title} side="right" disabled={expanded}>
-          <SidebarItem
-            icon={<Icon glyph={definition.icon} className="text-module size-5" aria-hidden />}
-            aria-label={title}
-            onClick={onOpen}
-          >
-            {title}
-          </SidebarItem>
-        </Tooltip>
-        {onRemove && expanded && (
-          <Button
-            color="primary"
-            variant="ghost"
-            size="xs"
-            shape="square"
-            aria-label={removeLabel}
-            // Hover/focus-reveal so a curated list does not read as a column of
-            // delete buttons. Keyboard reaches it; focus-visible paints it.
-            className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-            onClick={(event) => {
-              event.stopPropagation();
-              onRemove();
-            }}
-          >
-            <Icon glyph={faXmark} className="size-3.5" aria-hidden />
-          </Button>
-        )}
-      </div>
-    </ModuleScope>
-  );
-}
-
 interface FavouritesProps {
   surfaces: SurfaceDefinition[];
   expanded: boolean;
+  /** True while the panel is showing this list. */
+  browsing: boolean;
+  onBrowseList: () => void;
   onOpen: (definition: SurfaceDefinition) => void;
   onRemove: (definition: SurfaceDefinition) => void;
 }
 
-/** Only rendered once something is in it, so somebody who has favourited nothing
- *  never meets an empty heading. */
-export function Favourites({ surfaces, expanded, onOpen, onRemove }: FavouritesProps) {
-  if (surfaces.length === 0) return null;
+export function Favourites({
+  surfaces,
+  expanded,
+  browsing,
+  onBrowseList,
+  onOpen,
+  onRemove,
+}: FavouritesProps) {
+  if (!expanded) {
+    return (
+      <ListRow label="Favourites" glyph={faStar} outline active={browsing} onClick={onBrowseList} />
+    );
+  }
+
   return (
     <SidebarGroup>
-      {expanded ? <SidebarGroupLabel>Favourites</SidebarGroupLabel> : null}
-      {surfaces.map((definition) => (
-        <SurfaceRow
-          key={definition.key}
-          definition={definition}
-          expanded={expanded}
-          onOpen={() => {
-            onOpen(definition);
-          }}
-          removeLabel={`Remove ${resolveTitle(definition, {})} from favourites`}
-          onRemove={() => {
-            onRemove(definition);
-          }}
-        />
-      ))}
+      {/* The same star that marks a screen on its own tab — one gesture, one
+          symbol, wherever it appears. */}
+      <SidebarGroupLabel className="flex items-center gap-2">
+        <Icon glyph={faStar} outline className="size-4" aria-hidden />
+        Favourites
+      </SidebarGroupLabel>
+      {surfaces.length === 0 ? (
+        <Text className="px-2.5 text-sm">Star any screen to keep it here.</Text>
+      ) : (
+        surfaces.map((definition) => (
+          <SurfaceRow
+            key={definition.key}
+            definition={definition}
+            expanded={expanded}
+            onOpen={() => {
+              onOpen(definition);
+            }}
+            removeLabel={`Remove ${resolveTitle(definition, {})} from favourites`}
+            onRemove={() => {
+              onRemove(definition);
+            }}
+          />
+        ))
+      )}
     </SidebarGroup>
   );
 }
@@ -133,6 +87,8 @@ interface RecentProps {
   expanded: boolean;
   shut: boolean;
   clearing: boolean;
+  browsing: boolean;
+  onBrowseList: () => void;
   onToggle: () => void;
   onOpen: (definition: SurfaceDefinition) => void;
   onClear: () => void;
@@ -147,27 +103,42 @@ export function Recent({
   expanded,
   shut,
   clearing,
+  browsing,
+  onBrowseList,
   onToggle,
   onOpen,
   onClear,
 }: RecentProps) {
-  if (surfaces.length === 0 || !expanded) return null;
+  if (surfaces.length === 0) return null;
+
+  if (!expanded) {
+    return (
+      <ListRow label="Recent" glyph={faClockRotateLeft} active={browsing} onClick={onBrowseList} />
+    );
+  }
 
   return (
     <SidebarGroup>
       <div className="group/recent relative">
         <SidebarItem
           aria-expanded={!shut}
-          icon={
+          // The SAME clock the collapsed rail's Recent row wears, in the same
+          // place a row's icon always sits — so the heading is recognisably that
+          // row, exactly as the star does for Favourites.
+          icon={<Icon glyph={faClockRotateLeft} className="size-5" aria-hidden />}
+          // The chevron is a disclosure INDICATOR, not the row's identity: on the
+          // left it was standing where every other row keeps its subject, which
+          // made Recent the one heading that named itself with a mechanism.
+          //
+          // No number beside it either. How many recents there are is a list
+          // length, and this is the slot the console reserves for what needs doing.
+          trailing={
             <Icon
               glyph={faChevronDown}
               className={`size-4 transition-transform ${shut ? '-rotate-90' : ''}`}
               aria-hidden
             />
           }
-          // No number. How many recents there are is a list length, and this is
-          // the slot the console reserves for what needs doing — the chevron
-          // already says there is something behind it.
           onClick={onToggle}
         >
           Recent
@@ -182,7 +153,8 @@ export function Recent({
             size="xs"
             disabled={clearing}
             aria-label="Clear recent"
-            className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 transition-opacity group-hover/recent:opacity-100 focus-visible:opacity-100"
+            // Clear of the chevron, which now holds the right end of the row.
+            className="absolute top-1/2 right-8 -translate-y-1/2 opacity-0 transition-opacity group-hover/recent:opacity-100 focus-visible:opacity-100"
             onClick={(event) => {
               event.stopPropagation();
               onClear();

@@ -192,7 +192,7 @@ export function FeedbackCompose({
         // restored draft reads as the app having gone wrong.
         <p className="flex flex-wrap items-center gap-2 text-sm">
           Picking up the message you started.
-          <Button type="button" color="neutral" variant="ghost" size="xs" onClick={startOver}>
+          <Button type="button" variant="ghost" size="xs" onClick={startOver}>
             Start over
           </Button>
         </p>
@@ -266,7 +266,7 @@ export function FeedbackCompose({
         <div className="flex items-center gap-2">
           {/* Closing keeps the draft, so this is genuinely "later", not a
               discard — which is why nothing has to ask before it happens. */}
-          <Button type="button" color="neutral" variant="ghost" onClick={onCancel}>
+          <Button type="button" onClick={onCancel}>
             Cancel
           </Button>
           <Button type="submit" color="primary" disabled={!body.trim() || send.isPending}>

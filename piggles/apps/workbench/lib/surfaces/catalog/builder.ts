@@ -42,12 +42,16 @@ import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-de
 import { PageResultsSurface } from '../../../surfaces/builder/page-results';
 
 export const BUILDER_SURFACES: SurfaceDefinition[] = [
+  /* ── Lead group ───────────────────────────────────────────────────────── */
+  // No section, so these sit above the divider and never fold. Widest scope
+  // first: a theme repaints every page, the chrome every page wears, then one
+  // page, then one piece.
   {
     key: 'builder.theme',
     title: 'Look & feel',
     module: 'builder',
     icon: faPalette,
-    order: 4,
+    order: 2,
     keywords: ['theme', 'colors', 'colors', 'fonts', 'brand', 'style', 'look'],
     // A theme is TENANT-wide and reusable across sites, so this is its own pane
     // rather than a mode inside the page editor — open it beside a page and a
@@ -55,11 +59,23 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     component: ThemePaneSurface,
   },
   {
+    key: 'builder.layout',
+    title: 'Header & footer',
+    module: 'builder',
+    icon: faTableLayout,
+    order: 3,
+    keywords: ['header', 'footer', 'menu', 'nav', 'navigation', 'layout', 'chrome', 'logo bar'],
+    // The chrome every page renders inside. Its own pane rather than a mode in the
+    // page editor: a site has ONE of these, it publishes on its own, and open beside
+    // a page it shows the header that page will actually wear.
+    component: LayoutPaneSurface,
+  },
+  {
     key: 'builder.page',
     title: 'Page',
     module: 'builder',
     icon: faFileLines,
-    order: 2,
+    order: 4,
     keywords: [
       'page',
       'edit page',
@@ -78,18 +94,6 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     // different pages, because each is its own document. Opened with no page it
     // asks which one, rather than showing a blank canvas.
     component: PagePaneSurface,
-  },
-  {
-    key: 'builder.layout',
-    title: 'Header & footer',
-    module: 'builder',
-    icon: faTableLayout,
-    order: 3,
-    keywords: ['header', 'footer', 'menu', 'nav', 'navigation', 'layout', 'chrome', 'logo bar'],
-    // The chrome every page renders inside. Its own pane rather than a mode in the
-    // page editor: a site has ONE of these, it publishes on its own, and open beside
-    // a page it shows the header that page will actually wear.
-    component: LayoutPaneSurface,
   },
   {
     key: 'builder.email',

@@ -17,6 +17,7 @@
 // finding the words for an app means opening the file its rail hue names.
 
 import type { Guide, GuideKey } from '../types';
+import { HOME_GUIDE } from './home';
 import { CONTENT_GUIDE, SITE_GUIDE } from './web';
 import { GET_FOUND_GUIDE, PARTNERS_GUIDE, SELL_GUIDE, STOCK_GUIDE } from './sell';
 import { BOOKINGS_GUIDE, CUSTOMERS_GUIDE, MESSAGES_GUIDE } from './people';
@@ -24,6 +25,7 @@ import { INVOICES_GUIDE, MONEY_GUIDE } from './money';
 import { AUTOMATIONS_GUIDE, CONNECTIONS_GUIDE, TEAM_GUIDE } from './run';
 
 const ALL: Guide[] = [
+  HOME_GUIDE,
   SITE_GUIDE,
   CONTENT_GUIDE,
   GET_FOUND_GUIDE,

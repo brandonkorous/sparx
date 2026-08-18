@@ -83,7 +83,7 @@ export function NotificationCenter() {
         <div className="border-base-300 -mx-4 -mt-1 flex items-center justify-between gap-2 border-b px-4 pb-3">
           <PopoverTitle>Notifications</PopoverTitle>
           {unreadCount > 0 ? (
-            <Button color="neutral" variant="ghost" size="xs" onClick={markAllRead}>
+            <Button size="xs" onClick={markAllRead}>
               Mark all read
             </Button>
           ) : null}
@@ -141,13 +141,7 @@ export function NotificationCenter() {
             rest went is how the badge stopped being trustworthy in the first
             place. When there IS more, it says how much rather than hinting. */}
         <div className="border-base-300 -mx-4 mt-1 -mb-1 border-t px-2 pt-2">
-          <Button
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
-            onClick={openInbox}
-          >
+          <Button size="sm" className="w-full justify-start" onClick={openInbox}>
             {overflow > 0 ? `See all — ${String(overflow)} more unread` : 'See all in Pulse'}
           </Button>
         </div>

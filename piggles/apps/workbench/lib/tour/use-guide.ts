@@ -11,12 +11,17 @@
 // they placed, windows they tore off, a rail they chose. A guide that blacks all
 // of that out to explain it is arguing with the product it is explaining.
 //
-// So this one stands in the status strip, the same shelf the "how's it going?"
-// chip already uses for exactly this reason. It rings ONE thing at a time, says
-// what it is for, and waits. Nothing is dimmed, nothing is disabled, and every
-// control on screen still works — including the one being pointed at. Wandering
-// off mid-guide is not an escape from it; the strip is still there when you come
-// back, on the step you left.
+// So this one rings ONE thing at a time, says what it is for, and waits. Nothing
+// is dimmed, nothing is disabled, and every control on screen still works —
+// including the one being pointed at. Wandering off mid-guide is not an escape
+// from it; the chip is still on the strip when you come back, on the step you
+// left.
+//
+// Note what that argument does NOT settle: WHERE the words go. It is a claim
+// about modality, and for a while it was misread as "park the card in the corner
+// with the chip" — which put the sentence about a nav row some 900px from the
+// row. The card now sits beside whatever is ringed (./anchor.ts) and falls back
+// to the strip only when a step has nothing to point at.
 //
 // ── WHY A MODULE STORE AND NOT CONTEXT ──────────────────────────────────────
 //
@@ -25,36 +30,9 @@
 // would have to wrap all three, which means wrapping the shell, which means the
 // guide re-renders the entire console on every step.
 
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
-import { useWorkbench } from '../workbench/context';
-import { guideSelector, type Guide, type GuideStep } from './types';
-
-/** Set on the element a step is about. `lib/tour/guide.css` draws the ring. */
-const HERE = 'data-guide-here';
-
-/** "Open this app's panel." Which app the panel shows is shell state, and the
- *  chip that drives the guide lives in the status strip below it — so the request
- *  travels as an event rather than by lifting that state up through the shell for
- *  one caller. */
-const BROWSE_EVENT = 'piggles:guide-browse';
-
-export function browseApp(appId: string): void {
-  if (typeof window === 'undefined') return;
-  window.dispatchEvent(new CustomEvent<string>(BROWSE_EVENT, { detail: appId }));
-}
-
-/** The shell listens; nothing else may. */
-export function useGuideBrowseRequests(onBrowse: (appId: string) => void): void {
-  useEffect(() => {
-    const handle = (event: Event) => {
-      onBrowse((event as CustomEvent<string>).detail);
-    };
-    window.addEventListener(BROWSE_EVENT, handle);
-    return () => {
-      window.removeEventListener(BROWSE_EVENT, handle);
-    };
-  }, [onBrowse]);
-}
+import { useCallback, useSyncExternalStore } from 'react';
+import { clearRing } from './anchor';
+import type { Guide, GuideStep } from './types';
 
 export interface GuideHandlers {
   /** A step is now showing — used to remember the resume point. */
@@ -203,64 +181,6 @@ export function useGuideState(): GuideState {
 /** The step showing right now, or null. */
 export function currentStep(value: GuideState): GuideStep | null {
   return value.phase === 'running' ? (value.guide.steps[value.index] ?? null) : null;
-}
-
-function clearRing(): void {
-  if (typeof document === 'undefined') return;
-  for (const element of document.querySelectorAll(`[${HERE}]`)) element.removeAttribute(HERE);
-}
-
-/** Wait for an element to appear, giving up rather than hanging. A step whose
- *  anchor never arrives simply has no ring — the words still stand on their own,
- *  which is why every one of them is written to. */
-function waitFor(selector: string, timeoutMs = 4000): Promise<Element | null> {
-  return new Promise((resolve) => {
-    const found = document.querySelector(selector);
-    if (found) return resolve(found);
-    const start = performance.now();
-    const tick = () => {
-      const element = document.querySelector(selector);
-      if (element) return resolve(element);
-      if (performance.now() - start > timeoutMs) return resolve(null);
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
-}
-
-/**
- * Point at the current step: open the screen it is about, ring it, bring it into
- * view. Called once, from the chip.
- *
- * The screen is opened rather than merely assumed because an app's guide walks
- * that app's panel, and the panel is only there once the app is. The controller
- * re-focuses whatever is already open, so asking on every step costs nothing.
- */
-export function useGuideAnchor(step: GuideStep | null): void {
-  const { controller } = useWorkbench();
-
-  useEffect(() => {
-    clearRing();
-    if (!step) return;
-
-    let cancelled = false;
-    if (step.app) browseApp(step.app);
-    if (step.open) controller.open(step.open.surface, step.open.params);
-
-    const selector = guideSelector(step);
-    if (!selector) return;
-
-    void waitFor(selector).then((element) => {
-      if (cancelled || !element) return;
-      element.setAttribute(HERE, '');
-      element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    });
-
-    return () => {
-      cancelled = true;
-      clearRing();
-    };
-  }, [step, controller]);
 }
 
 /** The four things the chip can do, bound once so its buttons stay cheap. */

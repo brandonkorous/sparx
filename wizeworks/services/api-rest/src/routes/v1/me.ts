@@ -73,6 +73,10 @@ const TOUR_STATUSES = ['in-progress', 'completed', 'skipped', 'dismissed'] as co
 // existing record carrying it would fail this parse and degrade that user's whole
 // tour branch to `{}`, re-offering every tour they have already answered.
 const TOUR_MODULES = [
+  // The console's OWN screens — what Piggles calls Home and sparx calls the
+  // workbench. Keyed on the module both fronts, so neither brand's word for it
+  // reaches storage.
+  'platform',
   'builder',
   'commerce',
   'cms',

@@ -29,7 +29,7 @@ export function CapacityNotice({ accountOrigin }: { accountOrigin: string }) {
   return (
     <div
       data-capacity-tone={tone}
-      className="rounded-box border-base-300 bg-base-200 mx-1 mb-2 border p-3"
+      className="rounded-box border-base-300 bg-neutral-dark mx-1 mb-2 border p-3"
     >
       <div className="flex items-center gap-2">
         <span className="text-base font-bold">{over ? 'Out of room' : 'Nearly full'}</span>

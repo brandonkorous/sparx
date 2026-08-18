@@ -105,8 +105,6 @@ export function ScrollStrip({
     <div className={`flex min-w-0 items-center gap-1 ${className ?? ''}`}>
       {overflows ? (
         <Button
-          variant="ghost"
-          color="neutral"
           size="sm"
           shape="circle"
           className="shrink-0"
@@ -132,8 +130,6 @@ export function ScrollStrip({
 
       {overflows ? (
         <Button
-          variant="ghost"
-          color="neutral"
           size="sm"
           shape="circle"
           className="shrink-0"

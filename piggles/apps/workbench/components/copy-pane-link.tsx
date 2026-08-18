@@ -138,13 +138,7 @@ export function CopyPaneLink({
 
   return (
     <Tooltip content={copied ? 'Link copied' : 'Copy a link to this'}>
-      <Button
-        size="sm"
-        variant="ghost"
-        shape="square"
-        aria-label="Copy a link to this panel"
-        onClick={copy}
-      >
+      <Button size="sm" shape="square" aria-label="Copy a link to this panel" onClick={copy}>
         {copied ? (
           <Icon glyph={faCheck} className="size-4" aria-hidden />
         ) : (

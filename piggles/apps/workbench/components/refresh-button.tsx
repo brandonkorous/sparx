@@ -111,8 +111,6 @@ export function RefreshButton({
     >
       <Button
         size="sm"
-        variant="ghost"
-        color="neutral"
         shape="square"
         className={className}
         aria-label="Refresh this list"
