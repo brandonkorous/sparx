@@ -112,7 +112,7 @@ export function CompactConsole({
               `titleFor()`, not `descriptor.title`: the latter is only populated
               once a screen has renamed itself, so reading it directly showed the
               product name for every panel that never called setTitle. */}
-          <Logo className="ms-2 h-5 w-auto shrink-0" title={PRODUCT.name} />
+          <Logo className="ms-2 h-8 w-auto shrink-0" title={PRODUCT.name} />
           <p className="min-w-0 flex-1 truncate font-medium">
             {active ? titleFor(active) : PRODUCT.name}
           </p>
@@ -206,7 +206,6 @@ function SharePanelButton({ paneId }: { paneId: string | null }) {
 
   return (
     <Button
-      color="neutral"
       variant="ghost"
       shape="square"
       className="min-h-11 min-w-11"

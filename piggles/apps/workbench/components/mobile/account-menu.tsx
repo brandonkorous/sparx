@@ -49,13 +49,7 @@ export function AccountMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <Button
-            color="neutral"
-            variant="ghost"
-            shape="circle"
-            className="min-h-11 min-w-11"
-            aria-label="You"
-          >
+          <Button variant="ghost" shape="circle" className="min-h-11 min-w-11" aria-label="You">
             {initials(userName, userEmail)}
           </Button>
         </DropdownMenuTrigger>
