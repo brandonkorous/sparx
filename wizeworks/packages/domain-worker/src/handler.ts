@@ -15,7 +15,6 @@ import type { DomainPurchasedPayload, SparxEvent } from '@wizeworks/events';
 import { appLink, appOrigin } from '@wizeworks/links/server';
 import { cnameTargetFor, configureDNS, buildSparxDnsRecords, GoDaddyError } from './godaddy.js';
 import { publisher, pubLogger } from './publisher.js';
-import { env } from './env.js';
 
 async function verifyCname(host: string, target: string): Promise<boolean> {
   try {

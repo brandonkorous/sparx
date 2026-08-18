@@ -195,17 +195,33 @@ export const DEFAULT_TLDS = [
  * deployment was set up for and is all there was before there were two.
  */
 export function buildSparxDnsRecords(zoneDomain?: string | null): DnsRecord[] {
-  const target = `customers.${zoneDomain?.trim() || DEFAULT_ZONE_DOMAIN}`;
+  const target = `customers.${nonEmpty(zoneDomain) ?? DEFAULT_ZONE_DOMAIN}`;
   return [
     { type: 'CNAME', name: '@', data: target, ttl: 600 },
     { type: 'CNAME', name: 'www', data: target, ttl: 600 },
   ];
 }
 
+/**
+ * A trimmed value, or undefined when there was nothing but whitespace.
+ *
+ * Both callers below need BLANK to fall back, not merely absent: an unset brand
+ * zone and a brand zone set to `""` mean the same thing here, and a config value
+ * that arrived as an empty string is the likelier of the two. `??` alone cannot
+ * express that — it would build `customers.` and point a customer's domain at
+ * nothing — so emptiness is collapsed to undefined first, where `??` is then
+ * both correct and what the linter asks for.
+ */
+function nonEmpty(value: string | null | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+  return trimmed;
+}
+
 /** The zone this deployment mints subdomains in when no brand says otherwise.
  *  The FIRST entry of `SPARX_ZONE_DOMAINS`, matching wizeworks/services/api-rest's own
  *  reading of it, so the two cannot drift. */
 const DEFAULT_ZONE_DOMAIN =
-  (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone')
-    .split(',')[0]
-    ?.trim() || 'sparx.zone';
+  nonEmpty(
+    (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone').split(',')[0]
+  ) ?? 'sparx.zone';
