@@ -25,6 +25,14 @@ export interface EmailRenderContext {
   hoverId: string | null;
   /** Where a drop would land, drawn as an edge or a ring while dragging. */
   dropHint: EmailDropHint | null;
+  /**
+   * The block currently in the air on a press-and-hold drag.
+   *
+   * A mouse drag carries the browser's own ghost and needs nothing; a finger drag
+   * has no ghost, so without this the only evidence the hold had registered was a
+   * drop indicator somewhere else in the email.
+   */
+  liftedId?: string | null;
 }
 
 export interface EmailDropHint {
@@ -38,16 +46,21 @@ function stateClasses(ctx: EmailRenderContext, node: EmailNode): string {
   const classes: string[] = [];
 
   if (ctx.selectedIds.includes(node.id)) {
-    classes.push('outline-primary outline outline-2 -outline-offset-2');
+    classes.push('outline-(--studio-select) outline outline-2 -outline-offset-2');
   } else if (ctx.hoverId === node.id) {
-    classes.push('outline-primary/50 outline outline-1 -outline-offset-1');
+    classes.push(
+      'outline-[color-mix(in_oklab,var(--studio-select)_50%,transparent)] outline outline-1 -outline-offset-1'
+    );
   }
+
+  // Faded because it is ELSEWHERE — held under a finger. This is the hole it left.
+  if (ctx.liftedId === node.id) classes.push('opacity-50');
 
   if (ctx.dropHint?.targetId === node.id) {
     classes.push(
       ctx.dropHint.position === 'inside'
-        ? 'outline-secondary outline outline-2 outline-dashed -outline-offset-2'
-        : 'outline-secondary outline outline-2 -outline-offset-2'
+        ? 'outline-(--studio-drop) outline outline-2 outline-dashed -outline-offset-2'
+        : 'outline-(--studio-drop) outline outline-2 -outline-offset-2'
     );
   }
 

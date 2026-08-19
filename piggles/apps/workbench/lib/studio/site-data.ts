@@ -53,6 +53,9 @@ export interface ActiveProperty {
   slug: string;
   isPrimary: boolean;
   brandOverride: unknown;
+  /** How customers reach this business. Already in the payload — declared here so the
+   *  email preview can address merge tags at the real business rather than a sample. */
+  settings?: { contact?: { email?: string | null } | null } | null;
 }
 
 /** The tenant brand — identity colors, fonts, logos (docs/30 §6). Ungated
@@ -407,6 +410,9 @@ export interface SiteCheckReport {
   findings: CheckFinding[];
   counts: Record<CheckSeverity, number>;
   pagesChecked: number;
+  /** Pages the check could not open — no draft has ever been saved for them. Named,
+   *  because "nothing to fix" over a site with unopened pages is not a clean result. */
+  notChecked?: { id: string; name: string }[];
   budget: CheckBudget;
 }
 

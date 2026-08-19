@@ -12,7 +12,6 @@
 import { composeFrame, type Node, type SymbolDef, type Theme } from '@wizeworks/silicaui-html';
 import type { LayoutDoc, PageDoc, StudioDoc, TreeDoc } from '../documents/types';
 import { NO_FRAME } from '../documents/types';
-import { docKey } from '../documents/types';
 import { idOf } from '../tree/walk';
 import type { StudioSession } from '../session/session';
 
@@ -112,10 +111,4 @@ export function resolveTheme(session: StudioSession, fallback: Theme): Theme {
 /** Does this document participate in the site chain at all? Email does not. */
 export function inheritsSiteTheme(doc: StudioDoc): boolean {
   return doc.kind === 'layout' || doc.kind === 'page' || doc.kind === 'component';
-}
-
-/** Key for a resolution cache — changes whenever anything the chain reads changes. */
-export function resolutionKey(session: StudioSession, doc: TreeDoc): string {
-  const context = session.getSnapshot().context;
-  return [docKey(doc), context.themeId ?? '-', context.layoutId ?? '-'].join('|');
 }

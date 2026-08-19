@@ -69,6 +69,7 @@ export function PublishChecks({
 
 function CheckReport({ report }: { report: SiteCheckReport }) {
   const clean = report.findings.length === 0;
+  const missed = report.notChecked ?? [];
   return (
     <div className="flex flex-col gap-3">
       <Alert color={clean ? 'success' : 'info'} variant="soft">
@@ -76,6 +77,16 @@ function CheckReport({ report }: { report: SiteCheckReport }) {
           ? `Nothing to fix across ${String(report.pagesChecked)} pages. It reads well.`
           : `${String(report.findings.length)} things to look at across ${String(report.pagesChecked)} pages. None of them stops you publishing.`}
       </Alert>
+
+      {/* Coverage, next to the result. "Nothing to fix across 7 pages" on an
+          eleven-page site read as a clean bill of health for the whole site. */}
+      {missed.length ? (
+        <Alert color="warning" variant="soft">
+          {missed.length === 1
+            ? `We could not look at ${missed[0]?.name ?? 'one page'} — it has never been opened and saved, so there is nothing there to check yet.`
+            : `We could not look at ${String(missed.length)} pages — ${missed.map((page) => page.name).join(', ')}. They have never been opened and saved, so there is nothing there to check yet.`}
+        </Alert>
+      ) : null}
 
       {BANDS.map((band) => {
         const found = report.findings.filter((finding) => finding.severity === band.severity);

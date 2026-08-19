@@ -22,11 +22,14 @@
 //     answer different questions, so they are separated by a rule rather than
 //     left to be told apart by guesswork.
 //
-// The trigger is `faSliders`, not `faEllipsis`, and that is deliberate. The pane
-// title bar already owns a `⋯` (lib/dock/group-actions.tsx) and the two mean
-// different things — that one acts on the PANE (close, split, new window), this
-// one acts on the LIST. Two identical glyphs a few pixels apart would read as
-// one control someone split in half.
+// The trigger is `faBars`, and it is the SAME glyph the builders' overflow wears
+// (@wizeworks/studio's builder-toolbar-overflow.tsx). "The rest of the controls" is
+// one idea, so it is one thing to learn rather than two.
+//
+// It was `faSliders`, which this console spends in eleven other places to mean
+// settings-and-adjustments — one glyph doing two jobs. Not an ellipsis either: the
+// dock group's window menu wears one on the tab strip just above, and two identical
+// glyphs a few pixels apart read as one control someone split in half.
 
 import { cloneElement, isValidElement, useId } from 'react';
 import {
@@ -37,7 +40,7 @@ import {
   PopoverTrigger,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { faSliders } from '@fortawesome/pro-solid-svg-icons';
+import { faBars } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { CopyPaneLink } from './copy-pane-link';
 import { ToolbarFilterSelects, type ToolbarFilter } from './pane-toolbar-filters';
@@ -87,7 +90,7 @@ export function PaneToolbarOverflow({
             aria-label={label}
             data-tour="pane-toolbar-overflow"
           >
-            <Icon glyph={faSliders} className="size-4" aria-hidden />
+            <Icon glyph={faBars} className="size-4" aria-hidden />
             {activeCount > 0 ? (
               // `module`, not a semantic tone: an active filter is not a warning
               // or a success, it is this app doing its job. The count is already

@@ -73,7 +73,6 @@ export { StudioSession, type SessionSnapshot, type SiteContext } from './session
 
 export {
   inheritsSiteTheme,
-  resolutionKey,
   resolveCanvas,
   resolveTheme,
   type CanvasResolution,

@@ -17,6 +17,7 @@ import type { CanvasDevice } from '../canvas/canvas';
 import { rowLabel } from '../navigator/layer-tree';
 import { FillTabs, FillTabsPanel } from '../fill-tabs';
 import { DesignTab } from './design-tab';
+import { NodeActions } from './node-actions';
 import { SettingsTab } from './settings-tab';
 
 export function Inspector({ device }: { device: CanvasDevice }) {
@@ -35,8 +36,11 @@ export function Inspector({ device }: { device: CanvasDevice }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="border-base-300 border-b px-3 py-2">
-        <p className="text-base-content truncate text-sm font-medium">{rowLabel(node)}</p>
+      <div className="border-base-300 flex items-center gap-2 border-b px-3 py-2">
+        <p className="text-base-content min-w-0 flex-1 truncate text-sm font-medium">
+          {rowLabel(node)}
+        </p>
+        <NodeActions node={node} />
       </div>
       {/* Pills: a filled shape says "you are here" before the label is read. */}
       <FillTabs value={tab} onValueChange={setTab}>

@@ -14,12 +14,18 @@ import { useEffect, useState } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
 import { faCloudArrowUp, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { DocumentProvider, ThemeBuilder, useDocSnapshot } from '@wizeworks/studio/react';
+import {
+  DocumentProvider,
+  ThemeBuilder,
+  useDocSnapshot,
+  type BuilderAction,
+} from '@wizeworks/studio/react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
+import { useJustPublished } from '../../lib/studio/just-published';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { OpenHistory, OpenPreview } from './open-history';
+import { useHistoryAction, usePreviewAction } from './open-history';
 import { ThemeLibrary } from './theme-library';
 import { useThemeDocument } from './use-theme-document';
 
@@ -84,15 +90,22 @@ function ThemePaneBody({
 
   useDirtySource(dirty, 'Your changes to this look have not been saved.');
 
+  const actions = useThemeActions(ctx, state);
+
   return (
     <ThemeBuilder
-      toolbar={
-        <ThemeActions ctx={ctx} state={state} openId={openId} onOpen={onOpen} dirty={dirty} />
-      }
+      toolbarLabel="Look & feel controls"
+      save={<SaveTheme state={state} dirty={dirty} />}
+      actions={actions}
+      controls={<ThemeLibrary appliedId={state.appliedId} openId={openId} onOpen={onOpen} />}
+      // Publish folds away on a narrow pane; the status line keeps saying there is
+      // something to publish, and this marks where the control went.
+      attention={doc.unpublished}
       statusBar={
         <ThemeStatus
           dirty={dirty}
           unpublished={doc.unpublished}
+          publishedAt={doc.publishedAt}
           applied={state.appliedId === doc.id}
         />
       }
@@ -100,44 +113,48 @@ function ThemePaneBody({
   );
 }
 
-function ThemeActions({
-  ctx,
+/** What this pane offers. All of it may fold into the bar's popover; Save may not —
+ *  Publish is lifecycle on a stored document, a Save is the storing. */
+function useThemeActions(
+  ctx: SurfaceContext,
+  state: ReturnType<typeof useThemeDocument>
+): BuilderAction[] {
+  const preview = usePreviewAction(ctx);
+  const history = useHistoryAction(ctx);
+  return [
+    preview,
+    history,
+    {
+      label: state.publishing ? 'Publishing…' : 'Publish',
+      title: 'Put this look on your site',
+      icon: <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />,
+      emphasis: 'loud',
+      disabled: state.publishing,
+      onClick: () => void state.publish(),
+    },
+  ];
+}
+
+/** The commit. Never folds, at any width — see builder-toolbar.tsx. */
+function SaveTheme({
   state,
-  openId,
-  onOpen,
   dirty,
 }: {
-  ctx: SurfaceContext;
   state: ReturnType<typeof useThemeDocument>;
-  openId: string | null;
-  onOpen: (id: string) => void;
   dirty: boolean;
 }) {
   return (
-    <>
-      <ThemeLibrary appliedId={state.appliedId} openId={openId} onOpen={onOpen} />
-      <OpenPreview ctx={ctx} />
-      <OpenHistory ctx={ctx} />
-      <Button
-        size="sm"
-        color="primary"
-        variant="soft"
-        disabled={!dirty || state.saving}
-        onClick={() => void state.save()}
-      >
-        <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-        {state.saving ? 'Saving…' : 'Save'}
-      </Button>
-      <Button
-        size="sm"
-        color="primary"
-        disabled={state.publishing}
-        onClick={() => void state.publish()}
-      >
-        <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />
-        {state.publishing ? 'Publishing…' : 'Publish'}
-      </Button>
-    </>
+    <Button
+      size="sm"
+      color="primary"
+      variant="soft"
+      className="shrink-0 whitespace-nowrap"
+      disabled={!dirty || state.saving}
+      onClick={() => void state.save()}
+    >
+      <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+      {state.saving ? 'Saving…' : 'Save'}
+    </Button>
   );
 }
 
@@ -145,14 +162,19 @@ function ThemeActions({
 function ThemeStatus({
   dirty,
   unpublished,
+  publishedAt,
   applied,
 }: {
   dirty: boolean;
   unpublished: boolean;
+  publishedAt: string | null;
   applied: boolean;
 }) {
+  const catchingUp = useJustPublished(publishedAt);
+
   if (dirty) return <span>Not saved yet</span>;
   if (!applied) return <span>Saved. Your site is using a different look.</span>;
   if (unpublished) return <span>Saved. Visitors still see the last published look.</span>;
+  if (catchingUp) return <span>Published. Your site catches up within a few minutes.</span>;
   return <span>Saved and live.</span>;
 }

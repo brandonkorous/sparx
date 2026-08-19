@@ -51,9 +51,12 @@ export function ThemeLibrary({
 
   return (
     <>
-      <Button size="sm" onClick={() => setOpen(true)}>
-        <Icon glyph={faPalette} className="size-4" aria-hidden />
-        {current?.name ?? 'Choose a look'}
+      {/* Capped and truncated: this button wears a theme's NAME, so it is the one
+          control on the builder bar whose width belongs to the author rather than
+          to us — and the bar folds on a worked-out number, not a measurement. */}
+      <Button size="sm" className="max-w-40" onClick={() => setOpen(true)}>
+        <Icon glyph={faPalette} className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">{current?.name ?? 'Choose a look'}</span>
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>

@@ -1,6 +1,6 @@
 # Piggles builders on a phone
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-18
 
@@ -25,15 +25,35 @@ produces a builder that looks finished on a phone and still cannot make a page.
 
 ## What is broken
 
-**1 · Touch cannot drag anything.** Every drag in the package is the native
-HTML5 API — `draggable` plus `dataTransfer` — in `palette/palette.tsx`,
-`navigator/navigator.tsx`, `canvas/canvas.tsx` and their three email
-counterparts. Touch input does not deliver those events on iOS Safari and does
-not deliver them reliably on Android Chrome; that is the reason drag libraries
-ship a separate touch sensor at all. Consequence on a phone: no block can be
-dragged from Insert onto the page, no layer can be reordered, nothing on the
-canvas can be moved. The one path that survives is the palette's `onClick`
-insert, which is real and which this plan builds on.
+**1 · Touch cannot drag anything. — FIXED 2026-08-18.** Every drag in the
+package was the native HTML5 API — `draggable` plus `dataTransfer` — in
+`palette/palette.tsx`, `navigator/navigator.tsx`, `canvas/canvas.tsx` and their
+three email counterparts. Touch does not deliver those events on iOS Safari and
+does not deliver them reliably on Android Chrome; that is the reason drag
+libraries ship a separate touch sensor at all. On a phone no block could be
+dragged from Insert onto the page, no layer could be reordered, and nothing on
+the canvas could be moved.
+
+All six surfaces now carry a second drag over **pointer events**, which every
+input speaks — `react/drag/pointer-drag.tsx`, with the timing arithmetic split
+out pure and tested in `react/drag/gesture.ts`. It runs BESIDE the native path
+rather than replacing it: a mouse keeps the browser's own drag, which was
+already proven, and only touch and pen come through the new one. Both ends feed
+the same `dropPosition` / `resolveDropTarget` rule, so where a block lands cannot
+depend on what you dragged it with.
+
+The gesture is **press and hold** (280ms, 8px of slop). A finger cannot hover, so
+the gesture needs a way to say "I mean to move this" that a scroll does not also
+say: hold still and the block lifts; move first and the list scrolls. The lifted
+block fades so the hold is visibly registered, the page is stopped from scrolling
+under an active drag, near either edge the list pulls itself along so a drag can
+reach past one screenful, and the compatibility click touch leaves behind is
+swallowed — without that last one a dragged palette row landed twice, once where
+it was dropped and once wherever a click decided.
+
+Drag is scoped per DOCUMENT (`docKey`), not per kind. Two builders dock side by
+side routinely, and a block dragged across the gap between them would otherwise
+draw a drop indicator on a page it can never land in.
 
 **2 · Delete and Duplicate are keyboard-only.** `builders/shortcuts.ts` binds
 Backspace and Cmd-D and nothing else offers them — there is no button, no menu,
@@ -150,8 +170,9 @@ and the `max-h-96` stack goes away.
 - **Verbs before layout.** Phase 10 is ordered so that after the first three
   tasks a phone can already build a page inside today's layout.
 - **44px tap floor**, matching the nav bar's own floor.
-- **No new dependency.** No drag library. The touch paths are taps against ops
-  that already exist.
+- **No new dependency.** No drag library — the touch drag is ~250 lines of
+  pointer events over the ops and the drop rule that already existed, and the tap
+  paths are taps against those same ops.
 
 ## Open questions
 

@@ -11,7 +11,12 @@
 
 import { useMemo, useState } from 'react';
 import { Button, Input, useToast } from '@wizeworks/silicaui-react';
-import { emailMergeTags, groupMergeTags, type MergeTag } from '../../lib/studio/email-domain';
+import {
+  emailMergeTags,
+  groupMergeTags,
+  useEmailIdentity,
+  type MergeTag,
+} from '../../lib/studio/email-domain';
 
 /** A greeting that still reads properly for someone whose name you don't have. */
 const SAFE_GREETING = '{{customer.firstName ?? "there"}}';
@@ -34,7 +39,10 @@ function useCopy(): (text: string, said: string) => void {
 export function EmailTagsPanel() {
   const [query, setQuery] = useState('');
   const copy = useCopy();
-  const groups = useMemo(() => groupMergeTags(emailMergeTags()), []);
+  // The SAME identity the canvas resolves against. Two surfaces on one screen
+  // showing `{{site.name}}` as two different businesses is worse than a sample.
+  const identity = useEmailIdentity();
+  const groups = useMemo(() => groupMergeTags(emailMergeTags(identity)), [identity]);
 
   const needle = query.trim().toLowerCase();
   const shown = groups

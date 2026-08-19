@@ -1,12 +1,16 @@
-// A Save is always the primary action. Nothing else may hold it.
+// A Save is always the unfoldable action. Nothing else may hold it.
+//
+// TWO TOOLBARS ARE COVERED, because both fold. `PaneToolbar` (a list surface) keeps
+// its commit in `primary`; the builders (`TreeBuilder` / `EmailBuilder` /
+// `ThemeBuilder`) keep theirs in `save`. Everything else either slot's owner passes
+// — `controls` as nodes, `actions` as values — may be folded into a popover.
 //
 // ── WHY THIS IS A CHECK AND NOT A CONVENTION ────────────────────────────────
 //
-// PaneToolbar's `controls` slot is RELOCATABLE: on a narrow pane its contents
-// move into an overflow popover so the bar stays one honest row. That is correct
-// for filters, selects and secondary actions, and catastrophic for a Save — it
-// puts the one control a person is reaching for behind an extra tap they have no
-// reason to know about, on the device where they can see least.
+// A relocatable slot is correct for filters, selects and secondary actions, and
+// catastrophic for a Save — it puts the one control a person is reaching for behind
+// an extra tap they have no reason to know about, on the device where they can see
+// least.
 //
 // It is a check because the failure is INVISIBLE at the width anyone develops
 // at. A Save in `controls` looks perfect on a desktop pane and only goes wrong
@@ -135,35 +139,123 @@ function buttonTexts(region) {
   return texts;
 }
 
+/**
+ * The regions of a given `prop={…}`, brace-matched.
+ *
+ * Brace-matched rather than regexed to a closing line: a control's own JSX is full
+ * of braces, and a line-anchored match stops at the first nested one.
+ */
+function propRegions(source, prop) {
+  const open = `${prop}={`;
+  const regions = [];
+  let index = source.indexOf(open);
+  while (index !== -1) {
+    let depth = 0;
+    let cursor = index + prop.length + 1;
+    const start = cursor;
+    for (; cursor < source.length; cursor += 1) {
+      const ch = source[cursor];
+      if (ch === '{') depth += 1;
+      else if (ch === '}') {
+        depth -= 1;
+        if (depth === 0) break;
+      }
+    }
+    regions.push(source.slice(start, cursor + 1));
+    index = source.indexOf(open, cursor);
+  }
+  return regions;
+}
+
+/** The source with every `prop={…}` region cut out of it. */
+function without(source, prop) {
+  let out = source;
+  for (const region of propRegions(out, prop)) out = out.split(region).join('');
+  return out;
+}
+
+/**
+ * Every label a foldable ACTION VALUE in this file can carry.
+ *
+ * A toolbar that takes its secondary actions as values rather than nodes fails in a
+ * different shape than a list toolbar does: not `<Button>Save</Button>` in the wrong
+ * slot, but `{ label: 'Save', … }` in an array the bar is allowed to fold. Same
+ * consequence exactly.
+ *
+ * ── WHY THE WHOLE FILE, AND NOT THE `actions={…}` REGION ───────────────────
+ *
+ * Because scanning that region found NOTHING, and said so in green. Every pane here
+ * builds its list in a hook and passes it by reference — `actions={actions}` — so
+ * the region is four characters long and the array is somewhere else entirely. A
+ * planted Save survived the check, which is the failure this file exists to catch,
+ * committed in the checker itself.
+ *
+ * So: the whole file, minus the slots that are ALLOWED to hold a commit —
+ * `primary`, `primaryAction`, `save`. A "Add a customer" in `primaryAction` is
+ * correct and must not fail; the same words in `actions` are the bug.
+ *
+ * Every literal on the `label:` line counts, ternary branches included — an action
+ * reading "Save" down ANY branch is a commit action, whichever branch is live.
+ */
+function foldableLabels(source) {
+  const scanned = ['primary', 'primaryAction', 'save'].reduce(without, source);
+  const labels = [];
+  for (const [, expression] of scanned.matchAll(/label:\s*([^\n]*)/g)) {
+    for (const [, literal] of expression.matchAll(/['"`]([^'"`]*)['"`]/g)) {
+      labels.push(literal.replace(/\s+/g, ' '));
+    }
+  }
+  return labels;
+}
+
 const failures = [];
 for (const file of walk(SURFACES)) {
   const source = readFileSync(file, 'utf8');
-  if (!source.includes('controls={')) continue;
-  // A toolbar with no `primary` at all has nothing holding its commit action,
-  // so a lifecycle verb in `controls` IS the commit there.
-  const hasPrimary = source.includes('primary={');
+  const hasControls = source.includes('controls={');
+  const hasActions = source.includes('actions={');
+  if (!hasControls && !hasActions) continue;
+  // A toolbar with nothing holding its commit action means a lifecycle verb in a
+  // foldable slot IS the commit there. `save={…}` is the builders' name for the
+  // same slot `primary={…}` is on a list toolbar.
+  const holdsCommit = source.includes('primary={') || source.includes('save={');
+  const offend = (text) => COMMIT_TEXT.test(text) || (!holdsCommit && LIFECYCLE_TEXT.test(text));
+
   for (const region of controlsRegions(source)) {
     for (const text of buttonTexts(region)) {
-      if (COMMIT_TEXT.test(text) || (!hasPrimary && LIFECYCLE_TEXT.test(text))) {
-        failures.push({ file: relative(process.cwd(), file), label: text.trim() });
+      if (offend(text)) {
+        failures.push({
+          file: relative(process.cwd(), file),
+          label: text.trim(),
+          slot: 'controls',
+        });
         break;
       }
+    }
+  }
+  if (!hasActions) continue;
+  for (const text of foldableLabels(source)) {
+    if (offend(text)) {
+      failures.push({ file: relative(process.cwd(), file), label: text.trim(), slot: 'actions' });
+      break;
     }
   }
 }
 
 if (failures.length > 0) {
   console.error(
-    `\n${String(failures.length)} surface(s) put a commit action in PaneToolbar's relocatable \`controls\` slot.\n` +
-      'On a pane under 672px those move into the overflow popover, so the action a\n' +
-      'person came to press is hidden behind a tap they have no reason to expect.\n\n' +
-      'Move it to `primary` — that slot is always rendered, at every width.\n'
+    `\n${String(failures.length)} surface(s) put a commit action in a RELOCATABLE toolbar slot.\n` +
+      'On a narrow pane those move into an overflow popover, so the action a person\n' +
+      'came to press is hidden behind a tap they have no reason to expect.\n\n' +
+      'Move it to `primary` (a list toolbar) or `save` (a builder) — those slots are\n' +
+      'always rendered, at every width.\n'
   );
   for (const failure of failures) {
-    console.error(`  ${failure.label.padEnd(16)} ${failure.file.split('\\').join('/')}`);
+    console.error(
+      `  ${failure.label.padEnd(16)} ${failure.slot.padEnd(9)} ${failure.file.split('\\').join('/')}`
+    );
   }
   console.error('');
   process.exit(1);
 }
 
-console.log('check:piggles-toolbars — every commit action is in `primary`.');
+console.log('check:piggles-toolbars — every commit action is unfoldable (`primary` / `save`).');

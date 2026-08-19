@@ -63,8 +63,11 @@ describe('catalogMergeTags', () => {
 
 describe('site.* / tenant.* back-compat in the sample data', () => {
   it('resolves both the canonical and the alias root', () => {
-    expect(resolvePath({ root: SAMPLE_EMAIL_DATA }, 'site.name')).toBe('Acme Supply Co.');
-    expect(resolvePath({ root: SAMPLE_EMAIL_DATA }, 'tenant.name')).toBe('Acme Supply Co.');
+    // A visibly generic placeholder, never a fictional company — an owner must be
+    // able to tell "we do not know your business name yet" from "this is someone
+    // else's template".
+    expect(resolvePath({ root: SAMPLE_EMAIL_DATA }, 'site.name')).toBe('Your business');
+    expect(resolvePath({ root: SAMPLE_EMAIL_DATA }, 'tenant.name')).toBe('Your business');
     // Every URL alias agrees.
     expect(resolvePath({ root: SAMPLE_EMAIL_DATA }, 'site.url')).toBe('#');
     expect(resolvePath({ root: SAMPLE_EMAIL_DATA }, 'tenant.siteUrl')).toBe('#');
@@ -152,5 +155,29 @@ describe('groupMergeTags', () => {
     const groups = groupMergeTags(emailMergeTags());
     expect(groups[0]?.source.key).toBe('customer');
     expect(groups.every((g) => g.tags.length > 0)).toBe(true);
+  });
+});
+
+describe('the merge-tag reference names the real business', () => {
+  const siteName = (tags: ReturnType<typeof emailMergeTags>) =>
+    tags.find((tag) => tag.token.includes('site.name'))?.sample;
+
+  it('shows the business, not the sample company, when one is known', () => {
+    // This panel is the reference an author READS to learn what a tag produces.
+    // On the bare sample it showed `{{site.name}}` → a stand-in beside a
+    // canvas already rendering the real business — two surfaces disagreeing about
+    // one tag, which teaches an owner that neither can be trusted.
+    expect(siteName(emailMergeTags({ name: 'Wildroot Flowers' }))).toBe('Wildroot Flowers');
+  });
+
+  it('falls back to the sample when the business is not known yet', () => {
+    // Mid-load is a real state. A blank example is worse than a stand-in.
+    expect(siteName(emailMergeTags())).toBeTruthy();
+    expect(siteName(emailMergeTags({ name: null }))).toBeTruthy();
+  });
+
+  it('leaves the RECIPIENT a sample — that person does not exist yet', () => {
+    const tags = emailMergeTags({ name: 'Wildroot Flowers' });
+    expect(tags.find((tag) => tag.token.includes('customer.firstName'))?.sample).toBe('Alex');
   });
 });

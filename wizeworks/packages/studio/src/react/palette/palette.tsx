@@ -7,17 +7,33 @@
 // dragging is how you put it in one exact place. An author who has not yet built
 // a mental model of the tree uses the first, and stops needing it.
 //
+// Both gestures work with a finger. Tapping always did; dragging did not, because
+// the browser's own drag-and-drop is never delivered by touch — so a row is also
+// a press-and-hold source (`useDragSource`), which is the same drag over pointer
+// events. Holding still lifts it; moving first scrolls the list, as it should.
+//
 // The catalog is large — silica's primitives plus the app's own composites and
 // section library — so the top of the rail is a search box. A grouped browse is
 // only useful to someone who already knows which group a thing is in.
 
 import { useCallback, useMemo, useState } from 'react';
-import { Input } from '@wizeworks/silicaui-react';
+import { Input, useToast } from '@wizeworks/silicaui-react';
 import { mergeCatalog, paletteGroups, type PaletteItem } from '@wizeworks/silicaui-builder/react';
 import { defaultMakeId, stampTree, type Node } from '@wizeworks/silicaui-html';
 import type { TreeDoc } from '../../documents/types';
+import { docKey } from '../../documents/types';
 import { findPlace, isAddressable } from '../../tree/walk';
-import { useApply, useDoc, useDocSnapshot, useSelect, useStudioHost } from '../context';
+import {
+  useApply,
+  useDoc,
+  useDocSnapshot,
+  useResolutionVersion,
+  useSelect,
+  useStudioHost,
+  useStudioSession,
+} from '../context';
+import { useDragSource } from '../drag/pointer-drag';
+import { piecesGroup } from './pieces';
 import { NODE_DRAG_TYPE } from '../canvas/canvas';
 import { StudioIcon } from '../icon';
 
@@ -44,18 +60,26 @@ function score(item: PaletteItem, query: string): number {
   return best;
 }
 
-export function Palette() {
+export function Palette({ onInserted }: { onInserted?: () => void } = {}) {
   const host = useStudioHost();
   const doc = useDoc<TreeDoc>();
   const { selection } = useDocSnapshot();
   const apply = useApply();
   const select = useSelect();
+  const session = useStudioSession();
+  const toast = useToast();
   const [query, setQuery] = useState('');
 
-  const groups = useMemo(
-    () => mergeCatalog(paletteGroups(), host.catalog?.(doc.kind)),
-    [host, doc.kind]
-  );
+  // The author's own pieces come LAST, under their own heading — they are the
+  // shortest list and the one they named themselves, so burying them among two
+  // hundred catalog rows would hide the thing they went looking for.
+  const version = useResolutionVersion();
+  const groups = useMemo(() => {
+    const catalog = mergeCatalog(paletteGroups(), host.catalog?.(doc.kind));
+    const pieces = piecesGroup(session, doc.kind);
+    return pieces ? [...catalog, pieces] : catalog;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [host, doc.kind, session, version]);
 
   const results = useMemo<Ranked[] | null>(() => {
     const needle = query.trim().toLowerCase();
@@ -113,15 +137,35 @@ export function Palette() {
         }
       }
 
-      if (!parentId) return;
-      if (
-        !apply(`Add ${item.label.toLowerCase()}`, [{ kind: 'node.insert', parentId, index, node }])
-      )
+      // A refusal has to be SPOKEN. Some places genuinely cannot hold what is being
+      // added — inside a saved piece, inside an image — and a click that silently
+      // does nothing teaches an author that Insert is broken rather than that the
+      // spot is wrong.
+      const done =
+        parentId &&
+        apply(`Add ${item.label.toLowerCase()}`, [{ kind: 'node.insert', parentId, index, node }]);
+      if (!done) {
+        toast.add({
+          title: `“${item.label}” can’t go there`,
+          description:
+            'Pick a different spot on the page — a section or a container — and try again.',
+          type: 'info',
+        });
         return;
+      }
+      // Tell the pane something landed. On a narrow screen the palette and the
+      // canvas are different SCREENS, so without this an author tapped Heading,
+      // the node was added and selected out of sight, and the only feedback was
+      // the rail they were already looking at.
+      onInserted?.();
       select([node.id]);
     },
-    [apply, build, doc.root, selection, select]
+    [apply, build, doc.root, selection, select, onInserted, toast]
   );
+
+  // Per document, not per kind: two builders dock side by side, and a block
+  // dragged from one palette must not draw a drop indicator on the other's page.
+  const surface = docKey(doc);
 
   const rows =
     results ??
@@ -140,7 +184,7 @@ export function Palette() {
 
       <div className="min-h-0 flex-1 overflow-auto p-2">
         {results ? (
-          <PaletteRows rows={rows} onInsert={insert} onBuild={build} showGroup />
+          <PaletteRows rows={rows} onInsert={insert} onBuild={build} surface={surface} showGroup />
         ) : (
           groups.map((group) => (
             <section key={group.key} className="mb-4">
@@ -149,6 +193,7 @@ export function Palette() {
                 rows={group.items.map((item) => ({ item, group: group.label, score: 0 }))}
                 onInsert={insert}
                 onBuild={build}
+                surface={surface}
               />
             </section>
           ))
@@ -167,44 +212,72 @@ function PaletteRows({
   rows,
   onInsert,
   onBuild,
+  surface,
   showGroup,
 }: {
   rows: Ranked[];
   onInsert: (item: PaletteItem) => void;
   onBuild: (item: PaletteItem) => Node;
+  surface: string;
   showGroup?: boolean;
 }) {
   return (
     <ul>
       {rows.map(({ item, group }) => (
-        <li key={item.key}>
-          <button
-            type="button"
-            draggable
-            onClick={() => onInsert(item)}
-            onDragStart={(event) => {
-              // The canvas decodes this into a real insert at the exact drop spot.
-              event.dataTransfer.setData(NODE_DRAG_TYPE, JSON.stringify(onBuild(item)));
-              event.dataTransfer.effectAllowed = 'copy';
-            }}
-            className="hover:bg-base-200 flex w-full items-center gap-2 rounded px-2 py-1.5 text-left"
-          >
-            <StudioIcon
-              name={item.icon}
-              className="text-base-content/70 inline-flex size-4 shrink-0"
-            />
-            <span className="min-w-0">
-              <span className="block truncate text-sm">{item.label}</span>
-              {item.hint ? (
-                <span className="text-base-content block truncate text-xs">{item.hint}</span>
-              ) : null}
-            </span>
-            {showGroup ? (
-              <span className="text-base-content ml-auto shrink-0 text-xs">{group}</span>
-            ) : null}
-          </button>
-        </li>
+        <PaletteRow
+          key={item.key}
+          item={item}
+          group={showGroup ? group : undefined}
+          surface={surface}
+          onInsert={onInsert}
+          onBuild={onBuild}
+        />
       ))}
     </ul>
+  );
+}
+
+/** One row: a button, a mouse drag source, and a press-and-hold drag source. */
+function PaletteRow({
+  item,
+  group,
+  surface,
+  onInsert,
+  onBuild,
+}: {
+  item: PaletteItem;
+  group?: string;
+  surface: string;
+  onInsert: (item: PaletteItem) => void;
+  onBuild: (item: PaletteItem) => Node;
+}) {
+  // Built at PRESS time, not at render: every insert needs its own ids, and a node
+  // minted once per render would place the same id twice on one page.
+  const dragSource = useDragSource(() => ({ surface, node: onBuild(item) }));
+
+  return (
+    <li>
+      <button
+        type="button"
+        draggable
+        onClick={() => onInsert(item)}
+        onDragStart={(event) => {
+          // The canvas decodes this into a real insert at the exact drop spot.
+          event.dataTransfer.setData(NODE_DRAG_TYPE, JSON.stringify(onBuild(item)));
+          event.dataTransfer.effectAllowed = 'copy';
+        }}
+        {...dragSource}
+        className="hover:bg-base-200 flex w-full items-center gap-2 rounded px-2 py-1.5 text-left"
+      >
+        <StudioIcon name={item.icon} className="text-base-content/70 inline-flex size-4 shrink-0" />
+        <span className="min-w-0">
+          <span className="block truncate text-sm">{item.label}</span>
+          {item.hint ? (
+            <span className="text-base-content block truncate text-xs">{item.hint}</span>
+          ) : null}
+        </span>
+        {group ? <span className="text-base-content ml-auto shrink-0 text-xs">{group}</span> : null}
+      </button>
+    </li>
   );
 }

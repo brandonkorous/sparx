@@ -24,8 +24,9 @@ import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { PieceSettingsPanel } from '../../surfaces/studio/piece-settings-panel';
 import { EmailTagsPanel } from '../../surfaces/studio/email-tags-panel';
 import { catalogFor } from './catalog-scope';
+import { renderStudioIcon } from './studio-icons';
 import { useCanvasPreview, type CanvasPreview } from './preview';
-import { EMAIL_CONTENT_BLOCKS, useEmailPreview } from './email-domain';
+import { EMAIL_CONTENT_BLOCKS, useEmailIdentity, useEmailPreview } from './email-domain';
 import { useEmailColors } from './email-data';
 
 /** A blank brand, so theming degrades to bare defaults rather than crashing while
@@ -58,7 +59,9 @@ export function useStudioHostConfig(): StudioHost | null {
   const config = useSiteConfig();
   const property = useActiveProperty(useActivePropertyId());
   const preview = useCanvasPreview();
-  const emailPreview = useEmailPreview();
+  // `site.*` in an email is THIS business, not a sample — the same identity the
+  // header draws, the theme board names, and the merge-tag panel lists.
+  const emailPreview = useEmailPreview(useEmailIdentity());
   const emailColors = useEmailColors();
   const pickMedia = useMediaPicker();
 
@@ -113,6 +116,10 @@ function buildHost({
     // console that shows somebody else's shop.
     siteName: preview.resolve('site.identity.name'),
     catalog: catalogFor,
+    // The builders' chrome in the console's own icon set, so a bar does not carry
+    // two glyph families at once. studio-icons.tsx on what it does and does not
+    // cover.
+    renderIcon: renderStudioIcon,
     renderHostNode: (node) => drawHostNode(node, { preview: true }),
     resolveBinding: (ref) => preview.resolve(ref),
     // The business's own picture browser, so no image field ever asks for a web

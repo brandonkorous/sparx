@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { resolveEmailDrop } from './drop';
+import { appendEmailSlot, resolveEmailDrop } from './drop';
+import type { EmailNode } from '@wizeworks/silicaui-builder/email';
 import { emailBody, emailButton, emailSection, emailText } from '../testing/fixtures';
 
 describe('resolveEmailDrop', () => {
@@ -77,5 +78,37 @@ describe('resolveEmailDrop', () => {
     });
     expect(landing?.parentId).not.toBe('left');
     expect(landing).toEqual({ parentId: 'row', index: 0 });
+  });
+});
+
+describe('where a block lands with nothing selected', () => {
+  const body = (): EmailNode =>
+    ({
+      kind: 'body',
+      id: 'body',
+      children: [
+        { kind: 'section', id: 's1', children: [{ kind: 'text', id: 't1', html: 'one' }] },
+        { kind: 'section', id: 's2', children: [{ kind: 'text', id: 't2', html: 'two' }] },
+      ],
+    }) as unknown as EmailNode;
+
+  const text = (): EmailNode => ({ kind: 'text', id: 'new', html: 'hi' }) as unknown as EmailNode;
+  const section = (): EmailNode =>
+    ({ kind: 'section', id: 'new', children: [] }) as unknown as EmailNode;
+
+  it('puts a text block in the LAST section, not the body it cannot sit in', () => {
+    // A body holds sections. Appending a text block to it is illegal, so the obvious
+    // act — open Insert, click Text — was refused outright and the row did nothing.
+    expect(appendEmailSlot(body(), text())).toEqual({ parentId: 's2', index: 1 });
+  });
+
+  it('puts a section at the end of the body', () => {
+    expect(appendEmailSlot(body(), section())).toEqual({ parentId: 'body', index: 2 });
+  });
+
+  it('says nowhere when the email holds nowhere it could go', () => {
+    // A real answer, and the caller says it out loud rather than doing nothing.
+    const empty = { kind: 'body', id: 'body', children: [] } as unknown as EmailNode;
+    expect(appendEmailSlot(empty, text())).toBeUndefined();
   });
 });

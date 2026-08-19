@@ -24,10 +24,13 @@ import {
   groupMergeTags,
   resolveEmailExpression,
   EMAIL_CONTENT_BLOCKS,
-  SAMPLE_EMAIL_DATA,
+  emailSampleData,
   type MergeTag,
 } from '@wizeworks/builder-schemas';
 import type { EmailPreviewHost } from '@wizeworks/studio/react';
+import { useActivePropertyId } from '../api/shell-data';
+import { useActiveProperty, useSiteOrigin } from './site-data';
+import { useCanvasPreview } from './preview';
 
 export { EMAIL_CONTENT_BLOCKS, emailMergeTags, groupMergeTags, type MergeTag };
 
@@ -40,10 +43,50 @@ function showable(value: unknown): string | undefined {
   return undefined;
 }
 
-export function useEmailPreview(): EmailPreviewHost {
+/** Who the email says it is FROM. Not a sample — the business really is this one. */
+export interface EmailSenderIdentity {
+  name?: string | null;
+  siteUrl?: string | null;
+  supportEmail?: string | null;
+}
+
+/**
+ * The data the email canvas resolves merge tags against.
+ *
+ * TWO HALVES, and only one of them is a sample. `customer.*` and `order.*` are
+ * genuinely hypothetical — the recipient does not exist yet, and Alex Rivera is the
+ * honest way to show what the tag will do. `site.*` is not hypothetical at all: it
+ * is THIS business, and it is already known.
+ *
+ * Handing the bare sample through meant a welcome email showed "Acme Supply Co." in
+ * six places on a site called Wildroot Flowers. An owner reading that cannot tell
+ * whether the merge tag works, whether their business name is set, or whether they
+ * are looking at someone else's template — which is the same question the theme
+ * board answers by naming the real business on its own preview.
+ */
+/**
+ * The one answer to "who is this email from", for every surface that needs it.
+ *
+ * A hook rather than a value each caller assembles, because the canvas and the merge-tag
+ * reference panel MUST agree — showing `{{site.name}}` as two different businesses on
+ * one screen is worse than showing a sample in both.
+ */
+export function useEmailIdentity(): EmailSenderIdentity {
+  const propertyId = useActivePropertyId();
+  const property = useActiveProperty(propertyId);
+  const origin = useSiteOrigin(propertyId);
+  const preview = useCanvasPreview();
+  const name = preview.resolve('site.identity.name');
+  const siteUrl = origin.data?.origin ?? null;
+  const supportEmail = property.data?.settings?.contact?.email ?? null;
+  return useMemo(() => ({ name, siteUrl, supportEmail }), [name, siteUrl, supportEmail]);
+}
+
+export function useEmailPreview(identity: EmailSenderIdentity): EmailPreviewHost {
+  const { name, siteUrl, supportEmail } = identity;
   return useMemo(() => {
     const resolver = createSilicaResolver({
-      root: SAMPLE_EMAIL_DATA,
+      root: emailSampleData({ name, siteUrl, supportEmail }),
       format: defaultSilicaFormat,
       hideWhenEmpty: true,
     });
@@ -52,5 +95,5 @@ export function useEmailPreview(): EmailPreviewHost {
       resolveBinding: (ref) => showable(path(ref)),
       resolveExpression: (expr) => resolveEmailExpression(expr, path)?.value,
     };
-  }, []);
+  }, [name, siteUrl, supportEmail]);
 }

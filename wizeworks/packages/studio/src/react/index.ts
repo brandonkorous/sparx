@@ -28,6 +28,7 @@ export {
   useDocSnapshot,
   useDocumentStore,
   useHistoryState,
+  useResolutionVersion,
   useSelect,
   useSelectedNode,
   useSelection,
@@ -37,9 +38,10 @@ export {
 } from './context';
 
 export { StudioIcon } from './icon';
+export { ModeSwitch, type StudioMode } from './mode-switch';
 export { FillTabs, FillTabsPanel } from './fill-tabs';
 
-export { Canvas, NODE_DRAG_TYPE, type CanvasDevice } from './canvas/canvas';
+export { Canvas, NODE_DRAG_TYPE, type CanvasDevice, type CanvasMode } from './canvas/canvas';
 export {
   dropPosition,
   resolveDropTarget,
@@ -86,6 +88,12 @@ export { emailStylesheet } from './email/style';
 export { useEmailShortcuts } from './email/shortcuts';
 
 export { TreeBuilder } from './builders/tree-builder';
+export {
+  BuilderToolbar,
+  type BuilderAction,
+  type BuilderViewGroup,
+} from './builders/builder-toolbar';
+export { BUILDER_COLLAPSE_PX, useBuilderFit } from './builders/use-builder-fit';
 export { EmailBuilder } from './builders/email-builder';
 export { ThemeBuilder } from './theme/theme-builder';
 export { ThemeBoard } from './theme/board/board';

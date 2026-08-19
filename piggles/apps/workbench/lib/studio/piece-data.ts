@@ -10,6 +10,7 @@
 // than asking the caller to remember which kind it is holding.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import type { SilicaPieceDto } from '@wizeworks/builder-schemas';
 import type { Node } from '@wizeworks/silicaui-html';
 import { api } from '../api/client';
 import { pieceKeyOf, tenantSymbolId } from './saved-pieces';
@@ -147,9 +148,25 @@ export function useCreatePiece() {
         surfaces: ['page', 'site'],
         silicaTree: input.root,
       });
-      return { id: tenantSymbolId(key), name: input.name, root: input.root, shared: true };
+      return { key, id: tenantSymbolId(key), name: input.name, root: input.root, shared: true };
     },
-    onSuccess: () => {
+    // Seeded, not just invalidated. The caller places an instance of this master the
+    // moment it returns, and a canvas that cannot find one draws "no longer
+    // available" — so waiting on a refetch means the author watches their own work
+    // report itself lost. The invalidation still runs, for the authoritative copy.
+    onSuccess: (piece) => {
+      queryClient.setQueryData<SilicaPieceDto[]>(PIECES_KEY, (prev) => [
+        ...(prev ?? []),
+        {
+          key: piece.key,
+          name: piece.name,
+          group: 'content',
+          icon: 'box',
+          description: null,
+          version: 1,
+          root: piece.root,
+        },
+      ]);
       void queryClient.invalidateQueries({ queryKey: PIECES_KEY });
     },
   });
@@ -158,10 +175,17 @@ export function useCreatePiece() {
 /** A stable library key from a name, with enough entropy that two pieces called
  *  "Contact" from two sites do not collide into one master. */
 function pieceKey(name: string): string {
-  const slug =
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '') || 'piece';
-  return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
+  // An IDENTIFIER, not a URL slug. `ComponentKey` is
+  // `/^[a-z][a-z0-9_]*$/` capped at 56, because the key becomes the placement type
+  // `custom:<key>`. This built a hyphenated slug, so EVERY save-as-piece was
+  // refused with "Request validation failed" and no piece could be created from
+  // the console at all — the name the author typed decided nothing, because every
+  // name failed.
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  // A leading digit fails the same regex, and "3 tips" is an ordinary name.
+  const base = (/^[a-z]/.test(slug) ? slug : `piece_${slug}`).slice(0, 48) || 'piece';
+  return `${base}_${Math.random().toString(36).slice(2, 8)}`;
 }

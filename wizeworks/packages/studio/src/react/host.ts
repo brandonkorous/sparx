@@ -164,6 +164,26 @@ export interface StudioHost {
    */
   inspectorPanels?: (node: AddressableNode | undefined, ctx: InspectorContext) => ReactNode;
 
+  /**
+   * Draw one of the engine's own glyphs with the APP's icon set.
+   *
+   * The package deliberately owns no icon dependency — it renders silica's baked
+   * Lucide markup so it can serve two brands that have picked different sets. That
+   * floor is right for a package and wrong inside an app: a builder toolbar drawn
+   * in Lucide sits beside a Save drawn in the app's own set, and the two glyph
+   * families read as two products a few pixels apart.
+   *
+   * Supply this and the engine asks the app for every glyph it draws by name,
+   * falling back to the baked set for anything the app does not recognise — so a
+   * host answers for the chrome it cares about and leaves the rest alone. The names
+   * are silica's own ('undo', 'monitor', 'sun', 'menu').
+   *
+   * The class name is handed over rather than wrapped around the result, because
+   * an icon library sizes its own glyph: a `size-4` on a box around a FontAwesome
+   * svg does nothing to the svg inside it.
+   */
+  renderIcon?: (name: string, className?: string) => ReactNode;
+
   /** Mint an id for a newly inserted node. Defaults to the engine's own. */
   makeId?: () => string;
 

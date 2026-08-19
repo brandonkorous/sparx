@@ -15,11 +15,19 @@ import { Button } from '@wizeworks/silicaui-react';
 
 export type PreviewWidth = 'phone' | 'tablet' | 'full';
 
-/** Literal classes — a computed width compiles to nothing and the frame silently
- *  stops resizing. */
+/**
+ * Literal classes — a computed width compiles to nothing and the frame silently
+ * stops resizing.
+ *
+ * NOT clamped to the pane. The site inside this iframe lays itself out against the
+ * IFRAME's width, so `max-w-full` on a 700px pane made Tablet 700px wide: it drew
+ * the narrow layout and called it a tablet, and Tablet and Full width rendered
+ * identically. A device preview whose width is not that device's is worse than no
+ * preview, because it is believed. Wider than the pane scrolls, which is honest.
+ */
 const WIDTHS: { value: PreviewWidth; label: string; className: string }[] = [
-  { value: 'phone', label: 'Phone', className: 'w-[390px] max-w-full' },
-  { value: 'tablet', label: 'Tablet', className: 'w-[834px] max-w-full' },
+  { value: 'phone', label: 'Phone', className: 'w-[390px]' },
+  { value: 'tablet', label: 'Tablet', className: 'w-[834px]' },
   { value: 'full', label: 'Full width', className: 'w-full' },
 ];
 

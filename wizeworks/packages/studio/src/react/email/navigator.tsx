@@ -10,14 +10,20 @@
 // uses (`resolveEmailDrop`). A second rule here would let "drop between" mean two
 // different things in two places — and in a closed vocabulary, where half of all
 // aimed drops are illegal, that difference is what an author would feel.
+//
+// By finger as well as by mouse. Touch is never delivered the browser's own drag,
+// so this rail could select and rename but not REORDER — press and hold a row to
+// lift it.
 
 import { useCallback, useMemo, useRef, useState, type DragEvent, type KeyboardEvent } from 'react';
 import { Input } from '@wizeworks/silicaui-react';
 import type { EmailDoc } from '../../documents/types';
+import { docKey } from '../../documents/types';
 import { resolveEmailDrop } from '../../email/drop';
 import { emailChildren, findEmailNode } from '../../email/walk';
 import { useApply, useDoc, useDocSnapshot, useSelect } from '../context';
-import { dropPosition, type DropPosition } from '../canvas/drop';
+import { dropPosition, type DropPosition, type Point } from '../canvas/drop';
+import { useDragCargo, useDragSource, useDropZone } from '../drag/pointer-drag';
 import { StudioIcon } from '../icon';
 import { emailLayerRows, type EmailLayerRow } from './layers';
 
@@ -30,51 +36,114 @@ export function EmailNavigator() {
   const [renaming, setRenaming] = useState<string | null>(null);
   const [dropHint, setDropHint] = useState<{ id: string; where: DropPosition } | null>(null);
   const draggingRef = useRef<string | null>(null);
+  const [list, setList] = useState<HTMLUListElement | null>(null);
 
   const root = doc.document.root;
   const rows = useMemo(() => emailLayerRows(root), [root]);
 
-  const onRowDragOver = useCallback(
-    (event: DragEvent<HTMLLIElement>, row: EmailLayerRow) => {
-      const moving = draggingRef.current;
-      if (!moving || moving === row.id) return;
-      const node = findEmailNode(root, row.id);
-      if (!node) return;
-
-      const box = event.currentTarget.getBoundingClientRect();
+  /**
+   * The hint for a point over one row, or null if that row cannot take the drop.
+   *
+   * A point and an element rather than an event: a mouse drag names the row it is
+   * over, and a finger drag has its pointer captured by the row it STARTED on, so
+   * the row underneath has to be looked up.
+   */
+  const hintAt = useCallback(
+    (point: Point, element: HTMLElement | null, moving: string | null) => {
+      const id = element?.dataset.layerId;
+      if (!element || !id || !moving || moving === id) return null;
+      const node = findEmailNode(root, id);
+      if (!node) return null;
+      const box = element.getBoundingClientRect();
       const where = dropPosition(
-        { x: event.clientX, y: event.clientY },
+        point,
         { top: box.top, left: box.left, width: box.width, height: box.height },
         'y',
-        { canHold: row.container, isEmpty: emailChildren(node).length === 0 }
+        {
+          canHold: element.dataset.layerContainer === 'true',
+          isEmpty: emailChildren(node).length === 0,
+        }
       );
-      event.preventDefault();
-      setDropHint((current) =>
-        current?.id === row.id && current.where === where ? current : { id: row.id, where }
-      );
+      return { id, where };
     },
     [root]
   );
 
-  const onRowDrop = useCallback(
-    (event: DragEvent<HTMLLIElement>, row: EmailLayerRow) => {
-      event.preventDefault();
-      const hint = dropHint;
-      const moving = draggingRef.current;
-      draggingRef.current = null;
+  /** Land a move. One path, whichever input started it. */
+  const commit = useCallback(
+    (hint: { id: string; where: DropPosition } | null, moving: string | null) => {
       setDropHint(null);
-      if (!moving || hint?.id !== row.id || moving === row.id) return;
-
+      if (!hint || !moving || moving === hint.id) return;
       const node = findEmailNode(root, moving);
       if (!node) return;
-      const slot = resolveEmailDrop(root, { targetId: row.id, position: hint.where }, node, {
+      const slot = resolveEmailDrop(root, { targetId: hint.id, position: hint.where }, node, {
         id: moving,
       });
       if (!slot) return;
       apply('Move block', [{ kind: 'email.move', id: moving, ...slot }]);
     },
-    [apply, dropHint, root]
+    [apply, root]
   );
+
+  const onRowDragOver = useCallback(
+    (event: DragEvent<HTMLLIElement>) => {
+      const hint = hintAt(
+        { x: event.clientX, y: event.clientY },
+        event.currentTarget,
+        draggingRef.current
+      );
+      if (!hint) return;
+      event.preventDefault();
+      setDropHint((current) =>
+        current?.id === hint.id && current.where === hint.where ? current : hint
+      );
+    },
+    [hintAt]
+  );
+
+  const onRowDrop = useCallback(
+    (event: DragEvent<HTMLLIElement>) => {
+      event.preventDefault();
+      const moving = draggingRef.current;
+      draggingRef.current = null;
+      commit(hintAt({ x: event.clientX, y: event.clientY }, event.currentTarget, moving), moving);
+    },
+    [commit, hintAt]
+  );
+
+  // ---- the same gesture, by finger ---------------------------------------
+  const surface = `${docKey(doc)}#layers`;
+  const cargo = useDragCargo();
+  const lifted = cargo?.surface === surface ? (cargo.moveId ?? null) : null;
+
+  /** The row under a captured pointer. */
+  const rowAt = useCallback((point: Point): HTMLElement | null => {
+    const element = document.elementFromPoint(point.x, point.y);
+    return element instanceof HTMLElement ? element.closest('[data-layer-id]') : null;
+  }, []);
+
+  const liftFrom = useCallback(
+    (event: { target: EventTarget | null }) => {
+      const row =
+        event.target instanceof HTMLElement
+          ? event.target.closest<HTMLElement>('[data-layer-id]')
+          : null;
+      const id = row?.dataset.layerId;
+      // The body row does not lift. It is the email.
+      if (!id || row?.dataset.layerLift !== 'true') return null;
+      return { surface, moveId: id };
+    },
+    [surface]
+  );
+  const dragSource = useDragSource(liftFrom);
+
+  useDropZone(list, {
+    surface,
+    onOver: (point, dragged) => setDropHint(hintAt(point, rowAt(point), dragged.moveId ?? null)),
+    onLeave: () => setDropHint(null),
+    onDrop: (point, dragged) =>
+      commit(hintAt(point, rowAt(point), dragged.moveId ?? null), dragged.moveId ?? null),
+  });
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLUListElement>) => {
@@ -98,11 +167,13 @@ export function EmailNavigator() {
           `treeitem` per row is what puts the arrow keys, the selected state and
           the nesting level in front of a screen reader. */}
       <ul
+        ref={setList}
         role="tree"
         aria-label="Email layers"
         className="min-h-0 flex-1 overflow-auto p-1"
         tabIndex={0}
         onKeyDown={onKeyDown}
+        {...dragSource}
       >
         {rows.map((row) => (
           <li
@@ -110,6 +181,9 @@ export function EmailNavigator() {
             role="treeitem"
             aria-selected={selection.includes(row.id)}
             aria-level={row.depth + 1}
+            data-layer-id={row.id}
+            data-layer-lift={!row.locked && row.depth > 0 ? 'true' : undefined}
+            data-layer-container={row.container ? 'true' : undefined}
             draggable={!row.locked && row.depth > 0}
             onDragStart={(event) => {
               if (row.locked || row.depth === 0) {
@@ -120,9 +194,9 @@ export function EmailNavigator() {
               event.dataTransfer.effectAllowed = 'move';
               event.dataTransfer.setData('text/plain', row.id);
             }}
-            onDragOver={(event) => onRowDragOver(event, row)}
+            onDragOver={onRowDragOver}
             onDragLeave={() => setDropHint(null)}
-            onDrop={(event) => onRowDrop(event, row)}
+            onDrop={onRowDrop}
             onClick={() => select([row.id])}
             onDoubleClick={() => setRenaming(row.id)}
             onKeyDown={(event) => {
@@ -131,7 +205,7 @@ export function EmailNavigator() {
               if (event.key === 'Enter') select([row.id]);
               if (event.key === 'F2') setRenaming(row.id);
             }}
-            className={rowClasses(row, selection.includes(row.id), dropHint)}
+            className={rowClasses(row, selection.includes(row.id), dropHint, lifted === row.id)}
           >
             <span className="shrink-0 pl-1" aria-hidden>
               <StudioIcon name={row.icon} className="text-base-content/70 inline-flex size-4" />
@@ -191,7 +265,8 @@ function RenameField({
 function rowClasses(
   row: EmailLayerRow,
   selected: boolean,
-  hint: { id: string; where: DropPosition } | null
+  hint: { id: string; where: DropPosition } | null,
+  lifted: boolean
 ): string {
   const indent = ['pl-2', 'pl-5', 'pl-8', 'pl-11', 'pl-14', 'pl-17', 'pl-20'];
   const classes = [
@@ -199,6 +274,8 @@ function rowClasses(
     indent[Math.min(row.depth, indent.length - 1)] ?? 'pl-20',
     selected ? 'bg-primary text-primary-content' : 'hover:bg-base-200',
   ];
+  // Faded because it is ELSEWHERE — held under a finger. This is the hole it left.
+  if (lifted) classes.push('opacity-50');
   const where = hint?.id === row.id ? hint.where : null;
   if (where === 'before') classes.push('border-secondary border-t-2');
   if (where === 'after') classes.push('border-secondary border-b-2');

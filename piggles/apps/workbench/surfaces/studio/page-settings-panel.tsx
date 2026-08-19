@@ -141,7 +141,11 @@ function PageAddress({ doc }: { doc: PageDoc }) {
         }}
       />
       <FieldDescription>
-        What comes after your web address — “/about” shows at yoursite.com/about.
+        {doc.slug
+          ? 'What comes after your web address — “/about” shows at yoursite.com/about.'
+          : // Empty means HOME, and saying so is what stops three pages quietly
+            // claiming the same address with only one of them reachable.
+            'Empty means this is your home page — the first thing people see. Give it an address like “/about” if it is not.'}
       </FieldDescription>
     </Field>
   );

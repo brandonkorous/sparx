@@ -19,24 +19,50 @@
 // They are called Light and Dark, not day and night. Dark mode is a setting a
 // visitor chooses and keeps — plenty of people are on it at nine in the morning —
 // so naming it after a time of day describes the wrong thing.
+//
+// The bar across the top is the SAME bar the page and email builders wear
+// (builders/builder-toolbar.tsx). It used to be a third copy, and the copies had
+// drifted: this one's undo was a circle where theirs were squares, and its
+// light/dark switch wore labels where theirs did not.
 
-import { useRef, useState } from 'react';
-import { Button, Tooltip } from '@wizeworks/silicaui-react';
+import { useRef, useState, type ReactNode } from 'react';
 import type { ThemeDoc } from '../../documents/types';
-import { useDoc, useDocumentStore, useHistoryState } from '../context';
+import { useDoc, useDocumentStore } from '../context';
 import { useUndoShortcuts } from '../builders/shortcuts';
-import { StudioIcon } from '../icon';
+import { BuilderToolbar, type BuilderAction } from '../builders/builder-toolbar';
+import { useBuilderFit } from '../builders/use-builder-fit';
 import { ThemeBoard } from './board/board';
 import { ThemeEditProvider, type ThemeMode } from './edit-context';
 import { ThemeStylesheet } from './island';
 import { ThemeRail } from './rail';
 
+/** The same two names, the same two glyphs, as every other builder's palette
+ *  switch — this pane EDITS the mode it is switched to and the others only LOOK
+ *  at it, but it is the same question about the same two bags of colour. */
+const MODES = [
+  { value: 'light', label: 'Light', icon: 'sun' },
+  { value: 'dark', label: 'Dark', icon: 'moon' },
+] as const;
+
 export function ThemeBuilder({
-  toolbar,
+  toolbarLabel = 'Look & feel controls',
+  save,
+  actions,
+  controls,
+  attention,
   statusBar,
 }: {
-  toolbar?: React.ReactNode;
-  statusBar?: React.ReactNode;
+  /** Names the bar for a screen reader — several builders are open at once. */
+  toolbarLabel?: string;
+  /** The app's commit. Never folds, at any width. */
+  save?: ReactNode;
+  /** The app's other offers — Preview, History, Publish. Fold. */
+  actions?: readonly BuilderAction[];
+  /** Anything bespoke of the app's — the look picker. Relocated as-is. */
+  controls?: ReactNode;
+  /** Marks the folded popover while there is work to publish. */
+  attention?: boolean;
+  statusBar?: ReactNode;
 }) {
   const doc = useDoc<ThemeDoc>();
   const store = useDocumentStore();
@@ -44,34 +70,39 @@ export function ThemeBuilder({
   // `tabIndex` so the pane can hold focus and its shortcuts stay its own — several
   // documents are open at once, and undo belongs to the one being looked at.
   const paneRef = useRef<HTMLDivElement>(null);
+  const collapsed = useBuilderFit(paneRef);
   useUndoShortcuts(paneRef, store);
 
   return (
     <ThemeEditProvider mode={mode}>
-      <div ref={paneRef} tabIndex={-1} className="flex h-full min-h-0 flex-col outline-none">
+      <div
+        ref={paneRef}
+        tabIndex={-1}
+        className="@container/builder flex h-full min-h-0 flex-col outline-none"
+      >
         <ThemeStylesheet theme={doc.theme} />
 
-        <div className="border-base-300 flex shrink-0 flex-wrap items-center gap-2 border-b px-3 py-2">
-          <ModeButton
-            icon="sun"
-            label="Light"
-            selected={mode === 'light'}
-            onSelect={() => setMode('light')}
-          />
-          <ModeButton
-            icon="moon"
-            label="Dark"
-            selected={mode === 'dark'}
-            onSelect={() => setMode('dark')}
-          />
-          <span className="bg-base-300 mx-1 h-6 w-px" aria-hidden />
-          <UndoRedo />
-          <div className="ml-auto flex items-center gap-2">{toolbar}</div>
-        </div>
+        <BuilderToolbar
+          label={toolbarLabel}
+          collapsed={collapsed}
+          views={[
+            {
+              label: 'Edit the colours for',
+              value: mode,
+              onValue: (next) => setMode(next as ThemeMode),
+              options: MODES,
+            },
+          ]}
+          save={save}
+          actions={actions}
+          controls={controls}
+          attention={attention}
+        />
 
         {/* `@container` is on the WRAPPER, never on the element that also carries
             the `@3xl:` classes — an element cannot query itself, and with no other
-            container above it the split silently never happens. */}
+            container above it the split silently never happens. Unnamed on purpose:
+            these query the SPLIT's own box, not the pane the bar measures. */}
         <div className="@container flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col @3xl:flex-row">
             <div className="border-base-300 flex max-h-96 min-h-0 shrink-0 flex-col border-b @3xl:max-h-none @3xl:w-96 @3xl:border-r @3xl:border-b-0">
@@ -90,73 +121,5 @@ export function ThemeBuilder({
         ) : null}
       </div>
     </ThemeEditProvider>
-  );
-}
-
-/**
- * Step back and forward.
- *
- * Visible, not only on the keyboard: the person changing these colors is not
- * expected to know ctrl+Z, and a control that repaints an entire site needs a way
- * back that can be SEEN. One drag is one step — the store folds every frame of it
- * into a single entry.
- */
-function UndoRedo() {
-  const store = useDocumentStore();
-  const { canUndo, canRedo } = useHistoryState();
-
-  return (
-    <>
-      <Tooltip
-        content={store.undoLabel ? `Undo ${store.undoLabel.toLowerCase()}` : 'Nothing to undo'}
-      >
-        <Button
-          size="sm"
-          shape="circle"
-          disabled={!canUndo}
-          aria-label="Undo"
-          onClick={() => store.undo()}
-        >
-          <StudioIcon name="undo" className="text-base" />
-        </Button>
-      </Tooltip>
-      <Tooltip content="Redo">
-        <Button
-          size="sm"
-          shape="circle"
-          disabled={!canRedo}
-          aria-label="Redo"
-          onClick={() => store.redo()}
-        >
-          <StudioIcon name="redo" className="text-base" />
-        </Button>
-      </Tooltip>
-    </>
-  );
-}
-
-/** Selection is a filled shape. The one you are not on carries no color at all,
- *  which is what a bare `.btn` is for. */
-function ModeButton({
-  icon,
-  label,
-  selected,
-  onSelect,
-}: {
-  icon: string;
-  label: string;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <Button
-      size="sm"
-      aria-pressed={selected}
-      {...(selected ? { color: 'primary' as const } : {})}
-      onClick={onSelect}
-    >
-      <StudioIcon name={icon} className="text-base" />
-      {label}
-    </Button>
   );
 }

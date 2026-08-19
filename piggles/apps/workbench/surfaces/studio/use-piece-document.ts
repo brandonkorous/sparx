@@ -8,8 +8,8 @@
 // an edit here repaints every instance in every open page pane as it is typed, with
 // nothing in between.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ComponentDoc, DocumentStore } from '@wizeworks/studio';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import type { ComponentDoc, DocumentStore, StudioSession } from '@wizeworks/studio';
 import { useStudioBinding } from '../../lib/studio/provider';
 import { useSavePiece } from '../../lib/studio/piece-data';
 import { pieceKeyOf } from '../../lib/studio/saved-pieces';
@@ -26,15 +26,29 @@ export interface PieceDocumentState {
   save: () => Promise<void>;
 }
 
+/** Subscribing to a session that is not up yet: nothing to hear, nothing to undo. */
+const NO_SESSION = () => () => undefined;
+const NO_VERSION = () => 0;
+
+/** The session's resolution counter, tolerating a session that is not up yet. */
+function useSessionResolution(session: StudioSession | null): number {
+  return useSyncExternalStore(
+    session?.subscribeResolution ?? NO_SESSION,
+    session?.getResolutionVersion ?? NO_VERSION,
+    session?.getResolutionVersion ?? NO_VERSION
+  );
+}
+
 /** The one store this piece lives in, however many panes are looking at it. */
 function useOpenPiece(symbolId: string | null) {
   const { session } = useStudioBinding();
   const [store, setStore] = useState<DocumentStore<ComponentDoc> | null>(null);
   const [missing, setMissing] = useState(false);
 
-  // The library arrives asynchronously, so this re-runs as it lands rather than
-  // deciding "missing" from the first empty session.
-  const snapshot = session?.getSnapshot();
+  // Subscribed, not sampled. The library arrives asynchronously, and a read taken
+  // during render only updates when something else re-renders this hook — which is
+  // how a piece saved a moment ago reported itself missing.
+  const version = useSessionResolution(session);
 
   useEffect(() => {
     if (!session || !symbolId) {
@@ -62,8 +76,8 @@ function useOpenPiece(symbolId: string | null) {
         root: master.root,
       })
     );
-    // `snapshot` is the signal that the library has changed under us.
-  }, [session, symbolId, snapshot]);
+    // `version` is the signal that the library has changed under us.
+  }, [session, symbolId, version]);
 
   return { store, missing };
 }

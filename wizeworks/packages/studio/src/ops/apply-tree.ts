@@ -74,11 +74,22 @@ export function applyTreeOp(root: Node, op: TreeOp): TreeApplied | undefined {
     }
 
     case 'node.replace': {
+      // The replacement must be addressable, for the same reason an insert must be:
+      // an id-free node renders correctly and can never be selected, dropped on, or
+      // — the case that bit — undone.
+      if (!op.node.id) return undefined;
       const place = findPlace(root, op.id);
       if (!place) return undefined;
       const next = replaceNode(root, op.id, op.node);
       if (!next) return undefined;
-      return { root: next, inverse: { kind: 'node.replace', id: op.id, node: place.node } };
+      // Invert against the id that is now IN THE TREE, not the one that was.
+      // A replacement is allowed to carry its own id — Save as piece swapped a
+      // section for a freshly minted instance node — and inverting against the
+      // departed id produced a batch whose inverse could never find its subject.
+      // `undo()` refuses an inapplicable batch and pushes it back, so the button
+      // stayed enabled and did nothing however many times it was pressed: the one
+      // action an author cannot recover from is the one they cannot take back.
+      return { root: next, inverse: { kind: 'node.replace', id: op.node.id, node: place.node } };
     }
 
     case 'node.setClass':

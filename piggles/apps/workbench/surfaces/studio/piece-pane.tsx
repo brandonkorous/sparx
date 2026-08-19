@@ -14,12 +14,17 @@ import { useEffect } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { DocumentProvider, TreeBuilder, useDocSnapshot } from '@wizeworks/studio/react';
+import {
+  DocumentProvider,
+  TreeBuilder,
+  useDocSnapshot,
+  type BuilderAction,
+} from '@wizeworks/studio/react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { OpenHistory, OpenPreview } from './open-history';
+import { useHistoryAction, usePreviewAction } from './open-history';
 import { PiecesList } from './pieces-list';
 import { usePieceDocument, type PieceDocumentState } from './use-piece-document';
 
@@ -85,28 +90,30 @@ function PiecePaneBody({
 
   useDirtySource(dirty, 'Your changes to this saved piece have not been saved.');
 
+  const preview = usePreviewAction(ctx);
+  const history = useHistoryAction(ctx);
+  // A piece has no Publish of its own — it goes live with whatever page or layout
+  // carries it. So this list is only the two ways of looking at it.
+  const actions: BuilderAction[] = [preview, history];
+
   return (
     <TreeBuilder
-      toolbar={
-        <>
-          <OpenPreview ctx={ctx} />
-          <OpenHistory ctx={ctx} />
-          {/* Where the master lives is a real consequence, not a label: editing a
-              shared piece changes it on every site this business owns. */}
-          <Badge color={state.shared ? 'info' : 'primary'} variant="soft">
-            {state.shared ? 'Used on all your sites' : 'This site only'}
-          </Badge>
-          <Button
-            size="sm"
-            color="primary"
-            disabled={!dirty || state.saving}
-            onClick={() => void state.save()}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            {state.saving ? 'Saving…' : 'Save'}
-          </Button>
-        </>
+      toolbarLabel="Saved piece controls"
+      save={
+        <Button
+          size="sm"
+          color="primary"
+          className="shrink-0 whitespace-nowrap"
+          disabled={!dirty || state.saving}
+          onClick={() => void state.save()}
+        >
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+          {state.saving ? 'Saving…' : 'Save'}
+        </Button>
       }
+      actions={actions}
+      // No `attention`: a piece has no Publish, so there is never anything folded
+      // away that a person needs to be told about.
       statusBar={<PieceStatus dirty={dirty} shared={state.shared} error={state.error} />}
     />
   );
@@ -121,12 +128,21 @@ function PieceStatus({
   shared: boolean;
   error: string | null;
 }) {
+  return (
+    <>
+      {/* Where the master lives is a real consequence: editing a shared piece changes
+          it on every site this business owns. It sat on the TOOLBAR, spending ~150px
+          of a phone's row on a fact that never changes. A bar is for controls. */}
+      <Badge color={shared ? 'info' : 'primary'} variant="soft">
+        {shared ? 'Used on all your sites' : 'This site only'}
+      </Badge>
+      <PieceSaveState dirty={dirty} error={error} />
+    </>
+  );
+}
+
+function PieceSaveState({ dirty, error }: { dirty: boolean; error: string | null }) {
   if (error) return <span className="text-error">{error}</span>;
   if (dirty) return <span>Not saved yet</span>;
-  return (
-    <span>
-      Saved. It goes live wherever it is used, when you publish that page
-      {shared ? ' — on any of your sites.' : '.'}
-    </span>
-  );
+  return <span>Saved. It goes live wherever it is used, when you publish that page.</span>;
 }

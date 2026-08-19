@@ -68,6 +68,14 @@ export interface RenderContext {
   editableIds: Set<string> | null;
   /** Where a drop would land, drawn as an edge or a ring while dragging. */
   dropHint: DropHint | null;
+  /**
+   * The node currently in the air on a press-and-hold drag.
+   *
+   * A mouse drag carries its own ghost and needs nothing; a finger drag has no
+   * ghost at all, so without this the only evidence that a press-and-hold had
+   * registered was a drop indicator somewhere else on the page.
+   */
+  liftedId?: string | null;
 }
 
 export interface DropHint {
@@ -81,6 +89,20 @@ export function isEditable(ctx: RenderContext, id: string | undefined): boolean 
 }
 
 /** The outline utilities a node wears for its current state. */
+/**
+ * Selection and drop chrome — the CONSOLE's colors, never the tenant's.
+ *
+ * These classes are painted on nodes INSIDE the canvas, which is scoped to the
+ * theme being edited, so `outline-primary` here resolved to the SITE's primary.
+ * A tenant whose brand colour sits near their own background got a selection
+ * outline they could not see, and every author saw the outline change colour when
+ * they changed their brand — chrome reporting on the thing it is chrome for.
+ *
+ * `--studio-select` / `--studio-drop` are set on the scroll container in
+ * `canvas.tsx`, one level OUTSIDE the theme scope, so they inherit in carrying the
+ * console's own primary and secondary. Same rule as the theme builder's colour
+ * tiles: a control must not wear the thing it edits.
+ */
 function stateClasses(ctx: RenderContext, node: AddressableNode): string {
   const id = node.id;
   if (!id) return '';
@@ -88,22 +110,35 @@ function stateClasses(ctx: RenderContext, node: AddressableNode): string {
   const classes: string[] = [];
 
   if (ctx.selectedIds.includes(id)) {
-    classes.push('outline-primary outline outline-2 -outline-offset-2');
+    classes.push('outline-(--studio-select) outline outline-2 -outline-offset-2');
   } else if (ctx.hoverId === id && editable) {
-    classes.push('outline-primary/50 outline outline-1 -outline-offset-1');
+    classes.push(
+      'outline-[color-mix(in_oklab,var(--studio-select)_50%,transparent)] outline outline-1 -outline-offset-1'
+    );
   }
+
+  // Faded because it is ELSEWHERE — the author is holding it, and this is the
+  // hole it left. The one reading of faded ink this design system asks for.
+  if (ctx.liftedId === id) classes.push('opacity-50');
 
   if (ctx.dropHint?.targetId === id) {
     classes.push(
       ctx.dropHint.position === 'inside'
-        ? 'outline-secondary outline outline-2 outline-dashed -outline-offset-2'
-        : 'outline-secondary outline outline-2 -outline-offset-2'
+        ? 'outline-(--studio-drop) outline outline-2 outline-dashed -outline-offset-2'
+        : 'outline-(--studio-drop) outline outline-2 -outline-offset-2'
     );
   }
 
   // Chrome around an editable page body reads as context, not as content the
   // author forgot they could touch.
-  if (!editable) classes.push('pointer-events-none select-none');
+  //
+  // `pointer-events` INHERITS, and the editable page body is spliced into the
+  // Outlet INSIDE that chrome — so switching it off on the frame switched it off
+  // for the whole page too, and every click on a page canvas fell through to the
+  // wallpaper. The Layers rail still worked, which is what made it look like a
+  // quirk rather than the page builder being unusable with a mouse. Re-arming it
+  // on the editable node is what stops the cascade at the boundary.
+  classes.push(editable ? 'pointer-events-auto' : 'pointer-events-none select-none');
 
   return classes.join(' ');
 }

@@ -91,3 +91,29 @@ export function resolveEmailDrop(
   }
   return undefined;
 }
+
+/**
+ * Where a block lands when NOTHING is selected — the end of the email.
+ *
+ * "The end" is not the body, for most blocks. A body holds sections; a text block, a
+ * button and an image live inside one. Appending them to the body is illegal, so the
+ * obvious act — open Insert, click Text — was simply refused, and the author was left
+ * clicking a row that did nothing.
+ *
+ * So: the LAST place at the end of the email that can actually hold this block. For a
+ * section that is the body; for a text block it is the last section already there.
+ * Undefined only when the email holds nowhere it could go at all, which is a real
+ * answer worth saying out loud rather than a silent no-op.
+ */
+export function appendEmailSlot(root: EmailNode, node: EmailNode): EmailDropTarget | undefined {
+  if (canHold(root, node)) return { parentId: root.id, index: emailChildren(root).length };
+
+  const children = emailChildren(root);
+  for (let i = children.length - 1; i >= 0; i -= 1) {
+    const child = children[i];
+    if (!child) continue;
+    const nested = appendEmailSlot(child, node);
+    if (nested) return nested;
+  }
+  return undefined;
+}

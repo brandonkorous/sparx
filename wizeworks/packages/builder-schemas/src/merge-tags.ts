@@ -19,7 +19,7 @@ import {
   type BindingCatalog,
   type FieldKind,
 } from './binding';
-import { SAMPLE_EMAIL_DATA } from './email-tokens';
+import { emailSampleData, SAMPLE_EMAIL_DATA } from './email-tokens';
 import { resolvePath } from './runtime';
 
 /** One discoverable merge token, with everything the UI + MCP need to present it. */
@@ -101,9 +101,22 @@ export function catalogMergeTags(catalog: BindingCatalog, opts: MergeTagOptions 
  *  per-tenant catalog merges in CMS COLLECTION sources, but those are arrays
  *  (iterated, not flat tokens), so the flat token list is the constant email set.
  *  The historical `recipient` alias is hidden in favor of canonical `customer.*`. */
-export function emailMergeTags(): MergeTag[] {
+/**
+ * The merge tags an email can use, with an example of what each produces.
+ *
+ * `identity` names the business, and passing it matters more here than anywhere:
+ * this panel is the REFERENCE an author reads to learn what a tag does. Left on the
+ * bare sample it showed `{{site.name}}` → "Acme Supply Co." beside a canvas already
+ * rendering the real business — two surfaces disagreeing about one tag, which
+ * teaches an owner that neither can be trusted.
+ */
+export function emailMergeTags(identity?: {
+  name?: string | null;
+  siteUrl?: string | null;
+  supportEmail?: string | null;
+}): MergeTag[] {
   return catalogMergeTags(EMAIL_CATALOG, {
-    sampleData: SAMPLE_EMAIL_DATA,
+    sampleData: identity ? emailSampleData(identity) : SAMPLE_EMAIL_DATA,
     personalizedRoots: EMAIL_PERSONALIZED_ROOTS,
     excludeKeys: ['recipient'],
   });

@@ -14,14 +14,19 @@ import { useEffect } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
 import { faCloudArrowUp, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { DocumentProvider, EmailBuilder, useDocSnapshot } from '@wizeworks/studio/react';
+import {
+  DocumentProvider,
+  EmailBuilder,
+  useDocSnapshot,
+  type BuilderAction,
+} from '@wizeworks/studio/react';
 import type { EmailDoc } from '@wizeworks/studio';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { EmailsList } from './emails-list';
-import { OpenHistory, OpenPreview } from './open-history';
+import { useHistoryAction, usePreviewAction } from './open-history';
 import { useEmailDocument, type EmailDocumentState } from './use-email-document';
 
 export function EmailPaneSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -83,47 +88,55 @@ function EmailPaneBody({
 
   useDirtySource(dirty, 'Your changes to this email have not been saved.');
 
+  const actions = useEmailActions(ctx, state);
+
   return (
     <EmailBuilder
-      toolbar={<EmailActions ctx={ctx} state={state} unsaved={dirty} />}
+      toolbarLabel="Email editor controls"
+      save={<SaveEmail state={state} unsaved={dirty} />}
+      actions={actions}
+      // Publish folds away on a narrow pane; the status line keeps saying there is
+      // something to publish, and this marks where the control went.
+      attention={doc.unpublished}
       statusBar={<EmailStatus dirty={dirty} unpublished={doc.unpublished} error={state.error} />}
     />
   );
 }
 
-function EmailActions({
-  ctx,
-  state,
-  unsaved,
-}: {
-  ctx: SurfaceContext;
-  state: EmailDocumentState;
-  unsaved: boolean;
-}) {
+/** What this pane OFFERS — all foldable, so each carries its own label. Publish is
+ *  here and Save is not: Publish is lifecycle on a stored document, a Save IS the
+ *  storing, and an unreachable Save is work that stops existing. */
+function useEmailActions(ctx: SurfaceContext, state: EmailDocumentState): BuilderAction[] {
+  const preview = usePreviewAction(ctx);
+  const history = useHistoryAction(ctx);
+  return [
+    preview,
+    history,
+    {
+      label: state.publishing ? 'Publishing…' : 'Publish',
+      title: 'Make this the version recipients get',
+      icon: <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />,
+      emphasis: 'loud',
+      disabled: state.publishing,
+      onClick: () => void state.publish(),
+    },
+  ];
+}
+
+/** The commit. Never folds, at any width — see builder-toolbar.tsx. */
+function SaveEmail({ state, unsaved }: { state: EmailDocumentState; unsaved: boolean }) {
   return (
-    <>
-      <OpenPreview ctx={ctx} />
-      <OpenHistory ctx={ctx} />
-      <Button
-        size="sm"
-        color="primary"
-        variant="soft"
-        disabled={!unsaved || state.saving}
-        onClick={() => void state.save()}
-      >
-        <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-        {state.saving ? 'Saving…' : 'Save'}
-      </Button>
-      <Button
-        size="sm"
-        color="primary"
-        disabled={state.publishing}
-        onClick={() => void state.publish()}
-      >
-        <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />
-        {state.publishing ? 'Publishing…' : 'Publish'}
-      </Button>
-    </>
+    <Button
+      size="sm"
+      color="primary"
+      variant="soft"
+      className="shrink-0 whitespace-nowrap"
+      disabled={!unsaved || state.saving}
+      onClick={() => void state.save()}
+    >
+      <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
+      {state.saving ? 'Saving…' : 'Save'}
+    </Button>
   );
 }
 

@@ -169,3 +169,40 @@ describe('field ops', () => {
     ).toBeUndefined();
   });
 });
+
+describe('replacing a node with one that carries a DIFFERENT id', () => {
+  // Save as piece does exactly this: the selected section is swapped for an
+  // instance node standing in its place.
+  const swap = (): TreeOp => ({
+    kind: 'node.replace',
+    id: 'a',
+    node: { ...el('instance'), instanceOf: 'tenant:welcome_band' },
+  });
+
+  it('round-trips, because the inverse addresses the id now IN the tree', () => {
+    // Inverted against the DEPARTED id, this batch had no applicable inverse.
+    // `DocumentStore.undo` refuses one it cannot apply and pushes it back, so the
+    // Undo button stayed enabled and did nothing, however many times it was
+    // pressed — the author could not take back the one action that reshaped
+    // their page.
+    const { after, restored } = roundTrip(tree(), swap());
+    expect(findNode(after, 'a')).toBeUndefined();
+    expect(findNode(after, 'instance')).toBeDefined();
+    expect(restored).toEqual(tree());
+  });
+
+  it('redoes after the undo, back to the instance', () => {
+    const applied = applyTreeOp(tree(), swap())!;
+    const undone = applyTreeOp(applied.root, applied.inverse)!;
+    const again = applyTreeOp(undone.root, swap());
+    expect(again).toBeDefined();
+    expect(findNode(again!.root, 'instance')).toBeDefined();
+  });
+
+  it('refuses a replacement with no id at all', () => {
+    // An unaddressable node renders correctly and can never be selected, dropped
+    // on, or undone — the same failure the id healing on open exists to prevent.
+    const idFree = { kind: 'element' as const, tag: 'div', children: [] };
+    expect(applyTreeOp(tree(), { kind: 'node.replace', id: 'a', node: idFree })).toBeUndefined();
+  });
+});

@@ -131,12 +131,24 @@ export function resolveEmailExpression(
 // `storeUrl` are back-compat aliases (the store→site, then site.* renames) so a
 // `{{tenant.siteUrl}}` / `{{tenant.storeUrl}}` authored before the rename still
 // resolves on the canvas.
+/**
+ * The stand-in for a business whose own details are not known yet — mid-load, or a
+ * field the owner has not filled in.
+ *
+ * DELIBERATELY NOT A COMPANY. It used to be "Acme Supply Co." with a
+ * `help@acme.example` address, which reads as somebody else's shop rather than as a
+ * blank: an owner seeing it cannot tell whether the tag is broken, whether their own
+ * details are missing, or whether they are looking at a template that was never
+ * theirs. A visibly generic placeholder answers that question by looking like what
+ * it is. (`emailSampleData` replaces every one of these the moment a real value
+ * exists.)
+ */
 const IDENTITY_SAMPLE = {
-  name: 'Acme Supply Co.',
+  name: 'Your business',
   url: '#',
   siteUrl: '#',
   storeUrl: '#',
-  supportEmail: 'help@acme.example',
+  supportEmail: 'hello@yourbusiness.example',
 };
 
 // A neutral product-thumbnail placeholder for the editor CANVAS only. Line-item and
@@ -353,7 +365,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
  *  (docs/93) — the canvas's "reads like a real email" gloss. `data` defaults to the
  *  generic placeholders; the canvas passes `emailSampleData(tenant)` so KNOWN
  *  tenant values (the store's real name, etc.) resolve like the actual send instead
- *  of "Acme Supply Co.". A string with no `{{token}}` is returned unchanged, so
+ *  of the business name. A string with no `{{token}}` is returned unchanged, so
  *  it's a safe no-op for non-email content. */
 export function sampleEmailText(
   input: string,

@@ -10,13 +10,20 @@
 // list is always vertical, so the axis is fixed and only the container band
 // differs. Sharing `dropPosition` rather than writing a second rule is what stops
 // "drop between" meaning two different things in two places.
+//
+// And by finger as well as by mouse. The browser's drag-and-drop is never
+// delivered by touch, so on a phone this rail could select a layer and rename it
+// but not REORDER one — which left the order of a page fixed at whatever the
+// order of adding had been. Press and hold a row to lift it.
 
 import { useCallback, useMemo, useRef, useState, type DragEvent, type KeyboardEvent } from 'react';
 import { Button, Input } from '@wizeworks/silicaui-react';
 import type { TreeDoc } from '../../documents/types';
+import { docKey } from '../../documents/types';
 import { collectIds, findNode, findPlace } from '../../tree/walk';
 import { useApply, useDoc, useDocSnapshot, useSelect } from '../context';
-import { dropPosition, resolveDropTarget } from '../canvas/drop';
+import { dropPosition, resolveDropTarget, type DropPosition, type Point } from '../canvas/drop';
+import { useDragCargo, useDragSource, useDropZone } from '../drag/pointer-drag';
 import { StudioIcon } from '../icon';
 import { layerRows, type LayerDepth, type LayerRow } from './layer-tree';
 
@@ -30,8 +37,9 @@ export function Navigator() {
 
   const [depth, setDepth] = useState<LayerDepth>('simple');
   const [renaming, setRenaming] = useState<string | null>(null);
-  const [dropHint, setDropHint] = useState<{ id: string; where: string } | null>(null);
+  const [dropHint, setDropHint] = useState<{ id: string; where: DropPosition } | null>(null);
   const draggingRef = useRef<string | null>(null);
+  const [list, setList] = useState<HTMLUListElement | null>(null);
 
   // The Navigator lists THIS document only. Chrome around a page body is another
   // document's tree, and listing it here would offer rows that refuse every edit.
@@ -40,57 +48,48 @@ export function Navigator() {
     [doc.root, depth]
   );
 
-  const onRowDragStart = useCallback((event: DragEvent<HTMLLIElement>, row: LayerRow) => {
-    if (row.locked) {
-      event.preventDefault();
-      return;
-    }
-    draggingRef.current = row.id;
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', row.id);
-  }, []);
-
-  const onRowDragOver = useCallback(
-    (event: DragEvent<HTMLLIElement>, row: LayerRow) => {
-      const moving = draggingRef.current;
-      if (!moving || moving === row.id) return;
-      const node = findNode(doc.root, row.id);
-      if (!node) return;
-
-      const box = event.currentTarget.getBoundingClientRect();
+  /**
+   * The hint for a point over one row, or null if that row cannot take the drop.
+   *
+   * A point and an element rather than an event, for the same reason the canvas
+   * takes them: a mouse drag names the row it is over, and a finger drag has its
+   * pointer captured by the row it STARTED on, so the row underneath has to be
+   * looked up. One rule, two inputs.
+   */
+  const hintAt = useCallback(
+    (point: Point, element: HTMLElement | null, moving: string | null) => {
+      const id = element?.dataset.layerId;
+      if (!element || !id || !moving || moving === id) return null;
+      const node = findNode(doc.root, id);
+      if (!node) return null;
+      const box = element.getBoundingClientRect();
       const canHold =
         node.kind === 'element' && !VOID_TAGS.has(node.tag.toLowerCase()) && !node.instanceOf;
       const where = dropPosition(
-        { x: event.clientX, y: event.clientY },
+        point,
         { top: box.top, left: box.left, width: box.width, height: box.height },
         'y',
         { canHold, isEmpty: !(node.children ?? []).length }
       );
-      event.preventDefault();
-      setDropHint((current) =>
-        current?.id === row.id && current.where === where ? current : { id: row.id, where }
-      );
+      return { id, where };
     },
     [doc.root]
   );
 
-  const onRowDrop = useCallback(
-    (event: DragEvent<HTMLLIElement>, row: LayerRow) => {
-      event.preventDefault();
-      const hint = dropHint;
-      const moving = draggingRef.current;
-      draggingRef.current = null;
+  /** Land a move. One path, whichever input started it. */
+  const commit = useCallback(
+    (hint: { id: string; where: DropPosition } | null, moving: string | null) => {
       setDropHint(null);
-      if (!moving || hint?.id !== row.id || moving === row.id) return;
+      if (!hint || !moving || moving === hint.id) return;
 
-      const target = findPlace(doc.root, row.id);
+      const target = findPlace(doc.root, hint.id);
       const from = findPlace(doc.root, moving);
       if (!target) return;
 
       const resolved = resolveDropTarget(
-        hint.where as 'before' | 'after' | 'inside',
+        hint.where,
         {
-          id: row.id,
+          id: hint.id,
           ...(target.parent?.id ? { parentId: target.parent.id } : {}),
           indexInParent: target.index,
         },
@@ -104,8 +103,82 @@ export function Navigator() {
       if (!resolved) return;
       apply('Move layer', [{ kind: 'node.move', id: moving, ...resolved }]);
     },
-    [apply, doc.root, dropHint]
+    [apply, doc.root]
   );
+
+  const onRowDragStart = useCallback((event: DragEvent<HTMLLIElement>, row: LayerRow) => {
+    if (row.locked) {
+      event.preventDefault();
+      return;
+    }
+    draggingRef.current = row.id;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', row.id);
+  }, []);
+
+  const onRowDragOver = useCallback(
+    (event: DragEvent<HTMLLIElement>) => {
+      const hint = hintAt(
+        { x: event.clientX, y: event.clientY },
+        event.currentTarget,
+        draggingRef.current
+      );
+      if (!hint) return;
+      event.preventDefault();
+      setDropHint((current) =>
+        current?.id === hint.id && current.where === hint.where ? current : hint
+      );
+    },
+    [hintAt]
+  );
+
+  const onRowDrop = useCallback(
+    (event: DragEvent<HTMLLIElement>) => {
+      event.preventDefault();
+      const moving = draggingRef.current;
+      draggingRef.current = null;
+      commit(hintAt({ x: event.clientX, y: event.clientY }, event.currentTarget, moving), moving);
+    },
+    [commit, hintAt]
+  );
+
+  // ---- the same gesture, by finger ---------------------------------------
+  const surface = `${docKey(doc)}#layers`;
+  const cargo = useDragCargo();
+  const lifted = cargo?.surface === surface ? (cargo.moveId ?? null) : null;
+
+  /** The row under a captured pointer. */
+  const rowAt = useCallback((point: Point): HTMLElement | null => {
+    const element = document.elementFromPoint(point.x, point.y);
+    return element instanceof HTMLElement ? element.closest('[data-layer-id]') : null;
+  }, []);
+
+  const liftFrom = useCallback(
+    (event: { target: EventTarget | null }) => {
+      const row =
+        event.target instanceof HTMLElement
+          ? event.target.closest<HTMLElement>('[data-layer-id]')
+          : null;
+      const id = row?.dataset.layerId;
+      // A locked row is the one thing here that does not lift — the Outlet a layout
+      // is built around, which has exactly one legal place.
+      if (!id || row?.dataset.layerLocked === 'true') return null;
+      return { surface, moveId: id };
+    },
+    [surface]
+  );
+  const dragSource = useDragSource(liftFrom);
+
+  useDropZone(list, {
+    surface,
+    onOver: (point, dragged) => {
+      const hint = hintAt(point, rowAt(point), dragged.moveId ?? null);
+      setDropHint(hint);
+    },
+    onLeave: () => setDropHint(null),
+    onDrop: (point, dragged) =>
+      commit(hintAt(point, rowAt(point), dragged.moveId ?? null), dragged.moveId ?? null),
+  });
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLUListElement>) => {
@@ -142,11 +215,13 @@ export function Navigator() {
           none of it, and the rail is the only way to reach a node that is
           scrolled off the canvas. */}
       <ul
+        ref={setList}
         role="tree"
         aria-label="Layers"
         className="min-h-0 flex-1 overflow-auto p-1"
         tabIndex={0}
         onKeyDown={onKeyDown}
+        {...dragSource}
       >
         {rows.map((row) => (
           <li
@@ -154,11 +229,13 @@ export function Navigator() {
             role="treeitem"
             aria-selected={selection.includes(row.id)}
             aria-level={row.depth + 1}
+            data-layer-id={row.id}
+            data-layer-locked={row.locked ? 'true' : undefined}
             draggable={!row.locked}
             onDragStart={(event) => onRowDragStart(event, row)}
-            onDragOver={(event) => onRowDragOver(event, row)}
+            onDragOver={onRowDragOver}
             onDragLeave={() => setDropHint(null)}
-            onDrop={(event) => onRowDrop(event, row)}
+            onDrop={onRowDrop}
             onClick={() => select([row.id])}
             onDoubleClick={() => setRenaming(row.id)}
             onKeyDown={(event) => {
@@ -170,7 +247,8 @@ export function Navigator() {
             className={rowClasses(
               row,
               selection.includes(row.id),
-              dropHint?.id === row.id ? dropHint.where : null
+              dropHint?.id === row.id ? dropHint.where : null,
+              lifted === row.id
             )}
           >
             <span className="shrink-0 pl-1" aria-hidden>
@@ -219,7 +297,12 @@ export function Navigator() {
 }
 
 /** Every class a literal string, so a consuming app's Tailwind scan safelists it. */
-function rowClasses(row: LayerRow, selected: boolean, drop: string | null): string {
+function rowClasses(
+  row: LayerRow,
+  selected: boolean,
+  drop: string | null,
+  lifted: boolean
+): string {
   const indent = ['pl-2', 'pl-5', 'pl-8', 'pl-11', 'pl-14', 'pl-17', 'pl-20'];
   const base = [
     'flex cursor-pointer items-center gap-2 rounded py-1 pr-2',
@@ -230,5 +313,7 @@ function rowClasses(row: LayerRow, selected: boolean, drop: string | null): stri
   if (drop === 'after') base.push('border-secondary border-b-2');
   if (drop === 'inside') base.push('outline-secondary outline outline-2 outline-dashed');
   if (!row.editable) base.push('opacity-60');
+  // Faded because it is ELSEWHERE — held under a finger. This is the hole it left.
+  if (lifted) base.push('opacity-50');
   return base.join(' ');
 }

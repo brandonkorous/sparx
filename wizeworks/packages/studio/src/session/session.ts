@@ -11,7 +11,8 @@
 // through to draw itself.
 
 import type { ComponentDoc, DocumentRef, LayoutDoc, StudioDoc, ThemeDoc } from '../documents/types';
-import { docKey } from '../documents/types';
+import { docKey, isTreeDoc } from '../documents/types';
+import { ensureUniqueIds } from '@wizeworks/silica-catalog';
 import type { SymbolDef } from '@wizeworks/silicaui-html';
 import { DocumentStore } from './document-store';
 
@@ -30,14 +31,41 @@ export interface SessionSnapshot {
   dirty: readonly DocumentRef[];
 }
 
+/**
+ * A stored tree, made editable.
+ *
+ * An id is optional to silica and optional to the storefront — a node without one
+ * renders perfectly well, just without `data-sui-id`. It is NOT optional to an
+ * EDITOR: the canvas hit-tests on that attribute and the Navigator keys its rows
+ * on the id, so a tree that arrives id-free draws correctly and cannot be touched.
+ * Nothing errors. The Layers rail says "Nothing here yet. Add something from
+ * Insert" over a canvas showing a full header and footer, and every click lands on
+ * nothing.
+ *
+ * That is not hypothetical: 20 of 34 saved layouts in the development database are
+ * stored id-free, this site's among them. Healing on the way IN fixes every one of
+ * them with no migration and no rewrite of whatever wrote them, which is exactly
+ * what `ensureUniqueIds` was written for — every id that is already good survives,
+ * so re-opening a healed document does not re-mint anything and the ids persisted
+ * by the first Save are the ones already on screen.
+ *
+ * Once, on open, rather than in the canvas: an id minted during render would be a
+ * different id every frame, and those ids are React keys and drop targets.
+ */
+function healed<D extends StudioDoc>(doc: D): D {
+  return isTreeDoc(doc) ? { ...doc, root: ensureUniqueIds(doc.root) } : doc;
+}
+
 export class StudioSession {
   private readonly stores = new Map<string, DocumentStore>();
   private readonly unsubscribes = new Map<string, () => void>();
   private readonly listeners = new Set<() => void>();
   private readonly library = new Map<string, ComponentDoc>();
+  private readonly resolutionListeners = new Set<() => void>();
   private context: SiteContext;
   private snapshot: SessionSnapshot;
   private dirtyKey = '';
+  private version = 0;
 
   constructor(context: SiteContext) {
     this.context = context;
@@ -54,6 +82,35 @@ export class StudioSession {
   };
 
   /**
+   * A counter that moves whenever ANYTHING a canvas resolves through has moved —
+   * the theme's tokens, the site's chrome, the saved-piece library, the context
+   * naming which of each the site wears.
+   *
+   * Separate from `subscribe` because the two answer different questions and only
+   * one of them can afford to be noisy. `subscribe` publishes when the SET of
+   * dirty documents changes, so the shell's save indicator is not re-rendered per
+   * keystroke; a canvas needs the opposite, because a token typed in the theme
+   * pane has to repaint every open page THAT keystroke.
+   *
+   * Nothing subscribed to this at all, and the promise at the top of this file —
+   * one store per document, so an edit in one pane is visible in every other —
+   * was therefore not kept: `resolveCanvas` was memoized on `[session, doc]`, and
+   * `session` is one object for the life of the site. A page canvas recomputed
+   * only when its OWN document changed. So a piece saved a moment ago rendered as
+   * "This saved design is no longer available" until the pane happened to
+   * re-render for some unrelated reason — the library had arrived, and nothing
+   * was watching for it.
+   */
+  subscribeResolution = (listener: () => void): (() => void) => {
+    this.resolutionListeners.add(listener);
+    return () => {
+      this.resolutionListeners.delete(listener);
+    };
+  };
+
+  getResolutionVersion = (): number => this.version;
+
+  /**
    * Open a document, or hand back the store already holding it.
    *
    * Already-open wins, and the loaded copy is discarded. A second pane must never
@@ -65,7 +122,7 @@ export class StudioSession {
     const existing = this.stores.get(key);
     if (existing) return existing as DocumentStore<D>;
 
-    const store = new DocumentStore(doc);
+    const store = new DocumentStore(healed(doc));
     this.stores.set(key, store);
     this.unsubscribes.set(
       key,
@@ -162,6 +219,11 @@ export class StudioSession {
    * shell.
    */
   private refresh(force = false): void {
+    // The resolution channel is never gated: it exists to be noisy, and its
+    // subscribers are the handful of canvases that must repaint.
+    this.version += 1;
+    for (const listener of this.resolutionListeners) listener();
+
     const dirty = this.dirtyRefs;
     const key = dirty.map(docKey).sort().join('|');
     if (!force && key === this.dirtyKey) return;

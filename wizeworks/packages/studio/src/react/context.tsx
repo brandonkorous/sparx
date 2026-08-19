@@ -62,6 +62,18 @@ export function useStudioSession(): StudioSession {
   return session;
 }
 
+/**
+ * The host, or null where there is no provider.
+ *
+ * Not exported from the package's index: it exists for the few pieces that render
+ * OUTSIDE an app — `StudioIcon` is used in every rail and inspector row, and a
+ * throwing hook there would make the package untestable without an app around it,
+ * which is exactly the property `host.ts` says it keeps.
+ */
+export function useHostOrNull(): StudioHost | null {
+  return useContext(HostContext);
+}
+
 export function useStudioHost(): StudioHost {
   const host = useContext(HostContext);
   if (!host) throw new Error('useStudioHost must be used inside <StudioProvider>');
@@ -72,6 +84,24 @@ export function useStudioHost(): StudioHost {
 export function useSessionSnapshot(): SessionSnapshot {
   const session = useStudioSession();
   return useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
+}
+
+/**
+ * A number that changes whenever anything OUTSIDE this pane's own document has
+ * moved — the theme, the chrome, the saved-piece library.
+ *
+ * Put it in the dependency list of anything that resolves through the session.
+ * Subscribing is not sufficient on its own: `resolveCanvas(session, doc)` is
+ * memoized, and `session` is the same object forever, so without a value that
+ * actually changes the memo holds its first answer for the life of the pane.
+ */
+export function useResolutionVersion(): number {
+  const session = useStudioSession();
+  return useSyncExternalStore(
+    session.subscribeResolution,
+    session.getResolutionVersion,
+    session.getResolutionVersion
+  );
 }
 
 export function useDocumentStore<D extends StudioDoc = StudioDoc>(): DocumentStore<D> {

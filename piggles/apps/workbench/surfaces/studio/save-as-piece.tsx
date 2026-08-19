@@ -13,7 +13,6 @@ import { useCallback, useState } from 'react';
 import { Button, Input, useToast } from '@wizeworks/silicaui-react';
 import { faBookmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { defaultMakeId } from '@wizeworks/silicaui-html';
 import type { TreeDoc } from '@wizeworks/studio';
 import { findNode, idOf } from '@wizeworks/studio';
 import { useApply, useDoc, useDocSnapshot } from '@wizeworks/studio/react';
@@ -42,10 +41,12 @@ function useSaveSelection(onDone: () => void) {
       // The master keeps the design; the instance left behind keeps its position and
       // its own classes, so nothing on the page moves.
       const piece = await createPiece.mutateAsync({ name: trimmed, root: structuredClone(node) });
+      // The instance KEEPS the id: same slot, same thing. Mint a new one and the
+      // author's selection points at a node that no longer exists.
       const replacement = {
         kind: 'element' as const,
         tag: 'div',
-        id: defaultMakeId(),
+        id: selectedId,
         instanceOf: piece.id,
         ...(node.class ? { class: node.class } : {}),
       };
@@ -95,6 +96,7 @@ export function SaveAsPiece() {
       size="sm"
       variant="soft"
       color="primary"
+      className="whitespace-nowrap"
       disabled={!eligible}
       title={
         eligible
@@ -125,9 +127,13 @@ function NameField({
   focusOnMount: (element: HTMLInputElement | null) => void;
 }) {
   return (
-    <span className="flex items-center gap-1">
+    // Capped: this field REPLACES a button on a toolbar whose fold threshold is a
+    // worked-out number, not a measurement (use-builder-fit.ts), and a bare silica
+    // `.input` is `width: 100%`.
+    <span className="flex max-w-[14rem] items-center gap-1">
       <Input
         size="sm"
+        className="min-w-0"
         // Focus on mount via a ref, not `autoFocus`: this field REPLACES the button
         // that was just clicked, so the keyboard has to follow it or the author is
         // typing into nothing.

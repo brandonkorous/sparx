@@ -29,17 +29,20 @@ import { buildSilicaThemeCssFromTheme } from '@wizeworks/site-themes';
 import type { Node } from '@wizeworks/silicaui-html';
 import { defaultMakeId, stampTree } from '@wizeworks/silicaui-html';
 import type { TreeDoc } from '../../documents/types';
+import { docKey } from '../../documents/types';
 import { resolveCanvas } from '../../resolve/chain';
 import { collectIds, findNode, findPlace, isAddressable } from '../../tree/walk';
 import {
   useApply,
   useDoc,
   useDocSnapshot,
+  useResolutionVersion,
   useSelect,
   useStudioHost,
   useStudioSession,
 } from '../context';
-import { dropPosition, resolveDropTarget, siblingAxis, type DropPosition } from './drop';
+import { useDragCargo, useDragSource, useDropZone } from '../drag/pointer-drag';
+import { dropPosition, resolveDropTarget, siblingAxis, type Point } from './drop';
 import { boxOf, idOfElement, nodeElementAt, siblingBoxes } from './hit';
 import { renderNode, type DropHint, type RenderContext } from './render-node';
 
@@ -51,18 +54,64 @@ export const NODE_DRAG_TYPE = 'application/x-studio-node';
  *  show you. */
 export type CanvasDevice = 'mobile' | 'tablet' | 'desktop';
 
-/** Literal strings — a computed width class compiles to nothing and the canvas
- *  silently stops resizing. */
-const DEVICE_CLASS: Record<CanvasDevice, string> = {
-  desktop: 'w-full',
-  tablet: 'w-[834px] max-w-full',
-  mobile: 'w-[390px] max-w-full',
+/**
+ * The frame's real width per device. Literal strings — a computed width class
+ * compiles to nothing and the canvas silently stops resizing.
+ *
+ * These are the widths that DECIDE the reflow, because the frame is a
+ * `@container`: the tree's `@3xl:` rules need 768px and its `@5xl:` rules need
+ * 1024px before they apply to anything.
+ *
+ * So a device width may never be clamped to the pane. `desktop: w-full` and a
+ * `max-w-full` on the other two meant that in the default docked layout — where
+ * the canvas gets about 700px between the rails — Phone, Tablet and Computer all
+ * rendered the SAME base design. Nothing was broken enough to notice: the
+ * Inspector said "Editing what changes on desktop", the edit landed correctly in
+ * the tree, and the canvas simply could not show it. An author setting a heading
+ * smaller on the computer watched nothing happen and concluded the control did
+ * not work.
+ *
+ * Wider than the pane now scrolls, which is honest — a phone frame that is not
+ * 390px across is not a phone. Desktop still GROWS to fill a maximized pane; it
+ * just never shrinks below the width that makes it desktop.
+ */
+export const DEVICE_CLASS: Record<CanvasDevice, string> = {
+  desktop: 'w-full min-w-[1280px]',
+  tablet: 'w-[834px]',
+  mobile: 'w-[390px]',
 };
+
+/** The console's own selection colors, handed to the canvas subtree as custom
+ *  properties. Literal, because Tailwind reads source text. */
+const CHROME_VARS = '[--studio-select:var(--color-primary)] [--studio-drop:var(--color-secondary)]';
 
 /** Void tags cannot take a drop inside them. */
 const VOID_TAGS = new Set(['br', 'hr', 'img', 'input', 'source', 'track', 'wbr', 'embed', 'col']);
 
-export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
+/**
+ * Which of the theme's two palettes the canvas paints in.
+ *
+ * `light` by default, and EXPLICIT either way — never the theme's own name.
+ * silica emits the dark delta under `[data-theme="dark"]` AND under
+ * `@media (prefers-color-scheme:dark){…:not([data-theme="light"])}`, so a frame
+ * marked with anything else fails the guard: on an author whose computer is set
+ * to dark, every page, layout and piece silently painted the theme's NIGHT
+ * colours while the theme pane beside it, correctly marked, showed the day ones.
+ * Editing a colour then appeared to do nothing on the page — the value changed,
+ * and the rule the author was looking at came from the other bag.
+ *
+ * The theme island already carried this fix. The canvas is the second place that
+ * needed it.
+ */
+export type CanvasMode = 'light' | 'dark';
+
+export function Canvas({
+  device = 'desktop',
+  mode = 'light',
+}: {
+  device?: CanvasDevice;
+  mode?: CanvasMode;
+}) {
   const session = useStudioSession();
   const host = useStudioHost();
   const doc = useDoc<TreeDoc>();
@@ -76,9 +125,18 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
   const [dropHint, setDropHint] = useState<DropHint | null>(null);
   const scope = useId().replace(/:/g, '');
 
+  // `version` is the dependency that makes this live. The session is one object
+  // for the life of the site, so without it the canvas resolved the theme, the
+  // chrome and the saved-piece library ONCE and then never looked again — a piece
+  // saved a moment ago drew as "no longer available", and a token edited in the
+  // theme pane did not reach an open page until something else re-rendered it.
+  const version = useResolutionVersion();
   const resolution = useMemo(
     () => resolveCanvas(session, doc, { fallbackTheme: host.fallbackTheme }),
-    [session, doc, host.fallbackTheme]
+    // `version` stands in for the session's mutable interior, which React cannot
+    // see into — so it reads as unnecessary and is the opposite.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session, doc, host.fallbackTheme, version]
   );
 
   // Only the ids in THIS document are editable. On a page inside chrome that is
@@ -96,6 +154,13 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
     [resolution.theme, scope]
   );
 
+  // Drag scoped to THIS document (`docKey`), never to "a tree". Two builders are
+  // routinely docked side by side, and a block dragged across the gap between them
+  // would otherwise draw a drop indicator on a page it can never land in.
+  const surface = docKey(doc);
+  const cargo = useDragCargo();
+  const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
+
   const ctx: RenderContext = {
     host,
     symbols: resolution.symbols,
@@ -103,6 +168,7 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
     hoverId,
     editableIds,
     dropHint,
+    liftedId: cargo?.surface === surface ? (cargo.moveId ?? null) : null,
   };
 
   const editable = useCallback(
@@ -112,6 +178,13 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
+      // The canvas is a design surface, not a browsing one. Every `<a href>` in the
+      // tree is a REAL link, and the site's own paths sit on the console's origin,
+      // so clicking a nav item navigated the whole workbench to `/about` — the pane
+      // and any unsaved work with it. It read as "links cannot be selected": the
+      // browser tore the pane down before the selection could show. Buttons that
+      // submit and checkboxes that toggle are the same class of thing.
+      event.preventDefault();
       const frame = frameRef.current;
       if (!frame) return;
       const id = idOfElement(nodeElementAt(event.target, frame));
@@ -154,12 +227,20 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
     [doc.root, editable]
   );
 
-  /** The hint for wherever the pointer currently is, or null if nothing takes it. */
-  const hintFor = useCallback(
-    (event: DragEvent<HTMLDivElement>): DropHint | null => {
+  /**
+   * The hint for a point over the canvas, or null if nothing there takes it.
+   *
+   * A POINT and a target, rather than an event — because the two inputs report
+   * position differently. A mouse drag names `event.target`; a finger drag has its
+   * pointer captured by the row it started on, so what is underneath has to be
+   * looked up. Feeding both into one function is what stops "where does this land"
+   * from having two answers.
+   */
+  const hintAt = useCallback(
+    (point: Point, target: EventTarget | null): DropHint | null => {
       const frame = frameRef.current;
       if (!frame) return null;
-      const element = nodeElementAt(event.target, frame);
+      const element = nodeElementAt(target, frame);
       const id = idOfElement(element);
       if (!element || !editable(id) || !id) return null;
 
@@ -170,18 +251,18 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
         node.kind === 'element' && !VOID_TAGS.has(node.tag.toLowerCase()) && !node.instanceOf;
       const isEmpty = !(node.children ?? []).length;
       const axis = siblingAxis(boxOf(element), siblingBoxes(element));
-      const position = dropPosition({ x: event.clientX, y: event.clientY }, boxOf(element), axis, {
-        canHold,
-        isEmpty,
-      });
+      const position = dropPosition(point, boxOf(element), axis, { canHold, isEmpty });
       return { targetId: id, position };
     },
     [doc.root, editable]
   );
 
+  /** What a point is over, for a gesture whose pointer is captured elsewhere. */
+  const under = useCallback((point: Point) => document.elementFromPoint(point.x, point.y), []);
+
   const onDragOver = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
-      const hint = hintFor(event);
+      const hint = hintAt({ x: event.clientX, y: event.clientY }, event.target);
       if (!hint) {
         setDropHint(null);
         return;
@@ -194,56 +275,83 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
         current?.targetId === hint.targetId && current.position === hint.position ? current : hint
       );
     },
-    [hintFor]
+    [hintAt]
   );
 
-  /** A palette drag: stamp fresh ids, let the host rewrite it, and insert. */
-  const insertFromPalette = useCallback(
-    (payload: string, position: DropPosition, target: ReturnType<typeof targetPlace>) => {
+  /**
+   * Land a drag. ONE path, whichever input started it.
+   *
+   * A new node from a palette, or an id already in the tree — never both. Adding
+   * is a copy and moving is not, and telling those apart is the whole question a
+   * drop answers.
+   */
+  const commit = useCallback(
+    (hint: DropHint | null, movingId: string | null, incoming: Node | null) => {
+      setDropHint(null);
+      if (!hint) return;
+      const target = targetPlace(doc.root, hint.targetId);
       if (!target) return;
-      let parsed: Node;
-      try {
-        parsed = JSON.parse(payload) as Node;
-      } catch {
+
+      if (incoming) {
+        const stamped = stampTree(
+          host.onInsert?.(incoming) ?? incoming,
+          host.makeId ?? defaultMakeId
+        );
+        if (!isAddressable(stamped) || !stamped.id) return;
+        const resolved = resolveDropTarget(hint.position, target);
+        if (!resolved) return;
+        if (!apply('Add block', [{ kind: 'node.insert', node: stamped, ...resolved }])) return;
+        select([stamped.id]);
         return;
       }
-      const stamped = stampTree(host.onInsert?.(parsed) ?? parsed, host.makeId ?? defaultMakeId);
-      if (!isAddressable(stamped) || !stamped.id) return;
-      const resolved = resolveDropTarget(position, target);
+
+      if (!movingId || movingId === hint.targetId) return;
+      const resolved = resolveDropTarget(hint.position, target, targetPlace(doc.root, movingId));
       if (!resolved) return;
-      if (!apply('Add block', [{ kind: 'node.insert', node: stamped, ...resolved }])) return;
-      select([stamped.id]);
+      if (!apply('Move block', [{ kind: 'node.move', id: movingId, ...resolved }])) return;
+      select([movingId]);
     },
-    [apply, host, select]
+    [apply, doc.root, host, select]
   );
 
   const onDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
       event.preventDefault();
-      const hint = hintFor(event);
-      setDropHint(null);
+      const hint = hintAt({ x: event.clientX, y: event.clientY }, event.target);
       const movingId = draggingRef.current;
       draggingRef.current = null;
-      if (!hint) return;
-
-      const target = targetPlace(doc.root, hint.targetId);
-      if (!target) return;
-
-      const payload = event.dataTransfer.getData(NODE_DRAG_TYPE);
-      if (payload && !movingId) {
-        insertFromPalette(payload, hint.position, target);
-        return;
-      }
-      if (!movingId || movingId === hint.targetId) return;
-
-      const moving = targetPlace(doc.root, movingId);
-      const resolved = resolveDropTarget(hint.position, target, moving);
-      if (!resolved) return;
-      if (!apply('Move block', [{ kind: 'node.move', id: movingId, ...resolved }])) return;
-      select([movingId]);
+      const payload = movingId ? '' : event.dataTransfer.getData(NODE_DRAG_TYPE);
+      commit(hint, movingId, payload ? parseNode(payload) : null);
     },
-    [apply, doc.root, hintFor, insertFromPalette, select]
+    [commit, hintAt]
   );
+
+  // ---- the same gestures, by finger --------------------------------------
+  const liftFrom = useCallback(
+    (event: { target: EventTarget | null }): { surface: string; moveId: string } | null => {
+      const frame = frameRef.current;
+      if (!frame) return null;
+      const id = idOfElement(nodeElementAt(event.target, frame));
+      if (!editable(id) || !id) return null;
+      const node = findNode(doc.root, id);
+      if (!node || node.locked) return null;
+      return { surface, moveId: id };
+    },
+    [doc.root, editable, surface]
+  );
+  const dragSource = useDragSource(liftFrom);
+
+  useDropZone(scroller, {
+    surface,
+    onOver: (point) => setDropHint(hintAt(point, under(point))),
+    onLeave: () => setDropHint(null),
+    onDrop: (point, dragged) =>
+      commit(
+        hintAt(point, under(point)),
+        dragged.moveId ?? null,
+        (dragged.node as Node | undefined) ?? null
+      ),
+  });
 
   return (
     /* A click here SELECTS a node on a design surface, and the keyboard route to
@@ -259,10 +367,14 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
       // and the Layers rail beside it is the keyboard route to every node.
       role="application"
       aria-label="Page canvas"
-      className="bg-base-200 h-full min-h-0 overflow-auto p-6"
+      // `--studio-*` are declared HERE, outside `data-studio-canvas`, so they carry
+      // the console's colors rather than the theme being edited. See `stateClasses`.
+      ref={setScroller}
+      className={`bg-base-200 h-full min-h-0 overflow-auto p-6 ${CHROME_VARS}`}
       onClick={onClick}
       onMouseMove={onPointerMove}
       onMouseLeave={() => setHoverId(null)}
+      {...dragSource}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDragLeave={() => setDropHint(null)}
@@ -280,13 +392,22 @@ export function Canvas({ device = 'desktop' }: { device?: CanvasDevice }) {
       <div
         ref={frameRef}
         data-studio-canvas={scope}
-        data-theme={resolution.theme.name}
+        data-theme={mode}
         className={`bg-base-100 text-base-content @container mx-auto min-h-full ${DEVICE_CLASS[device]}`}
       >
         {renderNode(resolution.root, ctx)}
       </div>
     </div>
   );
+}
+
+/** A palette payload, or null when it is not a node at all. */
+function parseNode(payload: string): Node | null {
+  try {
+    return JSON.parse(payload) as Node;
+  } catch {
+    return null;
+  }
 }
 
 /** Where a node sits, in the shape `resolveDropTarget` wants. */
