@@ -35,7 +35,15 @@ import { withTenant } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
+import { detachEverywhereTx } from './detach-instances';
 import { BuilderNotFoundError, BuilderValidationError } from '../errors';
+
+/** The symbol id a tenant library piece is materialized under in a silica tree.
+ *  The console derives the same string (`saved-pieces.ts`); it is the contract that
+ *  lets a page reference a shared master without minting a per-site id for it. */
+function tenantSymbolId(key: string): string {
+  return `tenant:${key}`;
+}
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
 
@@ -600,6 +608,10 @@ export async function remove(ctx: ServiceContext, key: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const existing = await tx.builderComponent.findFirst({ where: { key } });
     if (!existing) throw new BuilderNotFoundError('BuilderComponent', key);
+    // Two placement systems, and they are deleted differently on purpose.
+    //
+    // A LEGACY placement (`custom:<key>` in a BuilderNode tree) is a reference the
+    // renderer resolves at draw time and cannot be inlined here, so it still blocks.
     const used = await scanUsages(tx, key);
     if (used.total > 0) {
       throw new BuilderValidationError(
@@ -607,6 +619,26 @@ export async function remove(ctx: ServiceContext, key: string): Promise<void> {
         [{ field: 'key', message: `In use in ${used.total} place${used.total === 1 ? '' : 's'}.` }]
       );
     }
+
+    // A SILICA instance can, so it DETACHES — the page keeps the design and simply
+    // stops following the master, which is what the console's delete confirm has
+    // always promised. `scanUsages` never looked at the silica trees at all, so a
+    // placed piece was invisible to the guard above AND left dangling: the page kept
+    // a node rendering "This saved design is no longer available" where the work had
+    // been, on pages nobody was looking at.
+    const version = await tx.builderComponentVersion.findFirst({
+      where: { componentId: existing.id, version: existing.latestVersion },
+      select: { silicaTree: true },
+    });
+    if (version?.silicaTree != null) {
+      // No propertyId: a library piece is shared with every site the business owns.
+      await detachEverywhereTx(
+        tx,
+        tenantSymbolId(key),
+        version.silicaTree as unknown as SilicaNode
+      );
+    }
+
     await tx.builderComponent.delete({ where: { id: existing.id } });
     await writeAuditLog({
       tx,

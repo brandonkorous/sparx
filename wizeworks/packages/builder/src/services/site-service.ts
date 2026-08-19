@@ -55,6 +55,7 @@ import {
   isRecordAddress,
   recordAddressAt,
   recordAddressFor,
+  ensureUniqueIds,
   recordPage,
   slugCandidatesForPath,
   starterFrame,
@@ -69,11 +70,30 @@ import { dropOwnerTx, reindexTreeTx } from './node-index-service';
 import { createReleaseTx, recordArtifactTx, type ManifestEntry } from './artifact-service';
 import { appendOpsTx } from './op-log-service';
 import { captureDraftVersionTx, type DraftVersionSource } from './draft-version-service';
+import { detachEverywhereTx } from './detach-instances';
 import { newOpBatch, pageCreateOp, pageDeleteOp, savedThemesSetOp, themeSetOp } from './silica-ops';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
+
+/**
+ * A tree on its way into a column, with the one invariant an EDITOR depends on.
+ *
+ * silica does not require node ids and the storefront does not need them — a node
+ * without one renders correctly, just without `data-sui-id`. The builder is the
+ * odd consumer: it hit-tests the canvas on that attribute and keys Layers rows on
+ * the id, so an id-free tree opens as a picture of a site that cannot be touched.
+ * Nothing errors, which is why this went unnoticed — 20 of 34 saved layouts and 10
+ * of 334 pages in the development database are stored id-free, all of them from
+ * blueprint installs (22 of the 191 shipped bundles author their frame id-free,
+ * `piggles-starter` among them, so every new Piggles site inherited it).
+ *
+ * Stamped on the WAY IN, because a tree written without ids is a site whose owner
+ * cannot edit their own header. `ensureUniqueIds` keeps every id that is already
+ * good, so this is inert on the editor's own saves and on a healthy install.
+ */
+const treeJson = (tree: SilicaNode): Prisma.InputJsonValue => asJson(ensureUniqueIds(tree));
 
 /** A stored tree column read back as a silica node. The DB types it `JsonValue` —
  *  Prisma cannot know a JSONB column holds a `Node` — and only the extractor consumes
@@ -1341,7 +1361,7 @@ function syncTx(
             // way out, and this writes the address back. No migration needed for the
             // rows that were already correct in the old vocabulary.
             ...(address ? { kind: 'collection', recordType: address.recordType } : {}),
-            silicaDraftTree: asJson(p.root),
+            silicaDraftTree: treeJson(p.root),
             // Chrome only when the payload SPEAKS about it. `undefined` here is the
             // scripted writer that has no opinion, and overwriting on its behalf would
             // put a header back on every landing page it happened to touch.
@@ -1371,7 +1391,7 @@ function syncTx(
             // sparx tree there (the storefront never reads it — it has no sparx
             // published tree, so it falls through the legacy path until cutover).
             draftTree: asJson(blankPageTree()),
-            silicaDraftTree: asJson(p.root),
+            silicaDraftTree: treeJson(p.root),
             ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
             position: i,
           },
@@ -1404,7 +1424,7 @@ function syncTx(
     if (input.frame) {
       await tx.builderLayout.update({
         where: { id: layout.id },
-        data: { silicaDraftTree: asJson(input.frame.root) },
+        data: { silicaDraftTree: treeJson(input.frame.root) },
       });
       // The chrome holds symbol instances and bindings like any other tree.
       await reindexTreeTx(tx, ctx, {
@@ -1638,7 +1658,7 @@ export async function resetFrame(
     const layout = await activeLayoutTx(tx, ctx);
     await tx.builderLayout.update({
       where: { id: layout.id },
-      data: { silicaDraftTree: asJson(frame.root) },
+      data: { silicaDraftTree: treeJson(frame.root) },
     });
     await writeAuditLog({
       tx,
@@ -1852,6 +1872,11 @@ export async function removeSymbol(ctx: PropertyContext, id: string): Promise<vo
     const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
     const symbols = symbolsOf(site?.silicaDraftSymbols);
     if (!(id in symbols)) throw new BuilderNotFoundError('Symbol', id);
+    // DETACH FIRST, then delete. Every placement keeps the design it was showing
+    // and simply stops following this piece — which is what the console's confirm
+    // has always promised and what nothing did.
+    const master: SilicaNode | undefined = symbols[id]?.root;
+    if (master) await detachEverywhereTx(tx, id, master, ctx.propertyId);
     delete symbols[id];
     await tx.builderSite.update({
       where: { propertyId: ctx.propertyId },
@@ -2382,7 +2407,7 @@ export function writeFrameRoot(ctx: PropertyContext, root: SilicaNode): Promise<
     const layout = await activeLayoutTx(tx, ctx);
     await tx.builderLayout.update({
       where: { id: layout.id },
-      data: { silicaDraftTree: asJson(root) },
+      data: { silicaDraftTree: treeJson(root) },
     });
     await reindexTreeTx(tx, ctx, { ownerKind: 'layout', ownerId: layout.id, tree: root });
     await captureDraftVersionTx(tx, ctx, 'save');
