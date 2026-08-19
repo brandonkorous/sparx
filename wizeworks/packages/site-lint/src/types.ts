@@ -83,6 +83,15 @@ export interface LinkTargets {
 /** The whole site as the linter sees it — what `lintSite` takes. */
 export interface SiteLintInput {
   pages: readonly LintablePage[];
+  /**
+   * Every page the site HAS, for the checks that read addresses rather than trees.
+   *
+   * Defaults to `pages`. A caller that drops pages before the walk — the API service
+   * skips any with no saved draft — must pass the full set here, or a page that
+   * silently occupies your home address is invisible precisely because nobody has
+   * opened it yet.
+   */
+  addressing?: readonly PageAddress[];
   /** The shared chrome wrapping every page. Its `root` must contain an outlet; a
    *  frame without one renders no page content at all, which is its own finding. */
   frame?: { root: SilicaNode } | null;
@@ -154,7 +163,9 @@ export type LintRuleId =
   | 'seo-title-duplicate'
   | 'seo-description-missing'
   | 'seo-description-duplicate'
-  | 'seo-page-hidden';
+  | 'seo-page-hidden'
+  // Addressing
+  | 'page-address-duplicate';
 
 /** Which authored tree a finding lives in — the tree the fix happens in, which is
  *  not always the page it was seen on. A broken link in the footer belongs to the
@@ -228,6 +239,16 @@ export interface LintFix {
 /** Advisory only. `fail` means "a visitor will see something broken", never "you
  *  may not publish" — nothing in this package can stop a publish. */
 export type LintStatus = 'pass' | 'warn' | 'fail';
+
+/** The little a page needs to have an ADDRESS — no tree, so this can cover pages
+ *  the walk never reached. */
+export interface PageAddress {
+  id: string;
+  name: string;
+  slug: string | null;
+  kind?: 'singleton' | 'collection';
+  recordType?: string | null;
+}
 
 export interface SiteLintReport {
   status: LintStatus;

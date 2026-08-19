@@ -9,7 +9,8 @@ vi.mock('@wizeworks/auth', () => ({
     Promise.resolve(moduleStates.get(key) ?? false),
 }));
 
-const { linkTargets, silicaPagesOf, storageKeysOf } = await import('./site-check.js');
+const { linkTargets, silicaPagesOf, skippedPagesOf, storageKeysOf } =
+  await import('./site-check.js');
 
 const CTX: PropertyContext = {
   tenantId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
@@ -220,5 +221,45 @@ describe('storageKeysOf', () => {
 
   it('never offers an empty key — it would match the wrong row', () => {
     expect(storageKeysOf('/')).not.toContain('');
+  });
+});
+
+describe('pages the check could not open', () => {
+  const rows = [
+    { id: 'a', name: 'Home', silicaDraftTree: { kind: 'element', tag: 'div' } },
+    { id: 'b', name: 'Thank you', silicaDraftTree: null },
+    { id: 'c', name: 'Careers', silicaDraftTree: null },
+  ];
+
+  it('names them instead of dropping them', () => {
+    // `silicaPagesOf` skips a page with no draft tree, because there is nothing to
+    // walk. Skipping it SILENTLY is the defect: `pagesChecked` then counts only the
+    // survivors, so an eleven-page site reported "Nothing to fix across 7 pages. It
+    // reads well." and the owner had no way to learn four were never opened.
+    expect(skippedPagesOf(rows)).toEqual([
+      { id: 'b', name: 'Thank you' },
+      { id: 'c', name: 'Careers' },
+    ]);
+  });
+
+  it('is empty when every page could be walked', () => {
+    expect(skippedPagesOf([rows[0]!])).toEqual([]);
+  });
+
+  it('agrees with what silicaPagesOf kept — every page is in exactly one', () => {
+    const kept = silicaPagesOf(
+      rows.map((r) => ({
+        ...r,
+        slug: null,
+        kind: 'singleton',
+        recordType: null,
+        seoTitle: null,
+        seoDescription: null,
+        canonical: null,
+        ogImage: null,
+        noindex: false,
+      }))
+    );
+    expect(kept.length + skippedPagesOf(rows).length).toBe(rows.length);
   });
 });

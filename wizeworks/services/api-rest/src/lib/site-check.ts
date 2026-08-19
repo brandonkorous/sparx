@@ -61,6 +61,8 @@ export function silicaPagesOf(
 ): LintablePage[] {
   const pages: LintablePage[] = [];
   for (const row of rows) {
+    // A page with no draft tree cannot be walked. It is REPORTED rather than
+    // dropped — see `skippedPagesOf`.
     if (row.silicaDraftTree == null) continue;
     pages.push({
       id: row.id,
@@ -77,6 +79,23 @@ export function silicaPagesOf(
     });
   }
   return pages;
+}
+
+/**
+ * The pages the check could not look at, and why.
+ *
+ * `silicaPagesOf` drops every page with no draft tree, because there is nothing to
+ * walk. Dropping them silently is the problem: `pagesChecked` then counts only the
+ * survivors, so a site of eleven pages reported "Nothing to fix across 7 pages. It
+ * reads well." and the owner had no way to learn that four of their pages were never
+ * opened. A clean result has to state its own coverage or it is not a result.
+ */
+export function skippedPagesOf(
+  rows: { id: string; name: string; silicaDraftTree: unknown }[]
+): { id: string; name: string }[] {
+  return rows
+    .filter((row) => row.silicaDraftTree == null)
+    .map((row) => ({ id: row.id, name: row.name }));
 }
 
 /**
@@ -269,6 +288,12 @@ async function imageWeights(tx: TxClient, sources: string[]): Promise<Record<str
   return weights;
 }
 
+/** The engine's report plus what this service could not hand it. */
+export interface SiteCheckReport extends SiteLintReport {
+  /** Pages with no draft tree — never walked, and named so the surface can say so. */
+  notChecked: { id: string; name: string }[];
+}
+
 /**
  * Run the pre-publish check over the property's DRAFT site.
  *
@@ -278,7 +303,7 @@ async function imageWeights(tx: TxClient, sources: string[]): Promise<Record<str
 export async function runSiteCheck(
   request: FastifyRequest,
   ctx: PropertyContext
-): Promise<SiteLintReport> {
+): Promise<SiteCheckReport> {
   return withRequestTenant(request, async (tx) => {
     const [rows, layout, site, theme, targets] = await Promise.all([
       tx.builderPage.findMany({
@@ -308,6 +333,15 @@ export async function runSiteCheck(
 
     const input: SiteLintInput = {
       pages: silicaPagesOf(rows),
+      // EVERY page, not just the walkable ones. A page nobody has opened still
+      // occupies its address, and the clash it causes is invisible from the site.
+      addressing: rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        kind: row.kind === 'collection' ? ('collection' as const) : ('singleton' as const),
+        recordType: row.recordType,
+      })),
       frame:
         layout?.silicaDraftTree != null
           ? { root: layout.silicaDraftTree as unknown as SilicaNode }
@@ -317,11 +351,17 @@ export async function runSiteCheck(
       targets,
     };
 
+    const notChecked = skippedPagesOf(rows);
+
     // TWO STEPS, and they have to be in this order: the engine names the pictures the
     // site references, this service sizes them, and the sized map goes back in. The
     // weights cannot be gathered up front because nothing outside the trees knows
     // which of the tenant's library a given site actually uses — and loading every
     // asset the tenant owns to weigh six of them is the query this avoids.
-    return lintSite({ ...input, imageBytes: await imageWeights(tx, imageSourcesOf(input)) });
+    const report = lintSite({
+      ...input,
+      imageBytes: await imageWeights(tx, imageSourcesOf(input)),
+    });
+    return { ...report, notChecked };
   });
 }

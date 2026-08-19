@@ -20,7 +20,7 @@ import type { LintablePage } from './types';
 /** A page that TEMPLATES one record per visit (`/products/:handle`) rather than being
  *  one page at one address. Same predicate `links.ts` uses for relative paths, and for
  *  the same underlying reason: its slug is a pattern, not a location. */
-function isRecordPage(page: LintablePage): boolean {
+export function isRecordPage(page: LintablePage): boolean {
   return isRecordAddress(page.slug) || page.kind === 'collection';
 }
 

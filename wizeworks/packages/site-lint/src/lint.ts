@@ -19,6 +19,7 @@ import { checkContrast, checkThemeContrast } from './contrast';
 import { checkContent } from './content';
 import { mergeFindings, type RawFinding } from './finding';
 import { checkLinks, resolveTargets } from './links';
+import { checkAddresses } from './addresses';
 import { checkSeo } from './seo';
 import { checkDuplicateIds, checkStructure } from './structure';
 import type { LintSeverity, LintStatus, SiteLintInput, SiteLintReport } from './types';
@@ -72,6 +73,9 @@ export function lintSite(input: SiteLintInput): SiteLintReport {
 
   for (const finding of checkThemeContrast(input.theme, inventories)) {
     sightings.push({ finding, page: WHOLE_SITE });
+  }
+  for (const finding of checkAddresses(input.addressing ?? input.pages)) {
+    sightings.push({ finding, page: finding.origin.ownerName });
   }
   for (const finding of checkSeo(input.pages)) {
     sightings.push({ finding, page: finding.origin.ownerName });
