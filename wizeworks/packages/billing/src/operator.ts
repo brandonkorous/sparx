@@ -3,7 +3,7 @@
 // PLATFORM Stripe account (the same account @wizeworks/billing uses to charge tenants
 // for modules — never a tenant's own Connect account).
 //
-// Every function is guarded by `getBillingStripe()`: when the platform Stripe key
+// Every function is guarded by `getBillingStripe(plan)`: when that plan's Stripe key
 // is unset (dev, and prod before the billing ops land) reads return empty and
 // writes throw a clear "not configured" error — so nothing here can move money
 // until billing is deliberately switched on. Stripe is the source of truth; these
@@ -12,6 +12,7 @@
 import type Stripe from 'stripe';
 
 import { getBillingStripe } from './client';
+import { planFor } from './plans';
 
 // ── Result shapes (wire-compatible with @wizeworks/operator's billing DTOs) ───────
 
@@ -56,6 +57,8 @@ export interface RefundInput {
   /** Partial refund amount in cents; omit for a full refund. */
   amountCents?: number;
   reason?: RefundReason;
+  /** Which billing plan's Stripe ACCOUNT to act in (./plans). Omit for the default. */
+  planId?: string | null;
 }
 
 export interface RefundResult {
@@ -71,6 +74,8 @@ export interface CreateCouponInput {
   currency?: string;
   duration: 'forever' | 'once' | 'repeating';
   durationInMonths?: number;
+  /** Which billing plan's Stripe ACCOUNT to act in (./plans). Omit for the default. */
+  planId?: string | null;
 }
 
 /** A customer-facing promotion code — the typeable string (`LAUNCH50`) a tenant
@@ -104,6 +109,8 @@ export interface CreatePromotionCodeInput {
   /** Only redeemable by a customer with no prior successful payment/invoice. */
   firstTimeOnly?: boolean;
   minimumAmountCents?: number;
+  /** Which billing plan's Stripe ACCOUNT to act in (./plans). Omit for the default. */
+  planId?: string | null;
   currency?: string;
 }
 
@@ -119,6 +126,8 @@ export interface CreateInvoiceInput {
   memo?: string;
   /** Finalize immediately (issue the invoice) vs. leave a draft. */
   autoFinalize: boolean;
+  /** Which billing plan's Stripe ACCOUNT to act in (./plans). Omit for the default. */
+  planId?: string | null;
 }
 
 export interface InvoiceResult {
@@ -130,14 +139,18 @@ export interface InvoiceResult {
 
 class BillingNotConfiguredError extends Error {
   readonly code = 'BILLING_NOT_CONFIGURED' as const;
-  constructor() {
-    super('Platform billing is not configured (STRIPE_SECRET_KEY unset).');
+  constructor(secretEnv: string) {
+    super(`Platform billing is not configured (${secretEnv} unset).`);
   }
 }
 
-function requireStripe(): Stripe {
-  const stripe = getBillingStripe();
-  if (!stripe) throw new BillingNotConfiguredError();
+// Every function here takes an optional `planId`, because WizeWorks bills out of
+// more than one Stripe account and a staff surface has to be able to look at
+// either. Omitting it reads the default plan's account — the previous behaviour.
+function requireStripe(planId?: string | null): Stripe {
+  const plan = planFor(planId);
+  const stripe = getBillingStripe(plan);
+  if (!stripe) throw new BillingNotConfiguredError(plan.secretEnv);
   return stripe;
 }
 
@@ -155,8 +168,11 @@ function isoFromUnix(seconds: number): string {
 /** Recent platform Stripe events — the webhook log viewer. Platform billing
  *  webhooks aren't persisted (fire-and-forget reconcile), so this reads Stripe's
  *  own event feed (retained ~30 days). */
-export async function listPlatformStripeEvents(limit = 25): Promise<PlatformStripeEvent[]> {
-  const stripe = getBillingStripe();
+export async function listPlatformStripeEvents(
+  limit = 25,
+  planId?: string | null
+): Promise<PlatformStripeEvent[]> {
+  const stripe = getBillingStripe(planFor(planId));
   if (!stripe) return [];
   const res = await stripe.events.list({ limit: clampLimit(limit) });
   return res.data.map((e) => ({ id: e.id, type: e.type, createdAt: isoFromUnix(e.created) }));
@@ -165,16 +181,23 @@ export async function listPlatformStripeEvents(limit = 25): Promise<PlatformStri
 /** A tenant's recent platform charges (money sparx collected from the tenant) —
  *  the source list an operator refunds from. Empty when the tenant has no Stripe
  *  customer or billing is unconfigured. */
-export async function listTenantCharges(customerId: string, limit = 20): Promise<PlatformCharge[]> {
-  const stripe = getBillingStripe();
+export async function listTenantCharges(
+  customerId: string,
+  limit = 20,
+  planId?: string | null
+): Promise<PlatformCharge[]> {
+  const stripe = getBillingStripe(planFor(planId));
   if (!stripe) return [];
   const res = await stripe.charges.list({ customer: customerId, limit: clampLimit(limit) });
   return res.data.map(toCharge);
 }
 
 /** Every platform coupon (discounts on a tenant's sparx bill). */
-export async function listPlatformCoupons(limit = 100): Promise<PlatformCoupon[]> {
-  const stripe = getBillingStripe();
+export async function listPlatformCoupons(
+  limit = 100,
+  planId?: string | null
+): Promise<PlatformCoupon[]> {
+  const stripe = getBillingStripe(planFor(planId));
   if (!stripe) return [];
   const res = await stripe.coupons.list({ limit: clampLimit(limit) });
   return res.data.map(toCoupon);
@@ -183,8 +206,11 @@ export async function listPlatformCoupons(limit = 100): Promise<PlatformCoupon[]
 /** Every platform promotion code (the typeable strings tenants redeem at checkout),
  *  optionally filtered to one coupon. Expands the coupon so each row carries its
  *  name. Empty when unconfigured. */
-export async function listPromotionCodes(couponId?: string): Promise<PlatformPromotionCode[]> {
-  const stripe = getBillingStripe();
+export async function listPromotionCodes(
+  couponId?: string,
+  planId?: string | null
+): Promise<PlatformPromotionCode[]> {
+  const stripe = getBillingStripe(planFor(planId));
   if (!stripe) return [];
   const res = await stripe.promotionCodes.list({
     limit: 100,
@@ -198,7 +224,7 @@ export async function listPromotionCodes(couponId?: string): Promise<PlatformPro
 
 /** Refund a platform charge, fully or partially. */
 export async function refundCharge(input: RefundInput): Promise<RefundResult> {
-  const stripe = requireStripe();
+  const stripe = requireStripe(input.planId);
   const refund = await stripe.refunds.create({
     charge: input.chargeId,
     ...(input.amountCents !== undefined ? { amount: input.amountCents } : {}),
@@ -208,7 +234,7 @@ export async function refundCharge(input: RefundInput): Promise<RefundResult> {
 }
 
 export async function createPlatformCoupon(input: CreateCouponInput): Promise<PlatformCoupon> {
-  const stripe = requireStripe();
+  const stripe = requireStripe(input.planId);
   const coupon = await stripe.coupons.create({
     name: input.name,
     duration: input.duration,
@@ -221,8 +247,8 @@ export async function createPlatformCoupon(input: CreateCouponInput): Promise<Pl
   return toCoupon(coupon);
 }
 
-export async function deletePlatformCoupon(id: string): Promise<void> {
-  const stripe = requireStripe();
+export async function deletePlatformCoupon(id: string, planId?: string | null): Promise<void> {
+  const stripe = requireStripe(planId);
   await stripe.coupons.del(id);
 }
 
@@ -233,7 +259,7 @@ export async function deletePlatformCoupon(id: string): Promise<void> {
 export async function createPromotionCode(
   input: CreatePromotionCodeInput
 ): Promise<PlatformPromotionCode> {
-  const stripe = requireStripe();
+  const stripe = requireStripe(input.planId);
   const restrictions: Stripe.PromotionCodeCreateParams.Restrictions = {};
   if (input.firstTimeOnly) restrictions.first_time_transaction = true;
   if (input.minimumAmountCents !== undefined) {
@@ -256,8 +282,11 @@ export async function createPromotionCode(
 
 /** Deactivate a promotion code. Stripe promotion codes can't be deleted, only
  *  turned off (`active: false`) — a deactivated code can't be reactivated. */
-export async function deactivatePromotionCode(id: string): Promise<PlatformPromotionCode> {
-  const stripe = requireStripe();
+export async function deactivatePromotionCode(
+  id: string,
+  planId?: string | null
+): Promise<PlatformPromotionCode> {
+  const stripe = requireStripe(planId);
   const updated = await stripe.promotionCodes.update(id, { active: false });
   return toPromotionCode(updated);
 }
@@ -265,7 +294,7 @@ export async function deactivatePromotionCode(id: string): Promise<PlatformPromo
 /** Author (and optionally finalize) a manual invoice against a tenant's platform
  *  Stripe customer — the enterprise-invoice path (custom-priced tenants, docs/92). */
 export async function createEnterpriseInvoice(input: CreateInvoiceInput): Promise<InvoiceResult> {
-  const stripe = requireStripe();
+  const stripe = requireStripe(input.planId);
   for (const line of input.lines) {
     await stripe.invoiceItems.create({
       customer: input.customerId,

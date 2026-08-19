@@ -13,7 +13,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { prisma } from '@wizeworks/db';
-import { getBillingState, getBillingStripe } from '@wizeworks/billing';
+import { getBillingState, getBillingStripe, planFor } from '@wizeworks/billing';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 
@@ -29,14 +29,16 @@ interface CardOnFile {
  *  yet, no default method, or a transient Stripe error — because the surface
  *  treats them identically: it points at the portal to add one. */
 async function readDefaultCard(tenantId: string): Promise<CardOnFile | null> {
-  const stripe = getBillingStripe();
-  if (!stripe) return null;
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
-      select: { stripeCustomerId: true },
+      select: { stripeCustomerId: true, billingPlan: true },
     });
     if (!tenant?.stripeCustomerId) return null;
+    // The customer lives in the account its PLAN names — reading it from the default
+    // account would 404 for a tenant billing anywhere else.
+    const stripe = getBillingStripe(planFor(tenant.billingPlan));
+    if (!stripe) return null;
     const customer = await stripe.customers.retrieve(tenant.stripeCustomerId, {
       expand: ['invoice_settings.default_payment_method'],
     });

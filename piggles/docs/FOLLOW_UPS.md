@@ -1,8 +1,8 @@
 # Piggles — follow-ups
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-14
+**Last Updated:** 2026-08-18
 
 Things found while building that need a **decision** or **work outside the slice
 that surfaced them**. One line per item in the register, detail below it.
@@ -22,50 +22,17 @@ resolved items stops being read.
 
 | #   | Item                                             | Kind     | Bites when                            |
 | --- | ------------------------------------------------ | -------- | ------------------------------------- |
-| 1   | Stripe module line items vs the one flat plan    | Defect   | The first Piggles tenant pays         |
-| 2   | The console shows no trial or lifecycle notice   | Gap      | A trial ends                          |
-| 3   | The module vocabulary is re-declared elsewhere   | Defect   | A module is added to the platform     |
-| 4   | Piggles activations are absent from the WW board | Decision | Someone asks what Piggles tenants use |
-| 5   | The console declares deps it does not import     | Decision | The first Piggles Dockerfile          |
-| 6   | "Is Google configured" is asked in two places    | Defect   | A second social provider is added     |
-| 7   | "Keep me signed in" stops at the domain boundary | Defect   | A customer restarts their browser     |
-| 8   | Every passwordless path is dead in local dev     | Gap      | Anyone forgets a dev password         |
+| 1   | The console shows no trial or lifecycle notice   | Gap      | A trial ends                          |
+| 2   | The module vocabulary is re-declared elsewhere   | Defect   | A module is added to the platform     |
+| 3   | Piggles activations are absent from the WW board | Decision | Someone asks what Piggles tenants use |
+| 4   | The console declares deps it does not import     | Decision | The first Piggles Dockerfile          |
+| 5   | "Is Google configured" is asked in two places    | Defect   | A second social provider is added     |
+| 6   | "Keep me signed in" stops at the domain boundary | Defect   | A customer restarts their browser     |
+| 7   | Every passwordless path is dead in local dev     | Gap      | Anyone forgets a dev password         |
 
 ---
 
-## 1. Stripe module line items vs the one flat plan
-
-**Kind:** defect · **Bites when:** the first Piggles tenant enters a card
-
-`syncModuleItems` (`wizeworks/packages/billing`) keeps a tenant's Stripe subscription in
-lockstep with their EXPLICIT module flags — one line item per active module.
-That is exactly right for sparx, which sells modules. **Piggles sells one flat
-plan with every app included**, so the same code would add up to fifteen
-priced line items to a $49/month subscription.
-
-It is dormant rather than solved. `syncModuleItems` returns early when the
-tenant has no `stripeSubscriptionId`, and a subscription is born at checkout —
-so a Piggles business on its card-less trial is untouched no matter how many
-apps it adds. **The moment one subscribes, every subsequent "Add app" starts
-billing them.**
-
-The reason to fix it is the pricing model, not the timing. Two shapes worth
-weighing:
-
-- Bill from the PLAN, not from the module set — `syncModuleItems` becomes a
-  no-op for a tenant whose plan is flat-rate, decided from the tenant's own
-  billing configuration rather than from `platformBrand` (a brand check in
-  `wizeworks/packages/billing` is the fork this repo works to avoid — piggles/CLAUDE.md
-  RULE #0).
-- Or: module items exist but are priced at zero for a flat plan. Simpler to
-  reason about in Stripe; noisier on an invoice a customer actually reads.
-
-Related and NOT the same question: capacity billing (storage, email volume,
-contacts, seats) is Piggles' actual variable axis and is item 3 on STATUS's
-`Next`. This item is only about the module axis, which for Piggles must be
-free.
-
-## 2. The console shows no trial or lifecycle notice
+## 1. The console shows no trial or lifecycle notice
 
 **Kind:** gap (created deliberately, needs the Piggles version building) ·
 **Bites when:** a trial runs out
@@ -93,7 +60,7 @@ all?** It is inherited from `provisionTenant` rather than chosen, and the
 source pack's commercial docs should be read before the notice is written —
 building a countdown for a trial nobody decided on is the wrong order.
 
-## 3. The module vocabulary is re-declared elsewhere
+## 2. The module vocabulary is re-declared elsewhere
 
 **Kind:** defect · **Bites when:** a module is added to the platform
 
@@ -113,7 +80,7 @@ Do this as a sweep: grep an existing slug (`dropship` is distinctive) across the
 repo, and for each list that turns up, either derive it from `ALL_MODULES` or
 write down why it legitimately differs.
 
-## 4. Piggles module activations are absent from the WizeWorks board
+## 3. Piggles module activations are absent from the WizeWorks board
 
 **Kind:** decision (currently deliberate — recorded so nobody "fixes" it blind)
 
@@ -139,7 +106,7 @@ Decide: leave it (module activation is not commercial and the board is a
 commercial instrument), or publish it with a payload that makes clear no money
 moved.
 
-## 5. The console declares dependencies it does not directly import
+## 4. The console declares dependencies it does not directly import
 
 **Kind:** decision · **Bites when:** the first Piggles Dockerfile is written
 
@@ -160,7 +127,7 @@ This becomes a real decision at deployment, because
 missing from an app image, and it is currently blind to both Piggles apps (see
 STATUS). Whatever is decided here has to be what that checker enforces.
 
-## 6. "Is Google configured" is answered in two places
+## 5. "Is Google configured" is answered in two places
 
 **Kind:** defect · **Bites when:** a second social provider is added, or the env
 changes on one deployment and not another
@@ -182,7 +149,7 @@ workbench's `auth-shell.tsx` renders its Google button **unconditionally**, so o
 a deployment without those env vars it offers an entry that cannot work. That is
 the platform-level version of this and it is live today.
 
-## 7. "Keep me signed in" stops at the domain boundary
+## 6. "Keep me signed in" stops at the domain boundary
 
 **Kind:** defect (mild) · **Bites when:** a customer closes their browser
 
@@ -200,7 +167,7 @@ The fix is to carry the choice through the handoff and set the console cookie's
 `maxAge` from it. The helper already accepts `maxAge`
 (`@piggles/auth-handoff/src/session-cookie.ts`); nothing passes one.
 
-## 8. Every passwordless path is dead in local dev
+## 7. Every passwordless path is dead in local dev
 
 **Kind:** gap · **Bites when:** anybody forgets a password on a dev account —
 which has now cost real time once

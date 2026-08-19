@@ -38,6 +38,7 @@ const h = vi.hoisted(() => {
 vi.mock('./client', () => ({
   getBillingStripe: () => h.stub.value,
   isBillingConfigured: () => Boolean(h.stub.value),
+  anyBillingConfigured: () => Boolean(h.stub.value),
 }));
 
 vi.mock('@wizeworks/db', () => ({
@@ -54,6 +55,23 @@ vi.mock('@wizeworks/db', () => ({
 }));
 
 import { createCheckoutSession, reconcileFromSubscription, syncModuleItems } from './service';
+import { registerBillingPlan, resetBillingPlansForTesting } from './plans';
+
+// A flat plan, registered the way ops would configure one. Its prices are arbitrary
+// here — these cases are about SHAPE, not amounts.
+const FLAT_PLAN = {
+  id: 'flat_test',
+  label: 'Flat monthly',
+  shape: 'flat' as const,
+  secretEnv: 'STRIPE_SECRET_KEY',
+  webhookSecretEnv: 'STRIPE_WEBHOOK_SECRET_BILLING',
+  base: {
+    product: 'flat_base',
+    lookupKey: 'flat_base_monthly',
+    priceEnv: 'TEST_FLAT_BASE_PRICE',
+    monthlyCents: 4900,
+  },
+};
 
 type Subscription = Parameters<typeof reconcileFromSubscription>[0];
 
@@ -94,6 +112,8 @@ beforeEach(() => {
 
 afterEach(() => {
   delete process.env.STRIPE_PRICE_COMMERCE_MONTHLY;
+  delete process.env.TEST_FLAT_BASE_PRICE;
+  resetBillingPlansForTesting();
 });
 
 describe('syncModuleItems', () => {
@@ -165,6 +185,105 @@ describe('syncModuleItems', () => {
       where: { id: 't1' },
       data: { stripeSubscriptionId: null },
     });
+  });
+});
+
+// The defect these cover: platform billing used to read ONE Stripe key and bill from
+// the module set, so a tenant on a flat plan would have been charged per module, in
+// the wrong Stripe account, and a webhook would then have switched off every app they
+// had just paid for.
+describe('a flat plan never bills from the module set', () => {
+  beforeEach(() => registerBillingPlan(FLAT_PLAN));
+
+  it('adds no module items and never cancels when the last module goes off', async () => {
+    h.tenantFindUnique.mockResolvedValue({
+      id: 't1',
+      stripeCustomerId: 'cus_abc',
+      stripeSubscriptionId: 'sub_live',
+      billingInterval: 'monthly',
+      billingPlan: 'flat_test',
+      trialEndsAt: null,
+    });
+
+    const r = await syncModuleItems({ tenantId: 't1', email: 'a@b.co', enabledModules: [] });
+
+    expect(r.applied).toBe(true);
+    expect(r.stripeSubscriptionId).toBe('sub_live');
+    // The whole point: turning an app off changes the workspace, not the price.
+    expect(h.stub.value!.subscriptions.cancel).not.toHaveBeenCalled();
+    expect(h.stub.value!.subscriptionItems.create).not.toHaveBeenCalled();
+    expect(h.txItems.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('checks out with exactly one line item — the base price', async () => {
+    process.env.TEST_FLAT_BASE_PRICE = 'price_flat_base';
+    process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
+    h.tenantFindUnique.mockResolvedValue({
+      id: 't1',
+      email: 'a@b.co',
+      name: 'Bakery',
+      stripeCustomerId: 'cus_abc',
+      stripeSubscriptionId: null,
+      billingInterval: 'monthly',
+      billingPlan: 'flat_test',
+      trialEndsAt: null,
+      settings: { modules: { commerce: { enabled: true }, cms: { enabled: true } } },
+    });
+
+    await createCheckoutSession('t1', { successUrl: 'https://s/ok', cancelUrl: 'https://s/no' });
+
+    const args = h.stub.value!.checkout.sessions.create.mock.calls[0]![0];
+    expect(args.line_items).toEqual([{ price: 'price_flat_base', quantity: 1 }]);
+  });
+
+  it('leaves module flags alone when reconciling a paid subscription', async () => {
+    h.tenantFindFirst.mockResolvedValue({
+      id: 't1',
+      settings: { modules: { commerce: { enabled: true }, cms: { enabled: true } } },
+    });
+
+    const tenantId = await reconcileFromSubscription(
+      {
+        id: 'sub_live',
+        status: 'active',
+        customer: 'cus_abc',
+        trial_end: null,
+        current_period_end: null,
+        cancel_at_period_end: false,
+        // The base price matches no module, which is exactly why the per-module
+        // reconciler would have cleared every flag.
+        items: { data: [{ id: 'si_1', price: { id: 'price_flat_base' } }] },
+      } as unknown as Subscription,
+      'flat_test'
+    );
+
+    expect(tenantId).toBe('t1');
+    // Columns are written; module flags are NOT touched.
+    expect(h.tenantUpdate).toHaveBeenCalledTimes(1);
+    expect(h.tenantUpdate.mock.calls[0]![0].data).not.toHaveProperty('settings');
+    // And no module-item rows are written for a plan that has no modules to diff.
+    expect(h.txItems.create).not.toHaveBeenCalled();
+  });
+
+  it('reconciles nothing when the customer belongs to a different plan', async () => {
+    h.tenantFindFirst.mockResolvedValue(null);
+
+    const tenantId = await reconcileFromSubscription(
+      {
+        id: 'sub_live',
+        status: 'active',
+        customer: 'cus_abc',
+        items: { data: [] },
+      } as unknown as Subscription,
+      'flat_test'
+    );
+
+    expect(tenantId).toBeNull();
+    expect(h.tenantFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { stripeCustomerId: 'cus_abc', billingPlan: 'flat_test' },
+      })
+    );
   });
 });
 

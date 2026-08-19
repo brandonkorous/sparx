@@ -55,6 +55,21 @@ model Tenant {
   currentPeriodEnd     DateTime? @map("current_period_end") @db.Timestamptz
   cancelAtPeriodEnd    Boolean   @default(false) @map("cancel_at_period_end")
   billingInterval      String    @default("monthly") @map("billing_interval") @db.VarChar(10)
+  // WHICH billing plan this tenant is on — the shape of its bill AND which Stripe
+  // ACCOUNT it bills from (@wizeworks/billing/plans). `modules` is sparx's
+  // per-active-module subscription; `piggles` is one flat plan out of a separate
+  // Stripe account.
+  //
+  // It is a column and not a brand lookup on purpose. Billing must never branch on
+  // `platformBrand` (piggles/CLAUDE.md RULE #0) — and beyond that rule, the two are
+  // genuinely different questions: a brand is who sold the account, a plan is what
+  // it is charged. An enterprise sparx tenant on a bespoke flat contract is the case
+  // that proves they are not the same field.
+  //
+  // Defaulted rather than nullable so every existing row keeps billing exactly as it
+  // did. VarChar over an enum for the same reason as `platformBrand`: the set is
+  // owned by product, and adding a plan should not need a migration.
+  billingPlan          String    @default("modules") @map("billing_plan") @db.VarChar(30)
   trialEndsAt          DateTime? @map("trial_ends_at") @db.Timestamptz
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
@@ -660,6 +675,7 @@ model Tenant {
   // The staff console lists and segments tenants by brand from the first day two
   // brands exist, and every cross-brand metric groups by it.
   @@index([platformBrand])
+  @@index([billingPlan], map: "tenants_billing_plan_idx")
   @@map("tenants")
 }
 

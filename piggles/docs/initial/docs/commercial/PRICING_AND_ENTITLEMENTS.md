@@ -30,6 +30,16 @@ They should know: "Piggles includes the tools. My bill changes when my business 
 
 Final numbers must be validated against infrastructure cost.
 
+## Pricing model
+
+Piggles $49/mo
+Extra 10,000 customers $10/mo
+Extra 5,000 email sends $10/mo
+Extra 10 GB storage $5/mo
+Extra site $10/mo
+Extra location $19/mo
+Extra team member $5/mo
+
 ## Expansion
 
 Possible add-ons:

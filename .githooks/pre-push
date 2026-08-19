@@ -92,6 +92,7 @@ node scripts/check-dockerfile-paths.mjs >/dev/null || fail "a Dockerfile path no
 node scripts/check-boundaries.mjs >/dev/null || fail "a product boundary broke, or piggles grew a new \`@sparx/*\` dependency — run \`pnpm check:boundaries\` to see it"
 node scripts/check-deletability.mjs >/dev/null || fail "piggles now depends on a sparx-owned package — deleting sparx would break its build. Run \`pnpm check:deletability\` for the chain"
 node scripts/check-webhook-events.mjs >/dev/null || fail "webhook event lists have drifted — run \`pnpm check:webhooks\` to see it"
+node scripts/check-billing-plans.mjs >/dev/null || fail "a billing plan and the prod ConfigMap have drifted, or a plan is malformed — run \`pnpm check:billing-plans\` to see it. NOTE: this class of failure DEPLOYS green and charges the wrong price."
 node scripts/check-inventory-api-docs.mjs >/dev/null || fail "the inventory API reference is stale — run \`pnpm gen:inventory-api\` to rebuild it"
 node piggles/scripts/check-toolbar-primary.mjs >/dev/null || fail "a Piggles toolbar put a commit action in the relocatable `controls` slot — run `pnpm check:piggles-toolbars` to see it"
 node scripts/check-console-parity.mjs >/dev/null || fail "the two consoles have drifted — one has system furniture the other lacks. Run \`pnpm check:console-parity\` to see which, and either build it or argue it onto the exception list"

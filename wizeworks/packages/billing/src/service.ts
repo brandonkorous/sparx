@@ -1,6 +1,12 @@
 // Billing service — provision + reconcile a tenant's platform subscription.
 //
-// One Stripe subscription per tenant, one item per active billable module. Every
+// One Stripe subscription per tenant, SHAPED BY THE TENANT'S PLAN (./plans): a
+// `per_module` plan carries one item per active billable module, a `flat` plan
+// carries one base item and never lets a module flag reach the bill. The plan also
+// decides which Stripe ACCOUNT the tenant lives in, so every Stripe call in this
+// file goes through `getBillingStripe(plan)` rather than a single global client.
+//
+// Every
 // operation is GUARDED: if the platform Stripe key is unset it returns a no-op
 // result, so the module-toggle path works unchanged in dev/test and ships before
 // the prod ops (products, price IDs, webhook) land. Stripe failures are surfaced
@@ -17,8 +23,9 @@ import {
   type ModuleSlug,
 } from '@wizeworks/modules';
 
-import { getBillingStripe, isBillingConfigured } from './client';
+import { anyBillingConfigured, getBillingStripe, isBillingConfigured } from './client';
 import { isPlatformTenant, resolveBillingPhase, type BillingPhaseView } from './gate';
+import { planFor, type BillingPlan, type PlanShape } from './plans';
 import {
   MODULE_MONTHLY_CENTS,
   isBillableModule,
@@ -113,6 +120,40 @@ function billablePriced(
   return out;
 }
 
+/** A Stripe Price id from its env var, or undefined when the ops have not landed. */
+function priceIdFromEnv(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  // Blank is the same as unset — a variable that is present but empty is an ops slip,
+  // not a price id, and passing '' to Stripe fails far from the cause.
+  return value === '' ? undefined : value;
+}
+
+/**
+ * The Checkout line items for a plan.
+ *
+ * - `flat` — exactly ONE item, the base price. Capacity blocks are bought later
+ *   and in place, at the moment of friction, so a first checkout never carries
+ *   one; and the module set is deliberately not consulted, because on a flat plan
+ *   turning an app on changes the workspace and not the price.
+ * - `per_module` — one item per EXPLICIT billable module that has a configured
+ *   price id. Bundled-free capabilities have no flag, so are never an item.
+ */
+function checkoutLineItems(
+  plan: BillingPlan,
+  settings: Parameters<typeof deriveModuleStates>[0],
+  iv: BillingInterval
+): Stripe.Checkout.SessionCreateParams.LineItem[] {
+  if (plan.shape === 'flat') {
+    const price = plan.base ? priceIdFromEnv(plan.base.priceEnv) : undefined;
+    return price ? [{ price, quantity: 1 }] : [];
+  }
+  const states = deriveModuleStates(settings);
+  const explicit = (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[]).filter(
+    (m) => states[m].source === 'explicit'
+  );
+  return billablePriced(explicit, iv).map((d) => ({ price: d.priceId, quantity: 1 }));
+}
+
 /**
  * Bring a tenant's Stripe subscription into line with its enabled modules:
  * lazily create the customer + trialing subscription on first call, then
@@ -120,8 +161,10 @@ function billablePriced(
  * automatically (Stripe default). No-op when billing is unconfigured.
  */
 export async function syncModuleItems(input: SubscriptionSyncInput): Promise<BillingResult> {
-  const stripe = getBillingStripe();
-  if (!stripe) return { applied: false };
+  // Cheap door first: with no Stripe key anywhere there is nothing to sync for any
+  // plan, and reading the tenant row only to discover that is a query dev and test
+  // should never pay. WHICH plan is wired still needs the row, below.
+  if (!anyBillingConfigured()) return { applied: false };
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: input.tenantId },
@@ -130,10 +173,36 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
       stripeCustomerId: true,
       stripeSubscriptionId: true,
       billingInterval: true,
+      billingPlan: true,
       trialEndsAt: true,
     },
   });
   if (!tenant) return { applied: false };
+
+  // The plan decides the ACCOUNT, so it has to be resolved before the client.
+  const plan = planFor(tenant.billingPlan);
+  const stripe = getBillingStripe(plan);
+  if (!stripe) return { applied: false };
+
+  // A FLAT plan does not bill from the module set — every app is included, and a
+  // tenant who turns one on is changing their workspace, not their price. Ensure
+  // the customer (so a later checkout has one) and stop. Without this the loop
+  // below would put one priced line item per app onto a $49 subscription, and the
+  // `desired.length === 0` branch would CANCEL the subscription of a tenant who
+  // simply switched their last optional app off.
+  if (plan.shape === 'flat') {
+    const customerId = await ensureStripeCustomer(stripe, {
+      tenantId: input.tenantId,
+      existingCustomerId: tenant.stripeCustomerId,
+      email: input.email,
+      name: input.name,
+    });
+    return {
+      applied: true,
+      stripeCustomerId: customerId,
+      ...(tenant.stripeSubscriptionId ? { stripeSubscriptionId: tenant.stripeSubscriptionId } : {}),
+    };
+  }
 
   const iv = interval(tenant.billingInterval);
   const desired = billablePriced(input.enabledModules, iv);
@@ -227,13 +296,15 @@ export async function createPortalSession(
   tenantId: string,
   returnUrl: string
 ): Promise<string | null> {
-  const stripe = getBillingStripe();
-  if (!stripe) return null;
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
-    select: { stripeCustomerId: true },
+    select: { stripeCustomerId: true, billingPlan: true },
   });
   if (!tenant?.stripeCustomerId) return null;
+  // The customer id only means anything inside its own account, so the portal
+  // session must be opened against the plan's account or Stripe 404s.
+  const stripe = getBillingStripe(planFor(tenant.billingPlan));
+  if (!stripe) return null;
   const session = await stripe.billingPortal.sessions.create({
     customer: tenant.stripeCustomerId,
     return_url: returnUrl,
@@ -264,9 +335,6 @@ export async function createCheckoutSession(
   tenantId: string,
   opts: { successUrl: string; cancelUrl: string }
 ): Promise<CheckoutSessionResult> {
-  const stripe = getBillingStripe();
-  if (!stripe) return { url: null, reason: 'unconfigured' };
-
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: {
@@ -276,24 +344,27 @@ export async function createCheckoutSession(
       stripeCustomerId: true,
       stripeSubscriptionId: true,
       billingInterval: true,
+      billingPlan: true,
       trialEndsAt: true,
       settings: true,
     },
   });
   if (!tenant) return { url: null, reason: 'unconfigured' };
 
+  const plan = planFor(tenant.billingPlan);
+  const stripe = getBillingStripe(plan);
+  if (!stripe) return { url: null, reason: 'unconfigured' };
+
   // A tenant with a live subscription manages payment in the Portal; a second
   // checkout would create a duplicate subscription.
   if (tenant.stripeSubscriptionId) return { url: null, reason: 'already_active' };
 
-  // Bill exactly the tenant's EXPLICIT billable modules (bundled-free capabilities
-  // have no flag, so never a line item) that also have a configured price id.
-  const states = deriveModuleStates(tenant.settings);
-  const explicit = (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[]).filter(
-    (m) => states[m].source === 'explicit'
-  );
-  const desired = billablePriced(explicit, interval(tenant.billingInterval));
-  if (desired.length === 0) return { url: null, reason: 'no_paid_modules' };
+  const lineItems = checkoutLineItems(plan, tenant.settings, interval(tenant.billingInterval));
+  // On a flat plan an empty list can only mean the base price id is unset — an ops
+  // gap, not "you have bought nothing to subscribe to".
+  if (lineItems.length === 0) {
+    return { url: null, reason: plan.shape === 'flat' ? 'unconfigured' : 'no_paid_modules' };
+  }
 
   const customerId = await ensureStripeCustomer(stripe, {
     tenantId,
@@ -315,7 +386,7 @@ export async function createCheckoutSession(
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     customer: customerId,
-    line_items: desired.map((d) => ({ price: d.priceId, quantity: 1 })),
+    line_items: lineItems,
     // The discount-code box the tenant asked for: Stripe renders + validates it,
     // redeeming a PROMOTION CODE (created off a coupon, @wizeworks/billing operator.ts)
     // against its restrictions. No custom field or redemption logic on our side.
@@ -342,11 +413,20 @@ export interface BillingStateView {
   currentPeriodEnd: string | null;
   cancelAtPeriodEnd: boolean;
   billingInterval: BillingInterval;
+  /** Which plan this tenant bills on (./plans) — the shape of the bill and the
+   *  Stripe account behind it. */
+  planId: string;
+  planLabel: string;
+  planShape: PlanShape;
   /** The plan derived from the tenant's EXPLICIT billable module flags — what the
    *  tenant will be charged. Always populated (independent of Stripe), so the
    *  settings page is meaningful before the billing ops land. Bundled-free
    *  capabilities (invoicing via Commerce/B2B) are 'bundled', not explicit, so
-   *  they never appear here. */
+   *  they never appear here.
+   *
+   *  EMPTY on a `flat` plan, and empty is the correct answer there rather than a
+   *  missing one: no module is separately billed, so there is no per-module
+   *  breakdown to show. Read `planTotalCents`, which is populated for both shapes. */
   planModules: { moduleKey: string; monthlyCents: number }[];
   planTotalCents: number;
   /** 'enterprise' for manually-provisioned tenants (Gillett Diesel, docs/92 §C5):
@@ -374,14 +454,25 @@ export async function getBillingState(tenantId: string): Promise<BillingStateVie
       currentPeriodEnd: true,
       cancelAtPeriodEnd: true,
       billingInterval: true,
+      billingPlan: true,
       settings: true,
     },
   });
 
+  const plan = planFor(tenant?.billingPlan);
   const states = deriveModuleStates(tenant?.settings);
-  const planModules = (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[])
-    .filter((m) => states[m].source === 'explicit')
-    .map((m) => ({ moduleKey: m, monthlyCents: MODULE_MONTHLY_CENTS[m] ?? 0 }));
+  const planModules =
+    plan.shape === 'flat'
+      ? []
+      : (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[])
+          .filter((m) => states[m].source === 'explicit')
+          .map((m) => ({ moduleKey: m, monthlyCents: MODULE_MONTHLY_CENTS[m] ?? 0 }));
+  // A flat plan's total is its base price, not the sum of an empty list — billing
+  // $0.00 onto a $49 plan's settings screen would be a measurement nobody took.
+  const planTotalCents =
+    plan.shape === 'flat'
+      ? (plan.base?.monthlyCents ?? 0)
+      : planModules.reduce((sum, m) => sum + m.monthlyCents, 0);
 
   const billingSettings = (tenant?.settings as { billing?: { planType?: string } } | null)?.billing;
   const planType: 'standard' | 'enterprise' =
@@ -396,23 +487,35 @@ export async function getBillingState(tenantId: string): Promise<BillingStateVie
   });
 
   return {
-    configured: isBillingConfigured(),
+    configured: isBillingConfigured(plan),
     billingActive: Boolean(tenant?.stripeSubscriptionId),
     subscriptionStatus: tenant?.subscriptionStatus ?? null,
     trialEndsAt: tenant?.trialEndsAt?.toISOString() ?? null,
     currentPeriodEnd: tenant?.currentPeriodEnd?.toISOString() ?? null,
     cancelAtPeriodEnd: tenant?.cancelAtPeriodEnd ?? false,
     billingInterval: interval(tenant?.billingInterval),
+    planId: plan.id,
+    planLabel: plan.label,
+    planShape: plan.shape,
     planModules,
-    planTotalCents: planModules.reduce((s, m) => s + m.monthlyCents, 0),
+    planTotalCents,
     planType,
     billing,
   };
 }
 
 /** Persist a Stripe subscription's state onto the tenant row + rebuild its item
- *  rows. Shared by create + webhook reconciliation. */
-async function persistSubscription(tenantId: string, sub: Stripe.Subscription): Promise<void> {
+ *  rows. Shared by create + webhook reconciliation.
+ *
+ *  `billing_subscription_items` exists to DIFF a module set against Stripe items, so
+ *  it is written for `per_module` plans only. A flat plan has nothing to diff, and
+ *  its capacity blocks are not modules — recording them in `module_key` would make
+ *  the column mean two different things depending on the row. */
+async function persistSubscription(
+  tenantId: string,
+  sub: Stripe.Subscription,
+  plan: BillingPlan
+): Promise<void> {
   await prisma.tenant.update({
     where: { id: tenantId },
     data: {
@@ -423,6 +526,7 @@ async function persistSubscription(tenantId: string, sub: Stripe.Subscription): 
       cancelAtPeriodEnd: sub.cancel_at_period_end,
     },
   });
+  if (plan.shape === 'flat') return;
   await withTenant({ tenantId }, async (tx) => {
     await tx.billingSubscriptionItem.deleteMany({ where: { tenantId } });
     for (const item of sub.items.data) {
@@ -448,15 +552,30 @@ async function persistSubscription(tenantId: string, sub: Stripe.Subscription): 
  * bundled-derived modules are untouched. Returns the resolved tenant id, or null
  * if the customer maps to no tenant.
  */
-export async function reconcileFromSubscription(sub: Stripe.Subscription): Promise<string | null> {
+export async function reconcileFromSubscription(
+  sub: Stripe.Subscription,
+  planId?: string | null
+): Promise<string | null> {
   const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id;
+  const plan = planFor(planId);
+  // Scoped to the plan as well as the customer, because a Stripe customer id is
+  // only meaningful INSIDE its own account: two accounts can in principle mint the
+  // same id, and matching on the id alone would let one product's webhook rewrite
+  // the other's tenant. Narrowing here fails closed — a mismatch reconciles nothing
+  // rather than reconciling the wrong row.
   const tenant = await prisma.tenant.findFirst({
-    where: { stripeCustomerId: customerId },
+    where: { stripeCustomerId: customerId, billingPlan: plan.id },
     select: { id: true, settings: true },
   });
   if (!tenant) return null;
 
-  await persistSubscription(tenant.id, sub);
+  await persistSubscription(tenant.id, sub, plan);
+
+  // On a FLAT plan the subscription says nothing about which apps are on — every
+  // app is included, and the items are the base plan plus capacity blocks. Running
+  // the module reconciliation below would find no item matching any module and
+  // switch EVERY app off for a tenant who just paid.
+  if (plan.shape === 'flat') return tenant.id;
 
   // Reconcile billable-module flags to the subscription's items.
   const itemModules = new Set(
@@ -500,10 +619,13 @@ export async function reconcileFromSubscription(sub: Stripe.Subscription): Promi
  *  changes — gating stays until a cancellation actually lands. */
 export async function setSubscriptionStatus(
   stripeCustomerId: string,
-  status: string
+  status: string,
+  planId?: string | null
 ): Promise<void> {
+  // Same scoping as reconcileFromSubscription: the customer id is only unique
+  // within its own Stripe account.
   await prisma.tenant.updateMany({
-    where: { stripeCustomerId },
+    where: { stripeCustomerId, billingPlan: planFor(planId).id },
     data: { subscriptionStatus: status },
   });
 }

@@ -165,6 +165,25 @@ const EnvSchema = z
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     STRIPE_WEBHOOK_SECRET_SPARX_PAY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET_BILLING: z.string().optional(),
+    // The SECOND billing account. WizeWorks bills Piggles out of its own Stripe
+    // account on a flat plan (@wizeworks/billing/plans), so its key and signing
+    // secrets are separate values, not extra entries on sparx's. Declared here so
+    // boot validates them and .env.example documents them; @wizeworks/billing reads
+    // them by name off the plan, the same way module price ids are read.
+    PIGGLES_STRIPE_SECRET_KEY: z.string().optional(),
+    PIGGLES_STRIPE_WEBHOOK_SECRET_BILLING: z.string().optional(),
+    // BILLING_PLANS — a JSON array of plan definitions (@wizeworks/billing/plans).
+    //   A plan says how a tenant's bill is SHAPED and which Stripe ACCOUNT it is
+    //   raised in. The platform ships one built-in (`modules`, per active module out
+    //   of STRIPE_SECRET_KEY); every other plan is brand policy and arrives here as
+    //   configuration, authored in the brand's own tree
+    //   (e.g. piggles/config/billing-plan.json).
+    //
+    //   Unset is a valid, complete configuration for a single-brand deployment. It is
+    //   NOT valid once a tenant row carries a `billing_plan` this process cannot
+    //   resolve — `planFor` throws rather than billing them on the default, because
+    //   the default is somebody else's Stripe account.
+    BILLING_PLANS: z.string().optional(),
     STRIPE_CLIENT_ID: z.string().optional(),
     // Media storage. When GCS_MEDIA_BUCKET is set we use Cloud Storage with
     // presigned PUT URLs; otherwise we fall back to a local-disk backend at

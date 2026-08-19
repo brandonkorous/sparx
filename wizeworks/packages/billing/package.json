@@ -2,7 +2,7 @@
   "name": "@wizeworks/billing",
   "version": "0.0.0",
   "private": true,
-  "description": "Platform billing — WizeWorks charging tenants per active module via a single Stripe subscription (one item per module). Lazy + idempotent customer/subscription provisioning, module-item sync, trial lifecycle, and webhook reconciliation. Guarded so every operation is a no-op until STRIPE_SECRET_KEY + price IDs are configured (dev/test never need Stripe).",
+  "description": "Platform billing - the WizeWorks subscription a tenant is charged for, out of the Stripe account its PLAN names (src/plans). A per_module plan bills one item per active module (sparx); a flat plan bills one base item plus capacity (Piggles). Lazy + idempotent customer/subscription provisioning, plan-shaped item sync, trial lifecycle, and webhook reconciliation scoped by account. Guarded so every operation is a no-op until that plan's key + price IDs are configured (dev/test never need Stripe).",
   "type": "module",
   "exports": {
     ".": {

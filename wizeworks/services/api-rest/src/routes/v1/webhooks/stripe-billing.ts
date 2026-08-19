@@ -4,6 +4,13 @@
 //
 //   POST /v1/public/webhooks/stripe/billing
 //
+// ONE URL, MORE THAN ONE STRIPE ACCOUNT. WizeWorks bills two products out of two
+// separate accounts, and both point their billing endpoint here. Which account an
+// event came from is not in the payload — it is whichever PLAN's signing secret
+// verifies the signature, so verification and account identification are the same
+// step (see `verifyAgainstAnyPlan`). Everything downstream is scoped by that plan,
+// because a Stripe customer id only means something inside its own account.
+//
 // Handled events:
 //   customer.subscription.updated  → reconcile tenant status + items + module flags
 //   customer.subscription.deleted  → same path; canceled status disables modules
@@ -19,13 +26,17 @@
 
 import type Stripe from 'stripe';
 import type { FastifyBaseLogger, FastifyPluginAsync } from 'fastify';
-import { reconcileFromSubscription, setSubscriptionStatus } from '@wizeworks/billing';
+import {
+  listBillingPlans,
+  reconcileFromSubscription,
+  setSubscriptionStatus,
+  type BillingPlan,
+} from '@wizeworks/billing';
 import { constructEventWithAnySecret, parseWebhookSecrets } from '@wizeworks/payments';
 import { ApiError } from '@wizeworks/api-core/errors';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { prisma } from '@wizeworks/db';
 import { appLink, appOrigin } from '@wizeworks/links/server';
-import { env } from '../../../env.js';
 
 // ── Platform billing notifications (docs/impl transactional-email §4 P4) ─────
 // The tenant's OWN bill from WizeWorks: receipt, payment-failed, trial-ending.
@@ -36,11 +47,15 @@ import { env } from '../../../env.js';
 /** The billing contact for a Stripe customer — the Tenant row keyed by the unique
  *  `stripeCustomerId` (a non-RLS root row, safe to read without a tenant context). */
 async function billingRecipient(
-  customerId: string | null | undefined
+  customerId: string | null | undefined,
+  planId: string
 ): Promise<{ tenantId: string; email: string; name: string; brand: string } | null> {
   if (!customerId) return null;
-  const tenant = await prisma.tenant.findUnique({
-    where: { stripeCustomerId: customerId },
+  // findFirst scoped by plan, not findUnique on the customer alone: the id is only
+  // unique within its own Stripe account, so a cross-account lookup could resolve
+  // somebody else's tenant. Narrowing fails closed.
+  const tenant = await prisma.tenant.findFirst({
+    where: { stripeCustomerId: customerId, billingPlan: planId },
     // `platformBrand` rides this read. A Stripe webhook has no session and no
     // hostname — the `tenants` row is the non-RLS dispatch row precisely so a
     // webhook can resolve the tenant before any context is set, and the brand is
@@ -154,33 +169,30 @@ const stripeBillingWebhookRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const rawBody = request.body as Buffer;
-    // Comma-separated list, so a rolled signing secret keeps verifying during Stripe's
-    // 24h overlap instead of 403-ing every billing event. See @wizeworks/payments'
-    // webhook-secrets.ts.
-    const webhookSecrets = parseWebhookSecrets(env.STRIPE_WEBHOOK_SECRET_BILLING);
-    if (webhookSecrets.length === 0) {
-      // Dev / pre-ops: no billing webhook secret configured. Acknowledge so
-      // Stripe (or a test) doesn't retry; nothing is reconciled.
+    const verified = verifyAgainstAnyPlan(rawBody.toString('utf8'), sig);
+
+    if (verified === 'unconfigured') {
+      // Dev / pre-ops: no plan has a billing webhook secret configured. Acknowledge
+      // so Stripe (or a test) doesn't retry; nothing is reconciled.
       request.log.warn(
-        'STRIPE_WEBHOOK_SECRET_BILLING unset — billing webhook acknowledged without processing'
+        'no billing webhook secret configured for any plan — acknowledged without processing'
       );
       await reply.code(200).send({ received: true });
       return;
     }
-
-    const event = constructEventWithAnySecret(rawBody.toString('utf8'), sig, webhookSecrets);
-    if (!event) {
+    if (!verified) {
       request.log.warn('stripe billing webhook: signature verification failed');
       throw new ApiError('FORBIDDEN', 'Invalid Stripe webhook signature');
     }
 
+    const { event, plan } = verified;
     try {
-      await dispatch(request.log, event);
+      await dispatch(request.log, event, plan);
     } catch (err) {
       // Log, don't rethrow — a 5xx makes Stripe retry; reconciliation is
       // idempotent, but we prefer to ack and let the next event self-heal.
       request.log.error(
-        { err, eventId: event.id, eventType: event.type },
+        { err, eventId: event.id, eventType: event.type, plan: plan.id },
         'stripe billing webhook: dispatch error'
       );
     }
@@ -191,7 +203,35 @@ const stripeBillingWebhookRoutes: FastifyPluginAsync = async (app) => {
 
 export default stripeBillingWebhookRoutes;
 
-async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<void> {
+/** Which billing PLAN sent this event — determined by whose signing secret verifies
+ *  it, because the payload carries no account identity of its own.
+ *
+ *  Each plan's secret env var is a comma-separated LIST, so a rolled secret keeps
+ *  verifying through Stripe's 24h overlap instead of 403-ing every billing event.
+ *
+ *  Returns `'unconfigured'` (acknowledge, process nothing) when NO plan has a secret,
+ *  `null` when secrets exist but none verify (a real 403), or the event plus the plan
+ *  that owns it. */
+function verifyAgainstAnyPlan(
+  rawBody: string,
+  signature: string
+): { event: Stripe.Event; plan: BillingPlan } | 'unconfigured' | null {
+  let anyConfigured = false;
+  for (const plan of listBillingPlans()) {
+    const secrets = parseWebhookSecrets(process.env[plan.webhookSecretEnv]);
+    if (secrets.length === 0) continue;
+    anyConfigured = true;
+    const event = constructEventWithAnySecret(rawBody, signature, secrets);
+    if (event) return { event, plan };
+  }
+  return anyConfigured ? null : 'unconfigured';
+}
+
+async function dispatch(
+  log: FastifyBaseLogger,
+  event: Stripe.Event,
+  plan: BillingPlan
+): Promise<void> {
   switch (event.type) {
     // A trial that ends with no card pauses (end_behavior: 'pause', docs/17 §6);
     // adding a card resumes it. Stripe also emits `updated` for both, but handle
@@ -202,7 +242,7 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
     case 'customer.subscription.resumed':
     case 'customer.subscription.deleted': {
       const sub = event.data.object;
-      const tenantId = await reconcileFromSubscription(sub);
+      const tenantId = await reconcileFromSubscription(sub, plan.id);
       if (tenantId) {
         await publishSubscriptionChanged(log, tenantId, sub.status, monthlyRecurringCents(sub), {
           currency: sub.currency,
@@ -216,7 +256,7 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
         (event.data as { previous_attributes?: Record<string, unknown> }).previous_attributes
       );
       if (kind) {
-        const recipient = await billingRecipient(asString(sub.customer));
+        const recipient = await billingRecipient(asString(sub.customer), plan.id);
         if (recipient) {
           const ps = planSummary(sub);
           await publish(log, 'email.send', recipient.tenantId, null, {
@@ -247,7 +287,7 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
     }
     case 'customer.subscription.trial_will_end': {
       const sub = event.data.object;
-      const recipient = await billingRecipient(asString(sub.customer));
+      const recipient = await billingRecipient(asString(sub.customer), plan.id);
       if (recipient && sub.trial_end) {
         await publish(log, 'email.send', recipient.tenantId, null, {
           template: 'billing-trial-ending',
@@ -271,12 +311,12 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
       const customerId = asString(invoice.customer);
       const status = event.type === 'invoice.payment_failed' ? 'past_due' : 'active';
       if (customerId) {
-        await setSubscriptionStatus(customerId, status);
+        await setSubscriptionStatus(customerId, status, plan.id);
       }
       // Notify the tenant about their own bill. The hosted invoice page is
       // Stripe's — always present on a real invoice; fall back to the dashboard
       // billing settings if a test invoice lacks it.
-      const recipient = await billingRecipient(customerId);
+      const recipient = await billingRecipient(customerId, plan.id);
       if (recipient) {
         const currency = invoice.currency ?? 'usd';
         const invoiceUrl = invoice.hosted_invoice_url ?? billingSettingsUrl(recipient.brand);

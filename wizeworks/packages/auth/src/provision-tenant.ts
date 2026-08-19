@@ -84,6 +84,9 @@ export interface ProvisionTenantInput {
    *
    *  Defaults to `sparx`, which is what every pre-existing caller means. */
   platformBrand?: string;
+  /** Override the brand's default billing plan — an enterprise contract, or a
+   *  migration. Omit for the ordinary case. */
+  billingPlan?: string;
   /** The zone the tenant's always-on subdomain is created under —
    *  `<slug>.<zoneDomain>`. Piggles tenants live on `piggles.site`, sparx
    *  tenants on `sparx.zone`.
@@ -122,6 +125,7 @@ export async function provisionTenant(
   // been provisioned yet. The platform's own tenant is exempted downstream by the
   // billing gate (isPlatformTenant), so stamping it here is harmless.
   const trialEndsAt = new Date(Date.now() + TRIAL_PERIOD_DAYS * 24 * 60 * 60 * 1000);
+  const brand = input.platformBrand ?? currentPlatformBrand();
   const tenant = await tx.tenant.create({
     data: {
       name: input.name,
@@ -133,7 +137,13 @@ export async function provisionTenant(
       // brand's account app is its own deployment, so a signup that names no
       // brand belongs to whichever one took it — and a Google signup cannot
       // name one, because the hook runs before the tenant exists to carry it.
-      platformBrand: input.platformBrand ?? currentPlatformBrand(),
+      platformBrand: brand,
+      // WHAT this account is charged, and out of which Stripe account
+      // (@wizeworks/billing/plans). Stamped ONCE here, from the brand's configured
+      // default, and read from the column forever after — which is what lets the
+      // billing engine stay free of brand checks, and lets a tenant later sit on a
+      // plan its brand does not sell.
+      billingPlan: input.billingPlan ?? platformBrandIdentity(brand).billingPlan,
       // Attribution (docs/80 §8.3) — written once. Denormalized channel/source/
       // campaign drive the acquisition report; the full snapshots ride along for
       // model recompute.
@@ -176,7 +186,7 @@ export async function provisionTenant(
   // a site on another company's domain.
   const zone =
     input.zoneDomain ??
-    platformBrandIdentity(input.platformBrand ?? currentPlatformBrand()).zoneDomain ??
+    platformBrandIdentity(brand).zoneDomain ??
     process.env.SPARX_ZONE_DOMAIN ??
     'sparx.zone';
   await tx.domain.create({

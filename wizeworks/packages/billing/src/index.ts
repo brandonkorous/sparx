@@ -1,8 +1,13 @@
-// @wizeworks/billing — platform billing (WizeWorks charges tenants per active module
-// via one Stripe subscription, one item per module). See ./service for the engine
-// and ./price-catalog for the prices + transaction-fee math. Every Stripe call is
-// guarded by isBillingConfigured(), so the package is a safe no-op until the prod
-// Stripe ops land (docs/67).
+// @wizeworks/billing — platform billing: the subscription WizeWorks charges a tenant
+// for, out of the Stripe account its PLAN names.
+//
+// ./plans is the registry — a plan says how the bill is shaped (`per_module`, one
+// item per active module; `flat`, one base item plus capacity) and which Stripe
+// account it bills from. Nothing here ever asks which BRAND a tenant is; it reads
+// `tenants.billing_plan` and looks the plan up. See ./service for the engine and
+// ./price-catalog for the module prices + transaction-fee math. Every Stripe call is
+// guarded by isBillingConfigured(plan), so the package is a safe no-op until a given
+// account's ops land (docs/67).
 
 export {
   MODULE_MONTHLY_CENTS,
@@ -13,7 +18,24 @@ export {
   type BillingInterval,
 } from './price-catalog';
 
-export { getBillingStripe, isBillingConfigured, resetBillingStripeForTesting } from './client';
+export {
+  getBillingStripe,
+  isBillingConfigured,
+  anyBillingConfigured,
+  resetBillingStripeForTesting,
+} from './client';
+
+export {
+  DEFAULT_PLAN_ID,
+  planFor,
+  listBillingPlans,
+  capacityBlockFor,
+  registerBillingPlan,
+  resetBillingPlansForTesting,
+  type BillingPlan,
+  type CapacityBlock,
+  type PlanShape,
+} from './plans';
 
 export {
   resolveBillingPhase,

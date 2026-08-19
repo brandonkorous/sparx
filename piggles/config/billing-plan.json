@@ -1,0 +1,103 @@
+{
+  "$comment": [
+    "The Piggles billing plan — Piggles' policy, owned by Piggles.",
+    "",
+    "One flat plan, every app included, capacity as the only variable axis",
+    "(docs/initial/docs/commercial/BILLING_RULES.md). It must never grow tiers, and",
+    "nothing in this file can be arranged into a Basic/Pro/Enterprise grid because",
+    "there is only one plan in it. There is deliberately no annual price either —",
+    "'Piggles is $49/month' is the whole sentence the marketing site says.",
+    "",
+    "It lives here and not in @wizeworks/billing because a plan's shape and prices are",
+    "brand policy: the platform owns the engine, the brand owns what it charges",
+    "(wizeworks/CLAUDE.md, 'Entitlements are a mechanism here and a policy there').",
+    "",
+    "TWO CONSUMERS, ONE FILE, so the prices cannot drift:",
+    "  1. scripts/provision-stripe.mjs reads it to create the Stripe catalog.",
+    "  2. api-rest reads it as the BILLING_PLANS env value, shipped by ops.",
+    "Change a price here, re-run the provisioner, re-ship the env — in that order.",
+    "",
+    "'secretEnv' is the load-bearing field: it names the env var holding the Stripe",
+    "key, and therefore WHICH ACCOUNT a Piggles business is charged in. Piggles has",
+    "its own Stripe account because the two products bill on incompatible models."
+  ],
+  "id": "piggles",
+  "label": "Flat monthly",
+  "shape": "flat",
+  "secretEnv": "PIGGLES_STRIPE_SECRET_KEY",
+  "webhookSecretEnv": "PIGGLES_STRIPE_WEBHOOK_SECRET_BILLING",
+  "base": {
+    "product": "piggles_base",
+    "lookupKey": "piggles_base_monthly",
+    "priceEnv": "PIGGLES_STRIPE_PRICE_BASE_MONTHLY",
+    "monthlyCents": 4900
+  },
+  "included": {
+    "businesses": 1,
+    "locations": 1,
+    "sites": 1,
+    "seats": 3,
+    "contacts": 10000,
+    "storage": 25,
+    "email": 5000
+  },
+  "capacity": [
+    {
+      "key": "seats",
+      "label": "Extra team member",
+      "product": "piggles_seat",
+      "lookupKey": "piggles_seat_monthly",
+      "priceEnv": "PIGGLES_STRIPE_PRICE_SEATS",
+      "monthlyCents": 500,
+      "blockSize": 1
+    },
+    {
+      "key": "locations",
+      "label": "Extra location",
+      "product": "piggles_location",
+      "lookupKey": "piggles_location_monthly",
+      "priceEnv": "PIGGLES_STRIPE_PRICE_LOCATIONS",
+      "monthlyCents": 1900,
+      "blockSize": 1
+    },
+    {
+      "key": "sites",
+      "label": "Extra site",
+      "product": "piggles_site",
+      "lookupKey": "piggles_site_monthly",
+      "priceEnv": "PIGGLES_STRIPE_PRICE_SITES",
+      "monthlyCents": 1000,
+      "blockSize": 1
+    },
+    {
+      "key": "storage",
+      "label": "Storage, 10 GB",
+      "product": "piggles_storage_10gb",
+      "lookupKey": "piggles_storage_10gb_monthly",
+      "priceEnv": "PIGGLES_STRIPE_PRICE_STORAGE",
+      "monthlyCents": 500,
+      "blockSize": 10,
+      "blockUnit": "GB"
+    },
+    {
+      "key": "email",
+      "label": "Email sends, 5,000 a month",
+      "product": "piggles_email_5k",
+      "lookupKey": "piggles_email_5k_monthly",
+      "priceEnv": "PIGGLES_STRIPE_PRICE_EMAIL",
+      "monthlyCents": 1000,
+      "blockSize": 5000,
+      "blockUnit": "sends"
+    },
+    {
+      "key": "contacts",
+      "label": "Customer records, 10,000",
+      "product": "piggles_contacts_10k",
+      "lookupKey": "piggles_contacts_10k_monthly",
+      "priceEnv": "PIGGLES_STRIPE_PRICE_CONTACTS",
+      "monthlyCents": 1000,
+      "blockSize": 10000,
+      "blockUnit": "records"
+    }
+  ]
+}

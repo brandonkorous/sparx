@@ -801,6 +801,15 @@ jobs:
             echo "Media storage: AZURE_STORAGE_ACCOUNT supplied explicitly; leaving Terraform's value unused."
           fi
 
+          # Every billing PLAN names the env vars holding its Stripe key, its webhook
+          # signing secret and its price ids (@wizeworks/billing/plans, BILLING_PLANS in
+          # the ConfigMap). A plan configured against an account whose key never shipped
+          # does not fail anything: billing degrades to a clean no-op by design, the
+          # release goes green, and the first person to discover it is a customer who
+          # cannot subscribe. Same posture as the media-storage pair above — a silent
+          # fallback is exactly what this stage exists to refuse, so fail the release.
+          node scripts/check-billing-plans.mjs --secrets /tmp/app.env.plain
+
           # Did the app's SECRETS actually change? The containers stage decides whether
           # to roll by diffing runtime PATHS (apps/ services/ packages/ k8s/), which is
           # right for code and blind to environment: a pod reads its env once, at start,

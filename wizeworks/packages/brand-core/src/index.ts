@@ -129,6 +129,26 @@ export interface PlatformBrandIdentity {
    * analytics scheme is worse than linking to the bare home.
    */
   creditUrl: string | null;
+  /**
+   * The billing plan a tenant born under this brand is stamped with — an id in
+   * `@wizeworks/billing`'s plan registry, which decides both the SHAPE of the bill
+   * and which Stripe ACCOUNT it is raised in.
+   *
+   * This is the ONE place brand and billing meet, and it is a default rather than a
+   * rule: it seeds `tenants.billing_plan` once, at provisioning, and from then on
+   * billing reads the column and never asks about the brand again. That is what
+   * keeps `@wizeworks/billing` free of the brand fork this repo works to avoid
+   * (piggles/CLAUDE.md RULE #0) — and it leaves room for a tenant whose plan is not
+   * its brand's default, which is what an enterprise contract is.
+   *
+   * Falls back to `modules` — sparx's per-active-module subscription, and the
+   * behaviour every tenant had before plans existed. A brand that bills any other
+   * way MUST set `<BRAND>_BILLING_PLAN`, because the fallback is silent by nature:
+   * a Piggles deployment missing it would charge Piggles businesses per module, on
+   * sparx's Stripe account, and nothing about that looks wrong until an invoice is
+   * read.
+   */
+  billingPlan: string;
 }
 
 /** `PIGGLES_BRAND_NAME` from (`piggles`, `BRAND_NAME`). */
@@ -202,6 +222,7 @@ export function platformBrandIdentity(brand?: string | null): PlatformBrandIdent
     siteUrl: readEnv(varName(key, 'BRAND_URL')),
     fromEmail: readEnv(varName(key, 'EMAIL_FROM')),
     accentChars: readAccentChars(varName(key, 'BRAND_ACCENT_CHARS'), name),
+    billingPlan: readEnv(varName(key, 'BILLING_PLAN')) ?? 'modules',
   };
 }
 

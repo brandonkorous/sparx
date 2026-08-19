@@ -25,7 +25,7 @@ import {
   type ModuleSlug,
 } from '@wizeworks/auth';
 import { publishPlatformEvent } from '@wizeworks/crm';
-import { isBillingConfigured, syncModuleItems } from '@wizeworks/billing';
+import { syncModuleItems } from '@wizeworks/billing';
 
 /** The closed set of module slugs, in a stable order. Shared so the tenant route
  *  and the operator route probe the same vocabulary.
@@ -164,7 +164,12 @@ export async function applyModuleWrites(
   // Best-effort + guarded: a no-op until billing is configured, and a Stripe
   // failure never blocks the toggle (the flag is already written; the webhook
   // reconciles authoritative state).
-  if ((options.billPerModule ?? true) && isBillingConfigured()) {
+  // No `isBillingConfigured()` pre-check here any more: whether Stripe is wired is a
+  // property of the tenant's PLAN, and only syncModuleItems knows which plan that is.
+  // Checking the DEFAULT plan's key would have skipped the sync for a tenant billing
+  // on another account, and run it for one whose account is unwired. syncModuleItems
+  // returns `{ applied: false }` in both cases, so the guard bought nothing.
+  if (options.billPerModule ?? true) {
     try {
       const explicitEnabled = MODULE_SLUGS.filter((s) => afterStates[s].source === 'explicit');
       const t = await prisma.tenant.findUnique({
