@@ -108,6 +108,43 @@ At least eight real-looking clients with history, including:
 - **Margot Lindqvist** — `margot@example.test` — no-showed once, deposit kept
 - **Ekaterina Volkonskaya** — `ekaterina.v@example.test` — a name long enough to break a table cell
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Nia's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+A salon site is a booking funnel with a price list attached. Everything points
+at one button.
+
+| Page                | What is really on it                                                  |
+| ------------------- | --------------------------------------------------------------------- |
+| Home                | What she does, the book button, hours, the two chairs                 |
+| Services & prices   | All ten, with lengths and prices, and which need a consultation first |
+| Book                | Live availability, the right stylist per service, deposits explained  |
+| The team            | Nia and Dara, what each of them does, real photographs                |
+| Gallery             | Real work — the reason anyone books a colourist                       |
+| About               | Twenty years, why she opened                                          |
+| Find us             | Address, hours including Monday closed, parking, phone                |
+| Cancellation policy | Deposits, no-shows, 48 hours — the thing she is protecting            |
+| Privacy · Terms     | Real, published, linked                                               |
+| 404                 | Offers the booking page                                               |
+
+**Working end to end:** booking with live slots, the deposit taken on the three
+services that need one, the consultation rule visible before a colour booking,
+the client changing her own appointment, and the four retail products buyable.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Considered and grown-up — a salon sells taste. Not clinical, not cute.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up and onboard
@@ -229,8 +266,61 @@ salon that did not tick "I sell things" can still ring up a bottle of shampoo.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Nia's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Cancel the wrong client's appointment. Delete "Cut and finish"
+while Thursday's booking still points at it. Book the same 14:00 slot from two
+windows at once.
+
+**Dates.** 13:15, in the middle of lunch. A booking inside the 1–8 August
+holiday. A reschedule that crosses a week boundary. Say which timezone the
+machine is in.
+
+**Money edge.** Refunding a $25 deposit on a cancellation. What is owing at the
+chair after a deposit against the $180 highlights.
+
+**Buyer's side.** The client changing her own appointment from the confirmation,
+with no account and no phone call — the thing Nia bought this software for.
+
+**Someone else's business.** Deep-link a Wildwater booking id. Nothing must come
+back.
+
+**Without a mouse.** Take one booking start to finish, keyboard only.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

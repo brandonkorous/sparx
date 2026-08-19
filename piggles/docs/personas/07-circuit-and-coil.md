@@ -102,6 +102,46 @@ At least 20, including:
 3. Order marked delivered → wait 7 days → ask for a review
 4. A refurb sold → start its 12-month warranty clock
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Lena's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+Her buyers are technical and sceptical. The site sells on detail and on what
+happens when it goes wrong.
+
+| Page                            | What is really on it                                                  |
+| ------------------------------- | --------------------------------------------------------------------- |
+| Home                            | What she does, why refurbished from her is different                  |
+| Shop                            | All ten, three kinds of thing clearly distinguished                   |
+| Refurbished units               | One-of-a-kind, serial shown, what was serviced, 12-month warranty     |
+| Repair kits                     | What is in the box, what it fits                                      |
+| Tools & components              | The everyday stock                                                    |
+| Product pages                   | Warranty terms where a buyer will read them, not in the footer        |
+| Warranty & returns              | 12 months on refurbs, 30 days on everything else, how to start an RMA |
+| Guides                          | Two real posts — recapping an amp, choosing a soldering station       |
+| About                           | The garage, the bench, why she started                                |
+| Account                         | Orders, serials owned, warranty claims                                |
+| Contact                         | A form                                                                |
+| Privacy · Terms · Refund policy | Real, published, linked                                               |
+| 404                             | Offers the shop                                                       |
+
+**Working end to end:** buying a serial-tracked unit, buying a dropshipped one
+with no visible difference to the buyer, starting an RMA from the account, and
+the warranty state being right for the serial.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required, and returns/shipping/refund because the shop is on. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Dark, technical, photographs of circuit boards. This is the one site where dark is the right default.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up and onboard
@@ -239,8 +279,59 @@ persona that proves Piggles never pays for the model.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Lena's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** RMA the same serial twice. Refund after the unit has already
+been restocked. Build a kit with no components left. Ship one order twice.
+
+**Dates.** The 12-month warranty at month 11 and at month 13. The 30-day window
+on day 29 and day 31. Both sides of both boundaries.
+
+**Money edge.** Refunding a kit that consumed components — do the components come
+back, and at what cost? Dropship margin after the supplier's price moved.
+
+**Buyer's side.** Ingrid opening a warranty claim from her own account, without
+emailing Lena and quoting a serial from memory.
+
+**Someone else's business.** Deep-link a Juniper Row order id. Nothing must come
+back.
+
+**Without a mouse.** Process one RMA end to end, keyboard only.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

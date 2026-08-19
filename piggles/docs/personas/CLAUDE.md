@@ -8,7 +8,7 @@ businesses, each with a person behind it, each set up from nothing and operated
 until it works or breaks. A persona file is both the **script** and the **log** —
 you read it to know what to do, and you write to it as you do it.
 
-## RULE #1 — you are the business owner, not an agent
+## RULE #1 — judge it as the business owner, not as an engineer
 
 **Drive the screen.** Click it, type into it, read what comes back, and decide
 what a person would do next. Every real defect this project has produced was
@@ -21,7 +21,34 @@ says nothing about whether anyone can reach it. The MCP tools and `psql` are for
 do. If a screen cannot create the thing, that is the finding; creating it through
 the API and carrying on erases it.
 
-The tell that you have drifted: you are reading JSON instead of a screen.
+**The verdict is the owner's, not the code's.** A run does not ask "is this
+implemented correctly" — it asks **could Marisol finish this job, and would she
+come back tomorrow?** Those come apart constantly, and where they do, hers wins:
+
+| Technically  | But as the owner                                         | Verdict |
+| ------------ | -------------------------------------------------------- | ------- |
+| works        | she could not find it, or did not know it was there      | broken  |
+| works        | it took nine taps and two screens she did not understand | broken  |
+| works        | the word on the button is not a word she uses            | broken  |
+| works        | it told her nothing happened, and something did          | broken  |
+| an edge case | it is Tuesday and she does this every Tuesday            | major   |
+
+So write findings in her terms. **"Ida could not tell whether her invoice sent"**
+is the finding; "the mutation resolves before the toast fires" is the cause, and
+it belongs further down the same file. An issue whose title only a developer can
+read has recorded the symptom from the wrong end.
+
+Three things a business owner never does, so you must not do them either:
+
+- **Read the source to find out whether something works.** Look at the screen.
+  Read code only once you are fixing what the screen already proved.
+- **Know what the software is called underneath.** If you needed the module name
+  to navigate, that is a finding.
+- **Try again in a different way because the first way failed.** The first way
+  failing IS the result. Record it, then try the second way as a separate note.
+
+The tell that you have drifted: you are reading JSON instead of a screen, or you
+are pleased that something works when you could not have found it.
 
 ## RULE #2 — real data, never placeholder data
 
@@ -36,21 +63,47 @@ called Test has not tested a catalogue.
 
 Where a file says "at least N", N is a floor, not a target.
 
-## RULE #3 — file every defect, immediately, in its own file
+## RULE #3 — file it, fix it, then prove the fix from the same screen
 
-One issue, one file in [issues/](issues/). Never a combined file, never a batch
-at the end of a run, never a fix without a file. The file is written **before**
-the fix, because a fix with no record is a defect that gets reintroduced.
+**Stop and fix.** A defect is not logged and left; it is repaired the moment it
+is found, and then the step that found it is **done again as the persona** to
+confirm the repair. Five beats, in this order, every time:
 
-**Do not stop the run at the first defect.** File it, work around it if a person
-could, and keep going — the value of a run is breadth. If it hard-blocks a later
-act, say so in the issue (`Blocks: P03 act 4`) and move to the next act that does
-not depend on it. Report at the end what was blocked and why.
+1. **File** the issue in [issues/](issues/) — before the fix, so a defect that
+   turns out to be two defects does not lose one of them.
+2. **Fix** it properly. Not a call-site patch: the single point of change (root
+   RULE #1) applies to a fix found in testing exactly as it does to new work.
+3. **Re-run the exact step**, as the persona, on the screen, with the same data.
+   Not a typecheck, not a unit test, not a `fetch`.
+4. **Record the confirmation** in the issue: `Status: fixed`, `Fixed:` stamped,
+   and one line on how it was proved — the screen, the data, what you saw.
+5. **Re-score the pane** in [rating.md](rating.md) if the fix moved it, keeping
+   both numbers (`5 → 8`).
 
-**Design failures are defects.** An eyebrow above a heading, an all-grey screen,
-faded readable text, body type under 16px, a `<Badge>` used as a label, a
-hardcoded hex — all of it is in scope while you are on the screen anyway. File it
-as `Severity: design`.
+Then continue the act. A run is a sequence of repairs, not a survey.
+
+**Why this and not "log it and keep going":** a defect list written on Tuesday
+gets fixed in a batch on Friday by somebody re-deriving what the sentence meant,
+and the fix never gets driven through the screen that found it. The confirmation
+is the part that keeps getting skipped, so it is a numbered beat.
+
+**When a fix genuinely cannot be made now**, say so explicitly in the issue and
+keep going — this is the exception, not the escape hatch. It applies to exactly
+these:
+
+| Situation                                     | Do                                                                               |
+| --------------------------------------------- | -------------------------------------------------------------------------------- |
+| Needs a schema migration                      | author the migration file, do not run it; `Status: open`, `Blocked on: pipeline` |
+| Needs a product decision that is Brandon's    | `Status: open`, `Blocked on: decision`, state the options                        |
+| The fix is larger than the surface under test | `Status: open`, `Blocked on: scope`, say what it would take                      |
+| Fixing it needs the dev server restarted      | note it, ask Brandon, carry on elsewhere                                         |
+
+Anything not in that table gets fixed now.
+
+**Design failures are defects and are fixed the same way.** An eyebrow above a
+heading, an all-grey screen, faded readable text, body type under 16px, a
+`<Badge>` used as a label, a hardcoded hex — file, fix, look again. `Severity:
+design`.
 
 **Copy that is FALSE is not a copy defect, it is a major one.** Piggles inherited
 sparx's prose, and sparx charges per module. Any sentence promising a smaller
@@ -78,7 +131,203 @@ a different trade's starter, a different pack, a different rail. Their value is
 their own surface, not a tenth re-verification of signup. If the spine breaks for
 one persona and not another, that difference IS the finding.
 
-## How a run works
+## RULE #6 — every pane gets a design score and an ease score
+
+Working is the floor, not the result. **Rate every pane you open**, on the two
+axes the platform already scores on ([surface-review](../../../.claude/skills/surface-review/SKILL.md),
+sparx's docs/105), in [rating.md](rating.md):
+
+| Axis       | The question                                                                                                                                                                                         |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Design** | Is it on-system and well-composed? Silica components and tokens, real color doing real work, hierarchy from scale and weight, holds at 360px, states (waiting / empty / error) all present and right |
+| **Ease**   | Could this owner do the job without help? Findable, one home per concern, the right data already on screen, no dead ends, words she uses, obvious next step, and reachable by keyboard and thumb     |
+
+**The two come apart, and both are reported.** A beautiful pane nobody can
+operate is not an 8, and a plain pane that gets the job done in two taps is not a 4. When a single number is wanted, quote the lower one.
+
+**A pane is not scored until you have seen it in dark and at 360px.** Not once
+per run, per pane — the two largest finds in this whole build were invisible to
+every automated check, and one of them was every app colour becoming unreadable
+as ink in dark mode. A score taken in one theme at one width is a guess about the
+other three.
+
+| Score | Means                                                      |
+| ----- | ---------------------------------------------------------- |
+| 9–10  | Nothing to fix. 10 is rare and needs a reason written down |
+| 7–8   | Right, with named nits                                     |
+| 5–6   | Works; the owner needed a second look or a second attempt  |
+| 3–4   | She got there by persistence, or it looks unfinished       |
+| 1–2   | She would stop, ask somebody, or leave                     |
+
+**The score is not the point — the deductions are.** Every row carries a **gap to
+10**: the specific thing that would raise it. That column is the worklist, and
+anything in it that is a real defect becomes an issue and gets fixed under RULE
+#3 rather than sitting in a table as a number.
+
+**Re-score after a fix**, keeping both values (`5 → 8`), so the file shows
+movement rather than a final opinion. Panes no persona reached stay `—`; an
+unrated pane is unrated, never assumed fine (RULE #4).
+
+## RULE #7 — the ten are neighbours, and fixes travel
+
+Ten businesses in **one database and one tenant pool**. That is not incidental to
+the test; it is the only chance this platform gets to be checked with real
+neighbours in it, and two things follow.
+
+### Every persona tries to see somebody else's business
+
+Multi-tenancy is enforced at the database level by Row Level Security, and RLS is
+the **backstop against application bugs** — it exists precisely for the case where
+the application tier forgets to filter. Nothing has ever tested it with real
+neighbouring tenants. So once per run, deliberately:
+
+- **Search** the console for something only another business stocks — "Ferrous",
+  a rival's SKU, another owner's surname
+- **Deep-link a record id** belonging to another tenant into the address bar: a
+  product, an invoice, a customer, a price list
+- **Switch business** (P10 has two sites; several personas can see the switcher)
+  and confirm the whole identity swaps — name, socials, theme, logo, catalogue,
+  not just the header
+
+The expected result is nothing: not found, or refused. **A leak here is a
+`blocker` and stops the run** — it is the one defect class where continuing to
+test is the wrong thing to do.
+
+### A fix made in one run must not break an earlier one
+
+This is new, and it is the cost of fixing inside the run (RULE #3). After
+repairing anything in the **shared spine or a shared surface**, reopen the
+earliest business it could touch and do one real job there — Marisol's bakery
+still takes a collection order, Tomás's invoice still totals.
+
+Record it on the issue as a second confirmation line. A P06 inventory fix that
+quietly breaks P01's shop is otherwise found by nobody, because nobody goes back.
+
+## RULE #8 — the website is the deliverable, not a step in the run
+
+**Each persona ends with a real, complete, working website for that business.**
+Not a demonstration of the builder, not the template with the words changed, not
+"four pages and publish". A site a stranger could land on from a search result
+and buy from, book on, or read — without ever knowing it was a test.
+
+Each persona file carries **its own page inventory** under "The website". That
+list is the definition of done for the site: if a page on it is missing, stock,
+or still wearing template copy, the run is not finished. Enumerate before you
+start; re-check before you say done.
+
+### What "fully featured" means, on every one of the ten
+
+|                             | The bar                                                                                                                                                                                                                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pages**                   | Every page in the persona's inventory, with real copy in that owner's voice. No lorem, no leftover template sentences, no "coming soon"                                                                                                                                      |
+| **Chrome**                  | A real header and nav, a working mobile drawer, and a footer carrying hours, address, socials and legal links — not the seed's defaults                                                                                                                                      |
+| **Images**                  | Real photographs on every page that wants one, with alt text. Sized so the page is not 30 MB                                                                                                                                                                                 |
+| **The thing it exists for** | Working end to end from the public side: the cart and checkout, the booking widget, the enquiry form, the trade login, the newsletter — whichever this business lives on                                                                                                     |
+| **Legal**                   | Run `get_legal_checklist`. Privacy is **always** required; returns, shipping and refund become required once the shop is on. Drafting is scaffolded, but publishing is the tenant's act — do it as the owner, in Content → Legal pages, and confirm the footer links resolve |
+| **Findable**                | Per-page title and description in plain words, a social card that actually renders, the sitemap, the favicon                                                                                                                                                                 |
+| **Not found**               | A real 404 that offers a way onward                                                                                                                                                                                                                                          |
+| **Consistent facts**        | Name, address, phone and hours identical in the footer, on the contact page, and in whatever structured data the site emits. A business whose own site disagrees about its phone number is a real defect                                                                     |
+| **Responsive**              | Every page at 360px through desktop, in both themes if the site offers one                                                                                                                                                                                                   |
+| **Reachable**               | Keyboard-navigable, visible focus, alt text, heading order that makes sense                                                                                                                                                                                                  |
+
+### The ten sites must not be one site ten times
+
+Different structures, different looks, different feature mixes. Ten sites that
+are the same template with swapped nouns have tested one path ten times and told
+you nothing about the builder. A bakery's site and a wholesaler's trade portal
+should not be recognisable as siblings.
+
+**Change the look properly on each one** — a bakery is warm and a climbing gym is
+not, and if all ten come out Piggles pink then the look builder was never
+exercised.
+
+### Tenant sites have full design freedom — do not apply sparx's restraints
+
+This is the mistake to avoid, and it is easy to make while holding the rest of
+this file in mind. **No shadows, no gradients, restraint about colour and soft
+tints — those govern sparx's own product surfaces, and Piggles' console. They do
+not govern a tenant's website.** A customer's site is the customer's brand: it
+may have a gradient, a hero image, a shadow, a display typeface, anything the
+business would actually want.
+
+Judge these sites by whether they look like a real business's site, not by
+whether they obey the console's design contract.
+
+## Standing checks — every run, every persona
+
+These are not acts. They are the things a real business does that the scripted
+acts do not, and each persona file names its own concrete instance of each.
+
+**Wrong moves.** The scripts are mostly happy paths plus a few refusals. Real
+owners make mistakes, and mistakes are where data loss and wrong money live:
+delete something that other records point at, import the same file twice,
+double-click the pay button, press Back after checkout, refund the same line
+twice, edit a document after it has been sent. Every persona does at least three,
+named in its file.
+
+**Reload, deep link, restore.** Press F5 on an open pane. Copy the address bar and
+open it in a new window. Close a pane and restore yesterday's arrangement. Six
+studio panes shipped with no address at all and blanked the address bar when
+focused — a pane you cannot link to is a pane nobody can be sent to.
+
+**Time and dates.** A booking at 18:30, a publish at Thursday 06:00, a Net 15 due
+date, "40 days overdue", a warranty at month 11 and month 13, a renewal after a
+six-week freeze. Check the boundary, not the middle. Say which timezone the
+machine is in when you record the result.
+
+**Money at the edges.** Not the happy total — the composition: tax on a
+discounted line, a partial refund of a discounted order, rounding when two
+percentages stack, a deposit against a balance, a zero-value document. Compute it
+by hand first, then look. Where they disagree, the software is wrong.
+
+**The buyer's side, past the sale.** Every run ends as the customer, not the
+owner. Can they get back to what they bought? A tenant site's shoppers have their
+own accounts (a separate Better Auth instance, per `(tenant, email)`), and a shop
+where somebody can buy once and never see the order again is broken in a way all
+ten scripts would otherwise pass.
+
+**Without a mouse.** One full job per run driven by keyboard alone, with the focus
+ring visible the whole way. Piggles' own audience includes a 61-year-old on a
+phone in a workshop — tap targets and focus are not a compliance exercise here,
+they are the product working for the person it was written for.
+
+## What every run records
+
+Four numbers and two confirmations, in the persona file. They cost minutes and
+they are the only comparable data across ten businesses:
+
+| Record                   | Why                                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Time to live site**    | From landing on meetpiggles to a published site a stranger can reach. The product's core promise, measured ten times                                               |
+| **Speed at real volume** | How the lists feel at 1,400 contacts, 60 variants, 300 photos. An owner's verdict, not a benchmark                                                                 |
+| **Growth board**         | Did this signup produce one contact, one deal, the `brand:piggles` tag and the story fields? Built, never seen with a real signup                                  |
+| **Usage rollup**         | Do the meters read sensibly for this tenant? Ten real businesses is the first data they will ever have — and point-in-time vs daily-total is easy to get backwards |
+
+## Before the first run — one thing to settle
+
+**Dev email is a no-op, and email is central to eight of the ten personas.**
+Order confirmations, booking reminders, invoices, reset links, newsletters,
+review requests — all of it currently resolves to "not checked", ten times over.
+
+The mechanism: with `SPARX_DEV_WORKER_ROUTES` unset the event transport is
+`{ kind: 'log' }`, so an `email.send` publish is **logged and never rendered**.
+You can see that an event fired and what payload it carried; you cannot see the
+subject line, the rendered body, or whether the merge tags resolved — which is
+the half a customer actually receives.
+
+Two honest options, and this is Brandon's call before P01 starts:
+
+1. **Wire it** — set `SPARX_DEV_WORKER_ROUTES` to JSON routing `email.send` (and
+   anything else a run needs) at the local email worker, whose dev provider
+   renders to the console. Then a run can read what the customer would get.
+   Needs a dev-server restart, so it is asked for, never done mid-run.
+2. **Accept it** — and then every persona records "email not delivered in dev;
+   event published, payload as follows" **once**, rather than as a mystery in
+   eleven acts. Recovery flows still work: reset tokens are stored plaintext in
+   `verifications`.
+
+Until it is settled, treat option 2 as in force and write the words. What must
+never happen is a run reporting that an email was sent.
 
 1. Read the persona file top to bottom before touching anything.
 2. Set `Status: in progress` and stamp the date in **Run log**.
@@ -86,10 +335,16 @@ one persona and not another, that difference IS the finding.
 4. Fill in the **Account** block as soon as signup gives you the values — tenant
    id, subdomain, published site URL. A run nobody can revisit is a run nobody
    can confirm.
-5. File issues as you hit them; link them under **Issues found**.
-6. Complete **Verification** honestly at the end, including what you skipped.
-7. Set `Status: done` only when every act has a recorded outcome — including
-   "blocked by #012". Silence is not an outcome.
+5. **On every pane you open**: score it in [rating.md](rating.md) in both themes
+   and at 360px, and write its gap to 10 (RULE #6).
+6. **On every defect**: file, fix, re-run the step as the persona, confirm in the
+   issue, re-score the pane (RULE #3). Do not carry it to the end of the run.
+7. Work the **standing checks** as you go — wrong moves, reload and deep links,
+   dates, money edges, the buyer's side, one job without a mouse. The persona
+   file names its own instance of each.
+8. Complete **Verification** honestly at the end, including what you skipped.
+9. Set `Status: done` only when every act has a recorded outcome — including
+   "blocked on a decision, issue #012". Silence is not an outcome.
 
 ### Accounts
 
@@ -144,8 +399,14 @@ Use [issues/\_TEMPLATE.md](issues/_TEMPLATE.md). The header block is fixed:
 **Found by:** P03 · Juniper Row · act 4
 **Surface:** mypiggles › Sell › Add a product
 **Filed:** 2026-08-18
-**Fixed:** —
+**Fixed:** 2026-08-18
+**Confirmed by:** re-ran P03 act 4 — 15 variants priced in one pass, saw the grid save
+**Blocked on:** — (pipeline · decision · scope, only when the fix could not be made)
 ```
+
+**Title it the way the owner would say it.** "Devi had to type fifteen prices one
+at a time", not "bulk price mutation absent on variant grid". The cause goes in
+**Where it lives**, not in the heading (RULE #1).
 
 | Severity | Means                                                                                        |
 | -------- | -------------------------------------------------------------------------------------------- |
@@ -156,17 +417,22 @@ Use [issues/\_TEMPLATE.md](issues/_TEMPLATE.md). The header block is fixed:
 | copy     | off-voice, jargon, sparx vocabulary — true, but the wrong words                              |
 
 **When an issue is fixed, it stays.** Set `Status: fixed`, stamp `Fixed:`, and
-record what the fix was and where. This is a defect ledger, not a queue —
-[FOLLOW_UPS.md](../FOLLOW_UPS.md) is the register that gets emptied.
+record what the fix was, where it landed, and **how it was confirmed from the
+screen**. A fix with no confirmation line is not fixed. This is a defect ledger,
+not a queue — [FOLLOW_UPS.md](../FOLLOW_UPS.md) is the register that gets emptied.
 
 There is deliberately **no index of issues**. `ls issues/` is the index, and a
 hand-maintained table would be wrong within two runs.
 
 ## What is out of scope on a run
 
-- **Redesigning a screen you are only passing through.** File it.
-- **Refactoring.** A one-line fix that keeps the run moving is fine and goes in
-  the issue. Anything larger is its own task.
+Fixing what the run finds is the job (RULE #3). These are the edges of it:
+
+- **Redesigning a screen you are only passing through.** A pane you did not open
+  as the persona gets no score and no rewrite.
+- **A fix bigger than the surface under test.** File it, mark
+  `Blocked on: scope`, say what it would take, and keep the run moving.
+- **Running a migration.** Author the file; the pipeline applies it.
 - **Restarting the dev server.** Ask Brandon. Parallel work dies with it.
 - **Committing or pushing.** Leave the tree dirty and report what changed.
 - **Resizing the browser window.** Check 360/390px in an iframe, never by
@@ -174,9 +440,18 @@ hand-maintained table would be wrong within two runs.
 
 ## Definition of done — the whole exercise
 
-All ten persona files at `Status: done`, every act with a recorded outcome, every
-defect in `issues/` carrying a status, and a live published site for each
-business that a stranger could buy from, book on, or read.
+- All ten persona files at `Status: done`, every act with a recorded outcome
+- Every defect in `issues/` carrying a status, and every `fixed` one carrying a
+  confirmation line naming the screen it was re-proved on
+- [rating.md](rating.md) scored for every pane the ten runs opened, each with a
+  gap to 10, and the unreached ones still visibly `—`
+- **Twelve complete websites** — every page in every persona's inventory built,
+  published and working; legal pages published and their footer links resolving;
+  and each site looking like its own business rather than one template twelve
+  times (RULE #8)
 
 Ten scripts and no runs is nothing. Nine runs and one stock persona is an
-unfinished deliverable that reads as finished.
+unfinished deliverable that reads as finished. Ten runs with a hundred logged
+defects and no fixes is a survey, which is not what this is. And ten businesses
+whose websites are four pages of template copy have tested the builder's Publish
+button, not the builder.

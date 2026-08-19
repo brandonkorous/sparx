@@ -1,4 +1,4 @@
-# NNN — One sentence naming what is wrong
+# NNN — What the owner could not do, in her words
 
 **Status:** open
 **Severity:** blocker · major · minor · design · copy
@@ -6,7 +6,12 @@
 **Surface:** mypiggles › App › Screen
 **Filed:** YYYY-MM-DD
 **Fixed:** —
-**Blocks:** — (only if it stopped a later act)
+**Confirmed by:** —
+**Blocked on:** — (pipeline · decision · scope, only if the fix could not be made now)
+
+Title it the way the owner would say it — "Devi had to type fifteen prices one at
+a time", not "bulk price mutation absent on variant grid". The mechanism goes in
+**Where it lives**.
 
 ## What happened
 
@@ -15,8 +20,8 @@ sentence is often the defect.
 
 ## What should have happened
 
-What a business owner had every reason to expect. If the expectation comes from a
-rule or a doc, name it.
+What this business owner had every reason to expect. If the expectation comes
+from a rule or a doc, name it.
 
 ## How to reproduce
 
@@ -26,16 +31,32 @@ rule or a doc, name it.
 
 ## Why it matters
 
-Who is hurt and how. "Wrong money", "the customer sees it", "the owner cannot
-finish the job", "it says something false". If it is cosmetic, say that plainly
-rather than inflating it.
+Who is hurt and how. "Wrong money", "the customer sees it", "she could not finish
+the job", "it says something false". If it is cosmetic, say that plainly rather
+than inflating it.
 
 ## Where it lives
 
-Files and lines, once found. Leave blank rather than guessing — a wrong pointer
-costs more than no pointer.
+Files and lines. Leave blank rather than guessing — a wrong pointer costs more
+than no pointer.
 
 ## The fix
 
-Filled in when it is fixed: what changed, in which files, and how it was proved.
-If it was closed without a code change, say why.
+What changed and in which files. Fix it where it propagates: a prop, then a
+token, then a variant, then — with a reason — a call site (root RULE #1). If the
+same defect could exist on a sibling screen, say whether you checked.
+
+## Confirmed by
+
+**Required before `Status: fixed`.** The step re-run as the persona, on the
+screen, with the same data, and what you saw:
+
+> Re-ran P03 act 3. Set one price across all 15 Ash Overshirt variants in a
+> single pass, saved, reopened the product — all 15 read $128.00.
+
+A typecheck, a unit test or a `fetch` is not a confirmation.
+
+## Rating effect
+
+If this moved a pane's score, record it here and in
+[rating.md](../rating.md): `Sell › Products — Ease 4 → 8`.

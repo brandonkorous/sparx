@@ -106,6 +106,49 @@ Load at least ten more accounts so the list pages and search is worth using.
 
 Any order over **$2,500** waits for Abel. Nothing over that ships without him.
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Abel's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+**Two sites in one**, and the split is the whole point: a signed-out visitor is
+a prospect and must see no prices; a signed-in buyer sees theirs.
+
+| Signed OUT                 | What is really on it                                       |
+| -------------------------- | ---------------------------------------------------------- |
+| Home                       | Trade only, stated plainly. Who he supplies, delivery area |
+| What we supply             | Categories and products, **no prices anywhere**            |
+| Apply for an account       | A real application — business, trade references, volume    |
+| About                      | Six staff, 130 accounts, since when                        |
+| Contact                    | Depot address, hours, phone                                |
+| Privacy · Terms · Delivery | Real, published, linked                                    |
+| 404                        | Offers the application                                     |
+
+| Signed IN                      | What is really on it                                                |
+| ------------------------------ | ------------------------------------------------------------------- |
+| Dashboard                      | Balance, credit left, recent orders, anything awaiting approval     |
+| Catalogue                      | **Their** prices — tier, breaks and overrides resolved              |
+| Quick order                    | Type SKUs and quantities, the way a trade counter actually orders   |
+| Reorder                        | Last month's list, in one action. The feature the competitor won on |
+| Quotes · Invoices · Statements | Openable, downloadable, payable                                     |
+| Account                        | Terms, limit, the two contacts and what each may do                 |
+
+**Working end to end:** no prices signed out; Hollis's override showing signed
+in; an order over $2,500 stopping for approval and saying so; the accounts
+contact seeing invoices but unable to place an order.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required, and returns/shipping because goods ship. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Sober and industrial. Fast over pretty — these people order the same thing every week.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up and onboard
@@ -243,8 +286,62 @@ rate, statements that balance, and two different people on one account.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Abel's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Approve the Northgate order twice. Edit the Trade tier while an
+order is in flight at the old price. Take Two Rivers over its limit, pay it down,
+and order again.
+
+**Dates.** Net 30 and Net 45 accounts in the same statement run. A period
+boundary that falls mid-week.
+
+**Money edge.** The four hand-computed prices in act 3. Rounding at the 144+
+break. A credit note against an already-paid invoice.
+
+**Buyer's side.** Yvonne's trade login and her one-action reorder. Then Peter Ng,
+the accounts contact — he must see invoices and must not be able to place orders.
+
+**Someone else's business.** The sharpest version in the roster: signed in as Two
+Rivers' buyer on the published trade site, try to reach Hollis's prices, Hollis's
+invoices, Hollis's account. A customer seeing another customer's negotiated rate
+is the leak that ends a wholesaler.
+
+**Without a mouse.** Place one trade order, keyboard only.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

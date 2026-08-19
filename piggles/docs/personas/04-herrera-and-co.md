@@ -105,6 +105,43 @@ Enquiry → Discovery call → Proposal sent → Won / Lost. Three live opportun
 | Assistant, 2 days/week | $980.00 | monthly   |
 | Mileage, client visits | varies  | as logged |
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Tomás's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+No shop, no cart, nothing to add to a basket. A site that has to make a stranger
+trust him with their books.
+
+| Page            | What is really on it                                                       |
+| --------------- | -------------------------------------------------------------------------- |
+| Home            | Who he helps, what it costs to start, one clear next step                  |
+| Services        | All seven, with how each is priced — monthly, fixed, hourly                |
+| Who I work with | The five kinds of business, in their words not his                         |
+| About           | 22 years, qualifications, why he works alone                               |
+| Book a call     | A real time-picker, or a form if that is what exists                       |
+| FAQ             | What a bookkeeper does that an accountant does not; what he needs from you |
+| Contact         | Name, business, email, phone, "what do you need help with"                 |
+| Privacy · Terms | Real, published, linked                                                    |
+| 404             | Offers the contact form                                                    |
+
+**Working end to end:** the contact form producing a findable record and a
+notification, a client opening a quote by link and accepting it, a client opening
+an invoice by link and paying it — all without an account. **If any page here
+requires a product to exist, that is the finding.**
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Plain, calm, high-contrast, no exclamation marks. Trust is the aesthetic.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up and onboard
@@ -235,8 +272,58 @@ name travelling everywhere, and the second user with a narrower view.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Tomás's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Edit an invoice after it has been paid. Record the Ottoline
+payment twice. Delete Kwan Brothers while $340 is outstanding against them.
+
+**Dates.** Net 15 counted from a month-end issue date. The recurring invoice due
+on the 1st. The 40-day overdue figure — check it against a calendar.
+
+**Money edge.** A zero-value invoice. 14 hours at $85. Silverback's $620 + $95
+with a $300 partial payment — the remaining balance to the cent.
+
+**Buyer's side.** A client opening the quote and then the invoice by link, with
+no account, and paying it.
+
+**Someone else's business.** Deep-link a Kanto invoice id. Nothing must come back.
+
+**Without a mouse.** Build and send one invoice, keyboard only.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

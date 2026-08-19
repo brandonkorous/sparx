@@ -101,6 +101,44 @@ uncredited photograph in a journal about provenance is its own joke.
 At least 40, imported from a CSV, with a real unsubscribe path. Include one
 already-unsubscribed address to prove suppression is honoured.
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Rosalind's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+A journal, and the hardest reader in the roster. Typography is not decoration
+here, it is the product.
+
+| Page                            | What is really on it                                                    |
+| ------------------------------- | ----------------------------------------------------------------------- |
+| Home                            | The newest piece, given room. Not a grid of teasers                     |
+| Field · Table · Ledger          | Three real section pages, each with its own standfirst                  |
+| Article pages ×6                | Headline, standfirst, body, hero with caption and credit, byline, date  |
+| Archive                         | Browsable by date and section, and it must stay browsable at 200 pieces |
+| Contributors                    | An index, plus a page each for the four — bio, portrait, their pieces   |
+| About the journal               | What it is for, who funds it, editorial independence                    |
+| Subscribe                       | The newsletter, what arrives and how often                              |
+| Contact                         | Pitches and corrections                                                 |
+| Privacy · Terms · Cookie policy | Real, published, linked                                                 |
+| 404                             | Offers the archive                                                      |
+
+**Working end to end:** search finding a piece by a word in its body, the
+scheduled piece invisible until Thursday, share cards rendering with title and
+image, the newsletter's unsubscribe link working, and **no commerce anywhere on
+the site** — if a basket, a price or a checkout appears, that is the finding.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required. There is no shop, so returns/shipping/refund are not required — record that. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Editorial and typographic — a real reading measure, generous leading, restrained palette. Body type 18px, not 16.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up and onboard
@@ -247,8 +285,62 @@ what every trade the picker does not list will get.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Rosalind's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Delete a published piece that other pieces link to. Unpublish
+and republish. Import the subscriber CSV twice. Edit the scheduled piece after it
+has gone live.
+
+**Dates.** Thursday 06:00 — in whose timezone? A correction stamped after the
+original publication date, and which date the reader sees.
+
+**Money edge.** **None. This business takes no money, and that is the point of
+it.** Record "not applicable" rather than inventing a transaction — a run that
+manufactures a sale here has stopped testing the thing it exists to test.
+
+**Buyer's side.** The reader needs no account at all: the piece, the archive, the
+newsletter, and an unsubscribe link that works from a real send.
+
+**Someone else's business.** Deep-link a Thistle & Rye content entry id. Nothing
+must come back.
+
+**Without a mouse.** Write and publish one piece, keyboard only — she is a writer
+and this is the job she does every day.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

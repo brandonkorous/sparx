@@ -106,6 +106,42 @@ rye, per café, per week.
 - **Collection orders** — how it works, cut-off is 8pm the night before
 - **Find us** — 114 Mercer Lane, opening hours, the fact that Monday is closed
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Marisol's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+A bakery that sells over the counter, takes collection orders and does cakes to
+order — the site has to do all three without confusing them.
+
+| Page                      | What is really on it                                               |
+| ------------------------- | ------------------------------------------------------------------ |
+| Home                      | Today's bake, the collection promise, hours, where to find her     |
+| What we bake              | The weekly schedule as a real table — which loaves on which days   |
+| Order for collection      | The shop: everything orderable, cut-off explained, collection date |
+| Celebration cakes         | The two sizes, five days' notice, the $30 deposit, an enquiry form |
+| About                     | Lyon, Agnes the six-year-old starter, flour milled 40 miles away   |
+| Find us                   | 114 Mercer Lane, map, hours, Monday closed, phone                  |
+| Wholesale                 | One page for cafés — how supply works, an enquiry form             |
+| Privacy · Terms · Returns | Real, published, linked from the footer                            |
+| 404                       | Offers the shop and the hours, not an apology                      |
+
+**Working end to end:** cart and checkout with a collection date, an item marked
+sold out behaving correctly, the cake enquiry landing as a record, newsletter
+signup, and the Instagram link.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required, and returns/refund once the shop is on. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Warm, floury, unmistakably a bakery. If it comes out Piggles pink it is wrong.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Discover, and sign up
@@ -262,8 +298,64 @@ in, order ahead, wholesale on terms.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Marisol's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Delete the seeded rye while it is sitting in a customer's
+collection basket. Change the sourdough price with an unfulfilled order open.
+Press Back after paying and see whether a second order appears. Mark one
+collection order collected twice.
+
+**Dates.** An order placed at 20:05 against an 8pm cut-off for tomorrow. A
+collection date that falls on a Monday, when the shop is shut. Say which timezone
+the machine is in.
+
+**Money edge.** The $30 deposit against the $135 cake — what is owing at
+collection. Three half loaves at $4.75 with tax, to the cent.
+
+**Buyer's side.** Next morning, without the confirmation email: can the customer
+find their order again, and reorder the same thing in two taps?
+
+**Someone else's business.** Search the console for `ALT-REM-130` — Ostrander's
+alternator — and deep-link a Kanto invoice id into the address bar. Nothing must
+come back.
+
+**Without a mouse.** Add one product start to finish, keyboard only, focus ring
+visible throughout.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

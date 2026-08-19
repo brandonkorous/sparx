@@ -114,6 +114,52 @@ that storage becomes a real number rather than a hypothesis.
 Ida, plus **Mattias Brandt**, plus fitters **Kev Doorley** and **Suna Aydın**.
 That is four people on a plan that includes three.
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Ida's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+**Two sites, and they must not look related** — the joinery and the furniture
+range are different businesses to everyone except the bank. This is where the
+per-site identity promise is proved or broken.
+
+### Site one — Brandt & Sons Joinery
+
+| Page                            | What is really on it                                        |
+| ------------------------------- | ----------------------------------------------------------- |
+| Home                            | The workshop, the work, get a quote                         |
+| Our work                        | The gallery — 300 photographs organised by job, not dumped  |
+| Kitchens · Staircases · Bespoke | Three real pages, each with its own photographs and process |
+| How we work                     | Quote → deposit → build → install, and how long each takes  |
+| About                           | Her father, 1998, taking it on three years ago              |
+| Get a quote                     | A real form — job type, rough size, timescale, photographs  |
+| Contact                         | Workshop address, hours, phone                              |
+| Privacy · Terms                 | Real, published, linked                                     |
+| 404                             | Offers the gallery                                          |
+
+### Site two — the furniture range
+
+Its **own** name, look, logo, socials and domain: Home · The range · Commissions
+· About · Contact · Privacy · Terms · 404. If it inherits the joinery's identity,
+that is a `blocker` — the whole per-site promise fails there.
+
+**Working end to end:** the quote form producing a record and a notification,
+Halvard paying a deposit invoice from a link on a phone, both sites live at once
+with the switcher working, and the custom domain flow walked as far as local DNS
+allows.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Site one: heavy, wooden, made-by-hand — photographs of joints and grain. Site two: lighter and more retail. They must not be siblings.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up on a phone
@@ -276,6 +322,32 @@ She decides to cancel. Take it as far as the product allows.
 **Done when:** the path is walked or its absence is filed. A product that cannot
 be left without a phone call is a finding, not a feature.
 
+### Act 14 — Now look at all ten from WizeWorks' side
+
+**Not Ida — you.** By this point ten real businesses exist, and the last surface
+nobody has tested is the one your own staff would use to support them: the
+console at `wizeworks/apps/admin`.
+
+It is a genuinely different reader with a different job. Open the tenants list
+and answer, as somebody taking a support call:
+
+- **Can you tell a Piggles business from a sparx one?** `Tenant.platformBrand`
+  records it and **`wizeworks/apps/admin` contains not one reference to that
+  field** — so the expected answer today is no, and confirming it by eye is the
+  point of this act. Ten Piggles businesses sitting indistinguishable among the
+  sparx tenants is a support problem the moment somebody rings up.
+- Can you find Brandt & Sons by name, by email, by domain?
+- Does its detail view show what a supporter needs — plan, trial state, modules,
+  usage against capacity, the site, the owner?
+- Does anything in there offer a sparx-only action against a Piggles tenant
+  (module pricing, marketplace, the partner programme)? That is the same "a sparx
+  PRODUCT is not a Piggles capability" rule, one console over.
+- Do the ten businesses' usage figures look sane, or is a meter obviously wrong
+  now that there is real data behind it?
+
+**Done when:** each is answered. Findings here are filed like any other, with
+`Surface: admin › …` — a defect in the staff console is a defect.
+
 ## What only this persona proves
 
 Everything commercial: **all four meters** (contacts, storage, seats, email),
@@ -284,6 +356,10 @@ the trial ending, a flat $49 subscription with no module line items, a custom
 domain, a second site, and cancellation. Plus the whole product driven from a
 **phone**, a password recovery through the path that does not send mail, and a
 1,400-row import of genuinely dirty data.
+
+It is also the roster's only look at **the staff console** — the surface
+WizeWorks itself uses to support all ten of these businesses, and the one nobody
+has opened with real Piggles tenants in it.
 
 ## Verification
 
@@ -304,6 +380,9 @@ domain, a second site, and cancellation. Plus the whole product driven from a
 | Trial end warned in the console, not only by email           | —      |
 | Stripe subscription is one flat plan, zero module line items | —      |
 | Cancellation is self-serve and says what happens to her data | —      |
+| Staff console: a Piggles business is identifiable as one     | —      |
+| Staff console: no sparx-only action offered against a tenant | —      |
+| Staff console: the ten tenants' usage figures look sane      | —      |
 
 ## Run log
 
@@ -311,8 +390,65 @@ domain, a second site, and cancellation. Plus the whole product driven from a
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Ida's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Import the 1,400 contacts twice. Delete a customer with an
+unpaid invoice. Remove a seat from somebody who is signed in on it right now.
+Cancel the plan and change her mind.
+
+**Dates.** The trial end date. Rosaleen's 40 days. A staged bill that crosses a
+month boundary.
+
+**Money edge.** The 40% deposit against $28,400. Staged bills on the $42,000 job
+summing to exactly $42,000. And the one that matters most: the seat price on the
+button matching what Stripe actually charges.
+
+**Buyer's side.** Halvard paying his deposit invoice online from a link, on a
+phone, without an account.
+
+**Someone else's business.** Two probes here, because Ida has a team: deep-link
+another tenant's invoice, and then — signed in as the fitter Kev — try to reach
+the money screens by address bar. A restricted user routing around the navigation
+is the same defect class as a tenant leak.
+
+**Without a mouse.** Ida is on a phone, so this one is thumbs: every tap target
+reachable one-handed, nothing that needs a long-press nobody would guess at, and
+no control that only appears on hover.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

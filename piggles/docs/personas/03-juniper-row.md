@@ -102,6 +102,45 @@ At least 25, imported rather than typed — she is arriving with a list. Include
 `SPRING15` — 15% off, the core range only, expires in 14 days, one use per
 customer, not stackable with free shipping.
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Devi's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+She is leaving a marketplace. The site has to do everything that marketplace did
+and look better than it.
+
+| Page                                  | What is really on it                                                    |
+| ------------------------------------- | ----------------------------------------------------------------------- |
+| Home                                  | Leads with New in, one photograph doing the selling                     |
+| Shop                                  | Everything, filterable, with stock states honest                        |
+| New in · The core range · Last chance | Three real collection pages, not one page three times                   |
+| Product pages                         | Every colourway shown, size chart where the eye goes, fabric, fit, care |
+| Size guide                            | Real measurements — the single biggest cause of returns                 |
+| Made in the studio                    | Who makes it and where. Her whole premium                               |
+| Shipping & returns                    | Flat $9, free over $150, 22% come back — say it plainly                 |
+| Account                               | Order history, and starting an exchange without emailing her            |
+| Contact                               | A form that reaches her                                                 |
+| Privacy · Terms · Refund policy       | Real, published, linked                                                 |
+| 404                                   | Offers New in                                                           |
+
+**Working end to end:** variant picker across 15 combinations, out-of-stock
+unbuyable, cart, `SPRING15` accepted and refused for the right reasons, the
+free-shipping threshold showing in the cart, reviews on product pages, newsletter
+signup, and search.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required, and returns/shipping/refund because the shop is on. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Quiet, editorial, lots of white space and big photographs. The clothes are the design.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up, onboard, and clear the decks
@@ -238,8 +277,61 @@ abandoned cart, and a broadcast with merge tags.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Devi's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Import the 25-customer CSV a second time. Refund the same Tee
+line twice. Delete the Clay colourway with an open order against it. Apply
+`SPRING15` to an order that has already been refunded.
+
+**Dates.** The 14-day expiry boundary — the last hour the code works and the
+first hour it does not.
+
+**Money edge.** A partial refund of a discounted order that qualified for free
+shipping: does the threshold recompute, and who ends up paying the $9?
+
+**Buyer's side.** Anneliese's own account on the shop — her order history, and
+starting the exchange herself rather than emailing Devi.
+
+**Someone else's business.** Search for "Thistle" and deep-link a P01 product id.
+Nothing must come back.
+
+**Without a mouse.** The 15-variant grid, keyboard only. If it cannot be done,
+that is the finding.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |

@@ -108,6 +108,44 @@ At least three vehicles with real part mappings, so a customer can search by
 vehicle: **2019 Ford F-250 6.7L**, **2016 Chevrolet Silverado 2500 6.6L**,
 **2021 Ram 3500 6.7L**.
 
+## The website
+
+**This list is the definition of done for the site** (CLAUDE.md RULE #8). Every
+page real, in Wes's voice, with real photographs — no template sentence left
+anywhere, and the whole thing working from the public side.
+
+One question decides everything on this site: **will it fit my truck?** If the
+site cannot answer that in two clicks it has failed, however good the rest is.
+
+| Page                        | What is really on it                                                        |
+| --------------------------- | --------------------------------------------------------------------------- |
+| Home                        | The vehicle selector, above everything else                                 |
+| Find parts for your vehicle | Pick year/make/model/engine, see only what fits                             |
+| Catalogue                   | By category — filters, brakes, belts, fluids — for people who know the part |
+| Product pages               | What it fits, specs, what is on the shelf, core charge explained            |
+| The workshop                | Four bays, what they do, book a slot                                        |
+| Fleet accounts              | What terms mean, apply, and sign in                                         |
+| About                       | Third generation, since when                                                |
+| Find us                     | Counter hours, workshop hours, address, phone                               |
+| Shipping & returns          | Including the core-charge return, which is not a normal return              |
+| Privacy · Terms             | Real, published, linked                                                     |
+| 404                         | Offers the vehicle selector                                                 |
+
+**Working end to end:** the vehicle selector genuinely narrowing the catalogue,
+buying a filter for a 2019 F-250, a fleet account seeing its own terms once
+signed in, stock visible, and a workshop booking.
+
+**Legal.** Run `get_legal_checklist` and close it out. Privacy is always
+required, and returns/shipping/refund because parts ship. Scaffolding drafts them; **publishing is the owner's act**
+in Content → Legal pages, and the footer links have to actually resolve.
+
+**The look.** Utilitarian and legible — big type, high contrast, greasy-thumb tap targets. Not delicate.
+
+**Also required, as on every site:** a real header and mobile drawer, a footer
+carrying hours, address, socials and legal links, per-page title and description
+in plain words, a social card that renders, the sitemap, a favicon, a real 404,
+and the same name/address/phone everywhere it appears.
+
 ## The run
 
 ### Act 1 — Sign up and onboard
@@ -248,8 +286,62 @@ cost.
 | ---- | --- | ------------- |
 | —    | —   | —             |
 
+## Standing checks
+
+The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Wes's instances of
+it, and they are worked into the acts rather than saved for the end.
+
+**Wrong moves.** Receive the Kessler PO a second time. Post the `A-01` count
+twice. Sell a serial that has already been sold. Delete a part that has stock on
+hand.
+
+**Dates.** The Net 30 statement period boundary. A purchase order past its stated
+lead time.
+
+**Money edge.** The $75 core charge out and back. Landed cost spread across a
+receipt that arrived short. Margin after the cost price moved.
+
+**Buyer's side.** The fitment shopper — order a filter for their F-250, then find
+that order's status a week later.
+
+**Someone else's business.** Deep-link a Kanto Trade Supply price list id. Two
+trade businesses in one database is the most tempting leak in the roster.
+Nothing must come back.
+
+**Without a mouse.** Look a part up and sell it over the counter, keyboard
+only — this is a till, and a till is keyboard-first.
+
+**Recorded for this run** — time from landing on meetpiggles to a live site,
+how the lists feel at this business's volume, whether the growth board got its
+contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
+for this tenant.
+
+| Standing check               | Result |
+| ---------------------------- | ------ |
+| Wrong moves                  | —      |
+| Reload · deep link · restore | —      |
+| Dates                        | —      |
+| Money edge                   | —      |
+| Buyer's side                 | —      |
+| Someone else's business      | —      |
+| One job without a mouse      | —      |
+| Time to live site            | —      |
+
+## Panes rated
+
+Every pane opened during this run gets a Design and an Ease score in
+[rating.md](rating.md), with its gap to 10 (CLAUDE.md RULE #6). Score it as you
+leave it, not from memory at the end.
+
+| Pane | Design | Ease | Gap to 10 |
+| ---- | ------ | ---- | --------- |
+| —    | —      | —    | —         |
+
 ## Issues found
 
-| #   | Severity | What |
-| --- | -------- | ---- |
-| —   | —        | —    |
+Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
+A row with no confirmation is not a fixed defect.
+
+| #   | Severity | What (in her words) | Fixed | Confirmed by |
+| --- | -------- | ------------------- | ----- | ------------ |
+| —   | —        | —                   | —     | —            |
