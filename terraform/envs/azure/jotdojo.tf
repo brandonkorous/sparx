@@ -235,6 +235,19 @@ resource "azurerm_key_vault" "jotdojo" {
   # FLIP THIS TO TRUE AT LAUNCH. It is the same one-line change either way, and
   # after there are real users the argument reverses completely.
   purge_protection_enabled = false
+
+  lifecycle {
+    # bootstrap-azure holds sparx's vault partly so a `terraform destroy` HERE
+    # can never take the platform's secrets with the cluster. jotDOJO's vault
+    # stays in this environment (see the note at the foot of this file), so it
+    # needs that protection stated rather than inherited from where it lives.
+    #
+    # Purge protection is deliberately off until launch, which makes this the
+    # ONLY thing standing between a careless destroy and a vault that has to be
+    # rebuilt under a different name — soft delete reserves the old one for the
+    # whole retention window.
+    prevent_destroy = true
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -301,131 +314,48 @@ resource "azurerm_storage_container" "jotdojo" {
   container_access_type = "private"
 }
 
-# ---------------------------------------------------------------------------
-# CI identity — the jotDOJO repository's own federated credential.
-#
-# A SECOND identity rather than reusing this repo's. The subject of a federated
-# credential names the repository, so sparx's identity cannot be assumed from
-# jotDOJO's workflows even if someone wanted it to be — and the separation is
-# worth keeping regardless: jotDOJO's pipeline should never hold a token that can
-# read sparx's Key Vault or roll sparx's Deployments.
-#
-# NO SUBSCRIPTION CONTRIBUTOR. sparx's Actions identity holds it because sparx's
-# pipeline RUNS TERRAFORM and creates infrastructure. jotDOJO's pipeline does
-# not: this file owns its infrastructure, so its identity needs only enough to
-# read its secrets, push to its namespace, and write its blobs. Every role below
-# is scoped to a single resource.
-# ---------------------------------------------------------------------------
-resource "azuread_application" "jotdojo_gha" {
-  count        = local.jotdojo_count
-  display_name = "gha-jotdojo-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
-}
-
-resource "azuread_service_principal" "jotdojo_gha" {
-  count     = local.jotdojo_count
-  client_id = azuread_application.jotdojo_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
-}
-
-# One credential per trusted context, exactly as bootstrap-azure does it.
-# `subject` is matched EXACTLY by Entra — there are no wildcards, not even for a
-# branch — so each context a workflow can run in needs its own entry or it cannot
-# authenticate.
-#
-# Keyed by branch rather than a single `main` resource. See
-# var.jotdojo_github_branches: the local checkout is on `master` and GitHub
-# defaults new repositories to `main`, so which one this repo ends up publishing
-# from is not yet knowable. Both are covered; the unused one is inert.
-resource "azuread_application_federated_identity_credential" "jotdojo_branch" {
-  for_each = var.jotdojo_enabled ? var.jotdojo_github_branches : toset([])
-
-  application_id = azuread_application.jotdojo_gha[0].id
-  display_name   = "github-${each.value}"
-  description    = "Pushes to ${each.value} in ${local.jotdojo_repo}."
-  audiences      = ["api://AzureADTokenExchange"]
-  issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${local.jotdojo_repo}:ref:refs/heads/${each.value}"
-}
-
-resource "azuread_application_federated_identity_credential" "jotdojo_environment" {
-  count          = local.jotdojo_count
-  application_id = azuread_application.jotdojo_gha[0].id
-  display_name   = "github-environment-prod"
-  description    = "Jobs bound to the `prod` GitHub Environment in ${local.jotdojo_repo}."
-  audiences      = ["api://AzureADTokenExchange"]
-  issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${local.jotdojo_repo}:environment:prod"
-}
-
-# Read its OWN vault. Get + list, never write: a compromised workflow must not be
-# able to rewrite a credential the product then deploys.
-resource "azurerm_role_assignment" "jotdojo_gha_kv" {
-  count                = local.jotdojo_count
-  scope                = azurerm_key_vault.jotdojo[0].id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azuread_service_principal.jotdojo_gha[0].object_id
-}
-
-# Write its OWN blobs. Scoped to the storage account, so it cannot touch sparx's
-# media account sitting in the same resource group.
-resource "azurerm_role_assignment" "jotdojo_gha_blob" {
-  count                = local.jotdojo_count
-  scope                = azurerm_storage_account.jotdojo[0].id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.jotdojo_gha[0].object_id
-}
-
-# `Azure Kubernetes Service Cluster User` — enough to FETCH a kubeconfig, and
-# nothing more. Authorization inside the cluster is Kubernetes' own; this role
-# does not grant it. Deliberately NOT `Cluster Admin`, which sparx's identity
-# holds because its release applies namespaces and CRD-adjacent infra.
-#
-# NOTE — this is the one grant that is not self-evidently safe, because AKS here
-# keeps LOCAL ACCOUNTS enabled (providers.tf depends on `kube_config`), and with
-# local accounts on, `Cluster User` returns admin-equivalent credentials. Closing
-# that properly means disabling local accounts and switching the cluster to Entra
-# RBAC with a namespace-scoped role binding — a change to the cluster that would
-# also force providers.tf onto exec-based auth. Recorded here rather than left
-# implicit; it is the follow-up that makes this grant mean what it reads like.
-resource "azurerm_role_assignment" "jotdojo_gha_aks" {
-  count                = local.jotdojo_count
-  scope                = azurerm_kubernetes_cluster.main.id
-  role_definition_name = "Azure Kubernetes Service Cluster User Role"
-  principal_id         = azuread_service_principal.jotdojo_gha[0].object_id
-}
-
-# The HUMAN loading secrets needs WRITE, and being subscription Owner does NOT
-# grant it — Key Vault's data plane is its own RBAC surface. Without this,
-# `az keyvault secret set` fails with a 403 that says nothing about a missing
-# role. Same trap as sparx's vault, same fix.
-resource "azurerm_role_assignment" "jotdojo_operator_kv" {
-  count                = local.jotdojo_count
-  scope                = azurerm_key_vault.jotdojo[0].id
-  role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
 
 # ---------------------------------------------------------------------------
-# Outputs — the values the jotDOJO repo needs to configure its own pipeline.
-# `terraform output jotdojo_github_setup` prints the gh commands verbatim.
+# WHAT IS NOT IN THIS FILE, AND WHY — the CI identity and every role assignment.
+#
+# They live in terraform/bootstrap-azure/jotdojo.tf. They were here first, and
+# the release failed on them with two 403s that are worth recording, because the
+# plan and the validate were both perfectly green:
+#
+#   Authorization_RequestDenied         — creating `azuread_application`
+#   Microsoft.Authorization/roleAssignments/write denied — every role assignment
+#
+# Neither is a bug in the code. This environment is applied by the RELEASE, using
+# an identity that deliberately holds subscription Contributor and nothing more:
+# Contributor cannot grant roles (that is the point — it stops the pipeline
+# escalating its own privileges), and a directory app registration is tenant-wide
+# rather than subscription-scoped, so it needs Graph rights the pipeline has
+# never had and should not be given.
+#
+# bootstrap-azure is applied BY A HUMAN with Owner and directory rights, which is
+# why every other app registration and role assignment in this repo already lived
+# there. There were none in this environment before jotDOJO added some; the
+# absence was the convention, and it is now documented rather than merely
+# observed.
+#
+# THE VAULT STAYS HERE, unlike sparx's, and that is deliberate rather than
+# inconsistent. The reasons bootstrap's own comment gives for holding the sparx
+# vault are (1) the release reads those secrets in the same job that applies this
+# environment, so a vault created here would be empty on first read, and (2) a
+# destroy here must not take the secrets. Reason 1 does not apply: jotDOJO's
+# release is a separate pipeline in a separate repository that never runs
+# Terraform at all. Reason 2 does, and is handled by the `prevent_destroy` on the
+# vault above. Moving it would also mean destroying and recreating a vault that
+# already exists — and a Key Vault name stays globally reserved through the
+# soft-delete window, so the move would cost the name for a week to fix nothing.
 # ---------------------------------------------------------------------------
+
 output "jotdojo_key_vault_name" {
-  description = "Key Vault holding jotDOJO's secrets."
+  description = "Key Vault holding jotDOJO's secrets. Set as AZURE_KEY_VAULT_NAME on the jotDOJO repo."
   value       = var.jotdojo_enabled ? azurerm_key_vault.jotdojo[0].name : null
 }
 
 output "jotdojo_storage_account" {
   description = "Blob account for jotDOJO ink, audio and rendered previews."
   value       = var.jotdojo_enabled ? azurerm_storage_account.jotdojo[0].name : null
-}
-
-output "jotdojo_github_setup" {
-  description = "Repository variables to set on the jotDOJO repo so its pipeline can authenticate."
-  value = var.jotdojo_enabled ? [
-    "gh variable set AZURE_CLIENT_ID       -R ${local.jotdojo_repo} -b '${azuread_application.jotdojo_gha[0].client_id}'",
-    "gh variable set AZURE_TENANT_ID       -R ${local.jotdojo_repo} -b '${data.azurerm_client_config.current.tenant_id}'",
-    "gh variable set AZURE_SUBSCRIPTION_ID -R ${local.jotdojo_repo} -b '${data.azurerm_client_config.current.subscription_id}'",
-    "gh variable set AZURE_KEY_VAULT_NAME  -R ${local.jotdojo_repo} -b '${azurerm_key_vault.jotdojo[0].name}'",
-  ] : []
 }

@@ -59,20 +59,14 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.35"
     }
-    // Exists solely for jotdojo.tf, which registers a SECOND GitHub Actions
-    // identity — the jotDOJO repository deploys jotDOJO into this cluster from
-    // its own pipeline, so it needs its own OIDC subject and cannot borrow the
-    // one terraform/bootstrap-azure minted for this repo.
-    //
-    // Directory app registrations are TENANT-wide, not subscription-scoped, so
-    // creating one needs `Application.ReadWrite.OwnedBy` (or Application
-    // Administrator) on the caller — the same prerequisite bootstrap-azure
-    // documents. If a plan fails with an authorization error naming
-    // `azuread_application`, that is what is missing.
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "~> 3.0"
-    }
+    // NO `azuread` PROVIDER HERE, and that is a constraint rather than an
+    // omission. This environment is applied by the RELEASE, whose identity holds
+    // subscription Contributor and no Microsoft Graph rights at all — a
+    // directory app registration is tenant-wide, so creating one from this
+    // configuration fails with `Authorization_RequestDenied` no matter how the
+    // provider is configured. Identity belongs in terraform/bootstrap-azure,
+    // which a human applies. jotDOJO's briefly lived here and 403'd exactly that
+    // way; the note at the foot of jotdojo.tf records it.
   }
 }
 
