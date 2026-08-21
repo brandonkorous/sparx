@@ -12,9 +12,9 @@
 #   2. Postgres   → MANAGED (psql-sparx-prod-cus). No in-cluster StatefulSet.
 #   3. Redis      → dropped entirely
 #   4. storage    → Azure Disk via the `managed-csi` StorageClass
-#   5. resources  → the node is 8 GiB with a managed database beside it, so the
-#                   apps get slightly more headroom than on a 16 GiB laptop that
-#                   is also hosting Postgres
+#   5. resources  → the node is 16 GiB with a managed database beside it (it was
+#                   8 GiB until 2026-08-21), so the apps get more headroom than on
+#                   a 16 GiB laptop that is also hosting Postgres
 #
 # Applied by .github/workflows/release.yml, not by hand.
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -238,17 +238,36 @@ patches:
   # release, so `Always` costs one registry HEAD request and guarantees the node
   # never serves a stale cached layer.
 
-  # --- Requests have to fit ONE 2-vCPU node -----------------------------------
+  # --- Requests have to fit ONE node ------------------------------------------
   # The base numbers are tuned for Autopilot, where every request is billed and
-  # the pool grows to meet them. Here there is one node with 1900m allocatable,
-  # and AKS's own kube-system takes ~610m of it (two metrics-server replicas at
-  # 156m, kube-proxy, two CoreDNS). That leaves roughly 1290m for the whole
-  # platform, and the base's 100m-per-app is most of it before a single CronJob
-  # pod asks for anything.
+  # the pool grows to meet them. Here there is exactly one node, and everything
+  # below is sized to it.
   #
-  # CPU stays deliberately small for exactly that reason: CPU is compressible,
-  # a request is a floor and not a cap, and the node is already 77% reserved.
-  # CPU limits are dropped entirely — a cap only throttles cold starts.
+  # THE NODE GREW ON 2026-08-21: Standard_D2ads_v7 (2 vCPU / 8 GiB) →
+  # Standard_D4ads_v7 (4 vCPU / 16 GiB), because memory ran out. Allocatable went
+  # from ~1900m / ~5.5Gi to ~3900m / ~12.7Gi. AKS's own kube-system still takes
+  # ~610m and ~0.5Gi of that (two metrics-server replicas at 156m, kube-proxy,
+  # two CoreDNS) — it is a fixed tax, so the whole increase is usable.
+  #
+  # NOT A SECOND NODE, DELIBERATELY, and at identical cost: two D2s and one D4
+  # are the same price to the cent, but two nodes pay AKS's regressive memory
+  # reservation twice (25% of the first 4 GB, 20% of the next 4), pay a second
+  # DaemonSet tax, and split free memory into two pools — while buying no
+  # availability at all, since every Deployment here is `replicas: 1` and
+  # sku_tier is "Free". Reasoning in terraform/envs/azure/variables.tf.
+  #
+  # NONE OF THE NUMBERS BELOW CHANGED WITH THE NODE, ON PURPOSE. They are
+  # measured steady-state RSS (see the memory note further down), not a division
+  # of the node between tenants — so a bigger node does not entitle anything to
+  # ask for more. What grew is HEADROOM: room for the surge during a rollout,
+  # for CronJob and one-off Job pods, and for new workloads. Raising a request
+  # here is still a thing you do because `kubectl top` moved, never because the
+  # node has space.
+  #
+  # CPU stays deliberately small: CPU is compressible, a request is a floor and
+  # not a cap, and the scheduler only needs the floors to be honest enough to
+  # order admission. CPU limits are dropped entirely — a cap only throttles cold
+  # starts, which is the one thing this platform has repeatedly lost to.
   #
   # MEMORY IS NOT CPU, AND THIS FILE USED TO TREAT IT AS IF IT WERE. The rule
   # here read "small requests let everything schedule and then grow into what it

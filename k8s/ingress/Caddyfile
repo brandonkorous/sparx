@@ -322,6 +322,74 @@ import mode.caddy
 	redir https://silicaui.com{uri} permanent
 }
 
+# ----- jotDOJO (co-tenant in the `jotdojo` namespace) -------------------------
+# A THIRD product on this cluster, living in a repository of its own. It shares
+# the cluster and the Postgres SERVER and nothing else — its own namespace, its
+# own database, its own Key Vault, its own pipeline. The Azure side is
+# terraform/envs/azure/jotdojo.tf; the workloads are plain YAML in that repo
+# under infra/k8s/ (its ADR-026 rules out Helm and Kustomize).
+#
+# Reached cross-namespace via ClusterIP Services on port 80, the same shape as
+# the kanNINJA blocks above. Port 80 on the Service, the app's real port behind
+# it — so this routing table never has to know that jotDOJO's web listens on
+# 3400, its api on 3401 and its mcp on 3402.
+#
+# ON-DEMAND (`tls_policy`), NOT the kanNINJA-style `tls_managed`. Both would work
+# on paper and the on-demand form is the one that survives a restart: this Caddy
+# is a single replica on a Recreate rollout, so every boot has a ~15-60s window
+# with no registered LB backend, and an explicit managed block fires all its
+# startup issuance attempts inside it — which is precisely what stopped
+# silicaui.com ever getting a first certificate. On-demand defers issuance to the
+# first HTTPS request, which lands on a warm, LB-registered pod.
+#
+# The cost of that choice is a dependency: on-demand asks api-rest's
+# /internal/domain-check whether the hostname may be issued for, and that
+# endpoint resolves against the `domains` table, which has no row for any of
+# these and never will. All four hostnames are therefore allow-listed as static
+# platform hosts in
+# wizeworks/services/api-rest/src/routes/internal/domain-check.ts. WITHOUT THOSE
+# ENTRIES THE FAILURE IS TOTAL AND LOOKS UNRELATED: every first HTTPS request
+# gets a 403 `unknown_host`, Caddy never issues, and Cloudflare answers 525 for
+# the whole product.
+{$SX_SCHEME:https}://jotdojo.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy web.jotdojo.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.jotdojo.com {
+	import tls_policy
+	import security_headers
+	redir https://jotdojo.com{uri} permanent
+}
+
+# The REST v1 surface Apple Shortcuts and third parties call. A separate
+# hostname rather than a path prefix on the apex because jotDOJO hands this
+# origin to code it does not control — a Shortcut on someone's phone — and a
+# hostname can be re-pointed later without every installed Shortcut breaking.
+{$SX_SCHEME:https}://api.jotdojo.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy api.jotdojo.svc.cluster.local:80
+}
+
+# The MCP server: streamable HTTP transport, OAuth 2.1 resource server.
+#
+# `MCP_RESOURCE` in jotDOJO's config must equal `https://mcp.jotdojo.com/mcp`
+# EXACTLY — RFC 8707 binds an access token to that literal string, and it is what
+# stops a jotDOJO token being replayed against another MCP server. If the
+# hostname here and the advertised resource identifier ever disagree, every token
+# validates as intended-for-someone-else and the whole agent surface 401s.
+#
+# Streaming: no `flush_interval` override is needed. Caddy's reverse_proxy
+# disables response buffering automatically for text/event-stream, which is what
+# the transport uses.
+{$SX_SCHEME:https}://mcp.jotdojo.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy mcp.jotdojo.svc.cluster.local:80
+}
+
 # ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
 # The Layer-4 operator console (docs/16 §2.4). Access control is enforced IN
 # FRONT by Cloudflare Access, the load-bearing gate until operator MFA ships;

@@ -75,7 +75,37 @@ variable "environment" {
 
 variable "node_size" {
   description = <<-EOT
-    AKS node VM size: 2 vCPU / 8 GiB, ~$70-75/mo.
+    AKS node VM size: 4 vCPU / 16 GiB, ~$166/mo ($0.228/hr Linux in centralus,
+    verified against the Azure retail price API 2026-08-21).
+
+    WAS Standard_D2ads_v7 (2 vCPU / 8 GiB, ~$83/mo). The upgrade note at the
+    bottom of this block said "when real users arrive"; what actually arrived
+    first was more workloads. Memory, not CPU, is what ran out — see the sizing
+    note below.
+
+    ONE BIGGER NODE, NOT TWO SMALL ONES. The two options cost exactly the same
+    (D-series pricing is linear: 2x D2ads_v7 = 1x D4ads_v7 = $0.228/hr), so the
+    decision is purely which yields more usable capacity, and the single larger
+    node wins on four counts:
+
+      1. AKS's memory reservation is REGRESSIVE - 25% of the first 4 GB, 20% of
+         the next 4, 10% of the next 8. Two small nodes pay the expensive 25%
+         bracket twice. One D4 leaves ~12.7 GiB allocatable; two D2s leave
+         ~10.9 GiB, and the second node pays its own DaemonSet tax on top
+         (~300-400 MiB and ~150-250m CPU for kube-proxy, the CSI node drivers
+         and cloud-node-manager).
+      2. A second node buys NO availability here. Every Deployment is
+         `replicas: 1`, api-rest is `strategy: Recreate`, and sku_tier is "Free"
+         (no control-plane SLA). Losing a node is an outage either way, so the
+         spend would buy HA that does not exist.
+      3. Free memory split across two pools is not the same as one contiguous
+         pool. api-rest alone requests 640Mi, and api-rest + media-worker are
+         pinned together by required pod affinity because `sparx-media` is a
+         ReadWriteOnce Azure Disk (see k8s/azure/apps/kustomization.yaml) - a
+         co-location constraint the scheduler must satisfy on top of bin-packing.
+      4. Image pulls double. The three API images are ~820 MB each and each node
+         pulls its own copy, re-creating the cold-start pressure the startupProbe
+         below is scar tissue from.
 
     Chosen for ONE property above all: it is NOT burstable. A B-series node
     throttles to baseline once burst credits are exhausted, and the moment that
@@ -84,8 +114,13 @@ variable "node_size" {
     restarts, exit 137) purely because it was CPU-starved during boot and could
     not finish loading its ~50-package workspace through runtime tsx before the
     probe killed it. The 300s startupProbe in k8s/apps/api-rest.yaml is scar
-    tissue from that incident. ~$14/mo over a B2ms to remove that failure mode is
-    cheap.
+    tissue from that incident. The premium over a burstable B-series to remove
+    that failure mode is cheap, and it is why the memory-optimized alternative
+    was rejected: E2ads_v6 (2 vCPU / 16 GiB, ~$120/mo) would have supplied the
+    memory that was actually short for $46/mo less, but it holds vCPUs flat at 2
+    while ADDING containers to the cold-start stampede. Paying for the two extra
+    cores buys headroom against the one failure mode this cluster has already
+    suffered twice.
 
     The `ads` suffix matters: `a` = AMD, `d` = LOCAL TEMP DISK, `s` = premium
     storage. The local disk is what allows an EPHEMERAL OS disk (see the node
@@ -106,14 +141,21 @@ variable "node_size" {
     size that worked elsewhere is available.
 
     Do NOT "simplify" this to an older, cheaper-looking size; it will be rejected.
-    Also avoid the `l` variants (D2als/D2lds) — those are low-memory, 4 GiB not 8 —
-    and the `p` variants (D2ps/D2pds), which are ARM64 and would need multi-arch
+    Also avoid the `l` variants (D4als/D4lds) — those are low-memory, 8 GiB not 16 —
+    and the `p` variants (D4ps/D4pds), which are ARM64 and would need multi-arch
     images.
 
-    Upgrade path when real users arrive: Standard_D4ads_v7 (4 vCPU / 16 GiB).
+    VERIFIED BEFORE THE BUMP, because the allow-list above makes availability a
+    per-subscription AND per-region question rather than a spec-sheet one:
+    `az vm list-skus --size Standard_D4ads_v7 --location centralus` returns the
+    SKU with an EMPTY `restrictions` array and zones 1/2/3, and reports
+    NvmeDiskSizeInMiB=225280 (220 GiB) — which is what os_disk_size_gb in main.tf
+    is set to. Re-run that check before any future size change.
+
+    Next step up if this fills: Standard_D8ads_v7 (8 vCPU / 32 GiB, $0.456/hr).
   EOT
   type        = string
-  default     = "Standard_D2ads_v7"
+  default     = "Standard_D4ads_v7"
 }
 
 variable "postgres_sku" {

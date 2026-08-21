@@ -147,6 +147,15 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 # creates a way to accidentally double the bill; scaling here is a deliberate
 # `node_count` or `node_size` change.
 #
+# AND WHEN IT IS TIME TO SCALE, IT IS `node_size` — NOT `node_count`. The two
+# cost the same to the cent (D-series pricing is linear), but a second node pays
+# AKS's regressive memory reservation a second time, pays a second DaemonSet
+# tax, splits free memory into two pools that cannot host one large pod, and
+# doubles image pulls — while buying zero availability, because every Deployment
+# here is `replicas: 1` and sku_tier is "Free". The full four-point comparison is
+# in the `node_size` variable description. Grew 8 GiB → 16 GiB on 2026-08-21 for
+# exactly this reason.
+#
 # COST NOTE — the one number I am not confident about: AKS provisions a Standard
 # Load Balancer for outbound (SNAT) connectivity even when no Service is of type
 # LoadBalancer. The cluster genuinely needs egress — to pull images from GHCR, to
@@ -191,11 +200,16 @@ resource "azurerm_kubernetes_cluster" "main" {
     # is what a 20-image cold start is bottlenecked on. A node reimage wipes it,
     # which is fine — nothing stateful lives on the node.
     #
-    # SIZED TO THE SKU'S WHOLE LOCAL DISK, ON PURPOSE. D2ads_v7 exposes 110 GiB
-    # (`az vm list-skus --size Standard_D2ads_v7` → NvmeDiskSizeInMiB=112640),
+    # SIZED TO THE SKU'S WHOLE LOCAL DISK, ON PURPOSE. D4ads_v7 exposes 220 GiB
+    # (`az vm list-skus --size Standard_D4ads_v7` → NvmeDiskSizeInMiB=225280),
     # and because ephemeral placement consumes that disk rather than a billed
-    # one, 110 costs exactly what 30 did: nothing. Asking for less does not save
+    # one, 220 costs exactly what 30 did: nothing. Asking for less does not save
     # money, it only leaves the rest unusable.
+    #
+    # THIS NUMBER IS A FUNCTION OF vm_size — it was 110 under D2ads_v7, whose
+    # local disk was half this. Change one and re-read the other: asking for more
+    # than the SKU exposes fails the node pool outright, and asking for less
+    # silently strands the remainder.
     #
     # 30 GiB is what this was, and it is why the first deploy failed. The three
     # API images are ~820 MB each — they ship the whole pnpm workspace because
@@ -206,7 +220,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     # placed then stopped scheduling with a message about a taint, which reads
     # like an affinity bug and is really a full disk. Leave the headroom.
     os_disk_type    = "Ephemeral"
-    os_disk_size_gb = 110
+    os_disk_size_gb = 220
 
     # Changing os_disk_size_gb (or vm_size) on the DEFAULT pool is ForceNew. Left
     # to itself the provider would destroy and recreate the whole CLUSTER; with a
@@ -334,7 +348,7 @@ resource "azurerm_postgresql_flexible_server_database" "sparx" {
 # that has already created the roles and rolled out pods — not an obvious
 # infrastructure error.
 #
-# The two names are the ones the schema actually asks for; grep the migrations
+# The names are the ones the schemas actually ask for; grep the migrations
 # before adding more:
 #     grep -rhoiE 'CREATE EXTENSION [^;]+' wizeworks/packages/db/prisma/migrations/
 #
@@ -343,11 +357,27 @@ resource "azurerm_postgresql_flexible_server_database" "sparx" {
 #                 bookings and price-list date ranges. A plain btree index
 #                 cannot back an EXCLUDE, so this is not optional.
 #
+# THE LAST THREE BELONG TO jotDOJO, NOT sparx, and they sit here because
+# `azure.extensions` is a SERVER-level parameter — Flexible Server has no
+# per-database allow-list. jotdojo.tf adds a second DATABASE to this same
+# server; its first migration opens with `CREATE EXTENSION vector / pg_trgm /
+# citext` (packages/db/migrations/0000_init.sql in the jotDOJO repo), and
+# without these names that migration fails in exactly the way the paragraph
+# above describes: after the roles exist and the pods have already rolled.
+#
+#   vector      — pgvector. jotDOJO embeds note blocks for semantic search.
+#   pg_trgm     — trigram fuzzy search (its 0010_fuzzy_search migration).
+#   citext      — case-insensitive text for email identity columns.
+#
+# Adding a name is additive and free: an allow-listed extension no database ever
+# creates is inert, so sparx gains nothing and loses nothing. The isolation
+# between the two products is the DATABASE and the role — never this list.
+#
 # Dynamic (`isDynamicConfig: true`), so applying it does NOT restart the server.
 resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
   name      = "azure.extensions"
   server_id = azurerm_postgresql_flexible_server.main.id
-  value     = "PGCRYPTO,BTREE_GIST"
+  value     = "PGCRYPTO,BTREE_GIST,VECTOR,PG_TRGM,CITEXT"
 }
 
 # ---------------------------------------------------------------------------

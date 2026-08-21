@@ -124,6 +124,26 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   // are authorised by the resolver below, per brand, exactly like *.sparx.zone.
   'piggles.site',
   'www.piggles.site',
+  // ── jotDOJO ──────────────────────────────────────────────────────────────
+  // A THIRD product sharing this cluster, living in a repository of its own, in
+  // its own `jotdojo` namespace with its own database and its own pipeline.
+  // api-rest serves it nothing — these entries exist ONLY so Caddy may mint
+  // certificates for its four hostnames.
+  //
+  // That is worth stating plainly, because this list is the one place a product
+  // sparx knows nothing about has to appear in sparx's code: its Caddy blocks
+  // `import tls_policy`, which is `tls { on_demand }`, so every first HTTPS
+  // request for these names asks THIS endpoint. Without a match here the
+  // resolver below is consulted, finds no `domains` row (there will never be
+  // one — jotDOJO is not a sparx tenant), returns 403 `unknown_host`, and
+  // Cloudflare answers 525 for the entire product.
+  //
+  // Routing lives in k8s/ingress/Caddyfile; the Azure side is
+  // terraform/envs/azure/jotdojo.tf.
+  'jotdojo.com',
+  'www.jotdojo.com',
+  'api.jotdojo.com',
+  'mcp.jotdojo.com',
 ]);
 
 const domainCheckRoutes: FastifyPluginAsync = (app) => {
