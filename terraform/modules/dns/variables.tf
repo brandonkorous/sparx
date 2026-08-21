@@ -56,3 +56,21 @@ variable "sparx_email_dkim_value" {
   type        = string
   default     = ""
 }
+
+variable "jotdojo_dns_enabled" {
+  description = <<-EOT
+    Whether to manage the jotdojo.com zone's records.
+
+    Separate from `cloudflare_enabled` because the zone must ALREADY EXIST in the
+    Cloudflare account: `data "cloudflare_zone" "jotdojo"` is a lookup, and a plan
+    fails outright if the domain has not been added there yet. That failure is
+    clear on its own ("no zone found"), but it would block every OTHER record this
+    module manages — sparx and piggles included — for a product that is not live.
+
+    So this defaults ON, matching the other brands, and exists as the switch to
+    flip if jotdojo.com is ever removed from the account or handed to a different
+    registrar mid-migration. Turning it off drops only jotDOJO's records.
+  EOT
+  type        = bool
+  default     = true
+}

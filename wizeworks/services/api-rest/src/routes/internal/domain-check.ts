@@ -140,8 +140,14 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   //
   // Routing lives in k8s/ingress/Caddyfile; the Azure side is
   // terraform/envs/azure/jotdojo.tf.
+  // FIVE names, not four. `app.jotdojo.com` is the PWA and the apex is the
+  // marketing site — the same Deployment, split on Host inside the app — so the
+  // apex being present here says nothing about `app.` being covered. Missing it
+  // 525s the application while the marketing site loads perfectly, which reads
+  // like an app outage rather than a TLS allow-list omission.
   'jotdojo.com',
   'www.jotdojo.com',
+  'app.jotdojo.com',
   'api.jotdojo.com',
   'mcp.jotdojo.com',
 ]);

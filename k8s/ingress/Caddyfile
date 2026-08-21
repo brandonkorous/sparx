@@ -351,16 +351,36 @@ import mode.caddy
 # ENTRIES THE FAILURE IS TOTAL AND LOOKS UNRELATED: every first HTTPS request
 # gets a 403 `unknown_host`, Caddy never issues, and Cloudflare answers 525 for
 # the whole product.
+# THE APEX IS THE MARKETING SITE AND `app.` IS THE APP, and they are the SAME
+# Service — one `web` Deployment that splits on Host in its own middleware
+# (jotDOJO's ADR-040). So these two blocks proxy to the identical backend and the
+# difference is decided inside the app, not here. Do not "simplify" them into one
+# block with a redirect; that is the bug this arrangement exists to avoid.
+#
+# `app.` IS NOT INTERCHANGEABLE WITH THE APEX. jotDOJO's ADR-010 and ADR-018 both
+# settle it: a PWA's install origin is baked into the home-screen icon at install
+# time and does NOT follow a redirect, so serving the app at the apex even once
+# means every user who installed it must delete and reinstall to move. The split
+# has to be right before the first deploy rather than corrected after it.
 {$SX_SCHEME:https}://jotdojo.com {
 	import tls_policy
 	import security_headers
 	reverse_proxy web.jotdojo.svc.cluster.local:80
 }
 
+{$SX_SCHEME:https}://app.jotdojo.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy web.jotdojo.svc.cluster.local:80
+}
+
+# `www` is MATCHED BY THE APP, not redirected here — same Service again, so the
+# canonical-host decision stays in one place (the middleware) instead of being
+# split between Caddy and the app, which is how the two drift.
 {$SX_SCHEME:https}://www.jotdojo.com {
 	import tls_policy
 	import security_headers
-	redir https://jotdojo.com{uri} permanent
+	reverse_proxy web.jotdojo.svc.cluster.local:80
 }
 
 # The REST v1 surface Apple Shortcuts and third parties call. A separate

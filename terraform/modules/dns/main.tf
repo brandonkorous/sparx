@@ -660,6 +660,93 @@ resource "cloudflare_record" "piggles_site_customers" {
 }
 
 # =========================================================================
+# jotdojo.com — jotDOJO, a THIRD product on the same cluster
+# =========================================================================
+# Same ingress IP and same Caddy as everything above. jotDOJO lives in its own
+# repository and its own `jotdojo` namespace; Caddy reaches it cross-namespace by
+# ClusterIP, so nothing about these records is special — they exist here because
+# this module is where the platform's DNS lives, not because sparx serves it.
+#
+# FIVE NAMES, FOUR OF THEM DISTINCT SERVICES — and one pair that is not:
+#
+#   jotdojo.com      the MARKETING site   → jotdojo-web
+#   www.jotdojo.com  the same, by CNAME   → jotdojo-web
+#   app.jotdojo.com  the PWA              → jotdojo-web   ← same Service
+#   api.jotdojo.com  REST v1              → jotdojo-api
+#   mcp.jotdojo.com  MCP server           → jotdojo-mcp
+#
+# THE APEX AND `app.` ARE ONE DEPLOYMENT, split by Host inside the app
+# (`apps/web/middleware.ts`, its ADR-040). So they need identical DNS and
+# separate Caddy blocks, but no second Service, Deployment or port.
+#
+# `app.` IS NOT OPTIONAL AND THE APEX IS NOT A SUBSTITUTE. jotDOJO's ADR-010 and
+# ADR-018 both settle this: a PWA's install origin is written into the
+# home-screen icon at install time and does not follow a redirect, so shipping
+# the app at the apex even once means every user who installed it must delete and
+# reinstall to move. That is why the split has to be right before the first
+# deploy rather than after.
+#
+# Proxied, like meetpiggles and sparx.works: these are OUR hostnames taking
+# ordinary Caddy-managed certificates, so no ACME challenge needs to reach the
+# origin directly. Cloudflare's SSL mode must be Full or Full (strict) — Flexible
+# would speak plain HTTP to an origin that only serves HTTPS.
+#
+# EVERY ONE of these names must ALSO appear in api-rest's PLATFORM_HOSTNAMES
+# (routes/internal/domain-check.ts). Their Caddy blocks use on-demand TLS, which
+# asks that endpoint before issuing; a name missing there gets 403 `unknown_host`,
+# never receives a certificate, and Cloudflare answers 525 for that hostname
+# alone — which reads like a routing bug and is an allow-list omission.
+locals {
+  jotdojo_enabled = var.cloudflare_enabled && var.jotdojo_dns_enabled
+
+  # Subdomains taking an A record straight at the ingress. The apex and `www` are
+  # handled separately below because their record types differ.
+  jotdojo_hosts = local.jotdojo_enabled ? toset(["app", "api", "mcp"]) : toset([])
+}
+
+data "cloudflare_zone" "jotdojo" {
+  count = local.jotdojo_enabled ? 1 : 0
+  name  = "jotdojo.com"
+}
+
+resource "cloudflare_record" "jotdojo_root" {
+  count           = local.jotdojo_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.jotdojo[0].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "jotDOJO marketing site — Caddy host-matches this name"
+}
+
+# CNAME rather than a second A record, so the apex is the single place the
+# address is stated. Matched by the app itself rather than redirected in Caddy.
+resource "cloudflare_record" "jotdojo_www" {
+  count           = local.jotdojo_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.jotdojo[0].id
+  name            = "www"
+  type            = "CNAME"
+  content         = "jotdojo.com"
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+}
+
+resource "cloudflare_record" "jotdojo_hosts" {
+  for_each        = local.jotdojo_hosts
+  zone_id         = data.cloudflare_zone.jotdojo[0].id
+  name            = each.value
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "jotDOJO ${each.value} — shared Caddy, jotdojo namespace"
+}
+
+# =========================================================================
 # wize.works — WizeWorks operator console (admin.wize.works)
 # =========================================================================
 # The Layer-4 operator console (docs/16 §2.4, docs/apps/admin/build-plan.md).
