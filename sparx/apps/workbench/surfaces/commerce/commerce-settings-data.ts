@@ -15,7 +15,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -89,10 +89,7 @@ export function useUpdateCommerceSettings() {
 /* ── Helpers ────────────────────────────────────────────────────────────── */
 
 export function settingsErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 // The currencies the platform's Currency enum accepts. Kept in step with

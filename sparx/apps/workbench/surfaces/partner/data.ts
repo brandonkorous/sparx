@@ -15,6 +15,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Enums (mirror @wizeworks/partner-schemas, kept local so a pane never imports the
@@ -362,10 +363,7 @@ export function useDeleteBootcamp(id: string) {
  *  partner tier.", "Only draft bootcamps can be deleted."). A 5xx has no such
  *  sentence, so it falls back to the caller's wording. */
 export function partnerErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isNotFound(error: unknown): boolean {

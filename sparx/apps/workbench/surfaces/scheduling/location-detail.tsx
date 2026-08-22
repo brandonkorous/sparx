@@ -39,6 +39,7 @@ import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { useBusinessTimezone } from '../../lib/business-timezone';
 import {
   TIMEZONE_OPTIONS,
   isNotFound,
@@ -123,10 +124,27 @@ function coordinate(value: string, bound: number): { ok: boolean; value: number 
 
 export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
-  return id === 'new' ? (
-    <LocationEditor ctx={ctx} id="new" initial={BLANK} existing={null} />
-  ) : (
-    <LocationLoader ctx={ctx} id={id} />
+  const businessZone = useBusinessTimezone();
+
+  if (id !== 'new') return <LocationLoader ctx={ctx} id={id} />;
+
+  // Held until the zone resolves rather than stamped with a placeholder the
+  // person would have to notice and undo. A cached read, so one frame.
+  if (businessZone === undefined) {
+    return (
+      <p className="p-4 text-sm" role="status">
+        Loading…
+      </p>
+    );
+  }
+
+  return (
+    <LocationEditor
+      ctx={ctx}
+      id="new"
+      initial={{ ...BLANK, timezone: businessZone }}
+      existing={null}
+    />
   );
 }
 

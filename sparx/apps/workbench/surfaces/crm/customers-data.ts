@@ -24,6 +24,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type { CustomerType, LeadStatus, LifecycleStage } from '@wizeworks/crm-schemas';
 import { api } from '../../lib/api/client';
 
@@ -553,8 +554,5 @@ export function useDeleteCustomer(id: string) {
 /** The server's own sentence for a 4xx is worth showing verbatim (it names the
  *  exact field); a 5xx has no such sentence, so it falls back to the caller's. */
 export function customerErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

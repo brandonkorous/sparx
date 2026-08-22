@@ -63,6 +63,7 @@ import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useSchedulingServices } from '../scheduling/bookings-data';
 import { useActiveSiteSlug } from '../../lib/api/shell-data';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 import {
   useMeetingLinkMutations,
   useMeetingLinks,
@@ -74,11 +75,7 @@ const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
 /** `Discovery call` → `discovery-call`. Typed for people, not for URLs. */
 function slugify(raw: string): string {
-  return raw
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+  return slugifyWebSegment(raw, 63);
 }
 
 export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {

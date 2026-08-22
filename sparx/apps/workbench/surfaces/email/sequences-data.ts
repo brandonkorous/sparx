@@ -26,6 +26,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type {
   CreateSequenceInput,
   SequenceStep,
@@ -387,8 +388,5 @@ export function formatDelay(seconds: number): string {
 /** Surface the server's own sentence for a 4xx — it names the exact problem —
  *  else a plain fallback. */
 export function sequenceErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

@@ -57,7 +57,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Tags, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTabSave } from './product-tab-save';
 import {

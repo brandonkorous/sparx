@@ -36,7 +36,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import { VariantPicker } from '../commerce/variant-picker';
 import type { VariantChoice } from '../commerce/bundles-data';
 import {

@@ -43,6 +43,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /** Where a sending domain's email is processed. Chosen at provision time and
@@ -283,8 +284,5 @@ export function regionLabel(region: SendingRegion): string {
  * A 5xx has no such sentence, so it falls back to the caller's wording.
  */
 export function emailDomainErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

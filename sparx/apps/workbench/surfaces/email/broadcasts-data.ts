@@ -40,6 +40,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Semantic tone (shared with the Badge color axis) ────────────────────── */
@@ -311,8 +312,5 @@ export function senderDisplay(settings: EmailSettings | undefined): string {
  *  broadcast already sent, no designed email attached, a schedule in the past) —
  *  else a plain fallback. */
 export function broadcastErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

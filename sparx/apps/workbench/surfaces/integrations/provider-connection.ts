@@ -18,6 +18,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /** The kinds of service a provider can be — mirrors commerce-schemas ProviderKind. */
@@ -215,10 +216,7 @@ export function isSellingDisabled(error: unknown): boolean {
  *  provider rejected), worth showing verbatim. A 5xx falls back to the caller's
  *  wording. */
 export function integrationErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Presentation helpers ──────────────────────────────────────────────────── */

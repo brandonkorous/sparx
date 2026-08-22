@@ -15,7 +15,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 // Imported so the invalidation below cannot drift from the keys it is meant to
 // clear — see `useInvalidateEngagement`.
@@ -469,8 +469,5 @@ export function useNoteSnippetUsed() {
 }
 
 export function engagementErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

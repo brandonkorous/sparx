@@ -18,7 +18,7 @@
 import { useState } from 'react';
 import { Badge, Button, Input, Text, Tooltip } from '@wizeworks/silicaui-react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { MoneyInput } from './money-input';
+import { MoneyInput } from '@/components/money-input';
 import { LineEditorModal, type LineTypeOption } from './line-editor-modal';
 import { type MarkupRuleSummary } from './line-markup';
 import { computeLine, isMarkupPriced, type DraftLine } from './totals';

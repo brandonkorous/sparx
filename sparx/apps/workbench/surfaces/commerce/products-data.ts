@@ -58,7 +58,9 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { slugify, slugifyUpper } from '../../lib/slugify';
 // The API origin, for the ONE request that cannot go through `api`: the media
 // upload PUT, whose URL is pre-authorised and must not carry a bearer token.
 import { getTokenState } from '../../lib/api/token';
@@ -1446,10 +1448,7 @@ export function productErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof VariantAfterCreateError) {
     return productErrorMessage(error.reason, fallback);
   }
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Saying what a state means ──────────────────────────────────────────── */
@@ -1522,22 +1521,14 @@ export function priceLabel(product: {
 /** A handle is the part of a web address that identifies this product, so it is
  *  lowercase, digits and hyphens — matching what api-rest derives from a title. */
 export function slugifyHandle(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 127);
+  return slugify(value, 127);
 }
 
 /** A first product code, derived from the title, so nobody has to invent one to
  *  get started. Stays fully editable — a business with its own coding scheme
  *  types theirs over the top. */
 export function suggestSku(title: string): string {
-  const base = title
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 20);
+  const base = slugifyUpper(title, 20);
   return base === '' ? '' : `${base}-1`;
 }
 

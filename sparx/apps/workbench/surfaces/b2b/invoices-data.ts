@@ -17,12 +17,19 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import {
+  invoiceState as sharedInvoiceState,
+  type InvoiceStatus,
+  type InvoiceTone,
+} from '../../lib/invoice-status';
+import { paymentMethodLabels } from '../../lib/payment-methods';
 import type { PaymentTerms } from './accounts-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
-export type InvoiceStatus = 'unpaid' | 'partial' | 'paid' | 'overdue' | 'void';
+export type { InvoiceStatus };
 export type PaidMethod = 'check' | 'ach' | 'wire' | 'credit_card' | 'other';
 
 /** One invoice, as api-rest's B2B-AR projection returns it. */
@@ -52,40 +59,23 @@ export const invoiceKeys = {
 
 /* ── Display language ───────────────────────────────────────────────────── */
 
-export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+export type Tone = InvoiceTone;
 
-/** What an invoice is DOING, in a business owner's words, as a semantic tone. */
+/** One vocabulary for both invoice panes — see lib/invoice-status. */
 export function invoiceState(row: { status: InvoiceStatus; overdueDays: number | null }): {
   label: string;
   tone: Tone;
 } {
-  switch (row.status) {
-    case 'paid':
-      return { label: 'Paid', tone: 'success' };
-    case 'partial':
-      return { label: 'Part paid', tone: 'info' };
-    case 'overdue':
-      return {
-        label:
-          row.overdueDays && row.overdueDays > 0
-            ? `Overdue ${String(row.overdueDays)} days`
-            : 'Overdue',
-        tone: 'danger',
-      };
-    case 'void':
-      return { label: 'Written off', tone: 'neutral' };
-    default:
-      return { label: 'Owed', tone: 'warning' };
-  }
+  return sharedInvoiceState(row.status, row.overdueDays);
 }
 
-export const PAID_METHOD_LABELS: Record<PaidMethod, string> = {
-  check: 'Cheque',
-  ach: 'Bank transfer (ACH)',
-  wire: 'Wire',
-  credit_card: 'Card',
-  other: 'Other',
-};
+export const PAID_METHOD_LABELS: Record<PaidMethod, string> = paymentMethodLabels([
+  'check',
+  'ach',
+  'wire',
+  'credit_card',
+  'other',
+] as const satisfies readonly PaidMethod[]);
 
 export function formatCents(cents: number, currency = 'USD'): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
@@ -217,8 +207,5 @@ export function useWriteOffInvoice(id: string) {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 export function invoiceErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

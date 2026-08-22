@@ -22,8 +22,9 @@
 // paid but not yet shipped.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
+import { paymentMethodLabels } from '../../lib/payment-methods';
+import { apiErrorMessage } from '../../lib/api-error';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -463,10 +464,7 @@ export function useRefundOrder(id: string) {
  * falls back to the caller's wording.
  */
 export function orderErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Saying what a state means ──────────────────────────────────────────── */
@@ -608,15 +606,20 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
  * `manual` is the API's name for "the business took it themselves", and by far
  * its commonest form is cash — but not its only one, so a recorded cheque or
  * transfer keeps its own name.
+ *
+ * The words themselves now live in lib/payment-methods, because four panes
+ * named this same column and disagreed on how to spell a cheque. This list is
+ * only which processors the commerce panes expect to see.
  */
-export const PAYMENT_PROCESSOR_LABELS: Record<string, string> = {
-  manual: 'Cash',
-  check: 'Cheque',
-  wire: 'Bank transfer',
-  net_terms: 'On account',
-  stripe: 'Card',
-  paypal: 'PayPal',
-};
+export const PAYMENT_PROCESSOR_LABELS: Record<string, string> = paymentMethodLabels([
+  'manual',
+  'check',
+  'ach',
+  'wire',
+  'net_terms',
+  'stripe',
+  'paypal',
+]);
 
 /** True when the money never went through a gateway, so there is nothing to
  *  send it back to. Drives the refund wording, which used to promise every

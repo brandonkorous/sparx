@@ -17,7 +17,7 @@
 // useViewer so a control never appears for someone the server will refuse.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /** The AI providers a business can bring their own account for. Mirrors the
@@ -104,10 +104,7 @@ export function useTestAiCredential() {
  * back to the caller's wording.
  */
 export function aiCredentialErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Presentation helpers ──────────────────────────────────────────────────── */

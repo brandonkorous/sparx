@@ -45,6 +45,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type {
   Action,
   AutomationDraft,
@@ -512,10 +513,7 @@ export function presetRange(preset: RangePreset, scope: 'this' | 'all'): ReportR
 /** Surface the server's own sentence for a 4xx — it names the exact problem (a
  *  locked rule, a missing draft, an invalid action) — else a plain fallback. */
 export function automationErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** Whether a 4xx names a locked-rule rejection (used to nudge toward cloning). */

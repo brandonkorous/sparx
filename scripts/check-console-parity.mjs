@@ -705,6 +705,14 @@ const EXCEPTIONS = [
     why: 'saves a layout PER PRESENTATION (mode-layouts.ts); sparx persists one arrangement and does it inline in lib/dock/dock.tsx. See lib/window-mode.',
   },
 
+  // ── Vocabulary: one shared service, two product languages ───────────────
+  {
+    axis: 'lib',
+    only: 'piggles',
+    path: 'lib/onboarding/piggles-words',
+    why: 'api-rest composes the first-run checklist SERVER-SIDE and hands over finished strings, so its copy is sparx’s copy — "Open CMS", "design your own in the Builder". Those are sparx’s real product names and its customers do say them, so the source must not change; the Piggles side of the wire translates them instead. There is nothing for sparx to build: it is already reading its own words.',
+  },
+
   // ── The tour: one capability, two deliveries ────────────────────────────
 ];
 

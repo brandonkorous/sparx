@@ -36,6 +36,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { stockKeys, type Tone } from './data';
 import { movementKeys } from './movements-data';
@@ -392,10 +393,7 @@ export function varianceLabel(variance: number | null): string {
  *  problem ("Add at least one line before submitting", "must be approved before
  *  posting") far better than a status code could. */
 export function countErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isCountNotFound(error: unknown): boolean {

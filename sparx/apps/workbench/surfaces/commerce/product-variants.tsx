@@ -61,7 +61,7 @@ import { ChevronDown, ChevronRight, Plus, Undo2, X } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useTabSave } from './product-tab-save';
 import { FormSection } from '../../components/form-section';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatCents,

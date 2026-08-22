@@ -11,6 +11,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 export interface Mailbox {
@@ -215,10 +216,7 @@ export function useSyncMailbox() {
 /** The server's own sentence when it has one — "Invalid credentials" tells
  *  someone which half is wrong, and a generic failure tells them nothing. */
 export function mailboxErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isModuleDisabled(error: unknown): boolean {

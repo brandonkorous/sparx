@@ -41,6 +41,7 @@ import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { useBusinessTimezone } from '../../lib/business-timezone';
 import {
   RESOURCE_KINDS,
   isNotFound,
@@ -610,9 +611,29 @@ export function ResourceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
   const resource = useResource(id);
+  const businessZone = useBusinessTimezone();
 
   if (isNew) {
-    return <ResourceEditor ctx={ctx} id="new" initial={BLANK} existing={null} />;
+    // Held until the zone resolves rather than stamped with a placeholder the
+    // person would have to notice and undo. It is a cached read, so this is one
+    // frame in practice.
+    if (businessZone === undefined) {
+      return (
+        <div className={PANE_SHELL}>
+          <p className="p-4 text-sm" role="status">
+            Loading…
+          </p>
+        </div>
+      );
+    }
+    return (
+      <ResourceEditor
+        ctx={ctx}
+        id="new"
+        initial={{ ...BLANK, timezone: businessZone }}
+        existing={null}
+      />
+    );
   }
 
   if (resource.isError) {

@@ -16,7 +16,7 @@
 // turned off, which the rail does not need.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type { LucideIcon } from 'lucide-react';
 import {
   Boxes,
@@ -316,8 +316,5 @@ export function useToggleModule() {
 /** A module toggle's error, preferring the server's own sentence for a 4xx — the
  *  "turn off Wholesale first" conflict is written to be shown verbatim. */
 export function moduleErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

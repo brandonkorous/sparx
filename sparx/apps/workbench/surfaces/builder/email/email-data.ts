@@ -15,7 +15,7 @@
 // means a filter matched nothing or the module is off, never "make your first one".
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../../lib/api-error';
 import type { EmailColorDefaults, EmailFrame } from '@wizeworks/silicaui-builder/email';
 import type { PresentationOverlayV2, TenantBrandColumns } from '@wizeworks/site-themes';
 import { api } from '../../../lib/api/client';
@@ -443,10 +443,7 @@ export function effectiveTenantBrand(base: TenantBrand, overrideRaw: unknown): T
  * wording.
  */
 export function emailErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** How an email is doing, in words + a tone for `<Badge color>`. */

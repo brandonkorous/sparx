@@ -11,6 +11,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { getTokenState, resolveToken } from '../../lib/api/token';
 
@@ -736,10 +737,7 @@ export function useCommitImport() {
  *  problem ("That category is still used by 12 costs") far better than anything
  *  this side could infer from a status code. A 5xx carries no such sentence. */
 export function spendErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isNotFound(error: unknown): boolean {

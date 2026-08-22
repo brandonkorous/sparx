@@ -39,7 +39,7 @@ import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   approvalErrorMessage,

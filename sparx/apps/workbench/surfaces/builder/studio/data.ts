@@ -13,7 +13,7 @@
 // called here from the browser through the workbench's token-vending client.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../../lib/api-error';
 import type {
   BindingCatalog,
   BuilderLayoutDto,
@@ -808,8 +808,5 @@ export function getSiteCheck(): Promise<SiteCheckReport> {
 /** The server's own sentence for a 4xx (it names the exact problem); a 5xx falls
  *  back to the caller's wording. */
 export function builderErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

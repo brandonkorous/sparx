@@ -28,6 +28,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { getTokenState, resolveToken } from '../../lib/api/token';
 import { stockKeys, type Tone } from './data';
@@ -730,10 +731,7 @@ export function formatWeight(grams: number | null): string {
  *  "this box does not complete order SO-1042 — still to pack: 2 × WIDGET" — and
  *  a generic message would throw away the only useful part. */
 export function pickErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isPickNotFound(error: unknown): boolean {

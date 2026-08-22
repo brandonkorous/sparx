@@ -44,6 +44,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shared vocabulary ──────────────────────────────────────────────────── */
@@ -906,10 +907,7 @@ export function evaluateTarget(
  * to the caller's wording.
  */
 export function socialErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** Whether a post can still be edited / moved through the lifecycle. Mirrors the

@@ -21,8 +21,9 @@
 //     wrong row's open/editing state the moment two stages swap places.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 import type { DocumentStageType, DocumentWorkflowDetail } from './types';
 
 export const WORKFLOWS_KEY = ['invoicing', 'workflows'];
@@ -60,12 +61,7 @@ export function newStageKey(): string {
 
 /** Slug from a name, for the create path — the operator never types one. */
 export function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+  return slugifyWebSegment(name.trim(), 63);
 }
 
 export function toStageDraft(stage: DocumentWorkflowDetail['stages'][number]): StageDraft {
@@ -225,8 +221,5 @@ export function useArchiveWorkflow() {
  * has documents sitting on it — far better than a status code can.
  */
 export function workflowErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

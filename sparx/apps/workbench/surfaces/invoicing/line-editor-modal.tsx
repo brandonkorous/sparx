@@ -37,7 +37,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import { MoneyInput } from './money-input';
+import { MoneyInput } from '@/components/money-input';
 import { ProductPicker } from './product-picker';
 import { ADHOC, METHOD_META, PASSTHROUGH, type MarkupRuleSummary } from './line-markup';
 import { useLineForm, type LineTypeOption } from './use-line-form';

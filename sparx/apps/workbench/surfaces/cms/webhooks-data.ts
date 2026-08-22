@@ -32,7 +32,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -495,10 +495,7 @@ export function webhookState(active: boolean): { label: string; tone: Tone; deta
  * A 5xx carries no such sentence, so it falls back to the caller's wording.
  */
 export function webhookErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** Medium date and time — a webhook's "added" moment is a fact people scan. */

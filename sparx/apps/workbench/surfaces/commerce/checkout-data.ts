@@ -12,7 +12,7 @@
 // by 100 at the render edge and reuse `formatMoney` from ./data.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 import type { OrderAddress } from './data';
@@ -123,10 +123,7 @@ export function useExpireCheckoutSession(id: string) {
 }
 
 export function checkoutErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Saying what a step means ───────────────────────────────────────────── */

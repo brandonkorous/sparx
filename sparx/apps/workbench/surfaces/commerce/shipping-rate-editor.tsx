@@ -34,7 +34,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Trash2, X } from 'lucide-react';
 import type { CreateShippingRateInput } from '@wizeworks/commerce-schemas';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import {
   rateTypeLabel,
   shippingErrorMessage,

@@ -40,7 +40,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { Plus, Trash2 } from 'lucide-react';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import { useProductFacets } from './products-data';
 import type { CollectionPredicate, CollectionRuleSet } from './collections-data';
 

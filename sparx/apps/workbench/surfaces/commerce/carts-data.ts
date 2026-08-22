@@ -12,7 +12,7 @@
 // edge and reuse `formatMoney` from ./data as the single money formatter.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 
@@ -143,10 +143,7 @@ export function useRecoverCart(id: string) {
 }
 
 export function cartErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Saying what a state means ──────────────────────────────────────────── */

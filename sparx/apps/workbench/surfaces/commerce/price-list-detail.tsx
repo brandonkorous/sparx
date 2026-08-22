@@ -46,7 +46,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import { VariantPicker } from './variant-picker';
 import type { VariantChoice } from './bundles-data';
 import {

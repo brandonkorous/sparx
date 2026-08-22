@@ -24,6 +24,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 // Read-only import: the content module's byline-picker cache key, so a write
 // here can refresh the picker the content editor shows. We never mutate its
@@ -181,10 +182,7 @@ export function useDeleteAuthor(id: string) {
  * carries no such sentence, so it falls back to the caller's wording.
  */
 export function authorErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** A person's name for a tab or a confirm, never a blank. */

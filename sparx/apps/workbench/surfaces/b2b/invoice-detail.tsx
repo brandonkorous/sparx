@@ -48,7 +48,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '@/components/money-input';
 import {
   PAID_METHOD_LABELS,
   formatCents,

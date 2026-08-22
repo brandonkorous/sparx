@@ -19,6 +19,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── What a file is, in the terms this surface groups by ─────────────────── */
@@ -328,8 +329,5 @@ export function formatDateTime(value: string | null | undefined): string {
  * back to the caller's wording.
  */
 export function mediaErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

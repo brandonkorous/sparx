@@ -42,6 +42,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
@@ -59,10 +60,7 @@ export interface StateLabel {
  * code. A 5xx carries no such sentence, so it falls back to the caller's wording.
  */
 export function schedulingErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** True when the thing behind an edit pane no longer exists. */

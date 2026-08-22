@@ -36,6 +36,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SiteTraffic, TRAFFIC_WINDOW_DAYS } from './traffic';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 import {
   conflictField,
   isBuilderRequired,
@@ -65,11 +66,7 @@ const MODULE_LABELS: Record<string, string> = {
 /** A handle is the part of the web address that identifies this site, so it is
  *  lowercase, digits and hyphens — matching what api-rest derives from a name. */
 function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+  return slugifyWebSegment(value, 63);
 }
 
 function CreateSite({ ctx }: { ctx: SurfaceContext }) {

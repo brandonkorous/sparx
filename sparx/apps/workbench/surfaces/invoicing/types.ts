@@ -3,7 +3,9 @@
 // aren't in the published spec yet — swap these for the generated types once
 // they are, and the surfaces below won't change.
 
-export type ArStatus = 'unpaid' | 'partial' | 'paid' | 'overdue' | 'void';
+import { invoiceState, type InvoiceStatus, type InvoiceTone } from '../../lib/invoice-status';
+
+export type ArStatus = InvoiceStatus;
 
 export interface BillingParty {
   name?: string;
@@ -216,24 +218,11 @@ export function normalizeDocument(raw: BillingDocument): BillingDocument {
   };
 }
 
-/** Maps AR status onto a silica semantic color. State is its own color axis,
- *  independent of the module hue — see docs/23 Semantic-Status. */
-export function statusTone(
-  status: ArStatus
-): 'success' | 'warning' | 'danger' | 'info' | 'neutral' {
-  switch (status) {
-    case 'paid':
-      return 'success';
-    case 'partial':
-      return 'info';
-    case 'overdue':
-      return 'danger';
-    case 'void':
-      return 'neutral';
-    default:
-      return 'warning';
-  }
-}
+/** State is its own color axis, independent of the module hue — see docs/23
+ *  Semantic-Status. Both invoice panes read the same words and tones from
+ *  lib/invoice-status, which is why this re-exports rather than switching. */
+export type ArTone = InvoiceTone;
+export { invoiceState };
 
 export function formatMoney(amount: number, currency: string): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);

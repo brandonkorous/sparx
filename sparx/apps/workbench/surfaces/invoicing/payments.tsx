@@ -33,9 +33,10 @@ import {
 } from '@wizeworks/silicaui-react';
 import { HandCoins } from 'lucide-react';
 import { api } from '../../lib/api/client';
+import { paymentMethodLabel, paymentMethodLabels } from '../../lib/payment-methods';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { FormSection } from '../../components/form-section';
-import { MoneyInput } from './money-input';
+import { MoneyInput } from '@/components/money-input';
 import { formatMoney, type BillingDocument } from './types';
 
 export interface PaymentRow {
@@ -48,15 +49,17 @@ export interface PaymentRow {
   receivedAt: string;
 }
 
-const METHOD_LABELS: Record<string, string> = {
-  cash: 'Cash',
-  card: 'Card',
-  check: 'Check',
-  ach: 'Bank transfer (ACH)',
-  wire: 'Wire',
-  account_credit: 'Account credit',
-  other: 'Other',
-};
+// The ways an invoice gets settled. The WORDS come from lib/payment-methods —
+// this list only decides which of them this pane offers, and in what order.
+const METHOD_LABELS = paymentMethodLabels([
+  'cash',
+  'card',
+  'check',
+  'ach',
+  'wire',
+  'account_credit',
+  'other',
+]);
 
 const KIND_LABELS: Record<PaymentRow['kind'], string> = {
   deposit: 'Deposit',
@@ -123,9 +126,7 @@ export function PaymentsSection({ doc }: PaymentsSectionProps) {
                     })}
                   </td>
                   <td>{KIND_LABELS[payment.kind]}</td>
-                  <td className="hidden @xl:table-cell">
-                    {METHOD_LABELS[payment.method] ?? payment.method}
-                  </td>
+                  <td className="hidden @xl:table-cell">{paymentMethodLabel(payment.method)}</td>
                   <td className="hidden max-w-40 truncate @2xl:table-cell">
                     {payment.reference ?? '—'}
                   </td>

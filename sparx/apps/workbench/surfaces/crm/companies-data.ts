@@ -21,6 +21,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type { CompanyStatus, PaymentTerms } from '@wizeworks/crm-schemas';
 import { api } from '../../lib/api/client';
 
@@ -114,18 +115,10 @@ export function accountStatusMeta(status: string): {
   }
 }
 
-export const PAYMENT_TERMS: { value: PaymentTerms; label: string }[] = [
-  { value: 'prepay', label: 'Pay before dispatch' },
-  { value: 'net15', label: '15 days to pay' },
-  { value: 'net30', label: '30 days to pay' },
-  { value: 'net60', label: '60 days to pay' },
-  { value: 'net90', label: '90 days to pay' },
-];
-
-export function paymentTermsLabel(terms: string | null): string {
-  if (!terms) return 'No agreed terms';
-  return PAYMENT_TERMS.find((t) => t.value === terms)?.label ?? terms;
-}
+/** The presets and the wording both live in lib/payment-terms.ts, because the
+ *  B2B trade pane edits this same column and used to carry its own, shorter
+ *  list — so a company on 15-day terms read back there as having none. */
+export { PAYMENT_TERM_PRESETS as PAYMENT_TERMS, paymentTermsLabel } from '../../lib/payment-terms';
 
 export function formatMoney(value: number | string | null | undefined, currency = 'USD'): string {
   const n = typeof value === 'string' ? Number(value) : (value ?? 0);
@@ -257,8 +250,5 @@ export function useCompanyDomainMatch(email: string, enabled = true) {
 }
 
 export function accountErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

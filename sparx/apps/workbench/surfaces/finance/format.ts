@@ -6,6 +6,8 @@
 // someone who has never heard the underlying term, per the platform's
 // non-technical-audience rule.
 
+import { paymentMethodLabel } from '../../lib/payment-methods';
+
 export function formatMoney(amount: number, currency = 'USD'): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
 }
@@ -152,30 +154,10 @@ export function channelLabel(channel: string | null, source: string | null): str
   }
 }
 
-/** How the money was taken, in plain words. */
-export function methodLabel(processor: string | null): string {
-  switch (processor) {
-    case 'stripe':
-    case 'sparx_pay':
-      return 'Card';
-    case 'square':
-      return 'Card (Square)';
-    case 'paypal':
-      return 'PayPal';
-    case 'check':
-      return 'Check';
-    case 'wire':
-      return 'Bank transfer';
-    case 'cash':
-      return 'Cash';
-    case 'net_terms':
-      return 'On account';
-    case 'manual':
-      return 'Recorded by hand';
-    default:
-      return processor ? processor.replace(/_/g, ' ') : 'Other';
-  }
-}
+/** How the money was taken, in plain words. One vocabulary for the whole
+ *  console — this pane used to spell a cheque "Check" and call a cash sale
+ *  "Recorded by hand", both of which disagreed with the order pane. */
+export const methodLabel = paymentMethodLabel;
 
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 

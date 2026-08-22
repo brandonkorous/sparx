@@ -17,7 +17,7 @@
 // every surface says the same thing.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── The page scorecard (from @wizeworks/seo-audit) ──────────────────────────── */
@@ -455,8 +455,5 @@ export function formatPosition(position: number): string {
  * syncing"). A 5xx has no such sentence, so it falls back to the caller's words.
  */
 export function seoErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

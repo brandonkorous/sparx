@@ -61,12 +61,12 @@ import { priorityLabel, priorityTone, useTickets } from './tickets-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useViewer } from '../../lib/api/shell-data';
+import { PaymentTermsField } from '../../components/payment-terms-field';
 import {
   ACCOUNT_STATUSES,
   accountErrorMessage,
   accountStatusMeta,
   formatMoney,
-  PAYMENT_TERMS,
   useAccount,
   useCreateAccount,
   useDeleteAccount,
@@ -74,7 +74,6 @@ import {
   type AccountInput,
   type Company,
   type CompanyStatus,
-  type PaymentTerms,
 } from './companies-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -329,7 +328,7 @@ function CompanyEditor({
     status: draft.status,
     creditLimit: draft.creditLimit.trim() === '' ? 0 : Number(draft.creditLimit),
     discountPercent: draft.discountPercent.trim() === '' ? 0 : Number(draft.discountPercent),
-    paymentTerms: draft.paymentTerms ? (draft.paymentTerms as PaymentTerms) : null,
+    paymentTerms: draft.paymentTerms || null,
     assignedRepId: draft.assignedRepId || null,
     fleetSize: draft.fleetSize.trim() === '' ? null : Number(draft.fleetSize),
     notes: trimOrNull(draft.notes),
@@ -613,16 +612,10 @@ function CompanyEditor({
               <div className="grid gap-3 @md:grid-cols-2">
                 <Field>
                   <FieldLabel>Payment terms</FieldLabel>
-                  <Select
-                    color="module"
-                    aria-label="Payment terms"
+                  <PaymentTermsField
                     value={draft.paymentTerms}
-                    items={{
-                      '': 'No agreed terms',
-                      ...Object.fromEntries(PAYMENT_TERMS.map((t) => [t.value, t.label])),
-                    }}
-                    onValueChange={(next) => {
-                      set('paymentTerms', next as string);
+                    onChange={(next) => {
+                      set('paymentTerms', next);
                     }}
                   />
                   <FieldDescription>

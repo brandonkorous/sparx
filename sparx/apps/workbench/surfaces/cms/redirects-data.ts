@@ -17,7 +17,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -207,10 +207,7 @@ export function redirectTypeMeta(code: number): RedirectTypeMeta {
  * caller's wording.
  */
 export function redirectErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Formatting + paths ─────────────────────────────────────────────────── */

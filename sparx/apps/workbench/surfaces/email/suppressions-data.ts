@@ -39,7 +39,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /** Semantic tone shared with the Badge color axis — state carries its own color. */
@@ -217,8 +217,5 @@ export function formatDate(iso: string): string {
  *  address, a duplicate) far better than a status code — else the caller's
  *  fallback for a 5xx that carries no useful sentence. */
 export function suppressionErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

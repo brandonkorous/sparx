@@ -28,6 +28,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './bookings-data';
 
@@ -432,10 +433,7 @@ export function clockLabel(iso: string): string {
 /** The server's own sentence for a 4xx, shown verbatim — a slot clash or a bad
  *  feed URL names itself far better than a status code. A 5xx falls back. */
 export function calendarErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500 && error.message) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isModuleDisabled(error: unknown): boolean {

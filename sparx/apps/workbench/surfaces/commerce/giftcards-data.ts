@@ -16,6 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './products-data';
 
@@ -202,8 +203,5 @@ export function useAdjustGiftCard() {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 export function giftCardErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
