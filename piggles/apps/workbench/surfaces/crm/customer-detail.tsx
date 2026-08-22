@@ -468,7 +468,7 @@ function CustomerEditor({
   /* ── The editable form (the Details tab, and the whole of "add") ────────── */
 
   const failureAlert = failure ? (
-    <Alert color="error" variant="soft">
+    <Alert color="error">
       <AlertContent>
         <AlertTitle>Could not save this customer</AlertTitle>
         <AlertDescription>{failure}</AlertDescription>
@@ -801,7 +801,7 @@ function CustomerEditor({
       label="Customer actions"
       status={
         /* The toolbar leads with the lifecycle stage — the primary "where are
-          they" signal; the relationship + lead status sit on the rail/form. */
+                  they" signal; the relationship + lead status sit on the rail/form. */
         <Badge color={lifecycleMeta.color} variant="soft" size="sm">
           {lifecycleMeta.label}
         </Badge>
@@ -1129,7 +1129,7 @@ function IdentityRail({
             </span>
           </button>
           {photoUrl && !photoBusy ? (
-            <Button size="xs" variant="ghost" color="neutral" onClick={removePhoto}>
+            <Button size="xs" variant="ghost" color="danger" onClick={removePhoto}>
               Remove photo
             </Button>
           ) : null}
@@ -1181,7 +1181,7 @@ function IdentityRail({
       </div>
 
       {customer.doNotContact ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertDescription>
               Left out of marketing emails. Order and account messages still reach them.

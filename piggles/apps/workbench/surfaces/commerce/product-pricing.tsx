@@ -59,7 +59,7 @@ import { useConfirm } from '../../lib/confirm';
 import { faPlus, faTags, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTabSave } from './product-tab-save';
 import {
@@ -380,7 +380,7 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
   return (
     <div className="flex flex-col gap-4">
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>That did not work</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>
@@ -917,7 +917,7 @@ function BulkTiers({
       description="Set a lower price per item once someone buys enough of them. Leave this alone if you charge the same however many they take."
     >
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>That did not work</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>

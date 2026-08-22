@@ -42,6 +42,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
@@ -59,10 +60,7 @@ export interface StateLabel {
  * code. A 5xx carries no such sentence, so it falls back to the caller's wording.
  */
 export function schedulingErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** True when the thing behind an edit pane no longer exists. */
@@ -549,22 +547,6 @@ export function formatAddress(address: LocationAddress): string {
     .filter((part) => part && part.trim() !== '')
     .join(', ');
 }
-
-/** A short, familiar set of zones — the same list the resource form offers, so a
- *  place and the people working it are described the same way. */
-export const TIMEZONE_OPTIONS = [
-  'UTC',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'America/Toronto',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Australia/Sydney',
-  'Pacific/Auckland',
-] as const;
 
 export const RESOURCE_KINDS: { value: ResourceKind; label: string; hint: string }[] = [
   {

@@ -172,7 +172,7 @@ export function ColumnMapper({ headers, raw, onChange }: ColumnMapperProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Alert color="info" variant="soft">
+      <Alert color="info">
         <AlertContent>
           <AlertTitle>Tell us what this file is</AlertTitle>
           <AlertDescription>

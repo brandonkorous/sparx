@@ -190,7 +190,7 @@ function CompanyLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this company</AlertTitle>
             <AlertDescription>
@@ -429,7 +429,7 @@ function CompanyEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this company</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -877,7 +877,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
           ) : (
             <div className="flex flex-col gap-3">
               {owed > 0 ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>
                       {formatInvoiceMoney(owed, owedCurrency)} outstanding

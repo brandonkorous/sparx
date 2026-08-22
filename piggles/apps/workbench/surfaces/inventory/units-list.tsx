@@ -319,7 +319,7 @@ export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
         ) : null}
 
         {rows.length === 0 ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>No units yet</AlertTitle>
               <AlertDescription>

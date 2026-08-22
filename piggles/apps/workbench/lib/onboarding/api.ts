@@ -17,6 +17,7 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient, type QueryClient } from '@wizeworks/query';
 import { api } from '../api/client';
 import { SWITCHBOARD_MODULES } from './modules';
+import { pigglesStep } from './piggles-words';
 import type {
   OnboardingPatch,
   OnboardingProgress,
@@ -28,6 +29,7 @@ import type {
   WizardBlueprint,
 } from './types';
 import type { StoryPayload } from './story-state';
+import { PRODUCT } from '@piggles/config';
 
 /* ── Query keys ─────────────────────────────────────────────────────────────
    One place, so an invalidation and a read can never disagree on the string. */
@@ -105,10 +107,15 @@ export function useOnboardingProgress() {
       const raw = await api.get<RawOnboardingProgress>('/v1/tenant/onboarding/progress');
       return {
         ...raw,
-        steps: raw.steps.map((step) => ({
-          ...step,
-          cta: step.cta ? { label: step.cta.label, ...surfaceForHref(step.cta.href) } : undefined,
-        })),
+        // Two translations, both because api-rest answers in sparx's shape: an
+        // href becomes a surface key (this console has no routes), and sparx's
+        // vocabulary becomes Piggles' (./piggles-words.ts, issue #008).
+        steps: raw.steps.map((step) =>
+          pigglesStep({
+            ...step,
+            cta: step.cta ? { label: step.cta.label, ...surfaceForHref(step.cta.href) } : undefined,
+          })
+        ),
       };
     },
     staleTime: 30_000,
@@ -142,10 +149,16 @@ export function storefrontPreviewUrl(slug: string, token?: string): string {
   const dev = process.env.NODE_ENV !== 'production';
   const base = dev
     ? `http://localhost:3004/?tenant=${encodeURIComponent(slug)}`
-    : `https://${slug}.sparx.zone`;
+    : `https://${slug}.${PRODUCT.tenantSites.suffix}`;
   if (!token) return base;
   const join = base.includes('?') ? '&' : '?';
-  return `${base}${join}preview=${encodeURIComponent(token)}`;
+  // `sparxSitePreview` — the ONE param name the site renderer reads for a draft
+  // (wizeworks/apps/site: proxy.ts mirrors it to the layout, every page route reads it
+  // off searchParams). This said `preview=`, which nothing there has ever looked
+  // at, so the button labelled "Preview your site" silently served the PUBLISHED
+  // site — or the 404 of a site that has not published yet, which is precisely
+  // the state a business is in when it reaches the Launch step.
+  return `${base}${join}sparxSitePreview=${encodeURIComponent(token)}`;
 }
 
 /* ── Writes ─────────────────────────────────────────────────────────────────── */

@@ -44,6 +44,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput } from '../../components/money-input';
 import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -494,7 +495,7 @@ function DiscountEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this discount</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -503,7 +504,7 @@ function DiscountEditor({
           ) : null}
 
           {!canCreateType ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>This is a {TYPE_LABELS[draft.type].toLowerCase()}</AlertTitle>
                 <AlertDescription>
@@ -667,16 +668,11 @@ function DiscountEditor({
                       <Text as="span" className="text-lg">
                         $
                       </Text>
-                      <Input
+                      <MoneyTextInput
                         color={amountError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        inputMode="decimal"
-                        value={draft.amountDollars}
-                        placeholder="5.00"
-                        onChange={(event) => {
-                          set('amountDollars', event.target.value);
+                        text={draft.amountDollars}
+                        onTextChange={(text) => {
+                          set('amountDollars', text);
                         }}
                       />
                     </div>

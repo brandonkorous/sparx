@@ -426,7 +426,7 @@ function InstructionEditor({
           ) : null}
 
           {!canEdit ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>You can read this but not change it</AlertTitle>
                 <AlertDescription>
@@ -443,7 +443,7 @@ function InstructionEditor({
           {/* One message, the most specific one — the server names the exact field
               it rejected, which beats a generic banner. */}
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this instruction</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -468,7 +468,7 @@ function InstructionEditor({
             </Field>
 
             {draft.category === 'persona' ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <Icon glyph={faRobot} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>This is your live chat’s personality</AlertTitle>

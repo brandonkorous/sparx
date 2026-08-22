@@ -90,6 +90,23 @@ function productCardNode(extraClass = ''): ElementNode {
             // the card's brand identity rides its Add-to-cart button, which is a
             // `btn-primary` fill and therefore legible by construction.
             bind(el('p', 'text-lg font-bold text-base-content', { text: '$0.00' }), 'price'),
+            // The card's half of the sold-out signal (the buy box carries the other).
+            // A grid that prices ten things identically and lets a shopper find out
+            // which two are gone by clicking each one is not a shop front.
+            //
+            // Colorless on purpose — an outline chip, no fill. Sold out is not a
+            // warning and not a failure, it is simply the absence of stock, and the
+            // filled `bg-warning` chip in this same slot already means "low stock":
+            // two filled chips a shade apart would read as two grades of the same
+            // thing rather than as opposites.
+            visibleWhen(
+              el(
+                'span',
+                'inline-flex w-fit items-center rounded-field border border-base-300 px-3 py-1 text-sm font-semibold text-base-content',
+                { text: 'Sold out' }
+              ),
+              'soldOut'
+            ),
           ],
         }),
       ],
@@ -354,6 +371,14 @@ export function addToCartForm(): Node {
   return action(
     behave(
       el('form', 'mt-2 flex flex-col gap-3', {
+        // `data-success-message` is deliberately EMPTY. The behavior announces one of
+        // the two messages into the status part on every settle, and on success the
+        // cart drawer opens — a line of text under the button saying the same thing is
+        // noise. An empty string is not the same as an absent attribute here: absent
+        // falls back to the built-in "Submitted.", which is not a sentence about a
+        // basket. The ERROR default is left alone so the storefront's `onAction` can
+        // overwrite it with the real reason ("Sorry, this item just sold out.").
+        attrs: { 'data-success-message': '' },
         children: [
           bind(el('input', '', { attrs: { type: 'hidden', name: 'variantId' } }), 'variantId'),
           // The quantity control nests INSIDE its label, so the pair needs no `id`
@@ -367,11 +392,54 @@ export function addToCartForm(): Node {
             ],
           }),
           atom('Button', 'btn btn-primary btn-lg', { type: 'submit' }, ['Add to cart']),
+          buyStatus(),
         ],
       }),
       { type: 'form' }
     ),
     'add-to-cart'
+  );
+}
+
+/** The line under the Add-to-cart button that says what went wrong.
+ *
+ *  silica's `form` behavior settles every submit into its `status` part — and when a
+ *  form authors none, it BUILDS one: a 1x1px `clip-path: inset(50%)` div. That is a
+ *  live region, so the message is announced to a screen reader and rendered to
+ *  literally nobody else. A shopper clicking Add-to-cart on a sold-out item watched
+ *  the button depress and nothing else happen, with the real answer sitting in the
+ *  DOM one pixel wide.
+ *
+ *  `empty:hidden` keeps it out of the form's `gap-3` at rest: the behavior writes
+ *  `textContent`, so an idle (or successful) settle leaves the element `:empty`.
+ *
+ *  Authored through `attrs` rather than `part()` because silicaui's `BehaviorRole`
+ *  union does not list `status` — the runtime reads the attribute by name
+ *  (`ownParts(root, 'status')`), the type just predates it. */
+function buyStatus(): Node {
+  return el('p', 'text-base text-error empty:hidden', {
+    attrs: { 'data-sui-part': 'status', 'aria-live': 'polite' },
+  });
+}
+
+/** What the buy box says INSTEAD of a form when the product is not for sale.
+ *
+ *  Shown on the `soldOut` bind, which the form hides on — so the two are mutually
+ *  exclusive by construction rather than by two conditions that can disagree. The
+ *  words stay industry-agnostic and make no promise the business has not made: a
+ *  bakery, a bookshop and a machine shop all sell out, and none of them can be told
+ *  by this file when the thing comes back. */
+export function soldOutNotice(): Node {
+  return visibleWhen(
+    el('div', 'mt-2 flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5', {
+      children: [
+        el('p', 'text-lg font-semibold text-base-content', { text: 'Sold out' }),
+        el('p', 'text-base text-base-content', {
+          text: 'This one has gone for now. We will put it back as soon as we have more.',
+        }),
+      ],
+    }),
+    'soldOut'
   );
 }
 
@@ -469,7 +537,7 @@ export function productStockBadge(): Node {
   return visibleWhen(
     el(
       'span',
-      'inline-flex w-fit items-center gap-2 rounded-field bg-warning px-3 py-1 text-xs font-semibold uppercase tracking-wide text-warning-content',
+      'inline-flex w-fit items-center gap-2 rounded-field bg-warning px-3 py-1 text-sm font-semibold text-warning-content',
       {
         text: 'Low stock',
       }
@@ -539,7 +607,24 @@ export function buyBox(): Node {
                   el('div', 'text-base-content', { text: 'Product description.' }),
                   'description'
                 ),
-                addToCartForm(),
+                // The form and the notice hang off the SAME `soldOut` bind, one negated,
+                // so a product that cannot be bought never renders a control that says
+                // it can. Wrapped in a plain div because a node carries one `data`
+                // binding and the form's is already spoken for by its action.
+                //
+                // The bind is `soldOut` and NOT `inStock` because of what ABSENT has to
+                // mean. A record that carries neither field — an older stored shape, a
+                // theme preview, a fixture — must still be buyable: not knowing a
+                // product's stock is not the same as knowing it has none, and inverting
+                // that would hide the buy button on every product nobody has counted.
+                // Same rule the availability service holds (`computeAvailability`: no
+                // level rows → untracked → in stock), expressed in the tree.
+                visibleWhen(
+                  el('div', 'flex flex-col', { children: [addToCartForm()] }),
+                  'soldOut',
+                  true
+                ),
+                soldOutNotice(),
                 // The product's OWN typed attributes (docs/143) — the auto-render floor, so a
                 // typed product shows real fabric/care/specs on the DEFAULT page with no
                 // bespoke authoring; an untyped product shows nothing.

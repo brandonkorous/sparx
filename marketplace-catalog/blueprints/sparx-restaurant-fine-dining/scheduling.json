@@ -7,7 +7,7 @@
       "depositAmountCents": 2500,
       "cancellationWindowHours": 48,
       "reminderOffsetsMin": [2880, 180],
-      "policyText": "A £25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
+      "policyText": "A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
     },
     {
       "handle": "chefs-counter",
@@ -16,7 +16,7 @@
       "depositAmountCents": 5000,
       "cancellationWindowHours": 72,
       "reminderOffsetsMin": [4320, 1440, 180],
-      "policyText": "The six counter seats take a £50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them."
+      "policyText": "The six counter seats take a $50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them."
     }
   ],
   "resources": [
@@ -292,7 +292,7 @@
     {
       "handle": "chefs-counter",
       "name": "The chef’s counter",
-      "description": "A seat at the pass, looking into the kitchen, for the full tasting menu told course by course by the hands that made it. Two and a half hours; a £50 per-guest deposit secures it.",
+      "description": "A seat at the pass, looking into the kitchen, for the full tasting menu told course by course by the hands that made it. Two and a half hours; a $50 per-guest deposit secures it.",
       "bookingType": "reservation",
       "durationMinutes": 150,
       "priceCents": 0,

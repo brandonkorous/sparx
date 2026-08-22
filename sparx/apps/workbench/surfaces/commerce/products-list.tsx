@@ -257,7 +257,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             cheerfully reading "Showing 1–6 of 6" beneath it, which is how the
             case was caught. Say the refresh failed, keep the rows. */}
         {staleAfterFailure ? (
-          <Alert color="warning" variant="soft" className="m-2">
+          <Alert color="warning" className="m-2">
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>

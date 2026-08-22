@@ -41,10 +41,11 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
+import { useBusinessTimezone } from '../../lib/business-timezone';
+import { timezoneOptions } from '../../lib/timezones';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  TIMEZONE_OPTIONS,
   isNotFound,
   schedulingErrorMessage,
   useCreateLocation,
@@ -83,7 +84,10 @@ const BLANK: Draft = {
   region: '',
   postalCode: '',
   country: '',
-  timezone: 'UTC',
+  // Filled in at the mount site from the zone the business works in — never a
+  // literal, because a field that already reads `UTC` looks answered and gets
+  // skipped (issue 081).
+  timezone: '',
   lat: '',
   lng: '',
   isActive: true,
@@ -127,10 +131,26 @@ function coordinate(value: string, bound: number): { ok: boolean; value: number 
 
 export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
-  return id === 'new' ? (
-    <LocationEditor ctx={ctx} id="new" initial={BLANK} existing={null} />
-  ) : (
-    <LocationLoader ctx={ctx} id={id} />
+  const businessZone = useBusinessTimezone();
+
+  if (id !== 'new') return <LocationLoader ctx={ctx} id={id} />;
+
+  // Held until the zone resolves rather than stamped with a placeholder the
+  // person would have to notice and undo. A cached read, so one frame.
+  if (businessZone === undefined) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneWaiting />
+      </div>
+    );
+  }
+  return (
+    <LocationEditor
+      ctx={ctx}
+      id="new"
+      initial={{ ...BLANK, timezone: businessZone }}
+      existing={null}
+    />
   );
 }
 
@@ -206,6 +226,8 @@ function LocationEditor({
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
+
+  const zones = useMemo(() => timezoneOptions(draft.timezone), [draft.timezone]);
 
   useEffect(() => {
     ctx.setTitle(isNew ? 'New place' : draft.name.trim() || 'Place');
@@ -355,7 +377,7 @@ function LocationEditor({
           ) : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>
@@ -403,12 +425,9 @@ function LocationEditor({
                       set('timezone', event.target.value);
                     }}
                   >
-                    {(TIMEZONE_OPTIONS as readonly string[]).includes(draft.timezone) ? null : (
-                      <option value={draft.timezone}>{draft.timezone}</option>
-                    )}
-                    {TIMEZONE_OPTIONS.map((zone) => (
-                      <option key={zone} value={zone}>
-                        {zone}
+                    {zones.map((zone) => (
+                      <option key={zone.value} value={zone.value}>
+                        {zone.label}
                       </option>
                     ))}
                   </NativeSelect>

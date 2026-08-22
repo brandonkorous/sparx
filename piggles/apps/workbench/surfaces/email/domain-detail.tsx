@@ -183,7 +183,7 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not add that address</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

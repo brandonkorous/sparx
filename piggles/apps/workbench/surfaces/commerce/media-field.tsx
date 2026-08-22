@@ -157,7 +157,7 @@ export function MediaField({
             <Button
               size="sm"
               variant="ghost"
-              color="neutral"
+              color="danger"
               onClick={() => {
                 onChange(null);
               }}

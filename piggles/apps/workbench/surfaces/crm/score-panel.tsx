@@ -386,7 +386,7 @@ export function ScorePanel({
           // temporary, and an owner who pressed "Re-score everyone" watched
           // their judgement disappear. The adjustment is now kept and added to
           // every future rules total, so this says what it does instead.
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>
                 Someone moved this by hand, {scoreOffset > 0 ? 'up' : 'down'}{' '}
@@ -402,7 +402,7 @@ export function ScorePanel({
             </AlertContent>
           </Alert>
         ) : (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>Your rules would put this at {live} today</AlertTitle>
               <AlertDescription>

@@ -258,7 +258,7 @@ export async function placeCall(
   const origin = await options.resolveOrigin(target.propertyId);
   if (!origin) {
     throw new CrmValidationError(
-      'No phone system is connected for this site, so sparx cannot place the call. You can still log a call you made yourself.',
+      'No phone system is connected for this site, so the call cannot be placed from here. You can still log a call you made yourself.',
       [{ field: 'customerId', message: 'No phone system is connected for this site.' }]
     );
   }

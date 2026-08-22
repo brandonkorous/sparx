@@ -134,7 +134,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {svg === null ? (
-          <Alert color="warning" variant="soft" className="print:hidden">
+          <Alert color="warning" className="print:hidden">
             {number
               ? `${number} cannot be printed as a barcode.`
               : 'No document reference was given, so there is nothing to print.'}

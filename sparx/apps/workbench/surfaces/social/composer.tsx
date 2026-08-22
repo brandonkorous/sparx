@@ -942,7 +942,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="info" variant="soft" className="max-w-md">
+          <Alert color="info" className="max-w-md">
             <AlertContent>
               <AlertTitle>You cannot write posts</AlertTitle>
               <AlertDescription>
@@ -1026,7 +1026,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
             </div>
 
             {failure ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>Could not save this post</AlertTitle>
                   <AlertDescription>{failure}</AlertDescription>
@@ -1160,7 +1160,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
               ) : (
                 <div className="flex flex-col gap-4">
                   {hasBlock ? (
-                    <Alert color="warning" variant="soft">
+                    <Alert color="warning">
                       <AlertContent>
                         <AlertTitle>One destination needs a fix first</AlertTitle>
                         <AlertDescription>
@@ -1635,7 +1635,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             </div>
 
             {actionError ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>That did not go through</AlertTitle>
                   <AlertDescription>{actionError}</AlertDescription>
@@ -1646,7 +1646,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             {/* Why it came back. Without this a rejection is a silent state change and
                 the author has to go and ask what was wrong with it. */}
             {post.reviewNote && post.status === 'draft' ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>Sent back for a change</AlertTitle>
                   <AlertDescription>{post.reviewNote}</AlertDescription>

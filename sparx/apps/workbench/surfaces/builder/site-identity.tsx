@@ -88,7 +88,7 @@ export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <AlertContent>
               <AlertTitle>Could not load this site&apos;s identity</AlertTitle>
               <AlertDescription>
@@ -281,7 +281,7 @@ function IdentityEditor({
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save your changes</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

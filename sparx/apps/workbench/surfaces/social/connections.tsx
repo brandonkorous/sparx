@@ -212,7 +212,7 @@ function ConnectionCard({
       </div>
 
       {connection.status === 'expired' ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This account needs reconnecting</AlertTitle>
             <AlertDescription>
@@ -328,7 +328,7 @@ function ReadinessRow({ result, name }: { result: ConnectionReadiness; name: str
         <Text className="text-sm">Not granted: {result.missing.join(', ')}</Text>
       ) : null}
       {result.caveat ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This result cannot be trusted</AlertTitle>
             <AlertDescription>{result.caveat}</AlertDescription>
@@ -369,7 +369,7 @@ function PermissionCheck({ catalogMap }: { catalogMap: Map<string, CatalogEntry>
           Asking each platform…
         </Text>
       ) : readiness.isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not run the check</AlertTitle>
             <AlertDescription>
@@ -647,7 +647,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
               </div>
 
               {connectFailure ? (
-                <Alert color="error" variant="soft">
+                <Alert color="error">
                   <AlertContent>
                     <AlertTitle>Could not connect</AlertTitle>
                     <AlertDescription>{connectFailure}</AlertDescription>

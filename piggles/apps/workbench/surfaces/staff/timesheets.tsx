@@ -393,7 +393,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Text>
 
               {!data.complete ? (
-                <Alert color="warning" variant="soft" className="mt-3">
+                <Alert color="warning" className="mt-3">
                   <AlertContent>
                     <AlertTitle>
                       {data.rowsNeedingRates === 1

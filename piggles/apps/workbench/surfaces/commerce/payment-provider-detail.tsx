@@ -188,8 +188,8 @@ function ProviderEditor({
         }
         refresh={
           /* Three queries feed this pane — the site's payment settings, the
-            gateway catalog and the stored credentials — so one refresh reloads
-            all three. */
+                      gateway catalog and the stored credentials — so one refresh reloads
+                      all three. */
           <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
         }
       />
@@ -333,7 +333,7 @@ function SparxPayBody({
               : 'Setup takes a few minutes on a secure page (bank details and identity checks). You will be brought back here when it is finished.'}
           </Text>
           {sparxPay && started && !sparxPay.detailsSubmitted ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Details still needed</AlertTitle>
                 <AlertDescription>

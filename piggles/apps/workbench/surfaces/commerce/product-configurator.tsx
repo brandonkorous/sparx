@@ -84,6 +84,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ScrollStrip } from '../../components/scroll-strip';
 import {
@@ -354,24 +355,13 @@ function ChoiceRow({
           <FieldLabel>Adds to price</FieldLabel>
           <FieldControl
             render={
-              <Input
+              <MoneyTextInput
                 color="module"
                 size="sm"
-                type="number"
-                step="0.01"
-                inputMode="decimal"
-                value={deltaText}
-                placeholder="0.00"
-                onChange={(event) => {
-                  const value = event.target.value;
-                  const parsed = Number(value);
-                  onChange({
-                    ...choice,
-                    priceDeltaCents:
-                      value.trim() === '' || !Number.isFinite(parsed)
-                        ? undefined
-                        : Math.round(parsed * 100),
-                  });
+                aria-label="Adds to price"
+                text={deltaText}
+                onTextChange={(text) => {
+                  onChange({ ...choice, priceDeltaCents: moneyCents(text) ?? undefined });
                 }}
               />
             }
@@ -670,7 +660,7 @@ function TryItPanel({
       description="Answer the questions the way a customer would. Nothing is bought and nothing is saved — this just runs your rules and shows what they produce."
     >
       {stale ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This tries the saved version</AlertTitle>
             <AlertDescription>
@@ -974,7 +964,7 @@ function TemplateEditor({
           in the pane toolbar. A Save floating above a form in a dock is
           ambiguous about which of the two things around it it belongs to. */}
       {blocked !== null && dirty ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Not ready to save</AlertTitle>
             <AlertDescription>{blocked}</AlertDescription>
@@ -1442,10 +1432,10 @@ function ConfiguratorBody({
         }
         primary={
           /* This pane's Save, in this pane's own toolbar. It is here and not
-            above the form for the same reason the detail pane's moved: a
-            primary action anchored to nothing is ambiguous about what it acts
-            on, and in a dock it competes with whatever is in the pane beside
-            it. Discard sits beside it because they are one decision. */
+                      above the form for the same reason the detail pane's moved: a
+                      primary action anchored to nothing is ambiguous about what it acts
+                      on, and in a dock it competes with whatever is in the pane beside
+                      it. Discard sits beside it because they are one decision. */
           draft !== null ? (
             <>
               <Button
@@ -1496,7 +1486,7 @@ function ConfiguratorBody({
         <div className={COLUMN}>
           <FollowingNotice scope={scope} />
           {draft !== null ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Not saved yet</AlertTitle>
                 <AlertDescription>

@@ -43,6 +43,8 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
+import { useBusinessTimezone } from '../../lib/business-timezone';
+import { timezoneOptions } from '../../lib/timezones';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -64,22 +66,6 @@ const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
 
 const DETAIL_KEY = 'scheduling.resources.detail';
 
-/** A short, familiar set of zones. The engine resolves the hours a resource is
- *  free in ITS zone, so this is the zone the person or place actually works in. */
-const TIMEZONES = [
-  'UTC',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'America/Toronto',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Australia/Sydney',
-  'Pacific/Auckland',
-] as const;
-
 interface Draft {
   name: string;
   kind: ResourceKind;
@@ -99,11 +85,14 @@ interface Draft {
   propertyIds: string[];
 }
 
+/** `timezone` is filled in at the mount site from the zone the business works
+ *  in — never a literal here, because a field that already reads `UTC` looks
+ *  answered and gets skipped (issue 081). */
 const BLANK: Draft = {
   name: '',
   kind: 'staff',
   description: '',
-  timezone: 'UTC',
+  timezone: '',
   pooled: false,
   capacity: 2,
   capacityMin: '',
@@ -188,8 +177,13 @@ function ResourceEditor({
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
+  const zones = useMemo(() => timezoneOptions(draft.timezone), [draft.timezone]);
+
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New resource' : draft.name.trim() || 'Resource');
+    // "Resource" is the schema's word, not hers. Everywhere else this pane is
+    // reached from — the menu, the list, its own heading — calls these people
+    // and equipment, and the tab was the one place the model showed through.
+    ctx.setTitle(isNew ? 'New person or thing' : draft.name.trim() || 'Person or thing');
   }, [ctx, isNew, draft.name]);
 
   const nameOk = draft.name.trim() !== '';
@@ -290,7 +284,7 @@ function ResourceEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={isNew ? 'New resource actions' : 'Resource actions'}
+        label={isNew ? 'New person or thing actions' : 'Person or thing actions'}
         refresh={
           onRefresh ? (
             <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
@@ -323,7 +317,7 @@ function ResourceEditor({
           {existing ? <Text className="text-sm">{resourceKindLabel(existing.kind)}</Text> : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>
@@ -406,9 +400,9 @@ function ResourceEditor({
                       set('timezone', event.target.value);
                     }}
                   >
-                    {TIMEZONES.map((zone) => (
-                      <option key={zone} value={zone}>
-                        {zone.replace(/_/g, ' ')}
+                    {zones.map((zone) => (
+                      <option key={zone.value} value={zone.value}>
+                        {zone.label}
                       </option>
                     ))}
                   </NativeSelect>
@@ -623,9 +617,27 @@ export function ResourceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
   const resource = useResource(id);
+  const businessZone = useBusinessTimezone();
 
   if (isNew) {
-    return <ResourceEditor ctx={ctx} id="new" initial={BLANK} existing={null} />;
+    // Held until the zone resolves rather than stamped with a placeholder the
+    // person would have to notice and undo. It is a cached read, so this is one
+    // frame in practice.
+    if (businessZone === undefined) {
+      return (
+        <div className={PANE_SHELL}>
+          <PaneWaiting />
+        </div>
+      );
+    }
+    return (
+      <ResourceEditor
+        ctx={ctx}
+        id="new"
+        initial={{ ...BLANK, timezone: businessZone }}
+        existing={null}
+      />
+    );
   }
 
   if (resource.isError) {

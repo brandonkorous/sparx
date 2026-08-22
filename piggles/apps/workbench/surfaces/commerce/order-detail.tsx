@@ -47,6 +47,9 @@ import { ModuleScope } from '../../components/module-scope';
 import { deferTick } from '../../lib/defer';
 import { useSites, useModuleStates, useViewer } from '../../lib/api/shell-data';
 import { SoldBySection } from './sold-by-section';
+import { RecordPayment } from './record-payment';
+import { refundWords } from './refund-words';
+import { RecordHandover } from './record-handover';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -55,6 +58,7 @@ import {
   amountDue,
   channelLabel,
   customerName,
+  deliveryPlan,
   formatDate,
   formatDateTime,
   formatMoney,
@@ -63,6 +67,8 @@ import {
   paymentRecordTone,
   paymentState,
   refundTone,
+  shipmentHeadline,
+  shipmentStatusLabel,
   shippingState,
   useCancelOrder,
   useOrder,
@@ -70,8 +76,9 @@ import {
   useOrderPayments,
   useOrderRefunds,
   useRefundOrder,
-  FULFILLMENT_STATUS_LABELS,
+  PAYMENT_PROCESSOR_LABELS,
   PAYMENT_STATUS_LABELS,
+  paidByHand,
   REFUND_STATUS_LABELS,
   type Order,
   type OrderAddress,
@@ -140,6 +147,7 @@ function SubSection({
   emptyText,
   count,
   children,
+  footer,
 }: {
   title: string;
   description?: string;
@@ -149,6 +157,11 @@ function SubSection({
   emptyText: string;
   count: number;
   children: React.ReactNode;
+  /** Rendered under the list AND under the empty text, because the thing that
+   *  ADDS the first row must be reachable when there are no rows — which is
+   *  exactly the state it exists for. `children` alone could not do this: it
+   *  is hidden at count 0. */
+  footer?: React.ReactNode;
 }) {
   return (
     <FormSection title={title} description={description}>
@@ -163,6 +176,7 @@ function SubSection({
       ) : (
         children
       )}
+      {!isPending && !isError ? footer : null}
     </FormSection>
   );
 }
@@ -241,6 +255,12 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const paid = paymentState(order);
   const shipped = shippingState(order);
   const due = amountDue(order);
+  // Whether a refund has anywhere to go. Money the business took by hand never
+  // passed through a gateway, so "back to the card it was paid with" is a
+  // promise about a card that does not exist — she hands the notes back.
+  const refundGoesBackToACard = !(payments.data ?? []).some((payment) =>
+    paidByHand(payment.processor)
+  );
   const items = order.items ?? [];
   const currency = order.currency;
   const site = sites?.find((candidate) => candidate.id === order.propertyId);
@@ -258,6 +278,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const stillToFulfil =
     cancellable && items.some((item) => item.quantity - item.quantityFulfilled > 0);
 
+  // How this order leaves, as the shopper chose it. Everything about the bottom
+  // half of this pane turns on it: a customer coming to collect has no carrier,
+  // no tracking number, and no warehouse walk that means anything.
+  const plan = deliveryPlan(order);
+
   // What is still refundable: money actually taken, less anything already given
   // back. Rounded to cents so floating-point noise can't offer a $0.0000001 refund.
   const refundableAmount = Math.max(
@@ -265,14 +290,18 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     Math.round((Number(order.amountPaid) - Number(order.refundTotal ?? 0)) * 100) / 100
   );
 
+  // One source for all three sentences about this refund. They used to be three
+  // separate strings and only the first one branched.
+  const refundSays = refundWords({
+    amount: formatMoney(refundableAmount, currency),
+    orderNumber: order.orderNumber,
+    toACard: refundGoesBackToACard,
+  });
+
   const onRefund = async () => {
     const ok = await confirm({
       title: `Refund ${formatMoney(refundableAmount, currency)} to ${customerName(order.customer)}?`,
-      description:
-        `This sends ${formatMoney(refundableAmount, currency)} back to the card used for order ` +
-        `${order.orderNumber}. The money leaves your account straight away and this cannot be ` +
-        `undone. Stock is NOT taken back in — if you expect the items returned, process a return ` +
-        `instead so the goods come back on the shelf.`,
+      description: refundSays.confirm,
       confirmLabel: `Refund ${formatMoney(refundableAmount, currency)}`,
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -287,7 +316,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         onSuccess: () => {
           toast.add({
             title: `Refunded ${formatMoney(refundableAmount, currency)}`,
-            description: `Order ${order.orderNumber} — the customer's card has been credited.`,
+            description: refundSays.done,
             type: 'success',
           });
         },
@@ -367,13 +396,17 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         // overflow popover under 672px. Enforced by scripts/check-toolbar-primary.mjs.
         primary={
           /* Send it to the warehouse (docs/146 Phase 4). Only while there is
-            something left to send: an order already fulfilled has nothing to
-            fetch, and offering the button anyway produces a walk that generates
-            zero lines and an error nobody expected.
-            Wears the INVENTORY hue on a commerce pane, deliberately — it is a
-            warehouse action surfacing here, and color follows functionality
-            rather than the page it happens to be on. */
-          stillToFulfil ? (
+                      something left to send: an order already fulfilled has nothing to
+                      fetch, and offering the button anyway produces a walk that generates
+                      zero lines and an error nobody expected.
+                      And only for something being SENT. A picking walk for an order the
+                      customer is coming to collect routes a bakery's own counter staff
+                      through a warehouse they do not have; the handover control at the
+                      foot of the pane is what finishes that order.
+                      Wears the INVENTORY hue on a commerce pane, deliberately — it is a
+                      warehouse action surfacing here, and color follows functionality
+                      rather than the page it happens to be on. */
+          stillToFulfil && !plan.collected ? (
             <Button
               size="sm"
               color="module-inventory"
@@ -409,7 +442,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         }
         refresh={
           /* Four queries feed this pane — the order and its money, shipments and
-            refunds — so one refresh reloads all of them. */
+                      refunds — so one refresh reloads all of them. */
           <RefreshButton
             isFetching={
               isFetching || payments.isFetching || fulfillments.isFetching || refunds.isFetching
@@ -444,7 +477,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </AlertContent>
             </Alert>
           ) : due > 0 ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>{formatMoney(due, currency)} still owed</AlertTitle>
                 <AlertDescription>
@@ -566,14 +599,32 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               admin-only, so a viewer gets no section rather than a 403. */}
           <SoldBySection type="order" sourceId={order.id} canSeePay={canSeeCommission} />
 
+          {/* An order nobody is delivering does not have a "where it goes", and
+              putting a Delivery address heading over the address a collecting
+              customer typed for their receipt is how a shop ends up posting
+              something to somebody who was going to walk in for it. */}
           <FormSection
-            title="Where it goes"
-            description="Copied down when the order was placed, so changing the customer’s address later never rewrites where this one went."
+            title={plan.collected ? 'How it leaves' : 'Where it goes'}
+            description={
+              plan.collected
+                ? 'Nothing is being posted. The address is what they gave when they ordered.'
+                : 'Copied down when the order was placed, so changing the customer’s address later never rewrites where this one went.'
+            }
           >
-            <div className="grid gap-4 @md:grid-cols-2">
-              <AddressBlock title="Delivery address" address={order.shippingAddress} />
-              <AddressBlock title="Billing address" address={order.billingAddress} />
-            </div>
+            {/* The words the shopper chose. Absent on orders placed before
+                checkout kept them, and absent is what it renders as — an order
+                whose method was never recorded must not be shown a method. */}
+            {plan.description ? (
+              <Text className="text-base font-medium">{plan.description}</Text>
+            ) : null}
+            {plan.collected ? (
+              <AddressBlock title="Their address" address={order.billingAddress} />
+            ) : (
+              <div className="grid gap-4 @md:grid-cols-2">
+                <AddressBlock title="Delivery address" address={order.shippingAddress} />
+                <AddressBlock title="Billing address" address={order.billingAddress} />
+              </div>
+            )}
           </FormSection>
 
           <SubSection
@@ -584,6 +635,13 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             errorText="We could not load the payments just now. The order and its money are unaffected — try reopening this order in a moment."
             emptyText="No payment has been recorded against this order yet."
             count={payments.data?.length ?? 0}
+            footer={
+              /* Only while money is actually outstanding. A settled,
+                               cancelled or refunded order has nothing left to write
+                               down, and offering the box anyway invites a second
+                               payment onto an order that is already square. */
+              due > 0 ? <RecordPayment order={order} due={due} /> : null
+            }
           >
             <ul className="flex flex-col">
               {(payments.data ?? []).map((payment) => (
@@ -593,7 +651,8 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="text-base font-medium">
-                      {formatMoney(payment.amount, payment.currency)} · {payment.processor}
+                      {formatMoney(payment.amount, payment.currency)} ·{' '}
+                      {PAYMENT_PROCESSOR_LABELS[payment.processor] ?? payment.processor}
                     </span>
                     <span className="text-sm">
                       {formatDateTime(payment.capturedAt ?? payment.createdAt)}
@@ -610,14 +669,39 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </ul>
           </SubSection>
 
+          {/* One card, two vocabularies. The words follow the shopper's own
+              choice rather than the module's: "Deliveries" on an order nobody is
+              delivering is the kind of wrongness that makes a person distrust
+              every other word on the screen. */}
           <SubSection
-            title="Deliveries"
-            description="Each shipment sent for this order, and how to follow it."
+            title={plan.collected ? 'Collection' : 'Deliveries'}
+            description={
+              /* Past tense once there is nothing left to hand over. "Mark it off
+                 when they do" on an order they already collected is an
+                 instruction to do something that is done, which reads as the
+                 screen not having noticed. */
+              plan.collected
+                ? stillToFulfil
+                  ? 'The customer is coming to fetch this one. Mark it off when they do.'
+                  : 'They picked this up.'
+                : 'Each shipment sent for this order, and how to follow it.'
+            }
             isPending={fulfillments.isPending}
             isError={fulfillments.isError}
             errorText="We could not load the deliveries just now. Anything already shipped is unaffected — try reopening this order in a moment."
-            emptyText="Nothing has been sent for this order yet."
+            emptyText={
+              plan.collected
+                ? 'This order has not been collected yet.'
+                : 'Nothing has been sent for this order yet.'
+            }
             count={fulfillments.data?.length ?? 0}
+            footer={
+              /* Only while something is still owed. An order already handed
+                               over has nothing left to hand over, and a cancelled or
+                               refunded one is refused by the server anyway — a control
+                               whose only job is to return an error is worse than none. */
+              stillToFulfil ? <RecordHandover order={order} plan={plan} /> : null
+            }
           >
             <ul className="flex flex-col">
               {(fulfillments.data ?? []).map((shipment) => (
@@ -626,10 +710,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   className="border-base-300 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="text-base font-medium">
-                      {shipment.carrier ?? 'Delivery'}
-                      {shipment.service ? ` · ${shipment.service}` : ''}
-                    </span>
+                    <span className="text-base font-medium">{shipmentHeadline(shipment)}</span>
                     {shipment.trackingNumber ? (
                       shipment.trackingUrl ? (
                         <a
@@ -651,14 +732,24 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         </span>
                       )
                     ) : null}
+                    {/* What she typed in the note box. Asking for a note and
+                        then never showing it anywhere is asking somebody to
+                        write into a drawer that does not open. */}
+                    {shipment.notes ? <span className="text-sm">{shipment.notes}</span> : null}
                     <span className="text-sm">
-                      {shipment.shippedAt
-                        ? `Sent ${formatDateTime(shipment.shippedAt)}`
-                        : `Created ${formatDateTime(shipment.createdAt)}`}
+                      {/* A collection was not "sent" anywhere, and a shipment
+                          with no despatch time has not been sent yet — so the
+                          row falls back to when the record was made and SAYS
+                          that, rather than presenting it as a despatch. */}
+                      {shipment.carrier === 'pickup' && shipment.deliveredAt
+                        ? `Collected ${formatDateTime(shipment.deliveredAt)}`
+                        : shipment.shippedAt
+                          ? `Sent ${formatDateTime(shipment.shippedAt)}`
+                          : `Created ${formatDateTime(shipment.createdAt)}`}
                     </span>
                   </div>
                   <Badge color={fulfillmentTone(shipment.status)} variant="soft" size="sm">
-                    {FULFILLMENT_STATUS_LABELS[shipment.status] ?? shipment.status}
+                    {shipmentStatusLabel(shipment)}
                   </Badge>
                 </li>
               ))}
@@ -722,10 +813,9 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-4">
               <div className="flex min-w-0 flex-col gap-0.5">
                 <Text className="text-base font-medium">Refund this order</Text>
-                <Text className="text-sm">
-                  Sends {formatMoney(refundableAmount, currency)} back to the card it was paid with.
-                  The money leaves your account straight away and this cannot be undone. To give
-                  back only part of it, or to take stock back in, use a return instead.
+                <Text className="text-base">
+                  {refundSays.panel} To give back only part of it, or to take stock back in, use a
+                  return instead.
                 </Text>
               </div>
               <Button

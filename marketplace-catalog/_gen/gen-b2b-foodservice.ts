@@ -250,7 +250,7 @@ function howItWorks(): Node {
               }),
               step({
                 title: 'Minimum order',
-                body: 'Orders start at a £250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking.',
+                body: 'Orders start at a $250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking.',
               }),
               step({
                 title: 'Delivery schedule',
@@ -373,7 +373,7 @@ function pdpBuyRegion(): Node {
                     text: 'Prices shown are the trade price per case. Volume breaks apply automatically from 10+ cases, and contract pricing is available on standing-order lines. Approved accounts pay on net-30 terms.',
                   }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Delivered on your area’s set day when ordered by 2pm the day before, on orders over the £250 minimum. Chilled and ambient arrive on one truck, in one drop.',
+                    text: 'Delivered on your area’s set day when ordered by 2pm the day before, on orders over the $250 minimum. Chilled and ambient arrive on one truck, in one drop.',
                   }),
                 ],
               }),
@@ -414,7 +414,7 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The trade catalogue',
-    'Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order £250 for delivery.'
+    'Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order $250 for delivery.'
   ),
 ];
 const COLLECTIONS: Node[] = [
@@ -433,7 +433,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your order' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Delivery starts at a £250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order.',
+            text: 'Delivery starts at a $250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order.',
           }),
         ],
       }),

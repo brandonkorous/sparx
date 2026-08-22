@@ -77,7 +77,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
 
   if (loadError !== null) {
     return (
-      <Alert color="warning" variant="soft">
+      <Alert color="warning">
         <AlertContent>
           <AlertTitle>We could not open this</AlertTitle>
           <AlertDescription>
@@ -196,7 +196,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
       ) : null}
 
       {view.status === 'declined' ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>You said no to this</AlertTitle>
             <AlertDescription>
@@ -209,7 +209,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
       ) : null}
 
       {view.status === 'expired' ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This link has run out</AlertTitle>
             <AlertDescription>
@@ -221,7 +221,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
       ) : null}
 
       {view.status === 'revoked' ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>This link was replaced</AlertTitle>
             <AlertDescription>
@@ -235,7 +235,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
       {view.status === 'pending' ? (
         <div className="border-base-300 rounded-box flex flex-col gap-4 border p-5">
           {actionError !== null ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertDescription>{actionError}</AlertDescription>
               </AlertContent>

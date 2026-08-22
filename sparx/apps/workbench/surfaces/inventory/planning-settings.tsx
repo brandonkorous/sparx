@@ -230,7 +230,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
 
         {policy.data && !policy.data.configured ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>You are on the standard settings</AlertTitle>
               <AlertDescription>
@@ -366,7 +366,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
         </FormSection>
 
         {turningAutomationOn ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>From the moment you save, this can order differently</AlertTitle>
               <AlertDescription>

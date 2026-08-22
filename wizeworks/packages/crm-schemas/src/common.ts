@@ -84,7 +84,21 @@ export type PreferredContactMethod = z.infer<typeof PreferredContactMethod>;
 export const CompanyStatus = z.enum(['active', 'credit_hold', 'suspended', 'inactive']);
 export type CompanyStatus = z.infer<typeof CompanyStatus>;
 
-export const PaymentTerms = z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']);
+// Payment terms are what two businesses AGREED, so this is a SHAPE rather than a
+// list. It was `z.enum(['prepay','net15','net30','net60','net90'])`, which meant
+// a supplier on Net 14 -- an entirely ordinary agreement -- had to be recorded as
+// 15 or 30, putting a wrong due date on a real invoice and mis-aging a real debt.
+//
+// Nothing downstream ever needed the enum: the column is VarChar(20) and
+// `netTermsDays()` in @wizeworks/crm has always parsed whatever digits it finds,
+// so every `netN` already worked end to end. The bound is a typo guard -- a year
+// of credit is a mistake, and a four-digit day count is a due date in 2031.
+export const PaymentTerms = z
+  .string()
+  .regex(
+    /^(prepay|net(?:[1-9]|[1-9]\d|[12]\d\d|3[0-5]\d|36[0-5]))$/,
+    'Payment terms must be "prepay" or "net" followed by 1-365 days, e.g. "net14".'
+  );
 export type PaymentTerms = z.infer<typeof PaymentTerms>;
 
 // What a stage MEANS, across every object a pipeline can move (docs/144 §7.2).

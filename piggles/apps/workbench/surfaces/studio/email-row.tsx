@@ -4,8 +4,7 @@
 //
 // Two actions beyond opening it, and both belong here rather than inside the pane:
 // deleting one is a decision about the CATALOG, and making a shared default belong
-// to just this site changes which email this site's list points at. Neither is a
-// thing you do while designing.
+// to just this site changes which email this site's list points at.
 
 import { Badge, Button, useToast } from '@wizeworks/silicaui-react';
 import { faColumns, faCodeBranch, faTrash } from '@fortawesome/pro-solid-svg-icons';
@@ -17,6 +16,7 @@ import {
   useDeleteEmail,
   type EmailSummary,
 } from '../../lib/studio/email-data';
+import { rowOpenProps } from './row-open';
 
 /** How an email is doing, in words. Three states, not two: live-but-edited-since is
  *  a different situation from live, and it is the one an author needs telling. */
@@ -36,51 +36,67 @@ export function EmailRow({
   onOpenBeside: (emailId: string) => void;
 }) {
   const state = status(email);
+
   return (
-    <li className="bg-base-100 mb-2 flex items-center gap-2 rounded-lg pr-2 shadow-sm">
-      <button
-        type="button"
-        onClick={() => onOpen(email.id)}
-        className="hover:bg-base-300 flex min-w-0 flex-1 items-center gap-3 rounded-lg p-3 text-left"
-      >
-        <span className="min-w-0 flex-1">
-          <span className="text-base-content block truncate font-medium">{email.name}</span>
-          <span className="text-base-content block truncate text-sm">
-            {email.subject || 'No subject yet'}
-          </span>
-        </span>
-        {email.scope === 'site' ? (
-          <Badge color="info" variant="soft">
-            This site only
-          </Badge>
-        ) : null}
+    <tr {...rowOpenProps(email.id, onOpen, onOpenBeside)}>
+      <td>
+        <span className="block max-w-56 truncate font-medium">{email.name}</span>
+      </td>
+      <td>
+        <span className="block max-w-72 truncate">{email.subject || 'No subject yet'}</span>
+      </td>
+      <td className="hidden @lg:table-cell">
+        <Badge color={email.scope === 'site' ? 'info' : 'primary'} variant="soft">
+          {email.scope === 'site' ? 'This site only' : 'All your sites'}
+        </Badge>
+      </td>
+      <td>
         <Badge color={state.tone} variant="soft">
           {state.label}
         </Badge>
-      </button>
+      </td>
+      <td className="w-0">
+        <RowActions email={email} onOpen={onOpen} onOpenBeside={onOpenBeside} />
+      </td>
+    </tr>
+  );
+}
 
+/** Side by side is the reason this builder is per-document at all, so it stays a
+ *  visible button rather than a modifier key to discover. */
+function RowActions({
+  email,
+  onOpen,
+  onOpenBeside,
+}: {
+  email: EmailSummary;
+  onOpen: (emailId: string) => void;
+  onOpenBeside: (emailId: string) => void;
+}) {
+  return (
+    // The row itself is the open action, so each button stops the click travelling up.
+    <div className="flex items-center justify-end gap-1">
       <CustomiseButton email={email} onOpen={onOpen} />
-      {/* Side by side is the reason this builder is per-document at all, so it is an
-          action on the row rather than something to discover in a menu. */}
       <Button
         size="sm"
         shape="square"
         aria-label={`Open ${email.name} alongside`}
         title="Open alongside"
-        onClick={() => onOpenBeside(email.id)}
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpenBeside(email.id);
+        }}
       >
         <Icon glyph={faColumns} className="size-4" aria-hidden />
       </Button>
       <DeleteButton email={email} />
-    </li>
+    </div>
   );
 }
 
 /**
- * Make a shared default this site's own.
- *
- * Only for a provisioned default that is still shared: a custom email already
- * belongs to whoever made it, and one already forked has nothing left to fork.
+ * Make a shared default this site's own. Only for a provisioned default that is
+ * still shared: a custom email already belongs to whoever made it.
  */
 function CustomiseButton({
   email,
@@ -111,7 +127,10 @@ function CustomiseButton({
       aria-label={`Make ${email.name} this site’s own`}
       title="Make this site’s own"
       disabled={customise.isPending}
-      onClick={() => void fork()}
+      onClick={(event) => {
+        event.stopPropagation();
+        void fork();
+      }}
     >
       <Icon glyph={faCodeBranch} className="size-4" aria-hidden />
     </Button>
@@ -147,7 +166,10 @@ function DeleteButton({ email }: { email: EmailSummary }) {
       aria-label={`Delete ${email.name}`}
       title="Delete"
       disabled={deleteEmail.isPending}
-      onClick={() => void remove()}
+      onClick={(event) => {
+        event.stopPropagation();
+        void remove();
+      }}
     >
       <Icon glyph={faTrash} className="size-4" aria-hidden />
     </Button>

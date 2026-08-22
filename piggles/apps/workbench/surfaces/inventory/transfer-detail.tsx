@@ -357,7 +357,7 @@ function LineEditorModal({
             </Field>
 
             {duplicate ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>That item is already on this transfer</AlertTitle>
                   <AlertDescription>
@@ -484,7 +484,7 @@ function ReceiveModal({
             </ul>
 
             {anyShort ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>Some of this did not arrive</AlertTitle>
                   <AlertDescription>
@@ -1023,7 +1023,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             )}
 
             {sameLocation ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>Pick two different locations</AlertTitle>
                   <AlertDescription>

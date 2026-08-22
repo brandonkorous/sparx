@@ -172,11 +172,19 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
   //    writer insert and the rest no-op, after which they all serialize on the
   //    FOR UPDATE lock below — keeping the concurrency guarantee true even for
   //    the very first movement.
-  await tx.$executeRaw`
+  //
+  //    The row count matters, and is kept: `DO NOTHING` returns 0 when the row was
+  //    already there and 1 when this call is what brought it into existence. That
+  //    is not bookkeeping — see the zero-delta return below. A variant becomes
+  //    stock-MANAGED by having a level row at all (availability.ts's header), so
+  //    creating one changes what the storefront may sell even when the number in
+  //    it is the same zero it would have defaulted to.
+  const createdLevel =
+    (await tx.$executeRaw`
     INSERT INTO inventory_levels (tenant_id, variant_id, warehouse_id, on_hand, allocated, as_of, updated_at)
     VALUES (${input.tenantId}::uuid, ${input.variantId}::uuid, ${input.warehouseId}::uuid, 0, 0, now(), now())
     ON CONFLICT (variant_id, warehouse_id) DO NOTHING
-  `;
+  `) > 0;
 
   // 2. Lock the row FOR UPDATE — serializes concurrent writers on this level.
   const locked = await tx.$queryRaw<LockedLevel[]>`
@@ -209,7 +217,19 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
 
   // A zero-effect movement (e.g. a sync run that found no change) writes no
   // ledger row — keeps `onHand == Σ(movements)` clean and avoids feed noise.
+  //
+  // But it can still have changed the ANSWER, and this is the one case where it
+  // does: the FIRST count of something, recorded as zero. Nothing moved, so no
+  // ledger row is right — yet the level row went from absent to present, which
+  // takes the variant off the untracked path and makes it genuinely sold out.
+  // Returning here without step 7 left `Product.inStock` at whatever it was, and
+  // for an uncounted product that is `true`. So a baker who counted her rye at
+  // zero because it had gone was still selling it on her website, with the
+  // console beside her showing "Nothing left to sell".
+  //
+  // "We are out of this" is the first count a shop ever records, not an edge.
   if (delta === 0 && allocatedDelta === 0) {
+    if (createdLevel) await syncProductInStock(tx, input.variantId);
     return noChange('', current);
   }
 

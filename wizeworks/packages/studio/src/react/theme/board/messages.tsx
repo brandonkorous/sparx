@@ -20,17 +20,17 @@ export function MessagesTile() {
         <AlertDescription>We will have it ready by eight.</AlertDescription>
       </Alert>
 
-      <Alert color="warning" variant="soft">
+      <Alert color="warning">
         <AlertTitle>Only two left</AlertTitle>
         <AlertDescription>Order today and we will hold one for you.</AlertDescription>
       </Alert>
 
-      <Alert color="error" variant="soft">
+      <Alert color="error">
         <AlertTitle>That card was declined</AlertTitle>
         <AlertDescription>Try another, or pay when you collect.</AlertDescription>
       </Alert>
 
-      <Alert color="info" variant="soft">
+      <Alert color="info">
         <AlertTitle>Closed on Monday</AlertTitle>
         <AlertDescription>Back at six on Tuesday morning.</AlertDescription>
       </Alert>

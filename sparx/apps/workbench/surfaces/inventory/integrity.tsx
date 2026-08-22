@@ -215,7 +215,7 @@ function Verdict({
         ) : null}
 
         {latest?.status === 'error' ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>The last check could not finish</AlertTitle>
               <AlertDescription>

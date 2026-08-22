@@ -35,7 +35,7 @@
 
 import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@wizeworks/db';
 import { isModuleEnabled, type ModuleSlug } from '@wizeworks/auth';
-import { commerceSiteService, shippingService, taxService } from '@wizeworks/commerce';
+import { commerceSiteService, taxService } from '@wizeworks/commerce';
 import {
   b2bQuoteService,
   documentLineTypeService,
@@ -102,7 +102,11 @@ async function provisionForModule(tenantId: string, slug: ProvisionedModule): Pr
         await inventoryService.bootstrapDefaultWarehouse(ctx);
       }
       await commerceSiteService.bootstrapDefaults(ctx);
-      await shippingService.bootstrapDefaults(ctx);
+      // NO shipping bootstrap. Seeding an "Everywhere" zone here bought a
+      // working checkout by inventing a delivery the business had never
+      // offered — worldwide postage, flat $5, for a bakery that sells over the
+      // counter (issue #031). A tenant with no zones now quotes "collect in
+      // person" instead, which is true of every shop and promises nothing.
       await taxService.bootstrapDefaults(ctx);
       break;
     }

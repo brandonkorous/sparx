@@ -47,6 +47,7 @@ import {
   type UseQueryOptions,
 } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -332,10 +333,7 @@ export function coverageSummary(locales: string[]): string {
  *  real problem ("Invalid locale", "Body locale does not match path locale")
  *  better than a status code. A 5xx carries no sentence, so it falls back. */
 export function translationErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Formatting + status ────────────────────────────────────────────────── */

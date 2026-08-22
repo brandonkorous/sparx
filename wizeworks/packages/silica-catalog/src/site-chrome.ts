@@ -453,6 +453,38 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
 }
 
 /**
+ * Guarantee the footer can show the tenant's published legal pages.
+ *
+ * `fillSlots` fills only the slots a block actually has, so a variant with no
+ * `link9` quietly went out with no legal column at all — and nothing downstream
+ * noticed, because the Legal pages checklist decides "linked in your footer" from
+ * a placement row rather than from the frame. This closes that gap at the source:
+ * whatever the variant, the core is in the footer.
+ *
+ * A no-op when the fill already placed it, so the `columns` footer is unchanged
+ * byte for byte. The appended copy carries its own heading, because there it IS
+ * the column rather than joining one that already has a title.
+ */
+function ensureLegalLinks(footer: Node): Node {
+  if (typeof footer === 'string' || footer.kind !== 'element') return footer;
+  if (containsHostCore(footer, HOST_KEYS.siteLegalLinks)) return footer;
+  return {
+    ...footer,
+    children: [
+      ...(footer.children ?? []),
+      hostCore(HOST_KEYS.siteLegalLinks, 'flex flex-col gap-3'),
+    ],
+  };
+}
+
+function containsHostCore(node: Node | string, key: string): boolean {
+  if (typeof node === 'string') return false;
+  if (node.kind === 'host' && node.component === key) return true;
+  if (node.kind !== 'element') return false;
+  return (node.children ?? []).some((child) => containsHostCore(child, key));
+}
+
+/**
  * The site footer — silica's `footer` block by default, or a chosen `FOOTER_VARIANTS`
  * key, filled the same way.
  *
@@ -464,8 +496,16 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
  * site two footer links to pages that did not exist.
  *
  * The `newsletter` variant shares the `brand`/`blurb`/`col1`/`col2` slots, so the same
- * by-name fill drives it; the legal-links `link9` and the columns-only `link10..15` keys
- * simply find no slot in that block and are ignored (`fillSlots` fills only slots it finds).
+ * by-name fill drives it — but it has no `link9` slot, and `fillSlots` fills only slots
+ * it finds. That silently dropped the legal column: a tenant on the newsletter footer got
+ * a live site with NO privacy, terms or cookie link, while the Legal pages checklist told
+ * them every required page was "published, up to date, and linked in your footer" and
+ * counted it as done. The claim was read off a placement row rather than off anything
+ * that renders.
+ *
+ * So the core is APPENDED after the fill (`ensureLegalLinks`) rather than left to a slot
+ * that may not exist. Legal links are not decorative chrome a variant may opt out of, and
+ * a footer that cannot show them must not be reachable by choosing a different look.
  */
 export function siteFooter(opts: SiteChromeOptions = {}): Node {
   const { commerceEnabled = true } = opts;
@@ -480,7 +520,17 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
     blurb: {
       text:
         variant === 'newsletter'
-          ? 'Join the list — new work, journal notes, and studio news, about once a month.'
+          ? // Was 'new work, journal notes, and studio news, about once a month' —
+            // copy for a design studio, seeded onto a bakery, a pet shop and a
+            // wine merchant, and the only sentence on the site its owner never
+            // wrote. It also promised a frequency nobody had agreed to.
+            //
+            // Deliberately NOT split on `commerceEnabled` like the line below:
+            // "new arrivals" is a shop's word and "new writing" is a publisher's,
+            // and a café that neither sells nor publishes gets a wrong one either
+            // way. This says what a mailing list is actually for, and promises
+            // nothing about how often or about what kind of business this is.
+            'Join the list — we’ll email when there’s something worth knowing.'
           : commerceEnabled
             ? 'Everything you publish and sell, in one place.'
             : 'Everything you publish, in one place.',
@@ -539,5 +589,5 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
     const extras: [string, string][] = opts.navLinks ? [] : [['Search', '/search']];
     fillNavLinks(explore, [...destinations, ...extras]);
   }
-  return filled;
+  return ensureLegalLinks(filled);
 }

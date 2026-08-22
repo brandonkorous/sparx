@@ -206,7 +206,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                 </div>
               </Alert>
             ) : returnStatus === 'cancelled' ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <div className="flex items-start justify-between gap-3">
                   <Text>
                     Checkout was cancelled — no changes were made. You can set up billing whenever
@@ -242,7 +242,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
             </Card>
 
             {bill.planType === 'enterprise' ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <Text>
                   You’re on a custom plan arranged with the sparx team. The breakdown below is for
                   reference — any changes go through your account contact rather than self-serve.
@@ -314,7 +314,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               </Text>
 
               {actionError ? (
-                <Alert color="warning" variant="soft" className="mt-3">
+                <Alert color="warning" className="mt-3">
                   <Text>{actionError}</Text>
                 </Alert>
               ) : null}

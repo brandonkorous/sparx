@@ -26,6 +26,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -310,8 +311,5 @@ export function isValidKey(key: string): boolean {
  * 5xx carries no such sentence, so it falls back to the caller's wording.
  */
 export function taxonomyErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

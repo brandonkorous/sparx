@@ -84,6 +84,15 @@ on:
           # this closes the tenants whose activation already fired. Create-only,
           # so a renamed category survives. Dry-runs by default. Safe to re-run.
           - backfill-finance-categories
+          # Republishes every tenant's search index from Postgres. Needed after a
+          # data migration touches a PROJECTED column, because a SQL UPDATE raises
+          # no event: the rows are right and the index goes on serving the old
+          # value. `20270401000000_uncounted_products_are_sellable` is that case —
+          # it un-strands products marked Sold out for never having been counted,
+          # and without this every one of them keeps telling visitors it is sold
+          # out until somebody edits it. Reports what it ASKED for; the rebuilds
+          # run on the worker. Dry-runs by default. Safe to re-run.
+          - reindex-search
       environment:
         description: 'Where to run it'
         required: false
@@ -305,6 +314,17 @@ jobs:
               else
                 command='["node","--import","tsx","src/scripts/migrate-media-to-blob.ts"]'
               fi
+              ;;
+            reindex-search)
+              image="$REPO/api-rest:$TAG"
+              # WORKDIR is /app/services/api-rest. Unticked it lists the tenants it
+              # WOULD ask for and publishes nothing. `tenant` narrows it to one,
+              # which is what you want when repairing a single business rather than
+              # rebuilding 101 indexes to fix one.
+              args='"node","--import","tsx","src/scripts/reindex-search.ts"'
+              if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
+              if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              command="[$args]"
               ;;
             backfill-finance-categories)
               image="$REPO/api-rest:$TAG"

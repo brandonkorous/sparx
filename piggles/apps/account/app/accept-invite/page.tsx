@@ -182,7 +182,7 @@ function InviteMessage({ heading, body }: { heading: string; body: string }) {
   return (
     <AuthShell heading={heading}>
       <div className="flex flex-col gap-6">
-        <Alert color="warning" variant="soft" role="status">
+        <Alert color="warning" role="status">
           {body}
         </Alert>
         <Button variant="outline" className="w-full" render={<Link href="/sign-in" />}>

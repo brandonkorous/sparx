@@ -36,6 +36,38 @@ import {
   type IntegrationCategory,
   type IntegrationDescriptor,
 } from '@wizeworks/integrations';
+import { fillPlatformName } from '@wizeworks/brand-core';
+
+import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
+
+/**
+ * Fill a descriptor's `{platform}` tokens with the tenant's own product name.
+ *
+ * The three fields that can carry one are the three a person reads: what it is
+ * called, what it does, and whose it is. `vendor` and `publisher` are the ones
+ * that bit — every first-party entry on this shelf was published by a literal
+ * "sparx", which a Piggles business has never heard of.
+ */
+function brandDescriptor<
+  T extends {
+    name: string;
+    blurb: string;
+    vendor?: string;
+    publisher?: string;
+    unavailableReason?: string;
+  },
+>(descriptor: T, brand: string): T {
+  return {
+    ...descriptor,
+    name: fillPlatformName(descriptor.name, brand),
+    blurb: fillPlatformName(descriptor.blurb, brand),
+    ...(descriptor.vendor ? { vendor: fillPlatformName(descriptor.vendor, brand) } : {}),
+    ...(descriptor.publisher ? { publisher: fillPlatformName(descriptor.publisher, brand) } : {}),
+    ...(descriptor.unavailableReason
+      ? { unavailableReason: fillPlatformName(descriptor.unavailableReason, brand) }
+      : {}),
+  };
+}
 
 /** What the tenant has actually done about one integration. `null` on a descriptor
  *  means "not connected" — the panel renders an invitation rather than a state. */
@@ -122,6 +154,10 @@ const integrationRoutes: FastifyPluginAsync = async (app) => {
       categories.filter((c) => isCategoryUnlocked(c.category, activeModules)).map((c) => c.category)
     );
     const connections = await readConnections(request, wanted);
+    // Which product this tenant thinks it is using. The descriptor registry is
+    // built once at boot, for every brand at once, so its strings carry the
+    // `{platform}` token and are resolved HERE against the asking tenant.
+    const brand = await tenantPlatformBrand(auth.tenantId);
 
     const views: CategoryView[] = categories.map((info) => {
       const unlocked = isCategoryUnlocked(info.category, activeModules);
@@ -129,7 +165,7 @@ const integrationRoutes: FastifyPluginAsync = async (app) => {
 
       const integrations = listIntegrationDescriptors({ category: info.category }).map(
         (descriptor) => ({
-          ...descriptor,
+          ...brandDescriptor(descriptor, brand),
           connection: byCategory.get(descriptor.slug) ?? null,
         })
       );

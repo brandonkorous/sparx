@@ -254,9 +254,21 @@ export function productLoadingMark(): ComponentType<ProductLoadingMarkProps> | n
   return adapter.LoadingMark;
 }
 
-/** Whether this product hides a surface outright. See `hiddenSurfaces`. */
+/**
+ * Whether this product hides a surface outright. See `hiddenSurfaces`.
+ *
+ * An entry may name one key, or a whole namespace as `module.*`. The namespace
+ * form is there because the alternative is a hand-kept list of every screen in a
+ * module the product does not have — and a hand-kept list is one new detail pane
+ * away from being wrong, which is exactly how a Piggles business could open
+ * sparx's bootcamp editor (issue #002).
+ */
 export function productHidesSurface(key: string): boolean {
-  return adapter.hiddenSurfaces.has(key);
+  if (adapter.hiddenSurfaces.has(key)) return true;
+  for (const entry of adapter.hiddenSurfaces) {
+    if (entry.endsWith('.*') && key.startsWith(entry.slice(0, -1))) return true;
+  }
+  return false;
 }
 
 /**

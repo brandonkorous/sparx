@@ -66,7 +66,7 @@ export function ActivityCard({
       description="A record of the things people have done in your account, newest first. Only actions are listed here — simply looking at something is not."
     >
       {isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load your activity</AlertTitle>
             <AlertDescription>
@@ -90,7 +90,7 @@ export function ActivityCard({
         <PaneWaiting module={MODULE} label="Loading your activity…" />
       ) : rows.length === 0 ? (
         /* No Card: the FormSection is one. <PaneEmpty> so this state draws the
-           same kind of picture as the <PaneWaiting> beside it. */
+                   same kind of picture as the <PaneWaiting> beside it. */
         <PaneEmpty
           module={MODULE}
           icon={<Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />}

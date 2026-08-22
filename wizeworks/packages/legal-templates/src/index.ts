@@ -59,13 +59,22 @@ const doc = (...nodes: DocNode[]): LegalDoc => ({ type: 'doc', content: nodes })
 
 /** The starter-text disclaimer prepended to every template body. It is content
  *  (survives editing) — the structured "reviewed?" signal lives on the entry's
- *  legal_disclaimer_ack_at column. */
+ *  legal_disclaimer_ack_at column.
+ *
+ *  It names NO vendor. This text is written for the owner but sits in a body the
+ *  owner can publish, so it has two audiences, and the second one is the reason:
+ *  a shopper reading a bakery's privacy page has never heard of whoever built
+ *  the site, and a policy that cites an unknown third party reads as boilerplate
+ *  nobody checked. The same package is also fronted by more than one product
+ *  (piggles/CLAUDE.md RULE #0), so a vendor name here is wrong in the console
+ *  too — Marisol's console is called Piggles and she has never seen the word
+ *  "sparx". The sentence loses nothing without it. */
 const disclaimer = (): DocNode => ({
   type: 'callout',
   attrs: { variant: 'warning' },
   content: [
     p(
-      'This is a starter template provided by sparx — not legal advice. Review it with your own counsel and tailor it to your business, jurisdiction, and how you handle data before publishing.'
+      'This is starter wording, not legal advice. Read it through, make it fit your business and where you trade, and take your own advice on it before you publish this page.'
     ),
   ],
 });
@@ -77,7 +86,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'privacy',
     defaultSlug: 'privacy-policy',
     title: 'Privacy Policy',
-    templateVersion: 1,
+    templateVersion: 2,
     requirement: 'always',
     doc: doc(
       disclaimer(),
@@ -120,7 +129,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'terms',
     defaultSlug: 'terms-of-service',
     title: 'Terms of Service',
-    templateVersion: 1,
+    templateVersion: 2,
     requirement: 'always',
     doc: doc(
       disclaimer(),
@@ -161,7 +170,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'cookie-policy',
     defaultSlug: 'cookie-policy',
     title: 'Cookie Policy',
-    templateVersion: 1,
+    templateVersion: 2,
     requirement: 'always',
     doc: doc(
       disclaimer(),
@@ -191,7 +200,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'returns',
     defaultSlug: 'returns-policy',
     title: 'Return Policy',
-    templateVersion: 1,
+    templateVersion: 2,
     requirement: 'commerce',
     doc: doc(
       disclaimer(),
@@ -218,8 +227,16 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'shipping',
     defaultSlug: 'shipping-policy',
     title: 'Shipping Policy',
-    templateVersion: 1,
-    requirement: 'commerce',
+    templateVersion: 2,
+    // OPTIONAL, not 'commerce'. Selling is not shipping: a bakery taking
+    // collection orders, a restaurant booking tables and a seller of downloads
+    // all have commerce switched on and post nothing, and forcing this on them
+    // made the checklist unreachable — it demanded a policy for something the
+    // business does not do, so "5 of 5 ready" could never honestly be true.
+    // Businesses that DO ship are prompted by evidence instead: see
+    // shipsButHasNoShippingPolicy() below, which fires on a signal that they
+    // ship rather than on the mere presence of a shop.
+    requirement: 'optional',
     doc: doc(
       disclaimer(),
       p('This policy explains how and when we ship orders.'),
@@ -243,7 +260,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'refund',
     defaultSlug: 'refund-policy',
     title: 'Refund Policy',
-    templateVersion: 1,
+    templateVersion: 2,
     requirement: 'optional',
     doc: doc(
       disclaimer(),

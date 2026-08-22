@@ -50,6 +50,7 @@ import * as discountService from './discount-service';
 import * as marketService from './market';
 import * as pricingService from './pricing-service';
 import * as shippingService from './shipping-service';
+import { describeRate } from './collection-option';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -59,6 +60,11 @@ function parseDueDays(paymentTerms: string | null | undefined): number {
 }
 
 const DEFAULT_SESSION_TTL_MIN = 60; // 1 hour
+
+/** The gateway that means "we take payment ourselves" — over the counter, on
+ *  collection, by arrangement. It has a catalog entry and no adapter, because
+ *  recording a payment by hand has nothing to dispatch. */
+const MANUAL_GATEWAY_ID = 'manual';
 
 // Valid transitions. Anything outside this table is a 409 CONFLICT.
 const STEP_ORDER: Record<string, number> = {
@@ -178,6 +184,9 @@ export async function get(
   ctx: ServiceContext,
   sessionId: string
 ): Promise<CheckoutSessionSnapshot | null> {
+  // Outside the transaction: it reads the tenant's payment config, and holding a
+  // tenant transaction open across it buys nothing.
+  const paymentMode = await resolvePaymentMode(ctx.tenantId);
   return withTenant(ctx, async (tx) => {
     const row = await tx.checkoutSession.findFirst({ where: { id: sessionId } });
     if (!row) return null;
@@ -212,6 +221,7 @@ export async function get(
         totalCents,
         surchargeLabel: surchargeLabelFor(surcharge.applied),
       },
+      paymentMode,
       account?.paymentTerms
     );
   });
@@ -223,11 +233,10 @@ export async function submitContact(ctx: ServiceContext, rawInput: unknown): Pro
   const input = SubmitContactInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
     const session = await assertSessionWritable(tx, input.sessionId);
-    assertCanAdvance(session.step, 'contact');
     await tx.checkoutSession.update({
       where: { id: session.id },
       data: {
-        step: 'contact',
+        step: furthestStep(session.step, 'contact'),
         customerEmail: input.email,
         customerPhone: input.phone ?? null,
         acceptsMarketing: input.acceptsMarketing,
@@ -295,7 +304,6 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
 
   await withTenant(ctx, async (tx) => {
     const session = await assertSessionWritable(tx, input.sessionId);
-    assertCanAdvance(session.step, 'shipping');
     // Re-point the total at the newly chosen rate: swap out whatever shipping the
     // session was carrying (0 on first pass, the previous pick on a change) for this
     // one, so going back and switching methods can't stack charges.
@@ -303,7 +311,7 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
     await tx.checkoutSession.update({
       where: { id: session.id },
       data: {
-        step: 'shipping',
+        step: furthestStep(session.step, 'shipping'),
         shippingAddress: input.shippingAddress,
         billingAddress: input.billingAddress ?? input.shippingAddress,
         // Record what we actually priced from this quote, not the (possibly
@@ -311,7 +319,7 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
         shippingProviderSlug: chosen.providerSlug,
         shippingRateRef: chosen.rateRef,
         shippingTotalCents: chosen.amountCents,
-        shippingDescription: `${chosen.carrier} ${chosen.service}`.trim(),
+        shippingDescription: describeRate(chosen),
         totalCents: nextTotalCents,
       },
     });
@@ -336,9 +344,9 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
 
 export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = SubmitPaymentInput.parse(rawInput);
+  const paymentMode = await resolvePaymentMode(ctx.tenantId);
   await withTenant(ctx, async (tx) => {
     const session = await assertSessionWritable(tx, input.sessionId);
-    assertCanAdvance(session.step, 'payment');
 
     // PO numbers / net-terms are accepted whenever the checking-out customer
     // is an active B2B contact — never gated on channel (a B2B customer
@@ -361,7 +369,18 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
         );
       }
     }
-    if (!billToAccount && !(input.paymentProviderSlug && input.paymentRef)) {
+    // The third way to owe money for something, after a card and a B2B account:
+    // the business takes payment ITSELF — over the counter, on collection, by
+    // arrangement. `complete()` has always supported it (a manual order carries
+    // no paymentRef, exactly like net terms); this is the gate that refused to
+    // let one through, so a shop that picked "Manual payments" in the provider
+    // picker had a checkout that could not finish.
+    //
+    // Decided HERE, from the tenant's own configuration, and never from a flag
+    // the client sends: otherwise any caller could declare itself paid in person
+    // and place an order a card-taking shop expects money for.
+    const inPerson = paymentMode === 'in_person';
+    if (!billToAccount && !inPerson && !(input.paymentProviderSlug && input.paymentRef)) {
       throw new CommerceValidationError(
         'A payment provider is required unless billing to a B2B account'
       );
@@ -371,7 +390,11 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
       where: { id: session.id },
       data: {
         step: 'review',
-        paymentProviderSlug: input.paymentProviderSlug,
+        // Recorded as the manual gateway with no ref, so the order says how it
+        // is to be settled rather than looking like a card order that lost its
+        // reference.
+        paymentProviderSlug:
+          input.paymentProviderSlug ?? (inPerson && !billToAccount ? MANUAL_GATEWAY_ID : undefined),
         paymentRef: input.paymentRef,
         poNumber: input.poNumber ?? null,
         paymentTermsRequested: input.paymentTermsRequested ?? null,
@@ -424,6 +447,71 @@ export interface CreatePaymentIntentResult {
   status: PaymentIntentStatus;
 }
 
+/**
+ * What a SHOPPER is told when the shop has no way to take their money.
+ *
+ * ── WHY THIS IS NOT THE OPERATOR'S SENTENCE ─────────────────────────────────
+ *
+ * It used to read: "Online payments are not configured for this site. Set up a
+ * payment gateway in Settings → Payments."
+ *
+ * That is a message for the business owner, and it is thrown from a PUBLIC
+ * checkout endpoint — so the only person who ever reads it is a customer. A
+ * stranger who has picked out two loaves and a box of buns, typed their address
+ * and clicked through three steps, is met with a red box telling them to go to a
+ * settings screen they have never heard of, cannot reach, and have no business
+ * being in. There is nothing they can do with that sentence.
+ *
+ * It also names our navigation to somebody who is not in our product. "Settings →
+ * Payments" is workbench's furniture; on the shop it is somebody else's software
+ * leaking through the wall.
+ *
+ * So: say what is true, say that no money has moved, and point at the one thing
+ * that CAN still get them their bread — the shop itself, whose phone number and
+ * address are already on the page underneath this message.
+ *
+ * The owner's half of this problem is not solved here. It belongs on their own
+ * screens, where they can act on it.
+ */
+const NO_PAYMENTS_MESSAGE =
+  'This shop cannot take card payments online just yet, so the order cannot be finished here. ' +
+  'Nothing has been charged. Get in touch with the shop to arrange it — their details are on this site.';
+
+/**
+ * How this shop can be paid, as the storefront needs to know it.
+ *
+ * Read from the tenant's own configuration rather than guessed. The three
+ * answers are genuinely different situations with different screens, and
+ * collapsing them is what produced [#038]: a business on MANUAL payments — an
+ * option the picker openly offers, describing itself as "No fee. No online card
+ * processing" — got the same red dead end as a business with nothing set up at
+ * all, because the storefront only ever knew how to draw a card form.
+ *
+ * Never throws. A shop whose gateway cannot be resolved is `unavailable`, which
+ * is the honest answer and the one that renders a message a customer can act on.
+ */
+async function resolvePaymentMode(tenantId: string): Promise<'card' | 'in_person' | 'unavailable'> {
+  // Read the tenant's CONFIG, not the adapter registry.
+  //
+  // `getGatewayForTenant` resolves an adapter, and `manual` deliberately has
+  // none — recording a payment by hand has nothing to dispatch, which the
+  // integration registry's own comment calls out as expected. So asking the
+  // registry about a manual shop throws, and the first version of this function
+  // read that throw as "cannot be paid" — the exact answer it exists to avoid.
+  const config = await withTenant({ tenantId }, (tx) =>
+    tx.tenantPaymentConfig.findUnique({
+      where: { tenantId },
+      select: { gatewayId: true, isActive: true },
+    })
+  );
+  if (!config) return 'unavailable';
+  if (config.gatewayId === MANUAL_GATEWAY_ID) return 'in_person';
+  // Chosen but not collecting is not the same as chosen: a gateway with its keys
+  // still missing takes no money, and saying `card` would draw a form that
+  // cannot work.
+  return config.isActive ? 'card' : 'unavailable';
+}
+
 /** Resolve the tenant's active payment gateway, or surface a clean validation error
  *  when the tenant is on manual payments / has no gateway configured. */
 async function resolvePaymentGateway(tenantId: string): Promise<PaymentGateway> {
@@ -431,9 +519,7 @@ async function resolvePaymentGateway(tenantId: string): Promise<PaymentGateway> 
     return await paymentService.getGatewayForTenant(tenantId);
   } catch (err) {
     if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
-      throw new CommerceValidationError(
-        'Online payments are not configured for this site. Set up a payment gateway in Settings → Payments.'
-      );
+      throw new CommerceValidationError(NO_PAYMENTS_MESSAGE);
     }
     throw err;
   }
@@ -506,9 +592,7 @@ export async function createPaymentIntent(
         ...(input.cancelUrl ? { cancelUrl: input.cancelUrl } : {}),
       });
     } catch {
-      throw new CommerceValidationError(
-        'Online payments are not configured for this site. Set up a payment gateway in Settings → Payments.'
-      );
+      throw new CommerceValidationError(NO_PAYMENTS_MESSAGE);
     }
     providerSlug = gateway.id;
   }
@@ -700,7 +784,9 @@ export async function complete(
         tx,
         ctx.tenantId,
         originPropertyId,
-        session.customerEmail
+        session.customerEmail,
+        // The shipping address is where checkout put the typed name.
+        readRecipientName(session.shippingAddress)
       );
     }
 
@@ -778,6 +864,11 @@ export async function complete(
           paymentRef: session.paymentRef,
           shippingProviderSlug: session.shippingProviderSlug,
           shippingRateRef: session.shippingRateRef,
+          // The words the shopper actually chose ("Collect in person", "USPS
+          // Priority"). The ref and the slug are wire values; this is the only
+          // thing on the order that a person can read, and without it the
+          // console can tell you an order exists but not how it leaves.
+          shippingDescription: session.shippingDescription,
           poNumber: session.poNumber,
           paymentTermsRequested: session.paymentTermsRequested,
           subtotalCents: session.subtotalCents,
@@ -1121,7 +1212,9 @@ async function ensureCheckoutCustomer(
   tx: TxClient,
   tenantId: string,
   cartPropertyId: string | null,
-  email: string
+  email: string,
+  /** What the shopper typed in "Full name" at checkout, if anything. */
+  fullName?: string | null
 ): Promise<string> {
   const normalizedEmail = email.trim().toLowerCase();
   let propertyId = cartPropertyId;
@@ -1154,10 +1247,46 @@ async function ensureCheckoutCustomer(
       email: normalizedEmail,
       type: 'retail',
       lifecycleStage: 'customer',
+      // The name the shopper actually typed. It used to be dropped on the floor:
+      // checkout REQUIRES "Full name", writes it onto the order's shipping
+      // address, and then created the customer from the email alone. So the
+      // business's own Orders screen showed "Who bought it:
+      // rowan.pike@example.test" — the email, twice, where a person's name goes.
+      // For a bakery calling out collection orders across a counter, the name is
+      // the one field that matters.
+      //
+      // Only on CREATE. An existing customer keeps the name they gave us; a
+      // one-off delivery to somebody else must not rename them.
+      ...splitName(fullName),
     },
     select: { id: true },
   });
   return created.id;
+}
+
+/** The `recipientName` out of a stored address blob, if it holds one. */
+export function readRecipientName(address: unknown): string | null {
+  if (typeof address !== 'object' || address === null) return null;
+  const name = (address as { recipientName?: unknown }).recipientName;
+  return typeof name === 'string' && name.trim() !== '' ? name : null;
+}
+
+/**
+ * A typed name into the two columns the schema has.
+ *
+ * First token is the given name, the remainder the family name — which is a
+ * convention, not a truth, so it is applied ONLY where there is nothing better.
+ * A single word goes entirely in `firstName` rather than being invented a
+ * surname, and blank input writes nothing at all: an empty string in these
+ * columns would read as "we asked and they declined", which is not what
+ * happened.
+ */
+export function splitName(fullName?: string | null): { firstName?: string; lastName?: string } {
+  const trimmed = fullName?.trim() ?? '';
+  if (!trimmed) return {};
+  const gap = trimmed.indexOf(' ');
+  if (gap === -1) return { firstName: trimmed };
+  return { firstName: trimmed.slice(0, gap), lastName: trimmed.slice(gap + 1).trim() };
 }
 
 async function assertSessionWritable(tx: TxClient, sessionId: string): Promise<CheckoutSession> {
@@ -1172,12 +1301,40 @@ async function assertSessionWritable(tx: TxClient, sessionId: string): Promise<C
   return session;
 }
 
-function assertCanAdvance(from: string, to: string): void {
+/**
+ * The step to RECORD after writing `to` on a session currently at `from`.
+ *
+ * ── WHY GOING BACK IS ALLOWED ───────────────────────────────────────────────
+ *
+ * This used to throw: `Cannot move checkout from "shipping" back to "contact"`.
+ * Three things were wrong with that, in ascending order of seriousness.
+ *
+ *   1. The sentence is machine language, quoted step names and all, and it was
+ *      rendered in a red box on a bakery's checkout to somebody buying bread.
+ *   2. It forbade something THE CHECKOUT ITSELF OFFERS. Step 2 has a "← Back"
+ *      button. Press it, correct your email, press Continue, and the server
+ *      refuses — a dead end reached by using the buttons as drawn.
+ *   3. Any customer who reopened the page hit it without touching Back at all.
+ *      The form restarts at Contact while the session remembers `shipping`, so
+ *      the first thing they submit is a step they have already passed.
+ *
+ * Editing an earlier step is not an error. It is a person changing their mind
+ * about their own email address, which they are entitled to do at any point
+ * before they pay. `submitShipping` was already written to be re-run — it
+ * explicitly swaps out the previous rate rather than stacking a second one — so
+ * the machinery for revisiting a step existed; only this guard denied it.
+ *
+ * What it must NOT do is drag the session backwards, or correcting a typo in an
+ * email would silently discard a chosen delivery option. So the recorded step is
+ * whichever of the two is FURTHER ALONG: the write lands, the progress stands.
+ *
+ * `completed` and `expired` are still refused, by `assertSessionWritable` — a
+ * paid order is not editable, and that guard is the one that matters.
+ */
+export function furthestStep(from: string, to: string): string {
   const fromIdx = STEP_ORDER[from] ?? -1;
   const toIdx = STEP_ORDER[to] ?? -1;
-  if (toIdx < fromIdx) {
-    throw new CommerceConflictError(`Cannot move checkout from "${from}" back to "${to}"`);
-  }
+  return toIdx >= fromIdx ? to : from;
 }
 
 /**
@@ -1210,9 +1367,11 @@ function surchargeLabelFor(applied: AppliedSurcharge[]): string | null {
 function serializeSession(
   row: CheckoutSession,
   surcharge: { surchargeTotalCents: number; totalCents: number; surchargeLabel: string | null },
+  paymentMode: CheckoutSessionSnapshot['paymentMode'],
   b2bAccountPaymentTerms?: string | null
 ): CheckoutSessionSnapshot {
   return {
+    paymentMode,
     sessionId: row.id,
     cartId: row.cartId,
     step: row.step as CheckoutSessionSnapshot['step'],

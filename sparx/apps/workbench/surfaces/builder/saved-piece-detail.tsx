@@ -77,7 +77,7 @@ export function SavedPieceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (key === '') {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>No piece to show</AlertTitle>
             <AlertDescription>
@@ -92,7 +92,7 @@ export function SavedPieceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this piece</AlertTitle>
             <AlertDescription>
@@ -328,7 +328,7 @@ function ManagePiece({
           </Alert>
 
           {piece.placeable ? null : (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This piece can&apos;t be opened in the editor</AlertTitle>
                 <AlertDescription>

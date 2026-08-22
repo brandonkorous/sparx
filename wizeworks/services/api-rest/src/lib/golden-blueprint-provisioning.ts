@@ -1,6 +1,5 @@
-// Golden-blueprint provisioning — the broker consumer + reconcile that install the
-// platform's DEFAULT site (the golden `sparx` blueprint) onto every new tenant's
-// PRIMARY property. A brand-new tenant should BE the golden template, not merely
+// Golden-blueprint provisioning — the broker consumer + reconcile that install a
+// brand's DEFAULT site onto every new tenant's PRIMARY property. A brand-new tenant should BE the golden template, not merely
 // render the base theme through a fallback (theming-spine Phase 3). It lives in
 // api-rest (the composition root) rather than a domain package or a standalone worker
 // because `installBlueprint` already lives here and pulls in @wizeworks/builder /
@@ -36,14 +35,32 @@ import type { FastifyBaseLogger } from 'fastify';
 import { ADVISORY_LOCKS, prisma, withAdvisoryTickLock, withTenant } from '@wizeworks/db';
 import { startConsumer, type RunningConsumer } from '@wizeworks/events';
 
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 import { installBlueprint } from './blueprint-installer.js';
 import { resolveBlueprintManifest } from './marketplace/resolve.js';
 import { resolvePrimaryPropertyId } from './property.js';
 
-/** The platform's default site. Its captured theme IS BASE_SILICA_THEME (the storefront
- *  render fallback), so installing it makes the fallback concrete rather than changing
- *  the look. */
-const GOLDEN_BLUEPRINT_KEY = 'sparx';
+/**
+ * Which starter site a tenant gets, asked of its BRAND rather than stated here.
+ *
+ * This was the literal `'sparx'`, applied to every tenant of every brand — so a
+ * Piggles salon was born with a homepage selling "sparx Enamel Mug" to its
+ * clients, while `piggles-starter` (same six products, named for an invented
+ * business) sat unused in the same catalog. Issue #091.
+ *
+ * Brand-BLIND on purpose: this reads the registry, never the brand's name, so a
+ * third brand needs no change here (piggles/CLAUDE.md RULE #0). sparx's key is
+ * the registry's own fallback, and its captured theme IS BASE_SILICA_THEME (the
+ * storefront render fallback), so a brand that publishes none keeps exactly the
+ * behaviour it had.
+ */
+async function goldenBlueprintKeyFor(tenantId: string): Promise<string> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { platformBrand: true },
+  });
+  return platformBrandIdentity(tenant?.platformBrand).goldenBlueprintKey;
+}
 
 /** The durable consumer name. Stable + distinct from every other `tenant.created`
  *  subscriber (legal-seed-worker, platform-crm-worker) so JetStream fans the event out
@@ -60,7 +77,7 @@ export type GoldenInstallOutcome =
  * exact same gate.
  *
  * Throws (for broker redelivery / reconcile retry) when the catalog can't yet resolve
- * `sparx` — that only happens in the boot window before selfRegisterFirstPartyCatalog
+ * the brand's golden key — that only happens in the boot window before selfRegisterFirstPartyCatalog
  * has published the shelf, so a redelivery a moment later succeeds. A genuinely absent
  * catalog is bounded by the consumer's maxDeliver and, ultimately, caught by the next
  * reconcile tick.
@@ -78,13 +95,14 @@ export async function installGoldenForTenant(
   );
   if (existing) return { installed: false, reason: 'already-installed' };
 
-  const blueprint = await resolveBlueprintManifest(tenantId, GOLDEN_BLUEPRINT_KEY);
+  const goldenKey = await goldenBlueprintKeyFor(tenantId);
+  const blueprint = await resolveBlueprintManifest(tenantId, goldenKey);
   if (!blueprint) {
     // Transient at boot (catalog not yet self-registered); persistent only if the image
     // ships no golden blueprint at all. Throw so the forward path redelivers; the
     // reconcile is the bounded backstop.
     throw new Error(
-      `golden-blueprint: catalog has no "${GOLDEN_BLUEPRINT_KEY}" blueprint for tenant ${tenantId}`
+      `golden-blueprint: catalog has no "${goldenKey}" blueprint for tenant ${tenantId}`
     );
   }
 

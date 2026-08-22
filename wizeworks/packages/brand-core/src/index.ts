@@ -36,9 +36,103 @@ export {
   type ResolvedEmailPalette,
 } from './email-palette';
 
+/**
+ * The placeholder shared code writes where a product's name belongs.
+ *
+ * ── WHY A TOKEN AND NOT A PARAMETER ─────────────────────────────────────────
+ *
+ * Most shared code can take the brand as an argument and interpolate. Some
+ * cannot, because it is DATA: a static catalog of payment gateways, a table of
+ * integration descriptors — declared once at module scope, long before any
+ * request exists to carry a brand. Those strings were written with a product
+ * name baked in, which made them right for one brand and wrong for the other at
+ * all times, on screens about money.
+ *
+ * So the data carries this token and an accessor resolves it. The rule that
+ * keeps it safe: **never export the raw data.** An unresolved `{platform}` on a
+ * live screen looks exactly like working software, so the only route to a value
+ * must be through something that fills it in.
+ */
+export const PLATFORM_TOKEN = '{platform}';
+
+/** Fill every `{platform}` with the brand's own name. Safe on text with none. */
+export function fillPlatformName(text: string, brand?: string | null): string {
+  if (!text.includes(PLATFORM_TOKEN)) return text;
+  return text.split(PLATFORM_TOKEN).join(platformBrandIdentity(brand).name);
+}
+
 /** The brand every tenant provisioned before the second brand existed carries,
  *  and the `tenants.platform_brand` column's own default. */
 export const DEFAULT_PLATFORM_BRAND = 'sparx';
+
+/** The starter site a brand that has published none is dressed with — the
+ *  platform's golden template, whose captured theme IS the storefront render
+ *  fallback. See `goldenBlueprintKey`. */
+export const DEFAULT_GOLDEN_BLUEPRINT = 'sparx';
+
+/**
+ * A brand's wordmark, as drawn geometry rather than as type.
+ *
+ * ── WHY THE ART ARRIVES AS CONFIGURATION ────────────────────────────────────
+ *
+ * The attribution badge at the foot of every tenant's public site is rendered by
+ * `wizeworks/apps/site`, which serves BOTH brands off one deployment and
+ * therefore may not import `@sparx/*` or `@piggles/*` (check-boundaries RULE 1).
+ * So it cannot reach either brand's marks package, and the badge set the name as
+ * bold type with an optional coloured tail — which is a reasonable rendering of
+ * "sparx" and is simply not what Piggles' logo is. Piggles' wordmark has a pink
+ * dot over the "i"; set as type it was just the word, in the wrong weight, with
+ * none of the mark in it.
+ *
+ * Geometry keyed by brand is the same shape every other value in this file
+ * already takes: `<BRAND>_BRAND_WORDMARK`, holding compact JSON. This file
+ * still names no brand and holds no brand's value, and the brand's own package
+ * remains the single source of the art — `scripts/check-brand-wordmark.mjs`
+ * fails the build if the configured value and the drawn paths disagree.
+ *
+ * Null when a brand has published none, and the badge then sets the name in type
+ * exactly as it did before. That fallback is load-bearing rather than tidy: a
+ * malformed value must degrade to a readable credit, never to an empty badge.
+ */
+export interface BrandWordmark {
+  /** The art's own canvas, e.g. `0 0 531.08 188.86`. Drives the aspect ratio. */
+  viewBox: string;
+  /** Letterforms. Painted in the badge's ink so the mark sits in its surface. */
+  paths: string[];
+  /**
+   * The one shape painted in the brand accent — Piggles' dot over the "i".
+   *
+   * Kept separate from `paths` rather than carrying its own colour, because the
+   * badge is self-contained by construction: it inlines every value it paints so
+   * a tenant's own CSS cannot reach it, and a colour baked into the art here
+   * would be the one thing on the badge that did not come from configuration.
+   */
+  accentPath: string | null;
+}
+
+/** Two shapes of malformed are possible — absent, and present-but-wrong — and
+ *  both must produce null rather than a throw or a half-drawn mark. A brand's
+ *  logo failing to parse is a cosmetic miss; an exception here is a tenant's
+ *  public site failing to render. */
+function readWordmark(name: string): BrandWordmark | null {
+  const raw = readEnv(name);
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) return null;
+    const { viewBox, paths, accentPath } = parsed as Record<string, unknown>;
+    if (typeof viewBox !== 'string' || viewBox.trim() === '') return null;
+    if (!Array.isArray(paths) || paths.length === 0) return null;
+    if (!paths.every((p): p is string => typeof p === 'string' && p.trim() !== '')) return null;
+    return {
+      viewBox: viewBox.trim(),
+      paths,
+      accentPath: typeof accentPath === 'string' && accentPath.trim() !== '' ? accentPath : null,
+    };
+  } catch {
+    return null;
+  }
+}
 
 export interface PlatformBrandIdentity {
   /** The `platform_brand` key itself, normalised. */
@@ -130,6 +224,15 @@ export interface PlatformBrandIdentity {
    */
   creditUrl: string | null;
   /**
+   * The brand's wordmark as drawn geometry — see `BrandWordmark` above for why
+   * the art travels as configuration and not as an import.
+   *
+   * Null when the brand has published none; the credit badge then sets `name`
+   * as type with `accentChars` trailing characters in `accentHex`, which is
+   * what every brand got before this existed.
+   */
+  wordmark: BrandWordmark | null;
+  /**
    * The billing plan a tenant born under this brand is stamped with — an id in
    * `@wizeworks/billing`'s plan registry, which decides both the SHAPE of the bill
    * and which Stripe ACCOUNT it is raised in.
@@ -149,6 +252,23 @@ export interface PlatformBrandIdentity {
    * read.
    */
   billingPlan: string;
+  /**
+   * The site every new tenant of this brand is dressed with — a blueprint key in
+   * the marketplace catalog, installed onto the primary property at sign-up.
+   *
+   * A brand fact, because a starter site carries the brand's OWN demo business:
+   * sparx's ships products called "sparx Enamel Mug", and Piggles' equivalent
+   * ships "Rowan Enamel Mug" precisely so no product's name reaches a customer's
+   * shop. The key used to be a literal `'sparx'` in the provisioner, so every
+   * Piggles business was born selling sparx merchandise on its own homepage
+   * (issue #091) even though `piggles-starter` had been written for it.
+   *
+   * Falls back to `sparx` — the platform's golden template, and what every tenant
+   * got before this existed. A brand with a starter of its own MUST set
+   * `<BRAND>_GOLDEN_BLUEPRINT`, because the fallback puts another company's name
+   * on a page the customer sees.
+   */
+  goldenBlueprintKey: string;
 }
 
 /** `PIGGLES_BRAND_NAME` from (`piggles`, `BRAND_NAME`). */
@@ -219,10 +339,12 @@ export function platformBrandIdentity(brand?: string | null): PlatformBrandIdent
     zoneDomain: readEnv(varName(key, 'ZONE_DOMAIN')),
     accentHex: readEnv(varName(key, 'BRAND_ACCENT')),
     creditUrl: readEnv(varName(key, 'CREDIT_URL')),
+    wordmark: readWordmark(varName(key, 'BRAND_WORDMARK')),
     siteUrl: readEnv(varName(key, 'BRAND_URL')),
     fromEmail: readEnv(varName(key, 'EMAIL_FROM')),
     accentChars: readAccentChars(varName(key, 'BRAND_ACCENT_CHARS'), name),
     billingPlan: readEnv(varName(key, 'BILLING_PLAN')) ?? 'modules',
+    goldenBlueprintKey: readEnv(varName(key, 'GOLDEN_BLUEPRINT')) ?? DEFAULT_GOLDEN_BLUEPRINT,
   };
 }
 

@@ -1,8 +1,8 @@
 # Tenant Provisioning — Modules × Starter × Blueprint (the Seed Model)
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-27
+**Last Updated:** 2026-08-20
 
 ---
 
@@ -197,19 +197,19 @@ Legend: 🟢 generic default (L2/L1) · 🟣 starter config (L2) · 🟡 starter
 
 ### 5.4 Commerce
 
-| Entity                                                                  | Class   | Coverage | Notes                                                                            |
-| ----------------------------------------------------------------------- | ------- | -------- | -------------------------------------------------------------------------------- |
-| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)  | 🟢      | ✅       | `commerceSiteService.bootstrapDefaults` on `module.activated(commerce)`.         |
-| `ShippingZone`/`Profile`/`Rate` (fallback)                              | 🟢      | ✅       | `shippingService.bootstrapDefaults` — "Everywhere" + "Standard" + flat fallback. |
-| `TaxZone`/`Rate`/`Exemption` (inactive home nexus)                      | 🟢      | ✅       | `taxService.bootstrapDefaults` — inactive zone, $0 until configured.             |
-| `ShippingZone`/`TaxZone` industry presets                               | 🟣      | 🔨       | **Starter config** (US-state sales-tax pack, region shipping).                   |
-| `ProductCategory` / `ProductCollection` (taxonomy)                      | 🟣      | 🔨       | **Starter config** — the industry's category tree (structure, not records).      |
-| `PriceList` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule`          | 🟣      | ❌       | **Starter config** (industry pricing shape).                                     |
-| `FitmentDomain`/`Category`/`Item`/`Variant` (dictionary)                | 🟣      | 🔨       | **Starter config** — the fitment dictionary (this program, Wave 0).              |
-| `Product` / `Variant` / `Option` / `Image`                              | 🟡      | ⚠️       | **Sample content** (example catalog records) — was 🔵; moves to the toggle.      |
-| `Discount` / `Bundle` / `ConfigurationTemplate`                         | 🟡 / 🟣 | ❌       | Promo records 🟡; reusable bundle structure 🟣.                                  |
-| `ProviderInstallation` (Stripe/Shippo/TaxJar…)                          | author  | —        | Runtime connect (onboarding Payments).                                           |
-| `ProductFitment`, carts, orders, payments, reviews, returns, gift cards | 🟡 / ⚪ | —        | Example fitment links + orders = 🟡 sample; real usage = ⚪.                     |
+| Entity                                                                  | Class   | Coverage | Notes                                                                                                                                                                                                             |
+| ----------------------------------------------------------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)  | 🟢      | ✅       | `commerceSiteService.bootstrapDefaults` on `module.activated(commerce)`.                                                                                                                                          |
+| `ShippingZone`/`Profile`/`Rate` (fallback)                              | ⚪      | —        | **Nothing is seeded.** Seeding an "Everywhere" zone invented a delivery the business had never offered (issue #031); a tenant with no zones now quotes "collect in person" — see `services/collection-option.ts`. |
+| `TaxZone`/`Rate`/`Exemption` (inactive home nexus)                      | 🟢      | ✅       | `taxService.bootstrapDefaults` — inactive zone, $0 until configured.                                                                                                                                              |
+| `ShippingZone`/`TaxZone` industry presets                               | 🟣      | 🔨       | **Starter config** (US-state sales-tax pack, region shipping).                                                                                                                                                    |
+| `ProductCategory` / `ProductCollection` (taxonomy)                      | 🟣      | 🔨       | **Starter config** — the industry's category tree (structure, not records).                                                                                                                                       |
+| `PriceList` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule`          | 🟣      | ❌       | **Starter config** (industry pricing shape).                                                                                                                                                                      |
+| `FitmentDomain`/`Category`/`Item`/`Variant` (dictionary)                | 🟣      | 🔨       | **Starter config** — the fitment dictionary (this program, Wave 0).                                                                                                                                               |
+| `Product` / `Variant` / `Option` / `Image`                              | 🟡      | ⚠️       | **Sample content** (example catalog records) — was 🔵; moves to the toggle.                                                                                                                                       |
+| `Discount` / `Bundle` / `ConfigurationTemplate`                         | 🟡 / 🟣 | ❌       | Promo records 🟡; reusable bundle structure 🟣.                                                                                                                                                                   |
+| `ProviderInstallation` (Stripe/Shippo/TaxJar…)                          | author  | —        | Runtime connect (onboarding Payments).                                                                                                                                                                            |
+| `ProductFitment`, carts, orders, payments, reviews, returns, gift cards | 🟡 / ⚪ | —        | Example fitment links + orders = 🟡 sample; real usage = ⚪.                                                                                                                                                      |
 
 ### 5.5 CRM
 

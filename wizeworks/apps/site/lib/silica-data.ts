@@ -135,6 +135,11 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     // un-clickable card rather than a link to nowhere — `dropEmptyUrlAttrs` removes
     // the `href=""` that the engine's `fillValue` would otherwise leave behind.
     url: p.handle ? `/products/${p.handle}` : '',
+    // The card's sold-out marker. AFFIRMATIVE and `undefined` when it is fine, never
+    // `inStock: false` — silica hides a node whose ref is absent, so a record missing
+    // the field entirely has to fall on the sellable side. A grid is where a shopper
+    // decides what to open, so it has to ride the list shape and not just the PDP.
+    soldOut: p.inStock ? undefined : true,
   };
 }
 
@@ -180,9 +185,18 @@ export function productToSilicaRecord(
     // for a nested sub-repeat.
     attributes: p.attributes ?? {},
     attributeSections: p.attributeSections ?? [],
-    // The honest inventory signals the PDP badge binds (`visibleWhen` low_stock),
-    // replacing fabricated "Selling fast" scarcity.
-    inStock: p.inStock,
+    // The honest inventory signals the buy box binds — `soldOut` swaps the whole
+    // add-to-cart form for a sold-out notice, `lowStock` shows the badge. Both are
+    // absent rather than false when they do not apply: the engine drops a node whose
+    // ref is absent, and a product nobody has counted must stay buyable.
+    //
+    // Read off the DEFAULT VARIANT, not the product. Two reasons, and both matter:
+    // the buy box has no version picker, so the only thing its form can add to a
+    // cart is that one variant — and the variant's `inStock` is COMPUTED per request
+    // from live levels, where the product's is a denormalized column maintained by
+    // the inventory ledger. A column can lag; the thing the button actually sells
+    // cannot. Falls back to the product flag for a product with no live variant.
+    soldOut: (defaultVariant?.inStock ?? p.inStock) ? undefined : true,
     lowStock: p.lowStock,
   };
 }

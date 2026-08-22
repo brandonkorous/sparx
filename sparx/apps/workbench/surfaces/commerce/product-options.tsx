@@ -454,7 +454,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
   // button invites someone to rebuild a lattice on top of nothing.
   if (options.isError || variants.isError) {
     return (
-      <Alert color="error" variant="soft">
+      <Alert color="error">
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s choices</AlertTitle>
           <AlertDescription>

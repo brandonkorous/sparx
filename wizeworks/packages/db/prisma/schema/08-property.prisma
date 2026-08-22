@@ -38,13 +38,18 @@ model Property {
   // Per-property settings bag (shape validated in the service, not the DB).
   settings Json @default("{}")
 
-  // Platform attribution — the always-on "Made with sparx" credit badge injected
-  // into this site's footer by wizeworks/apps/site (shell chrome, NOT a deletable
-  // BuilderNode). Defaults ON: at startup every site carries the credit (referral
-  // + brand exposure). The merchant-facing toggle is deliberately deferred until a
-  // client asks to remove it — flipping this to false is then a value change that
-  // hides the badge site-wide, no code change.
-  showSparxCredit Boolean @default(true) @map("show_sparx_credit")
+  // Platform attribution — the always-on credit badge injected into this site's
+  // footer by wizeworks/apps/site (shell chrome, NOT a deletable BuilderNode).
+  // Defaults ON: at startup every site carries the credit (referral + brand
+  // exposure). Flipping it to false hides the badge site-wide, no code change.
+  //
+  // NAMED FOR THE PLATFORM, NOT A PRODUCT. It was `show_sparx_credit`, from when
+  // there was one brand and the badge said "Made with sparx" on every site the
+  // renderer served — including every Piggles business's public footer. The badge
+  // has been resolved per tenant from `platform_brand` since 2026-08-16; the
+  // column kept the old name until 2026-08-21, which meant a Piggles owner's
+  // switch for their own footer credit was still spelled after another company.
+  showPlatformCredit Boolean @default(true) @map("show_platform_credit")
 
   // Per-site module scope (docs/49 Slice F) — a string[] of module slugs that are
   // DISABLED for this site only. Empty = all tenant-active modules are on.

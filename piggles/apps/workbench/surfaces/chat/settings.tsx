@@ -350,7 +350,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {!canEdit ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>You can view these settings but not change them</AlertTitle>
                 <AlertDescription>
@@ -364,7 +364,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* One message, the most specific one — the server's own reason a save
               failed (a rejected AI key names itself) beats a generic banner. */}
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save your settings</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -587,7 +587,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
             </div>
 
             {draft.aiEnabled && !config.aiKeyConfigured && keyInput.trim() === '' ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <Icon glyph={faRobot} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>Connect a key to turn this on</AlertTitle>

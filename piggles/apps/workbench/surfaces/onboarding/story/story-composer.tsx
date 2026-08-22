@@ -20,7 +20,7 @@ import { OnboardingLayout, type StepMark } from '../onboarding-layout';
 import { StoryComposeStage } from './story-compose-stage';
 import { StoryHelp } from './story-help';
 import { StoryTail } from './story-tail';
-import { StoryExtras, storyPlanItems, storyTotals } from './story-summary';
+import { StoryExtras, storyPlanItems } from './story-summary';
 
 // The COMPOSE phase orchestrator. The owner narrates their business (or seeds from an
 // example); each edit updates the live plan beside it. On "Build" it commits through
@@ -125,7 +125,6 @@ export function StoryComposer({
   const buildLabel = story.industry
     ? industryOf(story.industry).noun.replace(/^an? /, '')
     : 'workspace';
-  const { total, elsewhere, savings } = storyTotals(story);
 
   const steps: StepMark[] = [
     { key: 'story', label: 'Your story', status: 'current' },
@@ -215,7 +214,7 @@ export function StoryComposer({
       belowWork={<StoryHelp />}
       summary={
         <SummaryCard
-          plan={{ items: storyPlanItems(story), total, elsewhere, savings }}
+          plan={{ items: storyPlanItems(story) }}
           primary={{
             label: `Build my ${buildLabel}`,
             onClick: onBuild,

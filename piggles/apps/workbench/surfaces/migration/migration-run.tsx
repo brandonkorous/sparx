@@ -688,7 +688,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
                 </AlertContent>
               </Alert>
             ) : (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>
                     <Icon

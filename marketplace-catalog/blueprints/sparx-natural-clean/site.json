@@ -340,7 +340,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — new work, journal notes, and studio news, about once a month."
+                            "Join the list — we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",

@@ -922,15 +922,24 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     if (!tenant) throw notFound('Tenant', auth.tenantId);
 
     const state = readOnboarding(tenant.settings ?? null);
-    // "First page" signal: count the tenant's own CMS pages (the live
-    // content_entries model — NOT the deprecated `Page` table, which no longer
-    // receives writes). Auto-seeded legal pages (legal_kind set, docs/42) are
-    // excluded so the step reflects a page the tenant actually created. Read
-    // inside withRequestTenant so the FORCE-RLS count is tenant-scoped.
-    const [pageCount, paymentConfig] = await Promise.all([
+    // "First page" signal: count the pages the tenant HAS, of either kind.
+    //
+    //   • CMS pages — the live content_entries model, NOT the deprecated `Page`
+    //     table, which no longer receives writes. Auto-seeded legal pages
+    //     (legal_kind set, docs/42) are excluded so the step reflects a page the
+    //     tenant actually chose to have.
+    //   • BUILDER pages — what a blueprint install actually creates.
+    //
+    // Counting only the first is why a tenant who installed a template and got a
+    // five-page site was still being told to "add your first page". To the person
+    // reading it, a page is a page; which model holds it is our business, not
+    // theirs. Both counts are read inside withRequestTenant so FORCE-RLS scopes
+    // them to the tenant.
+    const [cmsPageCount, builderPageCount, paymentConfig] = await Promise.all([
       withRequestTenant(request, (tx) =>
         tx.contentEntry.count({ where: { typeKey: 'page', legalKind: null, deletedAt: null } })
       ),
+      withRequestTenant(request, (tx) => tx.builderPage.count()),
       // The payments step is "done" when the tenant can actually collect — the
       // stored `isActive` on their gateway config (sparx Pay charges-enabled, an
       // api-key gateway with credentials, or manual). This reads the same synced
@@ -945,6 +954,23 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
         })
       ),
     ]);
+    const pageCount = cmsPageCount + builderPageCount;
+
+    // "Template" signal: an INSTALL that exists, not a wizard flag.
+    //
+    // `state.completed.template` is written by the dashboard wizard's template
+    // step and by nothing else — so a tenant furnished through
+    // `/internal/tenant/furnish` (which is how a template is actually chosen
+    // during signup) had a blueprint installed and a flag still reading false.
+    // The checklist then asked them to choose a template they had already
+    // chosen, with a CTA that would install a second one over the top.
+    //
+    // The row is the honest signal: if a blueprint was installed, a template was
+    // chosen, whichever route did it. The flag still counts, so nothing that
+    // used to read done stops reading done.
+    const blueprintInstalled = await withRequestTenant(request, (tx) =>
+      tx.tenantBlueprintInstall.count({ where: { status: { in: ['installed', 'live'] } } })
+    );
 
     const steps = [
       {
@@ -971,7 +997,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
         id: 'theme' as const,
         title: 'Choose a template',
         description: 'Start from a complete, themed template — or design your own in the Builder.',
-        done: state.completed.template,
+        done: state.completed.template || blueprintInstalled > 0,
         cta: { label: 'Browse templates', href: '/marketplace/blueprints' },
       },
       {

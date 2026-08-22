@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-winebar',
-  version: '1.3.0',
+  version: '1.3.1',
   name: 'sparx — Wine bar',
   summary:
     'A complete, working site for an evening wine bar: a real by-the-glass and small-plates menu, and a live reservations flow (tables and bar stools as bookable resources, party-size reservation services, evening hours, a relaxed cancellation policy) on the /reserve page. Moody low-lit theme — charcoal-wine ground, a lit burgundy, a brass accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Decant.',

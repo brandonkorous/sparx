@@ -31,11 +31,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 // The Zod validator (a VALUE), aliased so it never clashes with the same-named
 // inferred TYPE below. `buildRuleSet` runs `.safeParse` on what the editor made.
 import { CollectionRuleSet as CollectionRuleSetSchema } from '@wizeworks/commerce-schemas';
 import type { CollectionPredicate, CollectionRuleSet } from '@wizeworks/commerce-schemas';
 import { api } from '../../lib/api/client';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 
 // The picker reader the product filing tab uses. Re-exported so callers import
 // their collection shapes from one place while there is one implementation.
@@ -298,16 +300,9 @@ export function useDeleteCollection(id: string) {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 export function collectionErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function slugifyHandle(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 120);
+  return slugifyWebSegment(value, 120);
 }

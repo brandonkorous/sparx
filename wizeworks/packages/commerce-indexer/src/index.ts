@@ -20,6 +20,10 @@ export const EVENTS = [
   'variant.updated',
   'variant.deleted',
   'inventory.adjusted',
+  // `order.placed` and `order.paid` were BOTH absent, so a new order was never
+  // indexed and a paid one was never re-indexed. See handler.ts's order case.
+  'order.placed',
+  'order.paid',
   'order.cancelled',
   'order.fulfilled',
   'order.delivered',

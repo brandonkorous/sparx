@@ -402,24 +402,48 @@ h6 {
  *
  * Base UI portals every overlay — popover, select listbox, menu, tooltip,
  * dialog — into `div[data-base-ui-portal]` on <body>, and silica positions them
- * at `z-index: 70`. dockview's floating windows sit at 1001 and climb as you
- * raise them, so ANY overlay opened inside a floating pane rendered BEHIND the
- * pane: the control was mounted, correct and interactive, with the table painted
- * over the top of it.
+ * from its own z-scale, which tops out at 90. dockview's floating windows sit at
+ * 1001 and climb as you raise them, so ANY overlay opened inside a floating pane
+ * rendered BEHIND the pane: the control was mounted, correct and interactive,
+ * with the table painted over the top of it.
  *
  * It reads exactly like a transparency bug, which is how it survived — the
- * popover's computed background is an opaque white the whole time. It was the
- * toolbar's overflow popover that made it obvious, but nothing about it is
- * specific to that: a `<Select>` in a floating pane had it too.
+ * popover's computed background is an opaque white the whole time.
  *
- * The POSITIONER is raised rather than the portal. The portal is an unstyled
- * container, and giving it `position` would re-anchor the absolutely-positioned
- * children inside it — moving every overlay in the app to fix a paint order.
- * The positioner is already `position: absolute`, so a z-index lands on it with
- * nothing else changing, and silica's relative ordering among overlays is
- * preserved because they all shift together. */
-[data-base-ui-portal] > * {
-  z-index: 10000;
+ * ── WHY THIS IS NOW TOKENS AND NOT ONE BLANKET RULE ─────────────────────────
+ *
+ * It used to be `[data-base-ui-portal] > * { z-index: 10000 }`, aimed at the
+ * POSITIONER. But the positioner is not the portal's only child: Base UI also
+ * renders an `[data-base-ui-inert]` backdrop as a sibling, and that rule raised
+ * it too — to the same 10000, while silica's own rule held the positioner down
+ * at `var(--z-popover, 70)`. The backdrop is `position: fixed; inset: 0` with a
+ * clip-path cutout around the TRIGGER only, so it covered the listbox it had
+ * been opened to serve.
+ *
+ * Every `<Select>` in the console became unclickable with a mouse. Not visibly:
+ * the popup painted normally, items simply never highlighted on hover and clicks
+ * fell through to "dismiss". KEYBOARD still worked, which is why it survived —
+ * arrow-then-Enter selects perfectly, so any check that drove a select by
+ * keystroke passed. It took clicking one.
+ *
+ * The fix is silica's own lever. Its z-scale is deliberately a SYSTEM property —
+ * a transient surface must outrank anything it can be opened from — so the whole
+ * scale is shifted above dockview at once, keeping every relative order intact.
+ * No component-level override, and nothing to remember at a call site. */
+:root {
+  --z-drawer: 10040;
+  --z-dialog: 10050;
+  --z-lightbox: 10060;
+  --z-popover: 10070;
+  --z-tooltip: 10080;
+  --z-toast: 10090;
+}
+
+/* Base UI's internal backdrop, which blocks the page while an overlay is open.
+ * It has no z-index of its own, so it needs one to clear dockview — but BELOW
+ * every silica overlay above, or it eats the popup it exists to serve. */
+[data-base-ui-portal] > [data-base-ui-inert] {
+  z-index: 10030;
 }
 
 /* ── WORKSPACE ZOOM: THE PANE-CONTENTS HALF ─────────────────────────────────

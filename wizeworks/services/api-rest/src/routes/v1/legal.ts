@@ -3,6 +3,8 @@
 //
 //   GET    /v1/legal/checklist          → completeness over the legal registry
 //   POST   /v1/legal/pages              → instantiate a starter template → draft
+//   GET    /v1/legal/pages/:id/starter  → the newer starter wording, if there is one
+//   POST   /v1/legal/pages/:id/starter  → take it
 //   GET    /v1/legal/placements         → footer doc placements (for management)
 //   POST   /v1/legal/placements         → wire an existing page into the footer
 //   PATCH  /v1/legal/placements/:id     → reorder / enable / relabel
@@ -16,7 +18,13 @@ import { z } from 'zod';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
-import { serializeEntry, getLegalChecklistTx, createLegalPageTx } from '@wizeworks/cms';
+import {
+  serializeEntry,
+  getLegalChecklistTx,
+  createLegalPageTx,
+  legalStarterUpdateTx,
+  refreshLegalPageTx,
+} from '@wizeworks/cms';
 import { writeAudit } from '@wizeworks/api-core/audit';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
@@ -72,6 +80,50 @@ const legalRoutes: FastifyPluginAsync = (app) => {
     }
 
     reply.code(201);
+    return ok(serializeEntry(entry));
+  });
+
+  // ── The newer starter wording ─────────────────────────────────────────────
+  //
+  // The checklist can mark a page `stale` — published, on wording the platform
+  // has since rewritten — and until these two existed there was NO way off that
+  // state: `legal_template_version` was written once at creation and never
+  // again, so the row said "open it to see what changed and update it" and the
+  // editor it opened could do neither. The GET is what "see what changed"
+  // means; the POST is "update it".
+  app.get('/v1/legal/pages/:id/starter', async (request) => {
+    requireRole(request, 'viewer');
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
+    const update = await withRequestTenant(request, (tx) => legalStarterUpdateTx(tx, id));
+    // null is an ANSWER — this page is already current — not a missing resource.
+    return ok({ update });
+  });
+
+  app.post('/v1/legal/pages/:id/starter', async (request) => {
+    const auth = requireRole(request, 'editor');
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
+
+    const { entry, events } = await withRequestTenant(request, async (tx) => {
+      const result = await refreshLegalPageTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        id
+      );
+      await writeAudit(tx, request, auth, {
+        action: 'content.entry.updated',
+        entityType: 'content_entry',
+        entityId: result.entry.id,
+        after: {
+          legalKind: result.entry.legalKind,
+          legalTemplateVersion: result.entry.legalTemplateVersion,
+        },
+      });
+      return result;
+    });
+
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
     return ok(serializeEntry(entry));
   });
 

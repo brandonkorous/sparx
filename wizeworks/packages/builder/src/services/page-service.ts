@@ -148,6 +148,35 @@ async function assertValidRecordType(ctx: ServiceContext, recordType: string): P
 // an injected default is identical to a freshly-seeded site's home.
 const HOME_STARTER = STARTER_PAGES.find((s) => s.key === 'home');
 
+// ── WHAT COUNTS AS THE HOME PAGE ────────────────────────────────────────────
+//
+// A page with no address of its own IS the site root, and the store spells that
+// THREE ways: a sparx-seeded home writes NULL, a blueprint-installed one writes
+// `''`, and a site imported from elsewhere can carry `'/'`. Every other reader in
+// the platform already knows this — siteService.getPublishedHome matches all three,
+// site-lint's `addressOf` folds them together, and blueprints/capture says so in as
+// many words.
+//
+// This file matched NULL alone, and the cost was not a missing home but an EXTRA
+// one: a site whose home came from a blueprint looked home-less to `listOrSeed`,
+// which duly "healed" it by injecting the starter landing page beside the real one.
+// Two pages then claimed `/`, the site check flagged it, and deleting the injected
+// one brought it straight back on the very next list read — a delete that reported
+// success and undid itself.
+const HOME_SLUGS = ['', '/'] as const;
+
+/** The home page as a query: a slugless singleton, in any of its three spellings. */
+export const homeWhere = (propertyId: string) => ({
+  kind: 'singleton',
+  propertyId,
+  OR: [{ slug: null }, { slug: { in: [...HOME_SLUGS] } }],
+});
+
+/** The home page as a test on a row already in hand. Same rule as `homeWhere`. */
+export function isHomeRow(row: { kind: string; slug: string | null }): boolean {
+  return row.kind === 'singleton' && (HOME_SLUGS as readonly string[]).includes(row.slug ?? '');
+}
+
 // Inject the slugless landing singleton (the site's `/`, getPublishedHome) when the
 // property has none. STARTER_PAGES seeds it on an EMPTY property, but any path that
 // creates pages FIRST — a blueprint shipping only collection templates, a fixture,
@@ -157,7 +186,7 @@ const HOME_STARTER = STARTER_PAGES.find((s) => s.key === 'home');
 // singleton exists. Returns the row it created, or null if a home already existed.
 async function ensureHomeTx(tx: TxClient, ctx: PropertyContext): Promise<BuilderPage | null> {
   const existing = await tx.builderPage.findFirst({
-    where: { kind: 'singleton', slug: null, propertyId: ctx.propertyId },
+    where: homeWhere(ctx.propertyId),
     select: { id: true },
   });
   if (existing || !HOME_STARTER) return null;
@@ -216,7 +245,7 @@ export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageSummaryDto[
     if (rows.length > 0) {
       // Pages exist but none is a home (e.g. a blueprint shipped only collection
       // templates) — inject the default landing page, then re-read in order.
-      const hasHome = rows.some((r) => r.kind === 'singleton' && r.slug === null);
+      const hasHome = rows.some(isHomeRow);
       if (!hasHome && (await ensureHomeTx(tx, ctx))) {
         const healed = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
@@ -545,7 +574,7 @@ export function getPublishedBySlug(
 export function getPublishedHome(ctx: PropertyContext): Promise<PublishedPageDto | null> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
-      where: { kind: 'singleton', slug: null, propertyId: ctx.propertyId },
+      where: homeWhere(ctx.propertyId),
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     const row = rows.find((r) => r.publishedTree != null);
@@ -567,7 +596,7 @@ export function getPublishedHome(ctx: PropertyContext): Promise<PublishedPageDto
 export function getDraftHome(ctx: PropertyContext): Promise<PublishedPageDto | null> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
-      where: { kind: 'singleton', slug: null, propertyId: ctx.propertyId },
+      where: homeWhere(ctx.propertyId),
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     const row = rows[0];

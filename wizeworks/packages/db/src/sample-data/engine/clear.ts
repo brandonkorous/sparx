@@ -82,6 +82,29 @@ export async function clearSampleDataOnTx(
     await tx.bundle.deleteMany({ where: { tenantId, bundleProductId: { in: productIds } } });
   }
 
+  // The sample RECIPE, and it is the third RESTRICT edge into variants — the one
+  // that was missed. `inventory-depth` creates one BillOfMaterials whose output
+  // and components are all sample variants, and `BomComponent.variantId` is
+  // RESTRICT, so deleting the products below was refused and the WHOLE clear
+  // rolled back with a 500. Nothing could be removed at all. Issue #012.
+  //
+  // Matched by variant rather than by a `sample` marker because the row carries
+  // none — it is identified by what it points at, which is the same way bundles
+  // above are found. Components cascade from the BOM; an assembly order that
+  // referenced it is SET NULL, so a real batch history survives losing the
+  // recipe it was built to.
+  if (variantIds.length) {
+    await tx.billOfMaterials.deleteMany({
+      where: {
+        tenantId,
+        OR: [
+          { outputVariantId: { in: variantIds } },
+          { components: { some: { variantId: { in: variantIds } } } },
+        ],
+      },
+    });
+  }
+
   // Inventory supply chain — transfers + suppliers (cascade POs/receipts/links) before products.
   await tx.inventoryTransfer.deleteMany({ where: { tenantId, number: { startsWith: 'TRF-9' } } });
   await tx.purchaseOrder.deleteMany({

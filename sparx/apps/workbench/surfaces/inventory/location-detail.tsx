@@ -382,7 +382,7 @@ function LocationEditor({
           ) : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this location</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>
@@ -592,7 +592,7 @@ function LocationEditor({
             {/* Names exactly what is missing, only once the address is required
                 but not yet complete — a rename never triggers this. */}
             {showAddrWarning ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>The address needs a little more</AlertTitle>
                   <AlertDescription>

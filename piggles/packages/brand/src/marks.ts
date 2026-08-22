@@ -108,3 +108,26 @@ export const LOGO_ICON_OFFSET = { x: -31.75, y: -14.93 } as const;
 
 /** Where the wordmark's own viewBox origin sits inside the lockup canvas. */
 export const LOGO_WORDMARK_OFFSET = { x: 214.03, y: 21.32 } as const;
+
+// ─── The wordmark, as the platform badge consumes it ────────────────────────
+//
+// The attribution badge at the foot of every tenant's public site is rendered by
+// `wizeworks/apps/site`, which serves the sites of BOTH brands from one
+// deployment and therefore may not import this package at all
+// (check-boundaries RULE 1 — the rule the whole brand split exists for).
+//
+// So the badge reads the geometry as CONFIGURATION, out of
+// `PIGGLES_BRAND_WORDMARK`, the same way it already reads the name, the accent
+// and the destination. This constant IS that value: the art above, serialised.
+// It is exported so the configured string is produced from the drawing rather
+// than pasted beside it, and `scripts/check-brand-wordmark.mjs` fails the build
+// if what is deployed and what is drawn ever disagree.
+//
+// Compact on purpose (no pretty-printing): it travels in a ConfigMap entry.
+
+/** The value of `PIGGLES_BRAND_WORDMARK` — this file's art, serialised. */
+export const WORDMARK_ENV_VALUE = JSON.stringify({
+  viewBox: WORDMARK_VIEWBOX,
+  paths: [...WORDMARK_LETTER_PATHS],
+  accentPath: WORDMARK_DOT_PATH,
+});

@@ -21,7 +21,7 @@ import styles from './story.module.css';
 
 // The dropdown menus behind the canvas tokens. Each renders a FLAT list (no section
 // headers, matching the grammar's menu contract). A clause option shows its module,
-// its live price ("included" once the module is already on, else "+$N"), and a
+// whether the app it needs is already switched on, and a
 // "suggested" tag when the chosen industry recommends it.
 
 function ClauseOption({
@@ -39,7 +39,9 @@ function ClauseOption({
   if (!cl) return null;
   const mod = MODULE_BY_KEY[cl.mod];
   const on = resolveModules(story);
-  const price = on[cl.mod] ? 'included' : `+$${mod?.price ?? 0}`;
+  // Not a price — what CHANGES if you pick this. Everything is in the plan
+  // either way (RULE #2); the only question is whether the app is already on.
+  const effect = on[cl.mod] ? 'already on' : 'switches this on';
   const phrase = cl.cust ?? cl.owner ?? id;
   const suggested =
     !!story.industry && (INDUSTRY_BY_SLUG[story.industry]?.suggest ?? []).includes(id);
@@ -59,7 +61,7 @@ function ClauseOption({
           {cl.slot ? ' …' : ''}
         </span>
         <small>
-          {mod?.name} · {price}
+          {mod?.name} · {effect}
           {suggested ? (
             <>
               {' · '}

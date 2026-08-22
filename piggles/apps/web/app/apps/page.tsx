@@ -4,6 +4,7 @@ import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
 import { accountUrl, appsInGroup } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { AppsFigure } from '@/components/marketing/hero/apps-figure';
 import { GROUP_COPY } from '@/components/marketing/groups';
@@ -24,8 +25,7 @@ import { CloseBand } from '@/components/marketing/close-band';
 
 export const metadata: Metadata = {
   title: 'All fifteen apps',
-  description:
-    'Everything Piggles includes, grouped the way a business actually works: your website, selling, people, money, and running the place. Every app is in the $49 plan.',
+  description: `Everything Piggles includes, grouped the way a business actually works: your website, selling, people, money, and running the place. Every app is in the ${PRICE_LABEL} plan.`,
 };
 
 export default function AppsIndexPage() {
@@ -41,7 +41,7 @@ export default function AppsIndexPage() {
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', 'apps-index')}
         >
-          Get Piggles — $49/month
+          Get Piggles — {PRICE_LABEL}/month
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
           See what changes the price
@@ -90,7 +90,7 @@ export default function AppsIndexPage() {
       ))}
 
       <CloseBand
-        heading="All fifteen, from the first day, for $49 a month."
+        heading={`All fifteen, from the first day, for ${PRICE_LABEL} a month.`}
         primary={{ label: 'Start free for 14 days', href: accountUrl('signup', 'apps-close') }}
         secondary={{ label: 'See what it costs', href: '/pricing' }}
       />

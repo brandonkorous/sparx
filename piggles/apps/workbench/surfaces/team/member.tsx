@@ -289,7 +289,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
             // Said at the top, once, in the person's own words — not as a
             // scatter of disabled controls the reader has to interpret.
             isOwner ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>This is the account owner</AlertTitle>
                   <AlertDescription>
@@ -299,7 +299,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
                 </AlertContent>
               </Alert>
             ) : isSelf ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>This is you</AlertTitle>
                   <AlertDescription>

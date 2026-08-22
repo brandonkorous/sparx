@@ -59,7 +59,7 @@ export function ActivityCard({
       description="A record of the things people have done in your account, newest first. Only actions are listed here — simply looking at something is not."
     >
       {isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load your activity</AlertTitle>
             <AlertDescription>

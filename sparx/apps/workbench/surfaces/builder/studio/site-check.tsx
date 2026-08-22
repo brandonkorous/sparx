@@ -499,7 +499,7 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
             {error ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>Could not run the check</AlertTitle>
                   <AlertDescription>
@@ -521,7 +521,7 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
             ) : (
               <div className="flex flex-col gap-5">
                 {stale ? (
-                  <Alert color="warning" variant="soft">
+                  <Alert color="warning">
                     <AlertContent>
                       <AlertDescription>
                         You have changed the site since this ran, so it may not still be true.

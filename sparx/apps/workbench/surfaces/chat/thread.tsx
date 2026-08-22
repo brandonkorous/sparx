@@ -344,7 +344,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
   if (id === '') {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="warning" variant="soft" className="max-w-md">
+        <Alert color="warning" className="max-w-md">
           <AlertContent>
             <AlertTitle>No conversation to show</AlertTitle>
             <AlertDescription>Open a conversation from the inbox to see it here.</AlertDescription>
@@ -365,7 +365,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError || !data) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this conversation</AlertTitle>
             <AlertDescription>

@@ -265,7 +265,7 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
             </div>
 
             {data.length === 0 ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>No industries to choose from</AlertTitle>
                   <AlertDescription>

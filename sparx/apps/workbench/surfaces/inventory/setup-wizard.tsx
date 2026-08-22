@@ -129,7 +129,7 @@ function StepRow({
           {!done && !skipped ? <Text className="text-sm">{step.why}</Text> : null}
           {skipped && step.skipCost ? <Text className="text-sm">{step.skipCost}</Text> : null}
           {step.discrepancy ? (
-            <Alert color="warning" variant="soft" className="mt-1">
+            <Alert color="warning" className="mt-1">
               <AlertContent>
                 <AlertDescription>{step.discrepancy}</AlertDescription>
               </AlertContent>

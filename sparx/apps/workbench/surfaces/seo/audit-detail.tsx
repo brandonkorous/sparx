@@ -197,7 +197,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <div className="flex h-full items-center justify-center p-8">
-            <Alert color="error" variant="soft" className="max-w-md">
+            <Alert color="error" className="max-w-md">
               <AlertContent>
                 <AlertTitle>Could not score this page</AlertTitle>
                 <AlertDescription>
@@ -233,7 +233,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                 wrong the engine returns null, and we say so with a success note
                 rather than a hollow prompt. */}
             {card.fixFirst ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <Lightbulb className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>Fix this first</AlertTitle>
@@ -317,7 +317,7 @@ export function AuditDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (!VALID_TYPES.includes(type as EntityType) || !id) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="warning" variant="soft" className="max-w-md">
+        <Alert color="warning" className="max-w-md">
           <AlertContent>
             <AlertTitle>No page to show</AlertTitle>
             <AlertDescription>

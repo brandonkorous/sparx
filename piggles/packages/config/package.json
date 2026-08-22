@@ -5,7 +5,8 @@
   "description": "Piggles product adapters — the app registry, the lexicon, and product identity.",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./pricing": "./src/pricing.ts"
   },
   "dependencies": {
     "@fortawesome/pro-solid-svg-icons": "^7.3.1",

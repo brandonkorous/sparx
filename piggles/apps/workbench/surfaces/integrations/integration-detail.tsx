@@ -354,7 +354,7 @@ function ConnectIntegration({
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not connect that service</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

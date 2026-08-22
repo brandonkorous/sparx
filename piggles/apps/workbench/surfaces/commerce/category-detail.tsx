@@ -423,7 +423,7 @@ function CategoryEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this category</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

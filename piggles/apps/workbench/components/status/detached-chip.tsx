@@ -53,7 +53,7 @@ export function DetachedChip({ windows }: { windows: DetachedWindow[] }) {
     <DropdownMenu>
       <Tooltip content="Panes torn into their own windows">
         <DropdownMenuTrigger>
-          <Button color="neutral" variant="ghost" size="xs" className="gap-1.5">
+          <Button variant="ghost" size="xs" className="gap-1.5">
             <Icon glyph={faWindow} className="size-3.5" aria-hidden />
             {windows.length === 1 ? '1 window' : `${String(windows.length)} windows`}
           </Button>

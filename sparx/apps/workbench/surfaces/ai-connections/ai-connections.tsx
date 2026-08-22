@@ -246,7 +246,7 @@ function KeyForm({
   return (
     <div className="flex flex-col gap-4">
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>That key could not be used</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>
@@ -462,7 +462,7 @@ function AiAccountSection({
           </Alert>
 
           {aiOn === false ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>The AI features are switched off right now</AlertTitle>
                 <AlertDescription>
@@ -525,7 +525,7 @@ function AiAccountSection({
             pay for and paste its key below.
           </Text>
           {aiOn === false ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>The AI features are switched off right now</AlertTitle>
                 <AlertDescription>
@@ -543,7 +543,7 @@ function AiAccountSection({
           />
         </>
       ) : (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>No AI account is connected yet</AlertTitle>
             <AlertDescription>
@@ -668,7 +668,7 @@ function ConnectedAssistantsSection({
           Only an account admin can see and remove connected apps. Ask an admin on your team.
         </Text>
       ) : isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load your connected apps</AlertTitle>
             <AlertDescription>
@@ -985,7 +985,7 @@ function ApiKeysSection({
             Create an API key
           </Heading>
           {issueFailure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>That key could not be created</AlertTitle>
                 <AlertDescription>{issueFailure}</AlertDescription>
@@ -1087,7 +1087,7 @@ function ApiKeysSection({
           </div>
         </div>
       ) : isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load your keys</AlertTitle>
             <AlertDescription>
@@ -1168,7 +1168,7 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <TriangleAlert />
           <AlertContent>
             <AlertTitle>Could not load your AI connections</AlertTitle>

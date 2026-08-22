@@ -120,7 +120,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
       <Shell>
         <div className="flex flex-col gap-3 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
-          <Alert color="warning" variant="soft" role="alert">
+          <Alert color="warning" role="alert">
             Your account cannot give an app access to this business. Ask whoever owns it to make the
             connection.
           </Alert>
@@ -145,7 +145,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
         {/* The security sentence, and the reason it names the host: the one thing
             a person can actually check is whether the destination looks like the
             app they just used. */}
-        <Alert color="warning" variant="soft" className="text-sm">
+        <Alert color="warning" className="text-sm">
           This gives an outside app live access to your business. Its access is sent to{' '}
           <strong>{redirectHost}</strong> — only continue if you started this yourself.
         </Alert>

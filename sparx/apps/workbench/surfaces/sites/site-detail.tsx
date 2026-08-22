@@ -137,7 +137,7 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-xl flex-col gap-4">
           {isBuilderRequired(create.error) ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Adding another site needs the Builder module</AlertTitle>
                 <AlertDescription>
@@ -147,7 +147,7 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
               </AlertContent>
             </Alert>
           ) : create.isError && !handleError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create the site</AlertTitle>
                 <AlertDescription>Nothing was created. Try again in a moment.</AlertDescription>
@@ -259,7 +259,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this site</AlertTitle>
             <AlertDescription>

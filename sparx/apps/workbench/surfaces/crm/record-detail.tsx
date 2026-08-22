@@ -180,7 +180,7 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {record.isError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not load this {label.toLowerCase()}</AlertTitle>
                 <AlertDescription>
@@ -191,7 +191,7 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : null}
 
           {fields.length === 0 && type.isSuccess ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>This record type has no details on it yet</AlertTitle>
                 <AlertDescription>

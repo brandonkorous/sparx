@@ -33,6 +33,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import {
   useFitmentDomains,
@@ -41,6 +42,7 @@ import {
   type FitmentDomain,
   type FitmentNode,
 } from './products-data';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 
 export { useFitmentDomains, useFitmentNodes };
 export type { FitmentDimension, FitmentDomain, FitmentNode };
@@ -259,10 +261,7 @@ export function useInstallFitmentDictionary() {
  * back to the caller's wording.
  */
 export function fitmentErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Reading a domain's shape out loud ──────────────────────────────────── */
@@ -304,20 +303,12 @@ export function rootCountLabel(domain: FitmentDomain): string {
 
 /** A domain slug — lowercase, digits, hyphens (matches the API's SlugString). */
 export function slugifyDomain(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+  return slugifyWebSegment(value, 63);
 }
 
 /** A node slug — same alphabet as a domain slug, room for 127 chars. */
 export function slugifyNode(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 127);
+  return slugifyWebSegment(value, 127);
 }
 
 /** A dimension key — a stable snake_case machine id derived from a label, never

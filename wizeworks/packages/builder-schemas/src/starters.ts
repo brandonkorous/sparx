@@ -154,11 +154,13 @@ function homeTree(): BuilderNode {
           contentWidth: 'contained',
           padding: 'md',
         },
+        // No vendor credit. A starter footer belongs to the BUSINESS, and the
+        // line named a product its customers have never heard of — the same
+        // package is fronted by more than one brand, so it was wrong in at
+        // least one of them at all times. The optional credit badge is a
+        // separate, brand-resolved feature (@wizeworks/ui platform-credit).
         layout: { direction: 'row', justify: 'between', alignItems: 'center' },
-        children: [
-          node('Text', { props: { variant: 'meta', text: '© Field & Form' } }),
-          node('Text', { props: { variant: 'meta', text: 'Built with sparx' } }),
-        ],
+        children: [node('Text', { props: { variant: 'meta', text: '© Field & Form' } })],
       }),
     ],
   });

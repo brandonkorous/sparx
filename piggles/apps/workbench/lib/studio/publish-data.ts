@@ -67,10 +67,20 @@ export function useSiteCheck() {
   });
 }
 
+/**
+ * What `POST /v1/builder/site/publish` actually returns.
+ *
+ * This used to declare `publishedAt` and a nested `release` too, and neither has
+ * ever been on the wire — `api.post<T>()` is an unchecked cast, so TypeScript
+ * cheerfully agreed and the toast rendered `String(undefined)`. Every field here
+ * is one the route sends; if the route grows another, add it there first.
+ */
 export interface PublishResult {
+  published: boolean;
+  /** How many pages went live — the only part of this a person reads. */
   pages: number;
-  publishedAt: string;
-  release: { id: string; hash: string };
+  releaseId: string;
+  hash: string;
 }
 
 /** Put everything live at once. */

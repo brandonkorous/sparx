@@ -418,7 +418,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full flex-col items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <TriangleAlert />
             <AlertContent>
               <AlertTitle>Could not load partner access</AlertTitle>

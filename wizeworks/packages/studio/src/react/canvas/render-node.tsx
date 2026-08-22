@@ -69,6 +69,15 @@ export interface RenderContext {
   /** Where a drop would land, drawn as an edge or a ring while dragging. */
   dropHint: DropHint | null;
   /**
+   * The node the author is typing INTO, if any.
+   *
+   * While a node is being edited its element owns its own text: React renders
+   * the words it had when editing began and never touches them again, because
+   * the children it is handed do not change until the edit is committed as an
+   * op. That is what lets a caret survive a hover or a selection re-render.
+   */
+  editingId?: string | null;
+  /**
    * The node currently in the air on a press-and-hold drag.
    *
    * A mouse drag carries its own ghost and needs nothing; a finger drag has no
@@ -143,11 +152,29 @@ function stateClasses(ctx: RenderContext, node: AddressableNode): string {
   return classes.join(' ');
 }
 
-/** Resolve a bound value for the canvas — sample data, so a bound heading reads
- *  as a real product name instead of as `{{…}}`. */
+/**
+ * Resolve a bound value for the canvas — sample data, so a bound heading reads as
+ * a real product name instead of as `{{…}}`.
+ *
+ * A binding that names an ATTRIBUTE is not text and never was: the anchor on a
+ * starter Contact page binds `site.identity.phoneHref` into `href`, and drawing
+ * that as the link's words put `tel:01632960118` on the page where the number
+ * belonged. It only stayed hidden while the binding resolved to nothing.
+ */
 function boundText(ctx: RenderContext, node: AddressableNode): string | undefined {
-  if (node.data?.kind !== 'value') return undefined;
-  return ctx.host.resolveBinding?.(node.data.ref, node.data.attr);
+  if (node.data?.kind !== 'value' || node.data.attr) return undefined;
+  return ctx.host.resolveBinding?.(node.data.ref);
+}
+
+/** The attribute a binding fills, when it names one. `href` on a link, `src` on
+ *  a picture — the value goes on the element, and the words stay the words. */
+function boundAttr(
+  ctx: RenderContext,
+  node: AddressableNode
+): { key: string; value: string } | undefined {
+  if (node.data?.kind !== 'value' || !node.data.attr) return undefined;
+  const value = ctx.host.resolveBinding?.(node.data.ref, node.data.attr);
+  return value === undefined ? undefined : { key: node.data.attr, value };
 }
 
 export function renderNode(node: Node, ctx: RenderContext, key?: string | number): ReactNode {
@@ -186,11 +213,21 @@ function renderElement(
   }
 
   const state = stateClasses(ctx, node);
+  const editing = Boolean(node.id) && node.id === ctx.editingId;
   props.className = [node.class, state].filter(Boolean).join(' ') || undefined;
   props.key = key;
   if (node.id) {
     props['data-sui-id'] = node.id;
-    props.draggable = isEditable(ctx, node.id) && !node.locked;
+    // Not draggable while it is being typed into: dragging is how you select a
+    // few words with a mouse, and a draggable element answers that gesture by
+    // picking the whole block up instead.
+    props.draggable = isEditable(ctx, node.id) && !node.locked && !editing;
+  }
+  if (editing) {
+    props.contentEditable = true;
+    props.suppressContentEditableWarning = true;
+    props.spellCheck = true;
+    props['data-studio-editing'] = '';
   }
 
   const tag = node.tag.toLowerCase();
@@ -202,6 +239,9 @@ function renderElement(
     props.dangerouslySetInnerHTML = { __html: node.rawHtml };
     return createElement(tag, props);
   }
+
+  const attr = boundAttr(ctx, node);
+  if (attr) props[ATTR_ALIASES[attr.key] ?? attr.key] = attr.value;
 
   const bound = boundText(ctx, node);
   if (bound !== undefined) return createElement(tag, props, bound);

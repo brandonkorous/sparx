@@ -24,6 +24,7 @@ import {
   expandComponent,
   flattenSymbols,
   resolveTree,
+  iconSvg,
   sanitizeElement,
   type ComponentNode,
   type DataScope,
@@ -231,8 +232,30 @@ function walk(node: WalkNode | string, key: React.Key, ctx: WalkContext): React.
   };
   if (node.class) props.className = node.class;
   if (VOID_ELEMENTS.has(tag)) return React.createElement(tag, props);
+
+  // ICONS. `toHtml` inlines an SVG for a CHILDLESS element carrying `data-icon`
+  // (`iconSvg`), and this walk — which otherwise mirrors it — did not, so every
+  // icon in a tenant's header or footer rendered as an empty span on the live
+  // site while rendering correctly in the builder canvas. The one that matters is
+  // the mobile menu button: a 32px transparent square with nothing in it, and the
+  // only navigation a phone visitor has. It was tappable, so nothing errored and
+  // nothing looked broken — it just was not there.
+  const icon = iconMarkup(node);
+  if (icon)
+    return React.createElement(tag, { ...props, dangerouslySetInnerHTML: { __html: icon } });
+
   const kids = (node.children ?? []).map((c, i) => walk(c, i, ctx));
   return React.createElement(tag, props, ...kids);
+}
+
+/** The inline SVG for a childless `data-icon` element, mirroring `toHtml`. Trusted
+ *  markup: it comes from silica's own bundled Lucide set keyed by name, never from
+ *  tenant input — an unknown name yields nothing rather than anything injected. */
+function iconMarkup(node: WalkNode): string | undefined {
+  if (node.children && node.children.length > 0) return undefined;
+  const name = node.attrs?.['data-icon'];
+  if (typeof name !== 'string') return undefined;
+  return iconSvg(name);
 }
 
 export function SilicaChrome({

@@ -96,6 +96,7 @@ import operatorTenantRoutes from './routes/internal/operator-tenant.js';
 import operatorPartnerRoutes from './routes/internal/operator-partners.js';
 import operatorUserRoutes from './routes/internal/operator-users.js';
 import operatorSiteRoutes from './routes/internal/operator-sites.js';
+import operatorAnnouncementRoutes from './routes/internal/operator-announcements.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -140,6 +141,7 @@ import publicFormsUploadRoutes from './routes/v1/public/forms-upload.js';
 import publicMarketplaceRoutes from './routes/v1/public/marketplace.js';
 import publicPartnerRoutes from './routes/v1/public/partners.js';
 import publicBootcampRoutes from './routes/v1/public/bootcamps.js';
+import publicAnnouncementRoutes from './routes/v1/public/announcements.js';
 import partnerRoutes from './routes/v1/partner/index.js';
 import partnerBootcampRoutes from './routes/v1/partner/bootcamps.js';
 import tenantPartnerRoutes from './routes/v1/tenant-partner.js';
@@ -921,6 +923,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(operatorPartnerRoutes);
   await app.register(operatorUserRoutes);
   await app.register(operatorSiteRoutes);
+  await app.register(operatorAnnouncementRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
   // map is easy to skim. Adding a new route group is a one-line registration.
@@ -980,6 +983,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicMarketplaceRoutes);
   await app.register(publicPartnerRoutes);
   await app.register(publicBootcampRoutes);
+  await app.register(publicAnnouncementRoutes);
   await app.register(partnerRoutes);
   await app.register(partnerBootcampRoutes);
   await app.register(tenantPartnerRoutes);

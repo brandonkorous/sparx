@@ -140,6 +140,19 @@ export interface StudioHost {
   resolveBinding?: (ref: string, attr?: string) => string | undefined;
 
   /**
+   * WHERE a bound value comes from, in the app's own words — "your site details,
+   * under Email address".
+   *
+   * Bound words cannot be typed over: whatever the tree holds is a fallback the
+   * binding replaces. Without this, that reads as a broken editor — a Contact
+   * page showed `hello@yourbusiness.com`, double-clicking it did nothing, and the
+   * Inspector offered a Words box that accepted an edit and changed nothing on
+   * the page. The engine knows the ref; only the app knows what its own screen is
+   * called, so the sentence is the app's to write.
+   */
+  describeBinding?: (ref: string) => string | undefined;
+
+  /**
    * How an EMAIL canvas resolves what it draws.
    *
    * Its own pair, not the site's `resolveBinding`, because they read different

@@ -13,6 +13,11 @@
 // codes. Offline first, because the commonest failure is not our fault and not
 // theirs and needs no apology — just "you're offline". Then the ones they can
 // fix. Then ours, which gets a plain admission rather than a euphemism.
+//
+// One rule earned the hard way: where one OUTCOME has two causes with different
+// remedies, it gets two messages. Advice is part of the contract — a sentence
+// that sends somebody to fix a connection that was never broken has cost them
+// more than saying nothing would have.
 
 import { ApiError } from '@wizeworks/api-client';
 
@@ -37,24 +42,46 @@ export interface WriteFailure {
   readonly code: string;
 }
 
+/** The browser itself says there is no connection. The one case where "check
+ *  your connection" is real advice. */
+function isOffline(): boolean {
+  return typeof navigator !== 'undefined' && !navigator.onLine;
+}
+
 /**
- * True when the browser says we are offline, or the request never reached a
- * server at all. `fetch` rejects with a bare TypeError for DNS failures, refused
- * connections, and a dropped Wi-Fi link alike — indistinguishable from each
- * other and, for the operator, all the same event.
+ * The request never reached us, but the connection is fine.
+ *
+ * `fetch` rejects with a bare TypeError for a dropped Wi-Fi link, a DNS failure,
+ * a refused connection AND a failed CORS preflight — which is what a service
+ * returning 503 looks like from the browser. This USED to be folded into
+ * "you're offline" on the grounds that the operator cannot tell them apart.
+ *
+ * They cannot, but the ADVICE differs, and that is what makes it worth telling
+ * apart: someone sent to check a connection that was never broken goes and
+ * restarts a router, comes back, and finds the same failure. Seen for real —
+ * a save came back 503 while the browser was plainly online, and the console
+ * told the owner she was not connected to the internet.
  */
-function isOffline(error: unknown): boolean {
-  if (typeof navigator !== 'undefined' && !navigator.onLine) return true;
+function isUnreachable(error: unknown): boolean {
   return error instanceof TypeError;
 }
 
 export function describeWriteFailure(error: unknown): WriteFailure {
-  if (isOffline(error)) {
+  if (isOffline()) {
     return {
       message:
         "You're not connected to the internet, so that didn't save. Check your connection and try again — what you typed is still here.",
       showReference: false,
       code: 'offline',
+    };
+  }
+
+  if (isUnreachable(error)) {
+    return {
+      message:
+        "We couldn't reach Piggles just then, so that didn't save. Your connection looks fine, so this is probably us — wait a moment and save again. What you typed is still here.",
+      showReference: false,
+      code: 'unreachable',
     };
   }
 
@@ -121,9 +148,17 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   // they entered, and it is written for them (docs/06 §3). Passing it through is
   // the whole point: "Choose a delivery date that isn't in the past" beats any
   // generic sentence we could substitute.
+  //
+  // Except VALIDATION_ERROR, where the message is not written for them at all:
+  // it is the fixed string "Request validation failed.", and the field paths that
+  // would explain it live in `details`. This reporter renders BESIDE a pane's own
+  // toast, so leaking it here put the schema's words on screen next to the plain
+  // ones — seen on order O-000003 as "Could not write that down · Nothing changed
+  // on this order" and "That didn't save · Request validation failed." together.
   if (error.status >= 400 && error.status < 500) {
+    const generic = "That didn't save. Check what you entered and try again.";
     return {
-      message: error.message || "That didn't save. Check what you entered and try again.",
+      message: error.code === 'VALIDATION_ERROR' ? generic : error.message || generic,
       showReference: false,
       code: error.code || 'rejected',
     };

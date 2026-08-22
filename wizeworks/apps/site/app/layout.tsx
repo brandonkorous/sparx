@@ -50,7 +50,7 @@ import { getPublishedBuilderStyles } from '@/lib/builder';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { SiteAnalyticsBeacon } from '@/components/site-analytics-beacon';
 import { TopProgressBar } from '@/components/top-progress-bar';
-import { ChatWidget } from '@wizeworks/chat-widget';
+import { SiteChatWidget } from '@/components/site-chat-widget';
 import { PlatformCredit } from '@wizeworks/ui';
 import { platformBrandIdentity } from '@wizeworks/brand-core';
 import { ChunkReloadGuard } from '@wizeworks/app-kit';
@@ -99,17 +99,31 @@ export async function generateMetadata(): Promise<Metadata> {
   const proto = mdHdrs.get('x-forwarded-proto') ?? 'https';
   const origin = host ? `${proto}://${host}` : undefined;
 
+  // The description a search engine prints under the title. It read
+  // `Shop ${site.name}.` for EVERY tenant — an assumption that the business
+  // sells, on a platform where a publisher and a CRM-only team render this same
+  // layout, and a sentence carrying no information even when the assumption held.
+  //
+  // The tenant's own tagline is the right answer, and it is the words they
+  // actually wrote. Where they have not written one, this is OMITTED rather than
+  // invented: a crawler with no description writes a snippet from the page, which
+  // is always truer than a template guess about what kind of business this is.
+  // Pages that set their own `seoDescription` override this either way.
+  // Empty string, not undefined, when there is no tagline — a tenant who cleared
+  // the field is as much 'no description' as one who never set it.
+  const description = site.tagline?.trim() ?? '';
+
   return {
     ...(origin ? { metadataBase: new URL(origin) } : {}),
     title: { default: site.name, template: `%s · ${site.name}` },
-    description: `Shop ${site.name}.`,
+    ...(description ? { description } : {}),
     // Site-level default social card. Pages with a real image (product photo,
     // collection hero, author-set OG) override this with their own; pages without
     // one inherit a tenant-branded generated card.
     openGraph: {
       type: 'website',
       title: site.name,
-      description: `Shop ${site.name}.`,
+      ...(description ? { description } : {}),
       images: [
         ogImageUrl({
           title: site.name,
@@ -227,6 +241,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     href: brand.creditUrl ?? brand.siteUrl ?? '/',
     accentColor: brand.accentHex ?? 'rgba(255, 255, 255, 0.96)',
     accentChars: brand.accentHex ? brand.accentChars : 0,
+    // The drawn mark, when the brand has published one. Null falls back to the
+    // name set as type — which is the right treatment for a name whose mark IS
+    // its letterforms, and was the wrong one for a logo with a shape in it.
+    wordmark: brand.wordmark,
   };
   // Mirror of the `?sparxSitePreview=` token, set by the proxy so this layout
   // (which the App Router never hands searchParams) can render the DRAFT chrome
@@ -582,7 +600,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       to the bottom-LEFT corner when the chat launcher (fixed
                       bottom-right) is on, so the two don't overlap. Hidden only when
                       the site opts out. */}
-                  {site.showSparxCredit !== false ? (
+                  {site.showPlatformCredit !== false ? (
                     <PlatformCredit
                       {...creditBrand}
                       placement={chatEnabled && chatApiUrl ? 'left' : 'right'}
@@ -597,7 +615,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     />
                   ) : null}
                   {chatEnabled && chatApiUrl ? (
-                    <ChatWidget
+                    <SiteChatWidget
                       apiUrl={chatApiUrl}
                       tenantSlug={site.slug}
                       accentColor={silicaThemePrimary ?? site.theme?.colorPrimary ?? null}

@@ -1223,7 +1223,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Orders start at a £250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking."
+                              "Orders start at a $250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking."
                             ],
                             "id": "2c7daee6-0e00-4045-a106-16fa85a9f025",
                             "ord": "a1"
@@ -1690,7 +1690,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order £250 for delivery."
+                      "Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order $250 for delivery."
                     ],
                     "id": "ba9372c4-e253-4b95-beee-889cf7c3783c",
                     "ord": "a1"
@@ -1810,7 +1810,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Delivery starts at a £250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order."
+                      "Delivery starts at a $250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order."
                     ],
                     "id": "b9e8b6af-286b-454c-8df1-1df0b06c1cd6",
                     "ord": "a1"
@@ -2664,7 +2664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Delivered on your area’s set day when ordered by 2pm the day before, on orders over the £250 minimum. Chilled and ambient arrive on one truck, in one drop."
+                              "Delivered on your area’s set day when ordered by 2pm the day before, on orders over the $250 minimum. Chilled and ambient arrive on one truck, in one drop."
                             ],
                             "id": "d77d840a-0808-4f2e-9395-eded6cca0353",
                             "ord": "a2"

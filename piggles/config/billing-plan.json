@@ -6,7 +6,13 @@
     "(docs/initial/docs/commercial/BILLING_RULES.md). It must never grow tiers, and",
     "nothing in this file can be arranged into a Basic/Pro/Enterprise grid because",
     "there is only one plan in it. There is deliberately no annual price either —",
-    "'Piggles is $49/month' is the whole sentence the marketing site says.",
+    "'Piggles is $99/month' is the whole sentence the marketing site says.",
+    "",
+    "A FOUNDING-MEMBER RATE IS NOT A SECOND PLAN AND MUST NOT BECOME ONE. It is a",
+    "Stripe coupon applied to this same base price, announced on the header notice",
+    "(authored in the WizeWorks admin console, stored in platform_notices). Nothing",
+    "in this file changes for it — adding a second `base` here is how the one-plan",
+    "promise quietly turns into tiers.",
     "",
     "It lives here and not in @wizeworks/billing because a plan's shape and prices are",
     "brand policy: the platform owns the engine, the brand owns what it charges",
@@ -30,7 +36,7 @@
     "product": "piggles_base",
     "lookupKey": "piggles_base_monthly",
     "priceEnv": "PIGGLES_STRIPE_PRICE_BASE_MONTHLY",
-    "monthlyCents": 4900
+    "monthlyCents": 9900
   },
   "included": {
     "businesses": 1,

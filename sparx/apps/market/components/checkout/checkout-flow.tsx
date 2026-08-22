@@ -47,6 +47,9 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
   const [address, setAddress] = useState<Address>(EMPTY_ADDRESS);
   const [rates, setRates] = useState<ShippingRate[]>([]);
   const [chosenRate, setChosenRate] = useState<ShippingRate | null>(null);
+  // Whether THIS address has been quoted — not `rates.length`, since a seller
+  // who cannot reach the address returns nothing, and that is an answer.
+  const [quoted, setQuoted] = useState(false);
 
   async function handleContact(e: React.FormEvent) {
     e.preventDefault();
@@ -75,33 +78,35 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
     setError(null);
     try {
       // First submit: quote rates for the entered destination + require a pick.
-      if (rates.length === 0) {
-        const quoted = await quoteShipping(merchantSlug, token, session.sessionId, {
+      //
+      // Whatever the quote returns is what the merchant actually offers. The
+      // invented free "Standard shipping" row that used to fill an empty quote
+      // could never survive `submitShipping`, which re-prices the choice against
+      // a fresh server quote — a made-up ref is not in it, so picking it
+      // dead-ended on "that shipping option is no longer available".
+      if (!quoted) {
+        const options = await quoteShipping(merchantSlug, token, session.sessionId, {
           destinationCountry: address.country,
           destinationPostal: address.postalCode,
         });
-        // Fall back to a single free standard option when the carrier engine has
-        // no configured rates, so checkout still completes.
-        const options =
-          quoted.length > 0
-            ? quoted
-            : [
-                {
-                  providerSlug: 'manual',
-                  rateRef: 'standard',
-                  service: 'Standard shipping',
-                  carrier: 'Standard',
-                  amountCents: 0,
-                  estimatedDays: null,
-                },
-              ];
+        setQuoted(true);
         setRates(options);
         setChosenRate(options[0] ?? null);
+        if (options.length === 0) {
+          setError(
+            'This seller can’t get an order to that address. Check it over, or try another one.'
+          );
+        }
         setBusy(false);
         return;
       }
 
-      const rate = chosenRate ?? rates[0]!;
+      const rate = chosenRate ?? rates[0];
+      if (!rate) {
+        setError('Choose how you’d like to get your order before carrying on.');
+        setBusy(false);
+        return;
+      }
       const updated = await submitShipping(merchantSlug, token, session.sessionId, {
         shippingAddress: address,
         shippingRateRef: rate.rateRef,
@@ -179,7 +184,17 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
         {step === 'shipping' ? (
           <form onSubmit={handleShipping} className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">Shipping address</h2>
-            <AddressForm value={address} onChange={setAddress} />
+            <AddressForm
+              value={address}
+              onChange={(next) => {
+                // A different address is a different question — drop the answer
+                // to the old one rather than carrying a rate priced for it.
+                setAddress(next);
+                setQuoted(false);
+                setRates([]);
+                setChosenRate(null);
+              }}
+            />
 
             {rates.length > 0 ? (
               <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
@@ -238,11 +253,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                 disabled={busy}
                 loading={busy}
               >
-                {busy
-                  ? 'Loading…'
-                  : rates.length === 0
-                    ? 'Get shipping rates'
-                    : 'Continue to payment'}
+                {busy ? 'Loading…' : quoted ? 'Continue to payment' : 'See your options'}
               </Button>
             </div>
           </form>

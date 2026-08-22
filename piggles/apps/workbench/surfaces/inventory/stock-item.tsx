@@ -287,7 +287,7 @@ function CountForm({
         <FieldDescription>
           {current
             ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted — we work out the difference and record it.`
-            : 'This has never been counted here. Put in what is on the shelf and it becomes sellable straight away.'}
+            : 'This has never been counted here. Put in what is on the shelf and your website starts keeping track of it.'}
         </FieldDescription>
       </Field>
 
@@ -526,7 +526,7 @@ function ManagementForm({
       {/* ONE message, the most specific one — not a generic "check your entries"
           above a field that already knows what is wrong. */}
       {ruleIncomplete ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>A reorder rule needs both numbers</AlertTitle>
             <AlertDescription>
@@ -1021,7 +1021,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
             out.length === levels.length
               ? 'Nothing left to sell'
               : `${plural(out.length, 'location has', 'locations have')} nothing left`,
-          body: 'Shoppers cannot buy what is out of stock, and it stays on your website looking available until it is restocked or taken off sale.',
+          body: 'Your website shows it as sold out and will not take an order for it. It comes back on sale by itself the moment you count some in.',
         }
       : low.length > 0
         ? {
@@ -1164,12 +1164,13 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
               }
             />
           ) : levels.length === 0 ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Nothing has been counted yet</AlertTitle>
                 <AlertDescription>
-                  Your website treats an uncounted item as out of stock. Record a count at any of
-                  your locations and it becomes sellable straight away.
+                  Until you count it, your website sells this one without limit — nobody has told it
+                  there is a number. Record a count at any of your locations and it starts keeping
+                  track: it comes off sale when it reaches zero, and back on when you bring more in.
                 </AlertDescription>
               </AlertContent>
             </Alert>

@@ -180,7 +180,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {query.isError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not load your settings</AlertTitle>
                 <AlertDescription>
@@ -303,7 +303,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Field>
 
                 {draft.autoMergeThreshold !== null ? (
-                  <Alert color="warning" variant="soft">
+                  <Alert color="warning">
                     <AlertContent>
                       <AlertTitle>Records will be merged without you seeing them</AlertTitle>
                       <AlertDescription>

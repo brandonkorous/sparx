@@ -9,7 +9,17 @@ import { useShortcutSurfaces } from '@/lib/console/use-shortcut-surfaces';
 import { useWorkbench } from '@/lib/workbench/context';
 import { ShortcutPanel } from './shortcut-panel';
 
-export function ShortcutPanelHost({ list }: { list: ShortcutList }) {
+export function ShortcutPanelHost({
+  list,
+  pinned,
+  onTogglePin,
+  onDismiss,
+}: {
+  list: ShortcutList;
+  pinned: boolean;
+  onTogglePin: () => void;
+  onDismiss: () => void;
+}) {
   const { controller } = useWorkbench();
   const { favourites, recents } = useShortcutSurfaces();
   const toggleFavorite = useToggleFavorite();
@@ -20,6 +30,9 @@ export function ShortcutPanelHost({ list }: { list: ShortcutList }) {
       list={list}
       surfaces={list === FAVOURITES_LIST ? favourites : recents}
       clearing={clearRecents.isPending}
+      pinned={pinned}
+      onTogglePin={onTogglePin}
+      onDismiss={onDismiss}
       onOpen={(definition) => {
         controller.open(definition.key);
       }}

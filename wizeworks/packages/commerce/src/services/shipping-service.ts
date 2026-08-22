@@ -30,6 +30,7 @@ import type { LabelResult } from './shipping-provider-bridge';
 // Imported (not just re-exported) because `quoteForCart` below composes them.
 import { resolvePackageForItems, resolveShipFromAddress } from './shipping-request-resolver';
 import { listInstallations } from './provider-service';
+import { collectionOption } from './collection-option';
 
 export {
   isAddressUsableForLiveRating,
@@ -403,59 +404,6 @@ export async function deleteRate(ctx: ServiceContext, id: string): Promise<void>
   });
 }
 
-// ─── Activation default (docs/104 L2) ─────────────────────────────────
-//
-// On `module.activated(commerce)`, seed a fallback shipping setup so checkout
-// can quote a rate before the tenant connects a carrier or configures zones —
-// otherwise an enabled store can add to cart but never complete an order. One
-// "Everywhere" zone (empty `countries` = unconstrained, matches every address),
-// one "Standard" profile, one flat rate. Find-or-create by "the tenant has any
-// zone": a tenant that configured shipping is never touched. `tenantId` is
-// scoped explicitly (not just RLS) since the local superuser bypasses RLS.
-export async function bootstrapDefaults(ctx: ServiceContext): Promise<{ created: boolean }> {
-  return withTenant(ctx, async (tx) => {
-    const zoneCount = await tx.shippingZone.count({ where: { tenantId: ctx.tenantId } });
-    if (zoneCount > 0) return { created: false };
-
-    const zone = await tx.shippingZone.create({
-      data: {
-        tenantId: ctx.tenantId,
-        name: 'Everywhere',
-        priority: 0,
-        targeting: { countries: [], regions: [], postalCodeRanges: [] },
-      },
-      select: { id: true },
-    });
-    const profile = await tx.shippingProfile.create({
-      data: { tenantId: ctx.tenantId, name: 'Standard' },
-      select: { id: true },
-    });
-    await tx.shippingRate.create({
-      data: {
-        tenantId: ctx.tenantId,
-        zoneId: zone.id,
-        profileId: profile.id,
-        name: 'Standard Shipping',
-        type: 'flat',
-        amountCents: 500,
-        currency: 'USD',
-        estimatedDeliveryDays: 5,
-      },
-    });
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'system',
-      action: 'commerce.shipping.bootstrapped',
-      entityType: 'ShippingZone',
-      entityId: zone.id,
-      diff: { after: { zone: 'Everywhere', rate: 'Standard Shipping', amountCents: 500 } },
-    });
-    return { created: true };
-  });
-}
-
 // ─── Real-time rate shopping ─────────────────────────────────────────
 //
 // Manual zone/rate-band rates are always computed as the guaranteed
@@ -476,7 +424,7 @@ export async function rateShipment(
   const totalWeightGrams = request.packages.reduce((s, p) => s + p.weight, 0);
   const totalItemValueCents = request.packages.reduce((s, p) => s + (p.declaredValueCents ?? 0), 0);
 
-  const [matchingZones, liveRates] = await Promise.all([
+  const [zoneRead, liveRates] = await Promise.all([
     withTenant(ctx, async (tx) => {
       const zones = await tx.shippingZone.findMany({
         // Only zones this SITE delivers from (docs/131 §4); a null property_id
@@ -489,10 +437,18 @@ export async function rateShipment(
         include: { rates: true },
         orderBy: { priority: 'desc' },
       });
-      return zones.filter((z) => zoneMatchesAddress(z.targeting, request.toAddress.country));
+      // Both counts matter, and they mean different things. NONE AT ALL is a
+      // business that has never said how it delivers; SOME BUT NONE MATCHING is
+      // a business that has said, and this address is outside it. Only the first
+      // gets answered on their behalf — see collection-option.ts.
+      return {
+        anyConfigured: zones.length > 0,
+        matching: zones.filter((z) => zoneMatchesAddress(z.targeting, request.toAddress.country)),
+      };
     }),
     tryLiveRates(ctx, request),
   ]);
+  const matchingZones = zoneRead.matching;
 
   const out: RateOption[] = [...liveRates];
   for (const zone of matchingZones) {
@@ -515,6 +471,14 @@ export async function rateShipment(
         isFreight: false,
       });
     }
+  }
+
+  // Delivery was never set up here, and no carrier answered. Rather than invent
+  // one — which is what the old activation bootstrap did, and how a
+  // collection-only bakery came to offer worldwide postage (issue #031) — offer
+  // the thing every business with a counter can actually do.
+  if (out.length === 0 && !zoneRead.anyConfigured) {
+    return [collectionOption(request.currency)];
   }
 
   return out.sort((a, b) => a.amountCents - b.amountCents);

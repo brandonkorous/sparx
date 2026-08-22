@@ -327,8 +327,11 @@ describe('inventory bins — DB-backed', () => {
           select: { id: true },
         })
       );
+      // Matches on what the shelf IS, not on who set it up: the message named a
+      // product until the brand sweep made it brand-neutral, and this assertion
+      // was left behind pinning the old wording.
       await expect(archiveBin(ctx(), defaultBin?.id ?? '')).rejects.toThrow(
-        /provisioned by sparx/i
+        /set up for you and cannot be removed/i
       );
     });
   });

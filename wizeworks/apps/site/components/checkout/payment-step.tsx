@@ -43,6 +43,20 @@ export interface PaymentStepProps {
 // from before this existed.
 export function PaymentStep(props: PaymentStepProps) {
   const { session } = props;
+
+  // The shop takes payment itself — over the counter, on collection, by
+  // arrangement. There is no card form to draw and nothing to charge, so this
+  // branch comes first: a business on manual payments is not a B2B question and
+  // not a card question.
+  //
+  // It used to be neither, which meant it was a card question by default: the
+  // step always created an intent, so a shop that chose "Manual payments" in the
+  // picker had a checkout that stopped dead at the last step. The server has
+  // always been able to place the order (a manual order settles outside the
+  // platform, exactly like net terms) — the storefront simply never asked.
+  if (session.paymentMode === 'in_person') {
+    return <InPersonPaymentStep {...props} />;
+  }
   // A prepay-designated account has no net-terms entitlement — go straight
   // to card, same as a non-B2B shopper (server-side submitPayment() also
   // rejects a net-terms request from a prepay account either way).
@@ -93,6 +107,59 @@ export function PaymentStep(props: PaymentStepProps) {
 // gateway entirely. Backed by the same submitPayment()/completeCheckout()
 // calls the card flow uses; the service layer enforces this is only reachable
 // for an active B2B account (checkout-service.ts submitPayment()).
+/**
+ * Paying the shop directly.
+ *
+ * No card fields, no gateway, nothing to confirm — the order is placed and the
+ * money changes hands where the goods do. The one thing this screen owes the
+ * customer is to be unambiguous that they have NOT paid yet, because every other
+ * checkout they have ever used took the money at this point.
+ */
+function InPersonPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStepProps) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      // Nothing is sent about HOW it will be paid. The server reads that from
+      // the shop's own configuration, so a caller cannot declare itself paid in
+      // person at a shop that expects a card.
+      await submitPayment(tenantSlug, session.sessionId, {});
+      const result = await completeCheckout(tenantSlug, session.sessionId, crypto.randomUUID());
+      onPaid(result.orderNumber);
+    } catch (err) {
+      setError((err as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+      <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+        How you&rsquo;ll pay
+      </h2>
+      <Alert color="info">
+        You pay when you collect. Placing this order does not take any money now, and no card
+        details are needed.
+      </Alert>
+      {error ? <Alert color="danger">{error}</Alert> : null}
+      <div className="flex gap-3">
+        <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
+          &larr; Back
+        </Button>
+        <Button type="submit" color="primary" size="lg" className="flex-1" disabled={busy}>
+          {busy
+            ? 'Placing order…'
+            : `Place order — ${formatMoney(session.totals.totalCents, session.currency)} to pay`}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStepProps) {
   const [poNumber, setPoNumber] = useState('');
   const [terms, setTerms] = useState<string>('net30');

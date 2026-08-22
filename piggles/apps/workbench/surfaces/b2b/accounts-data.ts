@@ -23,12 +23,17 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
 export type AccountStatus = 'active' | 'credit_hold' | 'suspended' | 'inactive';
-export type PaymentTerms = 'prepay' | 'net30' | 'net60' | 'net90';
+/** `prepay`, or `netN` for any agreed number of days. NOT a fixed set: a
+ *  supplier on Net 14 is ordinary, and this used to omit it (and net15, which
+ *  the Companies pane could write) so such an account read back as having no
+ *  terms at all. See lib/payment-terms.ts. */
+export type PaymentTerms = string;
 export type ContactRole = 'primary_contact' | 'buyer' | 'approver' | 'viewer';
 
 /** One trade account as the list and the detail header read it. Mirrors
@@ -119,21 +124,11 @@ export function accountState(status: AccountStatus): { label: string; tone: Tone
   }
 }
 
-/** How the account pays, in plain words. */
-export function paymentTermsLabel(terms: PaymentTerms | null): string {
-  switch (terms) {
-    case 'prepay':
-      return 'Pays before you ship';
-    case 'net30':
-      return 'Pays within 30 days';
-    case 'net60':
-      return 'Pays within 60 days';
-    case 'net90':
-      return 'Pays within 90 days';
-    default:
-      return 'No terms set';
-  }
-}
+/** How the account pays, in plain words — DERIVED, so any agreed number of days
+ *  reads as itself. The `switch` this replaced fell through to "No terms set"
+ *  for every value it did not list, which reported that no agreement existed
+ *  about money somebody is owed. One source now: lib/payment-terms.ts. */
+export { paymentTermsLabel } from '../../lib/payment-terms';
 
 export const CONTACT_ROLE_LABELS: Record<ContactRole, string> = {
   primary_contact: 'Main contact',
@@ -321,8 +316,5 @@ export function useUpdateContact(id: string) {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 export function accountErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

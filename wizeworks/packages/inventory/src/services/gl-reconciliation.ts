@@ -211,7 +211,7 @@ export async function glReconciliationReport(
     const lines: ReconciliationLine[] = [
       {
         kind: 'sparx_value',
-        description: 'What sparx values your stock at, from your deliveries and sales',
+        description: 'What your stock is valued at here, from your deliveries and sales',
         amountCents: valuation.totalValueCents,
         source: 'sparx',
         reference: `${valuation.totalUnits} units on hand`,
@@ -219,7 +219,7 @@ export async function glReconciliationReport(
       {
         kind: 'goods_received_not_invoiced',
         description:
-          'On your shelves with no supplier invoice yet — sparx counts it, your books do not until the bill arrives',
+          'On your shelves with no supplier invoice yet — counted here, but not in your books until the bill arrives',
         amountCents: grniCents,
         source: 'sparx',
         reference: `${Number(timing?.grni_lines ?? 0)} order lines`,
@@ -272,7 +272,7 @@ export async function glReconciliationReport(
       kind: 'ledger_value',
       description: snapshot
         ? 'What your accounting system says the inventory account holds'
-        : 'Nobody has told sparx what your inventory account says yet',
+        : 'Nobody has entered what your inventory account says yet',
       amountCents: ledgerValueCents,
       source: snapshot?.source ?? 'accountant',
       reference: snapshot ? snapshot.accountName : null,

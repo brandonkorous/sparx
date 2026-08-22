@@ -9,6 +9,8 @@
 // NEVER in here; `credentialFields[].secret` marks which captured fields are write-only
 // and encrypted at rest (docs/111 §2).
 
+import { fillPlatformName, platformBrandIdentity } from '@wizeworks/brand-core';
+
 /** How a tenant turns the gateway on. */
 export type GatewayOnboarding =
   // Stripe Connect Express — sparx hosts onboarding, nothing to capture (sparx Pay).
@@ -95,13 +97,13 @@ const CARD_CAPS: GatewayCapabilities = {
   storedMethods: true,
 };
 
-export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
+const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
   {
     id: 'sparx_pay',
-    name: 'sparx Pay',
+    name: '{platform} Pay',
     tagline: 'Recommended',
     blurb:
-      'Accept cards in minutes. sparx handles disputes, settlement, and PCI, and pays out to your bank automatically. Flat 0.5% per transaction — no monthly fee, and better blended rates as you grow.',
+      'Accept cards in minutes. {platform} handles disputes, settlement, and PCI, and pays out to your bank automatically. Flat 0.5% per transaction — no monthly fee, and better blended rates as you grow.',
     recommended: true,
     onboarding: 'sparx_hosted',
     checkout: 'inline',
@@ -116,7 +118,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'stripe_direct',
     name: 'Your own Stripe',
     blurb:
-      'Route checkout to your own Stripe account. No sparx fee — you own disputes, PCI, and payouts. Paste your secret key and webhook signing secret from the Stripe dashboard.',
+      'Route checkout to your own Stripe account. No {platform} fee — you own disputes, PCI, and payouts. Paste your secret key and webhook signing secret from the Stripe dashboard.',
     onboarding: 'api_keys',
     checkout: 'inline',
     capabilities: CARD_CAPS,
@@ -141,12 +143,12 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
         placeholder: 'whsec_…',
         secret: true,
         optional: true,
-        help: 'From the webhook endpoint you point at sparx. Optional but recommended.',
+        help: 'From the webhook endpoint you point at {platform}. Optional but recommended.',
       },
     ],
     environments: false,
     sparxFee: false,
-    feeNote: 'No sparx fee — you pay Stripe’s rates directly.',
+    feeNote: 'No {platform} fee — you pay Stripe’s rates directly.',
     regions: ['US', 'CA', 'GB', 'EU', 'AU'],
     docsUrl: 'https://dashboard.stripe.com/apikeys',
   },
@@ -154,7 +156,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'square',
     name: 'Square',
     blurb:
-      'Use your existing Square account. Great if you also sell in person — your online and POS sales land in one Square balance. Shoppers pay on a Square-hosted page; no sparx fee.',
+      'Use your existing Square account. Great if you also sell in person — your online and POS sales land in one Square balance. Shoppers pay on a Square-hosted page; no {platform} fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     capabilities: CARD_CAPS,
@@ -190,7 +192,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No sparx fee — you pay Square’s rates directly.',
+    feeNote: 'No {platform} fee — you pay Square’s rates directly.',
     regions: ['US', 'CA', 'GB', 'AU', 'JP'],
     docsUrl: 'https://developer.squareup.com/apps',
   },
@@ -198,7 +200,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'authorize_net',
     name: 'Authorize.net',
     blurb:
-      'The classic for established US merchants. Keep your Authorize.net account and gateway rates — sparx routes checkout to an Authorize.net hosted payment page. No sparx fee.',
+      'The classic for established US merchants. Keep your Authorize.net account and gateway rates — {platform} routes checkout to an Authorize.net hosted payment page. No {platform} fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     capabilities: CARD_CAPS,
@@ -238,7 +240,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No sparx fee — you pay your Authorize.net rates directly.',
+    feeNote: 'No {platform} fee — you pay your Authorize.net rates directly.',
     regions: ['US', 'CA', 'GB', 'AU'],
     docsUrl: 'https://account.authorize.net/',
   },
@@ -246,7 +248,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'first_pay',
     name: '1stPayGateway',
     blurb:
-      'Common with ISO/agent-sold merchant accounts. Keep your 1stPayGateway processing — sparx routes checkout to a 1stPay hosted page. No sparx fee.',
+      'Common with ISO/agent-sold merchant accounts. Keep your 1stPayGateway processing — {platform} routes checkout to a 1stPay hosted page. No {platform} fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // `storedMethods: false` here means UNVERIFIED, not impossible — 1stPay's
@@ -275,7 +277,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No sparx fee — you pay your 1stPayGateway rates directly.',
+    feeNote: 'No {platform} fee — you pay your 1stPayGateway rates directly.',
     regions: ['US'],
     docsUrl: 'https://secure.1stpaygateway.net/',
   },
@@ -283,7 +285,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'custom',
     name: 'Custom gateway',
     blurb:
-      'Use any other processor. Point sparx at your gateway’s hosted checkout URL and credentials; sparx redirects shoppers there and reconciles on return. For full control, a developer can drop in a code adapter — see the plugin contract.',
+      'Use any other processor. Point {platform} at your gateway’s hosted checkout URL and credentials; {platform} redirects shoppers there and reconciles on return. For full control, a developer can drop in a code adapter — see the plugin contract.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // A generic hosted redirect has no vault seam to reach through, so there is
@@ -301,26 +303,26 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
         label: 'Hosted checkout URL',
         placeholder: 'https://pay.yourgateway.com/checkout',
         secret: false,
-        help: 'Where sparx sends shoppers to pay. sparx appends amount, reference, and return URL.',
+        help: 'Where {platform} sends shoppers to pay. {platform} appends amount, reference, and return URL.',
       },
       {
         key: 'api_key',
         label: 'API key',
         secret: true,
         optional: true,
-        help: 'Sent as a bearer token when sparx confirms/queries the payment, if your gateway needs one.',
+        help: 'Sent as a bearer token when {platform} confirms/queries the payment, if your gateway needs one.',
       },
       {
         key: 'webhook_secret',
         label: 'Webhook secret',
         secret: true,
         optional: true,
-        help: 'Shared secret sparx verifies inbound webhooks against, if your gateway signs them.',
+        help: 'Shared secret {platform} verifies inbound webhooks against, if your gateway signs them.',
       },
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No sparx fee — your processor’s rates apply.',
+    feeNote: 'No {platform} fee — your processor’s rates apply.',
     regions: [],
   },
   {
@@ -335,7 +337,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'paypal',
     name: 'PayPal',
     blurb:
-      'Let customers pay with their PayPal balance, Venmo, or Pay Later. Customers can save their PayPal account for repeat orders. No sparx fee — you pay PayPal’s rates directly.',
+      'Let customers pay with their PayPal balance, Venmo, or Pay Later. Customers can save their PayPal account for repeat orders. No {platform} fee — you pay PayPal’s rates directly.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // PayPal's vault is the Payment Method Tokens v3 API — the shopper approves
@@ -362,12 +364,12 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
         label: 'Webhook secret',
         secret: true,
         optional: true,
-        help: 'Shared secret sparx verifies inbound PayPal webhooks against. Optional but recommended.',
+        help: 'Shared secret {platform} verifies inbound PayPal webhooks against. Optional but recommended.',
       },
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No sparx fee — you pay PayPal’s rates directly.',
+    feeNote: 'No {platform} fee — you pay PayPal’s rates directly.',
     regions: ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'NL', 'IT', 'ES', 'JP'],
   },
   {
@@ -394,12 +396,94 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
   },
 ] as const;
 
-export function getGatewayDescriptor(id: string): GatewayDescriptor | undefined {
-  return GATEWAY_CATALOG.find((g) => g.id === id);
+// -- Resolving the platform's name -------------------------------------------
+//
+// Every string above that names the product carries a `{platform}` token rather
+// than a product name, because this catalog is SHARED code and the platform runs
+// more than one brand off it. Written literally, the strings were right for one
+// brand and wrong for the other at all times -- and this is a screen about
+// MONEY, which is the worst place to name a company somebody has never heard of.
+//
+// Found by walking a Piggles bakery through her own checkout: the provider
+// picker read "No sparx fee -- you pay Stripe's rates directly", seven times
+// down one page, to an owner who signed up to Piggles.
+//
+// `{platform} Pay` is a RESOLVE and not a REMOVE: it is a real first-party
+// product, and the Piggles one is called Piggles Pay. Its `id` stays
+// `sparx_pay` -- that is a wire value and a stored column, read by adapters and
+// by rows already in the database, and it reaches nobody's eyes.
+//
+// THE TRAP, written down so the next person does not fall into it: the danger in
+// this shape is converting the data and leaving ONE caller reading the raw
+// array, because an unresolved `{platform}` on a live screen looks exactly like
+// working software. That is why `CATALOG_TEMPLATE` is not exported. The only
+// route to a descriptor is an accessor that resolves, so a caller cannot forget.
+
+/** Resolved catalogs, per brand. The data is static and the substitution is not
+ *  free; the provider picker reads this on every render. */
+const resolvedCatalogs = new Map<string, readonly GatewayDescriptor[]>();
+
+function fillDescriptor(g: GatewayDescriptor, brand: string): GatewayDescriptor {
+  const fill = (text: string) => fillPlatformName(text, brand);
+  return {
+    ...g,
+    name: fill(g.name),
+    blurb: fill(g.blurb),
+    feeNote: fill(g.feeNote),
+    ...(g.tagline ? { tagline: fill(g.tagline) } : {}),
+    credentialFields: g.credentialFields.map((field) => ({
+      ...field,
+      label: fill(field.label),
+      ...(field.help ? { help: fill(field.help) } : {}),
+      ...(field.placeholder ? { placeholder: fill(field.placeholder) } : {}),
+    })),
+  };
 }
 
-/** Every gateway id the catalog knows. */
-export const CATALOG_GATEWAY_IDS: readonly string[] = GATEWAY_CATALOG.map((g) => g.id);
+/**
+ * The catalog with `{platform}` STILL IN IT.
+ *
+ * Exactly one legitimate caller: the integration registry, which is built once
+ * at boot for every brand at once and therefore has no brand to resolve
+ * against. The route that serves those descriptors resolves them per tenant.
+ *
+ * Named to be alarming, because it is. If you are about to render this, you
+ * want `gatewayCatalog(brand)` instead — an unresolved token on a live screen
+ * reads as working software right up until somebody points at it.
+ */
+export function gatewayCatalogTemplate(): readonly GatewayDescriptor[] {
+  return CATALOG_TEMPLATE;
+}
+
+/** The catalog as a person of THIS brand reads it. */
+export function gatewayCatalog(brand?: string | null): readonly GatewayDescriptor[] {
+  // Keyed on the resolved NAME rather than the brand key, so two brand keys that
+  // resolve to the same name share one build instead of two identical ones.
+  const name = platformBrandIdentity(brand).name;
+  const cached = resolvedCatalogs.get(name);
+  if (cached) return cached;
+  const built = CATALOG_TEMPLATE.map((g) => fillDescriptor(g, brand ?? ''));
+  resolvedCatalogs.set(name, built);
+  return built;
+}
+
+/**
+ * One gateway, resolved.
+ *
+ * `brand` is optional because most callers want the CAPABILITIES -- does this
+ * gateway support refunds, which credential fields does it capture -- and never
+ * render a word of it. Those are identical across brands. Pass the brand
+ * wherever the result reaches a person.
+ */
+export function getGatewayDescriptor(
+  id: string,
+  brand?: string | null
+): GatewayDescriptor | undefined {
+  return gatewayCatalog(brand).find((g) => g.id === id);
+}
+
+/** Every gateway id the catalog knows. Ids are wire values -- no brand in them. */
+export const CATALOG_GATEWAY_IDS: readonly string[] = CATALOG_TEMPLATE.map((g) => g.id);
 
 /** The subset whose credentials a tenant captures + we encrypt (api_keys onboarding). */
 export function isApiKeyGateway(id: string): boolean {

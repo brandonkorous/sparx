@@ -433,7 +433,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
     // A failed load REPLACES the grid. An empty table beside a dead Save invites
     // someone to type a price into nothing.
     return (
-      <Alert color="error" variant="soft">
+      <Alert color="error">
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
           <AlertDescription>
@@ -522,7 +522,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
       {/* ONE message, the most specific one — the server's own sentence names the
           exact code that clashed, which no generic banner could. */}
       {saveError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>That version was not saved</AlertTitle>
             <AlertDescription>{saveError}</AlertDescription>
@@ -990,7 +990,7 @@ function VariantRow({
       {isOpen ? (
         <div id={panelId} className="flex flex-col gap-4 pl-6">
           {variant.markupRuleId ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>This price is worked out for you</AlertTitle>
                 <AlertDescription>

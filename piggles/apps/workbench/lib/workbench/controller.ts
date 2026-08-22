@@ -35,6 +35,8 @@ const NO_CAPABILITIES: PaneHostCapabilities = { split: false, popout: false };
 
 export class WorkbenchController {
   private host: PaneHost | null = null;
+  /** Bumped by `hydrate` — see `restoreCount`. */
+  private restores = 0;
   private readonly descriptors = new Map<string, PaneDescriptor>();
   /** paneId → sourceId → guard. A pane has MANY dirty sources, not one: the
    *  surface's own form plus any nested editor (a line composer, a picker
@@ -140,7 +142,24 @@ export class WorkbenchController {
   hydrate(panes: Record<string, PaneDescriptor>): void {
     this.descriptors.clear();
     for (const [id, descriptor] of Object.entries(panes)) this.descriptors.set(id, descriptor);
+    this.restores += 1;
     this.emit();
+  }
+
+  /**
+   * How many times an arrangement has been restored into this controller.
+   *
+   * A restore REPLACES what is open — `hydrate` clears the descriptors and the
+   * host then rebuilds its grid from the saved snapshot — so a pane opened
+   * before one lands does not survive it. Anything that opened a pane on the
+   * strength of "there is a host now" has to be able to notice that its pane was
+   * swept and open it again, which is what this counter is for.
+   *
+   * Only arrangement restores bump it: switching between tabs and windows goes
+   * through `switchWindowMode`, which reconciles rather than hydrates.
+   */
+  restoreCount(): number {
+    return this.restores;
   }
 
   /**

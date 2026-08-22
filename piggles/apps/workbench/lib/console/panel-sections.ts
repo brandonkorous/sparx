@@ -2,9 +2,15 @@
 
 // Which sections of an app's panel are folded shut.
 //
-// Per DEVICE, not per account — the same reasoning as the rail's groups next
-// door (./rail-groups.ts): how much column you can spend on navigation is a fact
-// about the screen in front of you.
+// Per DEVICE, not per account, the same way arrangements are
+// (lib/workbench/persistence.ts): how much column you can spend on navigation is
+// a fact about the screen in front of you, and syncing a laptop's folded panel
+// onto a 27" monitor would be wrong on both.
+//
+// This is the console's ONLY fold store now. The rail had one too, for its app
+// families and for Recent; neither folds any more — the families are named by
+// colour and Recent is one row that opens into this panel — so the rail's height
+// is fixed and there is nothing left about it to remember.
 //
 // Three states, not two. A section is folded because the person folded it, open
 // because they opened it, or neither — in which case the DEFAULT decides, and

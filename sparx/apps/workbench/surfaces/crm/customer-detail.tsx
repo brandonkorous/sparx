@@ -219,7 +219,7 @@ function CustomerLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this customer</AlertTitle>
             <AlertDescription>
@@ -447,7 +447,7 @@ function CustomerEditor({
   /* ── The editable form (the Details tab, and the whole of "add") ────────── */
 
   const failureAlert = failure ? (
-    <Alert color="error" variant="soft">
+    <Alert color="error">
       <AlertContent>
         <AlertTitle>Could not save this customer</AlertTitle>
         <AlertDescription>{failure}</AlertDescription>
@@ -1158,7 +1158,7 @@ function IdentityRail({
       </div>
 
       {customer.doNotContact ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertDescription>
               Left out of marketing emails. Order and account messages still reach them.

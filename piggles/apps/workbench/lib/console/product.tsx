@@ -128,13 +128,12 @@ const hiddenSurfaces = new Set([
   // Partners for their suppliers got another company's affiliate scheme. It now
   // fronts the supplier and purchase-order surfaces instead — see `claims` in
   // @piggles/config.
-  'partner.referrals.list',
-  'partner.clients.list',
-  'partner.commissions.list',
-  'partner.tier',
-  'partner.bootcamps',
-  'partner.resources',
-  'partner.profile',
+  //
+  // Hidden as a NAMESPACE, not as seven keys. The seven were written out once and
+  // the eighth — `partner.bootcamp.detail`, the bootcamps list's own editor — was
+  // missed, so a Piggles business could deep-link into sparx's partner training
+  // programme (issue #002). `partner.*` cannot miss the ninth.
+  'partner.*',
   // ...and the tenant-side half of it: granting a sparx partner agency access.
   'platform.settings.partner',
 ]);

@@ -28,7 +28,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── The settings row (dates omitted — this view carries none) ─────────────── */
@@ -119,8 +119,5 @@ export function useUpdateEmailSettings() {
 /** Surface the server's own sentence for a 4xx — it names the exact problem (a
  *  malformed address, an unknown domain) — else a plain fallback. */
 export function emailSettingsErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

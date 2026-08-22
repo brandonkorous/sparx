@@ -158,7 +158,7 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
           </div>
 
           {report.isError ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Could not work that out just now</AlertTitle>
                 <AlertDescription>
@@ -173,7 +173,7 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
           ) : (
             <>
               {data.awaitingLedgerFigure ? (
-                <Alert color="info" variant="soft">
+                <Alert color="info">
                   <AlertContent>
                     <AlertTitle>Tell sparx what your books say</AlertTitle>
                     <AlertDescription>
@@ -196,7 +196,7 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
                   </AlertContent>
                 </Alert>
               ) : (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>
                       {formatCents(Math.abs(data.unexplainedCents ?? 0), currency)} is unexplained

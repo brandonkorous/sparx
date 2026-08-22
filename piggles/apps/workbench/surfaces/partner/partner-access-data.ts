@@ -21,7 +21,7 @@
 
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { moduleLabel } from '../../lib/surfaces/nav';
 import { WORKBENCH_MODULES, type WorkbenchModule } from '../../components/module-scope';
@@ -192,10 +192,7 @@ export function useRemovePartner() {
  *  the exact problem ("… is already an active member of this team."). A 5xx has
  *  no such sentence, so it falls back to the caller's wording. */
 export function partnerAccessError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 function asModule(slug: string): WorkbenchModule | null {

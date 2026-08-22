@@ -30,6 +30,7 @@ import {
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import {
+  menuPrice,
     defineTheme,
     face,
     STATUS_ON_DARK,
@@ -37,7 +38,6 @@ import {
     emitServiceBundle,
     type ServiceSiteSpec,
 } from './service-sites/harness';
-import { writeServicePreview } from './service-sites/preview';
 
 // ── The bespoke theme (inline) ─────────────────────────────────────────────────────
 // A bright plant kitchen: a clean green-tinted cream ground, a vibrant leaf-green ink +
@@ -317,7 +317,7 @@ function menuItem(item: MenuItem): Node {
             el('div', 'flex items-baseline justify-between gap-4', {
                 children: [
                     el('h3', 'text-lg font-semibold text-base-content', { text: item.name }),
-                    el('span', 'text-lg font-semibold text-primary', { text: item.price }),
+                    el('span', 'text-lg font-semibold text-primary', { text: menuPrice(item.price) }),
                 ],
             }),
             el('p', 'text-base leading-relaxed text-secondary', { text: item.desc }),
@@ -589,7 +589,7 @@ const SPEC: ServiceSiteSpec = {
 // ── Main ─────────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-    const { dir, theme } = await emitServiceBundle(SPEC);
+    const { dir } = await emitServiceBundle(SPEC);
     console.log(`· wrote bundle → ${dir}`);
 
     const mod = (await import(pathToFileURL(join(dir, 'blueprint.ts')).href)) as { default: unknown };
@@ -602,9 +602,6 @@ async function main(): Promise<void> {
         process.exitCode = 1;
         return;
     }
-
-    const { path: previewPath } = await writeServicePreview(SPEC, theme);
-    console.log(`· preview → ${previewPath}`);
 }
 
 main().catch((err: unknown) => {

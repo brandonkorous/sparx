@@ -40,6 +40,7 @@ import {
   leadStatusMeta,
   lifecycleStageMeta,
 } from './customers-data';
+import { PAYMENT_TERM_PRESETS } from '../../lib/payment-terms';
 
 // Re-exported so the rest of the surface imports these from one place — but they
 // are the REAL shared types, not a local copy.
@@ -149,13 +150,10 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     label: 'Payment terms',
     group: 'Wholesale account',
     kind: 'enum',
-    options: [
-      { value: 'prepay', label: 'Pay before dispatch' },
-      { value: 'net15', label: '15 days to pay' },
-      { value: 'net30', label: '30 days to pay' },
-      { value: 'net60', label: '60 days to pay' },
-      { value: 'net90', label: '90 days to pay' },
-    ],
+    // Same presets the company form offers, from the one place they live. A
+    // segment that could only be built on four of the terms a business can
+    // actually agree would quietly exclude every customer on any other.
+    options: PAYMENT_TERM_PRESETS,
   },
   'email.openedLast30d': { label: 'Emails opened (30 days)', group: 'Email', kind: 'number' },
   'email.clickedLast30d': { label: 'Emails clicked (30 days)', group: 'Email', kind: 'number' },

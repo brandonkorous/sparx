@@ -730,7 +730,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {readOnly && expense.data ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>
                   This cost came from {sourceLabel(expense.data.source).toLowerCase()}

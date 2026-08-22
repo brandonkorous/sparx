@@ -328,7 +328,7 @@ function CreateEntry({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create this</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -337,7 +337,7 @@ function CreateEntry({ ctx }: { ctx: SurfaceContext }) {
           ) : null}
 
           {typesError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not load the kinds of content</AlertTitle>
                 <AlertDescription>This is a problem reaching the server.</AlertDescription>
@@ -446,26 +446,42 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const initialRef = useRef<string>('');
-  // Initialise ONCE per entry id. Re-initialising on every refetch would wipe an
-  // in-progress edit when a background refresh lands; Save and Restore reset the
-  // snapshot themselves (below), which are the only two paths that should.
   const initializedFor = useRef<string | null>(null);
+  /** The server's version, as last read. */
+  const serverRef = useRef<string>('');
 
+  const dirty = draft !== null && serializeDraft(draft) !== initialRef.current;
+
+  // Initialise on open, and re-read whenever the SERVER'S copy has moved while
+  // there is nothing of hers to lose.
+  //
+  // This used to initialise once per entry id and never again, which protected an
+  // in-progress edit from a background refetch — the right instinct, but it also
+  // meant a pane sitting open could never see a change made anywhere else. Taking
+  // the newer legal starter wording from the checklist rewrites the body
+  // server-side; the open editor went on showing the old text, the pane's own
+  // Refresh did not shift it, and pressing Save there would have written the old
+  // wording back over the new one. Same shape as issue #027: a stale box that
+  // saves is worse than a stale box that only looks wrong.
+  //
+  // So the guard is now DIRTY rather than "already initialised". A clean draft has
+  // no edit to protect and should show the truth; a dirty one keeps her work.
   useEffect(() => {
     if (!entry) return;
-    if (initializedFor.current === entry.id) return;
-    initializedFor.current = entry.id;
     const next: Draft = {
       slug: entry.slug ?? '',
       authorId: entry.author_id ?? '',
       body: entry.body,
       seo: entry.seo,
     };
+    const server = serializeDraft(next);
+    const firstOpen = initializedFor.current !== entry.id;
+    if (!firstOpen && (server === serverRef.current || dirty)) return;
+    initializedFor.current = entry.id;
+    serverRef.current = server;
     setDraft(next);
-    initialRef.current = serializeDraft(next);
-  }, [entry]);
-
-  const dirty = draft !== null && serializeDraft(draft) !== initialRef.current;
+    initialRef.current = server;
+  }, [entry, dirty]);
   useDirtySource(dirty, 'You have unsaved changes to this. Close anyway?');
 
   const displayTitle = draft
@@ -480,7 +496,7 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this</AlertTitle>
             <AlertDescription>

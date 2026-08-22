@@ -478,7 +478,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <TriangleAlert />
           <AlertContent>
             <AlertTitle>Could not load your team</AlertTitle>
@@ -600,11 +600,11 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           ) : visible.length === 0 ? (
             /* A search that found nobody is NOT an empty team, and the two must
-                                       never share a message. "It is just you for now" told to an owner
-                                       with twelve colleagues — who has simply mistyped a name — reads as
-                                       though the account lost everybody. This one says what actually
-                                       happened, quotes back the words that found nothing so the typo is
-                                       visible, and offers the way out: put the whole team back. */
+                                                   never share a message. "It is just you for now" told to an owner
+                                                   with twelve colleagues — who has simply mistyped a name — reads as
+                                                   though the account lost everybody. This one says what actually
+                                                   happened, quotes back the words that found nothing so the typo is
+                                                   visible, and offers the way out: put the whole team back. */
             <EmptyState
               icon={<Users className="size-6" aria-hidden />}
               title={`Nobody here matches "${search.trim()}"`}

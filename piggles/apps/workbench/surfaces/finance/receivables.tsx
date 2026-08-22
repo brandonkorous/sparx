@@ -63,6 +63,14 @@ function lateness(r: Receivable): {
   label: string;
   tone: 'success' | 'warning' | 'error' | 'info';
 } {
+  // "Not yet due" is a claim about a DEADLINE. An invoice with no due date has
+  // none, so saying it is not yet due tells her the money is fine when nobody
+  // has ever established when it stops being fine — it can never enter an aging
+  // bucket and can never be chased. `overdueDays` is 0 for both cases, which is
+  // exactly why they have to be told apart HERE.
+  if (!r.dueAt) {
+    return { label: 'No date agreed', tone: 'warning' };
+  }
   if (r.overdueDays <= 0) {
     return { label: 'Not yet due', tone: 'info' };
   }

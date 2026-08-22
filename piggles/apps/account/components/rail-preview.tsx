@@ -1,6 +1,6 @@
 'use client';
 
-import { APPS, appIcon } from '@piggles/config';
+import { APPS, appIcon, railHasApp } from '@piggles/config';
 import { Icon } from '@piggles/ui';
 import type { PigglesGroup } from '@piggles/brand';
 
@@ -37,24 +37,29 @@ import type { PigglesGroup } from '@piggles/brand';
 
 export function RailPreview({ picked }: { picked: PigglesGroup[] }) {
   const apps = [...APPS].sort((a, b) => a.navOrder - b.navOrder);
-  // Home is not a choice — it fronts `platform`, which is the console itself
-  // rather than a module anything can activate. It is on from the moment the
-  // business exists, so it is on here too.
-  const isOn = (group: PigglesGroup) => group === 'home' || picked.includes(group);
-  const onCount = apps.filter((app) => isOn(app.group)).length;
+  // The SAME rule the answer is saved with — `railAppIds` in @piggles/config.
+  //
+  // This used to be `group === 'home' || picked.includes(group)`, which drew a
+  // rail nobody ever got: several apps are on for everybody regardless of the
+  // ticks, so a business that ticked website · sell · invoice was shown NINE and
+  // given THIRTEEN. Issue #011. The rule lives in one place now, because this
+  // panel's only job is to be a truthful picture of the result.
+  const onCount = apps.filter((app) => railHasApp(app, picked)).length;
 
   return (
     <div className="rounded-box bg-base-100 border-base-300 border p-6">
       <h2 className="text-xl font-bold">What you will see</h2>
+      {/* No "just Home for now" branch, because there is no such state: twelve
+          apps are on the rail before anybody ticks anything, and saying
+          otherwise was half of issue #011. The count starting high is the point
+          — ticking a box ADDS to a working rail rather than unlocking one. */}
       <p className="mt-1 text-base">
-        {onCount === 1
-          ? 'Just Home for now — tick anything on the right and it lands here.'
-          : `${onCount} apps, ready to go. The rest are one tap away whenever you want them.`}
+        {onCount} apps, ready to go. The rest are one tap away whenever you want them.
       </p>
 
       <ul className="mt-5 flex flex-col gap-1">
         {apps.map((app) => {
-          const on = isOn(app.group);
+          const on = railHasApp(app, picked);
           const glyph = appIcon(app.id);
 
           return (

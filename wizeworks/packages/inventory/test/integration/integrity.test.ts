@@ -241,14 +241,38 @@ describe('inventory integrity — DB-backed', () => {
         })
       );
 
+      // COUNT IT FIRST. The fixture creates a variant and a warehouse and no
+      // inventory_level, and this test used to lean on `reserveOnTx` inventing a
+      // 0/0 row on the way past — which is precisely the behaviour that made
+      // every product a business typed in read "Sold out" on its own shop
+      // (issue #037), and is gone. A variant nobody has counted is untracked,
+      // so there is no quantity to over-promise and no incident to record.
+      //
+      // Over-promising is a real thing that happens to a real, counted stock
+      // level, so the test now does that: three on hand, seven asked for, four
+      // short — the same shortfall it always asserted.
+      await withTenant(ctx(), (tx) =>
+        applyMovement(tx, {
+          tenantId,
+          variantId: f.variantId,
+          warehouseId: f.warehouseId,
+          delta: 3,
+          reason: 'receive',
+          actorType: 'system',
+        })
+      );
+
       const result = await reserve(ctx(), {
         variantId: f.variantId,
         warehouseId: f.warehouseId,
-        quantity: 4,
+        quantity: 7,
         holderType: 'order',
         holderId: crypto.randomUUID(),
       });
-      expect(result.reservationId).toBeTruthy();
+      // Non-null asserted, not `!`: this variant HAS been counted now, so a null
+      // would mean the never-counted branch fired when it should not.
+      expect(result).not.toBeNull();
+      expect(result?.reservationId).toBeTruthy();
 
       const { items } = await listOversellIncidents(ctx(), { variantId: f.variantId });
       expect(items).toHaveLength(1);

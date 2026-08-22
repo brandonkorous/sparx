@@ -142,7 +142,7 @@ function ClassesPanel({
   return (
     <div className="flex flex-col gap-3">
       {noneJudged ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Worth is ranked; steadiness is not, yet</AlertTitle>
             <AlertDescription>

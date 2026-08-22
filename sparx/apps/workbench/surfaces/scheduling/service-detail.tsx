@@ -356,7 +356,7 @@ function ServiceEditor({
           ) : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this service</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>

@@ -19,7 +19,7 @@
 // stays the single money formatter across every commerce surface.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 
@@ -210,10 +210,7 @@ export function useRefundReturn(id: string) {
  * caller's wording.
  */
 export function returnErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Saying what a state means ──────────────────────────────────────────── */

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { isChunkLoadError } from './chunk-error';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { isChunkLoadError, reloadOnceForStaleBuild } from './chunk-error';
 
 // The regression this file exists for: between the Next 16 upgrade and
 // 2026-07-27 the detector matched only webpack's wording, so every stale-build
@@ -121,5 +121,113 @@ describe('isChunkLoadError', () => {
     ])('does not treat %p as a stale build', (message) => {
       expect(isChunkLoadError(new Error(message))).toBe(false);
     });
+  });
+});
+
+// The loop this file did NOT catch until 2026-08-19: `reloadOnceForStaleBuild`
+// was a sliding 10s cooldown that re-stamped its own timestamp on every reload,
+// so "once" meant "every ten seconds, forever". A storefront tab whose chunks a
+// rebuild had purged sat there reloading itself while its owner watched. The
+// detector had tests; the recovery — the half that actually touches the tab —
+// had none, so nothing failed when it stopped meaning what its name said.
+//
+// These pin the budget itself: how many reloads an episode gets, when a new
+// episode starts, and that dev never gets one at all.
+describe('reloadOnceForStaleBuild', () => {
+  const KEY = 'sparx:chunk-reload';
+
+  let store: Map<string, string>;
+  let reloads: number;
+
+  beforeEach(() => {
+    store = new Map();
+    reloads = 0;
+    vi.stubGlobal('window', {
+      sessionStorage: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => void store.set(k, v),
+      },
+      location: {
+        reload: () => {
+          reloads += 1;
+        },
+      },
+    });
+    vi.useFakeTimers();
+    // Well clear of epoch, so "no prior reload" (at: 0) reads as long-settled
+    // rather than as a reload that happened moments ago.
+    vi.setSystemTime(new Date('2026-08-19T12:00:00Z'));
+    vi.stubEnv('NODE_ENV', 'production');
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it('reloads on the first stale-build error', () => {
+    expect(reloadOnceForStaleBuild()).toBe(true);
+    expect(reloads).toBe(1);
+  });
+
+  it('gives up rather than looping when the build is still broken', () => {
+    expect(reloadOnceForStaleBuild()).toBe(true);
+    expect(reloadOnceForStaleBuild()).toBe(true);
+    expect(reloadOnceForStaleBuild()).toBe(false);
+    expect(reloads).toBe(2);
+  });
+
+  // The exact regression: the old cooldown let the budget refill on the clock,
+  // so waiting out the window bought another reload — and another, and another.
+  it('does not refill the budget merely because time passed', () => {
+    reloadOnceForStaleBuild();
+    reloadOnceForStaleBuild();
+    vi.advanceTimersByTime(60_000);
+    expect(reloadOnceForStaleBuild()).toBe(false);
+    expect(reloads).toBe(2);
+  });
+
+  // A page that ran for five minutes proves the build works, so the next chunk
+  // error is a fresh deploy — not the same one throwing again.
+  it('starts a new budget once a page has settled', () => {
+    reloadOnceForStaleBuild();
+    reloadOnceForStaleBuild();
+    vi.advanceTimersByTime(5 * 60_000 + 1);
+    expect(reloadOnceForStaleBuild()).toBe(true);
+    expect(reloads).toBe(3);
+  });
+
+  it('never reloads outside production, where a purged chunk is just HMR', () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    expect(reloadOnceForStaleBuild()).toBe(false);
+    expect(reloads).toBe(0);
+  });
+
+  it('reloads anyway when sessionStorage refuses to persist the budget', () => {
+    store = new Map();
+    vi.stubGlobal('window', {
+      sessionStorage: {
+        getItem: () => {
+          throw new Error('denied');
+        },
+        setItem: () => {
+          throw new Error('denied');
+        },
+      },
+      location: {
+        reload: () => {
+          reloads += 1;
+        },
+      },
+    });
+    expect(reloadOnceForStaleBuild()).toBe(true);
+    expect(reloads).toBe(1);
+  });
+
+  it('treats a corrupt stored budget as no prior reload', () => {
+    store.set(KEY, 'not json');
+    expect(reloadOnceForStaleBuild()).toBe(true);
+    expect(reloads).toBe(1);
   });
 });

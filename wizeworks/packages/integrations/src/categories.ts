@@ -52,7 +52,7 @@ const CATEGORY_LIST: readonly CategoryGate[] = [
   {
     category: 'social',
     label: 'Social accounts',
-    hint: 'Post to your own social accounts from sparx and see how the posts performed.',
+    hint: 'Post to your own social accounts from here and see how the posts performed.',
     module: 'social',
     modules: ['social'],
   },
@@ -73,7 +73,7 @@ const CATEGORY_LIST: readonly CategoryGate[] = [
   {
     category: 'ai',
     label: 'AI accounts',
-    hint: 'Connect your own AI account. Every AI feature in sparx runs on it, and nothing else.',
+    hint: 'Connect your own AI account. Every AI feature here runs on it, and nothing else.',
     module: 'ai',
     modules: ['ai'],
   },

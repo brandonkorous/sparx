@@ -110,7 +110,7 @@ export interface ResolvedSite {
   contact: { phone: string | null; email: string | null; address: string | null };
   // Whether the always-on platform attribution credit renders for this site.
   // Defaults true; a future merchant toggle can hide it.
-  showSparxCredit: boolean;
+  showPlatformCredit: boolean;
   // WHICH platform gets the credit. This renderer serves tenant sites for every
   // brand, so the badge is resolved per tenant rather than compiled in — it said
   // "Made with sparx" on Piggles businesses' public sites until 2026-08-16.
@@ -420,9 +420,9 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // Defaults null on an older api-rest that doesn't return it — the chrome
       // then renders whatever the node was authored with, rather than blanking.
       tagline: data.tagline ?? null,
-      // Defaults true so a storefront on an older api-rest (pre-`showSparxCredit`)
-      // keeps showing the credit — the badge is always-on by default.
-      showSparxCredit: data.showSparxCredit ?? true,
+      // Defaults true so a storefront on an older api-rest (which sent this under
+      // its former, brand-named key) keeps showing the credit — always-on by default.
+      showPlatformCredit: data.showPlatformCredit ?? true,
       platformBrand: data.platformBrand ?? DEFAULT_PLATFORM_BRAND,
       // Defaults 'active' on an older api-rest that omits it — a site is NEVER
       // suspended on missing data (only an explicit 'suspended' darkens it).

@@ -238,7 +238,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
       </div>
 
       {sub.status === 'past_due' ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>A payment failed</AlertTitle>
             <AlertDescription>

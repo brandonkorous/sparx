@@ -269,7 +269,7 @@ function ConnectIntegration({
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this service</AlertTitle>
             <AlertDescription>
@@ -338,7 +338,7 @@ function ConnectIntegration({
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not connect that service</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -437,7 +437,7 @@ function ManageIntegration({
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this connection</AlertTitle>
             <AlertDescription>
@@ -707,7 +707,7 @@ export function IntegrationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!editable) {
       return (
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="info" variant="soft" className="max-w-md">
+          <Alert color="info" className="max-w-md">
             <AlertContent>
               <AlertTitle>Connecting a service is limited to admins</AlertTitle>
               <AlertDescription>
@@ -723,7 +723,7 @@ export function IntegrationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className="flex h-full items-center justify-center p-8">
-      <Alert color="warning" variant="soft" className="max-w-md">
+      <Alert color="warning" className="max-w-md">
         <AlertContent>
           <AlertTitle>Nothing chosen</AlertTitle>
           <AlertDescription>

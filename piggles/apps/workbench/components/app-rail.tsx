@@ -10,10 +10,14 @@
 //
 // ── ORDER: YOURS, THEN THE PRODUCT ──────────────────────────────────────────
 //
-// Favourites lead and stay open; Recent follows, folded, because automatic
-// history does not get to push the product off the screen (./rail/shortcuts.tsx);
-// then every app, in colour families that no longer fold (./rail/app-groups.tsx).
-// Everything else is behind All apps in the footer.
+// Favourites lead, then Recent — ONE ROW EACH, at every rail width, browsing
+// into the panel the same way an app does (./rail/shortcuts.tsx). Then every app,
+// in colour families that no longer fold (./rail/app-groups.tsx). Everything else
+// is behind All apps in the footer.
+//
+// Nothing on this rail is a list of its own contents. Twenty-five rows in the
+// element a person looks at every day is a rail nobody scans, so the rail holds
+// names and the panel holds lists.
 //
 // Selecting an app BROWSES it — see ./app-panel.tsx. It never changes what is
 // open: in a workbench there is no single "current" place to switch away from.
@@ -29,9 +33,7 @@ import {
   Tooltip,
   useSidebar,
 } from '@wizeworks/silicaui-react';
-import { useClearRecents, useToggleFavorite } from '@/lib/api/shell-data';
 import { useShortcutSurfaces } from '@/lib/console/use-shortcut-surfaces';
-import { useWorkbench } from '@/lib/workbench/context';
 import { useAttention } from '@/lib/console/home-data';
 import { AllAppsDialog } from './all-apps-dialog';
 import { AppScope } from './app-scope';
@@ -40,12 +42,6 @@ import { CapacityNotice } from './rail/capacity-notice';
 import { Favourites, Recent } from './rail/shortcuts';
 import { LayoutsMenu } from './rail/layouts-menu';
 import { PlanCard } from './rail/plan-card';
-import {
-  isGroupFolded,
-  RECENT_GROUP,
-  setGroupFolded,
-  useGroupChoices,
-} from '@/lib/console/rail-groups';
 import { FAVOURITES_LIST, RECENT_LIST } from '@/lib/console/shortcut-lists';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 
@@ -70,23 +66,19 @@ export function AppRail({
   accountOrigin,
   onBrowse,
 }: AppRailProps) {
-  const { controller } = useWorkbench();
   // The shell's SidebarProvider, reached the same way SidebarTrigger reaches it.
   // Null outside a provider, which is why the call below is optional.
   const sidebar = useSidebar();
 
-  // Both lists ride the shared /v1/me spine with surface keys as actionIds — the
-  // same rows sparx writes, because they are the person's, not the brand's. The
-  // reachability gate lives in the hook, shared with the panel that opens either
-  // list up (lib/console/use-shortcut-surfaces.ts).
-  const { favourites: favoriteSurfaces, recents: recentSurfaces } = useShortcutSurfaces();
-  const toggleFavorite = useToggleFavorite();
-  const clearRecents = useClearRecents();
+  // Read here for ONE decision: whether Recent has anything to name yet. The
+  // rows themselves live in the panel, which reads the same hook — one
+  // reachability gate, shared, so a surface Piggles does not have cannot get in
+  // through either (lib/console/use-shortcut-surfaces.ts).
+  const { recents: recentSurfaces } = useShortcutSurfaces();
   // Shares its queries with Home by query key, so the rail and Home can never
   // show two different numbers for the same thing.
   const attention = useAttention();
 
-  const [folded, setFolded] = useGroupChoices();
   const [allAppsOpen, setAllAppsOpen] = useState(false);
 
   return (
@@ -109,42 +101,24 @@ export function AppRail({
         {/* ── ORDER: yours, then the apps ──────────────────────────────────
             What somebody actually opens every day is five screens, not fifteen
             apps, and those five used to sit BELOW fifteen rows they did not
-            choose. Favourites are theirs and stay put; recent is theirs and moves;
-            the apps are the whole product beneath both. Everything not on this
-            rail is behind All apps in the footer. */}
+            choose. Both of the person's lists lead, one row apiece; the apps are
+            the whole product beneath them. Everything not on this rail is behind
+            All apps in the footer. */}
         <SidebarContent className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
           <Favourites
-            surfaces={favoriteSurfaces}
             expanded={expanded}
             browsing={browsing === FAVOURITES_LIST}
             onBrowseList={() => {
               onBrowse(FAVOURITES_LIST);
-            }}
-            onOpen={(definition) => {
-              controller.open(definition.key);
-            }}
-            onRemove={(definition) => {
-              toggleFavorite.mutate({ actionId: definition.key, favorited: true });
             }}
           />
 
           <Recent
             surfaces={recentSurfaces}
             expanded={expanded}
-            shut={isGroupFolded(RECENT_GROUP, folded)}
-            clearing={clearRecents.isPending}
             browsing={browsing === RECENT_LIST}
             onBrowseList={() => {
               onBrowse(RECENT_LIST);
-            }}
-            onToggle={() => {
-              setFolded(setGroupFolded(RECENT_GROUP, !isGroupFolded(RECENT_GROUP, folded)));
-            }}
-            onOpen={(definition) => {
-              controller.open(definition.key);
-            }}
-            onClear={() => {
-              clearRecents.mutate();
             }}
           />
 

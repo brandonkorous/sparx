@@ -1,21 +1,56 @@
 # P02 — Nia Okafor · Halo & Hem
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-08-21
 
-**Status:** not started
-**Run:** —
+**Status:** in progress
+**Run:** started 2026-08-21. **Acts 1–4 done; act 5 part-done; 6–10 outstanding.**
+Machine clock is **PDT (UTC-7)**. Three standing checks are done and recorded
+below (reload · deep link · restore, someone else's business, money at the
+edges); wrong moves, dates, the buyer's side and one job without a mouse are not.
+
+**Where act 5 stands.** The **booking page is live and correct** — `/book` on the
+published site lists her ten services and its availability matches the hours set
+in act 3 to the minute (proved below). What is NOT done is the rest of the site:
+her homepage, About and Contact are still drafts, so the page a client actually
+lands on is the starter, and it is wrong in three separate ways
+([091](issues/091-her-salons-homepage-is-selling-sparx-branded-mugs-and-t-shirts.md),
+[092](issues/092-with-nothing-to-sell-her-site-advertised-a-product-called-product-name-at-0-00.md),
+and the blueprint's hardcoded price list).
+
+**Next:** finish act 5 — write and publish Home, About and Contact in her voice,
+with a Book call to action on the homepage, her real hours, address and phone,
+and a footer that is not the starter's. Then act 6, as the client.
+
+Three things already known about that work, so they do not have to be found again:
+
+- **Her draft Home is a good salon page with the wrong numbers on it.** The
+  blueprint's "The menu" block hardcodes four services as static text — `Cut &
+finish $85`, `Balayage $240`, `Full colour $160`, `Blow-dry & style $50/45min`.
+  Her real prices are $65 and $38, and she does not offer balayage or "full
+  colour" at all (she deleted both in act 4). That block has to be replaced, not
+  edited: `/book` renders her real services live, so the homepage holding a
+  hand-typed copy of the same list guarantees drift. Check whether the Add
+  palette offers a live services block before hand-writing one.
+- **Site identity is empty** — phone, email and address are all still
+  placeholders, and RULE #8 wants the same name/address/phone in the footer, on
+  Contact, and in the structured data.
+- **The footer is the starter's**: "Everything you publish and sell, in one
+  place.", with Explore/Account columns naming Shop, Journal, Orders and Cart —
+  none of which a salon that does not sell online has.
+
 **Trade:** Beauty & salon (`salon`) · **Rail groups:** people · web · money
 
 ## Account
 
-| Field         | Value                  |
-| ------------- | ---------------------- |
-| Email         | `p02.nia@piggles.test` |
-| Tenant id     | —                      |
-| Subdomain     | —                      |
-| Published URL | —                      |
+| Field         | Value                                                                                                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Email         | `p02.nia@piggles.test`                                                                                                                                                                                                                     |
+| Tenant id     | `dfdffe98-154f-473b-946d-6e60b03aa2c5`                                                                                                                                                                                                     |
+| Site id       | `6282b2b1-a7b0-4ef2-90eb-e3dbfe1e729d` (slug `primary`)                                                                                                                                                                                    |
+| Subdomain     | `halo-and-hem.piggles.site`                                                                                                                                                                                                                |
+| Published URL | `swift-horizon-4860.piggles.site` — stored, but dead; her site resolves at `halo-and-hem.piggles.site` ([089](issues/089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)). Dev: `localhost:3004/?tenant=halo-and-hem` |
 
 ## The person
 
@@ -262,9 +297,42 @@ salon that did not tick "I sell things" can still ring up a bottle of shampoo.
 
 ## Run log
 
-| Date | Act | What happened |
-| ---- | --- | ------------- |
-| —    | —   | —             |
+| Date       | Act | What happened                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ---------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-08-21 | 1   | meetpiggles → Start free → signup → onboarding. Business `Halo & Hem`, trade **Beauty & salon**, ticked website · customers · invoices (NOT selling). Look shelf offered six: Universal Starter, **Salon (Editorial)** (chosen), Salon (Modern), Barbershop (Heritage), Barbershop (Modern), Nail Studio (Gallery). Installed `sparx-salon-editorial` 1.3.0 + base `sparx` 1.4.0. `settings.industry = 'salon'` confirmed. Slug came out readable — `halo-and-hem`, not a random pair.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 2026-08-21 | 2   | **Nothing is locked.** Sell and Stock are both in her rail despite not ticking "I sell things", each one click, each fully populated (Sell: Orders 2, Products, Bundles, Discounts, Gift cards…; Stock: Locations, Shelves, Counts, Barcodes…). No upsell, no gate, no price anywhere. Only Partners, Automations and Connections sit outside the rail, reachable from All apps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 2026-08-21 | 3   | Created **Nia Okafor** and **Dara Bell**. Set Nia Tue–Sat 09:00–13:00 + 13:45–17:30, Dara Wed/Fri/Sat 10:00–18:00, Mon and Sun closed, and one whole-business closure **1–8 Aug 2027** ("Salon closed, summer week", Everyone). Used 2027 because 1–8 Aug 2026 is already past. Two defects found and fixed: [081](issues/081-her-salon-opens-at-nine-and-the-diary-showed-appointments-at-three-in-the-morning.md) (everything defaulted to UTC — her 9am diary showed 3am colour appointments) and [084](issues/084-she-typed-her-whole-week-in-and-the-diary-looked-exactly-the-same.md) (the diary drew none of the hours she had just typed). The calendar now shows her real week.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 2026-08-21 | —   | Standing check **reload · deep link · restore** run early, because act 3 needed it: [082](issues/082-a-link-to-any-screen-in-the-console-opened-nothing-at-all.md) — **every** link into the console opened nothing at all. Found, fixed, re-proved on five addresses.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 2026-08-21 | 4   | Found **18 services** where a two-chair salon should have none — two seeders both wrote a salon menu, with two prices for Balayage and two for a full head of colour ([085](issues/085-her-price-list-had-two-of-everything-at-two-different-prices.md)). Cleared the practice data (7 went), deleted the other 11 one at a time, and typed her ten. **Money edge on the way in:** `65,00` for a cut read back as **6500** — a blocker, swept across ten money fields ([086](issues/086-she-priced-a-cut-at-sixty-five-and-the-booking-page-said-six-thousand-five-hundred.md)). The service pane then insisted "Not saved" after saving ([087](issues/087-the-screen-kept-telling-her-the-change-was-not-saved-after-it-saved.md)), and there was no way at all to say only Dara does the fades ([088](issues/088-she-could-not-say-that-only-dara-does-the-fades.md)). All three fixed. Also deleted four staff she never hired that the sample clear left behind.                                                                                                                                                                                                                                                                        |
+| 2026-08-21 | 5   | Published `/book`. **The booking page is right, and the availability engine is right to the minute** — see the table below. Then opened her own homepage as a client would and found it selling **six sparx-branded products** with prices ([091](issues/091-her-salons-homepage-is-selling-sparx-branded-mugs-and-t-shirts.md)) — a hardcoded `GOLDEN_BLUEPRINT_KEY = 'sparx'` dresses every tenant of every brand, while `piggles-starter` (same six, named "Rowan") sat unused. Fixed by making the starter site a fact about the BRAND. Deleted her six; the empty grid then advertised **"Product name · $0.00 · Sold out"** ([092](issues/092-with-nothing-to-sell-her-site-advertised-a-product-called-product-name-at-0-00.md)). On the way in, her web address turned out to be `swift-horizon-4860.piggles.site` while the account app calls her `halo-and-hem.piggles.site` — two screens, two addresses, and the console's is the one that resolves to nothing ([089](issues/089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)). And Domains offered to sell her a domain from **shop.sparx.works** ([090](issues/090-piggles-offered-to-sell-her-a-domain-from-another-companys-shop.md)), now removed. |
+| 2026-08-21 | —   | Standing check **someone else's business**: deep-linked one of Marisol's orders (`ee8bd403…`, Thistle & Rye). `GET /v1/orders/…` → **404**, nothing leaked. The panel then spun for ever instead of saying so — [083](issues/083-a-link-to-an-order-this-salon-cannot-see-spun-for-ever.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+
+## Act 5 — what the live booking page actually offers
+
+Driven as a client on the published site, against the hours set in act 3 (Nia
+Tue–Sat 09:00–13:00 + 13:45–17:30; Dara Wed/Fri/Sat 10:00–18:00, no lunch; whole
+salon closed 1–8 Aug 2027). **Every one of these is correct.**
+
+| Service · day                                 | Offered                            | Why that is right                                                        |
+| --------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| **Full head highlights** (150 min, Nia) · Sat | 9:00–10:30, then **1:45–3:00**     | Last start that fits before lunch is 10:30; after it, 13:45 → 15:00      |
+| Full head highlights · the 13:00 lunch        | **nothing**                        | Her break, and only she does colour                                      |
+| **Barbering, skin fade** (30 min, Dara) · Sat | 10:00–5:30                         | Dara's whole day, last start 17:30                                       |
+| Barbering, skin fade · **Tue**                | **nothing**, with a real sentence  | Dara is not in, and Nia cannot do a fade — [088] proving itself publicly |
+| **Cut and finish** (60 min, either) · Sat     | 9:00–5:00, **including 1:00–1:30** | Correct: Dara covers the lunch hour and works till 18:00                 |
+| Cut and finish · **Mon**                      | **nothing**                        | Closed Mondays                                                           |
+| Cut and finish · **Wed 4 Aug 2027**           | **nothing**                        | Inside the summer closure                                                |
+| Cut and finish · **Wed 11 Aug 2027**          | 9:00–5:00                          | The closure ends; not simply "empty that far out"                        |
+
+**One correction to this script.** The standing check says "try to book 13:15,
+it must be impossible". That is only true of a service **Nia alone** performs.
+Dara takes no lunch, so 13:15 is genuinely bookable for anything either of them
+can do, and offering it is right. Act 6 tests 13:15 against **Full head
+highlights**, not against a cut.
+
+The empty state is a real sentence rather than a blank: "No open times that day —
+try another date, or join the waitlist and we'll let you know the moment a spot
+opens."
 
 ## Standing checks
 
@@ -321,6 +389,17 @@ leave it, not from memory at the end.
 Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
 A row with no confirmation is not a fixed defect.
 
-| #   | Severity | What (in her words) | Fixed | Confirmed by |
-| --- | -------- | ------------------- | ----- | ------------ |
-| —   | —        | —                   | —     | —            |
+| #                                                                                                       | Severity | What (in her words)                                                                | Fixed | Confirmed by                                                         |
+| ------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------- |
+| [081](issues/081-her-salon-opens-at-nine-and-the-diary-showed-appointments-at-three-in-the-morning.md)  | major    | Her salon opens at nine, and the diary showed appointments at three in the morning | yes   | New-person form opens on Los Angeles; both her people corrected      |
+| [082](issues/082-a-link-to-any-screen-in-the-console-opened-nothing-at-all.md)                          | major    | A link to any screen in the console opened nothing at all                          | yes   | Five addresses across three apps now open and take focus             |
+| [083](issues/083-a-link-to-an-order-this-salon-cannot-see-spun-for-ever.md)                             | minor    | A link to an order this salon cannot see spun for ever                             | no    | RLS refused it (404, no leak); the panel's dead end is scoped        |
+| [084](issues/084-she-typed-her-whole-week-in-and-the-diary-looked-exactly-the-same.md)                  | major    | She typed her whole week in, and the diary looked exactly the same                 | yes   | Monday and Sunday shaded shut, the 1:00 lunch band across five days  |
+| [085](issues/085-her-price-list-had-two-of-everything-at-two-different-prices.md)                       | major    | Her price list had two of everything, at two different prices                      | no    | Two seeders collide; both are shared with sparx — scoped             |
+| [086](issues/086-she-priced-a-cut-at-sixty-five-and-the-booking-page-said-six-thousand-five-hundred.md) | blocker  | She priced a cut at sixty-five, and it came out six thousand five hundred          | yes   | `65,00` settles to `65.00`; ten money fields swept                   |
+| [087](issues/087-the-screen-kept-telling-her-the-change-was-not-saved-after-it-saved.md)                | major    | The screen kept telling her the change was not saved, after it had saved           | yes   | Dot cleared, Save greyed, warning gone                               |
+| [088](issues/088-she-could-not-say-that-only-dara-does-the-fades.md)                                    | major    | She could not say that only Dara does the fades                                    | yes   | "Only Dara Bell can take this booking." said on screen before saving |
+| [089](issues/089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)                   | major    | Her salon's web address is "swift-horizon-4860", and it goes nowhere               | part  | Cause fixed; her own row waits on the pipeline migration             |
+| [090](issues/090-piggles-offered-to-sell-her-a-domain-from-another-companys-shop.md)                    | major    | Piggles offered to sell her a domain, from another company's shop                  | yes   | Toolbar reads Connect a domain only; no shop.sparx.works in the pane |
+| [091](issues/091-her-salons-homepage-is-selling-sparx-branded-mugs-and-t-shirts.md)                     | major    | Her salon's homepage is selling sparx-branded mugs and t-shirts                    | part  | Cause fixed; proving it needs a fresh signup after a deploy          |
+| [092](issues/092-with-nothing-to-sell-her-site-advertised-a-product-called-product-name-at-0-00.md)     | major    | With nothing to sell, her site advertised "Product name", $0.00, Sold out          | no    | Blocked on a decision: hide the section, or a real empty state       |

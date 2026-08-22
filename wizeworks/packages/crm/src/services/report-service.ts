@@ -169,7 +169,7 @@ export async function update(
   // could get back.
   if (before.builtinSlug) {
     throw new CrmValidationError(
-      'This is one of the reports sparx ships. Make a copy of it to change anything.',
+      'This is one of the built-in reports. Make a copy of it to change anything.',
       [{ field: 'id', message: 'built-in reports are read-only; duplicate instead' }]
     );
   }
@@ -241,7 +241,7 @@ export async function archive(ctx: ServiceContext, id: string): Promise<CrmRepor
   const before = await get(ctx, id);
   if (before.builtinSlug) {
     throw new CrmValidationError(
-      'This is one of the reports sparx ships, so it cannot be deleted. Remove it from your dashboards instead.',
+      'This is one of the built-in reports, so it cannot be deleted. Remove it from your dashboards instead.',
       [{ field: 'id', message: 'built-in reports cannot be archived' }]
     );
   }

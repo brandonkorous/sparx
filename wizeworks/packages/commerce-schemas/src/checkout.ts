@@ -106,6 +106,25 @@ export const CheckoutSessionSnapshot = z.object({
   taxBreakdownRef: z.string().optional(),
   poNumber: z.string().optional(),
   paymentTermsRequested: z.string().optional(),
+  /**
+   * How this shop takes money, so the storefront knows what to draw at the last
+   * step instead of assuming a card form.
+   *
+   *   'card'      a gateway is connected and collecting — a card form.
+   *   'in_person' the business is on MANUAL payments: they take payment at the
+   *               counter, on collection, or by arrangement. The order is placed
+   *               and settles outside the platform.
+   *   'unavailable' no way to be paid at all. The storefront says so plainly and
+   *               does not pretend the order can be finished.
+   *
+   * The three used to be one: the payment step always created a card intent, so
+   * a business that had chosen "Manual payments" in the picker — an option the
+   * picker offers, describing itself as "No fee. No online card processing" —
+   * had a checkout that could not complete. The SERVER already supported it
+   * (`complete()` carries no paymentRef for a manual order, exactly as for net
+   * terms); only the storefront had no branch for it.
+   */
+  paymentMode: z.enum(['card', 'in_person', 'unavailable']),
   // Customer-facing label for the disclosed surcharge (docs/48 §6), e.g.
   // "Card processing fee". Present only when a surcharge applies; the storefront
   // shows it as the line label. Multiple rules collapse to "Surcharges".

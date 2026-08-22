@@ -67,6 +67,16 @@ export * as paymentMethodService from './payment-method-service';
 // Collection: the off-session charge, the dunning ladder, invoice mode.
 export * as subscriptionBilling from './subscription-billing';
 export * as shippingService from './shipping-service';
+// What a quote answers when no delivery has been set up — the surfaces that
+// warn a merchant about it need to recognise the option they are describing.
+export {
+  COLLECTION_RATE_REF,
+  COLLECTION_PROVIDER_SLUG,
+  COLLECTION_SERVICE,
+  collectionOption,
+  describeRate,
+  isCollection,
+} from './collection-option';
 export { dispatchShippingTrackingWebhook } from './shipping-webhook-dispatch';
 export { quoteOutboundRates } from './outbound-shipment-request';
 export { listFulfillmentLabels } from './fulfillment-label-store';

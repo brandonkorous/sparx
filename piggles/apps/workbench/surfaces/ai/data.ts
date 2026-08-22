@@ -17,8 +17,9 @@
 // server stays the real gate.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 
 /* ── Prompt library shapes (mirror wizeworks/services/api-rest/src/lib/ai/types.ts) ──── */
 
@@ -423,10 +424,7 @@ export function categoryHint(category: PromptCategory): string {
  * back to the caller's wording.
  */
 export function aiErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 const AI_NUMBER = new Intl.NumberFormat();
@@ -471,10 +469,5 @@ export function isFailedOutcome(outcome: string): boolean {
 
 /** A kebab-case slug suggested from a name, for the immutable key on create. */
 export function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 120);
+  return slugifyWebSegment(input, 120);
 }

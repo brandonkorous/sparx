@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-couture-serif',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'sparx — Couture Serif',
   summary:
     'A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.',

@@ -26,7 +26,7 @@ import {
 import type { StudioDoc } from '../../documents/types';
 import { refOf } from '../../documents/types';
 import type { AddressableNode } from '../../tree/walk';
-import { idOf, isNodeChild } from '../../tree/walk';
+import { idOf, ownText } from '../../tree/walk';
 import { useApply, useDoc, useStudioHost } from '../context';
 
 /** A document's own root id — a theme has no tree, so it has none. */
@@ -42,11 +42,69 @@ const HEADING_TAGS = [
   { value: 'p', label: 'Paragraph' },
 ];
 
-/** The words this node holds, when it holds words rather than more blocks. */
-function ownText(node: AddressableNode): string | undefined {
-  const children = node.children ?? [];
-  if (children.some(isNodeChild)) return undefined;
-  return children.filter((child): child is string => typeof child === 'string').join('');
+/**
+ * Words this block does not own.
+ *
+ * Read-only on purpose, and it SAYS where to go instead. The alternative — the
+ * ordinary Words box — accepts the edit, writes it to the fallback, and leaves
+ * the page showing the old value, which is the worst of the three possible
+ * behaviours: nothing on screen changed and nothing said why.
+ */
+function BoundWords({ reference, shown }: { reference: string; shown: string }) {
+  const host = useStudioHost();
+  const where = host.describeBinding?.(reference);
+  return (
+    <Field>
+      <FieldLabel>Words</FieldLabel>
+      <Input value={shown} readOnly />
+      <FieldDescription>
+        {where
+          ? `These words come from ${where}. Change them there and every page that shows them follows.`
+          : 'These words come from your business details rather than from this page, so every page that shows them stays the same.'}
+      </FieldDescription>
+    </Field>
+  );
+}
+
+/**
+ * The key for an uncontrolled field, INCLUDING the value it is showing.
+ *
+ * Every box below is uncontrolled — it holds what it was mounted with and only
+ * writes on blur. Keyed on the node id alone, a value changed anywhere ELSE left
+ * the box holding the words from before: editing a heading on the canvas, or
+ * picking a picture with the button six lines up, both change a value this panel
+ * is displaying. That is not merely a stale label. Blurring the stale box writes
+ * its old value back over the new one, so the edit silently disappears — which
+ * is exactly how "Ask about a cake" became "Get a quote" again (issue #027).
+ * Putting the value in the key remounts the box whenever the value moves under
+ * it, so the box can never hold a version of the truth the document has left.
+ */
+export function fieldKey(id: string, field: string, value: string): string {
+  return `${id}:${field}:${value}`;
+}
+
+/**
+ * A page-part name, cleaned up enough to work as one.
+ *
+ * This becomes the element's `id`, which is what an in-page link (`#cakes`) is
+ * matched against — so it has to survive a URL, and a business owner typing
+ * "Our cakes" should not have to know that. Lowercased, spaces and punctuation
+ * folded to single hyphens, ends trimmed. Empty means "no name", which removes
+ * the attribute rather than writing an empty one.
+ */
+export function partName(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/** A component prop as an editable string. Anything that is not already text is
+ *  treated as absent rather than stringified — `[object Object]` in a box labelled
+ *  "Words" would be worse than an empty one, and blurring it would save it. */
+function textProp(node: AddressableNode, key: string): string {
+  const value = node.kind === 'component' ? node.props?.[key] : undefined;
+  return typeof value === 'string' ? value : '';
 }
 
 export function SettingsTab({ node }: { node: AddressableNode }) {
@@ -56,10 +114,27 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
   const id = node.id ?? '';
   const tag = node.kind === 'element' ? node.tag.toLowerCase() : '';
   const text = ownText(node);
+  // Words that come from somewhere else. The tree's own text is only the
+  // fallback, so a box to type in would take an edit and change nothing.
+  const boundRef = node.data?.kind === 'value' ? node.data.ref : undefined;
 
   const setAttr = useCallback(
     (key: string, value: string) => {
       apply(`Set ${key}`, [{ kind: 'node.setAttr', id, key, value: value || undefined }]);
+    },
+    [apply, id]
+  );
+
+  // A COMPONENT node (`Button`, and the other atoms a blueprint's chrome is built
+  // from) carries its words and its destination as PROPS, not as a text child and
+  // an href. Nothing in this panel read them, so a starter's header CTA had a label
+  // and a link no screen could change: Marisol's bakery shipped "Book a table"
+  // pointing at /book on its header and its phone menu, and the only way to alter
+  // either was to delete the button. `node.setProp` existed the whole time and was
+  // simply never offered.
+  const setProp = useCallback(
+    (key: string, value: string) => {
+      apply(`Set ${key}`, [{ kind: 'node.setProp', id, key, value: value || undefined }]);
     },
     [apply, id]
   );
@@ -75,11 +150,13 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
 
   return (
     <div className="flex flex-col gap-4 p-3">
-      {text !== undefined ? (
+      {boundRef ? <BoundWords reference={boundRef} shown={text ?? ''} /> : null}
+
+      {text !== undefined && !boundRef ? (
         <Field>
           <FieldLabel>Words</FieldLabel>
           <Textarea
-            key={`${id}:text`}
+            key={fieldKey(id, 'text', text)}
             defaultValue={text}
             rows={3}
             onBlur={(event) => {
@@ -91,11 +168,40 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
         </Field>
       ) : null}
 
+      {node.kind === 'component' ? (
+        <>
+          <Field>
+            <FieldLabel>Words</FieldLabel>
+            <Input
+              key={fieldKey(id, 'prop:label', textProp(node, 'label'))}
+              defaultValue={textProp(node, 'label')}
+              onBlur={(event) => {
+                setProp('label', event.currentTarget.value);
+              }}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Goes to</FieldLabel>
+            <Input
+              key={fieldKey(id, 'prop:href', textProp(node, 'href'))}
+              defaultValue={textProp(node, 'href')}
+              placeholder="/contact"
+              onBlur={(event) => {
+                setProp('href', event.currentTarget.value.trim());
+              }}
+            />
+            <FieldDescription>
+              A page on your own site starts with a slash, like <code>/contact</code>.
+            </FieldDescription>
+          </Field>
+        </>
+      ) : null}
+
       {['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(tag) ? (
         <Field>
           <FieldLabel>Kind of text</FieldLabel>
           <NativeSelect
-            key={`${id}:tag`}
+            key={fieldKey(id, 'tag', tag)}
             defaultValue={tag}
             onChange={(event) =>
               apply('Change kind of text', [
@@ -120,7 +226,11 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
         <Field>
           <FieldLabel>Goes to</FieldLabel>
           <Input
-            key={`${id}:href`}
+            key={fieldKey(
+              id,
+              'href',
+              String(node.kind === 'element' ? (node.attrs?.href ?? '') : '')
+            )}
             defaultValue={String(node.kind === 'element' ? (node.attrs?.href ?? '') : '')}
             placeholder="/contact"
             onBlur={(event) => setAttr('href', event.currentTarget.value.trim())}
@@ -131,13 +241,43 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
         </Field>
       ) : null}
 
+      {/* An in-page link needs something to land ON, and until this existed nothing
+          in the product could make one. The site check already validates `#name`
+          links against the real ids on the page and tells an author to "choose the
+          page, product or web address it should open, or remove it" — advice that
+          has no third option when the thing they want to reach is further down the
+          same page. This is that option. */}
+      <Field>
+        <FieldLabel>Link straight to this part</FieldLabel>
+        <Input
+          key={fieldKey(
+            id,
+            'anchor',
+            String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')
+          )}
+          defaultValue={String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')}
+          placeholder="cakes"
+          onBlur={(event) => {
+            setAttr('id', partName(event.currentTarget.value));
+          }}
+        />
+        <FieldDescription>
+          Give this part a short name and any button can jump straight to it — put the name after a{' '}
+          <code>#</code> in its Goes to box, like <code>#cakes</code>.
+        </FieldDescription>
+      </Field>
+
       {tag === 'img' ? (
         <>
           <Field>
             <FieldLabel>Picture</FieldLabel>
             <div className="flex items-center gap-2">
               <Input
-                key={`${id}:src`}
+                key={fieldKey(
+                  id,
+                  'src',
+                  String(node.kind === 'element' ? (node.attrs?.src ?? '') : '')
+                )}
                 defaultValue={String(node.kind === 'element' ? (node.attrs?.src ?? '') : '')}
                 onBlur={(event) => setAttr('src', event.currentTarget.value.trim())}
               />
@@ -151,7 +291,11 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
           <Field>
             <FieldLabel>Describe the picture</FieldLabel>
             <Input
-              key={`${id}:alt`}
+              key={fieldKey(
+                id,
+                'alt',
+                String(node.kind === 'element' ? (node.attrs?.alt ?? '') : '')
+              )}
               defaultValue={String(node.kind === 'element' ? (node.attrs?.alt ?? '') : '')}
               onBlur={(event) => setAttr('alt', event.currentTarget.value.trim())}
             />
@@ -165,7 +309,7 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
       <Field>
         <FieldLabel>Name this layer</FieldLabel>
         <Input
-          key={`${id}:label`}
+          key={fieldKey(id, 'label', node.label ?? '')}
           defaultValue={node.label ?? ''}
           placeholder="Hero, Prices, Opening hours…"
           onBlur={(event) => {

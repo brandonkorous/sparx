@@ -129,7 +129,7 @@ export function ContactForm({
   if (status === 'done') {
     return (
       <div className={className}>
-        <p className="alert alert-success alert-soft" role="status">
+        <p className="alert alert-success" role="status">
           {cfg.successMessage}
         </p>
       </div>

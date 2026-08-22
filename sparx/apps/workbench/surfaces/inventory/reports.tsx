@@ -669,7 +669,7 @@ function AsOfCard({ locationId }: { locationId: string }) {
           </div>
 
           {report.data.uncostedUnits > 0 ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>
                   {plural(report.data.uncostedUnits, 'unit', 'units')} with no purchase behind
@@ -907,7 +907,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
             neither healthy nor slow-moving because it is no longer there. Owns
             its own load state, like ageing below. */}
         {shrinkage.isError ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>Could not work out losses just now</AlertTitle>
               <AlertDescription>
@@ -928,7 +928,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* Ageing owns its own load/error state — the valuation above stays
             readable even if this one query is slow or fails. */}
         {aging.isError ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>Could not work out ageing just now</AlertTitle>
               <AlertDescription>
@@ -960,7 +960,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
 
         {turnover.isError ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>Could not work out selling pace just now</AlertTitle>
               <AlertDescription>

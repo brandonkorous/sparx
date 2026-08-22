@@ -11,6 +11,7 @@
 // + a GET form — no client JS. `basePath` points the facet form + pager at the current
 // route so filters stay on THIS surface; `scope` narrows the search to a collection/category.
 
+import { ButtonLink } from '@/components/button-link';
 import { BrowseFacets, type BrowseFacetValues } from '@/components/products/browse-facets';
 import type { FitmentLevel } from '@/components/facet-panel';
 import { Pagination } from '@/components/pagination';
@@ -185,13 +186,16 @@ export async function ScopedProductBrowser({
   return (
     <>
       {heading ? (
-        <header style={{ marginBottom: '0.5rem' }}>
+        <header className="mb-2">
           <h1 className="text-base-content text-4xl font-semibold tracking-tight">{heading}</h1>
         </header>
       ) : null}
 
       <div className="grid grid-cols-[248px_minmax(0,1fr)] items-start gap-[clamp(1.5rem,3vw,3rem)] py-[clamp(1.5rem,4vw,3rem)] max-[900px]:grid-cols-1">
-        <aside>
+        {/* Once the two columns stack, the filters go BELOW the products. A phone that
+            opens on a price box and a checkbox has buried the thing the shopper came
+            for; the toolbar's "Filter" jumps down to them. */}
+        <aside className="max-[900px]:order-2 max-[900px]:pt-2">
           <BrowseFacets
             action={basePath}
             facets={result.facets}
@@ -202,12 +206,19 @@ export async function ScopedProductBrowser({
           />
         </aside>
 
-        <div>
+        <div className="max-[900px]:order-1">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <span className="text-base-content text-sm">
+            <span className="text-base-content text-base">
               {result.total} {result.total === 1 ? 'product' : 'products'}
             </span>
-            <SortSelect value={sort} />
+            <div className="flex items-center gap-3">
+              <span className="min-[901px]:hidden">
+                <ButtonLink href="#browse-filters" variant="outline" prefetch={false}>
+                  Filter
+                </ButtonLink>
+              </span>
+              <SortSelect value={sort} />
+            </div>
           </div>
 
           <ProductGrid

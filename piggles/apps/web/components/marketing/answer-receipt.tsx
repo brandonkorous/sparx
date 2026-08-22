@@ -1,5 +1,6 @@
 import type { PigglesGroup } from '@piggles/brand';
 import { appsInGroup, APPS } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { GROUP_COPY } from './groups';
 
 // The panel is LIVE; the total is not. Name and lines redraw on every keystroke
@@ -35,9 +36,9 @@ const Count = (n: number) => {
 /** The joke only exists if the page notices you are testing it. */
 function verdict(runs: number) {
   if (runs <= 1) return 'Whatever you ticked, that is the price.';
-  if (runs === 2) return 'Different answer. Same $49.';
-  if (runs === 3) return 'Still $49. It is going to keep saying that.';
-  return `Answer number ${runs}. Still $49.`;
+  if (runs === 2) return `Different answer. Same ${PRICE_LABEL}.`;
+  if (runs === 3) return `Still ${PRICE_LABEL}. It is going to keep saying that.`;
+  return `Answer number ${runs}. Still ${PRICE_LABEL}.`;
 }
 
 const ROW = 'border-base-content/25 flex items-baseline justify-between gap-4 border-b py-3';
@@ -71,7 +72,7 @@ export function AnswerReceipt({
 
   return (
     // aria-live on the region, not the figure: a reader needs the lines and the
-    // number, and announcing $49 alone is the one reading that means nothing.
+    // number, and announcing the price alone is the one reading that means nothing.
     // `grow` so the panel fills its column and its CTA lands level with the
     // button in the column beside it.
     // A theme ISLAND, not `bg-secondary`. That utility is a navy panel only

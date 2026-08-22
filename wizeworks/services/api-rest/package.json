@@ -16,6 +16,7 @@
     "ops:backfill-record-templates": "node --import tsx src/scripts/backfill-record-templates.ts",
     "ops:migrate-media-to-blob": "node --import tsx src/scripts/migrate-media-to-blob.ts",
     "ops:backfill-finance-categories": "node --import tsx src/scripts/backfill-finance-categories.ts",
+    "ops:reindex-search": "node --import tsx src/scripts/reindex-search.ts",
     "ops:backfill-blueprint-scoping": "node --import tsx src/scripts/backfill-blueprint-scoping.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

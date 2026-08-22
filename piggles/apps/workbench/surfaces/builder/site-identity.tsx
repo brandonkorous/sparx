@@ -302,7 +302,7 @@ function IdentityEditor({
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save your changes</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -573,7 +573,7 @@ function BrandImageField({
             <Button
               size="sm"
               variant="ghost"
-              color="neutral"
+              color="danger"
               onClick={() => {
                 onChange(null);
               }}

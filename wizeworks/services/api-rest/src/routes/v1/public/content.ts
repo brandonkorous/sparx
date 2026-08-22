@@ -591,7 +591,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             select: {
               name: true,
               settings: true,
-              showSparxCredit: true,
+              showPlatformCredit: true,
               brandOverride: true,
               moduleScope: true,
             },
@@ -666,9 +666,11 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       // binding the picker offers could only ever resolve to an empty string (and
       // an empty bound value REPLACES the authored text, blanking the node).
       tagline: identity.tagline,
-      // Platform attribution: whether this site shows the "Made with sparx" footer
-      // credit. Defaults true so a site predating the column still shows it.
-      showSparxCredit: propertyRow?.showSparxCredit ?? true,
+      // Platform attribution: whether this site shows the footer credit badge.
+      // Defaults true so a site predating the column still shows it. The badge
+      // names no product here — the site resolves which one from `platformBrand`
+      // below, which is why this field is not named after either of them.
+      showPlatformCredit: propertyRow?.showPlatformCredit ?? true,
       // Not a brand NAME — the key. The site resolves the name, accent and link
       // from it through @wizeworks/brand-core, so adding a third brand is
       // configuration rather than a payload change.

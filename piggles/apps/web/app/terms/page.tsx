@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Section } from '@piggles/ui';
 import Link from 'next/link';
 import { brandLegal } from '@wizeworks/legal';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 
@@ -14,7 +15,7 @@ import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 // below is nonetheless taken from something already committed to in writing,
 // and where the two could disagree, the other page wins:
 //
-//   • $49/month · 1 business · 1 location · 1 site · 3 users · 14 days free
+//   • $99/month · 1 business · 1 location · 1 site · 3 users · 14 days free
 //     with no card — piggles/CLAUDE.md RULE #2 and sparx/apps/web/app/pricing.
 //   • A capacity limit never stops work in progress and never degrades what
 //     exists — RULE #2 again, and BILLING_RULES.md.
@@ -71,7 +72,7 @@ const CLAUSES: Clause[] = [
   {
     heading: 'Paying',
     paras: [
-      '$49 a month per business, in advance, from the day you decide to carry on after the trial. Prices are in US dollars and exclude any sales tax or VAT that applies where you are.',
+      `${PRICE_LABEL} a month per business, in advance, from the day you decide to carry on after the trial. Prices are in US dollars and exclude any sales tax or VAT that applies where you are.`,
       'Your card is handled by our payment provider and is replaced with a token before it reaches us. We never hold your card number.',
       'If a payment fails we will try again and tell you. We will not switch your business off over a payment problem without warning you first and giving you a real chance to fix it.',
       'If we ever change the price, you get at least thirty days’ notice before it applies to you, and cancelling instead is always an option.',

@@ -10,7 +10,7 @@ import type { ComponentType } from 'react';
 import type { PigglesIcon } from '@piggles/ui';
 import type { WorkbenchModule } from '../../components/module-scope';
 import type { PaneDescriptor, SurfaceParams } from './descriptor';
-import { productSurfaceTitle } from '../product';
+import { productHidesSurface, productSurfaceTitle } from '../product';
 
 /** Where a newly-opened pane should land. */
 export type OpenTarget =
@@ -176,7 +176,26 @@ export function registerSurfaces(definitions: readonly SurfaceDefinition[]): voi
   for (const definition of definitions) registerSurface(definition);
 }
 
+/**
+ * The surface behind a key — or nothing, if this product does not have it.
+ *
+ * The hidden check lives HERE rather than in the nav, because the nav is the one
+ * door somebody has already come through. A deep link, a restored layout, a
+ * dropped tab from another window and another surface's `open()` all arrive by
+ * their own route and every one of them resolves through here first, so this is
+ * the only place that can close them all at once.
+ *
+ * That was the lesson of `sparx_pay` and then of `partner.bootcamp.detail`
+ * (issue #002): both were kept out of a LIST while their screen stayed
+ * deep-linkable, which is a door only closed from the front. `listed: false`
+ * means "not offered"; hidden means "not here", and the two must not be confused
+ * again.
+ *
+ * Every caller already handles `undefined` — an unknown key is the same
+ * not-here that a deleted surface would be.
+ */
 export function getSurface(key: string): SurfaceDefinition | undefined {
+  if (productHidesSurface(key)) return undefined;
   return registry.get(key);
 }
 
@@ -186,7 +205,9 @@ export function listSurfaces(): SurfaceDefinition[] {
 
 /** Surfaces the launcher and command palette offer, grouped-friendly (module order preserved). */
 export function listedSurfaces(): SurfaceDefinition[] {
-  return listSurfaces().filter((surface) => surface.listed !== false);
+  return listSurfaces().filter(
+    (surface) => surface.listed !== false && !productHidesSurface(surface.key)
+  );
 }
 
 /**

@@ -10,7 +10,7 @@ import { enabledModuleKeys, resolveModules } from '../../../lib/onboarding/story
 import { OnboardingLayout, type StepMark } from '../onboarding-layout';
 import { StoryGetPaid } from './story-get-paid';
 import { StoryGoLive } from './story-go-live';
-import { StoryExtras, storyPlanItems, storyTotals } from './story-summary';
+import { StoryExtras, storyPlanItems } from './story-summary';
 
 // The story onboarding's TAIL. Once the story is committed, the SAME page continues
 // IN-PAGE through the "get paid" and "go live" chapters — it never bounces to the
@@ -52,7 +52,6 @@ export function StoryTail({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const { total, elsewhere, savings } = storyTotals(story);
   const moduleCount = enabledModuleKeys(story).length;
   const blueprint = blueprints.find((b) => b.key === blueprintKey) ?? null;
 
@@ -140,8 +139,6 @@ export function StoryTail({
         builderEnabled={Boolean(on.builder)}
         published={published}
         moduleCount={moduleCount}
-        monthlyTotal={total}
-        monthlyElsewhere={elsewhere}
         actions={actions}
       />
     );
@@ -152,7 +149,7 @@ export function StoryTail({
       work={work}
       summary={
         <SummaryCard
-          plan={{ items: storyPlanItems(story), total, elsewhere, savings }}
+          plan={{ items: storyPlanItems(story) }}
           primary={primary}
           back={back}
           error={error}

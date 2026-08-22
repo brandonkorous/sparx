@@ -92,7 +92,7 @@ export function CommerceSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <AlertContent>
               <AlertTitle>Could not load your selling settings</AlertTitle>
               <AlertDescription>
@@ -218,7 +218,7 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save your settings</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -490,7 +490,7 @@ function FailedPaymentsSection({
       {policy.finalOutcome === 'cancel' ? (
         // The one genuinely irreversible option on this screen. A paused order
         // resumes itself; a cancelled one has to be sold again.
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Cancelling ends the customer relationship</AlertTitle>
             <AlertDescription>
@@ -539,7 +539,7 @@ function FailedPaymentsSection({
         </FieldDescription>
       </Field>
 
-      <Alert color="info" variant="soft">
+      <Alert color="info">
         <AlertContent>
           <AlertTitle>What this means in practice</AlertTitle>
           <AlertDescription>{describeDunningPolicy(policy)}</AlertDescription>

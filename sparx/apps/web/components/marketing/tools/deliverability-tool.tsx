@@ -65,7 +65,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
           </Alert>
         ) : null}
         {result.error ? (
-          <Alert color="warning" variant="soft" size="sm">
+          <Alert color="warning" size="sm">
             {result.error}
           </Alert>
         ) : null}
@@ -214,7 +214,7 @@ export function DeliverabilityTool() {
           ) : (
             <EmptyResults />
           )}
-          <Alert color="info" variant="soft" size="sm">
+          <Alert color="info" size="sm">
             DKIM lives at a selector your provider chooses (e.g. <code>google._domainkey</code>). If
             DKIM shows as missing, try a different selector — your provider lists it in their setup
             docs.

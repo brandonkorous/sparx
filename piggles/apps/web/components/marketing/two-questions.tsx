@@ -6,6 +6,7 @@ import { Button, Checkbox, Field, FieldLabel, Input } from '@wizeworks/silicaui-
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
 import { accountUrl } from '@piggles/config';
+import { PRICE_MONTHLY } from '@piggles/config/pricing';
 import { AnswerReceipt } from './answer-receipt';
 import { useCountUp } from './use-count-up';
 
@@ -16,7 +17,7 @@ import { useCountUp } from './use-count-up';
 // meant one thing everywhere else for fifteen years — the number goes up — so
 // this is worth building precisely for what it does NOT do.
 //
-// No per-app prices, ever. Line items summing to $49 would be invented figures
+// No per-app prices, ever. Line items summing to the total would be invented figures
 // that shift as boxes are ticked, which is visibly rigged. Every line says
 // "Included" and only the total carries a number.
 
@@ -43,8 +44,6 @@ const OPTIONS: { group: PigglesGroup; label: string; hint: string }[] = [
   { group: 'money', label: 'I invoice people', hint: 'Bills, payments, and where you stand' },
   { group: 'run', label: 'I work with a team', hint: 'Who can see what, and the routine jobs' },
 ];
-
-const PRICE = 49;
 
 function DoesRow({
   option,
@@ -84,7 +83,7 @@ export function TwoQuestionsForm() {
   const [picked, setPicked] = useState<PigglesGroup[]>([]);
   /** How many times the total has been worked out. Drives the verdict line. */
   const [runs, setRuns] = useState(0);
-  const total = useCountUp(PRICE);
+  const total = useCountUp(PRICE_MONTHLY);
 
   const toggle = (g: PigglesGroup) =>
     setPicked((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));

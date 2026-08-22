@@ -55,6 +55,8 @@ export interface LegalChecklistItem {
 export interface LegalChecklist {
   items: LegalChecklistItem[];
   completeness: { requiredTotal: number; requiredComplete: number };
+  /** Whether to prompt for a shipping policy, and on what evidence. */
+  shipping: ShippingPolicySignal;
 }
 
 async function commerceEnabledTx(tx: TxClient, tenantId: string): Promise<boolean> {
@@ -62,6 +64,58 @@ async function commerceEnabledTx(tx: TxClient, tenantId: string): Promise<boolea
   const modules = (t?.settings as { modules?: Record<string, { enabled?: boolean }> } | null)
     ?.modules;
   return Boolean(modules?.commerce?.enabled);
+}
+
+/**
+ * Whether this business actually POSTS THINGS TO PEOPLE, on evidence.
+ *
+ * The Shipping Policy is optional, because selling is not shipping — a bakery
+ * taking collection orders has commerce switched on and posts nothing. But a
+ * business that DOES ship and has no shipping policy should be told, so the
+ * prompt has to come from evidence rather than from a default.
+ *
+ * `Product.requiresShipping` is NOT that evidence: it defaults to `true`, so
+ * every tenant on the platform would trip it, including the collection-only
+ * bakery this change exists for. A default is not a decision anybody made.
+ *
+ * These two are decisions somebody made:
+ *
+ *   `delivery-rates`  a shipping RATE exists — someone sat down and priced
+ *                     delivery. Zones alone are not enough; a zone can be
+ *                     seeded, a rate is authored.
+ *   `orders-shipped`  an order was actually fulfilled with a carrier or a
+ *                     tracking number. The strongest signal there is: it
+ *                     already happened.
+ *
+ * `because` is carried out, not just the boolean, so the notice can say WHY it
+ * is asking. "You have set delivery charges" is actionable; "you should write a
+ * shipping policy" with no reason reads as nagging and gets dismissed.
+ */
+export type ShippingEvidence = 'delivery-rates' | 'orders-shipped';
+
+export interface ShippingPolicySignal {
+  /** Evidence says this business ships. */
+  ships: boolean;
+  /** What the evidence was, or null when there is none. */
+  because: ShippingEvidence | null;
+  /** They ship AND no shipping policy is live. The only state worth a notice. */
+  missingPolicy: boolean;
+}
+
+async function shippingEvidenceTx(tx: TxClient): Promise<ShippingEvidence | null> {
+  const rate = await tx.shippingRate.findFirst({ select: { id: true } });
+  if (rate) return 'delivery-rates';
+  const shipped = await tx.orderFulfillment.findFirst({
+    where: {
+      OR: [
+        { status: { in: ['shipped', 'delivered'] } },
+        { trackingNumber: { not: null } },
+        { shippedAt: { not: null } },
+      ],
+    },
+    select: { id: true },
+  });
+  return shipped ? 'orders-shipped' : null;
 }
 
 /** The legal checklist over the platform template registry: for each template, whether
@@ -121,11 +175,18 @@ export async function getLegalChecklistTx(tx: TxClient, tenantId: string): Promi
   });
 
   const requiredItems = items.filter((i) => i.required);
+  const because = await shippingEvidenceTx(tx);
+  const shippingLive = items.find((i) => i.legalKind === 'shipping')?.state === 'complete';
   return {
     items,
     completeness: {
       requiredTotal: requiredItems.length,
       requiredComplete: requiredItems.filter((i) => i.state === 'complete').length,
+    },
+    shipping: {
+      ships: because !== null,
+      because,
+      missingPolicy: because !== null && !shippingLive,
     },
   };
 }
@@ -231,4 +292,168 @@ export function createLegalPage(
   legalKind: LegalKind
 ): Promise<LegalPageResult> {
   return withTenant({ tenantId: ctx.tenantId }, (tx) => createLegalPageTx(tx, ctx, legalKind));
+}
+
+// ─── Taking the newer starter wording ────────────────────────────────────────
+//
+// The checklist can mark a page `stale` — published, but built on starter wording
+// the platform has since rewritten. NOTHING used to move it off that state.
+// `legal_template_version` was written once at creation and never again, so a
+// tenant whose page went stale could edit it, publish it, place it in the footer,
+// and still read "a newer starter version is available" forever, with "0 of 4
+// required ready" underneath it. The row said "open it to see what changed and
+// update it", and the editor it opened offered neither.
+//
+// That is what these two do. `legalStarterUpdate` is what the screen SHOWS her —
+// the actual new wording, not a description of it — and `refreshLegalPage` is
+// what takes it.
+
+export interface LegalStarterUpdate {
+  legalKind: LegalKind;
+  title: string;
+  /** The starter version this page was built on. */
+  fromVersion: number;
+  /** Where the starter has got to. */
+  toVersion: number;
+  /** The new wording itself, so the screen can show it rather than promise it. */
+  body: { title: string; body: unknown };
+  /**
+   * True when the page still holds exactly what the starter wrote.
+   *
+   * Answered from the revision history rather than by diffing against the old
+   * template, because old template versions are not kept — only the current one
+   * is in the code. A page with one revision (the "Created from legal starter
+   * template" one) whose body still matches it has never been touched, so taking
+   * the new wording costs her nothing. Anything else HAS her work in it, and the
+   * screen has to say so before it offers to replace it.
+   */
+  unedited: boolean;
+}
+
+async function untouchedSinceCreationTx(tx: TxClient, entryId: string): Promise<boolean> {
+  const revisions = await tx.contentRevision.findMany({
+    where: { entryId },
+    orderBy: { revisionNumber: 'asc' },
+    select: { body: true },
+    take: 2,
+  });
+  if (revisions.length !== 1) return false;
+  const entry = await tx.contentEntry.findFirst({ where: { id: entryId }, select: { body: true } });
+  return JSON.stringify(entry?.body) === JSON.stringify(revisions[0]?.body);
+}
+
+/** The pending starter update for one legal page, or null when it is already current. */
+export async function legalStarterUpdateTx(
+  tx: TxClient,
+  entryId: string
+): Promise<LegalStarterUpdate | null> {
+  const entry = await tx.contentEntry.findFirst({
+    where: { id: entryId, typeKey: 'page', legalKind: { not: null }, deletedAt: null },
+    select: { id: true, legalKind: true, legalTemplateVersion: true },
+  });
+  if (!entry?.legalKind) return null;
+
+  const template = getLegalTemplate(entry.legalKind as LegalKind);
+  if (!template) return null;
+  const from = entry.legalTemplateVersion ?? 0;
+  if (from >= template.templateVersion) return null;
+
+  return {
+    legalKind: template.legalKind,
+    title: template.title,
+    fromVersion: from,
+    toVersion: template.templateVersion,
+    body: legalEntryBody(template),
+    unedited: await untouchedSinceCreationTx(tx, entry.id),
+  };
+}
+
+export function legalStarterUpdate(
+  tenantId: string,
+  entryId: string
+): Promise<LegalStarterUpdate | null> {
+  return withTenant({ tenantId }, (tx) => legalStarterUpdateTx(tx, entryId));
+}
+
+/**
+ * Replace a legal page's wording with the current starter, and record that it is
+ * now current.
+ *
+ * The old body is kept as a revision FIRST, so this is recoverable from the
+ * page's own history — a replace that cannot be undone is not something to put
+ * behind one button.
+ *
+ * The disclaimer acknowledgement is cleared on purpose. It means "a person read
+ * this wording and accepted it", and after this call the wording is different;
+ * carrying the old acknowledgement forward would certify text nobody has read.
+ * She re-reads and re-accepts, which is the whole point of the version bump.
+ */
+export async function refreshLegalPageTx(
+  tx: TxClient,
+  ctx: CmsWriteContext,
+  entryId: string
+): Promise<LegalPageResult> {
+  const entry = await tx.contentEntry.findFirst({
+    where: { id: entryId, typeKey: 'page', legalKind: { not: null }, deletedAt: null },
+  });
+  if (!entry?.legalKind) throw conflict('That page is not a legal page.');
+
+  const template = getLegalTemplate(entry.legalKind as LegalKind);
+  if (!template) throw conflict(`Unknown legal template "${entry.legalKind}".`);
+  if ((entry.legalTemplateVersion ?? 0) >= template.templateVersion) {
+    throw conflict(`${template.title} is already on the latest starter wording.`);
+  }
+
+  // Her wording, banked before it is replaced.
+  await recordRevision(tx, {
+    tenantId: ctx.tenantId,
+    entryId: entry.id,
+    body: entry.body as Record<string, unknown>,
+    seoJson: (entry.seoJson ?? {}) as Record<string, unknown>,
+    status: entry.status,
+    kind: 'manual',
+    authorId: ctx.actorId,
+    summary: 'Before taking the newer starter wording',
+  });
+
+  const next = legalEntryBody(template);
+  const updated = await tx.contentEntry.update({
+    where: { id: entry.id },
+    data: {
+      body: next as unknown as Json,
+      legalTemplateVersion: template.templateVersion,
+      // New words, so the old "I have read this" no longer applies.
+      legalDisclaimerAckAt: null,
+    },
+  });
+
+  await recordRevision(tx, {
+    tenantId: ctx.tenantId,
+    entryId: entry.id,
+    body: next,
+    seoJson: (updated.seoJson ?? {}) as Record<string, unknown>,
+    status: updated.status,
+    kind: 'manual',
+    authorId: ctx.actorId,
+    summary: `Updated to starter wording v${String(template.templateVersion)}`,
+  });
+
+  return {
+    entry: updated,
+    events: [
+      {
+        type: 'content.entry.updated',
+        data: {
+          entryId: updated.id,
+          typeKey: updated.typeKey,
+          slug: updated.slug,
+          status: updated.status,
+        },
+      },
+    ],
+  };
+}
+
+export function refreshLegalPage(ctx: CmsWriteContext, entryId: string): Promise<LegalPageResult> {
+  return withTenant({ tenantId: ctx.tenantId }, (tx) => refreshLegalPageTx(tx, ctx, entryId));
 }

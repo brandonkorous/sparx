@@ -40,6 +40,14 @@ export interface CheckoutSession {
   cartId: string;
   step: string;
   currency: string;
+  /**
+   * How this shop takes money: a card form, in person, or not at all.
+   *
+   * Optional on the type, and read defensively, because an api-rest that
+   * predates this field sends nothing — and the safe reading of "nothing" is the
+   * card path every shop had before, not a claim that the shop takes cash.
+   */
+  paymentMode?: 'card' | 'in_person' | 'unavailable';
   customerEmail?: string;
   // Present only when the signed-in customer is an active B2B contact — the
   // frontend's ONLY signal for showing the "bill to account" payment choice.
@@ -179,6 +187,9 @@ export function submitPayment(
   input:
     | { paymentProviderSlug: string; paymentRef: string; poNumber?: string }
     | { poNumber?: string; paymentTermsRequested: string }
+    // Paid in person: nothing to declare. The server reads how this shop takes
+    // money from the shop's own configuration, never from what the client claims.
+    | Record<string, never>
 ): Promise<CheckoutSession> {
   return call(`/v1/public/commerce/checkout/${sessionId}/payment`, tenantSlug, {
     method: 'POST',

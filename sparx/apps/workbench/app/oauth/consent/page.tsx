@@ -94,7 +94,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
       <Shell>
         <div className="flex flex-col gap-3 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
-          <Alert color="warning" variant="soft" role="alert">
+          <Alert color="warning" role="alert">
             Your account role ({role}) has no MCP permissions to grant. Ask an owner or admin to
             connect this assistant.
           </Alert>
@@ -116,7 +116,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
           </Text>
         </div>
 
-        <Alert color="warning" variant="soft" className="text-sm">
+        <Alert color="warning" className="text-sm">
           Grants an external app live access to your data. Access tokens are delivered to{' '}
           <strong>{redirectHost}</strong> — only continue if you started this connection yourself.
         </Alert>

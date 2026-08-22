@@ -14,6 +14,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { getTokenState, resolveToken } from '../../lib/api/token';
 
@@ -729,10 +730,7 @@ export async function downloadPayrollHours(params: {
  *  messages for a business owner ("End the existing rate first, or pick a start
  *  date after it"), and nothing this side could infer beats them. */
 export function staffErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isNotFound(error: unknown): boolean {

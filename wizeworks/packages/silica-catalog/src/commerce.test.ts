@@ -246,6 +246,43 @@ describe('buy_box — self-scoping product detail', () => {
     expect(html).toMatch(/name="quantity"[^>]*min="1"/);
   });
 
+  // The sold-out contract. Every one of these was broken in the same way: the buy box
+  // never read stock at all, so a bakery whose bread goes by eleven kept an enabled
+  // "Add to cart" on every sold-out loaf, the POST came back 409, and silica's form
+  // behavior announced the reason into a 1px clipped live region — which is to say, to
+  // nobody. The API had the right answer the whole time.
+  it('swaps the add-to-cart form for a sold-out notice when the product is sold out', () => {
+    const gone: ResolveHost = {
+      ...host,
+      resolveCollection: (ref) => (ref === 'product' ? [{ ...PRODUCT, soldOut: true }] : []),
+    };
+    const html = toHtml(resolveTree(buyBox(), gone));
+    expect(html).toContain('Sold out');
+    expect(html).not.toContain('Add to cart');
+    expect(html).not.toContain('name="variantId"');
+  });
+
+  it('keeps the form for a product whose stock is simply UNKNOWN', () => {
+    // The fixture carries no `soldOut` at all — an older stored record, a theme
+    // preview, a tenant with the inventory module off. Absent must not read as sold
+    // out: `computeAvailability` treats an uncounted variant as in stock, and a tree
+    // that disagreed would hide the buy button on every product nobody has counted.
+    const html = toHtml(resolveTree(buyBox(), host));
+    expect(html).toContain('Add to cart');
+    expect(html).not.toContain('Sold out');
+  });
+
+  it('gives the form a VISIBLE status part so a failed add is not silent', () => {
+    // Without an authored `data-sui-part="status"`, silica's form behavior builds its
+    // own — 1x1px, `clip-path: inset(50%)`. The message exists; nobody sighted sees it.
+    const html = toHtml(resolveTree(buyBox(), host));
+    expect(html).toMatch(/<p[^>]*data-sui-part="status"/);
+    expect(html).toContain('empty:hidden');
+    // Empty, not absent: absent falls back to the built-in "Submitted.", which is not
+    // a sentence about a basket. The cart drawer is the success signal.
+    expect(html).toMatch(/<form[^>]*data-success-message=""/);
+  });
+
   it('resolves an empty value when the product has no live variant', () => {
     // defaultVariantId === null upstream → '' in scope. The markup still renders;
     // refusing the empty add is the storefront onAction handler's job (a hidden

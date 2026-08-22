@@ -87,7 +87,7 @@ function SegmentLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this segment</AlertTitle>
             <AlertDescription>
@@ -440,7 +440,7 @@ function SegmentEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this segment</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -449,7 +449,7 @@ function SegmentEditor({
           ) : null}
 
           {isArchived ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>This segment is archived</AlertTitle>
                 <AlertDescription>
@@ -567,7 +567,7 @@ function SegmentEditor({
               description="Build up who belongs in this segment. A customer is in it when they match the rules below."
             >
               {rulesError && touched ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertDescription>{rulesError}</AlertDescription>
                   </AlertContent>

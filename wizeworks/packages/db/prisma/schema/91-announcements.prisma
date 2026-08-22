@@ -1,0 +1,65 @@
+// The header notice bar — one sentence WizeWorks puts above every page of a
+// brand's surfaces, authored by staff in the admin console.
+//
+// It exists because the alternative is a deploy. A founding-member offer, a
+// price change, a planned outage, a "we are open again" — all of them are true
+// for days and then not, and every one of them was previously a code edit to a
+// marketing layout, reviewed, built and rolled out, then a second one to take it
+// down again. The second one is the one that gets forgotten, which is how a site
+// ends up announcing a sale that ended in March.
+//
+// PLATFORM-OWNED, NOT TENANT-OWNED. This is WizeWorks talking to its own
+// customers about its own product — it is NOT a banner a tenant puts on their
+// own site (that is the site builder's job, on their own canvas). So there is no
+// `tenant_id` here, no RLS policy, and no tenant-facing surface that can write
+// one. Only an operator holding `announcement:manage` can.
+//
+// BRAND-SCOPED, because sparx and Piggles are two products sharing a database
+// and almost nothing else: a Piggles founding-member offer must never appear
+// over sparx.works. `platformBrand` matches `Tenant.platformBrand`.
+//
+// SURFACE-SCOPED, because the three surfaces answer different questions. A
+// "become a founding member" line belongs on the marketing site and the signup
+// flow; it is noise above somebody's invoices. `surfaces` is a list, so one
+// announcement can run on two of the three without being written twice.
+
+model PlatformAnnouncement {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  /** Which product this speaks for — `sparx` | `piggles`. Never both: two
+   *  products saying the same sentence is two announcements. */
+  platformBrand String    @map("platform_brand") @db.VarChar(30)
+  /** Where it shows — any of `marketing` | `account` | `console`. */
+  surfaces      String[]  @map("surfaces")
+  /** The sentence. One sentence: a header bar that wraps to three lines is a
+   *  section, and a section belongs on a page. */
+  message       String    @db.Text
+  /** Optional call to action. Both or neither — a label with no href is a
+   *  button that does nothing, so the API rejects the half-filled pair. */
+  linkLabel     String?   @map("link_label") @db.VarChar(60)
+  linkHref      String?   @map("link_href") @db.Text
+  /** A silica color name, so the bar is themed by the design system rather than
+   *  painted here (RULE #1). `primary` unless the notice carries urgency. */
+  tone          String    @default("primary") @db.VarChar(20)
+  /** Whether a reader can close it. An offer is dismissible; an outage is not. */
+  dismissible   Boolean   @default(true)
+  /** The window. Both open-ended by default: a notice with no dates runs from
+   *  the moment it is switched on until somebody switches it off. */
+  startsAt      DateTime? @map("starts_at") @db.Timestamptz
+  endsAt        DateTime? @map("ends_at") @db.Timestamptz
+  /** The switch. SEPARATE from the window on purpose — an operator drafts a
+   *  notice, schedules it, and still has one control that takes it down now
+   *  without editing the dates that record what was intended. */
+  isActive      Boolean   @default(false) @map("is_active")
+  /** Ties the break when two are live on the same surface. Higher wins; only one
+   *  bar is ever rendered, because two stacked bars is a page that starts with
+   *  its own footer. */
+  priority      Int       @default(0)
+  /** Who wrote it — a `wize_admin` operator id, FK-free (that store is a
+   *  different schema on a different connection). */
+  createdBy     String?   @map("created_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([platformBrand, isActive, priority])
+  @@map("platform_announcements")
+}

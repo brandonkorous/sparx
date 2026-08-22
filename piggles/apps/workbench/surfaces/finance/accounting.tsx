@@ -606,7 +606,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
           </div>
 
           {result.errorCount > 0 ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Some rows will be left out</AlertTitle>
                 <AlertDescription>

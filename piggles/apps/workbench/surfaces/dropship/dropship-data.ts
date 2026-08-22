@@ -32,6 +32,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Semantic tone (shared with the Badge/Button color axis) ────────────── */
@@ -750,8 +751,5 @@ export function presetRange(preset: RangePreset): AnalyticsRange {
 /** Surface the server's own sentence for a 4xx (it names the exact problem —
  *  a bad credential, an already-imported product), else a plain fallback. */
 export function dropshipErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

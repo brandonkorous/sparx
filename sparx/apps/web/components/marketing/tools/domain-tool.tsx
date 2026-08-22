@@ -158,7 +158,7 @@ export function DomainTool() {
               description="Enter a name and pick the extensions to check across them at once."
             />
           )}
-          <Alert color="info" variant="soft" size="sm">
+          <Alert color="info" size="sm">
             Availability comes from live registry (RDAP) data. Register the name you want at any
             registrar — premium names may carry special pricing.
           </Alert>

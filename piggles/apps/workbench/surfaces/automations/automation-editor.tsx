@@ -716,7 +716,7 @@ export function AutomationEditor({
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="neutral"
+                  color="danger"
                   className="shrink-0"
                   loading={discard.isPending}
                   onClick={() => {
@@ -784,7 +784,7 @@ export function AutomationEditor({
       />
 
       {error ? (
-        <Alert color="error" variant="soft" className="shrink-0">
+        <Alert color="error" className="shrink-0">
           <AlertContent>
             <AlertTitle>{isNew ? 'Cannot create this yet' : 'Cannot save this yet'}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>

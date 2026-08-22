@@ -37,7 +37,7 @@ import type {
   PendingDomain,
   WizardBlueprint,
 } from '../../../lib/onboarding/types';
-import { StoryExtras, storyPlanItems, storyTotals } from '../story/story-summary';
+import { StoryExtras, storyPlanItems } from '../story/story-summary';
 import { StepModules } from './step-modules';
 import { StepBlueprint, SCRATCH, GOLDEN_BLUEPRINT_KEY } from './step-blueprint';
 import { StepWorkspace, type SlugCheck } from './step-workspace';
@@ -45,6 +45,7 @@ import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
 import { StepLaunch } from './step-launch';
 import { productCopy } from '../../../lib/product';
+import { PRODUCT } from '@piggles/config';
 
 const FULL_ORDER: OnboardingStepKey[] = [
   'modules',
@@ -84,7 +85,7 @@ const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting: strin
     title: 'Make it yours',
     supporting: productCopy(
       'onboarding.domain.pitch',
-      'A custom domain builds trust — and it is yours to keep. Grab the perfect one now, or start free on your sparx.zone address and add a domain anytime.'
+      `A web address of your own builds trust — and it is yours to keep. Set one up now, or start free on your ${PRODUCT.tenantSites.suffix} address and add your own anytime.`
     ),
   },
   payments: {
@@ -246,9 +247,9 @@ function WizardInner({
   const nextKey = order[Math.min(idx + 1, order.length - 1)] ?? 'launch';
   const prevKey = order[Math.max(idx - 1, 0)] ?? 'modules';
 
-  // ── Plan math (one projection of the shared story — identical to the story flow) ──
+  // ── What is switched on (one projection of the shared story — identical to the
+  //    story flow). No totals: there is nothing per-app to add up. ──
   const activeModules = SWITCHBOARD_MODULES.filter((m) => effectiveModuleOn(modules, m.key));
-  const { total, elsewhere, savings } = storyTotals(story);
   const planItems = storyPlanItems(story);
 
   // ── Slug availability (debounced) ─────────────────────────────────────────────
@@ -441,8 +442,6 @@ function WizardInner({
           builderEnabled={effectiveModuleOn(modules, 'builder')}
           published={published}
           moduleCount={activeModules.length}
-          monthlyTotal={total}
-          monthlyElsewhere={elsewhere}
           pendingDomain={pendingDomain}
           actions={actions}
         />
@@ -467,7 +466,7 @@ function WizardInner({
 
   const summary = (
     <SummaryCard
-      plan={{ items: planItems, total, elsewhere, savings }}
+      plan={{ items: planItems }}
       primary={{
         label: ctaLabel,
         onClick: onContinue,

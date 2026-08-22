@@ -164,8 +164,6 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
           <Button
             size="sm"
-            variant="ghost"
-            color="neutral"
             onClick={() => {
               ctx.open('b2b.invoices.list', {}, { target: 'replace' });
             }}

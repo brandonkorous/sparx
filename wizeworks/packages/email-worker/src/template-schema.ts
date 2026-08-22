@@ -352,6 +352,33 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       signingUrl: z.string().min(1),
     }),
   }),
+  // Tenant -> customer invoice. The document travels IN the mail (there is no
+  // public invoice page), so the lines and the summary rows come with it.
+  // `dueAt` is nullable on purpose: a business that agreed no terms has no due
+  // date, and inventing one would put a deadline on the customer that nobody set.
+  z.object({
+    template: z.literal('invoice-sent'),
+    ...TemplateMeta,
+    props: z.object({
+      billToName: z.string().optional(),
+      fromName: z.string().min(1),
+      documentLabel: z.string().min(1),
+      documentNumber: z.string().min(1),
+      total: z.number(),
+      balance: z.number(),
+      currency: z.string().min(1),
+      dueAt: z.string().nullable().optional(),
+      lines: z.array(
+        z.object({
+          title: z.string(),
+          subtitle: z.string().optional(),
+          amount: z.string(),
+        })
+      ),
+      summary: z.array(z.object({ label: z.string(), value: z.string() })),
+      note: z.string().nullable().optional(),
+    }),
+  }),
   // Team / org membership.
   z.object({
     template: z.literal('invitation-accepted'),

@@ -166,7 +166,7 @@ export function ReceiptBillPanel({
       }
     >
       {data.existingBillId ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Invoice {data.existingBillNumber} is already on this order</AlertTitle>
             <AlertDescription>

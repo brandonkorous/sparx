@@ -208,6 +208,21 @@ export function Palette({ onInserted }: { onInserted?: () => void } = {}) {
   );
 }
 
+/**
+ * A key that survives the flattening.
+ *
+ * An item's `key` is unique inside its own group, and browsing renders one list
+ * per group, so it holds there. SEARCH does not: it flattens every group into a
+ * single list, and two different things can legitimately share a name — there is
+ * a `timeline` in Data (a bare component) and a `timeline` in How it works (a
+ * composed section). React saw one key twice, warned, and is free to drop one of
+ * the rows, so a search could silently omit the entry somebody went looking for.
+ * Pairing the group with the key makes it unique in both shapes at once.
+ */
+export function rowKey(group: string | undefined, item: PaletteItem): string {
+  return `${group ?? ''}:${item.key}`;
+}
+
 function PaletteRows({
   rows,
   onInsert,
@@ -225,7 +240,7 @@ function PaletteRows({
     <ul>
       {rows.map(({ item, group }) => (
         <PaletteRow
-          key={item.key}
+          key={rowKey(group, item)}
           item={item}
           group={showGroup ? group : undefined}
           surface={surface}

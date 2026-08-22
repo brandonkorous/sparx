@@ -248,22 +248,58 @@ export async function addItem(
     if (resolvedConfig) {
       unitPriceCents = Math.max(0, unitPriceCents + resolvedConfig.totalAdjustmentCents);
     }
-    const subtotalCents = unitPriceCents * input.quantity;
+    const attributes = serializeAttributes(input.attributes);
 
-    const item = await tx.cartItem.create({
-      data: {
-        tenantId: ctx.tenantId,
-        cartId: input.cartId,
-        variantId,
-        quantity: input.quantity,
-        unitPriceCents,
-        subtotalCents,
-        ...(configurationPayload ? { configurationPayload } : {}),
-        attributes: serializeAttributes(input.attributes),
-        unitPriceTrace: priced.trace,
-      },
-      select: { id: true },
-    });
+    // A SECOND add of the same thing is MORE OF IT, not another row. Adding a
+    // croissant twice used to leave two identical lines of one — the subtotal was
+    // right, but a cart that lists the same product twice reads like a shop that
+    // lost count.
+    //
+    // Only a line that is genuinely the same merges. A configured line never does
+    // (two personalised builds are two things even at one price); neither does a
+    // line carrying attributes, or one bought at a different unit price — merging
+    // across a price change would silently reprice what was already in the basket.
+    // Candidates are filtered in JS rather than by a Json `equals`, so the rule is
+    // legible and does not depend on JSON key order.
+    const plainAdd = !resolvedConfig && isEmptyAttributes(attributes);
+    const mergeInto = plainAdd
+      ? ((
+          await tx.cartItem.findMany({
+            where: { cartId: input.cartId, variantId, unitPriceCents },
+            select: {
+              id: true,
+              quantity: true,
+              inventoryReservationId: true,
+              configurationPayload: true,
+              attributes: true,
+            },
+          })
+        ).find((l) => l.configurationPayload == null && isEmptyAttributes(l.attributes)) ?? null)
+      : null;
+
+    const quantity = (mergeInto?.quantity ?? 0) + input.quantity;
+    const subtotalCents = unitPriceCents * quantity;
+
+    const item = mergeInto
+      ? await tx.cartItem.update({
+          where: { id: mergeInto.id },
+          data: { quantity, subtotalCents, unitPriceTrace: priced.trace },
+          select: { id: true },
+        })
+      : await tx.cartItem.create({
+          data: {
+            tenantId: ctx.tenantId,
+            cartId: input.cartId,
+            variantId,
+            quantity,
+            unitPriceCents,
+            subtotalCents,
+            ...(configurationPayload ? { configurationPayload } : {}),
+            attributes,
+            unitPriceTrace: priced.trace,
+          },
+          select: { id: true },
+        });
 
     // Soft-hold the stock against this line (docs/100 §2.4). Atomic with the
     // line write: a `deny`-policy shortfall throws InventoryOutOfStockError and
@@ -281,15 +317,25 @@ export async function addItem(
       )?.dropshipSourceId
     );
     if (inventoryActive && !isDropshipVariant) {
+      // A merged line already holds its PREVIOUS quantity, so release that first and
+      // take one hold for the new total — the same release-then-reserve `updateItem`
+      // does on a quantity change. A `deny` shortfall throws and rolls the whole add
+      // back, so a merge can never hold more than is on the shelf.
+      if (mergeInto?.inventoryReservationId) {
+        await inventoryService.releaseOnTx(tx, ctx, mergeInto.inventoryReservationId);
+      }
       const hold = await inventoryService.reserveOnTx(tx, ctx, {
         variantId,
-        quantity: input.quantity,
+        quantity,
         holderType: 'cart',
         holderId: input.cartId,
       });
+      // Null when the variant has never been counted — untracked, nothing held. The
+      // line simply carries no reservation, the same as a dropship line. Written
+      // unconditionally because a merge must also CLEAR a stale id it inherited.
       await tx.cartItem.update({
         where: { id: item.id },
-        data: { inventoryReservationId: hold.reservationId },
+        data: { inventoryReservationId: hold?.reservationId ?? null },
       });
     }
 
@@ -361,7 +407,7 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
           holderType: 'cart',
           holderId: item.cartId,
         });
-        reservationId = hold.reservationId;
+        reservationId = hold?.reservationId ?? null;
       }
       await tx.cartItem.update({
         where: { id: input.cartItemId },
@@ -945,6 +991,13 @@ async function bootstrapFromDocument(
 function serializeAttributes(attributes: CartItemAttributes | undefined): Prisma.InputJsonValue {
   if (!attributes) return {};
   return attributes;
+}
+
+/** No attributes worth distinguishing — `null`, or an object with no keys. The
+ *  column defaults to `{}`, so both spellings of "none" occur in real rows. */
+function isEmptyAttributes(value: unknown): boolean {
+  if (value == null) return true;
+  return typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0;
 }
 
 function serializeCart(row: CartWithRelations): CartSnapshot {

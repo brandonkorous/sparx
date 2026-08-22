@@ -140,7 +140,7 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load your response times</AlertTitle>
             <AlertDescription>
@@ -378,7 +378,7 @@ function PolicyEditor({
             </Text>
           </div>
 
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>Right now</AlertTitle>
               <AlertDescription>{describeHours(policy)}</AlertDescription>
@@ -404,7 +404,7 @@ function PolicyEditor({
             description="Untick a day to say you are shut. Tick every day and set 00:00 to 24:00 if you answer around the clock."
           >
             {dayError ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertDescription>{dayError}</AlertDescription>
                 </AlertContent>
@@ -560,7 +560,7 @@ function PolicyEditor({
             description="How far through the time a request goes amber, so somebody can still do something about it."
           >
             {warnError ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertDescription>{warnError}</AlertDescription>
                 </AlertContent>

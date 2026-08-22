@@ -90,15 +90,19 @@ export function SiteHeader() {
               on every other page, all of which are server components and cannot
               use `render` at all.
 
-              Sign in is the dismiss half of the pair, so it is the one control
-              on this bar that has earned `neutral` (root RULE #4). */}
+              Sign in and the drawer trigger are COLORLESS — no `color`, so
+              `--btn-accent` stays unset and silica falls back to
+              `var(--color-base-content)`. `neutral` cannot be used here: it is
+              Piggles' chrome FILL (dark in both themes, palette.css), and
+              `ghost`/`outline` paint the ink with it, which put both controls at
+              1.12:1 on the dark header. Issue #003. */}
           {/* `max-sm:hidden`, not `hidden sm:inline-flex`. The second form
               re-declares `display` on a `.btn`, which overrides whatever silica
               set and leaves the label sitting off-centre against the button
               beside it. Hiding by breakpoint upward never touches the class the
               component relies on. */}
           <a
-            className={`${buttonClasses({ color: 'neutral', variant: 'ghost' })} max-sm:hidden`}
+            className={`${buttonClasses({ variant: 'ghost' })} max-sm:hidden`}
             href={accountUrl('sign-in')}
           >
             Sign in
@@ -112,7 +116,7 @@ export function SiteHeader() {
                 no `render` prop, unlike Button. Passing one typechecks as an
                 unknown attribute and silently does nothing. */}
             <DrawerTrigger>
-              <Button color="neutral" variant="ghost" shape="square" className="lg:hidden">
+              <Button variant="ghost" shape="square" className="lg:hidden">
                 <span aria-hidden>☰</span>
                 <span className="sr-only">Menu</span>
               </Button>
@@ -133,7 +137,7 @@ export function SiteHeader() {
               </nav>
               <div className="border-base-300 mt-6 border-t pt-6">
                 <a
-                  className={buttonClasses({ color: 'neutral', variant: 'outline', block: true })}
+                  className={buttonClasses({ variant: 'outline', block: true })}
                   href={accountUrl('sign-in')}
                 >
                   Sign in

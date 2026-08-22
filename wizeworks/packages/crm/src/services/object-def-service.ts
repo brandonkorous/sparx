@@ -292,7 +292,7 @@ export async function update(
 export async function archive(ctx: ServiceContext, key: string): Promise<CrmObjectDef> {
   if (isBuiltinKey(key)) {
     throw new CrmValidationError(
-      'The records sparx ships with cannot be removed. You can rename one, or take away the extra details you added to it.',
+      'The built-in records cannot be removed. You can rename one, or take away the extra details you added to it.',
       [{ field: 'key', message: 'This is a built-in record type.' }]
     );
   }

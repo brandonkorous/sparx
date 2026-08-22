@@ -21,7 +21,7 @@
 // into an override so only what differs is stored.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { useSite, type Site } from '../sites/data';
 
@@ -288,8 +288,5 @@ export function useSaveIdentity() {
  *  URL). Show it verbatim; fall back to the caller's wording for a 5xx that has
  *  no such sentence. */
 export function saveErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

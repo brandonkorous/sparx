@@ -542,7 +542,7 @@ function SupplierEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this supplier</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -863,7 +863,7 @@ function LoadError({
 }) {
   return (
     <div className="flex h-full items-center justify-center p-8">
-      <Alert color="error" variant="soft" className="max-w-md">
+      <Alert color="error" className="max-w-md">
         <AlertContent>
           <AlertTitle>{title}</AlertTitle>
           <AlertDescription>

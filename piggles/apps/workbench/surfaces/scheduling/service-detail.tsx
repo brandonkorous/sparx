@@ -30,24 +30,22 @@ import {
   FieldDescription,
   FieldLabel,
   Input,
-  NativeSelect,
   Text,
-  Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faFloppyDisk, faPlus, faTrashCan, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { faFloppyDisk, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { ServiceRequirements } from './service-requirements';
+import { ServiceBasics } from './service-basics';
+import { moneyCents, moneyProblem } from '../../components/money-input';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  ASSIGNMENT_STRATEGIES,
-  BOOKING_TYPES,
-  RESOURCE_KINDS,
   bookingTypeLabel,
   isNotFound,
   schedulingErrorMessage,
@@ -59,7 +57,6 @@ import {
   useUpdateService,
   type AssignmentStrategy,
   type BookingType,
-  type ResourceKind,
   type ResourceRequirement,
   type SchedulingService,
 } from './setup-data';
@@ -69,9 +66,9 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 const DETAIL_KEY = 'scheduling.services.detail';
 
 /** The currencies offered, lowercase to match the 3-char ISO the service stores. */
-const CURRENCIES = ['usd', 'cad', 'eur', 'gbp', 'aud', 'nzd', 'jpy'] as const;
+export const CURRENCIES = ['usd', 'cad', 'eur', 'gbp', 'aud', 'nzd', 'jpy'] as const;
 
-interface Draft {
+export interface Draft {
   name: string;
   description: string;
   bookingType: BookingType;
@@ -119,13 +116,11 @@ function centsToPrice(cents: number): string {
   return cents > 0 ? (cents / 100).toFixed(2) : '';
 }
 
-/** A typed price → integer cents. Empty or unparseable reads as free (0). */
-function priceToCents(value: string): number {
-  const trimmed = value.trim();
-  if (trimmed === '') return 0;
-  const parsed = Number(trimmed);
-  if (Number.isNaN(parsed) || parsed < 0) return 0;
-  return Math.round(parsed * 100);
+/** A typed price → integer cents, or null when it cannot be read. Blank is
+ *  free; "65,00" is sixty-five dollars, not six thousand five hundred, and
+ *  anything genuinely unreadable is refused rather than saved as free (086). */
+function priceToCents(value: string): number | null {
+  return moneyCents(value);
 }
 
 function draftFrom(service: SchedulingService): Draft {
@@ -142,7 +137,16 @@ function draftFrom(service: SchedulingService): Draft {
     capacity: service.capacity,
     policyId: service.policyId ?? '',
     assignmentStrategy: service.assignmentStrategy,
-    requirements: service.resourceRequirements.map((requirement) => ({ ...requirement })),
+    // Field by field, NOT a spread. `draftsEqual` compares stringified drafts,
+    // which is key-ORDER sensitive, and the server returns these keys in a
+    // different order from the one the form builds them in — so a spread left
+    // the pane permanently "not saved" after a save that worked (issue 087).
+    requirements: service.resourceRequirements.map((requirement) => ({
+      role: requirement.role,
+      kind: requirement.kind,
+      skillTags: [...requirement.skillTags],
+      count: requirement.count,
+    })),
     minLeadMinutes: service.minLeadMinutes,
     maxAdvanceDays: service.maxAdvanceDays,
     bookableOnline: service.bookableOnline,
@@ -203,9 +207,12 @@ function ServiceEditor({
 
   const nameOk = draft.name.trim() !== '';
   const durationOk = draft.durationMinutes >= 1;
+  // A price nobody can read must not be saved as free (086) — the field says
+  // what is wrong and Save waits until it is.
+  const priceProblem = moneyProblem(draft.price);
   const changed = useMemo(() => !draftsEqual(draft, initial), [draft, initial]);
   const busy = create.isPending || update.isPending;
-  const canSave = nameOk && durationOk && changed && !busy;
+  const canSave = nameOk && durationOk && priceProblem === null && changed && !busy;
 
   useDirtySource(
     changed && !create.isSuccess,
@@ -233,7 +240,9 @@ function ServiceEditor({
     bufferBeforeMin: draft.bufferBeforeMin,
     bufferAfterMin: draft.bufferAfterMin,
     slotIntervalMin: Math.max(1, draft.slotIntervalMin),
-    priceCents: priceToCents(draft.price),
+    // `canSave` already refused an unreadable price, so the null branch is a
+    // belt-and-braces zero rather than a decision.
+    priceCents: priceToCents(draft.price) ?? 0,
     currency: draft.currency,
     capacity: draft.bookingType === 'class' ? Math.max(1, draft.capacity) : 1,
     policyId: draft.policyId === '' ? null : draft.policyId,
@@ -306,32 +315,7 @@ function ServiceEditor({
     });
   };
 
-  const addRequirement = () => {
-    set('requirements', [
-      ...draft.requirements,
-      { role: '', kind: 'staff', skillTags: [], count: 1 },
-    ]);
-  };
-  const updateRequirement = (index: number, patch: Partial<ResourceRequirement>) => {
-    set(
-      'requirements',
-      draft.requirements.map((requirement, i) =>
-        i === index ? { ...requirement, ...patch } : requirement
-      )
-    );
-  };
-  const removeRequirement = (index: number) => {
-    set(
-      'requirements',
-      draft.requirements.filter((_, i) => i !== index)
-    );
-  };
-
   const state = existing ? serviceState(existing) : null;
-  const typeHint = BOOKING_TYPES.find((t) => t.value === draft.bookingType)?.hint;
-  const strategyHint = ASSIGNMENT_STRATEGIES.find(
-    (s) => s.value === draft.assignmentStrategy
-  )?.hint;
 
   return (
     <div className={PANE_SHELL}>
@@ -371,7 +355,7 @@ function ServiceEditor({
           ) : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this service</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>
@@ -379,370 +363,24 @@ function ServiceEditor({
             </Alert>
           ) : null}
 
-          <FormSection
-            title={isNew ? 'New service' : 'What it is'}
-            description={
-              isNew
-                ? 'Give the service a name a customer will recognise, and say what kind of booking it is.'
-                : undefined
-            }
-          >
-            <Field>
-              <FieldLabel>Service name</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={draft.name}
-                    placeholder="Full color & cut"
-                    onChange={(event) => {
-                      set('name', event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>What a customer sees when they book.</FieldDescription>
-            </Field>
+          <ServiceBasics
+            isNew={isNew}
+            draft={draft}
+            policies={policies}
+            priceProblem={priceProblem}
+            onSet={set}
+          />
 
-            <Field>
-              <FieldLabel>What kind of booking</FieldLabel>
-              <FieldControl
-                render={
-                  <NativeSelect
-                    value={draft.bookingType}
-                    aria-label="What kind of booking"
-                    onChange={(event) => {
-                      set('bookingType', event.target.value as BookingType);
-                    }}
-                  >
-                    {BOOKING_TYPES.map((kind) => (
-                      <option key={kind.value} value={kind.value}>
-                        {kind.label}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                }
-              />
-              {typeHint ? <FieldDescription>{typeHint}</FieldDescription> : null}
-            </Field>
-
-            <Field>
-              <FieldLabel>Description (optional)</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    color="module"
-                    rows={3}
-                    value={draft.description}
-                    placeholder="What is included, what to bring, anything a customer should know."
-                    onChange={(event) => {
-                      set('description', event.target.value);
-                    }}
-                  />
-                }
-              />
-            </Field>
-
-            {draft.bookingType === 'class' ? (
-              <Field>
-                <FieldLabel>How many people can book each session</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={1}
-                      className="max-w-32 tabular-nums"
-                      value={String(draft.capacity)}
-                      onChange={(event) => {
-                        set('capacity', intOr(Number(event.target.value), 1) || 1);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  The most people who can join one session — the class fills up at this number.
-                </FieldDescription>
-              </Field>
-            ) : null}
-          </FormSection>
-
-          <FormSection
-            title="How long it takes"
-            description="How long the booking lasts, and any gap you need before or after it."
-          >
-            <div className="grid gap-4 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>Length (minutes)</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color={durationOk ? 'module' : 'error'}
-                      type="number"
-                      min={1}
-                      className="max-w-32 tabular-nums"
-                      value={String(draft.durationMinutes)}
-                      onChange={(event) => {
-                        set('durationMinutes', intOr(Number(event.target.value), 0));
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>How long the booking itself runs.</FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Offer start times every (minutes)</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={1}
-                      className="max-w-32 tabular-nums"
-                      value={String(draft.slotIntervalMin)}
-                      onChange={(event) => {
-                        set('slotIntervalMin', intOr(Number(event.target.value), 15) || 15);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  How far apart the bookable slots sit — every 15 minutes, on the hour, and so on.
-                </FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Gap before (minutes)</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      className="max-w-32 tabular-nums"
-                      value={String(draft.bufferBeforeMin)}
-                      onChange={(event) => {
-                        set('bufferBeforeMin', intOr(Number(event.target.value), 0));
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Time to set up, kept free before the booking.</FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Gap after (minutes)</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      className="max-w-32 tabular-nums"
-                      value={String(draft.bufferAfterMin)}
-                      onChange={(event) => {
-                        set('bufferAfterMin', intOr(Number(event.target.value), 0));
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Time to tidy up, kept free after the booking.</FieldDescription>
-              </Field>
-            </div>
-          </FormSection>
-
-          <FormSection
-            title="What it costs"
-            description="The price a customer pays, and which deposit rules apply."
-          >
-            <div className="grid gap-4 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>Price</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      step={0.01}
-                      className="max-w-40 tabular-nums"
-                      value={draft.price}
-                      placeholder="0.00"
-                      onChange={(event) => {
-                        set('price', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Leave blank for a free booking.</FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Currency</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      className="max-w-32"
-                      value={draft.currency}
-                      aria-label="Currency"
-                      onChange={(event) => {
-                        set('currency', event.target.value);
-                      }}
-                    >
-                      {CURRENCIES.map((code) => (
-                        <option key={code} value={code}>
-                          {code.toUpperCase()}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-              </Field>
-            </div>
-
-            <Field>
-              <FieldLabel>Booking rules</FieldLabel>
-              <FieldControl
-                render={
-                  <NativeSelect
-                    value={draft.policyId}
-                    aria-label="Booking rules"
-                    disabled={policies.isPending}
-                    onChange={(event) => {
-                      set('policyId', event.target.value);
-                    }}
-                  >
-                    <option value="">No deposit or cancellation rules</option>
-                    {(policies.data?.items ?? []).map((policy) => (
-                      <option key={policy.id} value={policy.id}>
-                        {policy.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                }
-              />
-              <FieldDescription>
-                The deposit and cancellation terms a customer agrees to when booking this service.
-                Set these up under Booking rules.
-              </FieldDescription>
-            </Field>
-          </FormSection>
-
-          <FormSection
-            title="Who or what it needs"
-            description="What a booking uses up — a member of staff, a room, a machine. Two bookings can never claim the same one at the same time. Leave this empty if a booking needs nothing set aside."
-          >
-            {draft.requirements.length > 0 ? (
-              <Field>
-                <FieldLabel>When more than one is needed</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={draft.assignmentStrategy}
-                      aria-label="How resources are picked"
-                      onChange={(event) => {
-                        set('assignmentStrategy', event.target.value as AssignmentStrategy);
-                      }}
-                    >
-                      {ASSIGNMENT_STRATEGIES.map((strategy) => (
-                        <option key={strategy.value} value={strategy.value}>
-                          {strategy.label}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-                {strategyHint ? <FieldDescription>{strategyHint}</FieldDescription> : null}
-              </Field>
-            ) : null}
-
-            <div className="flex flex-col gap-3">
-              {draft.requirements.map((requirement, index) => (
-                <div
-                  key={index}
-                  className="border-base-300 flex flex-col gap-3 rounded-lg border p-3 @md:flex-row @md:items-end"
-                >
-                  <Field className="min-w-0 flex-1">
-                    <FieldLabel>What it is</FieldLabel>
-                    <FieldControl
-                      render={
-                        <Input
-                          color="module"
-                          value={requirement.role}
-                          placeholder="Stylist"
-                          onChange={(event) => {
-                            updateRequirement(index, { role: event.target.value });
-                          }}
-                        />
-                      }
-                    />
-                  </Field>
-                  <Field className="min-w-0 @md:w-44">
-                    <FieldLabel>Kind</FieldLabel>
-                    <FieldControl
-                      render={
-                        <NativeSelect
-                          value={requirement.kind}
-                          aria-label="Kind of resource needed"
-                          onChange={(event) => {
-                            updateRequirement(index, {
-                              kind: event.target.value as ResourceKind,
-                            });
-                          }}
-                        >
-                          {RESOURCE_KINDS.map((kind) => (
-                            <option key={kind.value} value={kind.value}>
-                              {kind.label}
-                            </option>
-                          ))}
-                        </NativeSelect>
-                      }
-                    />
-                  </Field>
-                  <Field className="@md:w-24">
-                    <FieldLabel>How many</FieldLabel>
-                    <FieldControl
-                      render={
-                        <Input
-                          color="module"
-                          type="number"
-                          min={1}
-                          className="tabular-nums"
-                          value={String(requirement.count)}
-                          onChange={(event) => {
-                            updateRequirement(index, {
-                              count: intOr(Number(event.target.value), 1) || 1,
-                            });
-                          }}
-                        />
-                      }
-                    />
-                  </Field>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    shape="square"
-                    aria-label={`Remove ${requirement.role.trim() || 'this requirement'}`}
-                    className="shrink-0"
-                    onClick={() => {
-                      removeRequirement(index);
-                    }}
-                  >
-                    <Icon glyph={faXmark} className="size-4" aria-hidden />
-                  </Button>
-                </div>
-              ))}
-
-              <div>
-                <Button size="sm" variant="soft" color="module" onClick={addRequirement}>
-                  <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  Add something it needs
-                </Button>
-              </div>
-            </div>
-          </FormSection>
+          <ServiceRequirements
+            requirements={draft.requirements}
+            strategy={draft.assignmentStrategy}
+            onChangeStrategy={(strategy) => {
+              set('assignmentStrategy', strategy);
+            }}
+            onChange={(requirements) => {
+              set('requirements', requirements);
+            }}
+          />
 
           <FormSection title="Booking window">
             <div className="grid gap-4 @md:grid-cols-2">

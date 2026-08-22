@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-candle-apothecary',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'sparx — Candle Apothecary (Retail)',
   summary:
     'A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme — warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.',

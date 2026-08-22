@@ -2705,6 +2705,9 @@ importers:
 
   wizeworks/packages/payments:
     dependencies:
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
       '@wizeworks/db':
         specifier: workspace:*
         version: link:../db
@@ -3426,6 +3429,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
       '@wizeworks/silica-corrections':
         specifier: workspace:*
         version: link:../silica-corrections

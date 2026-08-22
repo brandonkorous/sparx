@@ -51,10 +51,11 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaymentTermsField } from '../../components/payment-terms-field';
 import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from '../crm/custom-properties-panel';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import { CustomerPicker, customerLabel, type CustomerSummary } from '../invoicing/customer-picker';
 import {
   CONTACT_ROLE_LABELS,
@@ -87,13 +88,6 @@ const STATUS_OPTIONS: { value: AccountStatus; label: string }[] = [
   { value: 'inactive', label: 'Closed' },
 ];
 
-const TERMS_OPTIONS: { value: PaymentTerms; label: string }[] = [
-  { value: 'prepay', label: 'Pays before you ship' },
-  { value: 'net30', label: 'Pays within 30 days' },
-  { value: 'net60', label: 'Pays within 60 days' },
-  { value: 'net90', label: 'Pays within 90 days' },
-];
-
 interface Draft {
   companyName: string;
   taxId: string;
@@ -101,7 +95,9 @@ interface Draft {
   tierId: string;
   /** Whole currency units while editing (MoneyInput works in dollars). */
   creditLimit: number;
-  paymentTerms: PaymentTerms | '';
+  /** `''` is a real answer — nothing was agreed — and not the same as a
+   *  day count of zero. See lib/payment-terms.ts. */
+  paymentTerms: PaymentTerms;
   discountPercent: number;
   status: AccountStatus;
   notes: string;
@@ -458,7 +454,7 @@ function AccountEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this account</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -618,14 +614,10 @@ function AccountEditor({
               <FieldControl
                 render={
                   <div className="max-w-sm">
-                    <Select
-                      color="module"
-                      aria-label="Payment terms"
-                      placeholder="No terms set"
+                    <PaymentTermsField
                       value={draft.paymentTerms}
-                      items={TERMS_OPTIONS}
-                      onValueChange={(next) => {
-                        set('paymentTerms', (next as PaymentTerms | null) ?? '');
+                      onChange={(next) => {
+                        set('paymentTerms', next);
                       }}
                     />
                   </div>

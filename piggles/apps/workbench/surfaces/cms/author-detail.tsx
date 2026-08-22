@@ -256,7 +256,7 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not add this author</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

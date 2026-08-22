@@ -160,7 +160,7 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* The credentials belong to the BUSINESS, not to sparx. Said up
               front, because handing over an auth token is the moment someone
               wants to know who is paying and who can see it. */}
-          <Alert color="info" variant="soft" className="mt-4">
+          <Alert color="info" className="mt-4">
             You connect your own phone account, so the calls are billed to you at your own rates and
             the number stays yours. sparx encrypts the token and never shows it again.
           </Alert>

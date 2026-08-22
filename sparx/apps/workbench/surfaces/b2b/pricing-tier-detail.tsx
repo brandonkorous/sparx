@@ -107,7 +107,7 @@ function TierLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <AlertContent>
               <AlertTitle>Could not load this tier</AlertTitle>
               <AlertDescription>
@@ -299,7 +299,7 @@ function TierEditor({ ctx, id, tier }: { ctx: SurfaceContext; id: string; tier?:
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this tier</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

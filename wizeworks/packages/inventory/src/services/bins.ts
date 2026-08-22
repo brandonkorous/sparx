@@ -470,7 +470,7 @@ export async function updateBin(
     // routing find it, and type is what makes it not sellable.
     if (existing.isSystem && (input.code !== undefined || input.type !== undefined)) {
       throw new InventoryValidationError(
-        'This shelf is provisioned by sparx — its label and kind cannot be changed. You can rename it and set where it falls in the pick order.',
+        'This shelf was set up for you — its label and kind cannot be changed. You can rename it and set where it falls in the pick order.',
         [{ field: 'code', message: 'Not editable on a system shelf' }]
       );
     }
@@ -538,7 +538,7 @@ export async function archiveBin(ctx: ServiceContext, id: string): Promise<void>
     if (!bin) throw new InventoryNotFoundError('InventoryBin', id);
     if (bin.isSystem) {
       throw new InventoryValidationError(
-        'This shelf is provisioned by sparx and cannot be removed. Turn bins off for the location instead.'
+        'This shelf was set up for you and cannot be removed. Turn bins off for the location instead.'
       );
     }
 

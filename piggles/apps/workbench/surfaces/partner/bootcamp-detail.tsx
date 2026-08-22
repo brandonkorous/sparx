@@ -20,6 +20,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { MoneyTextInput } from '../../components/money-input';
 import {
   Alert,
   AlertContent,
@@ -468,7 +469,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {!isNew && status === 'draft' && !isCertified ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Publishing needs the Certified tier</AlertTitle>
                 <AlertDescription>
@@ -676,17 +677,13 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Price per seat</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      inputMode="decimal"
-                      value={form.price}
-                      placeholder="0.00"
-                      className="text-right tabular-nums"
-                      onChange={(event) => {
-                        set('price', event.target.value);
+                      className="text-right"
+                      aria-label="Price per seat"
+                      text={form.price}
+                      onTextChange={(text) => {
+                        set('price', text);
                       }}
                     />
                   }

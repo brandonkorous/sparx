@@ -1,5 +1,6 @@
 import { cookies, headers } from 'next/headers';
 import { accountOrigin } from '@piggles/auth-handoff';
+import { fetchHeaderNotice } from '@piggles/config';
 import { COMPACT_COOKIE, guessCompact } from '@/lib/compact';
 import { requireConsoleSession } from '@/lib/session';
 import { ConsoleShell } from '@/components/console-shell';
@@ -45,8 +46,17 @@ export async function ConsoleEntry({ address }: { address: string }) {
     userAgent: requestHeaders.get('user-agent'),
   });
 
+  // What WizeWorks is announcing to people USING the product — planned work, an
+  // outage, a change that lands tomorrow. Marketing notices are not written for
+  // this surface (the admin console picks per surface), so an offer never lands
+  // over somebody's invoices. Fetched here because the shell is a client
+  // component and this read is server-only; it never throws, so the console
+  // cannot be taken down by the announcement service.
+  const notice = await fetchHeaderNotice('console');
+
   return (
     <ConsoleShell
+      notice={notice}
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
       initialSiteKey={initialSiteKey}

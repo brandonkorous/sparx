@@ -743,7 +743,7 @@ export function AvailabilitySurface({ ctx }: { ctx: SurfaceContext }) {
             >
               <WeeklyHours week={draft} onChange={setWeek} />
               {dirty && !valid ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>Some hours don’t add up</AlertTitle>
                     <AlertDescription>
@@ -794,7 +794,7 @@ function Body({
 
   if (resources) {
     return (
-      <Alert color="error" variant="soft">
+      <Alert color="error">
         <AlertContent>
           <AlertTitle>Could not load your people & equipment</AlertTitle>
           <AlertDescription>
@@ -827,7 +827,7 @@ function Body({
 
   if (windowsError) {
     return (
-      <Alert color="error" variant="soft">
+      <Alert color="error">
         <AlertContent>
           <AlertTitle>Could not load these hours</AlertTitle>
           <AlertDescription>

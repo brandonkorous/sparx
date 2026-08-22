@@ -186,7 +186,7 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
           </div>
 
           {cryptoOff ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Calendar sync is not set up yet</AlertTitle>
                 <AlertDescription>
@@ -265,7 +265,7 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
           )}
 
           {connections.isError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not load linked calendars</AlertTitle>
                 <AlertDescription>

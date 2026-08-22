@@ -58,6 +58,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 // The API origin, for the ONE request that cannot go through `api`: the media
 // upload PUT, whose URL is pre-authorised and must not carry a bearer token.
@@ -71,6 +72,8 @@ import type {
   StockMovement,
   StockLocation,
 } from '../inventory/data';
+import { slugify, slugifyUpper } from '../../lib/slugify';
+import { usePaymentConfig } from './providers-data';
 
 /* ── Shapes: the product itself ─────────────────────────────────────────── */
 
@@ -1446,10 +1449,7 @@ export function productErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof VariantAfterCreateError) {
     return productErrorMessage(error.reason, fallback);
   }
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Saying what a state means ──────────────────────────────────────────── */
@@ -1520,24 +1520,18 @@ export function priceLabel(product: {
 }
 
 /** A handle is the part of a web address that identifies this product, so it is
- *  lowercase, digits and hyphens — matching what api-rest derives from a title. */
+ *  lowercase, digits and hyphens — matching what api-rest derives from a title,
+ *  ACCENTS AND ALL. This used to drop its own copy of the rule in here and turn
+ *  "gruyère" into "gruy-re" (issue #013); the shared helper folds instead. */
 export function slugifyHandle(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 127);
+  return slugify(value, 127);
 }
 
 /** A first product code, derived from the title, so nobody has to invent one to
  *  get started. Stays fully editable — a business with its own coding scheme
  *  types theirs over the top. */
 export function suggestSku(title: string): string {
-  const base = title
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 20);
+  const base = slugifyUpper(title, 20);
   return base === '' ? '' : `${base}-1`;
 }
 
@@ -2865,4 +2859,76 @@ export function splitMemberships(
   chosen.sort(byName);
   automatic.sort(byName);
   return { chosen, automatic, unknownIds };
+}
+
+/* ── Are these products findable? ───────────────────────────────────────── */
+
+/**
+ * How many of this business's records are in the search index.
+ *
+ * The public shop does not read the products table \u2014 it reads the search index,
+ * and when that index is empty it renders "No products found. Try adjusting your
+ * filters or search." A shop with nine products on sale and an empty index tells
+ * every visitor there is nothing to buy, tells the owner nothing at all, and looks
+ * from the console exactly like a shop that is working.
+ *
+ * That is the gap this closes. It is not a diagnostic: it is the only place the
+ * owner can learn their shop is invisible.
+ */
+export interface SearchCollectionStat {
+  collection: string;
+  documents: number;
+}
+
+export function useSearchStatus() {
+  return useQuery({
+    queryKey: ['search', 'status'],
+    queryFn: () => api.get<{ collections: SearchCollectionStat[] }>('/v1/search/status'),
+    // A search-side hiccup must never take the products list down with it.
+    retry: false,
+    staleTime: 60_000,
+  });
+}
+
+/** How many PRODUCT documents this business has in search, or null when the
+ *  answer could not be fetched \u2014 which is not the same as zero and must not
+ *  render as one. */
+export function indexedProductCount(
+  data: { collections: SearchCollectionStat[] } | undefined
+): number | null {
+  if (!data) return null;
+  const row = data.collections.find((c) => c.collection.includes('product'));
+  return row ? row.documents : null;
+}
+
+/** Rebuild this business's search index from its real records. The work happens
+ *  on a worker, so this returns as soon as the request is accepted \u2014 the copy
+ *  has to say "started", never "done". */
+export function useReindexSearch() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ runId: string }>('/v1/search/reindex'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });
+    },
+  });
+}
+
+/**
+ * Can this shop actually take a customer's money?
+ *
+ * Separate from every other reason a sale can fail, because it is the only one
+ * that lets a customer get all the way to the last step first. A shopper picks
+ * out their order, types their address, chooses how to collect it, and only then
+ * is told the shop cannot be paid. Nothing before that moment hints at it, on
+ * either side of the screen.
+ *
+ * Returns `null` while unknown — loading, or the request failed. Absence is not
+ * "no gateway", and rendering a warning off a failed request would tell a
+ * business their shop is broken because our own call timed out.
+ */
+export function usePaymentsReady(): boolean | null {
+  const config = usePaymentConfig();
+  if (!config.data) return null;
+  return config.data.isActive;
 }

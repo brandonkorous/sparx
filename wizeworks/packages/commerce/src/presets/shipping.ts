@@ -1,7 +1,10 @@
 // Shipping module presets (kind 'shipping') — installable zone + profile + rate
 // packs. These are merchant fallback rates (used when no carrier API is
-// connected). Distinct zone NAMES keep them from colliding with the "Everywhere"
-// zone `shippingService.bootstrapDefaults` seeds on activation.
+// connected).
+//
+// Nothing seeds a zone on activation any more: installing one of these is a
+// merchant SAYING they post things, and until they say it the quote offers
+// collection instead (see services/collection-option.ts, issue #031).
 
 import type {
   CreateShippingProfileInput,

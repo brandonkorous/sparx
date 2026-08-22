@@ -17,8 +17,12 @@ import {
   Loading,
 } from '@wizeworks/silicaui-react';
 import type { SlugAvailability } from '../../../lib/onboarding/types';
+import { PRODUCT } from '@piggles/config';
 
-const SITE_ZONE = 'sparx.zone';
+// The tenant-site suffix comes from the brand, never a literal. It was
+// hardcoded to sparx.zone — another product's domain, offered to a Piggles
+// customer as their own web address. Issue #009.
+const SITE_ZONE = PRODUCT.tenantSites.suffix;
 
 /** The live availability of the typed slug, owned + debounced by the orchestrator. */
 export type SlugCheck =

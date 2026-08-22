@@ -278,7 +278,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
   if (forbidden) {
     return (
       <FormSection title="What they're paid">
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Only an account admin can see pay</AlertTitle>
             <AlertDescription>
@@ -317,7 +317,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
       {rates.isPending ? (
         <Text className="text-sm">Loading…</Text>
       ) : items.length === 0 && !adding ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>No pay rate on file</AlertTitle>
             <AlertDescription>
@@ -1480,7 +1480,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {archived ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This person has left</AlertTitle>
                 <AlertDescription>
@@ -1670,7 +1670,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : null}
 
           {isNew ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Pay, hours and qualifications come next</AlertTitle>
                 <AlertDescription>

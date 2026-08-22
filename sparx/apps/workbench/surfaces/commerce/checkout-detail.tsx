@@ -110,7 +110,7 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this checkout</AlertTitle>
             <AlertDescription>

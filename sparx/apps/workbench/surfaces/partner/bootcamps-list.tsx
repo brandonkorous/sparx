@@ -131,7 +131,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
             {!canHost && profile.data ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>Hosting unlocks when your account is active</AlertTitle>
                   <AlertDescription>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
 import { accountUrl, APP_BY_ID, type PigglesAppId } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import type { MascotPoseId } from '@piggles/mascot';
 import { PigglesMascot } from '@piggles/mascot/react';
 import { PageHero } from '@/components/marketing/page-hero';
@@ -240,7 +241,7 @@ export default function WhoItsForPage() {
       </Section>
 
       <CloseBand
-        heading="Whatever is on your door, it is $49 a month."
+        heading={`Whatever is on your door, it is ${PRICE_LABEL} a month.`}
         primary={{ label: 'Start free for 14 days', href: accountUrl('signup', 'who-close') }}
         secondary={{ label: 'See what it costs', href: '/pricing' }}
       />

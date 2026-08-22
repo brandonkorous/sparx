@@ -128,7 +128,7 @@ export function mapBlock(): Node {
             el('span', 'text-lg font-semibold', { text: 'Your business name' }),
             el('span', '', { text: '123 Example Street' }),
             el('span', '', { text: 'Your town, POST CODE' }),
-            el('a', 'link link-primary', { text: 'Call us', attrs: { href: 'tel:+10000000000' } }),
+            el('a', 'link link-primary', { text: 'Call us', attrs: { href: 'tel:+15551234567' } }),
           ],
         }),
         hostCore(HOST_KEYS.siteMap, 'w-full @3xl:flex-1', {

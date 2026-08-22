@@ -66,8 +66,16 @@ export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
     void publish
       .mutateAsync()
       .then((result) => {
+        // A count nobody sent must never be rendered as one. The route now returns
+        // `pages`, but a toast is the wrong place to find out it stopped: if the
+        // number is ever absent, say the true thing without it rather than print
+        // "undefined pages are live" over a publish that actually worked.
+        const count = typeof result.pages === 'number' ? result.pages : null;
         toast.add({
-          title: `${String(result.pages)} ${result.pages === 1 ? 'page is' : 'pages are'} live`,
+          title:
+            count === null
+              ? 'Your website is live'
+              : `${String(count)} ${count === 1 ? 'page is' : 'pages are'} live`,
           type: 'success',
         });
         // The check described the site BEFORE this publish; keeping it on screen

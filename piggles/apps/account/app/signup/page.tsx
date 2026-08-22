@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSession } from '@wizeworks/auth';
-import { PRODUCT } from '@piggles/config';
+import { marketingUrl, PRODUCT } from '@piggles/config';
 import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';
 import { SignUpForm } from '@/components/signup-form';
@@ -74,14 +74,11 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
         // href here resolves to getpiggles.com and 404s.
         <p>
           {`Creating an account means you agree to the ${PRODUCT.name} `}
-          <a className="font-semibold underline" href={`https://${PRODUCT.hosts.marketing}/terms`}>
+          <a className="font-semibold underline" href={marketingUrl('terms')}>
             terms
           </a>
           {` and `}
-          <a
-            className="font-semibold underline"
-            href={`https://${PRODUCT.hosts.marketing}/privacy`}
-          >
+          <a className="font-semibold underline" href={marketingUrl('privacy')}>
             privacy policy
           </a>
           {`.`}

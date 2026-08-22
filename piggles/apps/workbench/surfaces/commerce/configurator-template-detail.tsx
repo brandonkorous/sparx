@@ -59,6 +59,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -569,7 +570,7 @@ function Editor({
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this build</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -578,7 +579,7 @@ function Editor({
           ) : null}
 
           {blocked !== null && dirty ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Not ready to save</AlertTitle>
                 <AlertDescription>{blocked}</AlertDescription>
@@ -797,24 +798,13 @@ function ChoiceRow({
           <FieldLabel>Adds to price</FieldLabel>
           <FieldControl
             render={
-              <Input
+              <MoneyTextInput
                 color="module"
                 size="sm"
-                type="number"
-                step="0.01"
-                inputMode="decimal"
-                value={deltaText}
-                placeholder="0.00"
-                onChange={(event) => {
-                  const value = event.target.value;
-                  const parsed = Number(value);
-                  onChange({
-                    ...choice,
-                    priceDeltaCents:
-                      value.trim() === '' || !Number.isFinite(parsed)
-                        ? undefined
-                        : Math.round(parsed * 100),
-                  });
+                aria-label="Adds to price"
+                text={deltaText}
+                onTextChange={(text) => {
+                  onChange({ ...choice, priceDeltaCents: moneyCents(text) ?? undefined });
                 }}
               />
             }
@@ -1101,7 +1091,7 @@ function TryItPanel({
       description="Answer the questions the way a customer would. Nothing is bought and nothing is saved — this just runs your rules and shows what they produce."
     >
       {stale ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This tries the saved version</AlertTitle>
             <AlertDescription>

@@ -17,6 +17,8 @@ import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import { ButtonLink } from './button-link';
 
+import { cn } from '@/lib/cn';
+
 import type {
   PublicFitmentDimension,
   PublicFitmentDomain,
@@ -55,16 +57,16 @@ export interface FacetPanelProps {
   values: FacetValues;
 }
 
-const YEAR_NOW = 2026;
-const YEARS = Array.from({ length: 50 }, (_, i) => YEAR_NOW - i);
+// Fifty model years back from TODAY, computed per render. A frozen literal here
+// (it read `2026`) quietly stops offering the newest model year the moment the
+// calendar turns — and a shop whose newest stock cannot be filtered for looks
+// like a shop that does not carry it.
+const modelYears = () => {
+  const now = new Date().getUTCFullYear();
+  return Array.from({ length: 50 }, (_, i) => now - i);
+};
 const US_SHOES = Array.from({ length: 21 }, (_, i) => (5 + i * 0.5).toString());
 const EU_SHOES = Array.from({ length: 16 }, (_, i) => (35 + i).toString());
-
-const COLUMN_LABEL = {
-  flexDirection: 'column',
-  alignItems: 'stretch',
-  gap: '0.4rem',
-} as const;
 
 export function FacetPanel({ action, domains, activeDomain, levels, values }: FacetPanelProps) {
   return (
@@ -78,10 +80,8 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
       <div>
-        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
-          Price
-        </h4>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">Price</h4>
+        <div className="flex items-center gap-2">
           <Input
             type="number"
             name="minPrice"
@@ -89,7 +89,7 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
             min={0}
             placeholder="Min"
             defaultValue={values.minPrice ?? ''}
-            style={{ width: '100%' }}
+            className="w-full"
             aria-label="Minimum price (dollars)"
           />
           <span className="text-base-content">–</span>
@@ -100,17 +100,15 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
             min={0}
             placeholder="Max"
             defaultValue={values.maxPrice ?? ''}
-            style={{ width: '100%' }}
+            className="w-full"
             aria-label="Maximum price (dollars)"
           />
         </div>
       </div>
 
       <div>
-        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
-          Availability
-        </h4>
-        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm">
+        <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">Availability</h4>
+        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-base">
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
           In stock only
         </label>
@@ -118,11 +116,11 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
 
       <FitmentFacet domains={domains} activeDomain={activeDomain} levels={levels} values={values} />
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <Button type="submit" color="primary" style={{ flex: 1 }}>
+      <div className="flex gap-2">
+        <Button type="submit" color="primary" className="flex-1">
           Apply
         </Button>
-        <ButtonLink href={action} aria-label="Clear filters" color="neutral" variant="ghost">
+        <ButtonLink href={action} aria-label="Clear filters" variant="ghost">
           Clear
         </ButtonLink>
       </div>
@@ -147,13 +145,13 @@ export function FitmentFacet({
 
   return (
     <div>
-      <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+      <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">
         {domains.length > 1 ? 'Fits your' : `Fits your ${activeDomain.displayName.toLowerCase()}`}
       </h4>
 
       {domains.length > 1 ? (
-        <label style={{ ...COLUMN_LABEL, marginBottom: '0.5rem' }}>
-          <span className="text-base-content text-xs">Type</span>
+        <label className="mb-2 flex flex-col items-stretch gap-1.5">
+          <span className="text-base-content text-base">Type</span>
           <NativeSelect name="fitmentDomain" defaultValue={activeDomain.slug}>
             {domains.map((d) => (
               <option key={d.id} value={d.slug}>
@@ -170,9 +168,9 @@ export function FitmentFacet({
       {levels.map((level, i) => (
         <label
           key={level.dimension.key}
-          style={{ ...COLUMN_LABEL, marginTop: i === 0 ? undefined : '0.5rem' }}
+          className={cn('flex flex-col items-stretch gap-1.5', i > 0 && 'mt-2')}
         >
-          <span className="text-base-content text-xs">{level.dimension.label}</span>
+          <span className="text-base-content text-base">{level.dimension.label}</span>
           <NativeSelect name={`fl${i}`} defaultValue={level.selectedId}>
             <option value="">Any {level.dimension.label.toLowerCase()}</option>
             {level.nodes.map((n) => (
@@ -188,8 +186,8 @@ export function FitmentFacet({
           dimension key. The unit drives the widget (year picker, shoe size, or
           a plain number input with a unit suffix). */}
       {rangeDimensions.map((dim) => (
-        <label key={dim.key} style={{ ...COLUMN_LABEL, marginTop: '0.5rem' }}>
-          <span className="text-base-content text-xs">{dim.label}</span>
+        <label key={dim.key} className="mt-2 flex flex-col items-stretch gap-1.5">
+          <span className="text-base-content text-base">{dim.label}</span>
           <RangeWidget dim={dim} value={fitmentRanges[dim.key]} />
         </label>
       ))}
@@ -222,7 +220,7 @@ function RangeWidget({ dim, value }: { dim: PublicFitmentDimension; value?: stri
     return (
       <NativeSelect name={dim.key} defaultValue={value ?? ''}>
         <option value="">Any {dim.label.toLowerCase()}</option>
-        {YEARS.map((y) => (
+        {modelYears().map((y) => (
           <option key={y} value={y}>
             {y}
           </option>
@@ -247,7 +245,7 @@ function RangeWidget({ dim, value }: { dim: PublicFitmentDimension; value?: stri
 
   // Numeric units (weight, age, dimension) → number input with a unit suffix.
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+    <span className="flex items-center gap-1.5">
       <Input
         type="number"
         name={dim.key}
@@ -256,7 +254,7 @@ function RangeWidget({ dim, value }: { dim: PublicFitmentDimension; value?: stri
         step="any"
         placeholder={dim.label}
         defaultValue={value ?? ''}
-        style={{ width: '100%' }}
+        className="w-full"
         aria-label={`${dim.label}${unitSuffix ? ` (${unitSuffix})` : ''}`}
       />
       {unitSuffix ? <span className="text-base-content">{unitSuffix}</span> : null}

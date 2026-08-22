@@ -63,7 +63,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  is the full 9-page sites (bespoke PDP + Collections/Cart/Search/Journal framing) over the
  *  original 1.0.0 home-only pass. Both the blueprint.ts and sparx.json versions read this, so
  *  they can't disagree (the loader cross-checks them). */
-const BUNDLE_VERSION = '1.4.0';
+const BUNDLE_VERSION = '1.4.1';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

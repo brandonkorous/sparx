@@ -203,6 +203,14 @@ jobs:
       - name: Check event/topic parity
         run: node scripts/check-event-topics.mjs
 
+      # The sibling question: not "does this event have a topic" but "does the
+      # worker that claims to handle it name a real event at all". commerce-indexer
+      # routed `order.created` and `order.payment.recorded`, neither of which
+      # exists — so no order was indexed when it was placed, and search answered
+      # "Nothing matches that" for a real order number.
+      - name: Check worker event names
+        run: node scripts/check-worker-events.mjs
+
   surface-routes:
     name: Surface ↔ address parity
     runs-on: ubuntu-latest
@@ -251,6 +259,22 @@ jobs:
       # file ended up.
       - name: Check Dockerfile paths resolve
         run: node scripts/check-dockerfile-paths.mjs
+
+      # The same question one layer up: not "can this image be built" but "can
+      # the service inside it START". event-worker — the process running all
+      # fourteen event handlers — had no .env.example at all, so `pnpm dev`
+      # started it and it exited 78 every time, in one pane of a thirty-pane
+      # TUI. Typecheck, lint and 1400 tests were green throughout, because
+      # none of them boot a service.
+      - name: Check services declare their environment
+        run: node scripts/check-service-env.mjs
+
+      # A brand's logo is drawn in its own package and COPIED into the ConfigMap,
+      # because the renderer serving every brand's tenant sites may not import
+      # either brand (check-boundaries RULE 1). A stale copy deploys green and
+      # draws a perfectly clean version of the previous logo on every one of them.
+      - name: Check brand wordmarks match the art
+        run: node scripts/check-brand-wordmark.mjs
 
   brand-isolation:
     name: Brand isolation
@@ -331,6 +355,37 @@ jobs:
 
       - name: Check the inventory API reference is current
         run: node scripts/check-inventory-api-docs.mjs
+
+  blueprint-versions:
+    name: Blueprint versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # A blueprint's content is COPIED into a tenant's site when they install it,
+    # so correcting the bundle here never reaches them directly. What does reach
+    # them is the update offer (docs/55), and it decides there is one by comparing
+    # the version they installed against the catalog's.
+    #
+    # A content change with no version bump therefore ships green and reaches
+    # NOBODY who already installed it — the catalog reports nothing changed. It is
+    # the quietest possible failure: the fix exists, the tests pass, the issue
+    # closes, and the tenant keeps the defect. See scripts/check-blueprint-versions.mjs.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The check compares against the base branch, so one commit is not
+          # enough history to find it.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check blueprint versions were bumped
+        run: |
+          BASE='${{ github.event_name == 'pull_request'
+                    && format('origin/{0}', github.event.pull_request.base.ref)
+                    || 'HEAD~1' }}'
+          node scripts/check-blueprint-versions.mjs "$BASE"
 
   migration-order:
     name: Migration ordering

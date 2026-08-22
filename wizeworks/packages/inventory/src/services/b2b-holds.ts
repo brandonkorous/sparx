@@ -246,9 +246,11 @@ export async function createFleetHold(
       holderId: hold.id,
     });
 
+    // Null when the variant has never been counted: the hold is recorded, with
+    // nothing allocated behind it, because there is no counted stock to allocate.
     await tx.b2bFleetHold.update({
       where: { id: hold.id },
-      data: { reservationId: reservation.reservationId },
+      data: { reservationId: reservation?.reservationId ?? null },
     });
     return hold.id;
   });

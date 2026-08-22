@@ -721,8 +721,8 @@ function VariantCard({
 
       {levels.length === 0 ? (
         <Text className="text-sm">
-          Nobody has said how many of this version you have. Until you do, your website treats it as
-          out of stock.
+          Nobody has said how many of this version you have, so your website sells it without limit.
+          Count it once and it starts keeping track.
         </Text>
       ) : (
         <div className="flex flex-col gap-3">
@@ -907,7 +907,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
               outOfStock.length === levels.length
                 ? 'Nothing left to sell'
                 : `${plural(outOfStock.length, 'place has', 'places have')} nothing left`,
-            body: 'Shoppers cannot buy what is out of stock, and the product stays on your website looking available until it is restocked or taken off sale.',
+            body: 'Your website shows it as sold out and will not take an order for it. It comes back on sale by itself the moment you count some in.',
           }
         : low.length > 0
           ? {
@@ -1038,12 +1038,13 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
         ) : null}
 
         {levels.length === 0 ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>Nothing has been counted yet</AlertTitle>
               <AlertDescription>
-                Your website treats an uncounted product as out of stock. Record a count against any
-                version below and it becomes sellable straight away.
+                Until you count it, your website sells this one without limit — nobody has told it
+                there is a number. Record a count against any version below and it starts keeping
+                track: it comes off sale at zero, and back on when you bring more in.
               </AlertDescription>
             </AlertContent>
           </Alert>

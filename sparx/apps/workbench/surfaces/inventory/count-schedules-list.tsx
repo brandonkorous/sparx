@@ -287,7 +287,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
       </PaneToolbar>
 
       {dueCount > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>{plural(dueCount, 'schedule is', 'schedules are')} due</AlertTitle>
             <AlertDescription>

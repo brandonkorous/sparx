@@ -378,7 +378,7 @@ function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create this webhook</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

@@ -299,7 +299,7 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create this</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -587,7 +587,7 @@ function BuiltInType({
             ) : null}
           </div>
 
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>This is a built-in type</AlertTitle>
               <AlertDescription>

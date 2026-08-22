@@ -384,7 +384,7 @@ function PolicyEditor({
           ) : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this rule set</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>

@@ -3,6 +3,7 @@ import { Section } from '@piggles/ui';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
 import { accountUrl } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PigglesMascot } from '@piggles/mascot/react';
 import { PageHero } from '../page-hero';
 import { GROUP_COPY } from '../groups';
@@ -69,7 +70,7 @@ export function ToolsIndex() {
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', 'tools-hub')}
         >
-          Get Piggles — $49/month
+          Get Piggles — {PRICE_LABEL}/month
         </a>
         {/* No `color` at all. It was pinned to `neutral`, which is Brandon's
             call every time (root RULE #4) — and an uncolored `.btn` resolves to
@@ -104,18 +105,18 @@ export function ToolsIndex() {
             </p>
             <p className="text-lg">
               The product these come from is Piggles: fifteen apps for running a small business —
-              your website, your customers, your stock, your money — for $49 a month with everything
-              included. These seventeen are the corners of it that fit in a page.
+              your website, your customers, your stock, your money — for {PRICE_LABEL} a month with
+              everything included. These seventeen are the corners of it that fit in a page.
             </p>
           </div>
         </div>
       </Section>
 
       <CloseBand
-        heading="The tools are free. The business software is $49."
+        heading={`The tools are free. The business software is ${PRICE_LABEL}.`}
         primary={{ label: 'Start free for 14 days', href: accountUrl('signup', 'tools-close') }}
         secondary={{ label: 'See what it costs', href: '/pricing' }}
-        note="$49 a month · free for 14 days · no card needed"
+        note={`${PRICE_LABEL} a month · free for 14 days · no card needed`}
       />
     </>
   );

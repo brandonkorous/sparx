@@ -99,40 +99,111 @@ export async function runReindex(
 
   const result: ReindexResult = { runId, collections: {} };
 
+  // ── ONE COLLECTION CANNOT SINK THE REBUILD ────────────────────────────────
+  //
+  // `reindexEntities` already documents the contract — "One bad row is counted,
+  // not thrown — same contract as the rich-collection plans" — and the rich
+  // collections did not honour it. A batch the search engine rejects throws out
+  // of `projectAndUpsert`, straight past this loop, and takes every collection
+  // AFTER it with it.
+  //
+  // Watched happening: one unimportable customer document meant `products` was
+  // rebuilt, then the run died — so `orders` and `entities` were never reached
+  // at all. The message nak-ed, redelivered, rebuilt products again, died again.
+  // Ten products re-indexed five times over while a business's orders could not
+  // enter search by ANY route, including the operator's own reindex task. The
+  // failure was one collection wide and the blast radius was all of them.
+  //
+  // Same principle as `reconcileSystemSeeds`' "ONE TENANT CANNOT SINK THE PASS",
+  // applied one level down: seal each collection off, record what failed, and
+  // carry on to the next. The run still reports failure at the end — a rebuild
+  // that lost a collection must not read as success — but by then everything
+  // that COULD be rebuilt has been.
+  const failures: string[] = [];
+
   for (const collection of requested) {
-    // The universal `entities` collection is rebuilt by walking every
-    // registered projector (each entity type) — not a single plan.
-    if (collection === 'entities') {
-      result.collections.entities = await reindexEntities(ctx, dropStale, runId, logger);
-      continue;
-    }
-
-    const plan = planFor(collection);
-
-    if (dropStale) {
-      const dropped = await dropTenantFromCollection(plan.collectionName, tenantId);
-      logger.info(
-        { tenantId, collection, dropped: dropped.deleted, runId },
-        'reindex: dropped stale docs'
+    try {
+      result.collections[collection] = await reindexOne(collection, ctx, dropStale, runId, logger);
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err);
+      failures.push(`${collection}: ${reason}`);
+      // Zero indexed, and the count of documents is unknown rather than zero —
+      // reporting `errors: 0` here would say the collection was clean.
+      result.collections[collection] = { indexed: 0, errors: -1 };
+      logger.error(
+        { tenantId, collection, runId, err: reason },
+        'reindex: collection FAILED — continuing with the rest'
       );
     }
+  }
 
-    const ids = await plan.listIds(ctx);
-    let indexed = 0;
-    let errors = 0;
-    for (const idBatch of chunk(ids, PROJECT_CHUNK)) {
-      const out = await plan.projectAndUpsert(ctx, idBatch);
-      indexed += out.indexed;
-      errors += out.errors;
-    }
-    result.collections[collection] = { indexed, errors };
-    logger.info(
-      { tenantId, collection, indexed, errors, total: ids.length, runId },
-      'reindex: collection done'
+  if (failures.length > 0) {
+    throw new Error(
+      `reindex incomplete for tenant ${tenantId}: ` +
+        `${String(failures.length)} of ${String(requested.length)} collection(s) failed — ` +
+        failures.join('; ')
     );
   }
 
   return result;
+}
+
+/** One collection's rebuild. Split out so the loop above can seal each one off. */
+async function reindexOne(
+  collection: ReindexTarget,
+  ctx: ReindexCtx,
+  dropStale: boolean,
+  runId: string | undefined,
+  logger: PinoLogger
+): Promise<{ indexed: number; errors: number }> {
+  const tenantId = ctx.tenantId;
+
+  // The universal `entities` collection is rebuilt by walking every
+  // registered projector (each entity type) — not a single plan.
+  if (collection === 'entities') {
+    return reindexEntities(ctx, dropStale, runId, logger);
+  }
+
+  const plan = planFor(collection);
+
+  if (dropStale) {
+    const dropped = await dropTenantFromCollection(plan.collectionName, tenantId);
+    logger.info(
+      { tenantId, collection, dropped: dropped.deleted, runId },
+      'reindex: dropped stale docs'
+    );
+  }
+
+  const ids = await plan.listIds(ctx);
+  let indexed = 0;
+  let errors = 0;
+  let batchFailure: string | null = null;
+  for (const idBatch of chunk(ids, PROJECT_CHUNK)) {
+    try {
+      const out = await plan.projectAndUpsert(ctx, idBatch);
+      indexed += out.indexed;
+      errors += out.errors;
+    } catch (err) {
+      // Isolated for the same reason as the collection above, one level down: a
+      // single rejected chunk must not cost the other five hundred documents
+      // their rebuild. The whole chunk is counted as failed, since the engine
+      // rejected it as a batch and did not say which row it objected to.
+      errors += idBatch.length;
+      batchFailure ??= err instanceof Error ? err.message : String(err);
+    }
+  }
+  if (batchFailure) {
+    logger.error(
+      { tenantId, collection, indexed, errors, total: ids.length, runId, err: batchFailure },
+      'reindex: some batches failed'
+    );
+    throw new Error(batchFailure);
+  }
+  logger.info(
+    { tenantId, collection, indexed, errors, total: ids.length, runId },
+    'reindex: collection done'
+  );
+  return { indexed, errors };
 }
 
 interface ReindexCtx {

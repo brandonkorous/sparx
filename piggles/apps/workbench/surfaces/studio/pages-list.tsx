@@ -2,23 +2,24 @@
 
 // Every page on the site, and the way into each one.
 //
-// This is what the old editor's page switcher used to be, moved out of the editor —
-// because a pane that edits ONE page cannot also own the list of all of them
-// without becoming the whole-site editor again. It is also the answer to "how do I
-// get two pages side by side": open one, then open the next beside it.
+// A TABLE, like every other list in the app: each page carries the same four facts
+// and people scan DOWN one of them — "which of these is still not live", "what
+// claims /about". It is also the answer to "how do I get two pages side by side".
 
-import { useState } from 'react';
-import { Badge, Button, Input } from '@wizeworks/silicaui-react';
-import { faColumns, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { useState, type ReactNode } from 'react';
+import { Button, Card, EmptyState, Input, Text } from '@wizeworks/silicaui-react';
+import { faFileLines, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { Table } from '../../components/table';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { useCreatePage, usePages, type PageSummary } from '../../lib/studio/page-data';
+import { slugify } from './page-address';
+import { PageRow } from './page-row';
 
-/** What a page's address reads as, including the ones that have none. */
-function addressOf(page: PageSummary): string {
-  if (page.kind === 'collection') return 'One page per record';
-  return page.slug ?? 'No address yet';
-}
+const GLYPH = <Icon glyph={faFileLines} className="size-6" aria-hidden />;
 
 export function PagesList({
   onOpen,
@@ -28,32 +29,125 @@ export function PagesList({
   onOpenBeside: (pageId: string) => void;
 }) {
   const pages = usePages();
-
-  if (pages.isPending) return <PaneWaiting label="Finding your pages…" />;
   const rows = pages.data ?? [];
+  const retry = () => {
+    void pages.refetch();
+  };
 
   return (
-    <div className="bg-base-200 flex h-full min-h-0 flex-col">
-      <AddPage onCreated={onOpen} />
+    <div className={PANE_SHELL}>
+      <AddPage
+        onCreated={onOpen}
+        refresh={
+          <RefreshButton
+            isFetching={pages.isFetching}
+            updatedAt={pages.data ? pages.dataUpdatedAt : undefined}
+            onRefresh={retry}
+          />
+        }
+      />
 
-      <ul className="min-h-0 flex-1 overflow-auto p-3">
-        {rows.map((page) => (
-          <PageRow key={page.id} page={page} onOpen={onOpen} onOpenBeside={onOpenBeside} />
-        ))}
-      </ul>
+      <Card className="min-h-0 flex-1 overflow-y-auto">
+        <PagesBody
+          state={pages.isError ? 'error' : pages.isPending ? 'loading' : 'ready'}
+          rows={rows}
+          onRetry={retry}
+          onOpen={onOpen}
+          onOpenBeside={onOpenBeside}
+        />
+      </Card>
 
-      {rows.length === 0 ? (
-        <p className="text-base-content p-6 text-center">
-          No pages yet. Name one above and start building.
-        </p>
-      ) : null}
+      <Text className="hidden px-1 text-sm @lg:block">
+        Click a page to open it · Shift-click to open it alongside
+      </Text>
     </div>
+  );
+}
+
+/** The four things this card can be: a failed load, a pending one, an empty
+ *  library, or the table. */
+function PagesBody({
+  state,
+  rows,
+  onRetry,
+  onOpen,
+  onOpenBeside,
+}: {
+  state: 'error' | 'loading' | 'ready';
+  rows: readonly PageSummary[];
+  onRetry: () => void;
+  onOpen: (pageId: string) => void;
+  onOpenBeside: (pageId: string) => void;
+}) {
+  if (state === 'error') {
+    return (
+      <PaneLoadError
+        icon={GLYPH}
+        title="Could not load your pages"
+        description="This is a problem reaching the server. None of your pages are affected — nothing has been lost."
+        onRetry={onRetry}
+      />
+    );
+  }
+  if (state === 'loading') return <PaneWaiting label="Finding your pages…" />;
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        icon={GLYPH}
+        title="No pages yet"
+        description="Name one above — “Prices”, “About us” — and it opens straight into the editor, empty and ready to build."
+      />
+    );
+  }
+  return <PagesTable rows={rows} onOpen={onOpen} onOpenBeside={onOpenBeside} />;
+}
+
+function PagesTable({
+  rows,
+  onOpen,
+  onOpenBeside,
+}: {
+  rows: readonly PageSummary[];
+  onOpen: (pageId: string) => void;
+  onOpenBeside: (pageId: string) => void;
+}) {
+  return (
+    <Table size="sm" hover>
+      <thead>
+        <tr>
+          <th>Page</th>
+          <th>Address</th>
+          <th className="hidden @lg:table-cell">Kind</th>
+          <th>Status</th>
+          <th className="w-0">
+            <span className="sr-only">Actions</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((page) => (
+          <PageRow
+            key={page.id}
+            page={page}
+            pages={rows}
+            onOpen={onOpen}
+            onOpenBeside={onOpenBeside}
+          />
+        ))}
+      </tbody>
+    </Table>
   );
 }
 
 /** Name it and you are in it. A new page has no body until the first Save, which
  *  is what the builder opens it on — an empty page rather than a starter to dismantle. */
-function AddPage({ onCreated }: { onCreated: (pageId: string) => void }) {
+function AddPage({
+  onCreated,
+  refresh,
+}: {
+  onCreated: (pageId: string) => void;
+  refresh: ReactNode;
+}) {
   const createPage = useCreatePage();
   const [name, setName] = useState('');
 
@@ -66,74 +160,29 @@ function AddPage({ onCreated }: { onCreated: (pageId: string) => void }) {
   };
 
   return (
-    <div className="border-base-300 flex shrink-0 items-center gap-2 border-b p-3">
-      <Input
-        size="sm"
-        value={name}
-        placeholder="Name a new page — “Prices”, “About us”"
-        onChange={(event) => setName(event.currentTarget.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') void add();
-        }}
-      />
+    <div className="flex shrink-0 items-center gap-2">
+      <div className="max-w-md min-w-0 flex-1">
+        <Input
+          size="sm"
+          value={name}
+          placeholder="Name a new page — “Prices”, “About us”"
+          onChange={(event) => setName(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') void add();
+          }}
+        />
+      </div>
       <Button
         size="sm"
         color="primary"
+        className="shrink-0 whitespace-nowrap"
         disabled={!name.trim() || createPage.isPending}
         onClick={() => void add()}
       >
         <Icon glyph={faPlus} className="size-4" aria-hidden />
         Add page
       </Button>
+      <div className="ml-auto shrink-0">{refresh}</div>
     </div>
-  );
-}
-
-/** A page name as the address it suggests. Empty means no address — the page is
- *  reachable only by a link the author places. */
-function slugify(name: string): string | null {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-  return slug ? `/${slug}` : null;
-}
-
-function PageRow({
-  page,
-  onOpen,
-  onOpenBeside,
-}: {
-  page: PageSummary;
-  onOpen: (pageId: string) => void;
-  onOpenBeside: (pageId: string) => void;
-}) {
-  return (
-    <li className="bg-base-100 mb-2 flex items-center gap-2 rounded-lg pr-2 shadow-sm">
-      <button
-        type="button"
-        onClick={() => onOpen(page.id)}
-        className="hover:bg-base-300 flex min-w-0 flex-1 items-center gap-3 rounded-lg p-3 text-left"
-      >
-        <span className="min-w-0 flex-1">
-          <span className="text-base-content block truncate font-medium">{page.name}</span>
-          <span className="text-base-content block truncate text-sm">{addressOf(page)}</span>
-        </span>
-        <Badge color={page.published ? 'success' : 'warning'} variant="soft">
-          {page.published ? 'Live' : 'Not live yet'}
-        </Badge>
-      </button>
-      {/* Side by side is the reason this builder is per-document at all, so it is an
-          action on the row rather than something to discover in a menu. */}
-      <Button
-        size="sm"
-        shape="square"
-        aria-label={`Open ${page.name} alongside`}
-        title="Open alongside"
-        onClick={() => onOpenBeside(page.id)}
-      >
-        <Icon glyph={faColumns} className="size-4" aria-hidden />
-      </Button>
-    </li>
   );
 }

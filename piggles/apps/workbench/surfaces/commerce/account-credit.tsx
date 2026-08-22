@@ -552,7 +552,7 @@ function CustomerCredit({
           History
         </Heading>
         {ledger.isError ? (
-          <Alert color="error" variant="soft">
+          <Alert color="error">
             <AlertContent>
               <AlertTitle>Could not load history</AlertTitle>
               <AlertDescription>The balance above may still be right. Try again.</AlertDescription>

@@ -8,6 +8,7 @@ import {
   Button,
   Checkbox,
   Field,
+  FieldControl,
   FieldLabel,
   Input,
   PasswordInput,
@@ -223,10 +224,10 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
 
         <Field>
           <FieldLabel>Your six-digit code</FieldLabel>
-          <Input
+          <FieldControl
+            render={<Input size="lg" />}
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            size="lg"
             inputMode="numeric"
             autoComplete="one-time-code"
             required
@@ -250,10 +251,10 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
 
       <Field>
         <FieldLabel>Email</FieldLabel>
-        <Input
+        <FieldControl
+          render={<Input size="lg" />}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          size="lg"
           type="email"
           autoComplete="email"
           placeholder="you@yourbusiness.com"
@@ -263,10 +264,10 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
 
       <Field>
         <FieldLabel>Password</FieldLabel>
-        <PasswordInput
+        <FieldControl
+          render={<PasswordInput size="lg" />}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          size="lg"
           autoComplete="current-password"
           required
         />

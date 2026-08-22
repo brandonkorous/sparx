@@ -30,7 +30,7 @@ import { ModuleScope } from '../../components/module-scope';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
-  statusTone,
+  invoiceState,
   type BillingDocument,
 } from '../invoicing/types';
 import {
@@ -261,8 +261,12 @@ export function CustomerInvoicesTab({
                   {row.dueAt ? formatOrderDate(row.dueAt) : 'No due date'}
                 </td>
                 <td>
-                  <Badge color={statusTone(row.status)} variant="soft" size="sm">
-                    {row.status}
+                  <Badge
+                    color={invoiceState(row.status).tone}
+                    variant={invoiceState(row.status).tone && 'soft'}
+                    size="sm"
+                  >
+                    {invoiceState(row.status).label}
                   </Badge>
                 </td>
                 <td className="text-right font-mono text-sm tabular-nums">

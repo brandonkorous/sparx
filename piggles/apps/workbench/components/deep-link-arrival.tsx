@@ -48,8 +48,10 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
   const confirmRef = useRef(confirm);
   confirmRef.current = confirm;
 
-  /** Set once the link has been honoured against the CURRENT host. */
-  const arrived = useRef(false);
+  /** The restore generation the link was last honoured against; -1 = never.
+   *  Not a boolean, because an arrangement restore SWEEPS the pane the link just
+   *  opened — see `controller.restoreCount`. */
+  const arrivedAt = useRef(-1);
   /** Set the moment a switch is committed to, so the reload can only start once. */
   const switching = useRef(false);
 
@@ -62,14 +64,29 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
     () => false
   );
 
+  // A restore replaces everything that is open. The dock attaches its host and
+  // THEN rebuilds the saved arrangement, so a link followed on the strength of
+  // "there is a host now" opens a pane that the rebuild a moment later sweeps
+  // away — the pane was added (the tab strip went from six to seven) and gone
+  // inside 100ms, with the address bar still showing the link and nothing said.
+  // Re-arming per restore is what makes the link outlive the rebuild.
+  const restores = useSyncExternalStore(
+    controller.subscribe,
+    () => controller.restoreCount(),
+    () => 0
+  );
+
   useEffect(() => {
     if (!attached) {
       // The host went away; the next one restores a layout from scratch and the
       // link applies to it too.
-      arrived.current = false;
+      arrivedAt.current = -1;
       return;
     }
-    if (arrived.current || switching.current) return;
+    // Honoured once per host AND per restore. `controller.open` focuses a match
+    // rather than duplicating, so re-applying costs nothing when the pane did
+    // survive — and is the only thing that saves the link when it did not.
+    if (arrivedAt.current === restores || switching.current) return;
 
     const resolved = resolveDeepLink(
       readDeepLink(),
@@ -101,7 +118,7 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
             // They chose to stay. The link is spent — re-asking on the next
             // render would be nagging, and the address bar has already moved on
             // to whatever they are actually looking at.
-            arrived.current = true;
+            arrivedAt.current = restores;
             switching.current = false;
             return;
           }
@@ -110,7 +127,7 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
         // not be recorded — see noteSwitchAttempt. An attempt nothing remembers
         // is an attempt that repeats forever.
         if (!noteSwitchAttempt(target)) {
-          arrived.current = true;
+          arrivedAt.current = restores;
           switching.current = false;
           applyDeepLink(controller, {
             kind: 'unresolved',
@@ -130,7 +147,7 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
       return;
     }
 
-    arrived.current = true;
+    arrivedAt.current = restores;
 
     // Clear the guard once the SITE gate has passed — which every outcome except
     // `site-unavailable` proves, since that is the only verdict the site gate
@@ -144,7 +161,7 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
     }
 
     applyDeepLink(controller, resolved);
-  }, [attached, controller, siteKey, sites, moduleStates]);
+  }, [attached, restores, controller, siteKey, sites, moduleStates]);
 
   return null;
 }

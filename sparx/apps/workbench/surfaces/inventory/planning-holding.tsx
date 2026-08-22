@@ -111,7 +111,7 @@ function CostPanel({ locationId }: { locationId: string }) {
           nothing to it. A total that quietly understates is worse than one that
           names its gap. */}
       {data.itemsWithoutCost > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {data.itemsWithoutCost === 1
@@ -127,7 +127,7 @@ function CostPanel({ locationId }: { locationId: string }) {
       ) : null}
 
       {data.usingDefaultRate ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>This uses the standard estimate</AlertTitle>
             <AlertDescription>

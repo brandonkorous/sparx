@@ -232,7 +232,7 @@ function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: 
           <DialogTitle>{result.rotated ? 'Your new pairing key' : 'Your pairing key'}</DialogTitle>
 
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1">
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>You will only see this once</AlertTitle>
                 <AlertDescription>
@@ -755,7 +755,7 @@ function SourceEditor({
           {/* One specific message: a connected system needs a key for the auth it
               was set to use, which is the one non-obvious rejection. */}
           {type === 'api' && needsKey ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This connection needs an access key</AlertTitle>
                 <AlertDescription>
@@ -1095,7 +1095,7 @@ function SourceEditor({
                       old key stops working the moment you do.
                     </Text>
                   ) : (
-                    <Alert color="info" variant="soft">
+                    <Alert color="info">
                       <AlertContent>
                         <AlertTitle>Not paired yet</AlertTitle>
                         <AlertDescription>
@@ -1136,7 +1136,7 @@ function SourceEditor({
               ) : (
                 // A non-admin sees the state but not the controls — the server
                 // would refuse them anyway.
-                <Alert color="info" variant="soft">
+                <Alert color="info">
                   <AlertContent>
                     <AlertTitle>Pairing is an admin job</AlertTitle>
                     <AlertDescription>

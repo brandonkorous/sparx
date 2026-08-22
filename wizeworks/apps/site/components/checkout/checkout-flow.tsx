@@ -40,6 +40,10 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
 
   const [address, setAddress] = useState<Address>(EMPTY_ADDRESS);
   const [rates, setRates] = useState<ShippingRate[]>([]);
+  // Whether THIS address has been quoted. Not `rates.length` — a shop that
+  // cannot reach the address returns nothing, and that is an answer, not a
+  // missing one.
+  const [quoted, setQuoted] = useState(false);
   const [chosenRate, setChosenRate] = useState<ShippingRate | null>(null);
 
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
@@ -74,32 +78,35 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
       // Send the full address (not just country/postal) so live carrier
       // rating can actually geocode the destination — a placeholder
       // street/city silently disables live rates entirely.
-      if (rates.length === 0) {
-        const quoted = await quoteShipping(tenantSlug, session.sessionId, {
+      //
+      // Whatever comes back is what the shop actually offers. This used to
+      // invent a free "Standard shipping" row whenever the quote was empty,
+      // which was worse than useless: `submitShipping` re-prices every choice
+      // against a fresh server quote and could never find a ref the client had
+      // made up, so picking it dead-ended on "that shipping option is no longer
+      // available". An empty quote now says the true thing instead.
+      if (!quoted) {
+        const options = await quoteShipping(tenantSlug, session.sessionId, {
           destinationAddress: address,
         });
-        // Fall back to a single free standard option when the carrier engine
-        // has no configured rates yet, so checkout still completes.
-        const options =
-          quoted.length > 0
-            ? quoted
-            : [
-                {
-                  providerSlug: 'manual',
-                  rateRef: 'standard',
-                  service: 'Standard shipping',
-                  carrier: 'Standard',
-                  amountCents: 0,
-                  estimatedDays: null,
-                },
-              ];
+        setQuoted(true);
         setRates(options);
         setChosenRate(options[0] ?? null);
+        if (options.length === 0) {
+          setError(
+            'We can’t get an order to that address. Check it over, or try another address — and do get in touch if you think it should work.'
+          );
+        }
         setBusy(false);
         return;
       }
 
-      const rate = chosenRate ?? rates[0]!;
+      const rate = chosenRate ?? rates[0];
+      if (!rate) {
+        setError('Choose how you’d like to get your order before carrying on.');
+        setBusy(false);
+        return;
+      }
       const updated = await submitShipping(tenantSlug, session.sessionId, {
         shippingAddress: address,
         shippingRateRef: rate.rateRef,
@@ -145,7 +152,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
   }
 
   if (step === 'done' && orderNumber) {
-    return <Confirmation orderNumber={orderNumber} />;
+    return <Confirmation orderNumber={orderNumber} paymentMode={session?.paymentMode} />;
   }
 
   return (
@@ -189,12 +196,25 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
             <h2 className="text-base-content text-3xl font-semibold tracking-tight">
               Shipping address
             </h2>
-            <AddressForm value={address} onChange={setAddress} />
+            <AddressForm
+              value={address}
+              onChange={(next) => {
+                // A different address is a different question — drop the answer
+                // to the old one rather than carrying a rate priced for it.
+                setAddress(next);
+                setQuoted(false);
+                setRates([]);
+                setChosenRate(null);
+              }}
+            />
 
             {rates.length > 0 ? (
               <fieldset className="rounded-box border-base-300 m-0 flex flex-col gap-2 border p-4">
+                {/* Not "Shipping method": a shop that has not set delivery up
+                    offers collection here, and heading it Shipping would
+                    describe the one thing it is not. */}
                 <legend className="text-base-content px-2 text-2xl font-semibold">
-                  Shipping method
+                  How you&rsquo;ll get your order
                 </legend>
                 {rates.map((rate) => (
                   <label
@@ -234,11 +254,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
                 ← Back
               </Button>
               <Button type="submit" color="primary" size="lg" style={{ flex: 1 }} disabled={busy}>
-                {busy
-                  ? 'Loading…'
-                  : rates.length === 0
-                    ? 'Get shipping rates'
-                    : 'Continue to payment'}
+                {busy ? 'Loading…' : quoted ? 'Continue to payment' : 'See your options'}
               </Button>
             </div>
           </form>
@@ -306,7 +322,32 @@ function StepIndicator({ step }: { step: CheckoutStep }) {
   );
 }
 
-function Confirmation({ orderNumber }: { orderNumber: string }) {
+/**
+ * The last thing a customer reads, so every sentence in it has to be true.
+ *
+ * ── WHY THE EMAIL LINE IS CONDITIONAL ───────────────────────────────────────
+ *
+ * "A confirmation email is on its way" was unconditional, and for an order that
+ * is not paid by card it was not true. The order-confirmation email is sent from
+ * the PAYMENT WEBHOOK (`payment-webhook-reconcile.ts`), so an order that never
+ * takes a card payment never triggers one — a shop on manual payments, a B2B
+ * order billed to account, anything settled in person. The seeded automations
+ * cover `order.paid`, `.delivered`, `.cancelled` and `.refunded`; there is no
+ * `order.placed` one, deliberately, because order-confirmation is the payment's
+ * counterpart.
+ *
+ * Whether that should change is a design decision about transactional email and
+ * it is written up in the issue, not patched here — a naive `order.placed` rule
+ * would send a card customer two. What is NOT a decision is telling somebody an
+ * email is coming when we know none is.
+ */
+function Confirmation({
+  orderNumber,
+  paymentMode,
+}: {
+  orderNumber: string;
+  paymentMode?: 'card' | 'in_person' | 'unavailable';
+}) {
   return (
     <div
       className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center"
@@ -317,8 +358,10 @@ function Confirmation({ orderNumber }: { orderNumber: string }) {
       </span>
       <h1 className="text-base-content text-4xl font-semibold tracking-tight">Order confirmed</h1>
       <p className="text-base-content" style={{ margin: 0 }}>
-        Thank you! Your order <strong>{orderNumber}</strong> has been placed. A confirmation email
-        is on its way.
+        Thank you! Your order <strong>{orderNumber}</strong> has been placed.{' '}
+        {paymentMode === 'in_person'
+          ? 'Keep this order number — you pay when you collect.'
+          : 'A confirmation email is on its way.'}
       </p>
       <Button render={<Link href="/products" style={{ marginTop: '0.5rem' }} />} color="primary">
         Continue shopping

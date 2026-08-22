@@ -24,6 +24,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── The attribute-field schema ──────────────────────────────────────────────
@@ -528,8 +529,5 @@ export function useDeleteProductType(key: string) {
  *  key, an attribute the products already use); a 5xx falls back to the caller's
  *  wording. */
 export function productTypeErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

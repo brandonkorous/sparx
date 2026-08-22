@@ -155,7 +155,7 @@ function ExportButton({ reportKey, filters }: { reportKey: string; filters: Repo
  *  two ways is a gap somebody argues about. */
 function GapNote({ children }: { children: React.ReactNode }) {
   return (
-    <Alert color="warning" variant="soft">
+    <Alert color="warning">
       <AlertContent>
         <AlertTitle>What these figures leave out</AlertTitle>
         <AlertDescription>{children}</AlertDescription>
@@ -426,7 +426,7 @@ function FillRateCard({
       </div>
 
       {report.lineFillRatePct === null ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Nothing to measure yet</AlertTitle>
             <AlertDescription>

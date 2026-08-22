@@ -31,6 +31,7 @@ import {
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import {
+  menuPrice,
   defineTheme,
   face,
   STATUS_ON_DARK,
@@ -38,7 +39,6 @@ import {
   emitServiceBundle,
   type ServiceSiteSpec,
 } from './service-sites/harness';
-import { writeServicePreview } from './service-sites/preview';
 
 // ── The bespoke theme (inline) ─────────────────────────────────────────────────────
 // A dark, candle-lit fine-dining room: a warm charcoal ground in BOTH modes (dinner is a
@@ -189,13 +189,13 @@ function tastingBand(): Node {
                 children: [
                   el('p', 'text-lg text-base-content', {
                     children: [
-                      el('span', 'font-semibold text-primary', { text: '£145' }),
+                      el('span', 'font-semibold text-primary', { text: '$145' }),
                       el('span', 'text-secondary', { text: ' · the tasting menu, per person' }),
                     ],
                   }),
                   el('p', 'text-lg text-base-content', {
                     children: [
-                      el('span', 'font-semibold text-primary', { text: '£95' }),
+                      el('span', 'font-semibold text-primary', { text: '$95' }),
                       el('span', 'text-secondary', { text: ' · wine pairing' }),
                     ],
                   }),
@@ -353,7 +353,7 @@ function menuItem(item: MenuItem): Node {
         children: [
           el('h3', 'text-xl font-semibold text-base-content', { text: item.name }),
           ...(item.price
-            ? [el('span', 'shrink-0 text-lg font-semibold text-primary', { text: item.price })]
+            ? [el('span', 'shrink-0 text-lg font-semibold text-primary', { text: menuPrice(item.price) })]
             : []),
         ],
       }),
@@ -393,7 +393,7 @@ function tastingFeature(): Node {
             children: [
               el('h2', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', { text: 'The tasting menu' }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. £145 per guest; wine pairing £95.',
+                text: 'Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. $145 per guest; wine pairing $95.',
               }),
             ],
           }),
@@ -572,7 +572,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 180],
       policyText:
-        'A £25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day.',
+        'A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day.',
     },
     {
       handle: 'chefs-counter',
@@ -582,7 +582,7 @@ const SCHEDULING = {
       cancellationWindowHours: 72,
       reminderOffsetsMin: [4320, 1440, 180],
       policyText:
-        'The six counter seats take a £50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them.',
+        'The six counter seats take a $50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them.',
     },
   ],
   resources: [
@@ -623,7 +623,7 @@ const SCHEDULING = {
       handle: 'chefs-counter',
       name: 'The chef’s counter',
       description:
-        'A seat at the pass, looking into the kitchen, for the full tasting menu told course by course by the hands that made it. Two and a half hours; a £50 per-guest deposit secures it.',
+        'A seat at the pass, looking into the kitchen, for the full tasting menu told course by course by the hands that made it. Two and a half hours; a $50 per-guest deposit secures it.',
       bookingType: 'reservation',
       durationMinutes: 150,
       priceCents: 0,
@@ -688,7 +688,7 @@ const SPEC: ServiceSiteSpec = {
 // ── Main ─────────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { dir, theme } = await emitServiceBundle(SPEC);
+  const { dir } = await emitServiceBundle(SPEC);
   console.log(`· wrote bundle → ${dir}`);
 
   const mod = (await import(pathToFileURL(join(dir, 'blueprint.ts')).href)) as { default: unknown };
@@ -701,9 +701,6 @@ async function main(): Promise<void> {
     process.exitCode = 1;
     return;
   }
-
-  const { path: previewPath } = await writeServicePreview(SPEC, theme);
-  console.log(`· preview → ${previewPath}`);
 }
 
 main().catch((err: unknown) => {

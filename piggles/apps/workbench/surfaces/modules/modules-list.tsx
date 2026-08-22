@@ -330,7 +330,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {trial ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>You are in your free trial</AlertTitle>
                 <AlertDescription>
@@ -342,7 +342,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
           ) : null}
 
           {viewer && !canManage ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>You can see what is on, but not change it</AlertTitle>
                 <AlertDescription>

@@ -484,7 +484,7 @@ export function encodeBarcode(raw: string, declared?: BarcodeSymbology): Encoded
       throw new Error('QR codes are two-dimensional and are drawn by a different renderer.');
     case 'code_39':
       throw new Error(
-        'Code 39 can be stored and scanned but is not printed by sparx — use Code 128, which is denser and carries a check digit.'
+        'Code 39 can be stored and scanned but is not printed here — use Code 128, which is denser and carries a check digit.'
       );
     default:
       return code128(value);

@@ -6,32 +6,30 @@ import {
   Alert,
   AlertDescription,
   Button,
-  Checkbox,
   Field,
+  FieldControl,
   FieldDescription,
   FieldLabel,
   Input,
   NativeSelect,
 } from '@wizeworks/silicaui-react';
 import type { PigglesGroup } from '@piggles/brand';
-import { appsInGroup } from '@piggles/config';
 import type { BlueprintChoice } from '@/lib/furnish';
+import { rankLooks } from '@/lib/looks';
+import type { TradeOption } from '@/lib/trade-options';
 import { completeOnboarding, type OnboardingState } from '@/app/onboarding/actions';
 import { AuthShell } from './auth-shell';
 import { RailPreview } from './rail-preview';
+import { Choices } from './onboarding/choices';
+import { LookPicker } from './onboarding/look-picker';
 
-// "What do you do" — the second and last question.
+// Onboarding — two questions, a live preview of the answer, and the door in.
 //
-// The options are the six color groups, described by what a person does rather
-// than by what the software is. Picking some is optional and picking none is
-// fine: the answer only decides what starts on the rail.
-//
-// The list of apps under each option is shown ON PURPOSE, and the copy says
-// plainly that everything stays available. Somebody who does not tick "Selling"
-// must not be able to leave this screen believing they have just given up
-// invoices — the fear that a choice here costs you something is exactly what
-// module pricing trained everybody to expect, and this is the screen where
-// Piggles either contradicts that or quietly confirms it.
+// This component is the STATE and the frame. The two question blocks are their
+// own files (RULE #0.5): `onboarding/choices.tsx` holds "what do you do" and the
+// reasoning about why unticking costs nothing, `onboarding/look-picker.tsx`
+// holds the template shelf, and `lib/looks.ts` decides which templates that
+// shelf shows.
 //
 // ── WHY THIS COMPONENT OWNS THE SHELL ───────────────────────────────────────
 //
@@ -45,67 +43,8 @@ import { RailPreview } from './rail-preview';
 // The shell is presentational — layout, a logo, a card — so pulling it into this
 // route's client bundle costs nothing anybody can measure.
 
-// The lines of work the platform has a sample dataset for. The VALUES are the
-// real pack slugs (`settings.industry`) and must stay that way — the action
-// validates them against the packs, and anything it does not recognise falls
-// back to the generic set rather than failing, so a typo here would ship as a
-// bakery quietly getting generic data.
-//
-// The labels are ours. The packs call themselves things like "Apparel & fashion"
-// and "Generic starter", which is a catalogue talking about itself; a person
-// picking their own trade off a list should read words they would use about
-// their own business (RULE #3). Ordered by how likely somebody is to find
-// themselves in it, with the catch-all last where a catch-all belongs.
-const TRADES: { value: string; label: string }[] = [
-  { value: 'food', label: 'Food & drink' },
-  { value: 'salon', label: 'Beauty & salon' },
-  { value: 'apparel', label: 'Clothing & accessories' },
-  { value: 'professional', label: 'Professional services' },
-  { value: 'fitness', label: 'Fitness & wellbeing' },
-  { value: 'auto-parts', label: 'Car parts & repair' },
-  { value: 'electronics', label: 'Electronics & tech' },
-  { value: 'wholesale', label: 'Wholesale & trade supply' },
-  { value: 'generic', label: 'Something else' },
-];
-
 /** The brand's own showcase — always offered, always first, preselected. */
 const SHOWCASE_KEY = 'piggles-starter';
-
-/** How many looks to show. A wall of 190 is not a choice, it is a search task,
- *  and this screen is meant to take a glance. The trade narrows it; this caps it. */
-const LOOK_LIMIT = 6;
-
-/**
- * The trade a person picks → the broad shelf its templates sit on.
- *
- * Coarse ON PURPOSE. The catalog classifies templates four ways (retail ·
- * services · content · b2b) and separately names ~138 specific trades that are
- * NOT stored anywhere queryable — so this is the honest join, not a lossy one.
- * It orders the shelf; it never hides the rest, which is why the list falls back
- * to everything when a trade has no obvious shelf.
- */
-const TRADE_SHELF: Record<string, string> = {
-  food: 'retail',
-  salon: 'services',
-  apparel: 'retail',
-  professional: 'services',
-  fitness: 'services',
-  'auto-parts': 'services',
-  electronics: 'retail',
-  wholesale: 'b2b',
-};
-
-const OPTIONS: { group: PigglesGroup; label: string; hint: string }[] = [
-  { group: 'web', label: 'I need a website', hint: 'Pages, writing, and turning up in search' },
-  { group: 'sell', label: 'I sell things', hint: 'Products or services, and what you have left' },
-  {
-    group: 'people',
-    label: 'I deal with customers',
-    hint: 'Their history, messages, appointments',
-  },
-  { group: 'money', label: 'I invoice people', hint: 'Bills, payments, and where you stand' },
-  { group: 'run', label: 'I work with a team', hint: 'Who can see what, and the routine jobs' },
-];
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -119,9 +58,13 @@ function Submit() {
 export function Onboarding({
   suggestedName,
   blueprints,
+  trades,
 }: {
   suggestedName: string;
   blueprints: BlueprintChoice[];
+  /** Read from the packs on the server, so a trade the platform can furnish is
+   *  never missing from the list somebody picks from (issue #001). */
+  trades: TradeOption[];
 }) {
   const [state, action] = useActionState<OnboardingState, FormData>(completeOnboarding, {
     error: null,
@@ -143,20 +86,12 @@ export function Onboarding({
   const toggle = (g: PigglesGroup) =>
     setPicked((cur) => (cur.includes(g) ? cur.filter((x) => x !== g) : [...cur, g]));
 
-  // The showcase first, then this trade's shelf, capped. Recomputed as the trade
-  // changes, so answering "what kind of business" visibly re-orders the looks
-  // rather than leaving a stale set that no longer matches the answer above it.
-  const looks = useMemo(() => {
-    const showcase = blueprints.filter((b) => b.key === SHOWCASE_KEY);
-    const shelf = TRADE_SHELF[trade];
-    const rest = blueprints.filter((b) => b.key !== SHOWCASE_KEY);
-    const onShelf = shelf ? rest.filter((b) => b.vertical === shelf) : rest;
-    // Falling back to the whole list matters: a trade whose shelf happens to be
-    // empty must still offer looks, or the section renders as one lonely card
-    // and reads like the catalog is broken.
-    const pool = onShelf.length > 0 ? onShelf : rest;
-    return [...showcase, ...pool].slice(0, LOOK_LIMIT);
-  }, [blueprints, trade]);
+  // The showcase first, then the templates that actually answer to this trade —
+  // by what they are ABOUT, not just by which of four verticals they were filed
+  // under. Recomputed as the trade changes, so answering "what kind of business"
+  // visibly re-orders the looks rather than leaving a stale set that no longer
+  // matches the answer above it. Why relevance and not the shelf: lib/looks.ts.
+  const looks = useMemo(() => rankLooks(blueprints, trade, SHOWCASE_KEY), [blueprints, trade]);
 
   return (
     <AuthShell
@@ -179,9 +114,9 @@ export function Onboarding({
         <div className="flex flex-col gap-5">
           <Field>
             <FieldLabel>What is your business called?</FieldLabel>
-            <Input
+            <FieldControl
+              render={<Input size="lg" />}
               name="businessName"
-              size="lg"
               defaultValue={suggestedName}
               required
               maxLength={120}
@@ -190,9 +125,13 @@ export function Onboarding({
 
           <Field>
             <FieldLabel>What kind of business is it?</FieldLabel>
-            <NativeSelect
+            {/* `NativeSelect` is a plain <select> and registers with the Field
+                context no more than a bare <Input> does — checked on the screen,
+                where its label came back an orphan. It goes through FieldControl
+                too. Issue #006. */}
+            <FieldControl
+              render={<NativeSelect size="lg" />}
               name="industry"
-              size="lg"
               value={trade}
               onChange={(e) => setTrade(e.target.value)}
               required
@@ -200,12 +139,12 @@ export function Onboarding({
               <option value="" disabled>
                 Pick the closest one
               </option>
-              {TRADES.map((t) => (
+              {trades.map((t) => (
                 <option key={t.value} value={t.value}>
                   {t.label}
                 </option>
               ))}
-            </NativeSelect>
+            </FieldControl>
             <FieldDescription>
               We use this to fill your account with realistic examples — products, customers,
               bookings and pages — so nothing is empty when you walk in. Change or clear them
@@ -214,125 +153,9 @@ export function Onboarding({
           </Field>
         </div>
 
-        <div>
-          <h2 className="text-xl font-bold">What do you do?</h2>
-          <p className="mt-1 text-base">
-            Pick any that fit. This only decides what you see first — everything is included either
-            way, and nothing is switched off by leaving it unticked.
-          </p>
+        <Choices picked={picked} onToggle={toggle} />
 
-          {/* Two columns from `sm` up. Five rows in one column is a scroll for
-              something that should be taken in at a glance — the whole question is
-              "which of these are you", which needs them side by side to compare.
-
-              Five into two leaves a hole, and a hole beside the last option reads
-              as a sixth choice that failed to load. So the last one spans the
-              row. There is no sixth option to add instead: `does` is validated as
-              a PigglesGroup and stored as `railGroups`, and the only group not
-              already here is `home` — which is on the rail whatever anybody ticks
-              (see RailPreview), so a row for it would be a checkbox that cannot
-              change anything. If the option list ever becomes even, drop the span. */}
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {OPTIONS.map((o, i) => {
-              const on = picked.includes(o.group);
-              const last = i === OPTIONS.length - 1;
-              return (
-                <li key={o.group} data-group={o.group} className={last ? 'sm:col-span-2' : ''}>
-                  {/* A label bound to a real checkbox: the whole row is the hit
-                      target, keyboard focus and the space bar work with no
-                      handlers of ours, and it is announced as a checkbox because
-                      it IS one.
-
-                      Bound with htmlFor/id rather than by nesting alone, and the
-                      three lines of text are DIRECT children of the label — a
-                      grid places them in the second column beside the row-spanning
-                      checkbox, rather than a wrapper <span> holding them. Nesting
-                      them one level deeper puts the accessible name further from
-                      the label than a tool will look for it, which is what
-                      jsx-a11y objects to. The grid gets the same layout with the
-                      text where it belongs. */}
-                  <label
-                    htmlFor={`does-${o.group}`}
-                    className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${
-                      on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
-                    }`}
-                  >
-                    <Checkbox
-                      id={`does-${o.group}`}
-                      name="does"
-                      value={o.group}
-                      color="module"
-                      checked={on}
-                      onChange={() => toggle(o.group)}
-                      className="row-span-3 mt-0.5"
-                    />
-                    <span className="text-lg font-bold">{o.label}</span>
-                    <span className="text-base">{o.hint}</span>
-                    <span className="mt-2 text-base font-semibold">
-                      {appsInGroup(o.group)
-                        .map((a) => a.label)
-                        .join(' · ')}
-                    </span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* The look. Shown only when the catalog answered — an empty list means
-            the picker could not load, and the action falls back to the brand's
-            own showcase, so a broken fetch costs a choice rather than a site. */}
-        {looks.length > 0 ? (
-          <div>
-            <h2 className="text-xl font-bold">How should it look?</h2>
-            <p className="mt-1 text-base">
-              Every one is a complete working site — shop, journal, bookings and all. You can
-              rewrite any of it once you are in.
-            </p>
-
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {looks.map((b) => {
-                const on = look === b.key;
-                return (
-                  <li key={b.key}>
-                    <label
-                      htmlFor={`look-${b.key}`}
-                      className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${
-                        on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        id={`look-${b.key}`}
-                        name="blueprintKey"
-                        value={b.key}
-                        checked={on}
-                        onChange={() => setLook(b.key)}
-                        className="radio radio-module row-span-3 mt-0.5"
-                      />
-                      <span className="text-lg font-bold">{b.name}</span>
-                      <span className="text-base">{b.summary}</span>
-                      {b.preview ? (
-                        // A plain <img>, not next/image: the card art is served by
-                        // api-rest's media proxy on a host this app has no remote
-                        // pattern for, and adding one is a wider change than this
-                        // screen. Lazy, and decorative — the name beside it is the
-                        // accessible label, so the alt is deliberately empty.
-                        <img
-                          src={b.preview}
-                          alt=""
-                          loading="lazy"
-                          className="rounded-box border-base-300 mt-3 w-full border"
-                        />
-                      ) : null}
-                    </label>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ) : null}
+        <LookPicker looks={looks} selected={look} onSelect={setLook} />
 
         <Submit />
       </form>

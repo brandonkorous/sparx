@@ -146,7 +146,7 @@ function MappingStep({
           </AlertContent>
         </Alert>
       ) : preview.mapping.needsConfirmation.length > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(preview.mapping.needsConfirmation.length, 'column', 'columns')} matched by

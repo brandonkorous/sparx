@@ -20,6 +20,7 @@ export * from './apps';
 export * from './app-index';
 export * from './app-icons';
 export * from './lexicon';
+export * from './notice';
 export * from './normalize-email';
 export * from './product';
 export * from './safe-path';

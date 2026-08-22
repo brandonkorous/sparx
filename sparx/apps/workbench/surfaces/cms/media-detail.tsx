@@ -80,7 +80,7 @@ export function MediaDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <AlertContent>
               <AlertTitle>Could not load this file</AlertTitle>
               <AlertDescription>
@@ -349,7 +349,7 @@ function ManageAsset({
           </div>
 
           {asset.status === 'failed' ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>This file could not be prepared</AlertTitle>
                 <AlertDescription>
@@ -359,7 +359,7 @@ function ManageAsset({
               </AlertContent>
             </Alert>
           ) : asset.status === 'uploading' ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Still being prepared</AlertTitle>
                 <AlertDescription>{state.detail}</AlertDescription>

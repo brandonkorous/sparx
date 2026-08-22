@@ -133,7 +133,7 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
       </Stats>
 
       {report && report.unmeasuredLevels > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(report.unmeasuredLevels, 'stock line has', 'stock lines have')} never been

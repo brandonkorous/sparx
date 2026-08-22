@@ -128,7 +128,7 @@ export default function PaymentMethodsPage() {
       ) : null}
 
       {!canSave ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           This store does not take saved cards. Any repeat orders are billed to you each time, with
           a link to pay.
         </Alert>

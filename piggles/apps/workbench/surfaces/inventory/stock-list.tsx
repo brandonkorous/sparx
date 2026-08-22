@@ -20,12 +20,17 @@
 // expression over three columns, which is why the endpoint grew a real filter
 // for it rather than the client sieving a page.
 //
-// ── Three empty states, because they are three different problems ────────
+// ── Four empty states, because they are four different problems ──────────
 //
 // Nothing matches the search · nothing matches the low-stock filter (which is
-// GOOD news and should say so) · nothing is counted anywhere yet. Telling
-// someone to go record their first count when they have four hundred rows and
-// mistyped a SKU is the worse of the mistakes.
+// GOOD news and should say so) · nothing is counted anywhere yet · and the one
+// that used to hide inside the first: the search matched a real PRODUCT that has
+// simply never been counted. This list can only see what has a level row, and a
+// level row appears only when somebody counts something — so a bakery typing
+// "rye", the exact name of a product on her own shop page, was told to try part
+// of a product name. Same outcome, different cause, and the advice for the other
+// cause sends her to redo the thing she just did correctly. When the search is
+// the ONLY thing narrowing the list, we ask the catalog and offer what we find.
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -58,12 +63,14 @@ import {
   levelState,
   locationLabel,
   sellable,
+  useCatalogMatches,
   useStockLevels,
   useStockLocations,
   type SortDirection,
   type StockLevel,
   type StockSortKey,
 } from './data';
+import { openProductFacet } from '../commerce/product-scope';
 import { humanDuration, stockAgeTone } from './integrity-data';
 
 /** Same modifier contract as every other list in the app. */
@@ -128,6 +135,18 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     take,
     skip,
   });
+
+  const rowCount = data?.items.length ?? 0;
+  // Is this search a dead end because the thing was never COUNTED, rather than
+  // because it does not exist? Only askable when the search is the only thing
+  // narrowing the list: with a location filter on, an empty result means "not
+  // here", and a product could be sitting counted at the place next door.
+  const searchOnly = search.trim() !== '' && locationId === '' && !lowOnly;
+  const catalog = useCatalogMatches(
+    search.trim(),
+    searchOnly && !isLoading && !isError && rowCount === 0
+  );
+  const catalogMatches = catalog.data?.items ?? [];
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -238,6 +257,46 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         );
       }
+      // Still asking the catalog whether this is a typo or an uncounted product.
+      // Answering "Nothing matches that" first and correcting it a beat later is
+      // worse than a short wait: the first answer is the wrong one.
+      if (catalog.isFetching) {
+        return <PaneWaiting label="Checking your catalog…" />;
+      }
+
+      // The search matched real products that simply have no count behind them.
+      // Naming them, and offering the one action that helps, is the difference
+      // between a dead end and a next step.
+      if (catalogMatches.length > 0) {
+        return (
+          <EmptyState
+            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
+            title={`Nothing counted for “${search.trim()}” yet`}
+            description={
+              catalogMatches.length === 1
+                ? 'This is in your catalog and has never been counted, so your website sells it without limit. Open it to say how many you have.'
+                : 'These are in your catalog and have never been counted, so your website sells them without limit. Open one to say how many you have.'
+            }
+            actions={
+              <div className="flex flex-wrap gap-2">
+                {catalogMatches.map((match) => (
+                  <Button
+                    key={match.id}
+                    size="sm"
+                    color="module"
+                    onClick={(event) => {
+                      openProductFacet(ctx, 'commerce.product.stock', match.id, event);
+                    }}
+                  >
+                    {match.title}
+                  </Button>
+                ))}
+              </div>
+            }
+          />
+        );
+      }
+
       return (
         <EmptyState
           icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
@@ -245,7 +304,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             narrowed
               ? emptyAdvice(search.trim(), locationName)
-              : 'Stock appears here once you record how many of something you have. Open a product and use its Stock panel to count it for the first time — until then your website treats it as out of stock.'
+              : 'Stock appears here once you record how many of something you have. Open a product and use its Stock panel to count it for the first time — and until you do, your website sells it without limit.'
           }
         />
       );

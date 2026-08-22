@@ -37,6 +37,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 
@@ -416,10 +417,7 @@ export function warehouseLabel(name: string | null, code: string | null): string
  *  real problem ("Not enough stock to send", "Cannot ship a transfer while
  *  received") far better than a status code could. */
 export function transferErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isNotFound(error: unknown): boolean {

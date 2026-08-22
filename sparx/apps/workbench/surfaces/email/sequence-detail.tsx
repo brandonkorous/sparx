@@ -156,7 +156,7 @@ function LoadSequence({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this sequence</AlertTitle>
             <AlertDescription>
@@ -517,7 +517,7 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
       </PaneToolbar>
 
       {error ? (
-        <Alert color="error" variant="soft" className="shrink-0">
+        <Alert color="error" className="shrink-0">
           <AlertContent>
             <AlertTitle>{isNew ? 'Cannot create this yet' : 'Cannot save this yet'}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
@@ -528,7 +528,7 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {status === 'active' ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>This sequence is on</AlertTitle>
                 <AlertDescription>

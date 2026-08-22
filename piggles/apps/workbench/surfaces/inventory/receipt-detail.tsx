@@ -888,7 +888,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
       </div>
 
       {receipt.currency !== receipt.baseCurrency ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Billed in {receipt.currency}</AlertTitle>
             <AlertDescription>
@@ -1116,8 +1116,8 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         }
         controls={
           /* A receipt is history, so this is for TRACING rather than for a
-            workflow: stick it on the carton that came in and a scan months later
-            says which delivery it arrived on. */
+                      workflow: stick it on the carton that came in and a scan months later
+                      says which delivery it arrived on. */
           <Tooltip content="Print a scannable label so this delivery can be traced later">
             <Button
               size="sm"

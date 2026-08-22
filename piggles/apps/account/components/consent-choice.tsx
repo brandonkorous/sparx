@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import { Alert, AlertDescription, Button } from '@wizeworks/silicaui-react';
-import { PRODUCT } from '@piggles/config';
+import { marketingUrl, PRODUCT } from '@piggles/config';
 import { recordConsent, type ConsentState } from '@/app/cookie-choices/actions';
 
 // The one optional-tracking question Piggles asks, as a screen rather than a bar
@@ -109,7 +109,7 @@ export function ConsentChoice({
         your account. The full list —{' '}
         <a
           className="font-semibold underline"
-          href={`https://${PRODUCT.hosts.marketing}/cookies`}
+          href={marketingUrl('cookies')}
           target="_blank"
           rel="noreferrer"
         >

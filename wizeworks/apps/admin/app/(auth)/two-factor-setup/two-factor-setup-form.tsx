@@ -169,7 +169,7 @@ export function TwoFactorSetupForm({ email }: { email: string }) {
                   <li key={c}>{c}</li>
                 ))}
               </ul>
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 Save these now — each signs you in once if you lose your phone, and this is the only
                 time they are shown without your password. There is no self-serve recovery for an
                 operator account.

@@ -23,6 +23,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes (mirrors of @wizeworks/builder-schemas DTOs, carried not imported) ── */
@@ -268,10 +269,7 @@ export function countBlocks(tree: PieceNode | null | undefined): number {
  * carries no such sentence, so it falls back to the caller's wording.
  */
 export function pieceErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** Medium date, or an em dash for nothing. */

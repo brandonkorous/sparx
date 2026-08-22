@@ -458,7 +458,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* The question, read top to bottom as a sentence. */}
         <div className="flex flex-col gap-5">
           {readOnly ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               This is one of the reports sparx ships. Make a copy to change anything — your copy is
               yours entirely.
             </Alert>
@@ -671,7 +671,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* The "where …" at the end of the sentence. */}
           <FormSection title="Only count some of them">
             {draft.opaqueFilters ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 This report narrows what it counts in a way that cannot be shown as a simple list of
                 rules. It is being kept exactly as it is — saving will not change it.
               </Alert>
@@ -896,7 +896,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {preview.isError ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               {preview.error instanceof Error
                 ? preview.error.message
                 : 'That combination cannot be worked out.'}
@@ -909,7 +909,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 accent={accent}
               />
               {preview.data.truncated ? (
-                <Alert color="info" variant="soft">
+                <Alert color="info">
                   Showing the first {preview.data.rows.length} rows — narrow the period or add a
                   filter to see a complete answer.
                 </Alert>

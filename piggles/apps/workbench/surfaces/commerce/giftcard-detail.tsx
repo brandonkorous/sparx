@@ -36,6 +36,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput } from '../../components/money-input';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './products-data';
@@ -165,7 +166,7 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not issue this gift card</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -183,17 +184,10 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
                       <Text as="span" className="text-lg">
                         $
                       </Text>
-                      <Input
+                      <MoneyTextInput
                         color={amountError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        inputMode="decimal"
-                        value={amount}
-                        placeholder="50.00"
-                        onChange={(event) => {
-                          setAmount(event.target.value);
-                        }}
+                        text={amount}
+                        onTextChange={setAmount}
                       />
                     </div>
                   }
@@ -335,7 +329,7 @@ function ManageGiftCard({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not load this gift card</AlertTitle>
                 <AlertDescription>
@@ -458,18 +452,7 @@ function GiftCardBody({ card }: { card: GiftCardDetail }) {
                   <Text as="span" className="text-lg">
                     $
                   </Text>
-                  <Input
-                    color="module"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    inputMode="decimal"
-                    value={amount}
-                    placeholder="10.00"
-                    onChange={(event) => {
-                      setAmount(event.target.value);
-                    }}
-                  />
+                  <MoneyTextInput color="module" text={amount} onTextChange={setAmount} />
                 </div>
               }
             />

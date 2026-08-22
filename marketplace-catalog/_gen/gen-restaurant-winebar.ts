@@ -30,13 +30,13 @@ import {
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import {
+  menuPrice,
   defineTheme,
   face,
   STATUS_ON_DARK,
   emitServiceBundle,
   type ServiceSiteSpec,
 } from './service-sites/harness';
-import { writeServicePreview } from './service-sites/preview';
 
 // ── The bespoke theme (inline) ─────────────────────────────────────────────────────
 // A low-lit wine room: a DARK charcoal-wine ground in BOTH modes (a bar that opens bright
@@ -171,7 +171,7 @@ function byGlassBand(): Node {
             el('span', 'text-sm leading-relaxed text-secondary', { text: note }),
           ],
         }),
-        el('span', 'shrink-0 text-base font-semibold text-primary', { text: price }),
+        el('span', 'shrink-0 text-base font-semibold text-primary', { text: menuPrice(price) }),
       ],
     });
   return el('section', 'bg-base-100 @container px-6 py-16 @3xl:py-20', {
@@ -341,7 +341,7 @@ function menuItem(item: MenuItem): Node {
       el('div', 'flex items-baseline justify-between gap-4', {
         children: [
           el('h3', 'text-lg font-semibold text-base-content', { text: item.name }),
-          el('span', 'text-lg font-semibold text-primary', { text: item.price }),
+          el('span', 'text-lg font-semibold text-primary', { text: menuPrice(item.price) }),
         ],
       }),
       ...(item.desc ? [el('p', 'text-base leading-relaxed text-secondary', { text: item.desc })] : []),
@@ -404,7 +404,7 @@ const MENU: Node[] = [
     { name: 'Steak, anchovy butter, watercress', desc: 'A grilled bavette, sliced, for one who’s hungry or two who aren’t.', price: '28' },
     { name: 'Mushrooms on toast, aged parmesan', desc: 'Seasonal mushrooms, garlic, a slick of butter.', price: '16' },
   ]),
-  menuSection('By the bottle', 'A short peek at the wall — hundreds more downstairs. Corkage on anything you spot on the shelf is £10 to drink in.', [
+  menuSection('By the bottle', 'A short peek at the wall — hundreds more downstairs. Corkage on anything you spot on the shelf is $10 to drink in.', [
     { name: 'Faubourg “Vieilles Vignes” · Loire', desc: 'The old-vine chenin, worth the sit-down.', price: '58' },
     { name: 'Cascina Vecchia Barbaresco · Piedmont', desc: 'Give it an hour and it gives everything back.', price: '92' },
     { name: 'Domaine du Héron · Jura', desc: 'Poulsard, pale and haunting, a table favourite.', price: '64' },
@@ -615,7 +615,7 @@ const SPEC: ServiceSiteSpec = {
 // ── Main ─────────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { dir, theme } = await emitServiceBundle(SPEC);
+  const { dir } = await emitServiceBundle(SPEC);
   console.log(`· wrote bundle → ${dir}`);
 
   const mod = (await import(pathToFileURL(join(dir, 'blueprint.ts')).href)) as { default: unknown };
@@ -628,9 +628,6 @@ async function main(): Promise<void> {
     process.exitCode = 1;
     return;
   }
-
-  const { path: previewPath } = await writeServicePreview(SPEC, theme);
-  console.log(`· preview → ${previewPath}`);
 }
 
 main().catch((err: unknown) => {

@@ -330,8 +330,8 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
 
       {record ? (
         /* Not a disabled copy of the real controls — an explanation instead of them.
-           A greyed-out Page title still reads as "this is where it goes, someday". */
-        <Alert color="info" variant="soft">
+                   A greyed-out Page title still reads as "this is where it goes, someday". */
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Each {record.each} writes its own</AlertTitle>
             <AlertDescription>

@@ -45,6 +45,7 @@ export const TEMPLATE_IDS = [
   'domain-expired',
   'email-domain-verified',
   'document-signature-request',
+  'invoice-sent',
   'invitation-accepted',
   'team-member-removed',
   'team-role-changed',

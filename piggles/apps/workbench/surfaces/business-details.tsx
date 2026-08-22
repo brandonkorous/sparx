@@ -257,7 +257,7 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load your business details</AlertTitle>

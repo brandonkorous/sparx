@@ -142,7 +142,7 @@ export function ReportWidget({
       {isPending ? (
         <div className="skeleton h-40 w-full" />
       ) : isError ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           {error instanceof Error ? error.message : 'This report could not be worked out.'}
         </Alert>
       ) : !data || data.rows.length === 0 ? (

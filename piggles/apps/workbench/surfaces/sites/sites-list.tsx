@@ -37,7 +37,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 /** The address a visitor would actually type. Canonical when one is marked,
- *  otherwise the first — a site always has at least its sparx.zone subdomain. */
+ *  otherwise the first — a site always has at least its piggles.site subdomain. */
 function canonicalHost(domains: Domain[]): string | null {
   const active = domains.filter((domain) => domain.status !== 'removed');
   return (active.find((domain) => domain.isCanonical) ?? active[0])?.host ?? null;

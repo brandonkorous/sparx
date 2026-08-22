@@ -175,7 +175,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* A gap in the data, said out loud. A variance report that silently
             skipped half the deliveries would read as "nothing to worry about". */}
         {data.unitsWithoutStandard > 0 ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>
                 {plural(data.unitsWithoutStandard, 'unit has', 'units have')} nothing to compare

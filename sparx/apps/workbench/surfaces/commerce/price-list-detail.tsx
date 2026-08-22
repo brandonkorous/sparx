@@ -232,7 +232,7 @@ function PriceListLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (listQuery.isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this price list</AlertTitle>
             <AlertDescription>
@@ -588,7 +588,7 @@ function PriceListEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this price list</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -867,7 +867,7 @@ function PriceListEditor({
             description="Set what these customers pay for each product version. A fixed price replaces the normal one; a percentage takes that much off it."
           >
             {entryError && touched ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>One of the prices needs a look</AlertTitle>
                   <AlertDescription>{entryError}</AlertDescription>

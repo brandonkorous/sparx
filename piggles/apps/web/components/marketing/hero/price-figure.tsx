@@ -1,4 +1,5 @@
 import { Badge } from '@wizeworks/silicaui-react';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { HeroPanel, HeroRow, HeroRows } from './panel';
 
 // /pricing — the bill.
@@ -60,7 +61,7 @@ export function PriceFigure() {
       <div className="bg-primary text-primary-content flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-5">
         <span className="text-lg font-bold">Everything, every month</span>
         <span className="text-5xl leading-none font-black tabular-nums">
-          $49
+          {PRICE_LABEL}
           <span className="text-xl font-bold">/mo</span>
         </span>
       </div>

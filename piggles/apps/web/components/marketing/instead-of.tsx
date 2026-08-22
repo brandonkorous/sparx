@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Section } from '@piggles/ui';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 
 // Ten bills against one, said spatially: a crowded column beside a single calm
 // panel. The argument IS the asymmetry, so the layout has to carry it.
@@ -62,14 +63,14 @@ export function InsteadOf() {
 
               A theme ISLAND, not `bg-secondary` — that token is dark only in the
               light theme (#d7dbe3 in dark), so with a theme toggle on the site
-              this panel turned pale under a 9xl pink $49. */}
+              this panel turned pale under a 9xl pink price. */}
         <div
           data-theme="dark"
           className="bg-base-200 rounded-box flex flex-col justify-center p-8 text-center sm:p-10"
         >
           <p className="text-xl font-bold sm:text-2xl">All of it, replaced, for</p>
           <p className="font-heading text-primary text-8xl leading-none font-black lg:text-9xl">
-            $49
+            {PRICE_LABEL}
           </p>
           <p className="mt-3 text-xl font-bold sm:text-2xl">a month</p>
 
@@ -82,7 +83,7 @@ export function InsteadOf() {
             className={`${buttonClasses({ color: 'primary', size: 'xl' })} mt-8 self-center`}
             href="/pricing"
           >
-            What is in the $49
+            What is in the {PRICE_LABEL}
           </Link>
         </div>
       </div>

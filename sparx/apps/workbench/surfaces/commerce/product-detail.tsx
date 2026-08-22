@@ -418,7 +418,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     // invites someone to retype a description over the top of nothing.
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this product</AlertTitle>
             <AlertDescription>

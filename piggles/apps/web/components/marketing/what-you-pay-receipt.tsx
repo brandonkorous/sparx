@@ -1,5 +1,6 @@
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import {
   amountOf,
   BILL_ROWS,
@@ -21,7 +22,7 @@ import {
 //
 // ── IT HAS TO BE ABLE TO SAY "DON'T BUY THIS" ───────────────────────────────
 //
-// <Verdict> has a branch for somebody whose bills come to less than $49, and it
+// <Verdict> has a branch for somebody whose bills come to less than ours, and it
 // tells them plainly that Piggles is not the cheaper option for them. That
 // branch is the reason the other two are worth reading. A calculator that
 // arrives at "you are better off" from every set of inputs is an advert with
@@ -115,7 +116,7 @@ function Verdict({ f }: { f: Figures }) {
           {`${usd(f.difference * 12)}${NB}a year, on the software alone.`}
         </p>
         <p className="mt-3 text-base">
-          {`That is the difference between what you typed in and $49 — your figures, not ours. ${
+          {`That is the difference between what you typed in and ${PRICE_LABEL} — your figures, not ours. ${
             f.bills > 1
               ? `The renewal dates, the logins, and ${count(f.bills, 'thing that has', 'things that have')} never once spoken to each other go with it.`
               : 'The renewal date and the separate login go with it.'
@@ -237,8 +238,8 @@ export function WhatYouPayReceipt({ bills, f }: { bills: Bills; f: Figures }) {
         Start free for 14 days
       </a>
       <p className="mt-3 text-base">
-        No card needed. $49 covers one business, one website and three people — the whole list is
-        right below.
+        No card needed. {PRICE_LABEL} covers one business, one website and three people — the whole
+        list is right below.
       </p>
     </div>
   );

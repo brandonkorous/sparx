@@ -147,7 +147,7 @@ function ClassesPanel({
     // space to give, so the table card can fill down to the foot of the pane.
     <div className="flex h-full flex-col gap-3">
       {noneJudged ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Worth is ranked; steadiness is not, yet</AlertTitle>
             <AlertDescription>

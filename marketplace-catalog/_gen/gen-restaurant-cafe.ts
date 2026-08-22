@@ -30,6 +30,7 @@ import {
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 
 import {
+  menuPrice,
   defineTheme,
   face,
   STATUS_ON_DARK,
@@ -37,7 +38,6 @@ import {
   emitServiceBundle,
   type ServiceSiteSpec,
 } from './service-sites/harness';
-import { writeServicePreview } from './service-sites/preview';
 
 // ── The bespoke theme (inline) ─────────────────────────────────────────────────────
 // A sunny all-day café: a bright warm-cream ground, a fresh café-green ink + primary, a
@@ -291,7 +291,7 @@ function menuItem(item: MenuItem): Node {
       el('div', 'flex items-baseline justify-between gap-4', {
         children: [
           el('h3', 'text-lg font-semibold text-base-content', { text: item.name }),
-          el('span', 'text-lg font-semibold text-primary', { text: item.price }),
+          el('span', 'text-lg font-semibold text-primary', { text: menuPrice(item.price) }),
         ],
       }),
       el('p', 'text-base leading-relaxed text-secondary', { text: item.desc }),
@@ -326,14 +326,14 @@ const MENU: Node[] = [
       }),
     ],
   }),
-  menuSection('Breakfast & brunch', 'Served open to close. Add streaky bacon or an extra egg to anything for 3.', [
+  menuSection('Breakfast & brunch', 'Served open to close. Add streaky bacon or an extra egg to anything for $3.', [
     { name: 'The big plate', desc: 'Two eggs how you like them, streaky bacon, roast tomato, garlic mushrooms, beans and sourdough.', price: '15' },
     { name: 'Green eggs', desc: 'Soft-scrambled eggs, wilted greens, herb oil, feta and dukkah on toasted sourdough.', price: '12' },
     { name: 'Buttermilk pancakes', desc: 'A stack of three, maple butter, seasonal fruit and a dust of icing sugar.', price: '11' },
     { name: 'Shakshuka', desc: 'Eggs baked in a spiced tomato-and-pepper sauce, whipped feta, warm flatbread to mop.', price: '13' },
     { name: 'Bircher bowl', desc: 'Overnight oats, grated apple, toasted seeds, yoghurt and a spoon of berry compote.', price: '9' },
   ]),
-  menuSection('Toasts & plates', 'On our own sourdough unless you ask otherwise. Make any toast a double for 4.', [
+  menuSection('Toasts & plates', 'On our own sourdough unless you ask otherwise. Make any toast a double for $4.', [
     { name: 'Avo, chilli & lime', desc: 'Smashed avocado, quick-pickled chilli, lime, toasted seeds and a soft-poached egg.', price: '11' },
     { name: 'Mushrooms on toast', desc: 'Garlic-buttered mushrooms, thyme, aged cheddar melted through, a crack of pepper.', price: '10' },
     { name: 'Smoked salmon', desc: 'Cream cheese, cured salmon, capers, dill and shaved red onion on rye.', price: '13' },
@@ -557,7 +557,7 @@ const SPEC: ServiceSiteSpec = {
 // ── Main ─────────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { dir, theme } = await emitServiceBundle(SPEC);
+  const { dir } = await emitServiceBundle(SPEC);
   console.log(`· wrote bundle → ${dir}`);
 
   const mod = (await import(pathToFileURL(join(dir, 'blueprint.ts')).href)) as { default: unknown };
@@ -570,9 +570,6 @@ async function main(): Promise<void> {
     process.exitCode = 1;
     return;
   }
-
-  const { path: previewPath } = await writeServicePreview(SPEC, theme);
-  console.log(`· preview → ${previewPath}`);
 }
 
 main().catch((err: unknown) => {

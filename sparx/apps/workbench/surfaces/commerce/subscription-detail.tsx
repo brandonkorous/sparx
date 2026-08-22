@@ -238,7 +238,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
       </div>
 
       {sub.status === 'past_due' ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>A payment failed</AlertTitle>
             <AlertDescription>
@@ -508,7 +508,7 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <div className="flex h-full items-center justify-center p-8">
-            <Alert color="error" variant="soft" className="max-w-md">
+            <Alert color="error" className="max-w-md">
               <AlertContent>
                 <AlertTitle>Could not load this repeat order</AlertTitle>
                 <AlertDescription>

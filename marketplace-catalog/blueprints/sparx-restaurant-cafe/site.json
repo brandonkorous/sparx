@@ -340,7 +340,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — new work, journal notes, and studio news, about once a month."
+                            "Join the list — we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -1278,7 +1278,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "Served open to close. Add streaky bacon or an extra egg to anything for 3."
+                      "Served open to close. Add streaky bacon or an extra egg to anything for $3."
                     ],
                     "id": "1532e9b4-cdf6-4da9-8615-f7296273dc86",
                     "ord": "a1"
@@ -1310,7 +1310,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["15"],
+                                "children": ["$15"],
                                 "id": "31055f5d-fa98-4657-9304-52adac9549ac",
                                 "ord": "a1"
                               }
@@ -1354,7 +1354,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["12"],
+                                "children": ["$12"],
                                 "id": "05476a30-b1fd-4941-9655-2293fc7d140d",
                                 "ord": "a1"
                               }
@@ -1398,7 +1398,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["11"],
+                                "children": ["$11"],
                                 "id": "5af87a4e-07dd-4c7e-b446-03ef45a6dc03",
                                 "ord": "a1"
                               }
@@ -1442,7 +1442,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["13"],
+                                "children": ["$13"],
                                 "id": "44dac906-375f-491e-8941-b7c592735441",
                                 "ord": "a1"
                               }
@@ -1486,7 +1486,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["9"],
+                                "children": ["$9"],
                                 "id": "a67de08c-e965-45af-889b-afc80c6a2d37",
                                 "ord": "a1"
                               }
@@ -1543,7 +1543,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "On our own sourdough unless you ask otherwise. Make any toast a double for 4."
+                      "On our own sourdough unless you ask otherwise. Make any toast a double for $4."
                     ],
                     "id": "df1e9ecf-055c-450e-b65e-c6f1982d6483",
                     "ord": "a1"
@@ -1575,7 +1575,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["11"],
+                                "children": ["$11"],
                                 "id": "fbbed0b7-0c70-41c5-a20c-527ad15be98f",
                                 "ord": "a1"
                               }
@@ -1619,7 +1619,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["10"],
+                                "children": ["$10"],
                                 "id": "1086c53d-ed20-4475-ad01-d3678b678bf3",
                                 "ord": "a1"
                               }
@@ -1663,7 +1663,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["13"],
+                                "children": ["$13"],
                                 "id": "c0e3a802-89d2-44b2-a18f-bfd6af6a417b",
                                 "ord": "a1"
                               }
@@ -1707,7 +1707,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["8"],
+                                "children": ["$8"],
                                 "id": "f08a8146-c869-4300-9b33-eebf228daab4",
                                 "ord": "a1"
                               }
@@ -1751,7 +1751,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["12"],
+                                "children": ["$12"],
                                 "id": "7d2b88a6-7d75-42a2-868c-89e7e2729ce0",
                                 "ord": "a1"
                               }
@@ -1840,7 +1840,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["5"],
+                                "children": ["$5"],
                                 "id": "caae2f46-1360-40aa-b2e2-f70969a3fb25",
                                 "ord": "a1"
                               }
@@ -1884,7 +1884,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["6"],
+                                "children": ["$6"],
                                 "id": "92d5b8bb-35a2-4ab4-ba56-aa7802157646",
                                 "ord": "a1"
                               }
@@ -1928,7 +1928,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["4"],
+                                "children": ["$4"],
                                 "id": "b34535f2-3700-4ae1-8b3b-14c9e94f8122",
                                 "ord": "a1"
                               }
@@ -1972,7 +1972,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["4"],
+                                "children": ["$4"],
                                 "id": "7c8d68dc-6e01-4029-b4e9-6c0b954391dd",
                                 "ord": "a1"
                               }
@@ -2061,7 +2061,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["4"],
+                                "children": ["$4"],
                                 "id": "3ed37f84-9701-4bd7-9bd7-432bed4a051e",
                                 "ord": "a1"
                               }
@@ -2105,7 +2105,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["4"],
+                                "children": ["$4"],
                                 "id": "a3540f1a-51b4-4f01-84c3-e6ffdd1bfae5",
                                 "ord": "a1"
                               }
@@ -2149,7 +2149,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["5"],
+                                "children": ["$5"],
                                 "id": "75c10d27-0df9-485e-ac4b-c66d13b947d2",
                                 "ord": "a1"
                               }
@@ -2193,7 +2193,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["4"],
+                                "children": ["$4"],
                                 "id": "1c521799-b86c-44ed-ad9f-d01fe56c0014",
                                 "ord": "a1"
                               }
@@ -2237,7 +2237,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["5"],
+                                "children": ["$5"],
                                 "id": "4f76fe3e-5421-4e73-bcb0-15937b9ce919",
                                 "ord": "a1"
                               }

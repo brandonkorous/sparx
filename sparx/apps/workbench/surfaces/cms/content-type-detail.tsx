@@ -290,7 +290,7 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create this</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -334,7 +334,7 @@ function LoadType({ ctx, typeKey }: { ctx: SurfaceContext; typeKey: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this content type</AlertTitle>
             <AlertDescription>
@@ -584,7 +584,7 @@ function BuiltInType({
             ) : null}
           </div>
 
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>This is a built-in type</AlertTitle>
               <AlertDescription>

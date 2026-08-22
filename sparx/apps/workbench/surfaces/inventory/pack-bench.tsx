@@ -160,7 +160,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
         {activeId ? (
           <ActiveBox packageId={activeId} ctx={ctx} />
         ) : (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>No box open yet</AlertTitle>
               <AlertDescription>

@@ -152,7 +152,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <TriangleAlert />
           <AlertContent>
             <AlertTitle>Could not load this teammate</AlertTitle>
@@ -270,7 +270,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
             // Said at the top, once, in the person's own words — not as a
             // scatter of disabled controls the reader has to interpret.
             isOwner ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>This is the account owner</AlertTitle>
                   <AlertDescription>
@@ -280,7 +280,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
                 </AlertContent>
               </Alert>
             ) : isSelf ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>This is you</AlertTitle>
                   <AlertDescription>

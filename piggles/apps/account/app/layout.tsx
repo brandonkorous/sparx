@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fredoka, Inter } from 'next/font/google';
-import { PRODUCT } from '@piggles/config';
+import { fetchHeaderNotice, PRODUCT } from '@piggles/config';
+import { HeaderNotice } from '@piggles/ui';
 import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
@@ -41,7 +42,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // The same notice the marketing site is running, if it was written for here
+  // too. It matters most at this end: somebody arriving from an offer is one
+  // click from acting on it, and a promise that stops being repeated at the
+  // moment of signing up reads as a promise that was withdrawn.
+  const notice = await fetchHeaderNotice('account');
+
   // NO `data-theme` on <html>, and that is load-bearing rather than an omission.
   // React owns every attribute it renders and re-asserts it whenever the element
   // is created, so a hardcoded value here is a second writer racing the script
@@ -60,7 +67,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             sign-in page a white flash is the first thing a customer sees of us. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <HeaderNotice notice={notice} />
+        {children}
+      </body>
     </html>
   );
 }

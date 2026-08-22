@@ -366,7 +366,7 @@ function ProfitBody({
         </div>
 
         {lost ? (
-          <Alert color="warning" variant="soft" className="mt-4">
+          <Alert color="warning" className="mt-4">
             <AlertContent>
               <AlertTitle>This period cost more than it brought in</AlertTitle>
               <AlertDescription>

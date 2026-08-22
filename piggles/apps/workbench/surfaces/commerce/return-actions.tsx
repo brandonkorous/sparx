@@ -33,6 +33,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
+import { MoneyTextInput } from '../../components/money-input';
 import { formatMoney } from './data';
 import {
   conditionLabel,
@@ -514,19 +515,12 @@ export function RefundReturnModal({
         <FieldLabel required>Amount to give back</FieldLabel>
         <FieldControl
           render={
-            <Input
+            <MoneyTextInput
               color="module"
-              type="number"
-              min="0"
-              step="0.01"
-              inputMode="decimal"
-              className="text-right tabular-nums"
-              value={amount}
-              placeholder="0.00"
+              className="text-right"
               aria-label="Amount to give back"
-              onChange={(event) => {
-                setAmount(event.target.value);
-              }}
+              text={amount}
+              onTextChange={setAmount}
             />
           }
         />
@@ -536,19 +530,12 @@ export function RefundReturnModal({
         <FieldLabel>Restocking fee kept</FieldLabel>
         <FieldControl
           render={
-            <Input
+            <MoneyTextInput
               color="module"
-              type="number"
-              min="0"
-              step="0.01"
-              inputMode="decimal"
-              className="text-right tabular-nums"
-              value={fee}
-              placeholder="0.00"
+              className="text-right"
               aria-label="Restocking fee kept"
-              onChange={(event) => {
-                setFee(event.target.value);
-              }}
+              text={fee}
+              onTextChange={setFee}
             />
           }
         />

@@ -95,7 +95,7 @@ function NameSection() {
 
 function ReadOnlyNotice() {
   return (
-    <Alert color="info" variant="soft" className="m-4">
+    <Alert color="info" className="m-4">
       <AlertTitle>This is one of our ready-made looks</AlertTitle>
       <AlertDescription>
         Make a copy to change it — the original stays available to everyone.
@@ -106,7 +106,7 @@ function ReadOnlyNotice() {
 
 function DarkNotice() {
   return (
-    <Alert color="info" variant="soft" className="m-4">
+    <Alert color="info" className="m-4">
       <AlertTitle>You are editing the dark version</AlertTitle>
       <AlertDescription>
         Anything you leave alone here uses its light-mode value. Change one and it stops following.

@@ -224,16 +224,34 @@ export function useRevisions(id: string) {
   });
 }
 
+/** The root of the legal checklist's query keys.
+ *
+ *  It lives HERE, in the content module, rather than beside the checklist that
+ *  owns it — because this module has to invalidate it (a legal page is a content
+ *  entry) and legal-data already imports this one, so owning it there and
+ *  reaching for it here would be a cycle. Two hand-written copies of a query key
+ *  drift silently: the invalidation goes on succeeding against a key nothing
+ *  reads. */
+export const LEGAL_QUERY_ROOT = ['cms', 'legal'] as const;
+
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
 /** The ONE way anything here says "that changed": refresh the lists, and — when
  *  a specific entry moved — its record and its history, because a status or a
  *  title shows in all three. Scoped to `lists()` rather than the whole `entries()`
- *  prefix so it never re-touches OTHER open detail panes. */
+ *  prefix so it never re-touches OTHER open detail panes.
+ *
+ *  The legal checklist is refreshed too, and not as a nicety: a legal page IS an
+ *  ordinary content entry, so publishing one from the editor is the ONLY way its
+ *  checklist row can go green. Without this, four policies could be published one
+ *  after another while the Legal pages surface went on saying "0 of 4 required
+ *  ready" — which reads as "publishing did not work" rather than "this list is a
+ *  minute old". It is a checklist; being right about what is done is its job. */
 function useInvalidateContent() {
   const queryClient = useQueryClient();
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: contentKeys.lists() });
+    void queryClient.invalidateQueries({ queryKey: LEGAL_QUERY_ROOT });
     if (id) {
       // detail(id) is the prefix of revisions(id), so this covers both.
       void queryClient.invalidateQueries({ queryKey: contentKeys.detail(id) });

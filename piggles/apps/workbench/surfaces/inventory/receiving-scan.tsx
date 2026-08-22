@@ -214,7 +214,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
         </Card>
 
         {closed ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>This order is {data.status}</AlertTitle>
               <AlertDescription>
@@ -339,7 +339,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* Scans that hit nothing. Not an error toast that vanishes — a pile
             somebody has to deal with, which means it has to persist. */}
         {data.unresolved.length > 0 ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <Icon glyph={faExclamationTriangle} className="size-5 shrink-0" aria-hidden />
             <AlertContent>
               <AlertTitle>

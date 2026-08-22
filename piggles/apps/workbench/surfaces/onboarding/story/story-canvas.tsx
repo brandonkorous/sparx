@@ -10,6 +10,7 @@ import {
 import { GhostTok, ChipTok, ClauseChip, AddButton, AutoInput, IndustryIcon } from './story-tokens';
 import { TenseMenu, IndustryMenu, AudienceMenu, ClauseListMenu } from './story-menus';
 import styles from './story.module.css';
+import { PRODUCT } from '@piggles/config';
 
 // The interactive sentence. It renders the story as tappable prose:
 //   "I [tense] [industry] for [audience], where they can …. I'll …. Find me at …."
@@ -74,7 +75,7 @@ export function StoryCanvas({
           placeholder="your-name"
           ariaLabel="Your web address"
         />
-        <span className={styles.sfx}>.sparx.zone</span>.
+        <span className={styles.sfx}>.{PRODUCT.tenantSites.suffix}</span>.
       </span>
     );
 

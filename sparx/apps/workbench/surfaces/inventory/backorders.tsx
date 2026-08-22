@@ -298,7 +298,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
       ) : null}
 
       {overdueCount > 0 && lens !== 'overdue' ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(overdueCount, 'commitment is', 'commitments are')} past the date you gave

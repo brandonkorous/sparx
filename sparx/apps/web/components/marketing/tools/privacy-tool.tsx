@@ -125,7 +125,7 @@ export function PrivacyTool() {
               Download .md
             </Button>
           </div>
-          <Alert color="warning" variant="soft" size="sm">
+          <Alert color="warning" size="sm">
             A strong starting point — review and adapt it to your business. This is not legal
             advice.
           </Alert>

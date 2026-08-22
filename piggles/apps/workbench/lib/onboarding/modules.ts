@@ -2,9 +2,17 @@
 // surface is built from, plus the dependency graph that keeps a selection honest.
 //
 // Client-safe by construction (no server import): flipping a switch recomputes the
-// bill in the browser with no round-trip. The API enforces the authoritative graph
-// (b2b→commerce, the bundled-free rules) on save; this file is the user-intended
-// set the UI drives from, and the price/savings math the plan summary shows.
+// selection in the browser with no round-trip. The API enforces the authoritative
+// graph (b2b→commerce, the bundled rules) on save; this file is the user-intended
+// set the UI drives from.
+//
+// THERE ARE NO PRICES HERE, and there must not be. Every app is in the one flat
+// plan (RULE #2) and the console never knows a price. This file carried `price`
+// and `elsewhere` per module, and the onboarding summary added them into a
+// running total with a "you save $N vs elsewhere" line — a per-module bill, on
+// the surface that introduces a product whose whole promise is that there is no
+// such thing. It was inherited wholesale and it contradicted the marketing site
+// on the same account.
 //
 // A row carries NO color of its own. The workbench's module-hue mechanism is
 // `ModuleScope` (data-module ⇒ --color-module), so a row that wants a module's
@@ -13,25 +21,20 @@
 // `var(--color-module-<key>)` per entry; nothing ever read it, and duplicating the
 // palette in TS is exactly the drift the tokens exist to prevent.
 //
-// This mirrors the same catalog the pricing page and Settings → Modules present, so
-// a tenant sees an identical offer whether shopping, onboarding, or managing a live
-// workspace. A future @sparx/module-catalog package could collapse those copies
-// into one source; until then each surface owns a client-safe view of the data.
+// Switching one on changes the WORKSPACE, not the bill — so this list is about
+// what somebody wants on screen, never about what they are buying.
 
 export interface SwitchboardModule {
   /** Module slug — also the brand color key (`--color-module-<key>`). */
   key: string;
   name: string;
   desc: string;
-  /** Monthly price in whole dollars. */
-  price: number;
-  /** Real monthly cost of the tool this module replaces (the savings ledger). */
-  elsewhere: number;
   long: string;
   feats: string[];
   replaces: string;
-  /** Add-ons render under an "Add-ons" divider — priced on top, never part of the
-   *  core "modules" story. */
+  /** The less common ones, grouped under their own divider so the everyday apps
+   *  read as a short list. A GROUPING, not a tier — they cost nothing extra and
+   *  nothing here is withheld. */
   addon?: boolean;
 }
 
@@ -40,8 +43,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'builder',
     name: 'Builder',
     desc: 'Themes, pages, live URLs',
-    price: 10,
-    elsewhere: 39,
     long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
     feats: [
       'Theme-first, customize what matters',
@@ -55,8 +56,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'commerce',
     name: 'Commerce',
     desc: 'Cart, checkout, orders',
-    price: 49,
-    elsewhere: 399,
     long: 'Products, inventory, payments, tax, and shipping. A conversion-optimized single-page checkout out of the box, D2C and B2B from the same codebase.',
     feats: [
       'Variants, bundles, real-time inventory',
@@ -70,8 +69,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'cms',
     name: 'CMS',
     desc: 'Words, media, SEO',
-    price: 49,
-    elsewhere: 99,
     long: 'A real editor with revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
     feats: [
       'Block editor with revisions',
@@ -85,8 +82,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'crm',
     name: 'CRM',
     desc: 'Customers, pipeline, signal',
-    price: 49,
-    elsewhere: 300,
     long: 'One customer record across orders, email, support, RFQs, and AI conversations — sitting on the same database as everything else. No sync, no glue, no duplicate records.',
     feats: [
       'One record, no deduping',
@@ -100,9 +95,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'email',
     name: 'Email',
     desc: 'Transactional + marketing',
-    price: 29,
-    elsewhere: 165,
-    long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price — send 10K or 1M a month, same bill.',
+    long: 'Transactional and marketing email from your own sending address, with the technical bits set up for you so it lands in inboxes rather than spam.',
     feats: [
       'Transactional wired into every module',
       'Campaigns + A/B testing',
@@ -115,8 +108,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'b2b',
     name: 'B2B · Fleet',
     desc: 'Wholesale, net terms, fleet',
-    price: 99,
-    elsewhere: 2400,
     long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling — natively, not a bolt-on. Built for how industrial actually works.',
     feats: [
       'Account-tier + contract pricing',
@@ -130,8 +121,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'ai',
     name: 'AI · MCP',
     desc: 'Native MCP server',
-    price: 49,
-    elsewhere: 103,
     long: 'The first content + commerce platform built around the Model Context Protocol. Connect any AI client once and read or write live data in plain English. Scoped, audited, revocable.',
     feats: [
       'First-class MCP server, per-tenant',
@@ -145,8 +134,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'scheduling',
     name: 'Scheduling',
     desc: 'Appointments, classes, reservations',
-    price: 29,
-    elsewhere: 49,
     long: 'Online booking for anything time-based — appointments, group classes, table reservations, equipment rentals — on one engine. Availability that prevents double-booking at the database level, deposits and no-show fees, automated reminders, and two-way calendar sync.',
     feats: [
       'Appointments, classes, reservations & rentals',
@@ -160,8 +147,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'dropship',
     name: 'Dropship',
     desc: 'Suppliers, sync, fulfillment',
-    price: 29,
-    elsewhere: 60,
     long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
     feats: [
       'Supplier connectors + CSV/FTP/API',
@@ -175,8 +160,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'invoicing',
     name: 'Invoicing',
     desc: 'Estimates, invoices, AR',
-    price: 19,
-    elsewhere: 30,
     long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
     feats: [
       'Estimate → invoice workflows you name',
@@ -191,8 +174,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'inventory',
     name: 'Inventory',
     desc: 'Stock, warehouses, ledger',
-    price: 29,
-    elsewhere: 99,
     long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
     feats: [
       'Multi-warehouse on-hand / allocated / available',
@@ -207,8 +188,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     key: 'chat',
     name: 'Live Chat',
     desc: 'Widget, AI replies, inbox',
-    price: 19,
-    elsewhere: 74,
     // No marketplace sentence. sparx.market is a sparx PRODUCT, not a Piggles
     // capability, and the fork inherited the copy naming it — piggles/CLAUDE.md
     // RULE #0. Renaming it would offer a listing nobody can sign up for.
@@ -313,17 +292,6 @@ export function toggleModule(
   return next;
 }
 
-/** Monthly charge for a module given the graph — a bundled capability is $0. */
-export function moduleBilled(modules: Record<string, boolean>, m: SwitchboardModule): number {
-  return moduleLock(modules, m.key) === 'included' ? 0 : m.price;
-}
-
-/** Replaced-cost contribution to the savings ledger — bundled capabilities are a
- *  free rider, so they contribute $0 (no double-count). */
-export function moduleElsewhere(modules: Record<string, boolean>, m: SwitchboardModule): number {
-  return moduleLock(modules, m.key) === 'included' ? 0 : m.elsewhere;
-}
-
 /** The default modules a fresh tenant starts onboarding with switched on. */
 export const DEFAULT_ON = ['builder', 'commerce', 'cms'];
 
@@ -333,20 +301,4 @@ export const SELLING_MODULE_KEYS = ['commerce', 'b2b', 'dropship'];
 /** Whether any selling module is effectively on (so Payments should appear). */
 export function isSellingSelected(modules: Record<string, boolean>): boolean {
   return SELLING_MODULE_KEYS.some((k) => effectiveModuleOn(modules, k));
-}
-
-/** The plan total + savings for a module selection, applying the graph. */
-export function planTotals(modules: Record<string, boolean>): {
-  total: number;
-  elsewhere: number;
-  savings: number;
-} {
-  let total = 0;
-  let elsewhere = 0;
-  for (const m of SWITCHBOARD_MODULES) {
-    if (!effectiveModuleOn(modules, m.key)) continue;
-    total += moduleBilled(modules, m);
-    elsewhere += moduleElsewhere(modules, m);
-  }
-  return { total, elsewhere, savings: Math.max(0, elsewhere - total) };
 }

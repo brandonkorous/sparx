@@ -180,7 +180,7 @@ export function PlanningShell({
           numbers on these screens are ABSENT rather than wrong, and saying so
           beats a screen full of dashes. */}
       {policy.data && !lastSweepAt ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Nothing has been measured yet</AlertTitle>
             <AlertDescription>

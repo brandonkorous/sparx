@@ -102,7 +102,7 @@ function SlotRow({
           Fills itself
         </Badge>
       ) : (
-        <Badge color="neutral" variant="soft" size="sm">
+        <Badge color="info" variant="soft" size="sm">
           Just a reminder
         </Badge>
       )}

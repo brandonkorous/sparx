@@ -29,11 +29,13 @@ export interface BillToValue {
 interface BillToProps {
   customerId: string | null;
   value: BillToValue;
+  /** `YYYY-MM-DD`, or '' for none. */
+  dueAt: string;
   readOnly?: boolean;
-  onChange: (patch: { customerId?: string | null; billTo?: BillToValue }) => void;
+  onChange: (patch: { customerId?: string | null; billTo?: BillToValue; dueAt?: string }) => void;
 }
 
-export function BillTo({ customerId, value, readOnly, onChange }: BillToProps) {
+export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToProps) {
   const setField = (field: keyof BillToValue, next: string) => {
     onChange({ billTo: { ...value, [field]: next } });
   };
@@ -61,7 +63,33 @@ export function BillTo({ customerId, value, readOnly, onChange }: BillToProps) {
           }}
         />
         <FieldDescription>
-          The customer record this invoice belongs to — it shows up in their history
+          The customer record this invoice belongs to. It shows up in their history.
+        </FieldDescription>
+      </Field>
+
+      {/* The list has always had a Due column, a Late filter and day-counting
+          phrasing, and nothing could set the date they all read. It arrived only
+          when a document was ADVANCED into a payable stage, so an invoice raised
+          straight into one never got a date and could never be chased. */}
+      <Field className="@lg:max-w-64">
+        <FieldLabel>When it should be paid</FieldLabel>
+        <FieldControl
+          render={
+            <Input
+              color="module"
+              type="date"
+              value={dueAt}
+              disabled={readOnly}
+              onChange={(event) => {
+                onChange({ dueAt: event.target.value });
+              }}
+            />
+          }
+        />
+        <FieldDescription>
+          {dueAt
+            ? 'After this, the invoice starts counting how many days late it is.'
+            : 'Leave it empty if there is no deadline. Without one this invoice never counts as late, so it will not show up when you look for who owes you.'}
         </FieldDescription>
       </Field>
 

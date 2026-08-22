@@ -163,7 +163,7 @@ function CategoryEditor({
       </Alert>
 
       {category && category.kind !== kind ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertDescription>
               Every cost already filed under {category.name} moves to{' '}

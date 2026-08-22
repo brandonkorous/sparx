@@ -76,7 +76,7 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this delivery region</AlertTitle>
             <AlertDescription>
@@ -192,7 +192,7 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
       title: `Delete ${zone.name}?`,
       description:
         zone.rateCount > 0
-          ? `This region and its ${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'} are removed. Shoppers in this region will fall back to another region that covers them, or see no delivery option at all. This cannot be undone.`
+          ? `This region and its ${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'} are removed. Shoppers in this region will fall back to another region that covers them — or, if you have no regions left, to collecting from you. This cannot be undone.`
           : 'This region is removed. This cannot be undone.',
       confirmLabel: 'Delete this region',
       cancelLabel: 'Keep it',
@@ -266,7 +266,7 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
           )}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this region</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

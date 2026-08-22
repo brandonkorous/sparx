@@ -427,7 +427,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
           )}
 
           {serverError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>That didn’t go through</AlertTitle>
                 <AlertDescription>{serverError}</AlertDescription>
@@ -495,7 +495,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
             description="An audience is a saved group of your customers. This broadcast reaches everyone in it, apart from anyone who has unsubscribed."
           >
             {audiences.isError ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>Couldn’t load your audiences</AlertTitle>
                   <AlertDescription>
@@ -563,7 +563,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
             }
           >
             {designed.isError ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>Couldn’t load your designed emails</AlertTitle>
                   <AlertDescription>
@@ -804,7 +804,7 @@ function BroadcastReview({
           <Text className="text-sm">{broadcast.subject}</Text>
 
           {broadcast.status === 'scheduled' && broadcast.scheduledAt ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Scheduled to send</AlertTitle>
                 <AlertDescription>
@@ -816,7 +816,7 @@ function BroadcastReview({
           ) : null}
 
           {broadcast.status === 'cancelled' ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This send was cancelled</AlertTitle>
                 <AlertDescription>
@@ -827,7 +827,7 @@ function BroadcastReview({
           ) : null}
 
           {broadcast.status === 'failed' ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>This broadcast didn’t send</AlertTitle>
                 <AlertDescription>
@@ -867,7 +867,7 @@ function BroadcastReview({
               description="Counts update as people open and click over the hours and days after you send."
             >
               {stats.isError ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>Couldn’t load the results</AlertTitle>
                     <AlertDescription>

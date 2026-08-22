@@ -3,7 +3,9 @@
 // aren't in the published spec yet — swap these for the generated types once
 // they are, and the surfaces below won't change.
 
-export type ArStatus = 'unpaid' | 'partial' | 'paid' | 'overdue' | 'void';
+import { invoiceState, type InvoiceStatus, type InvoiceTone } from '../../lib/invoice-status';
+
+export type ArStatus = InvoiceStatus;
 
 export interface BillingParty {
   name?: string;
@@ -135,6 +137,10 @@ export interface BillingDocument {
    */
   billedToName?: string | null;
   taxRate: number;
+  /** The note printed on the document the customer receives — `billing-document-html`
+   *  renders it under a "Notes" heading. It was missing from this interface, which
+   *  is why the editor seeded its notes box from a hardcoded `''`. */
+  notes: string | null;
   subtotal: number;
   taxTotal: number;
   total: number;
@@ -151,6 +157,10 @@ export interface BillingDocument {
   overdueDays: number;
   workflowId: string;
   stageId: string;
+  /** Everything the document carries that has no column of its own. `sentAt` /
+   *  `sentTo` live here: there is no `sent_at` column, and this is where the
+   *  send route records that the customer has it. */
+  metadata?: Record<string, unknown> | null;
   lines?: BillingDocumentLine[];
   /** Set once an accepted quote has been converted — the FK lives on Order, so
    *  the API looks it up and sends it along with the document. */
@@ -216,24 +226,8 @@ export function normalizeDocument(raw: BillingDocument): BillingDocument {
   };
 }
 
-/** Maps AR status onto a silica semantic color. State is its own color axis,
- *  independent of the module hue — see docs/23 Semantic-Status. */
-export function statusTone(
-  status: ArStatus
-): 'success' | 'warning' | 'danger' | 'info' | 'neutral' {
-  switch (status) {
-    case 'paid':
-      return 'success';
-    case 'partial':
-      return 'info';
-    case 'overdue':
-      return 'danger';
-    case 'void':
-      return 'neutral';
-    default:
-      return 'warning';
-  }
-}
+export type ArTone = InvoiceTone;
+export { invoiceState };
 
 export function formatMoney(amount: number, currency: string): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
@@ -276,21 +270,43 @@ export interface AgingReport {
 
 /**
  * Due-date phrasing, in the words an owner would use rather than a raw date.
- * `overdueDays` is computed server-side, so the UI never re-derives "how late is
- * this" and can't disagree with the AR report about it.
+ *
+ * `overdueDays` is a STORED column with a default of `0`, and nothing recomputes
+ * it when a document goes past its date: setting a due date of two weeks ago
+ * flipped the status to `overdue` and left `overdueDays` at 0. Trusting it alone
+ * printed "Due today" in the Due column beside a "Late" chip in the Status
+ * column, on the same row, for an invoice fourteen days late. "Due today" is the
+ * damaging half: it reads as nothing-to-do-yet.
+ *
+ * A default zero is indistinguishable from a measured zero, so the count is
+ * taken from the DATE, which is a fact, and the stored value is used only when
+ * it is larger. The server stays authoritative wherever it has actually counted.
  */
 export function describeDue(
   dueAt: string | null | undefined,
   overdueDays: number
 ): { label: string; tone: 'danger' | 'warning' | 'muted'; title: string } {
-  if (!dueAt) return { label: 'No due date', tone: 'muted', title: 'No payment terms set' };
+  // NOT "no payment terms set". A due date arrives from the payer's terms only
+  // when the document is ADVANCED into a payable stage, so an invoice raised
+  // straight into one has none however carefully the terms were agreed. Sending
+  // her to set terms she already set is advice that cannot work; the invoice is
+  // where the date is fixed, so that is what this says.
+  if (!dueAt) {
+    return {
+      label: 'No due date',
+      tone: 'muted',
+      title: 'No date set, so this never counts as late. Open it to give it one.',
+    };
+  }
 
   const due = new Date(dueAt);
   const title = due.toLocaleDateString(undefined, { dateStyle: 'medium' });
 
-  if (overdueDays > 0) {
+  const elapsed = Math.floor((Date.now() - due.getTime()) / 86_400_000);
+  const late = Math.max(overdueDays, elapsed);
+  if (late > 0) {
     return {
-      label: overdueDays === 1 ? '1 day late' : `${String(overdueDays)} days late`,
+      label: late === 1 ? '1 day late' : `${String(late)} days late`,
       tone: 'danger',
       title: `Was due ${title}`,
     };

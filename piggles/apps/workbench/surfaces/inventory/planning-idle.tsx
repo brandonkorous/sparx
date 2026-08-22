@@ -105,7 +105,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
           price contributes nothing to them. Saying so is the difference between
           a total that is low and a total that is wrong. */}
       {totals && totals.itemsWithoutCost > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(totals.itemsWithoutCost, 'item has', 'items have')} no cost price

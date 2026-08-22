@@ -168,7 +168,7 @@ function QuoteView({
           <Text>For {quoteParty(quote)}</Text>
 
           {expired ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This quote has expired</AlertTitle>
                 <AlertDescription>

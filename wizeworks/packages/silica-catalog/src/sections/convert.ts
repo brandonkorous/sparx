@@ -83,7 +83,7 @@ export function enquiryForm(): Node {
               'A real person reads every one of these and replies, usually the same day. There is no ' +
                 'obligation and we will not add you to anything.'
             ),
-            caption('Or call 01233 000000, Monday to Friday, 8am to 5pm.'),
+            caption('Or call (555) 123-4567, Monday to Friday, 8am to 5pm.'),
           ],
         }),
         form(
@@ -149,7 +149,7 @@ export function bookingPrompt(): Node {
         }),
         actions([
           primaryAction('See available times', '/book'),
-          secondaryAction('Call instead', 'tel:+441233000000'),
+          secondaryAction('Call instead', 'tel:+15551234567'),
         ]),
       ],
     }),
@@ -172,7 +172,7 @@ export function quoteRequest(): Node {
               [
                 field('Your name', 'name'),
                 field('Email address', 'email', 'email'),
-                field('Where is the work?', 'location', 'text', 'Town or postcode is enough'),
+                field('Where is the work?', 'location', 'text', 'Town or ZIP code is enough'),
                 textField(
                   'What needs doing?',
                   'message',

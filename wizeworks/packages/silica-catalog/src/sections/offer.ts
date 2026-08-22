@@ -235,10 +235,10 @@ export function stockists(): Node {
     ),
     el('ul', 'grid grid-cols-1 gap-x-10 @2xl:grid-cols-2', {
       children: [
-        shop('Northgate Interiors', 'Canterbury · 01227 000000'),
-        shop('The Kitchen Rooms', 'Tunbridge Wells · 01892 000000'),
-        shop('Wharf Road Design', 'Maidstone · 01622 000000'),
-        shop('Coast & Co', 'Whitstable · 01227 000000'),
+        shop('North Gate Interiors', 'Riverton · (555) 123-4567'),
+        shop('The Kitchen Rooms', 'Fairview · (555) 123-4567'),
+        shop('Wharf Road Design', 'Eastport · (555) 123-4567'),
+        shop('Coast & Co', 'Westbrook · (555) 123-4567'),
       ],
     }),
   ]);

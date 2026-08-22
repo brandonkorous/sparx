@@ -56,6 +56,7 @@ import {
   useUpdateSite,
 } from './data';
 import { productCopy } from '../../lib/product';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 
 /** Modules a site can be told not to show. `builder` is absent on purpose — it
  *  is what BUILDS the site, so hiding it from one site is meaningless. */
@@ -75,11 +76,7 @@ const MODULE_LABELS: Record<string, string> = {
 /** A handle is the part of the web address that identifies this site, so it is
  *  lowercase, digits and hyphens — matching what api-rest derives from a name. */
 function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+  return slugifyWebSegment(value, 63);
 }
 
 function CreateSite({ ctx }: { ctx: SurfaceContext }) {
@@ -150,7 +147,7 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-xl flex-col gap-4">
           {isBuilderRequired(create.error) ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Adding another site needs the Builder module</AlertTitle>
                 <AlertDescription>
@@ -160,7 +157,7 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
               </AlertContent>
             </Alert>
           ) : create.isError && !handleError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create the site</AlertTitle>
                 <AlertDescription>Nothing was created. Try again in a moment.</AlertDescription>

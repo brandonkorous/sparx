@@ -56,7 +56,7 @@ export function QuoteDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <AlertContent>
               <AlertTitle>Could not load this quote</AlertTitle>
               <AlertDescription>
@@ -151,7 +151,7 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
           </div>
 
           {expired ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This quote has expired</AlertTitle>
                 <AlertDescription>

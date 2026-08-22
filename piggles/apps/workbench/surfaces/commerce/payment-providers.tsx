@@ -162,7 +162,13 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
             <>
               <Text className="text-sm">
                 {active && config.data?.isActive
-                  ? `You're set up with ${active.name} and can take card payments now. Switch to another provider below at any time.`
+                  ? active.id === 'manual'
+                    ? // Manual is the ONE active provider that takes no card. Saying it
+                      // does contradicted the row directly beneath — "No fee. No online
+                      // card processing" — in the same eyeful, and told a business the
+                      // opposite of the decision they had just made.
+                      `You're set up with ${active.name}. You take the money yourself — checkout places the order and nothing is charged online.`
+                    : `You're set up with ${active.name} and can take card payments now. Switch to another provider below at any time.`
                   : productCopy(
                       'commerce.payments.chooseIntro',
                       'Choose the service that takes your customers’ payments. sparx Pay is the fastest to start; you can also connect your own processor if you already have one.'

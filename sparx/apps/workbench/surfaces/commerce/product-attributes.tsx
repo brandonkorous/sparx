@@ -231,7 +231,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
           )}
 
           {typeMissing ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This product&apos;s kind is no longer defined</AlertTitle>
                 <AlertDescription>
@@ -243,7 +243,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
           ) : null}
 
           {!isPending && !isError && (types ?? []).length === 0 ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>No product kinds yet</AlertTitle>
                 <AlertDescription>

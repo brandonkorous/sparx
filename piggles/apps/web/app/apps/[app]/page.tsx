@@ -6,10 +6,12 @@ import { notFound } from 'next/navigation';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { badgeClasses, buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl, APP_BY_ID, APPS, appsInGroup, PRODUCT } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { APP_MARKETING } from '@/content/apps';
 import { PageHero } from '@/components/marketing/page-hero';
 import { AppFigure } from '@/components/marketing/hero/app-figure';
 import { GROUP_COPY } from '@/components/marketing/groups';
+import { AppChapters } from '@/components/marketing/app-chapters';
 import { CloseBand } from '@/components/marketing/close-band';
 
 // /apps/[app] — one page per app, fifteen of them.
@@ -74,7 +76,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', `app-${app.id}`)}
         >
-          Get Piggles — $49/month
+          Get Piggles — {PRICE_LABEL}/month
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
           All fifteen apps
@@ -113,6 +115,10 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
         </div>
       </Section>
 
+      {/* The parts of the app, for the ones six bullets do not cover. Most apps
+          have none and this renders nothing — see AppChapters. */}
+      <AppChapters chapters={copy.chapters} />
+
       {copy.photo ? (
         <Section>
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
@@ -132,8 +138,8 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
               </h2>
               <p className="mt-6 text-lg">
                 {app.label} is not an add-on, an upgrade or a thing you pay to unlock and get billed
-                for. It is in the $49 plan alongside the other fourteen, whether you open it every
-                morning or twice a year.
+                for. It is in the {PRICE_LABEL} plan alongside the other fourteen, whether you open
+                it every morning or twice a year.
               </p>
               <Link className={`${buttonClasses({ color: 'success' })} mt-6`} href="/pricing">
                 What actually changes the price
@@ -199,7 +205,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           end having read about Stock and needs an offer in front of them. A page
           that ends in the footer sends them back to the search results. */}
       <CloseBand
-        heading={`${app.label} is in the $49 plan. So are the other fourteen.`}
+        heading={`${app.label} is in the ${PRICE_LABEL} plan. So are the other fourteen.`}
         primary={{
           label: 'Start free for 14 days',
           href: accountUrl('signup', `app-${app.id}-close`),

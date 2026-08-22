@@ -220,7 +220,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {staleAfterFailure ? (
-          <Alert color="warning" variant="soft" className="m-2">
+          <Alert color="warning" className="m-2">
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>

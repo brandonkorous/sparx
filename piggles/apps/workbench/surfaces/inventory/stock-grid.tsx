@@ -454,7 +454,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
             Save {pending.edits.length}
           </Button>
           <Button
-            color="neutral"
+            color="danger"
             variant="outline"
             size="sm"
             onClick={() => {

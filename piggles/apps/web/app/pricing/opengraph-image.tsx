@@ -1,14 +1,15 @@
 import { OG_SIZE, renderOg } from '@piggles/brand/og';
 import { MASCOT_POSES } from '@piggles/mascot';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 
 export const runtime = 'nodejs';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
-export const alt = 'Piggles pricing — $49 a month, all fifteen apps';
+export const alt = `Piggles pricing — ${PRICE_LABEL} a month, all fifteen apps`;
 
 export default function Image() {
   return renderOg({
-    title: '$49 a month. All fifteen apps.',
+    title: `${PRICE_LABEL} a month. All fifteen apps.`,
     subtitle: 'No tiers, no per-app unlocks, and no upgrade button in the way of your work.',
     // The one money pose that belongs on a marketing card. DESIGN.md keeps her out
     // of a customer's OWN money moments — a failed payment, a tax filing, a payroll

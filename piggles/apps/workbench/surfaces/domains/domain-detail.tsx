@@ -198,7 +198,7 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not connect that domain</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

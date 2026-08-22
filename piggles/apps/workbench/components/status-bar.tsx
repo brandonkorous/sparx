@@ -38,6 +38,7 @@ import { faCircleExclamation, faSpinner } from '@fortawesome/pro-solid-svg-icons
 import { Icon } from '@piggles/ui';
 import { describeAgo, useActivity, NOTABLE_ACTIONS } from '../lib/api/activity';
 import { useActiveJobs } from '../lib/api/jobs';
+import type { PaneDescriptor } from '../lib/surfaces/descriptor';
 import { useWorkbench } from '../lib/workbench/context';
 import { useAgoTick, useDetachedWindows, useDirtyPanes, useLastSaved } from './status-bar-signals';
 import { SentimentChip } from './feedback/sentiment-chip';
@@ -52,6 +53,41 @@ import {
 } from './status/activity';
 import { GuideChip } from '../lib/tour/guide-chip';
 
+/** A panel's own name, for the unsaved chip. */
+function panelName(pane: PaneDescriptor): string {
+  return pane.title ?? 'a panel';
+}
+
+/**
+ * The unsaved DOCUMENTS, not the panels showing them.
+ *
+ * One page open in two panels is one document and one draft — editing in either
+ * changes both, and saving in either saves both. Counting panels announced "2
+ * unsaved changes" for a single unsaved page.
+ */
+function unsavedDocuments(dirty: readonly PaneDescriptor[]): PaneDescriptor[] {
+  const seen = new Set<string>();
+  return dirty.filter((pane) => {
+    const key = `${pane.surface}:${JSON.stringify(pane.params ?? {})}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/** What is not saved, named rather than counted while there is room to name it. */
+function unsavedLabel(docs: readonly PaneDescriptor[]): string {
+  const first = docs[0];
+  if (docs.length === 1 && first) return `Not saved: ${panelName(first)}`;
+  return `${String(docs.length)} not saved`;
+}
+
+function unsavedTooltip(docs: readonly PaneDescriptor[]): string {
+  const names = docs.map(panelName).join(', ');
+  if (docs.length === 1) return `${names} has work you have not saved. Click to go to it.`;
+  return `${names} have work you have not saved. Click to go to the first.`;
+}
+
 function subscribeOnline(listener: () => void): () => void {
   window.addEventListener('online', listener);
   window.addEventListener('offline', listener);
@@ -63,7 +99,7 @@ function subscribeOnline(listener: () => void): () => void {
 
 export function StatusBar() {
   const { controller } = useWorkbench();
-  const dirty = useDirtyPanes();
+  const unsaved = unsavedDocuments(useDirtyPanes());
   const detached = useDetachedWindows();
   const jobs = useActiveJobs();
   const lastSaved = useLastSaved();
@@ -178,7 +214,6 @@ export function StatusBar() {
       {latest ? (
         <Tooltip content={`${latest.subject ?? latest.title} · open the list`}>
           <Button
-            color="neutral"
             variant="ghost"
             size="xs"
             className="gap-1.5"
@@ -205,18 +240,18 @@ export function StatusBar() {
       ) : null}
 
       {/* Unsaved work — only speaks when there is something to say. */}
-      {dirty.length > 0 ? (
-        <Tooltip content="Click to go to the pane with unsaved changes">
+      {unsaved.length > 0 ? (
+        <Tooltip content={unsavedTooltip(unsaved)}>
           <Button
             color="warning"
             variant="soft"
             size="xs"
             onClick={() => {
-              const first = dirty[0];
+              const first = unsaved[0];
               if (first) controller.focusPane(first.id);
             }}
           >
-            {dirty.length === 1 ? '1 unsaved change' : `${String(dirty.length)} unsaved changes`}
+            {unsavedLabel(unsaved)}
           </Button>
         </Tooltip>
       ) : null}

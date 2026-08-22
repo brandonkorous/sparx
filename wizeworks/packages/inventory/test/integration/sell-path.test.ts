@@ -143,6 +143,12 @@ describe('sell-path seam — reserve · commit · reverse', () => {
     );
     expect(await levelOf(f)).toEqual({ onHand: 10, allocated: 4 });
 
+    // The fixture counted this variant, so the reserve above must have held
+    // something. Asserted rather than `!`-ed so a regression in the
+    // never-counted branch fails here instead of further down.
+    expect(hold).not.toBeNull();
+    if (!hold) throw new Error('unreachable');
+
     const orderId = crypto.randomUUID();
     const lines = [
       { variantId: f.variantId, quantity: 4, reservationId: hold.reservationId, lineKey: 'L1' },

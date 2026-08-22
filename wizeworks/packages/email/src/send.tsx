@@ -127,6 +127,11 @@ import {
   type DocumentSignatureRequestEmailProps,
 } from './templates/document-signature-request';
 import {
+  InvoiceSentEmail,
+  invoiceSentSubject,
+  type InvoiceSentEmailProps,
+} from './templates/invoice-sent';
+import {
   InvitationAcceptedEmail,
   invitationAcceptedSubject,
   type InvitationAcceptedEmailProps,
@@ -229,6 +234,7 @@ export type TemplateId =
   | 'email-domain-verified'
   // A tenant→customer document signing request (published from signature-mail.ts).
   | 'document-signature-request'
+  | 'invoice-sent'
   // Team / org membership.
   | 'invitation-accepted'
   | 'team-member-removed'
@@ -415,6 +421,13 @@ export type TemplateSend =
       template: 'document-signature-request';
       to: string;
       props: DocumentSignatureRequestEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'invoice-sent';
+      to: string;
+      props: InvoiceSentEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -919,6 +932,26 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'document-signature-request',
+      };
+    }
+    case 'invoice-sent': {
+      const element = wrap(<InvoiceSentEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: invoiceSentSubject(
+          input.props.documentLabel,
+          input.props.documentNumber,
+          input.props.fromName
+        ),
+        html,
+        text,
+        templateId: 'invoice-sent',
       };
     }
     case 'invitation-accepted': {

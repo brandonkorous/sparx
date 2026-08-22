@@ -42,7 +42,7 @@ import { FormSection } from '../../components/form-section';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 
 /** Registry module for this pane, so the brand draws Trade's own picture rather

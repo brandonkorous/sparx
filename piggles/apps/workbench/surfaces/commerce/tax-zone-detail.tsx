@@ -311,7 +311,7 @@ function ZoneEditor({
           )}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this place</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -534,7 +534,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
   return (
     <div className="flex flex-col gap-4">
       {rates.isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load the rate</AlertTitle>
             <AlertDescription>
@@ -587,7 +587,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
       )}
 
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not add this rate</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>

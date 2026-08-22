@@ -81,7 +81,7 @@ function CheckReport({ report }: { report: SiteCheckReport }) {
       {/* Coverage, next to the result. "Nothing to fix across 7 pages" on an
           eleven-page site read as a clean bill of health for the whole site. */}
       {missed.length ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           {missed.length === 1
             ? `We could not look at ${missed[0]?.name ?? 'one page'} — it has never been opened and saved, so there is nothing there to check yet.`
             : `We could not look at ${String(missed.length)} pages — ${missed.map((page) => page.name).join(', ')}. They have never been opened and saved, so there is nothing there to check yet.`}

@@ -69,7 +69,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
  *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.3.0';
+const BUNDLE_VERSION = '1.3.1';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -495,6 +495,19 @@ export async function emitServiceBundle(
         )
     );
 
+    // Emitting a bundle RENDERS ITS PREVIEW. That belongs here rather than in each
+    // generator because 90 of the 96 generators simply never called it — so no preview
+    // HTML existed, `bundle-media.mjs` had nothing to shoot, and every one of those
+    // templates fell back to a synthetic card: a flat colour block with a wordmark, in a
+    // gallery where the picture IS how a business owner chooses. A step a generator can
+    // forget is a step most generators will forget.
+    //
+    // Dynamically imported because `preview.ts` imports this module; a static import
+    // would be a cycle.
+    const { writeServicePreview } = await import('./preview');
+    const { path: previewPath } = await writeServicePreview(spec, resolved);
+    console.log(`· preview → ${previewPath}`);
+
     return { dir, theme: resolved };
 }
 
@@ -570,6 +583,16 @@ function serviceEmails(_spec: ServiceSiteSpec): Record<string, unknown>[] {
 export function price(cents: number): string {
     const dollars = cents / 100;
     return Number.isInteger(dollars) ? `$${dollars}` : `$${dollars.toFixed(2)}`;
+}
+
+/** A MENU price as it goes on the board. Menu data is authored as the bare number a
+ *  kitchen writes ('15', '6.50'); the currency belongs to the render, once, rather than
+ *  to 146 hand-typed strings. Every other blueprint in the catalog writes "$15" — a menu
+ *  that says "145" beside "Omakase — twelve courses" is naming no currency at all, and
+ *  the tenant who edits the number has no symbol to keep. */
+export function menuPrice(amount: string): string {
+    const trimmed = amount.trim();
+    return /^[$£€¥]/.test(trimmed) ? trimmed : `$${trimmed}`;
 }
 
 /** Minutes → a human duration, e.g. 90 → "1 hr 30 min", 45 → "45 min". */

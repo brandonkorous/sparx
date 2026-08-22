@@ -38,6 +38,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
+  faArrowsRotate,
   faCheck,
   faEye,
   faEyeSlash,
@@ -53,10 +54,12 @@ import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { contentErrorMessage, entryStatusState } from './data';
+import { ShippingPolicyNotice } from './shipping-policy-notice';
 import {
   legalItemStatus,
   legalKindBlurb,
   useAcknowledgeLegalPage,
+  useTakeStarterWording,
   useAddPlacement,
   useInstantiateLegalPage,
   useLegalChecklist,
@@ -87,9 +90,11 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const instantiate = useInstantiateLegalPage();
   const acknowledge = useAcknowledgeLegalPage();
+  const takeStarter = useTakeStarterWording();
 
   const items = checklist.data?.items ?? [];
   const completeness = checklist.data?.completeness;
+  const shipping = checklist.data?.shipping;
   const requiredItems = items.filter((item) => item.required);
   const optionalItems = items.filter((item) => !item.required);
 
@@ -127,6 +132,46 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
         toast.add({
           title: 'Could not add this page',
           description: contentErrorMessage(error, 'Nothing was created.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  /**
+   * Take the newer starter wording.
+   *
+   * The confirm has to say two different things because two different things are
+   * at stake. A page she has never edited loses nothing. A page she HAS edited
+   * loses her words from the live page — recoverable from the page's history,
+   * which is why the sentence says so rather than just warning her off.
+   */
+  const takeWording = async (item: ChecklistItem) => {
+    const entry = item.entry;
+    if (!entry) return;
+    const live = entry.status === 'published';
+    const ok = await confirm({
+      title: `Use the new wording for your ${item.title.toLowerCase()}?`,
+      description: `Everything on this page is replaced with the current starter wording${
+        live ? ', and your live page changes straight away' : ''
+      }. What is on it now is kept in the page’s history, so you can get it back. You will need to read the new wording and mark it reviewed.`,
+      confirmLabel: 'Use the new wording',
+      cancelLabel: 'Leave it as it is',
+      color: 'warning',
+    });
+    if (!ok) return;
+    takeStarter.mutate(entry.id, {
+      onSuccess: () => {
+        toast.add({
+          title: `${item.title} now uses the new wording`,
+          description: 'Read it through and mark it reviewed.',
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not update the wording',
+          description: contentErrorMessage(error, 'The page is unchanged.'),
           type: 'error',
         });
       },
@@ -224,6 +269,8 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Alert>
               ) : null}
 
+              {shipping?.missingPolicy ? <ShippingPolicyNotice because={shipping.because} /> : null}
+
               {requiredItems.length > 0 ? (
                 <FormSection
                   title="Pages you should have"
@@ -239,7 +286,11 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                       void acknowledgePage(item);
                     }}
                     addingKind={instantiate.isPending ? instantiate.variables : undefined}
+                    onTakeWording={(item) => {
+                      void takeWording(item);
+                    }}
                     acknowledgingId={acknowledge.isPending ? acknowledge.variables : undefined}
+                    takingWordingId={takeStarter.isPending ? takeStarter.variables : undefined}
                   />
                 </FormSection>
               ) : null}
@@ -259,7 +310,11 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                       void acknowledgePage(item);
                     }}
                     addingKind={instantiate.isPending ? instantiate.variables : undefined}
+                    onTakeWording={(item) => {
+                      void takeWording(item);
+                    }}
                     acknowledgingId={acknowledge.isPending ? acknowledge.variables : undefined}
+                    takingWordingId={takeStarter.isPending ? takeStarter.variables : undefined}
                   />
                 </FormSection>
               ) : null}
@@ -280,10 +335,13 @@ interface ChecklistRowsProps {
   onAdd: (item: ChecklistItem) => void;
   onEdit: (item: ChecklistItem, event: { shiftKey: boolean; altKey: boolean }) => void;
   onAcknowledge: (item: ChecklistItem) => void;
+  onTakeWording: (item: ChecklistItem) => void;
   /** The legalKind currently being instantiated, so only its row shows a spinner. */
   addingKind: string | undefined;
   /** The entry id currently being acknowledged. */
   acknowledgingId: string | undefined;
+  /** The entry id currently taking the newer starter wording. */
+  takingWordingId: string | undefined;
 }
 
 function ChecklistRows({
@@ -291,8 +349,10 @@ function ChecklistRows({
   onAdd,
   onEdit,
   onAcknowledge,
+  onTakeWording,
   addingKind,
   acknowledgingId,
+  takingWordingId,
 }: ChecklistRowsProps) {
   return (
     <ul className="flex flex-col">
@@ -335,6 +395,19 @@ function ChecklistRows({
                 </Button>
               ) : (
                 <>
+                  {status.stale ? (
+                    <Button
+                      size="sm"
+                      color="warning"
+                      loading={takingWordingId === entry.id}
+                      onClick={() => {
+                        onTakeWording(item);
+                      }}
+                    >
+                      <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+                      Use the new wording
+                    </Button>
+                  ) : null}
                   {showAcknowledge ? (
                     <Button
                       size="sm"
@@ -481,7 +554,7 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
       description="The legal pages people can reach from the footer at the bottom of every page."
     >
       {placements.isError ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Could not load your footer links</AlertTitle>
             <AlertDescription>This is a problem reaching the server.</AlertDescription>

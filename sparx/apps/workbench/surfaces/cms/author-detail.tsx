@@ -255,7 +255,7 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not add this author</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -303,7 +303,7 @@ function EditAuthor({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     // A failed load replaces the form — never an empty form beside a dead Save.
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this author</AlertTitle>
             <AlertDescription>

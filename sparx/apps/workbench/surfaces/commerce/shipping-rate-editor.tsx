@@ -219,7 +219,7 @@ function RateComposer({
       </div>
 
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not add this option</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>
@@ -552,7 +552,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
   return (
     <div className="flex flex-col gap-3">
       {rates.isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load the delivery options</AlertTitle>
             <AlertDescription>
@@ -613,7 +613,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
 
       {adding ? (
         profileList.length === 0 ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>Add a product group first</AlertTitle>
               <AlertDescription>

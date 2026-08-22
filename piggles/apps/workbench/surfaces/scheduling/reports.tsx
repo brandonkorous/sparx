@@ -567,7 +567,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
         </Text>
 
         {noneInWindow ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>No bookings fell in this period</AlertTitle>
               <AlertDescription>

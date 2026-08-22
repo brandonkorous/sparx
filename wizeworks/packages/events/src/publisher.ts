@@ -26,6 +26,17 @@ export interface PublisherLogger {
 
 export interface Publisher {
   publish<T>(event: SparxEvent<T>): Promise<void>;
+  /**
+   * Flush and release the transport's connection.
+   *
+   * OPTIONAL, and absent on most transports on purpose: a long-lived service
+   * never closes its publisher, and only NATS holds a socket that keeps the
+   * event loop alive. It exists for the callers that are not servers — an ops
+   * script, a one-shot job — which otherwise publish correctly and then hang
+   * forever with nothing left to do. That is worse than it sounds in a
+   * workflow, where "hangs" reads as "still working" until the job times out.
+   */
+  close?(): Promise<void>;
 }
 
 class CloudPubSubPublisher implements Publisher {

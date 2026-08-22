@@ -1,7 +1,7 @@
 'use client';
 
 // The two row shapes the shortcut lists are made of: one screen, and one whole
-// list standing in for itself while the rail is collapsed.
+// list standing in for itself on the rail.
 
 import { Icon } from '@piggles/ui';
 import { faXmark } from '@fortawesome/pro-solid-svg-icons';
@@ -70,24 +70,29 @@ export function SurfaceRow({
   );
 }
 
-/** The collapsed stand-in for a whole list: one row that browses it into the
- *  panel. Same shape as an app row, so it reads as one. */
+/** A whole list standing in for itself: one row that browses it into the panel.
+ *  Same shape as an app row, so it reads as one — at every rail width.
+ *
+ *  The tooltip only exists to name a nameless glyph, so it goes the moment the
+ *  label is showing; repeating a word already on screen is noise, not help. */
 export function ListRow({
   label,
   glyph,
   outline,
   active,
+  expanded,
   onClick,
 }: {
   label: string;
   glyph: Parameters<typeof Icon>[0]['glyph'];
   outline?: boolean;
   active: boolean;
+  expanded: boolean;
   onClick: () => void;
 }) {
   return (
     <SidebarGroup>
-      <Tooltip content={label} side="right">
+      <Tooltip content={label} side="right" disabled={expanded}>
         <SidebarItem
           icon={<Icon glyph={glyph} outline={outline} className="size-5" aria-hidden />}
           aria-label={label}

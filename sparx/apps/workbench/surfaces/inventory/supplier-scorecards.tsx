@@ -301,7 +301,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
           real number of suppliers, say WHY once here rather than leaving the
           reader to infer that half the screen is broken. */}
       {unscored > 0 && !scoredOnly ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>
               {plural(unscored, 'supplier has', 'suppliers have')} too little history to grade

@@ -3,9 +3,10 @@
 import { requireSession } from '@wizeworks/auth';
 import { withTenant } from '@wizeworks/db';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
-import { APPS } from '@piggles/config';
+import { railAppIds } from '@piggles/config';
 import { furnishTenant } from '@/lib/furnish';
 import { isKnownTrade } from '@/lib/trades';
+import { claimBusinessSlug } from '@/lib/business-slug';
 import { text, textAll } from '@/lib/form';
 
 // Onboarding, which is two questions long.
@@ -86,20 +87,6 @@ export interface OnboardingState {
   done?: string;
 }
 
-/**
- * The rail this answer earns: every app in a group they ticked, plus the ones
- * that start on every rail.
- *
- * Ticking NOTHING must still leave a usable product, which is why the
- * `defaultEnabled` half is unconditional — the practical test at the top of this
- * file is that a business who answers nothing is still three taps from selling.
- */
-function railApps(groups: PigglesGroup[]): string[] {
-  return APPS.filter((app) => app.defaultEnabled || groups.includes(app.group)).map(
-    (app) => app.id
-  );
-}
-
 export async function completeOnboarding(
   _prev: OnboardingState,
   formData: FormData
@@ -144,7 +131,7 @@ export async function completeOnboarding(
       // Piggles keys are namespaced for the same reason.
       const current = await tx.tenant.findUniqueOrThrow({
         where: { id: session.user.tenantId },
-        select: { settings: true },
+        select: { settings: true, slug: true },
       });
       const settings =
         current.settings && typeof current.settings === 'object' && !Array.isArray(current.settings)
@@ -185,7 +172,7 @@ export async function completeOnboarding(
             // unticked apps locked doors on a screen promising the opposite.
             rail: {
               ...((settings.rail as Record<string, unknown> | undefined) ?? {}),
-              apps: railApps(does),
+              apps: railAppIds(does),
             },
             piggles: {
               ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
@@ -216,6 +203,19 @@ export async function completeOnboarding(
       if (renamed.count === 0) {
         throw new Error(`onboarding: no primary site renamed for tenant ${session.user.tenantId}`);
       }
+
+      // The WEB ADDRESS, which is the third thing the business name decides and
+      // the one that was being left behind. A tenant is born with a generated
+      // placeholder (`quiet-haven-3783`) for the onboarding "Workspace" step to
+      // personalise — a step Piggles does not have — so without this a bakery
+      // called Thistle & Rye lived at `quiet-haven-3783.piggles.site` forever.
+      // Issue #010.
+      //
+      // Inside the same transaction as the two renames on purpose: a business
+      // named "Thistle & Rye" whose address still says quiet-haven is precisely
+      // the split being fixed. Best-effort by design — a taken or unusable slug
+      // keeps the placeholder rather than failing a signup (lib/business-slug.ts).
+      await claimBusinessSlug(tx, session.user.tenantId, businessName, current.slug);
     });
   } catch {
     return { error: 'We could not save that just now. Please try again.' };

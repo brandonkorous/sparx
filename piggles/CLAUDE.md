@@ -131,9 +131,10 @@ bought. Enabling an app changes the **workspace**, not the **price**.
 sparx charges per active module. **Piggles does not, and must never grow tiers.**
 One flat plan, every app included, capacity limits protecting the economics:
 
-- $49/month, 1 business, 1 location, 1 primary site, 3 users included
+- $99/month, 1 business, 1 location, 1 primary site, 3 users included
 - capacity metered on storage, email volume, contacts, and seats
 - no Basic/Pro/Enterprise unless product strategy changes explicitly
+- a founding-member discount is a COUPON on that one price, never a second plan
 
 Three consequences that are easy to miss:
 

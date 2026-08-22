@@ -9,7 +9,8 @@ This package is the **foundation tables only** — tenants, staff users, session
 ## First-time setup
 
 ```bash
-# 1. Bring up local Postgres 18 (matches Cloud SQL production).
+# 1. Bring up the local data plane: Postgres 18, Typesense, and NATS JetStream.
+#    (The command is still called db:up; it has grown past the database.)
 pnpm db:up
 
 # 2. Copy the env template.
@@ -24,6 +25,25 @@ pnpm db:seed
 ```
 
 Subsequent runs only need `pnpm db:up`.
+
+### What comes up, and why the broker is one of them
+
+| Container         | Port       | What breaks without it                                                                                                       |
+| ----------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `sparx-postgres`  | 5544       | Everything.                                                                                                                  |
+| `sparx-typesense` | 8108       | Search reads return nothing — including a shop's own product listing page, which reads the index and not the products table. |
+| `sparx-nats`      | 4222, 8222 | Every event is **silently discarded**.                                                                                       |
+
+That third row was the state of local development until 2026-08-21, and it is
+worth stating plainly because nothing about it looked wrong. With `EVENT_BROKER`
+unset, `resolveTransport` returns the `log` transport, which writes a line and
+drops the event; `publishEvent()` then reports success to its caller. So
+publishing a product left the search index untouched (empty shop page, full
+console), placing an order rendered no confirmation email, and verifying a
+domain started nothing — with no error anywhere in the chain. `EVENT_BROKER=nats`
+is now set in each service's `.env.example`, and the consumers run in
+`wizeworks/services/event-worker`, which had no `.env.example` at all and had
+therefore never started locally. `pnpm check:service-env` is the guard.
 
 ## Applying a migration
 

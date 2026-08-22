@@ -165,7 +165,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create this</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -490,7 +490,7 @@ function ManageBody({
         }
         refresh={
           /* This pane reads TWO queries — the taxonomy's settings and its terms —
-            so one refresh reloads both. */
+                      so one refresh reloads both. */
           <RefreshButton
             isFetching={isFetching || termsFetching}
             updatedAt={terms ? termsUpdatedAt : undefined}
@@ -667,7 +667,7 @@ function TermsSection({
       />
 
       {isError ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Could not load the labels</AlertTitle>
             <AlertDescription>This is a problem reaching the server.</AlertDescription>
@@ -1087,7 +1087,7 @@ function AddTermForm({
         </Button>
       </div>
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertDescription>{failure}</AlertDescription>
           </AlertContent>

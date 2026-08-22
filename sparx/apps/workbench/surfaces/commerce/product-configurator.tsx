@@ -665,7 +665,7 @@ function TryItPanel({
       description="Answer the questions the way a customer would. Nothing is bought and nothing is saved — this just runs your rules and shows what they produce."
     >
       {stale ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This tries the saved version</AlertTitle>
             <AlertDescription>
@@ -969,7 +969,7 @@ function TemplateEditor({
           in the pane toolbar. A Save floating above a form in a dock is
           ambiguous about which of the two things around it it belongs to. */}
       {blocked !== null && dirty ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Not ready to save</AlertTitle>
             <AlertDescription>{blocked}</AlertDescription>
@@ -1489,7 +1489,7 @@ function ConfiguratorBody({
         <div className={COLUMN}>
           <FollowingNotice scope={scope} />
           {draft !== null ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Not saved yet</AlertTitle>
                 <AlertDescription>

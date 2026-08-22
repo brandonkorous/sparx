@@ -195,7 +195,7 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
           </Text>
 
           {cryptoOff ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Calendar sync is not set up yet</AlertTitle>
                 <AlertDescription>

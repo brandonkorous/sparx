@@ -16,6 +16,31 @@
 // Consigned stock is somebody else's asset and entirely sellable — being able to
 // sell it is the whole reason to hold it — so it counts here and is excluded
 // from valuation instead. The asymmetry is the feature.
+//
+// ── NO LEVEL ROWS IS NOT A COUNT OF ZERO ────────────────────────────────────
+//
+// A variant with NO inventory_levels row anywhere has never been counted. That
+// is the absence of a measurement, not a measurement of nothing, and the two
+// must not render the same — so it takes the untracked path exactly as a
+// module-off tenant does.
+//
+// This was not a subtle edge. Nothing in the product-creation path writes a
+// level row: they appear only when somebody deliberately sets stock (levels.ts,
+// stock-grid.ts) or from a seed. So EVERY product a business types in starts
+// with zero rows, and `inventory_policy` defaults to `deny` — which summed to
+// `available: 0, inStock: false`. A bakery entered ten products, saw all ten
+// listed as On sale in her console, and her live shop told every visitor that
+// every single one was **Sold out**. She had bread on the counter. Nothing on
+// either screen connected the two, and there was no way to find the cause from
+// where she was standing.
+//
+// It is worse on a brand that includes every app in one flat price, because
+// then the inventory module is ON for everybody and this is not an edge case —
+// it is what happens to every business on their first day.
+//
+// The rule that keeps this honest, and the ONE thing to preserve if this is
+// ever revisited: a variant becomes stock-managed by being COUNTED, not by
+// existing. Once one level row exists, zero means zero and `deny` means deny.
 
 export interface AvailabilityLevel {
   onHand: number;
@@ -52,6 +77,11 @@ export function computeAvailability(
   opts: { inventoryActive: boolean }
 ): VariantAvailability {
   if (!opts.inventoryActive) {
+    return { available: null, inStock: true, tracked: false };
+  }
+  // Never counted → untracked. Same answer as a module-off tenant, and for the
+  // same reason: there is no number here to be a shortage of. See the header.
+  if (levels.length === 0) {
     return { available: null, inStock: true, tracked: false };
   }
   const available = levels.reduce(

@@ -282,7 +282,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Field>
 
           {minAmountCents === 0 ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This will hold every single order</AlertTitle>
                 <AlertDescription>

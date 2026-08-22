@@ -231,7 +231,7 @@ function Conversation({
   if (thread.isError || !thread.data || thread.data.length === 0) {
     return (
       <div className="p-4">
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not open this conversation</AlertTitle>
             <AlertDescription>

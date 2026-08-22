@@ -677,7 +677,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
                 </AlertContent>
               </Alert>
             ) : (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>
                     <TriangleAlert className="mr-2 inline size-4" aria-hidden />

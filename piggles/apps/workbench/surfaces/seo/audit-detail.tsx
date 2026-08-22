@@ -196,7 +196,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
         }
         refresh={
           /* ALWAYS the last child — a fresh read here re-scores the page, so this
-            IS "check again". Carries ml-auto as the only right-hand control. */
+                      IS "check again". Carries ml-auto as the only right-hand control. */
           <RefreshButton
             className="ml-auto"
             isFetching={isFetching}
@@ -235,7 +235,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                 wrong the engine returns null, and we say so with a success note
                 rather than a hollow prompt. */}
             {card.fixFirst ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <Icon glyph={faLightbulb} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>Fix this first</AlertTitle>

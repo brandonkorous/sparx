@@ -29,7 +29,11 @@ import { setGatewayCredentialReader, type GatewayCredentials } from './credentia
 import { AuthorizeNetGateway } from './gateways/authorize-net';
 import { PayPalGateway } from './gateways/paypal';
 import { SquareGateway } from './gateways/square';
-import { GATEWAY_CATALOG } from './catalog';
+import { gatewayCatalog } from './catalog';
+
+// Resolved with no brand, which is the default brand — the capability assertions
+// below are about SHAPE, and shape does not vary by brand.
+const CATALOG = gatewayCatalog();
 
 /* ── Harness ──────────────────────────────────────────────────────────────── */
 
@@ -115,17 +119,17 @@ describe('gateways that claim a vault have one', () => {
   it.each(['sparx_pay', 'stripe_direct', 'square', 'authorize_net', 'paypal'])(
     '%s reports storedMethods true',
     (id) => {
-      expect(GATEWAY_CATALOG.find((g) => g.id === id)?.capabilities.storedMethods).toBe(true);
+      expect(CATALOG.find((g) => g.id === id)?.capabilities.storedMethods).toBe(true);
     }
   );
 
   it.each(['first_pay', 'custom', 'manual'])('%s honestly reports it cannot vault', (id) => {
-    expect(GATEWAY_CATALOG.find((g) => g.id === id)?.capabilities.storedMethods).toBe(false);
+    expect(CATALOG.find((g) => g.id === id)?.capabilities.storedMethods).toBe(false);
   });
 
   it('no longer lists PayPal as unbuilt', () => {
     // The adapter exists, so the catalog must not tell a tenant to wait for it.
-    expect(GATEWAY_CATALOG.find((g) => g.id === 'paypal')?.availability).toBeUndefined();
+    expect(CATALOG.find((g) => g.id === 'paypal')?.availability).toBeUndefined();
   });
 });
 

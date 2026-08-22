@@ -406,7 +406,7 @@ function BundleEditor({
           )}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this bundle</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

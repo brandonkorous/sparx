@@ -183,7 +183,7 @@ export function AddToCart({ merchantSlug, merchantName, variants, currency }: Ad
       ) : null}
 
       {conflict ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Start a new cart?</AlertTitle>
             <AlertDescription>

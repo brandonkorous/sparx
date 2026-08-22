@@ -205,7 +205,7 @@ function LockedAutomation({
             <Text className="text-sm">{automation.description}</Text>
           ) : null}
 
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>
                 {productCopy('automations.badge.managed', 'Managed by sparx')}

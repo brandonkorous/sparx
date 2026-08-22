@@ -183,6 +183,25 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
     expiresAt: new Date('2026-09-01T00:00:00Z').toISOString(),
     signingUrl: 'https://rosasflowers.com/sign/abc',
   },
+  'invoice-sent': {
+    billToName: 'Ferrous Coffee Bar',
+    fromName: 'Rosa Flowers',
+    documentLabel: 'Invoice',
+    documentNumber: 'INV-000148',
+    total: 624,
+    balance: 424,
+    currency: 'USD',
+    dueAt: new Date('2026-09-04T00:00:00Z').toISOString(),
+    lines: [
+      { title: 'Country sourdough, whole loaf', subtitle: '48 × $8.50', amount: '$408.00' },
+      { title: 'Seeded rye', subtitle: '24 × $9.00', amount: '$216.00' },
+    ],
+    summary: [
+      { label: 'Subtotal', value: '$624.00' },
+      { label: 'Already paid', value: '-$200.00' },
+    ],
+    note: 'August standing order: four weeks. 12 sourdough, 6 rye, each week.',
+  },
   'invitation-accepted': {
     inviterName: 'Rosa',
     inviteeName: 'Dev Patel',

@@ -44,6 +44,7 @@ import {
 import { useDragCargo, useDragSource, useDropZone } from '../drag/pointer-drag';
 import { dropPosition, resolveDropTarget, siblingAxis, type Point } from './drop';
 import { boxOf, idOfElement, nodeElementAt, siblingBoxes } from './hit';
+import { useInlineText } from './use-inline-text';
 import { renderNode, type DropHint, type RenderContext } from './render-node';
 
 /** The MIME type a palette drag carries its node under. */
@@ -161,6 +162,22 @@ export function Canvas({
   const cargo = useDragCargo();
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
 
+  const editable = useCallback(
+    (id: string | undefined): boolean => Boolean(id && (!editableIds || editableIds.has(id))),
+    [editableIds]
+  );
+
+  // Typing into the page itself. Everything about it — which nodes take a caret,
+  // what Enter and Escape mean, how a paste is flattened — lives in the hook.
+  const text = useInlineText({
+    frameRef,
+    container: scroller,
+    root: doc.root,
+    editable,
+    select,
+    apply,
+  });
+
   const ctx: RenderContext = {
     host,
     symbols: resolution.symbols,
@@ -168,13 +185,9 @@ export function Canvas({
     hoverId,
     editableIds,
     dropHint,
+    editingId: text.editingId,
     liftedId: cargo?.surface === surface ? (cargo.moveId ?? null) : null,
   };
-
-  const editable = useCallback(
-    (id: string | undefined): boolean => Boolean(id && (!editableIds || editableIds.has(id))),
-    [editableIds]
-  );
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -188,11 +201,14 @@ export function Canvas({
       const frame = frameRef.current;
       if (!frame) return;
       const id = idOfElement(nodeElementAt(event.target, frame));
+      // A click inside the words being typed is the author moving their caret,
+      // not choosing a different block.
+      if (id && id === text.editingId) return;
       // Clicking the chrome, or the padding around the page, clears the selection —
       // which is what makes the inspector's document-level tabs reachable.
       select(editable(id) && id ? [id] : []);
     },
-    [editable, select]
+    [editable, select, text.editingId]
   );
 
   const onPointerMove = useCallback(
@@ -209,6 +225,12 @@ export function Canvas({
     (event: DragEvent<HTMLDivElement>) => {
       const frame = frameRef.current;
       if (!frame) return;
+      // Dragging across words is how a mouse selects them. While a node is being
+      // typed into, that gesture belongs to the caret rather than to the block.
+      if (text.editingId) {
+        event.preventDefault();
+        return;
+      }
       const id = idOfElement(nodeElementAt(event.target, frame));
       if (!editable(id) || !id) {
         event.preventDefault();
@@ -224,7 +246,7 @@ export function Canvas({
       // Firefox refuses to start a drag with an empty payload.
       event.dataTransfer.setData('text/plain', id);
     },
-    [doc.root, editable]
+    [doc.root, editable, text.editingId]
   );
 
   /**
@@ -331,13 +353,14 @@ export function Canvas({
     (event: { target: EventTarget | null }): { surface: string; moveId: string } | null => {
       const frame = frameRef.current;
       if (!frame) return null;
+      if (text.editingId) return null;
       const id = idOfElement(nodeElementAt(event.target, frame));
       if (!editable(id) || !id) return null;
       const node = findNode(doc.root, id);
       if (!node || node.locked) return null;
       return { surface, moveId: id };
     },
-    [doc.root, editable, surface]
+    [doc.root, editable, surface, text.editingId]
   );
   const dragSource = useDragSource(liftFrom);
 
@@ -356,10 +379,15 @@ export function Canvas({
   return (
     /* A click here SELECTS a node on a design surface, and the keyboard route to
        the same thing is the Layers rail beside it — a real `role="tree"` with
-       arrow keys, Enter and F2 — plus the pane's own shortcuts. A key handler on
-       this div would put a second, worse route to the same nodes in the tab
-       order, which is why the rule is answered rather than obeyed here. */
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
+       arrow keys, Enter and F2 — plus the pane's own shortcuts. Selection is
+       deliberately NOT reachable from this div's own key handler: that would put
+       a second, worse route to the same nodes in the tab order.
+
+       The `onKeyDown` here does something else entirely — it belongs to the
+       caret, and only ever fires for a node already being typed into, where
+       Enter and Escape have to mean finish and put-it-back rather than reaching
+       the pane's block shortcuts. */
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       // `application`, because that is what it is: a design surface where the
       // arrow keys, Delete and ⌘Z mean what the editor says rather than what a
@@ -370,8 +398,16 @@ export function Canvas({
       // `--studio-*` are declared HERE, outside `data-studio-canvas`, so they carry
       // the console's colors rather than the theme being edited. See `stateClasses`.
       ref={setScroller}
-      className={`bg-base-200 h-full min-h-0 overflow-auto p-6 ${CHROME_VARS}`}
+      // Focusable only in code (-1, so it stays out of the tab order): finishing
+      // an inline edit hands focus back here, which is what keeps the pane's own
+      // shortcuts alive afterwards.
+      tabIndex={-1}
+      className={`bg-base-200 h-full min-h-0 overflow-auto p-6 outline-none ${CHROME_VARS}`}
       onClick={onClick}
+      onDoubleClick={text.onDoubleClick}
+      onKeyDown={text.onKeyDown}
+      onBlur={text.onBlur}
+      onPaste={text.onPaste}
       onMouseMove={onPointerMove}
       onMouseLeave={() => setHoverId(null)}
       {...dragSource}

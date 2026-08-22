@@ -78,6 +78,11 @@ import type {
   OperatorSiteDetail,
   OperatorSiteStatusInput,
   OperatorSiteStatusResult,
+  OperatorAnnouncement,
+  OperatorAnnouncementInput,
+  OperatorAnnouncementPatch,
+  OperatorAnnouncementListParams,
+  OperatorAnnouncementListResult,
 } from './types';
 
 /** Shared-secret header — mirrors the existing `X-sparx-Internal-*-Token`
@@ -414,6 +419,27 @@ export interface OperatorApiClient {
     operatorId: string,
     signal?: AbortSignal
   ): Promise<OperatorSiteStatusResult>;
+  // ── Announcements (the header notice bar) ──
+  /** Every announcement, both brands, newest first — drafts and expired ones
+   *  included. The console is where a notice is written and retired, so it must
+   *  show the ones that are not on screen. */
+  listAnnouncements(
+    params: OperatorAnnouncementListParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorAnnouncementListResult>;
+  createAnnouncement(
+    input: OperatorAnnouncementInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorAnnouncement>;
+  updateAnnouncement(
+    id: string,
+    input: OperatorAnnouncementPatch,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorAnnouncement>;
+  deleteAnnouncement(id: string, operatorId: string, signal?: AbortSignal): Promise<void>;
 }
 
 export function createOperatorApiClient(config: OperatorApiClientConfig): OperatorApiClient {
@@ -762,6 +788,36 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
         `/internal/operator/sites/${encodeURIComponent(siteId)}/status`,
         { method: 'PATCH', body: input, operatorId, signal }
       ),
+    listAnnouncements: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.brand) qs.set('brand', params.brand);
+      if (params.surface) qs.set('surface', params.surface);
+      const query = qs.toString();
+      return request<OperatorAnnouncementListResult>(
+        `/internal/operator/announcements${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    createAnnouncement: (input, operatorId, signal) =>
+      request<OperatorAnnouncement>('/internal/operator/announcements', {
+        method: 'POST',
+        body: input,
+        operatorId,
+        signal,
+      }),
+    updateAnnouncement: (id, input, operatorId, signal) =>
+      request<OperatorAnnouncement>(`/internal/operator/announcements/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: input,
+        operatorId,
+        signal,
+      }),
+    deleteAnnouncement: (id, operatorId, signal) =>
+      request<void>(`/internal/operator/announcements/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        operatorId,
+        signal,
+      }),
   };
 }
 

@@ -7,6 +7,7 @@
 // each keeping their own copy of "which app is browsed" is how they drift.
 
 import type { Dispatch, SetStateAction } from 'react';
+import { HeaderNotice, type HeaderNoticeData } from '@piggles/ui';
 import { WorkbenchProvider } from '@/lib/workbench/context';
 import { StudioSessionProvider } from '@/lib/studio/provider';
 import { BackNavigation } from '@/lib/workbench/nav-history';
@@ -30,6 +31,10 @@ import { ChromeColumn } from './chrome-column';
 import { Topbar } from './topbar';
 
 interface DesktopShellProps {
+  /** What WizeWorks is announcing on this surface, or null. Marketing notices
+   *  are not written for the console, so this is planned work, an outage, or a
+   *  change landing tomorrow — the things somebody mid-task needs told. */
+  notice: HeaderNoticeData | null;
   windowId: string;
   userName: string;
   userEmail: string;
@@ -60,6 +65,7 @@ interface DesktopShellProps {
 }
 
 export function DesktopShell({
+  notice,
   windowId,
   userName,
   userEmail,
@@ -92,6 +98,12 @@ export function DesktopShell({
       <FeedbackProvider theme={theme} activeSite={activeSite}>
         <StudioSessionProvider>
           <div className="bg-base-300 flex h-dvh w-full flex-col overflow-hidden">
+            {/* ABOVE the top bar, inside the h-dvh column — so the bar takes its
+                own height off the shell rather than pushing the dock below the
+                fold. It renders nothing when there is nothing to say, which is
+                most of the time, and the layout is identical in that case. */}
+            <HeaderNotice notice={notice} />
+
             {/* Every chrome region is crash-isolated from the panels and from
               each other — the panels hold the unsaved work. */}
             <ChromeBoundary

@@ -115,6 +115,8 @@ export {
   type DocumentSignatureRequestEmailProps,
 } from './document-signature-request';
 
+export { InvoiceSentEmail, invoiceSentSubject, type InvoiceSentEmailProps } from './invoice-sent';
+
 export {
   InvitationAcceptedEmail,
   invitationAcceptedSubject,

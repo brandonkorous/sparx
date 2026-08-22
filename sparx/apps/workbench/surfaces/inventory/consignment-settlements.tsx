@@ -104,7 +104,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
       </PaneToolbar>
 
       {unpricedTotal > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(unpricedTotal, 'unit', 'units')} sold with no cost recorded

@@ -222,7 +222,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
       ) : null}
 
       {data.currentReorderPoint === null && data.computedReorderPoint !== null ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Nothing will warn you about this item</AlertTitle>
             <AlertDescription>

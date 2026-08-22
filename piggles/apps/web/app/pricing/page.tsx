@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Table } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl, PRODUCT } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { PriceFigure } from '@/components/marketing/hero/price-figure';
 import { WhatYouPay } from '@/components/marketing/what-you-pay';
@@ -20,10 +21,10 @@ import { CloseBand } from '@/components/marketing/close-band';
 //
 // ── THE PRICE IS STATED TWICE, NOT THREE TIMES ──────────────────────────────
 //
-// The hero said $49 and then a card three lines below said $49 again, with the
+// The hero said the price and then a card three lines below said it again, with the
 // same button under it. Repeating a number is not emphasis; it is the page
 // having nothing to add. <WhatYouPay> now carries the price and the call to
-// action, because it is the one place on the page where $49 is standing next to
+// action, because it is the one place on the page where the price is standing next to
 // something — so "What you get for it" went back to being what it says it is: a
 // sentence and the allowance table, full width.
 //
@@ -45,8 +46,7 @@ import { CloseBand } from '@/components/marketing/close-band';
 
 export const metadata: Metadata = {
   title: 'Pricing',
-  description:
-    'Piggles is $49 a month with all fifteen apps included. No tiers, no per-feature unlocks. Your bill changes when your business needs more room, not when you switch an app on.',
+  description: `Piggles is ${PRICE_LABEL} a month with all fifteen apps included. No tiers, no per-feature unlocks. Your bill changes when your business needs more room, not when you switch an app on.`,
 };
 
 const INCLUDED = [
@@ -116,7 +116,7 @@ export default function PricingPage() {
   return (
     <>
       <PageHero
-        heading="$49 a month. All fifteen apps. No upgrade buttons."
+        heading={`${PRICE_LABEL} a month. All fifteen apps. No upgrade buttons.`}
         lede="You are not charged for what the software is allowed to do. You are charged when your business needs more room — more people, more storage, more email going out."
         figure={<PriceFigure />}
         assurances={['Free for 14 days', 'No card needed', 'Cancel by not carrying on']}

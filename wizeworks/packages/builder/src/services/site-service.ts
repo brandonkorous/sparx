@@ -2109,7 +2109,13 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
  *  published columns stay authoritative for rendering until Phase 6 flips reads
  *  onto the artifacts — the two are written in the same transaction, so they
  *  cannot disagree. */
-export async function publish(ctx: PropertyContext): Promise<{ id: string; hash: string }> {
+/** The release, plus HOW MUCH went live — the count is the only part of this a
+ *  person reads, and it was computed here and then thrown away. The console's
+ *  toast invented a `pages` field to say it with, which does not exist on the
+ *  wire, so a successful publish told the owner "undefined pages are live". */
+export async function publish(
+  ctx: PropertyContext
+): Promise<{ id: string; hash: string; pages: number }> {
   let publishedPageCount = 0;
   let release = { id: '', hash: '' };
   await withTenant(ctx, async (tx) => {
@@ -2256,7 +2262,7 @@ export async function publish(ctx: PropertyContext): Promise<{ id: string; hash:
       hash: release.hash,
     },
   });
-  return release;
+  return { ...release, pages: publishedPageCount };
 }
 
 // ── Single-item safe writers (the Builder MCP silica tools) ───────────────────

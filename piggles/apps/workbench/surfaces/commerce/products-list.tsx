@@ -30,6 +30,7 @@ import {
   Button,
   Card,
   SearchInput,
+  useToast,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faBox, faPlus } from '@fortawesome/pro-solid-svg-icons';
@@ -44,7 +45,11 @@ import {
   formatDate,
   priceLabel,
   productState,
+  indexedProductCount,
+  usePaymentsReady,
   useProducts,
+  useReindexSearch,
+  useSearchStatus,
   type ProductRow,
   type ProductSortKey,
   type ProductStatus,
@@ -114,6 +119,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // How many rows the current window has grown to. "Load more" raises this;
   // anything that changes WHICH rows match resets it.
   const [take, setTake] = useState<number>(50);
+  const toast = useToast();
 
   const active = FILTERS.find((entry) => entry.value === filter) ?? FILTERS[0];
   const skip = (page - 1) * pageSize;
@@ -131,6 +137,31 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
+
+  // Is the shop actually findable? The public listing reads the SEARCH INDEX, not
+  // this table, so a catalog that never got indexed renders "No products found"
+  // to every visitor while this screen shows a full, healthy list. Nothing else
+  // in the product tells an owner their shop is empty to customers.
+  //
+  // Only "none at all" is reported. A count that merely disagrees could be a
+  // worker a few seconds behind, and crying wolf on that would train people to
+  // ignore the one message that matters. `null` means the check itself could not
+  // run — said nothing about, never rendered as zero.
+  const searchStatus = useSearchStatus();
+  const indexed = indexedProductCount(searchStatus.data);
+  const reindex = useReindexSearch();
+  const sellableCount = rows.filter((row) => row.status === 'active').length;
+  const invisibleShop = indexed === 0 && sellableCount > 0;
+
+  // The OTHER way a live shop quietly sells nothing, and the crueller of the
+  // two: the products are findable, the cart works, and the customer is turned
+  // away at the last step because there is no way to take their money. They
+  // had already chosen, typed an address and picked how to collect it.
+  //
+  // `null` while unknown, so a failed request never accuses a business of
+  // something that may not be true.
+  const paymentsReady = usePaymentsReady();
+  const cannotBePaid = paymentsReady === false && sellableCount > 0;
   /** A refetch failed but the previous window is still on screen. */
   const staleAfterFailure = Boolean(error) && rows.length > 0;
 
@@ -257,8 +288,70 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             the operator can still use — and the footer underneath went on
             cheerfully reading "Showing 1–6 of 6" beneath it, which is how the
             case was caught. Say the refresh failed, keep the rows. */}
+        {cannotBePaid ? (
+          <Alert color="warning" className="m-2">
+            <AlertContent>
+              <AlertTitle>Nobody can pay you on your site yet</AlertTitle>
+              <AlertDescription>
+                Customers can fill a basket and reach the last step, and then there is no way for
+                them to hand over the money — so the order is lost right at the end. Connect a card
+                processor and they can pay you.
+              </AlertDescription>
+            </AlertContent>
+            <Button
+              size="sm"
+              onClick={() => {
+                ctx.open('commerce.providers', {}, { target: 'tab' });
+              }}
+            >
+              Set this up
+            </Button>
+          </Alert>
+        ) : null}
+        {invisibleShop ? (
+          <Alert color="warning" className="m-2">
+            <AlertContent>
+              <AlertTitle>Customers can’t find these on your site</AlertTitle>
+              <AlertDescription>
+                Your shop page looks up products in a search list, and yours is empty — so anyone
+                visiting is told there is nothing to buy. Everything here is safe; it just needs
+                putting back into that list.
+              </AlertDescription>
+            </AlertContent>
+            <Button
+              size="sm"
+              loading={reindex.isPending}
+              onClick={() => {
+                reindex.mutate(undefined, {
+                  onSuccess: () => {
+                    // No time estimate. The rebuild runs somewhere else, and this
+                    // screen cannot see whether it started — promising "a minute or
+                    // two" would be inventing a fact. The message above IS the
+                    // status: it disappears when the products are findable again.
+                    toast.add({
+                      title: 'Asked for your products to be put back',
+                      description:
+                        'The message above will go when they are findable again. If it is still there tomorrow, tell us.',
+                      type: 'success',
+                    });
+                  },
+                  onError: () => {
+                    toast.add({
+                      title: 'Could not start that',
+                      description: 'Nothing changed. Try again in a moment.',
+                      type: 'error',
+                    });
+                  },
+                });
+              }}
+            >
+              Put them back
+            </Button>
+          </Alert>
+        ) : null}
+
         {staleAfterFailure ? (
-          <Alert color="warning" variant="soft" className="m-2">
+          <Alert color="warning" className="m-2">
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>
@@ -268,7 +361,6 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertContent>
             <Button
               size="sm"
-              color="warning"
               variant="soft"
               onClick={() => {
                 void refetch();

@@ -2,7 +2,7 @@
 
 ## Public pricing target
 
-# Piggles — $49/month
+# Piggles — $99/month
 
 All normal Piggles apps included.
 
@@ -32,7 +32,7 @@ Final numbers must be validated against infrastructure cost.
 
 ## Pricing model
 
-Piggles $49/mo
+Piggles $99/mo (founders rate: $49/mo)
 Extra 10,000 customers $10/mo
 Extra 5,000 email sends $10/mo
 Extra 10 GB storage $5/mo

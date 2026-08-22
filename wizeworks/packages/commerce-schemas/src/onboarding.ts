@@ -326,7 +326,7 @@ export const STOCK_IMPORT_TARGETS: readonly ColumnTarget[] = [
       'item description',
     ],
     required: false,
-    hint: 'Only used when an item is new to sparx and has to be created.',
+    hint: 'Only used when an item is new here and has to be created.',
   },
   {
     key: 'warehouse',
@@ -375,7 +375,7 @@ export const STOCK_IMPORT_TARGETS: readonly ColumnTarget[] = [
     label: 'Change in quantity',
     aliases: ['delta', 'change', 'adjustment', 'adjust', 'difference', 'variance', 'movement'],
     required: false,
-    hint: 'A plus or minus against what sparx already holds.',
+    hint: 'A plus or minus against what is already held here.',
   },
   {
     key: 'unitCost',
@@ -832,8 +832,8 @@ export const MIGRATION_RECIPES: readonly MigrationRecipe[] = [
     key: 'stock_take',
     name: 'A stock-take sheet coming back from the floor',
     description:
-      'The sheet sparx exported, filled in with what was actually on the shelves. Differences post as a recount.',
-    recognisedBy: 'It came from sparx — the headings already match.',
+      'The sheet you exported, filled in with what was actually on the shelves. Differences post as a recount.',
+    recognisedBy: 'It was exported from here — the headings already match.',
     extraAliases: {},
     options: { reason: 'recount' },
   },

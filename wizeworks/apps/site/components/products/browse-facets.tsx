@@ -102,7 +102,7 @@ export function BrowseFacets({
   return (
     <form
       id="browse-filters"
-      className="sticky top-[92px] flex flex-col gap-6 max-[900px]:static"
+      className="sticky top-[92px] flex scroll-mt-[92px] flex-col gap-6 max-[900px]:static"
       method="GET"
       action={action}
     >
@@ -111,10 +111,8 @@ export function BrowseFacets({
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
       <div>
-        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
-          Price
-        </h4>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">Price</h4>
+        <div className="flex items-center gap-2">
           <Input
             type="number"
             name="minPrice"
@@ -122,7 +120,7 @@ export function BrowseFacets({
             min={0}
             placeholder={priceRange ? dollars(priceRange.minCents) : 'Min'}
             defaultValue={values.minPrice ?? ''}
-            style={{ width: '100%' }}
+            className="w-full"
             aria-label="Minimum price (dollars)"
           />
           <span className="text-base-content">–</span>
@@ -133,17 +131,15 @@ export function BrowseFacets({
             min={0}
             placeholder={priceRange ? dollars(priceRange.maxCents) : 'Max'}
             defaultValue={values.maxPrice ?? ''}
-            style={{ width: '100%' }}
+            className="w-full"
             aria-label="Maximum price (dollars)"
           />
         </div>
       </div>
 
       <div>
-        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
-          Availability
-        </h4>
-        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm">
+        <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">Availability</h4>
+        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-base">
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
           In stock only
         </label>
@@ -156,13 +152,11 @@ export function BrowseFacets({
         const active = values[group.param];
         return (
           <div key={group.field}>
-            <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
-              {group.label}
-            </h4>
+            <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">{group.label}</h4>
             {counts.slice(0, 10).map((c) => (
               <label
                 key={c.value}
-                className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm"
+                className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-base"
               >
                 <input
                   type="radio"
@@ -170,8 +164,8 @@ export function BrowseFacets({
                   value={c.value}
                   defaultChecked={active === c.value}
                 />
-                <span style={{ flex: 1 }}>{c.value}</span>
-                <span className="text-base-content text-xs">{c.count}</span>
+                <span className="flex-1">{c.value}</span>
+                <span className="text-base-content text-sm">{c.count}</span>
               </label>
             ))}
           </div>
@@ -183,13 +177,11 @@ export function BrowseFacets({
           one Size can both apply. */}
       {options.map((group) => (
         <div key={group.name}>
-          <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
-            {group.name}
-          </h4>
+          <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">{group.name}</h4>
           {group.values.slice(0, 12).map((v) => (
             <label
               key={v.token}
-              className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm"
+              className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-base"
             >
               <input
                 type="checkbox"
@@ -197,8 +189,8 @@ export function BrowseFacets({
                 value={v.token}
                 defaultChecked={selected.has(v.token)}
               />
-              <span style={{ flex: 1 }}>{v.label}</span>
-              <span className="text-base-content text-xs">{v.count}</span>
+              <span className="flex-1">{v.label}</span>
+              <span className="text-base-content text-sm">{v.count}</span>
             </label>
           ))}
         </div>
@@ -212,14 +204,13 @@ export function BrowseFacets({
         values={{ fitmentDomain: values.fitmentDomain, fitmentRanges: values.fitmentRanges }}
       />
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <Button type="submit" color="primary" style={{ flex: 1 }}>
+      <div className="flex gap-2">
+        <Button type="submit" color="primary" className="flex-1">
           Apply
         </Button>
         <ButtonLink
           href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
           aria-label="Clear filters"
-          color="neutral"
           variant="ghost"
         >
           Clear

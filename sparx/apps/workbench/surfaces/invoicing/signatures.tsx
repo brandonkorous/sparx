@@ -179,7 +179,7 @@ export function SignaturesSection({
     >
       {/* Shown once, right after issuing. Deliberately not persisted anywhere. */}
       {issuedUrl !== null ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Here is the link — this is the only time it is shown</AlertTitle>
             <AlertDescription>
@@ -291,7 +291,7 @@ export function SignaturesSection({
               }}
             >
               {isDraft ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>This is still a draft</AlertTitle>
                     <AlertDescription>
@@ -304,7 +304,7 @@ export function SignaturesSection({
               ) : null}
 
               {live ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>{live.signerName} already has a link</AlertTitle>
                     <AlertDescription>

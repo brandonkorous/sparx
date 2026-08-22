@@ -1287,7 +1287,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["7"],
+                                "children": ["$7"],
                                 "id": "6f11e577-7e43-4e42-a4da-691364788611",
                                 "ord": "a1"
                               }
@@ -1331,7 +1331,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["14"],
+                                "children": ["$14"],
                                 "id": "0bdfd1f1-f9c1-409a-99fb-43d878d1c9d6",
                                 "ord": "a1"
                               }
@@ -1375,7 +1375,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["16"],
+                                "children": ["$16"],
                                 "id": "e8f1f987-e9c0-4ef3-92c9-7a7e74c600b8",
                                 "ord": "a1"
                               }
@@ -1419,7 +1419,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["11"],
+                                "children": ["$11"],
                                 "id": "b928b30a-aff7-4403-8cf5-93c8cf7c73e9",
                                 "ord": "a1"
                               }
@@ -1463,7 +1463,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["10"],
+                                "children": ["$10"],
                                 "id": "13695eb8-9c54-41a5-80ae-1b06d8bbd13d",
                                 "ord": "a1"
                               }
@@ -1552,7 +1552,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["14"],
+                                "children": ["$14"],
                                 "id": "716f7a61-fdcf-465c-9e99-8f1950f098ad",
                                 "ord": "a1"
                               }
@@ -1596,7 +1596,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["17"],
+                                "children": ["$17"],
                                 "id": "471a1ca7-62b9-40a2-b99d-e032d56c7a12",
                                 "ord": "a1"
                               }
@@ -1640,7 +1640,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["18"],
+                                "children": ["$18"],
                                 "id": "e42fdb0d-c1c7-4ce6-b72e-3369a27253d0",
                                 "ord": "a1"
                               }
@@ -1684,7 +1684,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["17"],
+                                "children": ["$17"],
                                 "id": "01bbf194-65a4-432f-9a76-0a1616150760",
                                 "ord": "a1"
                               }
@@ -1728,7 +1728,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["12"],
+                                "children": ["$12"],
                                 "id": "e7229845-47d4-4c4c-829d-5adb5879769e",
                                 "ord": "a1"
                               }
@@ -1772,7 +1772,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["16"],
+                                "children": ["$16"],
                                 "id": "0b7a19a4-7ba5-4606-beb1-696f07d0fc9b",
                                 "ord": "a1"
                               }
@@ -1861,7 +1861,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["18"],
+                                "children": ["$18"],
                                 "id": "ed80d2ff-05fd-435f-9ffb-92a8f789c271",
                                 "ord": "a1"
                               }
@@ -1903,7 +1903,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["16"],
+                                "children": ["$16"],
                                 "id": "be271af1-8fc7-4bee-bcd3-ed8330ef880c",
                                 "ord": "a1"
                               }
@@ -1947,7 +1947,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["19"],
+                                "children": ["$19"],
                                 "id": "aa730423-5e4d-48ef-8378-3218898b1779",
                                 "ord": "a1"
                               }
@@ -1991,7 +1991,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["17"],
+                                "children": ["$17"],
                                 "id": "4c1be8cd-6b48-4c60-8e68-29afafcdd438",
                                 "ord": "a1"
                               }
@@ -2078,7 +2078,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["9"],
+                                "children": ["$9"],
                                 "id": "83b5cab9-a135-46c1-bcc5-c6ed589bbc54",
                                 "ord": "a1"
                               }
@@ -2122,7 +2122,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["7"],
+                                "children": ["$7"],
                                 "id": "3c9f29bb-cf8e-4b7e-8712-fb192f4ea6e2",
                                 "ord": "a1"
                               }
@@ -2166,7 +2166,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["6"],
+                                "children": ["$6"],
                                 "id": "9702c643-c068-4b20-9904-c647f28a31a8",
                                 "ord": "a1"
                               }
@@ -2208,7 +2208,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["8"],
+                                "children": ["$8"],
                                 "id": "6a88efa8-764f-47cd-882f-d1f766b792e4",
                                 "ord": "a1"
                               }
@@ -2297,7 +2297,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["11"],
+                                "children": ["$11"],
                                 "id": "c2b47e7d-4161-495f-883a-e4815491b14a",
                                 "ord": "a1"
                               }
@@ -2341,7 +2341,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["8"],
+                                "children": ["$8"],
                                 "id": "03cecfe0-7ecf-4479-b54b-7901dde106f4",
                                 "ord": "a1"
                               }
@@ -2383,7 +2383,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["6"],
+                                "children": ["$6"],
                                 "id": "8c53fe80-1fbf-4ce8-8389-adbf3ca1e4e5",
                                 "ord": "a1"
                               }
@@ -2425,7 +2425,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["4"],
+                                "children": ["$4"],
                                 "id": "25ba411a-04e6-4a12-bac6-73ab25567294",
                                 "ord": "a1"
                               }

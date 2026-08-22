@@ -111,6 +111,26 @@ interface PublicTenantChrome {
   tagline?: string | null;
   theme: { logoMediaId: string | null; logoDarkMediaId?: string | null } | null;
   socials?: { platform: string; url: string }[];
+  /** How customers reach this site — already returned by the endpoint, and for a
+   *  while read by nobody here, which is why a Contact page kept previewing the
+   *  blueprint's invented phone number. */
+  contact?: { phone: string | null; email: string | null; address: string | null } | null;
+}
+
+/** A phone number as something a phone can dial. Mirrors the live site's
+ *  `telHref` — a `tel:` with brackets and spaces in it does not dial. */
+function telHref(phone: string | null): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
+  return /\d/.test(digits) ? `tel:${digits}` : null;
+}
+
+/** Trimmed, or null. '' is a KNOWN-but-empty value that the resolver fills OVER
+ *  the authored words, which would blank the node instead of leaving the
+ *  placeholder the owner still needs to see. */
+function orNull(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed === undefined || trimmed === '' ? null : trimmed;
 }
 
 /** A media id → the public media redirect URL (the browser <img> loads it), or an
@@ -304,18 +324,34 @@ export function useSitePreview(tenantSlug: string | null, propertySlug: string |
           (s) =>
             typeof s?.platform === 'string' && typeof s?.url === 'string' && s.url.trim() !== ''
         );
+        const email = orNull(payload.contact?.email);
         return {
           identity: {
             name,
             tagline: payload.tagline?.trim() ? payload.tagline : null,
             logo: logoUrl ? { url: logoUrl, alt: name } : null,
             logoDark: logoDarkUrl ? { url: logoDarkUrl, alt: name } : null,
+            phone: orNull(payload.contact?.phone),
+            email,
+            address: orNull(payload.contact?.address),
+            phoneHref: telHref(orNull(payload.contact?.phone)),
+            emailHref: email ? `mailto:${email}` : null,
           },
           social,
         };
       } catch {
         return {
-          identity: { name: 'Brand', tagline: null, logo: null, logoDark: null },
+          identity: {
+            name: 'Brand',
+            tagline: null,
+            logo: null,
+            logoDark: null,
+            phone: null,
+            email: null,
+            address: null,
+            phoneHref: null,
+            emailHref: null,
+          },
           social: [],
         };
       }

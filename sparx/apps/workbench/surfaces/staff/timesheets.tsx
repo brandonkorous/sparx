@@ -258,7 +258,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="info" variant="soft" className="max-w-md">
+          <Alert color="info" className="max-w-md">
             <AlertContent>
               <AlertTitle>Only an account admin can open timesheets</AlertTitle>
               <AlertDescription>
@@ -390,7 +390,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Text>
 
               {!data.complete ? (
-                <Alert color="warning" variant="soft" className="mt-3">
+                <Alert color="warning" className="mt-3">
                   <AlertContent>
                     <AlertTitle>
                       {data.rowsNeedingRates === 1

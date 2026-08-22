@@ -488,7 +488,7 @@ function TicketEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this request</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -646,7 +646,7 @@ function TicketEditor({
               />
             </FormSection>
           ) : view ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Nobody is linked to this request</AlertTitle>
                 <AlertDescription>

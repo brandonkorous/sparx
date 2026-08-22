@@ -327,7 +327,7 @@ function ManagePiece({
           </Alert>
 
           {piece.placeable ? null : (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This piece can&apos;t be opened in the editor</AlertTitle>
                 <AlertDescription>

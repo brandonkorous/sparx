@@ -174,10 +174,28 @@ export async function handleEvent(
       return { outcome: 'indexed', details: { primaryId, merged: duplicateIds.length } };
     }
 
-    // ── Orders (order.* — the platform bus, teed to Pub/Sub) ──
-    case 'order.created':
+    // ── Orders (order.* — the platform bus) ──
+    //
+    // TWO OF THESE USED TO NAME EVENTS THAT DO NOT EXIST. The list read
+    // `order.created` and `order.payment.recorded`; the catalog's types are
+    // `order.placed` and `order.paid` (wizeworks/packages/events/src/types.ts,
+    // and CLAUDE.md says in as many words that there is no `order.created`).
+    //
+    // A `case` for an event nobody publishes is dead code that looks like
+    // coverage, and the parity check does not see it — `check:events` compares
+    // the EventType union against topics, not against the handlers that claim to
+    // route them. So the four surviving cases were all LATER lifecycle events,
+    // and an order entered the search index for the first time only when it was
+    // cancelled, fulfilled, delivered or refunded.
+    //
+    // Which means the one moment an order most needs to be findable — just
+    // placed, customer on the phone about it — was the one moment it was not
+    // there. Searching a real order number in the console answered "Nothing
+    // matches that", while the activity bar in the same window said the checkout
+    // had completed on it sixteen minutes earlier.
+    case 'order.placed':
+    case 'order.paid':
     case 'order.cancelled':
-    case 'order.payment.recorded':
     case 'order.fulfilled':
     case 'order.delivered':
     case 'order.refunded': {

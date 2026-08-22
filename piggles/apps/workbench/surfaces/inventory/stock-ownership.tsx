@@ -191,7 +191,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       {rows.length > 0 ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>This stock is still on sale</AlertTitle>
             <AlertDescription>
@@ -204,7 +204,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
       ) : null}
 
       {uncosted > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>{plural(uncosted, 'line has', 'lines have')} no cost recorded</AlertTitle>
             <AlertDescription>

@@ -379,7 +379,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
   // would invite someone to re-upload photos that are already there.
   if (media.isError) {
     return (
-      <Alert color="error" variant="soft">
+      <Alert color="error">
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s photos</AlertTitle>
           <AlertDescription>
@@ -407,7 +407,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
           gave us one. Sits above the gallery because every action below can
           raise it. */}
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>That did not work</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>

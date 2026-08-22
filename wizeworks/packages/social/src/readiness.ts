@@ -171,8 +171,8 @@ export function judgeSocialReadiness({
     headline: 'Ready',
     detail:
       grantedSource === 'platform'
-        ? `${platformName} confirms this connection holds everything sparx needs.`
-        : `This connection was granted everything sparx needs when it was connected.`,
+        ? `${platformName} confirms this connection holds everything needed.`
+        : `This connection was granted everything needed when it was connected.`,
     missing,
   };
 }

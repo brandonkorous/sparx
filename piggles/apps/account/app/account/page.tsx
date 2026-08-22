@@ -6,7 +6,8 @@ import { requireSession } from '@wizeworks/auth';
 import { prisma } from '@wizeworks/db';
 import { Logo } from '@piggles/brand/react';
 import { AppearanceControl } from '@/components/appearance-control';
-import { PRODUCT } from '@piggles/config';
+import { marketingUrl, PRODUCT } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { capacityReport } from '@wizeworks/usage';
 import { Capacity } from '@/components/capacity';
 import { readConsent } from '@/lib/consent';
@@ -38,6 +39,17 @@ export default async function AccountPage() {
       trialEndsAt: true,
       platformBrand: true,
     },
+  });
+
+  // The address her site is really served at, READ rather than composed. This
+  // used to render `{tenant.slug}.{suffix}`, which is the same fact from a
+  // different place: the console reads the `domains` row, so when the two drifted
+  // apart the two apps quoted two different addresses for one business and
+  // neither knew (issue #089). One source, so a drift shows up instead of hiding.
+  const siteAddress = await prisma.domain.findFirst({
+    where: { tenantId: session.user.tenantId, type: 'subdomain' },
+    orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
+    select: { host: true },
   });
 
   const trial = trialState(tenant?.trialEndsAt ?? null, tenant?.subscriptionStatus ?? '');
@@ -81,6 +93,14 @@ export default async function AccountPage() {
               on the signed-out screens, so it does not move once somebody has an
               account. */}
           <AppearanceControl />
+          {/* A FORM, not a link. Signing out is a state change, so it must not be
+              reachable by a prefetch, a crawler or an <img> — see the note in
+              /sign-out. Colourless: `neutral` on a bar like this is issue #003. */}
+          <form action="/sign-out" method="post">
+            <button className={buttonClasses({ variant: 'ghost' })} type="submit">
+              Sign out
+            </button>
+          </form>
           <a className={buttonClasses({ color: 'primary' })} href="/handoff">
             Go to my business
           </a>
@@ -101,7 +121,8 @@ export default async function AccountPage() {
             <h2 className="text-xl font-bold">Your plan</h2>
             <p className="mt-1 text-base">All fifteen apps, one price.</p>
             <p className="mt-4 text-4xl font-extrabold">
-              $49<span className="text-base font-bold">/month</span>
+              {PRICE_LABEL}
+              <span className="text-base font-bold">/month</span>
             </p>
             <div className="mt-4">
               {/* Status is its own color axis — a lifecycle state gets a
@@ -133,7 +154,7 @@ export default async function AccountPage() {
               you are ready.
             </p>
             <p className="mt-4 text-lg font-bold break-all">
-              {tenant?.slug}.{PRODUCT.tenantSites.suffix}
+              {siteAddress?.host ?? `${tenant?.slug}.${PRODUCT.tenantSites.suffix}`}
             </p>
           </CardBody>
         </Card>
@@ -178,7 +199,7 @@ export default async function AccountPage() {
               : `${PRODUCT.name} is counting nothing. The only cookies left are the ones that keep you signed in.`}{' '}
           <a
             className="font-semibold underline"
-            href={`https://${PRODUCT.hosts.marketing}/cookies`}
+            href={marketingUrl('cookies')}
             target="_blank"
             rel="noreferrer"
           >

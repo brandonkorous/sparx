@@ -277,7 +277,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
       ) : null}
 
       {undatedLots > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(undatedLots, 'batch has', 'batches have')} no expiry date recorded

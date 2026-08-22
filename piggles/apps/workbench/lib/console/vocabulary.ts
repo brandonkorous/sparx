@@ -43,7 +43,14 @@
  */
 export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // ── My Site ───────────────────────────────────────────────────────────────
-  'builder.studio': 'Page editor',
+  //
+  // No entry for `builder.studio`. There was one — "Page editor" — and the key
+  // stopped existing when the whole-site editor was split into a pane per
+  // document (`builder.page`, `builder.theme`, `builder.layout`, `builder.piece`,
+  // `builder.publish`). An override for a key nothing registers renames nothing
+  // and reads as a screen this brand has named, which is why it survived the
+  // split unnoticed. Those five carry plain platform titles that are already
+  // right, so they are absent from here on purpose too — see the note above.
   'builder.site': 'Your site',
   // "Blueprints" is a builder's word for a whole pre-made site. What it does for
   // the reader is save them starting from nothing.
@@ -126,6 +133,10 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'dropship.products.list': 'What they can send',
   'dropship.orders.list': 'What they are sending',
   'dropship.analytics': 'What you made on it',
+  // Same problem one row down: Money already has a "Bills to pay", and it means
+  // everything the business owes. This one is narrower and lives in a different
+  // app — supplier invoices, checked against what actually turned up.
+  'inventory.supplier-bills': 'What suppliers billed you',
 
   // ── Stock ─────────────────────────────────────────────────────────────────
   // Most of this module was already written plainly and is left alone. These
@@ -149,6 +160,11 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'inventory.sources': 'Counts from elsewhere',
   'inventory.consignment': 'Paying for what sold',
   'inventory.stock.grid': 'Edit a lot at once',
+  // Was "Waiting list", which is also what the Bookings diary calls its queue of
+  // people hoping for a cancelled slot. Two rows of that name in one launcher,
+  // meaning two completely different things — one is customers waiting for a
+  // haircut, the other is orders waiting for stock.
+  'inventory.backorders': 'Waiting for stock',
 
   // ── Customers ─────────────────────────────────────────────────────────────
   // RULE #3: never make a person understand "CRM".
@@ -164,6 +180,9 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'crm.object-type.detail': 'Thing you track',
   'crm.scoring': 'Who is worth chasing',
   'crm.reports': 'Customer reports',
+  // Home has a "Dashboards" too, and it is the general one. Named the same way
+  // as the report row directly above, so the pair reads as a set.
+  'crm.dashboards': 'Customer dashboards',
 
   // ── Messages ──────────────────────────────────────────────────────────────
   // This app carries email AND live chat, so a bare "Inbox" would be one of two
@@ -190,8 +209,38 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // ── Get Found ─────────────────────────────────────────────────────────────
   'seo.performance': 'How people find you',
   'seo.audits': 'Things worth fixing',
-  'social.cadence': 'How often you post',
+  // The platform names this after Google's product. A person who has one knows
+  // what it is; a person who does not reads a proper noun and learns nothing —
+  // and the screen's job is a sentence either of them understands. The connect
+  // button inside it still says Google Search Console, which is where the proper
+  // noun belongs.
+  'seo.search-console': 'What people searched for',
+  //
+  // ── ...and the social half of it ──────────────────────────────────────────
+  //
+  // Five of these seven screens are renamed, which is far more than this file
+  // usually does — the platform's titles are plain, and plain is normally left
+  // alone. The problem here is not the words, it is that FOUR of them are the
+  // same word as a row somewhere else in this console:
+  //
+  //   Calendar     · social AND the Bookings diary
+  //   Inbox        · social AND live chat
+  //   Approvals    · social AND wholesale order sign-off
+  //   Connections  · social accounts AND the app called Connections
+  //
+  // Inside the panel a "Social" heading tells them apart. In the launcher there
+  // is no heading — it is a flat list of every screen by name — so searching
+  // "inbox" offered two identical rows and searching "connections" offered a row
+  // that is not the app of that name. Naming them by what they hold fixes both
+  // places at once, and puts the word "social" in a panel where it appeared
+  // exactly once.
+  'social.calendar': 'What is going out, and when',
   'social.queue': 'Posts',
+  'social.insights': 'How your posts did',
+  'social.inbox': 'Comments and replies',
+  'social.approvals': 'Posts waiting on you',
+  'social.cadence': 'How often you post',
+  'social.connections': 'Your social accounts',
 
   // ── Automations ───────────────────────────────────────────────────────────
   'automations.recipes': 'Ready-made automations',

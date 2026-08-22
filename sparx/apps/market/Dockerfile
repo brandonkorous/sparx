@@ -33,6 +33,7 @@ COPY sparx/apps/market/package.json sparx/apps/market/
 # silicaui-react are npm deps resolved by pnpm install below, so they need no COPY.
 COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY sparx/packages/brand/package.json sparx/packages/brand/
+COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY wizeworks/packages/ui/package.json wizeworks/packages/ui/
 COPY wizeworks/packages/silica-corrections/package.json wizeworks/packages/silica-corrections/
 COPY wizeworks/packages/commerce-schemas/package.json wizeworks/packages/commerce-schemas/
@@ -46,6 +47,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY sparx/packages/brand sparx/packages/brand
+COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY wizeworks/packages/ui wizeworks/packages/ui
 COPY wizeworks/packages/silica-corrections wizeworks/packages/silica-corrections
 COPY wizeworks/packages/commerce-schemas wizeworks/packages/commerce-schemas

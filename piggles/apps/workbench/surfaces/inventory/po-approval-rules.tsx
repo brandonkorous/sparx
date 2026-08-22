@@ -163,7 +163,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       {rows.length > 1 ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>When two limits both apply</AlertTitle>
             <AlertDescription>

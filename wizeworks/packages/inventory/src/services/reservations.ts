@@ -93,17 +93,42 @@ async function incidentFeedContext(
  * and the variant's inventoryPolicy is `deny`. For `continue` / `preorder`,
  * succeeds even when short (allocated may temporarily exceed onHand — surfaces as
  * a negative `available` in the dashboard).
+ *
+ * Returns `null` for a variant NOBODY HAS EVER COUNTED — see below. There is no
+ * hold to record, exactly as under a disabled inventory module, and callers
+ * already handle a line with no reservation (a dropship variant takes the same
+ * path).
  */
 export async function reserveOnTx(
   tx: TxClient,
   ctx: ServiceContext,
   input: ReserveInventoryInput
-): Promise<ReservationResult> {
+): Promise<ReservationResult | null> {
   const variant = await tx.productVariant.findFirst({
     where: { id: input.variantId, deletedAt: null },
     select: { id: true, inventoryPolicy: true },
   });
   if (!variant) throw new InventoryNotFoundError('Variant', input.variantId);
+
+  // ── NEVER COUNTED → UNTRACKED, AND NO ROW IS INVENTED ─────────────────────
+  //
+  // A variant with no inventory_levels row anywhere has never been counted, and
+  // `computeAvailability` treats that as untracked rather than as a count of
+  // zero (see availability.ts). This is the same rule at the write end, and it
+  // has to be here or the read end is defeated the first time anyone uses it.
+  //
+  // What happened without it, and it is worse than the badge it mirrors: the
+  // INSERT below CREATES a 0/0 level row before judging against it. So the first
+  // customer to press Add to cart on a product that had never been counted got
+  // OUT_OF_STOCK — and left behind a level row that made the variant genuinely,
+  // permanently sold out. One click silently converted "nobody has counted this"
+  // into "there are none", and no screen anywhere in the platform said so.
+  //
+  // Bailing BEFORE the insert is the point: a level row must keep meaning
+  // "somebody counted this". Inventing one to answer a question is what turned a
+  // missing measurement into a false one.
+  const counted = await tx.inventoryLevel.count({ where: { variantId: input.variantId } });
+  if (counted === 0) return null;
 
   const warehouseId =
     input.warehouseId ??
@@ -222,8 +247,12 @@ export async function reserveOnTx(
   };
 }
 
-/** Public reserve — opens its own tenant transaction. */
-export async function reserve(ctx: ServiceContext, rawInput: unknown): Promise<ReservationResult> {
+/** Public reserve — opens its own tenant transaction. Null when the variant has
+ *  never been counted; see `reserveOnTx`. */
+export async function reserve(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<ReservationResult | null> {
   const input = ReserveInventoryInput.parse(rawInput);
   return withTenant(ctx, (tx) => reserveOnTx(tx, ctx, input));
 }

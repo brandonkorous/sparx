@@ -183,7 +183,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           situations. The third — nothing booked in yet — is the one a naive
           screen would render as a green tick. */}
       {data.hasDiscrepancy === null ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Nothing has been checked in against this yet</AlertTitle>
             <AlertDescription>

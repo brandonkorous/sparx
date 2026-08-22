@@ -431,7 +431,7 @@ export function LiveConnection({
         </div>
 
         {locked.length > 0 ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>
                 <Lock className="mr-2 inline size-4" aria-hidden />
@@ -446,7 +446,7 @@ export function LiveConnection({
         ) : null}
 
         {connected.withheld.length > 0 ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>
                 {connected.withheld.map((entry) => entry.label).join(' and ')} need one more detail

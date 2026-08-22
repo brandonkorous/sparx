@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-eyewear',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'sparx — Eyewear (Modern)',
   summary:
     'A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colorways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme — crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.',

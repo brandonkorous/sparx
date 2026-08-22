@@ -41,7 +41,7 @@ export function JobsChip({ jobs }: { jobs: Job[] }) {
     <Popover>
       <Tooltip content="Background work in progress">
         <PopoverTrigger>
-          <Button color="neutral" variant="ghost" size="xs" className="gap-1.5">
+          <Button variant="ghost" size="xs" className="gap-1.5">
             <Icon glyph={faSpinner} className="size-3.5 animate-spin" aria-hidden />
             <span className="max-w-56 truncate">{trigger}</span>
           </Button>
@@ -66,7 +66,6 @@ export function JobsChip({ jobs }: { jobs: Job[] }) {
             so the way there belongs right here. */}
         <div className="border-base-300 mt-3 border-t pt-2">
           <Button
-            color="neutral"
             variant="ghost"
             size="xs"
             className="w-full justify-start"

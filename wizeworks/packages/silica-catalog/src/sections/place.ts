@@ -62,7 +62,7 @@ export function openingHours(): Node {
         }),
       ],
     }),
-    caption('Bank holidays vary — call ahead if you are making a special trip.'),
+    caption('Holiday hours vary — call ahead if you are making a special trip.'),
   ]);
 }
 
@@ -78,16 +78,16 @@ export function findUs(): Node {
             el('h2', 'text-3xl font-semibold text-base-content', { text: 'Find us' }),
             el('address', 'flex flex-col gap-1 text-base not-italic text-base-content', {
               children: [
-                el('span', '', { text: 'The Old Mill, Mill Lane' }),
-                el('span', '', { text: 'Ashford, Kent' }),
-                el('span', '', { text: 'TN23 1QX' }),
+                el('span', '', { text: 'The Old Mill, 24 Mill Lane' }),
+                el('span', '', { text: 'Millbrook, OR' }),
+                el('span', '', { text: '97005' }),
               ],
             }),
             el('div', 'flex flex-col gap-2', {
               children: [
                 el('a', 'text-base font-semibold text-base-content', {
-                  attrs: { href: 'tel:+441233000000' },
-                  text: '01233 000000',
+                  attrs: { href: 'tel:+15551234567' },
+                  text: '(555) 123-4567',
                 }),
                 el('a', 'text-base font-semibold text-base-content', {
                   attrs: { href: 'mailto:hello@example.com' },
@@ -97,7 +97,7 @@ export function findUs(): Node {
             }),
             actions([
               primaryAction('Get directions'),
-              secondaryAction('Call us', 'tel:+441233000000'),
+              secondaryAction('Call us', 'tel:+15551234567'),
             ]),
           ],
         }),
@@ -124,14 +124,20 @@ export function locationCards(): Node {
     sectionHead('Where to find us'),
     gridThree([
       place(
-        'Ashford',
-        'The Old Mill, Mill Lane',
-        'TN23 1QX',
+        'Millbrook',
+        'The Old Mill, 24 Mill Lane',
+        'Millbrook, OR 97005',
         'Mon–Fri 8–5, Sat 9–1',
-        '01233 000000'
+        '(555) 123-4567'
       ),
-      place('Canterbury', '14 Northgate', 'CT1 1BA', 'Mon–Sat 9–5', '01227 000000'),
-      place('Maidstone', 'Unit 6, Wharf Road', 'ME15 6RT', 'Mon–Fri 8–5', '01622 000000'),
+      place('Riverton', '14 North Gate', 'Riverton, OR 97042', 'Mon–Sat 9–5', '(555) 123-4567'),
+      place(
+        'Wharf Road',
+        'Unit 6, 200 Wharf Road',
+        'Eastport, OR 97128',
+        'Mon–Fri 8–5',
+        '(555) 123-4567'
+      ),
     ]),
   ]);
 }
@@ -147,14 +153,14 @@ export function serviceArea(): Node {
     ),
     el('ul', 'grid grid-cols-2 gap-3 @2xl:grid-cols-3 @4xl:grid-cols-4', {
       children: [
-        'Ashford',
-        'Canterbury',
-        'Faversham',
-        'Folkestone',
-        'Maidstone',
-        'Sittingbourne',
-        'Tenterden',
-        'Whitstable',
+        'Millbrook',
+        'Riverton',
+        'Eastport',
+        'Fairview',
+        'Cedar Falls',
+        'Northfield',
+        'Oakhurst',
+        'Westbrook',
       ].map((town) =>
         el('li', 'rounded-box border border-base-300 px-4 py-3 text-base text-base-content', {
           text: town,

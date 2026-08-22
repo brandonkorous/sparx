@@ -20,6 +20,7 @@ FROM base AS builder
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY sparx/apps/web/package.json sparx/apps/web/
 COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
+COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY wizeworks/packages/ui/package.json wizeworks/packages/ui/
 COPY sparx/packages/brand/package.json sparx/packages/brand/
 # @wizeworks/forms — client form-validation engine behind silica's FieldStatus (react peer only).
@@ -43,6 +44,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/web...
 
 COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
+COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY wizeworks/packages/ui wizeworks/packages/ui
 COPY sparx/packages/brand sparx/packages/brand
 COPY wizeworks/packages/forms wizeworks/packages/forms

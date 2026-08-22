@@ -21,12 +21,12 @@ import {
 import { Icon } from '@piggles/ui';
 import { storefrontPreviewUrl, type OnboardingActions } from '../../../lib/onboarding/api';
 import type { PendingDomain, WizardBlueprint } from '../../../lib/onboarding/types';
+import { PRODUCT } from '@piggles/config';
 
-const SITE_ZONE = 'sparx.zone';
-
-function usd(n: number): string {
-  return n.toLocaleString('en-US');
-}
+// The tenant-site suffix comes from the brand, never a literal. It was
+// hardcoded to sparx.zone — another product's domain, offered to a Piggles
+// customer as their own web address. Issue #009.
+const SITE_ZONE = PRODUCT.tenantSites.suffix;
 
 function money(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
@@ -51,8 +51,6 @@ export function StepLaunch({
   builderEnabled,
   published,
   moduleCount,
-  monthlyTotal,
-  monthlyElsewhere,
   pendingDomain,
   actions,
 }: {
@@ -62,8 +60,6 @@ export function StepLaunch({
   builderEnabled: boolean;
   published: boolean;
   moduleCount: number;
-  monthlyTotal: number;
-  monthlyElsewhere: number;
   pendingDomain: PendingDomain | null;
   actions: OnboardingActions;
 }) {
@@ -88,8 +84,6 @@ export function StepLaunch({
     return <LaunchSuccess slug={slug} host={host} />;
   }
 
-  const monthlySavings = Math.max(0, monthlyElsewhere - monthlyTotal);
-  const annualSavings = monthlySavings * 12;
   const facts = contentFacts(blueprint);
   const previewHref = installId && token ? storefrontPreviewUrl(slug, token) : null;
 
@@ -178,19 +172,18 @@ export function StepLaunch({
         </div>
       ) : null}
 
-      {monthlySavings > 0 ? (
-        <div className="border-success rounded-xl border px-6 py-5 text-center">
-          <span className="text-success text-sm font-medium">You are saving</span>
-          <div className="mt-1 flex items-baseline justify-center gap-1">
-            <span className="text-success text-5xl font-semibold tracking-tight">
-              ${usd(monthlySavings)}
-            </span>
-            <span className="text-success text-lg">/mo</span>
+      {/* This was a "You are saving $N/mo" panel, in 5xl, computed from invented
+          per-app prices against invented competitor prices. The console does not
+          state a price (RULE #2) and it certainly does not state a saving it made
+          up. The count is real, so the count is what it says. */}
+      {moduleCount > 0 ? (
+        <div className="border-module rounded-xl border px-6 py-5 text-center">
+          <div className="flex items-baseline justify-center gap-2">
+            <span className="text-module text-5xl font-semibold tracking-tight">{moduleCount}</span>
+            <span className="text-lg">{moduleCount === 1 ? 'app' : 'apps'}, ready to use</span>
           </div>
           <Text className="mx-auto mt-2 max-w-prose text-sm">
-            That is <span className="font-medium">${usd(annualSavings)}</span> a year. {moduleCount}{' '}
-            best-in-class {moduleCount === 1 ? 'tool' : 'tools'} on one platform, one login, one
-            invoice — for ${usd(monthlyTotal)}/mo after your free trial.
+            One place, one login, one bill — and nothing to pay until your free trial ends.
           </Text>
         </div>
       ) : null}
@@ -204,7 +197,7 @@ export function StepLaunch({
         <ValuePoint
           icon={<Icon glyph={faReceipt} className="text-module size-4" aria-hidden />}
           title="One login, one invoice"
-          body="Flat per-module pricing — no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
+          body="One flat price with every app in it — no per-seat fees, no cut of every order, and no upgrade button between you and a feature."
         />
         <ValuePoint
           icon={<Icon glyph={faArrowTrendUp} className="text-module size-4" aria-hidden />}

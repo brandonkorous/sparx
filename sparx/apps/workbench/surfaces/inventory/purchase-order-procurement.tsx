@@ -83,7 +83,7 @@ function HeldForApproval({ purchaseOrderId, purchaseOrderNumber, ctx }: Props) {
 
   return (
     <FormSection title="Waiting for sign-off">
-      <Alert color="warning" variant="soft">
+      <Alert color="warning">
         <AlertContent>
           <AlertTitle>Nothing has been ordered yet</AlertTitle>
           <AlertDescription>

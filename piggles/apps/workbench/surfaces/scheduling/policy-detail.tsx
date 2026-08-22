@@ -37,6 +37,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput, moneyCents, moneyProblem } from '../../components/money-input';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -96,12 +97,11 @@ const BLANK: Draft = {
   reminders: [1440, 120],
 };
 
+/** A typed amount → cents. Blank means "no deposit", not zero — and `65,00`
+ *  means sixty-five, not six thousand five hundred (issue 086). */
 function dollarsToCents(value: string): number | null {
-  const trimmed = value.trim();
-  if (trimmed === '') return null;
-  const parsed = Number(trimmed);
-  if (Number.isNaN(parsed) || parsed < 0) return null;
-  return Math.round(parsed * 100);
+  if (value.trim() === '') return null;
+  return moneyCents(value);
 }
 
 function centsToDollars(cents: number | null): string {
@@ -185,17 +185,13 @@ function FeeRow({
             </NativeSelect>
 
             {fee.mode === 'fixed' ? (
-              <Input
+              <MoneyTextInput
                 color="module"
-                type="number"
-                min={0}
-                step={0.01}
-                className="max-w-32 tabular-nums"
+                className="max-w-32"
                 aria-label={`${label} — amount`}
-                value={fee.amount}
-                placeholder="0.00"
-                onChange={(event) => {
-                  onChange({ ...fee, amount: event.target.value });
+                text={fee.amount}
+                onTextChange={(text) => {
+                  onChange({ ...fee, amount: text });
                 }}
               />
             ) : null}
@@ -266,9 +262,14 @@ function PolicyEditor({
   }, [ctx, isNew, draft.name]);
 
   const nameOk = draft.name.trim() !== '';
+  // An amount nobody can read must not become a deposit of nothing (086).
+  const moneyOk =
+    moneyProblem(draft.depositAmount) === null &&
+    moneyProblem(draft.noShow.amount) === null &&
+    moneyProblem(draft.lateCancel.amount) === null;
   const changed = useMemo(() => !draftsEqual(draft, initial), [draft, initial]);
   const busy = create.isPending || update.isPending;
-  const canSave = nameOk && changed && !busy;
+  const canSave = nameOk && moneyOk && changed && !busy;
 
   useDirtySource(
     changed && !create.isSuccess,
@@ -394,7 +395,7 @@ function PolicyEditor({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this rule set</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>
@@ -473,17 +474,13 @@ function PolicyEditor({
                       </NativeSelect>
 
                       {draft.depositMode === 'amount' ? (
-                        <Input
+                        <MoneyTextInput
                           color="module"
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          className="max-w-32 tabular-nums"
+                          className="max-w-32"
                           aria-label="Deposit amount"
-                          value={draft.depositAmount}
-                          placeholder="0.00"
-                          onChange={(event) => {
-                            set('depositAmount', event.target.value);
+                          text={draft.depositAmount}
+                          onTextChange={(text) => {
+                            set('depositAmount', text);
                           }}
                         />
                       ) : (

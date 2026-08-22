@@ -337,7 +337,7 @@ function ManageFlow({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this build</AlertTitle>
             <AlertDescription>
@@ -543,7 +543,7 @@ function Editor({
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this build</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -552,7 +552,7 @@ function Editor({
           ) : null}
 
           {blocked !== null && dirty ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>Not ready to save</AlertTitle>
                 <AlertDescription>{blocked}</AlertDescription>
@@ -1075,7 +1075,7 @@ function TryItPanel({
       description="Answer the questions the way a customer would. Nothing is bought and nothing is saved — this just runs your rules and shows what they produce."
     >
       {stale ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>This tries the saved version</AlertTitle>
             <AlertDescription>

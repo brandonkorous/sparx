@@ -190,7 +190,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not take this booking</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>
@@ -199,7 +199,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
           ) : null}
 
           {noServices ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Set up something to book first</AlertTitle>
                 <AlertDescription>
@@ -593,7 +593,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
           </div>
 
           {actionError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>That did not go through</AlertTitle>
                 <AlertDescription>{actionError}</AlertDescription>

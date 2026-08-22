@@ -1,6 +1,7 @@
 import { faCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { APP_BY_ID } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import type { AppMarketing } from '@/content/apps';
 import { HeroPanel, HeroPanelBar } from './panel';
 import { Shot } from './shot';
@@ -81,7 +82,7 @@ export function AppFigure({ app, copy }: { app: string; copy: AppMarketing }) {
       </ul>
 
       <p className="px-5 py-4 text-base font-semibold">
-        All of it, in the $49 plan, from your first day.
+        All of it, in the {PRICE_LABEL} plan, from your first day.
       </p>
     </HeroPanel>
   );

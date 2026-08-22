@@ -184,7 +184,7 @@ export function contactStrip(): Node {
     });
   return sectionAlt([
     gridThree([
-      item('Call us', '01233 000000', 'tel:+441233000000'),
+      item('Call us', '(555) 123-4567', 'tel:+15551234567'),
       item('Email', 'hello@example.com', 'mailto:hello@example.com'),
       item('Open', 'Mon–Fri 8–5, Sat 9–1'),
     ]),

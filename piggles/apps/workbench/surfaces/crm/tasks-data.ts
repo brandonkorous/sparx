@@ -19,6 +19,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type { TaskPriority, TaskStatus } from '@wizeworks/crm-schemas';
 import { api } from '../../lib/api/client';
 
@@ -227,8 +228,5 @@ export function useCompleteTask(id: string) {
 }
 
 export function taskErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

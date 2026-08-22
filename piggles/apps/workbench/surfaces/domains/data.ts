@@ -8,14 +8,14 @@
 // narrower copy. Two definitions of the same row is how a list ends up reading a
 // field the other one never fetched.
 //
-// Buying a domain is deliberately absent. api-rest can register one (search /
-// check / purchase / renew), but that surface is not built yet and sits behind
-// `DOMAIN_PURCHASE_ENABLED`; until it is, "I don't own one yet" is answered by
-// sending people to shop.sparx.works. Connecting a domain you ALREADY own is the
-// whole of this surface.
+// Buying a domain is deliberately absent, and stays absent. Piggles does not sell
+// domains, and the sparx console's answer — a "Get a domain" button opening
+// shop.sparx.works — is another company's shop with another company's checkout
+// on the end of it (issue #090). Connecting a domain you ALREADY own is the whole
+// of this surface, and a customer buys hers wherever she likes.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /** One DNS record, exactly as it must be typed into a registrar. */
@@ -28,8 +28,9 @@ export interface Domain {
   id: string;
   propertyId: string;
   host: string;
-  /** `subdomain` (the free sparx.zone address, always live), `custom` (connected
-   *  by its owner), or `purchased` (registered through sparx). */
+  /** `subdomain` (the free piggles.site address, always live), `custom`
+   *  (connected by its owner), or `purchased` (registered on the customer's
+   *  behalf — never on Piggles, which does not sell domains; see the header). */
   type: string;
   status: string;
   isCanonical: boolean;
@@ -51,11 +52,6 @@ export interface Domain {
    *  sparx manages. */
   verifiesByTxt: boolean;
 }
-
-/** Where to send someone who does not own a domain yet. Buying is not part of
- *  this surface (see the file header), so the answer is a real shop rather than
- *  a disabled button. */
-export const DOMAIN_SHOP_URL = 'https://shop.sparx.works';
 
 export const DOMAINS_KEY = ['domains'];
 
@@ -164,10 +160,7 @@ export function useDisconnectDomain(id: string) {
  * back to the caller's wording.
  */
 export function domainErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** How a domain is doing, in words rather than a status enum. `tone` feeds

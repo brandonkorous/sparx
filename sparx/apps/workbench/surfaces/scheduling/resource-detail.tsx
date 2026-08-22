@@ -310,7 +310,7 @@ function ResourceEditor({
           ) : null}
 
           {saveError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this</AlertTitle>
                 <AlertDescription>{saveError}</AlertDescription>

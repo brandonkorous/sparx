@@ -172,7 +172,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       {undated > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(undated, 'open order has', 'open orders have')} no expected date

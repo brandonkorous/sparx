@@ -158,7 +158,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not create this</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -308,7 +308,7 @@ function ManageTaxonomy({ ctx, taxKey }: { ctx: SurfaceContext; taxKey: string }
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this</AlertTitle>
             <AlertDescription>
@@ -667,7 +667,7 @@ function TermsSection({
       />
 
       {isError ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Could not load the labels</AlertTitle>
             <AlertDescription>This is a problem reaching the server.</AlertDescription>
@@ -1087,7 +1087,7 @@ function AddTermForm({
         </Button>
       </div>
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertDescription>{failure}</AlertDescription>
           </AlertContent>

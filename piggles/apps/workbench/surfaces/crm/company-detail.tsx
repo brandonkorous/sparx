@@ -53,10 +53,11 @@ import { customerName, lifecycleStageMeta, useCustomers } from './customers-data
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { ModuleScope } from '../../components/module-scope';
+import { PaymentTermsField } from '../../components/payment-terms-field';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
-  statusTone,
+  invoiceState,
   type BillingDocument,
 } from '../invoicing/types';
 import { formatMoney as formatDealMoney, useDeals } from './deals-data';
@@ -70,7 +71,6 @@ import {
   accountErrorMessage,
   accountStatusMeta,
   formatMoney,
-  PAYMENT_TERMS,
   useAccount,
   useCreateAccount,
   useDeleteAccount,
@@ -78,7 +78,6 @@ import {
   type AccountInput,
   type Company,
   type CompanyStatus,
-  type PaymentTerms,
 } from './companies-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -336,7 +335,7 @@ function CompanyEditor({
     status: draft.status,
     creditLimit: draft.creditLimit.trim() === '' ? 0 : Number(draft.creditLimit),
     discountPercent: draft.discountPercent.trim() === '' ? 0 : Number(draft.discountPercent),
-    paymentTerms: draft.paymentTerms ? (draft.paymentTerms as PaymentTerms) : null,
+    paymentTerms: draft.paymentTerms || null,
     assignedRepId: draft.assignedRepId || null,
     fleetSize: draft.fleetSize.trim() === '' ? null : Number(draft.fleetSize),
     notes: trimOrNull(draft.notes),
@@ -447,7 +446,7 @@ function CompanyEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this company</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -631,16 +630,10 @@ function CompanyEditor({
               <div className="grid gap-3 @md:grid-cols-2">
                 <Field>
                   <FieldLabel>Payment terms</FieldLabel>
-                  <Select
-                    color="module"
-                    aria-label="Payment terms"
+                  <PaymentTermsField
                     value={draft.paymentTerms}
-                    items={{
-                      '': 'No agreed terms',
-                      ...Object.fromEntries(PAYMENT_TERMS.map((t) => [t.value, t.label])),
-                    }}
-                    onValueChange={(next) => {
-                      set('paymentTerms', next as string);
+                    onChange={(next) => {
+                      set('paymentTerms', next);
                     }}
                   />
                   <FieldDescription>
@@ -895,7 +888,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
           ) : (
             <div className="flex flex-col gap-3">
               {owed > 0 ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>
                       {formatInvoiceMoney(owed, owedCurrency)} outstanding
@@ -926,8 +919,12 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                     >
                       <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
                       <td>
-                        <Badge color={statusTone(doc.status)} variant="soft" size="sm">
-                          {doc.status}
+                        <Badge
+                          color={invoiceState(doc.status).tone}
+                          variant={invoiceState(doc.status).tone && 'soft'}
+                          size="sm"
+                        >
+                          {invoiceState(doc.status).label}
                         </Badge>
                       </td>
                       <td className="text-right font-mono text-sm tabular-nums">

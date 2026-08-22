@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { requireSession } from '@wizeworks/auth';
 import { prisma } from '@wizeworks/db';
 import { listBlueprints } from '@/lib/furnish';
+import { tradeOptions } from '@/lib/trades';
 import { Onboarding } from '@/components/onboarding';
 
 export const metadata: Metadata = { title: 'Set up your business' };
@@ -33,5 +34,7 @@ export default async function OnboardingPage() {
   // Empty is a legitimate answer — the form falls back to the default template.
   const blueprints = await listBlueprints(session.user.tenantId);
 
-  return <Onboarding suggestedName={suggestedName} blueprints={blueprints} />;
+  return (
+    <Onboarding suggestedName={suggestedName} blueprints={blueprints} trades={tradeOptions()} />
+  );
 }

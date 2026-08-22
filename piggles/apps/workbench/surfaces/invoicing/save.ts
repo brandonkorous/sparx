@@ -34,6 +34,8 @@ export interface InvoiceHeader {
   taxRate: number;
   notes: string;
   currency: string;
+  /** `YYYY-MM-DD` as typed, or '' for none. Sent as an instant, or null. */
+  dueAt: string;
 }
 
 export interface SaveInput {
@@ -126,6 +128,10 @@ function headerBody(header: InvoiceHeader) {
     taxRate: header.taxRate,
     billTo: header.billTo,
     notes: header.notes || null,
+    // Midday UTC, not midnight: a due date is a DAY, and midnight lands on the
+    // day before for anyone west of UTC, so the invoice would read as due a day
+    // early for them and go late a day early with it.
+    dueAt: header.dueAt ? new Date(`${header.dueAt}T12:00:00Z`).toISOString() : null,
   };
 }
 

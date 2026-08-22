@@ -129,7 +129,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load your do-not-email list</AlertTitle>
@@ -163,8 +163,8 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
         label="Do-not-email list controls"
         search={
           /* The width sits on a WRAPPER: SearchInput forwards className to its inner
-            <input>, so a sizing class aimed at the control never reaches the
-            element that lays out. */
+                      <input>, so a sizing class aimed at the control never reaches the
+                      element that lays out. */
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
@@ -177,7 +177,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
         }
         status={
           /* Hidden below @lg so the search box keeps its width on a narrow pane;
-            the pager below carries the authoritative count anyway. */
+                      the pager below carries the authoritative count anyway. */
           typeof total === 'number' ? (
             <p className="hidden shrink-0 text-sm whitespace-nowrap @lg:block">
               {searching
@@ -190,7 +190,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
         }
         primary={
           /* ml-auto pushes the action group over — never a spacer div, which is a
-            phantom stop in the toolbar's roving focus. */
+                      phantom stop in the toolbar's roving focus. */
           <Button
             color="module"
             size="sm"

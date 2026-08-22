@@ -35,6 +35,78 @@ export function idOf(node: Node): string | undefined {
   return isAddressable(node) ? node.id : undefined;
 }
 
+/** Elements that hold nothing at all. An image has no words to edit, and asking
+ *  the browser to put a caret in one produces a caret nobody can type into. */
+const VOID_TAGS = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+]);
+
+/** Tags whose whole job is words, so an EMPTY one is still a place to type.
+ *  An empty `<div>` is not here: it is a container waiting for blocks, and
+ *  turning it into a text box is how an author loses a layout. */
+const WORD_TAGS = new Set([
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'span',
+  'a',
+  'button',
+  'li',
+  'dt',
+  'dd',
+  'td',
+  'th',
+  'caption',
+  'figcaption',
+  'blockquote',
+  'label',
+  'legend',
+  'summary',
+  'strong',
+  'em',
+  'small',
+]);
+
+/**
+ * The words a node holds ITSELF, or undefined when it is not a place for words.
+ *
+ * The one test behind two editing routes — the Inspector's Words box and typing
+ * straight into the canvas — so a heading that can be edited in one is editable
+ * in the other, and neither offers to edit something that cannot hold words.
+ *
+ * Three ways to fail it: a node holding any element child is a CONTAINER, and
+ * writing text into it would silently discard everything inside; a void element
+ * holds nothing; and an empty node that is not a word tag is a layout box, not
+ * an empty sentence.
+ */
+export function ownText(node: Node): string | undefined {
+  if (!isAddressable(node)) return undefined;
+  const tag = node.kind === 'element' ? node.tag.toLowerCase() : '';
+  if (tag && VOID_TAGS.has(tag)) return undefined;
+  const children = node.children ?? [];
+  if (children.some(isNodeChild)) return undefined;
+  const words = children.filter((child): child is string => typeof child === 'string');
+  if (words.length === 0 && !WORD_TAGS.has(tag)) return undefined;
+  return words.join('');
+}
+
 /** The element children of a node, text children dropped. */
 export function childNodes(node: Node): Node[] {
   if (!isAddressable(node)) return [];

@@ -17,6 +17,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 // The read shapes are the product layer's — one definition, shared, so the
 // bundle a product-scoped pane reads and the one this list reads cannot drift.
@@ -191,8 +192,5 @@ export function useDeleteBundle(id: string) {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 export function bundleErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

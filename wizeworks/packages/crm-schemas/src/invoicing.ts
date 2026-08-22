@@ -154,9 +154,16 @@ export const CreateBillingDocumentInput = z
     shipTo: Address.optional().nullable(),
     shippingTotal: z.number().min(0).default(0),
     surchargeTotal: z.number().min(0).default(0),
+    // The note PRINTED ON THE DOCUMENT. `billing-document-html` renders it under
+    // a "Notes" heading and `billing-snapshot` freezes it, so this is what the
+    // customer reads.
     notes: z.string().max(5000).optional().nullable(),
-    // Customer-visible note — `notes` above stays staff-internal (mirrors the
-    // retired Quote model's internal/customer note split).
+    // Inert on a billing document: nothing writes it and nothing renders it. It
+    // was carried over from the retired Quote model's internal/customer note
+    // split, and the comment here used to claim the reverse -- that `notes` was
+    // staff-internal and this was customer-visible. It is not true of this model
+    // and following it would have moved the customer's note somewhere no
+    // customer can see. (`customerNote` IS live on Order, Return and Quote.)
     customerNote: z.string().max(2000).optional().nullable(),
     validUntil: z.string().datetime().optional().nullable(),
     // Net-terms due date. Usually set automatically on finalize from the B2B

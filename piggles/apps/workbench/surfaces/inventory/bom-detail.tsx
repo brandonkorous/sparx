@@ -911,7 +911,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </FormSection>
 
           {status === 'archived' ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>This recipe is retired</AlertTitle>
                 <AlertDescription>

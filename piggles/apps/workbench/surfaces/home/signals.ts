@@ -79,7 +79,12 @@ export const SIGNALS: Signal[] = [
     surface: 'inventory.stock.list',
     one: 'product is running low',
     many: 'products are running low',
-    clear: 'stock is healthy',
+    // "stock is healthy" was a claim this count cannot support. It measures ONE
+    // thing — items at or below a reorder point — and a business that has set no
+    // reorder points scores zero on it for ever. A bakery with four products at
+    // "None to sell" read "You are all caught up… stock is healthy" on her home
+    // screen. A clear signal may only say what its own measurement said.
+    clear: 'nothing is running low',
     noun: 'stock',
   },
 ];
@@ -121,7 +126,7 @@ export function isClear(count: AttentionCount): boolean {
 
 /**
  * The clear signals as one sentence: "everything is sent, nothing is overdue and
- * stock is healthy."
+ * nothing is running low."
  *
  * One sentence rather than five pills, because the reader's question here is
  * binary — is there anything for me? — and five separate all-good badges make

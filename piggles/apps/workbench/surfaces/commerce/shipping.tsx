@@ -183,12 +183,30 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
               </Text>
 
               {shipFromWarning ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>Live carrier rates are turned off right now</AlertTitle>
                     <AlertDescription>
                       {shipFromWarning} Until then, shoppers only see the delivery options you set
                       up below — your connected carrier’s live prices won’t appear at checkout.
+                    </AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : null}
+
+              {/* No regions means no delivery has been set up, and the quote
+                  answers that with collection rather than by inventing a
+                  postage rate (issue #031). The merchant has to be TOLD that,
+                  or the first they learn of it is an order with no address. */}
+              {!zones.isPending && zoneRows.length === 0 ? (
+                <Alert color="info">
+                  <AlertContent>
+                    <AlertTitle>Right now, customers collect from you</AlertTitle>
+                    <AlertDescription>
+                      You haven’t set up any delivery yet, so the only choice at checkout is to come
+                      and collect — nothing gets posted, and nothing is charged for delivery. That’s
+                      exactly right for a shop people come to. If you do post orders out, add a
+                      region below and set what you charge.
                     </AlertDescription>
                   </AlertContent>
                 </Alert>
@@ -216,8 +234,8 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                   <EmptyState
                     size="sm"
                     icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
-                    title="No delivery regions yet"
-                    description="Add your first region — for example one covering your own country — then give it a delivery option and a price."
+                    title="You don’t deliver — people collect"
+                    description="That’s all set up and working. If you start posting orders out, add your first region — for example one covering your own country — then give it a delivery option and a price."
                   />
                 ) : (
                   <div className="flex flex-col">

@@ -39,6 +39,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 import { reachableSiteIds } from '../../../lib/property.js';
 import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
+import { sendInvoice, InvoiceSendError } from '../../../lib/invoice-mail.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const LinePathIds = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
@@ -167,6 +168,27 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await billingDocumentService.update(toInvoicingContext(request), id, request.body));
+  });
+
+  // Give the document to the person who owes the money. Was the one thing
+  // invoicing could not do: create, number, total, snapshot, print and collect,
+  // but never send.
+  app.post('/v1/invoicing/documents/:id/send', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    try {
+      return ok(await sendInvoice(request, id));
+    } catch (error) {
+      // The refusals this raises are sentences the operator can act on ("add an
+      // email address under Bill to"), so they go back verbatim rather than as a
+      // 500 that tells them nothing.
+      if (error instanceof InvoiceSendError) {
+        reply.code(400);
+        return { success: false, error: { message: error.message } };
+      }
+      throw error;
+    }
   });
 
   app.delete('/v1/invoicing/documents/:id', async (request, reply) => {

@@ -32,7 +32,7 @@ import {
   describeDue,
   formatMoney,
   normalizeDocument,
-  statusTone,
+  invoiceState,
   type BillingDocument,
 } from './types';
 
@@ -57,11 +57,14 @@ const MODULE = 'invoicing';
 type SortKey = 'number' | 'customer' | 'status' | 'dueAt' | 'total' | 'balance';
 type SortDir = 'asc' | 'desc';
 
+// The same words the chips in the rows use — filtering for "Owed" and reading
+// back "unpaid" was half of what made the raw status confusing.
 const STATUS_FILTERS = [
   { value: 'all', label: 'All' },
-  { value: 'unpaid', label: 'Unpaid' },
-  { value: 'overdue', label: 'Late' },
-  { value: 'paid', label: 'Paid' },
+  { value: 'unpaid', label: invoiceState('unpaid').label },
+  { value: 'overdue', label: invoiceState('overdue').label },
+  { value: 'partial', label: invoiceState('partial').label },
+  { value: 'paid', label: invoiceState('paid').label },
 ] as const;
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -300,6 +303,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             <tbody>
               {rows.map((doc) => {
                 const due = describeDue(doc.dueAt, doc.overdueDays);
+                const state = invoiceState(doc.status);
                 return (
                   <tr
                     key={doc.id}
@@ -343,8 +347,8 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {due.label}
                     </td>
                     <td>
-                      <Badge color={statusTone(doc.status)} variant="soft" size="sm">
-                        {doc.status}
+                      <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
+                        {state.label}
                       </Badge>
                     </td>
                     <td className="hidden text-right tabular-nums @3xl:table-cell">

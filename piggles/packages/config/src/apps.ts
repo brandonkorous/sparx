@@ -238,3 +238,31 @@ export const APPS: readonly PigglesAppDef[] = [
     modules: ['ai'],
   },
 ] as const;
+
+/**
+ * Which apps start on the rail, for a given answer to "what do you do".
+ *
+ * ONE rule, because there were two and they disagreed on screen. Onboarding's
+ * live preview drew the rail as *only* the ticked groups, while what actually got
+ * written was `defaultEnabled || ticked` — so a business that ticked website ·
+ * sell · invoice was shown nine apps and given thirteen. Issue #011.
+ *
+ * The preview is the one screen whose whole job is to be believed: it exists so
+ * nobody can leave onboarding thinking an unticked box took something away. A
+ * preview that does not match the result is worse than no preview.
+ *
+ * `defaultEnabled` is unconditional on purpose. Ticking NOTHING must still leave
+ * a usable product — a business that answers nothing is still three taps from
+ * selling — so the ticks ADD to a working rail rather than composing it.
+ */
+export function railAppIds(groups: readonly string[]): string[] {
+  return APPS.filter((app) => app.defaultEnabled || groups.includes(app.group)).map(
+    (app) => app.id
+  );
+}
+
+/** Whether one app starts on the rail for this answer. The same rule as
+ *  {@link railAppIds}, for a caller drawing app by app. */
+export function railHasApp(app: PigglesAppDef, groups: readonly string[]): boolean {
+  return app.defaultEnabled || groups.includes(app.group);
+}

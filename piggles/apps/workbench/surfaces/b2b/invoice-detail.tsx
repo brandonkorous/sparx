@@ -52,7 +52,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import {
   PAID_METHOD_LABELS,
   formatCents,
@@ -234,7 +234,7 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not raise this invoice</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -494,7 +494,7 @@ function InvoiceManage({
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this invoice</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -729,9 +729,7 @@ function MarkPaidDialog({ invoice }: { invoice: InvoiceRow }) {
 
           <DialogFooter>
             <DialogClose>
-              <Button color="neutral" variant="ghost" size="sm">
-                Cancel
-              </Button>
+              <Button size="sm">Cancel</Button>
             </DialogClose>
             <Button color="module" size="sm" loading={markPaid.isPending} onClick={record}>
               Mark {formatCents(invoice.balanceCents)} paid

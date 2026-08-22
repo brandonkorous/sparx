@@ -60,7 +60,13 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       const t = v?.trim();
       return t && t.length > 0 ? t : undefined;
     };
-    const title = clean(silicaPage.seoTitle) ?? `${silicaPage.name} · ${site.name}`;
+    // NOT `… · ${site.name}` — the root layout's title template already appends it
+    // (`template: '%s · <site>'`), so carrying the brand here too shipped every page
+    // with no SEO title as "Collection orders · Thistle & Rye · Thistle & Rye" in the
+    // browser tab. `ogTitle` below keeps the brand, because openGraph has no template
+    // and a social card is seen with none of the site around it.
+    const title = clean(silicaPage.seoTitle) ?? silicaPage.name;
+    const ogTitle = `${title} · ${site.name}`;
     const description = clean(silicaPage.seoDescription);
     const canonical = clean(silicaPage.canonical);
     const ogImage =
@@ -75,7 +81,11 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       title,
       ...(description ? { description } : {}),
       ...(canonical ? { alternates: { canonical } } : {}),
-      openGraph: { title, ...(description ? { description } : {}), images: [{ url: ogImage }] },
+      openGraph: {
+        title: ogTitle,
+        ...(description ? { description } : {}),
+        images: [{ url: ogImage }],
+      },
       robots: silicaPage.noindex ? { index: false, follow: false } : { index: true, follow: true },
     };
   }
@@ -95,7 +105,10 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       const t = v?.trim();
       return t && t.length > 0 ? t : undefined;
     };
-    const title = clean(builderPage.seoTitle) ?? `${builderPage.name} · ${site.name}`;
+    // Same rule as the silica branch above: the layout template owns the ` · <site>`
+    // suffix, so the page title must not carry one of its own.
+    const title = clean(builderPage.seoTitle) ?? builderPage.name;
+    const ogTitle = `${title} · ${site.name}`;
     const description = clean(builderPage.seoDescription);
     const canonical = clean(builderPage.canonical);
     // Author-set OG URL wins; otherwise a tenant-branded generated card
@@ -113,7 +126,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       ...(description ? { description } : {}),
       ...(canonical ? { alternates: { canonical } } : {}),
       openGraph: {
-        title,
+        title: ogTitle,
         ...(description ? { description } : {}),
         images: [{ url: ogImage }],
       },
@@ -128,20 +141,23 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   const seoTitle = typeof seo.title === 'string' ? seo.title : undefined;
   const seoDescription = typeof seo.description === 'string' ? seo.description : undefined;
   const bodyTitle = typeof page.body.title === 'string' ? page.body.title : undefined;
-  const title = seoTitle ?? bodyTitle ?? site.name;
+  // The last fallback is the site's own name, which the layout template would turn
+  // into "Thistle & Rye · Thistle & Rye". `absolute` opts that one out — it is the
+  // whole title already, not a page within a site.
+  const title = seoTitle ?? bodyTitle;
 
   return {
-    title,
+    title: title ?? { absolute: site.name },
     ...(seoDescription ? { description: seoDescription } : {}),
     // CMS pages carry no image of their own — give them a tenant-branded
     // generated social card (docs/50 §5).
     openGraph: {
-      title,
+      title: title ? `${title} · ${site.name}` : site.name,
       ...(seoDescription ? { description: seoDescription } : {}),
       images: [
         {
           url: ogImageUrl({
-            title,
+            title: title ?? site.name,
             eyebrow: 'Page',
             brand: site.name,
             accent: site.theme?.colorPrimary,

@@ -102,7 +102,7 @@ export function AddRedirectDialog({
 
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
             {failure ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>Could not add that redirect</AlertTitle>
                   <AlertDescription>{failure}</AlertDescription>

@@ -294,7 +294,15 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     });
     // The release id + hash ride back so the caller can name what it just published —
     // and so a UI can offer "undo" without a second round trip (docs/126 §5.3).
-    return ok({ published: true, releaseId: release.id, hash: release.hash });
+    // `pages` rides back with them because it is the part a PERSON reads: the console
+    // says how much went live, and until this was returned it said
+    // "undefined pages are live" on every successful publish.
+    return ok({
+      published: true,
+      pages: release.pages,
+      releaseId: release.id,
+      hash: release.hash,
+    });
   });
 
   // ── Publish history (docs/126 §5.3) ────────────────────────────────────────

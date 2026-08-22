@@ -24,6 +24,7 @@ import {
 } from '@wizeworks/story-schemas';
 import { SWITCHBOARD_MODULES, MODULE_BY_KEY, moduleLock } from './modules';
 import type { PersistedStory, WizardBlueprint } from './types';
+import { PRODUCT } from '@piggles/config';
 
 export { EMPTY_STORY };
 export type { StoryState };
@@ -322,7 +323,7 @@ function joinClauses(ids: string[], slots: Record<string, string>): string {
   return ids.map((id, i) => `${oxford(i, ids.length)}${phrase(id, slots)}`).join('');
 }
 
-/** Slugify a typed handle into the `.sparx.zone` subdomain form. */
+/** Slugify a typed handle into the tenant-site subdomain form. */
 export function handleSlug(name: string): string {
   return (
     name
@@ -375,6 +376,6 @@ export function toProse(s: StoryState): string {
   s.lines.forEach((line, li) => {
     out += `${li === 0 ? ' I’ll ' : ' I also '}${joinClauses(line, s.slots)}.`;
   });
-  out += ` Find me at ${handleSlug(s.name) || 'your-name'}.sparx.zone.`;
+  out += ` Find me at ${handleSlug(s.name) || 'your-name'}.${PRODUCT.tenantSites.suffix}.`;
   return out;
 }

@@ -150,7 +150,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
       }
     >
       {isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load your devices</AlertTitle>
             <AlertDescription>
@@ -174,7 +174,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
         <PaneWaiting module={MODULE} label="Loading your devices…" />
       ) : rows.length === 0 ? (
         /* No Card: the FormSection is one. <PaneEmpty> so this state draws the
-           same kind of picture as the <PaneWaiting> beside it. */
+                   same kind of picture as the <PaneWaiting> beside it. */
         <PaneEmpty
           module={MODULE}
           icon={<Icon glyph={faLaptopMobile} className="size-6" aria-hidden />}

@@ -291,7 +291,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       </Alert>
 
       {data.varianceAcceptedAt ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>
               The difference was accepted by {data.varianceAcceptedByName ?? 'someone'}

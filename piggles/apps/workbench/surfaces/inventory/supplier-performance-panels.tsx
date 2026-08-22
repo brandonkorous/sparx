@@ -129,7 +129,7 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
       }
     >
       {data.score === null ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Not enough to grade them on yet</AlertTitle>
             <AlertDescription>

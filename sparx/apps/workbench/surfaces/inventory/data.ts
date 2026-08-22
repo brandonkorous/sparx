@@ -169,6 +169,40 @@ export const stockKeys = {
 /* ── Reads ──────────────────────────────────────────────────────────────── */
 
 /**
+ * Products whose name or code matches a search that turned up NO counted stock.
+ *
+ * The dead end this exists for: the Stock list can only find what has a level
+ * row, and a level row appears only when somebody counts something. So a real
+ * product typed in by its real name comes back "Nothing matches that — try part
+ * of a product name", which is advice to redo the thing that just worked. The
+ * product is not missing; it has never been counted, and those are different
+ * problems with different answers.
+ *
+ * Only fires on that dead end (`enabled`), so the ordinary path costs nothing.
+ * Five is enough to recognise the one you meant without becoming a second list.
+ */
+export function useCatalogMatches(search: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...stockKeys.all, 'catalog-matches', search] as const,
+    queryFn: () =>
+      api.list<CatalogMatch>('/v1/commerce/products', {
+        q: search,
+        sort_by: 'title',
+        order: 'asc',
+        take: 5,
+        skip: 0,
+      }),
+    enabled: enabled && search.length > 0,
+  });
+}
+
+/** Just enough of a product to name it and open its stock panel. */
+export interface CatalogMatch {
+  id: string;
+  title: string;
+}
+
+/**
  * One window of the stock list.
  *
  * Every narrowing is a SERVER filter, including "running low" — which is an

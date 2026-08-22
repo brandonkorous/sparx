@@ -545,7 +545,7 @@ function LoadFailure({
   onRetry: () => void;
 }) {
   return (
-    <Alert color="error" variant="soft">
+    <Alert color="error">
       <AlertContent>
         <AlertTitle>{title}</AlertTitle>
         <AlertDescription>{detail}</AlertDescription>

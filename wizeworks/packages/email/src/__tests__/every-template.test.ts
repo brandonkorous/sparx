@@ -91,7 +91,8 @@ describe('every coded template renders', () => {
     // the other direction — an id removed from the union but left behind here — and
     // pins the count so a silent drop is visible.
     expect(new Set(IDS).size).toBe(IDS.length);
-    expect(IDS.length).toBe(36);
+    // 37 since `invoice-sent` — the tenant's own invoice to their customer.
+    expect(IDS.length).toBe(37);
   });
 });
 

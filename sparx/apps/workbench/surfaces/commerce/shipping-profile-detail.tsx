@@ -78,7 +78,7 @@ function ProfileLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this product group</AlertTitle>
             <AlertDescription>
@@ -277,7 +277,7 @@ function ProfileEditor({
           )}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this group</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

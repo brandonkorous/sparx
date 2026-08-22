@@ -23,6 +23,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 
@@ -346,10 +347,7 @@ export function relativeTime(iso: string | null): string {
 /** The server's own sentence for a 4xx — it names the exact problem ("A header
  *  name is required for header auth") far better than a status code can. */
 export function sourceErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 export function isNotFound(error: unknown): boolean {

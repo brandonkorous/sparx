@@ -41,6 +41,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -167,6 +168,40 @@ export const stockKeys = {
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
+
+/**
+ * Products whose name or code matches a search that turned up NO counted stock.
+ *
+ * The dead end this exists for: the Stock list can only find what has a level
+ * row, and a level row appears only when somebody counts something. So a real
+ * product typed in by its real name comes back "Nothing matches that — try part
+ * of a product name", which is advice to redo the thing that just worked. The
+ * product is not missing; it has never been counted, and those are different
+ * problems with different answers.
+ *
+ * Only fires on that dead end (`enabled`), so the ordinary path costs nothing.
+ * Five is enough to recognise the one you meant without becoming a second list.
+ */
+export function useCatalogMatches(search: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...stockKeys.all, 'catalog-matches', search] as const,
+    queryFn: () =>
+      api.list<CatalogMatch>('/v1/commerce/products', {
+        q: search,
+        sort_by: 'title',
+        order: 'asc',
+        take: 5,
+        skip: 0,
+      }),
+    enabled: enabled && search.length > 0,
+  });
+}
+
+/** Just enough of a product to name it and open its stock panel. */
+export interface CatalogMatch {
+  id: string;
+  title: string;
+}
 
 /**
  * One window of the stock list.
@@ -493,10 +528,7 @@ export function holderLabel(holderType: string): string {
  * sentence, so it falls back to the caller's wording.
  */
 export function stockErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** True when the sku behind this pane no longer exists — a different problem

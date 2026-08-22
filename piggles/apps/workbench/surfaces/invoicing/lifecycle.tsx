@@ -36,6 +36,7 @@ import {
   faChevronDown,
   faCopy,
   faEllipsis,
+  faPaperPlane,
   faPrint,
   faTrashCan,
 } from '@fortawesome/pro-solid-svg-icons';
@@ -186,6 +187,111 @@ export function StageControl({ doc, stages }: StageControlProps) {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+/** Same shape the payments and signature rows use — medium date, no time. When
+ *  it was sent matters to the day, not the minute. */
+function sentOn(iso: string): string {
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return 'an earlier date';
+  return new Date(t).toLocaleDateString(undefined, { dateStyle: 'medium' });
+}
+
+/**
+ * Give the document to the person who owes the money.
+ *
+ * This is the one thing invoicing could not do. It could create, number, total,
+ * snapshot, print and take payment on a document, and the editor's email box
+ * even says "Where the invoice gets sent" — a promise nothing kept. The only
+ * outbound actions were Print and Copy payment link, both of which hand the job
+ * back to the operator's own mail client.
+ *
+ * It sits in the TOOLBAR, not the overflow menu. Making an invoice and sending
+ * it is one errand, and the second half of it is not a thing to go hunting for.
+ */
+export function SendButton({ doc, dirty }: { doc: BillingDocument; dirty: boolean }) {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const confirm = useConfirm();
+
+  const send = useMutation({
+    mutationFn: () =>
+      api.post<{ to: string; documentNumber: string }>(
+        `/v1/invoicing/documents/${doc.id}/send`,
+        {}
+      ),
+    onSuccess: (result) => {
+      void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
+      toast.add({
+        title: `Sent to ${result.to}`,
+        description: 'The invoice is in their inbox, with the lines and the total on it.',
+        type: 'success',
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        title: 'Could not send it',
+        // The server refuses with sentences somebody can act on ("add an email
+        // address under Bill to"), so they are shown as written.
+        description:
+          error instanceof Error && error.message.length < 300
+            ? error.message
+            : 'Nothing was sent. Try again in a moment.',
+        type: 'error',
+      });
+    },
+  });
+
+  const metadata = (doc.metadata ?? {}) as { sentAt?: unknown; sentTo?: unknown };
+  const sentAt = typeof metadata.sentAt === 'string' ? metadata.sentAt : null;
+  const sentTo = typeof metadata.sentTo === 'string' ? metadata.sentTo : null;
+
+  // Never email a version that is not the saved one — what lands in their inbox
+  // has to be the document this pane can still show her afterwards.
+  const blockedReason = dirty
+    ? 'Save your changes first — otherwise they would get a different invoice from the one you are looking at.'
+    : null;
+
+  const onSend = async () => {
+    const to = (doc.billTo?.email ?? '').trim();
+    const ok = await confirm({
+      title: sentAt ? 'Send this invoice again?' : 'Send this invoice?',
+      description: to
+        ? `${doc.number ?? 'This invoice'} goes to ${to}, with its lines, its total and anything you wrote in Notes.` +
+          (sentAt ? ' They already have a copy; this sends another.' : '')
+        : 'There is no email address on this invoice yet. Add one under Bill to first.',
+      confirmLabel: sentAt ? 'Send it again' : 'Send it',
+      cancelLabel: 'Not yet',
+      color: 'module',
+    });
+    if (!ok) return;
+    await deferTick();
+    send.mutate();
+  };
+
+  return (
+    <Tooltip
+      content={
+        blockedReason ??
+        (sentAt && sentTo
+          ? `Last sent to ${sentTo} on ${sentOn(sentAt)}`
+          : 'Email it to the customer')
+      }
+    >
+      <Button
+        color="module"
+        variant="outline"
+        size="sm"
+        disabled={Boolean(blockedReason) || send.isPending}
+        onClick={() => {
+          void onSend();
+        }}
+      >
+        <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
+        {send.isPending ? 'Sending…' : sentAt ? 'Send again' : 'Send'}
+      </Button>
+    </Tooltip>
   );
 }
 

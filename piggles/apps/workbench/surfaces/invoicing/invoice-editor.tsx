@@ -41,7 +41,7 @@ import { BillTo } from './bill-to';
 import { LineItems } from './line-items';
 import { InvoiceSummary } from './invoice-summary';
 import { HistorySection } from './history';
-import { DocumentActions, StageControl, useDocumentWorkflow } from './lifecycle';
+import { DocumentActions, SendButton, StageControl, useDocumentWorkflow } from './lifecycle';
 import { PaymentsSection } from './payments';
 import { SignaturesSection } from './signatures';
 import { InvoiceValidationError, listDocumentWorkflows, saveInvoice } from './save';
@@ -55,6 +55,8 @@ interface DraftShape {
   billTo: { name: string; email: string; address: string };
   taxRate: number;
   notes: string;
+  /** `YYYY-MM-DD`, or '' for no due date. */
+  dueAt: string;
   lines: DraftLine[];
 }
 
@@ -63,6 +65,7 @@ const EMPTY_DRAFT: DraftShape = {
   billTo: { name: '', email: '', address: '' },
   taxRate: 0,
   notes: '',
+  dueAt: '',
   // No starter row: lines are added through the modal, so a fresh invoice shows
   // the empty state + Add button rather than a stray blank line.
   lines: [],
@@ -168,7 +171,16 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
         address: doc.billTo?.address ?? '',
       },
       taxRate: doc.taxRate,
-      notes: '',
+      // The note the customer reads, as stored. It used to be hardcoded to `''`,
+      // which made the box look empty on every load AND wiped the stored note on
+      // the next save (`headerBody` sends `notes || null`). So a note could be
+      // written, saved, and was gone the moment the pane reloaded — with the save
+      // reporting success both times.
+      notes: doc.notes ?? '',
+      // Seeded from the document for the same reason `notes` is: a field the
+      // editor does not read is a field the next save WIPES, and the save
+      // reports success while doing it.
+      dueAt: doc.dueAt ? doc.dueAt.slice(0, 10) : '',
       lines,
     });
     setOriginal(lines.filter((line) => line.id));
@@ -252,9 +264,10 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         }
       >
+        {/* Toolbar chrome, so no colour: a bare `.btn` resolves to base ink and
+            stays right in both themes. `variant` without a colour is nothing to
+            apply, and `neutral` is not a choice to make unasked (RULE #4). */}
         <Button
-          color="neutral"
-          variant="outline"
           size="sm"
           onClick={() => {
             // 'beside' is a suggestion, not a layout: it splits the current group
@@ -271,6 +284,10 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             documents — a new draft has no stage until it enters its workflow. */}
         {doc && docWorkflow ? <StageControl doc={doc} stages={docWorkflow.stages} /> : null}
         {doc ? <DocumentActions doc={doc} stage={currentStage} ctx={ctx} /> : null}
+        {/* Sending is the second half of the errand, so it is a real control
+            rather than an overflow item. Only on a saved document — a draft that
+            has never been written down has nothing to send. */}
+        {doc ? <SendButton doc={doc} dirty={dirty} /> : null}
         <Button
           color="module"
           size="sm"
@@ -300,7 +317,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                     </Alert>
                   ) : null}
                   {readOnly ? (
-                    <Alert color="neutral" variant="soft">
+                    <Alert color="info" variant="soft">
                       {currentStage
                         ? `This document is at "${currentStage.customerLabel}", which locks it from edits. Recording a payment still works.`
                         : 'This document has been voided, so it can no longer be changed.'}
@@ -337,6 +354,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                   <BillTo
                     customerId={draft.customerId}
                     value={draft.billTo}
+                    dueAt={draft.dueAt}
                     readOnly={readOnly}
                     onChange={update}
                   />

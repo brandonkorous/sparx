@@ -59,16 +59,11 @@ export function MiniCart() {
         </div>
 
         {lines.length === 0 ? (
-          <div
-            className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center"
-            style={{ flex: 1 }}
-          >
+          <div className="text-base-content grid flex-1 place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
             <span className="text-[2.5rem] opacity-50" aria-hidden="true">
               🛒
             </span>
-            <p className="text-base-content" style={{ margin: 0 }}>
-              Your cart is empty.
-            </p>
+            <p className="text-base-content m-0">Your cart is empty.</p>
             <Button type="button" color="primary" onClick={closeDrawer}>
               Keep shopping
             </Button>
@@ -81,24 +76,26 @@ export function MiniCart() {
                   key={line.id}
                   className="border-base-300 grid grid-cols-[88px_1fr_auto] items-start gap-4 border-b py-5 max-[520px]:grid-cols-[64px_1fr]"
                 >
-                  <div className="rounded-field bg-base-200 relative h-[88px] w-[88px] shrink-0 overflow-hidden">
+                  {/* The thumbnail follows its COLUMN. It was a fixed 88px inside a
+                      64px column below 520px, so it overhung by 24px and covered the
+                      first letter of the product's name. */}
+                  <div className="rounded-field bg-base-200 relative size-[88px] shrink-0 overflow-hidden max-[520px]:size-16">
                     {line.imageUrl ? (
                       <Image
                         src={line.imageUrl}
                         alt={line.title}
                         fill
-                        sizes="88px"
-                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 520px) 64px, 88px"
+                        className="object-cover"
                       />
                     ) : null}
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <div className="flex flex-col gap-1.5">
                     {line.productHandle ? (
                       <Link
                         href={`/products/${line.productHandle}`}
                         onClick={closeDrawer}
-                        className="card-title text-base-content"
-                        style={{ textDecoration: 'none', color: 'inherit' }}
+                        className="card-title text-base-content no-underline"
                       >
                         {line.title}
                       </Link>
@@ -106,9 +103,7 @@ export function MiniCart() {
                       <span className="card-title text-base-content">{line.title}</span>
                     )}
                     {line.variantTitle ? (
-                      <span className="text-base-content" style={{ fontSize: '0.82rem' }}>
-                        {line.variantTitle}
-                      </span>
+                      <span className="text-base-content text-sm">{line.variantTitle}</span>
                     ) : null}
                     <div>
                       <QuantityStepper
@@ -119,7 +114,7 @@ export function MiniCart() {
                       />
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontWeight: 600 }}>
+                  <div className="text-right font-semibold">
                     {formatMoney(line.lineTotalCents, currency)}
                   </div>
                 </div>
@@ -131,7 +126,7 @@ export function MiniCart() {
                 <span>Subtotal</span>
                 <span>{formatMoney(totals.subtotalCents, currency)}</span>
               </div>
-              <p className="text-base-content" style={{ fontSize: '0.8rem', margin: 0 }}>
+              <p className="text-base-content m-0 text-sm">
                 Shipping &amp; taxes calculated at checkout.
               </p>
               <Button
@@ -144,7 +139,6 @@ export function MiniCart() {
               </Button>
               <Button
                 render={<Link href="/cart" onClick={closeDrawer} />}
-                color="neutral"
                 variant="outline"
                 className="w-full"
               >

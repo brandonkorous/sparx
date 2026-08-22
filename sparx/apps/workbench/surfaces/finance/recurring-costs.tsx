@@ -728,7 +728,7 @@ export function RecurringCostsSurface() {
             )}
 
             {templates.length > 0 && templates.every((t) => !t.autoGenerate) ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertDescription>
                     None of these record themselves, so nothing will appear in your spending until

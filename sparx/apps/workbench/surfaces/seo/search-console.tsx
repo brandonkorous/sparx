@@ -96,7 +96,7 @@ function SitePicker({
 }) {
   if (sites.length === 0) {
     return (
-      <Alert color="warning" variant="soft">
+      <Alert color="warning">
         <AlertContent>
           <AlertTitle>No verified sites on that Google account</AlertTitle>
           <AlertDescription>
@@ -354,7 +354,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
           </p>
         ) : status.isError ? (
           <div className="flex h-full items-center justify-center p-8">
-            <Alert color="error" variant="soft" className="max-w-md">
+            <Alert color="error" className="max-w-md">
               <AlertContent>
                 <AlertTitle>Could not check the connection</AlertTitle>
                 <AlertDescription>
@@ -377,7 +377,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
             </div>
 
             {!configured ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>Not available yet</AlertTitle>
                   <AlertDescription>
@@ -456,7 +456,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
             ) : (
               <FormSection title="Connect Google">
                 {state === 'error' && connection?.lastError ? (
-                  <Alert color="error" variant="soft">
+                  <Alert color="error">
                     <AlertContent>
                       <AlertTitle>The last connection ran into a problem</AlertTitle>
                       <AlertDescription>{connection.lastError}</AlertDescription>
@@ -482,7 +482,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
             )}
 
             {connectFailure ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>Could not connect</AlertTitle>
                   <AlertDescription>{connectFailure}</AlertDescription>

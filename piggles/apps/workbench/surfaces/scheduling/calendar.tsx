@@ -22,25 +22,11 @@
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
-import {
-  Button,
-  Card,
-  Join,
-  NativeSelect,
-  Text,
-  ToggleGroup,
-  ToggleGroupItem,
-  Tooltip,
-} from '@wizeworks/silicaui-react';
-import {
-  faCalendarXmark,
-  faChevronLeft,
-  faChevronRight,
-  faLink,
-} from '@fortawesome/pro-solid-svg-icons';
+import { Card, Text } from '@wizeworks/silicaui-react';
+import { faCalendarXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { RefreshButton } from '../../components/refresh-button';
+import { PANE_SHELL } from '../../components/pane-toolbar';
+import { CalendarToolbar } from './calendar-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 
 /** Registry module for this pane, so the brand draws Bookings' own picture rather
@@ -53,75 +39,14 @@ import {
   addWeeks,
   dayLabel,
   dayWindow,
-  isSameDay,
-  isToday,
   useCalendarRange,
-  weekDays,
   weekLabel,
-  weekdayHeading,
   weekWindow,
   type CalendarEvent,
 } from './calendar-data';
 import { windowForEvents } from './calendar-grid';
-import { TimeGrid, targetFor, type GridColumn } from './calendar-timegrid';
-
-type View = 'week' | 'day';
-
-/** Column heading for a week day — the weekday over its date, today lit up. */
-function WeekHeader({ date }: { date: Date }) {
-  const { weekday, day } = weekdayHeading(date);
-  const today = isToday(date);
-  return (
-    <span className="flex flex-col items-center leading-tight">
-      <span className="text-xs">{weekday}</span>
-      <span className={`text-sm tabular-nums ${today ? 'font-bold' : 'font-medium'}`}>{day}</span>
-    </span>
-  );
-}
-
-/** The week's seven day columns, each carrying the bookings that START on it. */
-function weekColumns(anchor: Date, events: CalendarEvent[]): GridColumn[] {
-  return weekDays(anchor).map((date) => ({
-    key: date.toISOString(),
-    header: <WeekHeader date={date} />,
-    today: isToday(date),
-    events: events.filter((event) => isSameDay(new Date(event.startAt), date)),
-  }));
-}
-
-/**
- * The day's columns — one per resource, plus an "Unassigned" column for anything
- * not yet given to anyone. When a single resource is chosen the server already
- * narrowed the read, so it is one column; when the business has no resources set
- * up at all, the whole day is a single track.
- */
-function dayColumns(
-  events: CalendarEvent[],
-  resources: { id: string; name: string }[],
-  chosenResourceId: string
-): GridColumn[] {
-  if (chosenResourceId) {
-    const name = resources.find((resource) => resource.id === chosenResourceId)?.name ?? 'Booked';
-    return [{ key: chosenResourceId, header: headerText(name), events }];
-  }
-  if (resources.length === 0) {
-    return [{ key: 'all', header: headerText('All bookings'), events }];
-  }
-  const columns: GridColumn[] = resources.map((resource) => ({
-    key: resource.id,
-    header: headerText(resource.name),
-    events: events.filter((event) => event.resourceIds.includes(resource.id)),
-  }));
-  const unassigned = events.filter((event) => event.resourceIds.length === 0);
-  if (unassigned.length > 0) {
-    columns.push({ key: 'unassigned', header: headerText('Unassigned'), events: unassigned });
-  }
-  return columns;
-}
-
-function headerText(label: string) {
-  return <span className="truncate text-sm font-semibold">{label}</span>;
-}
+import { TimeGrid, targetFor } from './calendar-timegrid';
+import { dayColumns, emptyLine, useShutHours, weekColumns, type View } from './calendar-columns';
 
 export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const [view, setView] = useState<View>('week');
@@ -142,12 +67,14 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const events = useMemo(() => data ?? [], [data]);
   const timeWindow = useMemo(() => windowForEvents(events), [events]);
 
+  const shut = useShutHours(resourceId, timeWindow);
+
   const columns = useMemo(
     () =>
       view === 'week'
-        ? weekColumns(anchor, events)
-        : dayColumns(events, resources.data ?? [], resourceId),
-    [view, anchor, events, resources.data, resourceId]
+        ? weekColumns(anchor, events, shut)
+        : dayColumns(events, resources.data ?? [], resourceId, anchor, shut),
+    [view, anchor, events, resources.data, resourceId, shut]
   );
 
   const label = view === 'week' ? weekLabel(anchor) : dayLabel(anchor);
@@ -203,11 +130,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               <Text className="font-medium">
                 {view === 'week' ? 'Nothing booked this week' : 'Nothing booked this day'}
               </Text>
-              <Text className="text-sm">
-                {resourceId
-                  ? 'This person or resource has an open diary here. Try a different week, or clear the filter.'
-                  : 'An open diary. New bookings appear here as soon as they are made.'}
-              </Text>
+              <Text className="text-sm">{emptyLine(resourceId, view, anchor, shut)}</Text>
             </div>
           </div>
         ) : null}
@@ -217,110 +140,23 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Calendar controls"
-        status={
-          /* The "where am I in time" anchor. In the day view especially — whose
-            columns are resource names, not dates — this is the only thing naming
-            the day. Truncates rather than wraps the bar. */
-          <Text className="hidden min-w-0 truncate font-medium @sm:block">{label}</Text>
-        }
-        controls={
-          <>
-            <Button
-              size="sm"
-              variant="outline"
-              color="neutral"
-              onClick={() => {
-                setAnchor(new Date());
-              }}
-            >
-              Today
-            </Button>
-            <Join>
-              <Button
-                size="sm"
-                variant="outline"
-                color="neutral"
-                shape="square"
-                aria-label={view === 'week' ? 'Previous week' : 'Previous day'}
-                onClick={() => {
-                  step(-1);
-                }}
-              >
-                <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                color="neutral"
-                shape="square"
-                aria-label={view === 'week' ? 'Next week' : 'Next day'}
-                onClick={() => {
-                  step(1);
-                }}
-              >
-                <Icon glyph={faChevronRight} className="size-4" aria-hidden />
-              </Button>
-            </Join>
-            <ToggleGroup
-              size="sm"
-              color="module"
-              className="ml-auto shrink-0"
-              value={[view]}
-              onValueChange={(next: unknown[]) => {
-                const picked = next.at(-1);
-                if (picked === 'week' || picked === 'day') setView(picked);
-              }}
-            >
-              <ToggleGroupItem value="day">Day</ToggleGroupItem>
-              <ToggleGroupItem value="week">Week</ToggleGroupItem>
-            </ToggleGroup>
-            {/* People & equipment as a picker, not chips: a business can have twenty,
-            and twenty chips is a bar taller than the grid. */}
-            <NativeSelect
-              size="sm"
-              className="max-w-40 shrink"
-              aria-label="Show the diary for"
-              value={resourceId}
-              disabled={activeResources.length === 0}
-              onChange={(domEvent) => {
-                setResourceId(domEvent.target.value);
-              }}
-            >
-              <option value="">Everyone &amp; equipment</option>
-              {activeResources.map((resource) => (
-                <option key={resource.id} value={resource.id}>
-                  {resource.name}
-                </option>
-              ))}
-            </NativeSelect>
-            <Tooltip content="Linked outside calendars" align="end">
-              <Button
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                shape="square"
-                aria-label="Linked outside calendars"
-                onClick={() => {
-                  ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
-                }}
-              >
-                <Icon glyph={faLink} className="size-4" aria-hidden />
-              </Button>
-            </Tooltip>
-          </>
-        }
-        refresh={
-          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+      <CalendarToolbar
+        label={label}
+        view={view}
+        resourceId={resourceId}
+        resources={activeResources}
+        isFetching={isFetching}
+        updatedAt={data ? dataUpdatedAt : undefined}
+        onSetView={setView}
+        onSetAnchor={setAnchor}
+        onSetResourceId={setResourceId}
+        onStep={step}
+        onRefresh={() => {
+          void refetch();
+        }}
+        onOpenLinkedCalendars={() => {
+          ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
+        }}
       />
 
       {/* One recessed card holding the whole grid. Capped nowhere on purpose: the

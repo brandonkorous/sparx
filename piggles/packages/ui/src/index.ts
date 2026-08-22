@@ -16,6 +16,8 @@ export { useAppearance } from './use-appearance';
 export type { AppearanceOptions, AppearanceState } from './use-appearance';
 export { FaqSection } from './faq';
 export type { FaqItem } from './faq';
+export { HeaderNotice } from './header-notice';
+export type { HeaderNoticeData } from './header-notice';
 export { Icon } from './icon';
 export type { IconGlyph, IconProps, PigglesIcon } from './icon';
 export { Section } from './section';

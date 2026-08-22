@@ -140,7 +140,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
       }
     >
       {isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load your devices</AlertTitle>
             <AlertDescription>

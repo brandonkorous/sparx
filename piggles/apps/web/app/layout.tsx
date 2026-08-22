@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fredoka, Inter } from 'next/font/google';
-import { PRODUCT } from '@piggles/config';
+import { fetchHeaderNotice, PRODUCT } from '@piggles/config';
+import { HeaderNotice } from '@piggles/ui';
 import { SiteHeader } from '@/components/marketing/site-header';
 import { SiteFooter } from '@/components/marketing/site-footer';
 import { THEME_SCRIPT } from '@/lib/theme';
@@ -45,7 +46,12 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+// `async`, for one fetch: what WizeWorks is announcing today. It is cached for a
+// minute and NEVER throws (see `fetchHeaderNotice`), so the site does not depend
+// on the announcement service being up — the worst case is no bar.
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const notice = await fetchHeaderNotice('marketing');
+
   return (
     // NO `data-theme` here. It carried a hardcoded `light` as "the SSR default,
     // not the answer" — but React owns every attribute it renders and re-asserts
@@ -69,6 +75,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
+        {/* ABOVE the header, not inside it. A notice is temporary and the header
+            is not; nesting it would make the site's own chrome jump every time
+            somebody in the admin console switches one on. */}
+        <HeaderNotice notice={notice} />
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />

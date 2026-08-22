@@ -158,7 +158,7 @@ function AddRedirectDialog({
 
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
             {failure ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>Could not add that redirect</AlertTitle>
                   <AlertDescription>{failure}</AlertDescription>
@@ -389,7 +389,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </PaneToolbar>
 
       {overWindow ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Showing the first {rows.length} redirects</AlertTitle>
             <AlertDescription>
@@ -402,7 +402,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {staleAfterFailure ? (
-          <Alert color="warning" variant="soft" className="m-2">
+          <Alert color="warning" className="m-2">
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>

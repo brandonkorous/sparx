@@ -6,7 +6,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { PigglesIcon } from '@piggles/ui';
-import { PRODUCT } from '@piggles/config';
+import { marketingUrl, PRODUCT } from '@piggles/config';
 
 // The band along the foot of every credential screen.
 //
@@ -88,7 +88,7 @@ export function Assurances() {
 
         <p className="mt-8 text-base">
           <a
-            href={`https://${PRODUCT.hosts.marketing}/trust`}
+            href={marketingUrl('trust')}
             className="text-primary font-semibold underline underline-offset-4"
           >
             The whole story, in plain words

@@ -200,7 +200,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : null}
 
             {!canMerge ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>Merging is limited to owners and admins</AlertTitle>
                   <AlertDescription>

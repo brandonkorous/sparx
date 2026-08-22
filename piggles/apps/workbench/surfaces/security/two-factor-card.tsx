@@ -443,7 +443,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
 
           <BackupCodes codes={setup.backupCodes} />
 
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             Save your backup codes before you continue — this is the only time they are shown
             without your password.
           </Alert>

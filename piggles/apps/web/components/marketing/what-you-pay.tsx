@@ -4,8 +4,8 @@ import { WhatYouPayForm } from './what-you-pay-form';
 
 // /pricing · the beat between the price and its small print.
 //
-// The hero states $49 and the section under this one states the allowances. What
-// neither of them says is what $49 is measured AGAINST, which is the only
+// The hero states the price and the section under this one states the allowances.
+// What neither of them says is what the price is measured AGAINST, which is the only
 // question somebody on a pricing page actually has. This is where they answer it
 // with their own numbers.
 //
@@ -18,7 +18,7 @@ import { WhatYouPayForm } from './what-you-pay-form';
 // whether to believe it — so the comparison sits BEHIND the price rather than in
 // front of it, on the one page whose whole job is that decision.
 //
-// ── EVERY FIGURE IS THEIRS OR IT IS $49 ────────────────────────────────────
+// ── EVERY FIGURE IS THEIRS OR IT IS OURS ───────────────────────────────────
 //
 // No competitor price appears, no market average, no "businesses like yours
 // typically spend". instead-of.tsx names the products on Brandon's instruction

@@ -188,7 +188,7 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {bomOptions.length === 0 ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>No recipes in use yet</AlertTitle>
                 <AlertDescription>
@@ -585,7 +585,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           ) : null}
 
           {data.status === 'released' ? (
-            <Alert color="warning" variant="soft">
+            <Alert color="warning">
               <AlertContent>
                 <AlertTitle>The parts are being held</AlertTitle>
                 <AlertDescription>

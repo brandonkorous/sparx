@@ -296,7 +296,10 @@ export async function sendInboxReply(
     await withTenant({ tenantId }, (tx) =>
       tx.socialInboxItem.update({
         where: { id: itemId },
-        data: { status: 'failed', metadata: { error: 'This platform cannot reply from sparx.' } },
+        data: {
+          status: 'failed',
+          metadata: { error: 'This platform does not allow replies from here.' },
+        },
       })
     );
     return { itemId, result: 'failed' };

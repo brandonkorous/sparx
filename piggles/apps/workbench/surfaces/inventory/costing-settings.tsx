@@ -159,7 +159,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
         </Text>
 
         {policy.data && !policy.data.configured ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>You are on the standard setting</AlertTitle>
               <AlertDescription>
@@ -196,7 +196,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* The question anyone sensible asks before touching this. Answered on
             the screen, at the moment they change it, not in a help article. */}
         {methodChanged ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>This changes what happens next, not what already happened</AlertTitle>
               <AlertDescription>

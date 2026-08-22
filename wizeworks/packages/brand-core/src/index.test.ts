@@ -19,6 +19,7 @@ const TOUCHED = [
   'PIGGLES_SUPPORT_EMAIL',
   'PIGGLES_BRAND_URL',
   'PIGGLES_EMAIL_FROM',
+  'PIGGLES_BRAND_WORDMARK',
 ] as const;
 
 let saved: Record<string, string | undefined>;
@@ -128,5 +129,73 @@ describe('platformFrom', () => {
   it('leaves the default brand’s own From untouched', () => {
     process.env.SPARX_BRAND_NAME = 'sparx';
     expect(platformFrom(platformBrandIdentity('sparx'), FALLBACK)).toBe(FALLBACK);
+  });
+});
+
+// ─── The drawn wordmark ─────────────────────────────────────────────────────
+//
+// The badge these feed is on the most public surface the platform has: the foot
+// of every tenant's own website. So every case below is about the same thing —
+// a bad value must degrade to a READABLE credit, never to an empty badge or a
+// thrown render.
+
+describe('platformBrandIdentity().wordmark', () => {
+  const ART = JSON.stringify({
+    viewBox: '0 0 531.08 188.86',
+    paths: ['M47.36,127.6', 'M140.95,124.07'],
+    accentPath: 'M120.67,27.21',
+  });
+
+  it('reads the geometry a brand has published', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = ART;
+    const wordmark = platformBrandIdentity('piggles').wordmark;
+    expect(wordmark?.viewBox).toBe('0 0 531.08 188.86');
+    expect(wordmark?.paths).toHaveLength(2);
+    expect(wordmark?.accentPath).toBe('M120.67,27.21');
+  });
+
+  it('is null for a brand whose mark IS its letterforms', () => {
+    expect(platformBrandIdentity('sparx').wordmark).toBeNull();
+  });
+
+  it('does not leak one brand’s logo onto the other’s tenants', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = ART;
+    expect(platformBrandIdentity('sparx').wordmark).toBeNull();
+  });
+
+  it('returns null rather than throwing on a value that is not JSON', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = '{not json';
+    expect(platformBrandIdentity('piggles').wordmark).toBeNull();
+  });
+
+  it('rejects a mark with no paths — an empty <svg> is a blank badge', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = JSON.stringify({ viewBox: '0 0 10 10', paths: [] });
+    expect(platformBrandIdentity('piggles').wordmark).toBeNull();
+  });
+
+  it('rejects a mark with no viewBox — without one the art has no scale', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = JSON.stringify({ viewBox: '  ', paths: ['M0,0'] });
+    expect(platformBrandIdentity('piggles').wordmark).toBeNull();
+  });
+
+  it('rejects a paths array holding anything that is not a path', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = JSON.stringify({
+      viewBox: '0 0 10 10',
+      paths: ['M0,0', 42],
+    });
+    expect(platformBrandIdentity('piggles').wordmark).toBeNull();
+  });
+
+  it('accepts a mark with no accent shape — not every logo has one', () => {
+    process.env.PIGGLES_BRAND_WORDMARK = JSON.stringify({ viewBox: '0 0 10 10', paths: ['M0,0'] });
+    expect(platformBrandIdentity('piggles').wordmark?.accentPath).toBeNull();
+  });
+
+  it('leaves the type treatment intact, so a null wordmark still credits by name', () => {
+    process.env.PIGGLES_BRAND_NAME = 'Piggles';
+    process.env.PIGGLES_BRAND_WORDMARK = 'rubbish';
+    const brand = platformBrandIdentity('piggles');
+    expect(brand.wordmark).toBeNull();
+    expect(brand.name).toBe('Piggles');
   });
 });

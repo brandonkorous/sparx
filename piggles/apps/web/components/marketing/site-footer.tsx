@@ -4,6 +4,7 @@ import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
 import { Logo } from '@piggles/brand/react';
 import { accountUrl, appIcon, appsInGroup, PRODUCT } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { GROUP_COPY } from './groups';
 
 // The footer carries the WHOLE app index — all fifteen, grouped, every one a
@@ -93,7 +94,7 @@ export function SiteFooter() {
                 Talk to a person
               </a>
             </div>
-            <p className="mt-4 text-base">$49 a month · 14 days free · no card needed</p>
+            <p className="mt-4 text-base">{PRICE_LABEL} a month · 14 days free · no card needed</p>
           </div>
 
           {COLUMNS.map((column) => (

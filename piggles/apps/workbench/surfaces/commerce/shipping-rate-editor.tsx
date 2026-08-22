@@ -35,7 +35,7 @@ import { useConfirm } from '../../lib/confirm';
 import { faPlus, faTrashCan, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { CreateShippingRateInput } from '@wizeworks/commerce-schemas';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import {
   rateTypeLabel,
   shippingErrorMessage,
@@ -220,7 +220,7 @@ function RateComposer({
       </div>
 
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not add this option</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>
@@ -553,7 +553,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
   return (
     <div className="flex flex-col gap-3">
       {rates.isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load the delivery options</AlertTitle>
             <AlertDescription>
@@ -614,7 +614,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
 
       {adding ? (
         profileList.length === 0 ? (
-          <Alert color="warning" variant="soft">
+          <Alert color="warning">
             <AlertContent>
               <AlertTitle>Add a product group first</AlertTitle>
               <AlertDescription>

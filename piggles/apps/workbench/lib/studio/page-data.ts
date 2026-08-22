@@ -7,6 +7,7 @@
 // copies of the same draft.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import type { Node } from '@wizeworks/silicaui-html';
 import { api } from '../api/client';
 
@@ -65,6 +66,13 @@ export function usePage(id: string | null) {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    // A 404 is an ANSWER — the page was deleted, or the id belongs to another
+    // business — and it will be the same answer three times. Retrying it holds the
+    // query in `pending`, which the pane renders as "Opening your page…", so the
+    // one state that can explain itself never gets to. Everything else still
+    // retries: a dropped connection is a fault and worth asking again.
+    retry: (attempt, error) =>
+      error instanceof ApiError && error.status === 404 ? false : attempt < 2,
   });
 }
 
@@ -146,6 +154,24 @@ export function useCreatePage() {
       api.post<PageSummary>('/v1/builder/pages', input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PAGES_KEY });
+    },
+  });
+}
+
+/** Remove a page — the half of the site check's advice ("give them an address, or
+ *  delete them") that the console could not carry out. The page's own cache is
+ *  REMOVED, so an open pane falls straight to its "isn't here any more" state. */
+export function useDeletePage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.delete<{ id: string }>(`/v1/builder/pages/${encodeURIComponent(id)}`),
+    onSuccess: (_result, id) => {
+      queryClient.removeQueries({ queryKey: pageKey(id) });
+      void queryClient.invalidateQueries({ queryKey: PAGES_KEY });
+      // The address is free again, so the check's finding and the site read are stale.
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'publish-state'] });
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'silica-site'] });
     },
   });
 }

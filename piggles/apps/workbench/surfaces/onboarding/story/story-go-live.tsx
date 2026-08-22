@@ -8,6 +8,7 @@ import { industryOf, type StoryState } from '@wizeworks/story-schemas';
 import { storefrontPreviewUrl, type OnboardingActions } from '../../../lib/onboarding/api';
 import { handleSlug } from '../../../lib/onboarding/story-state';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
+import { PRODUCT } from '@piggles/config';
 
 // The story's "go live" chapter — the SAME publish beat the wizard calls Launch, told
 // as the closing line of the owner's story. It keeps the real work (a live preview of
@@ -15,11 +16,10 @@ import type { WizardBlueprint } from '../../../lib/onboarding/types';
 // drops the wizard's generic marketing wall for a warm, first-person send-off in the
 // compose phase's voice + surface.
 
-const SITE_ZONE = 'sparx.zone';
-
-function usd(n: number): string {
-  return n.toLocaleString('en-US');
-}
+// The tenant-site suffix comes from the brand, never a literal. It was
+// hardcoded to sparx.zone — another product's domain, offered to a Piggles
+// customer as their own web address. Issue #009.
+const SITE_ZONE = PRODUCT.tenantSites.suffix;
 
 function subjectNoun(story: StoryState): string {
   const noun = story.industry ? industryOf(story.industry).noun : 'a business';
@@ -45,8 +45,6 @@ export function StoryGoLive({
   builderEnabled,
   published,
   moduleCount,
-  monthlyTotal,
-  monthlyElsewhere,
   actions,
 }: {
   story: StoryState;
@@ -55,8 +53,6 @@ export function StoryGoLive({
   builderEnabled: boolean;
   published: boolean;
   moduleCount: number;
-  monthlyTotal: number;
-  monthlyElsewhere: number;
   actions: OnboardingActions;
 }): ReactNode {
   const slug = handleSlug(story.name);
@@ -108,8 +104,6 @@ export function StoryGoLive({
     );
   }
 
-  const monthlySavings = Math.max(0, monthlyElsewhere - monthlyTotal);
-  const annualSavings = monthlySavings * 12;
   const facts = contentFacts(blueprint);
   const previewHref = installId && token ? storefrontPreviewUrl(slug, token) : null;
 
@@ -174,18 +168,20 @@ export function StoryGoLive({
         ) : null}
       </div>
 
-      {monthlySavings > 0 ? (
+      {/* The quiet part, and it carries NO figure. This screen used to add up
+          invented per-app prices and print a saving against them; the console is
+          not allowed to state a price at all (RULE #2), and a made-up one is
+          worse than none. What is true and worth saying is the shape: many
+          things, one place, one bill. */}
+      {moduleCount > 0 ? (
         <div className="flex flex-col gap-1">
           <Text className="max-w-[58ch] text-base">
             And here’s the quiet part of the story: you’re running{' '}
             <span className="font-medium">
-              {String(moduleCount)} {moduleCount === 1 ? 'tool' : 'tools'}
+              {String(moduleCount)} {moduleCount === 1 ? 'app' : 'apps'}
             </span>{' '}
-            on one platform for <span className="font-medium">${usd(monthlyTotal)}/mo</span> after
-            your free trial — saving{' '}
-            <span className="text-success font-medium">${usd(monthlySavings)}/mo</span>, about{' '}
-            <span className="font-medium">${usd(annualSavings)}</span> a year, versus stitching them
-            together elsewhere.
+            in one place, on one login and one bill, instead of stitching that many subscriptions
+            together and hoping they talk to each other.
           </Text>
         </div>
       ) : null}

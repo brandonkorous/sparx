@@ -880,7 +880,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
       </div>
 
       {receipt.currency !== receipt.baseCurrency ? (
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertTitle>Billed in {receipt.currency}</AlertTitle>
             <AlertDescription>

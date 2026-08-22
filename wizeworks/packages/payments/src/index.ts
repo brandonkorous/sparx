@@ -25,7 +25,8 @@ export type {
 } from './gateway';
 
 export {
-  GATEWAY_CATALOG,
+  gatewayCatalog,
+  gatewayCatalogTemplate,
   CATALOG_GATEWAY_IDS,
   getGatewayDescriptor,
   isApiKeyGateway,
@@ -118,7 +119,7 @@ import { registerPaymentIntegrations } from './integration';
 
 /** Register the built-in gateways. Call once at host boot. A developer PLUGIN
  *  (docs/111 D6) registers its own adapter the same way — `gatewayRegistry.register(
- *  new MyGateway())` at boot + a GATEWAY_CATALOG descriptor — and it lights up across
+ *  new MyGateway())` at boot + a gateway-catalog descriptor — and it lights up across
  *  checkout, invoices, and B2B with zero flow changes. */
 export function registerSparxGateways(): void {
   const gateways = [

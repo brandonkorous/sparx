@@ -411,7 +411,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
           which is the opposite of what a live-site action needs. `warning`, not
           `danger`: this is a caution about what the buttons below do, not a report
           that something is wrong. */}
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertDescription>
               These are the versions your visitors have seen. Putting one back changes your live

@@ -1,0 +1,23 @@
+-- property.show_sparx_credit → property.show_platform_credit
+--
+-- The column decides whether a tenant's public site carries the platform
+-- attribution badge in its footer. The badge itself stopped naming a product on
+-- 2026-08-16 — it resolves the name, the accent and the destination per tenant
+-- from `tenants.platform_brand`, because this one renderer serves the public
+-- sites of every brand and a fixed "Made with sparx" was appearing at the foot
+-- of Piggles businesses' websites. The column kept its old name through that
+-- change, so the switch controlling a Piggles owner's own footer was still
+-- spelled after a company they had never heard of.
+--
+-- SAFETY. RENAME rather than add-backfill-drop: the column has no writer
+-- anywhere in the platform (no console surfaces the toggle yet), so every row
+-- holds the `true` default and there is no data to move or lose.
+--
+-- The one cost, stated rather than discovered: the release pipeline runs data
+-- BEFORE containers, on purpose, so between this statement and the api-rest
+-- rollout the still-running old container selects a column that no longer
+-- exists. That window is the length of one container roll. It is accepted here
+-- because the alternative — expand, backfill, dual-read, contract across three
+-- releases — is a lot of machinery for a boolean that is `true` in every row and
+-- that nothing has ever written.
+ALTER TABLE "properties" RENAME COLUMN "show_sparx_credit" TO "show_platform_credit";

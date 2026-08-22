@@ -235,7 +235,7 @@ export async function checkConnection(
         tenantId,
         connectionId,
         'token_expired',
-        'The permission this account gave sparx has run out.',
+        'The permission this account gave has run out.',
         logger
       );
       return { connectionId, result: 'expired' };

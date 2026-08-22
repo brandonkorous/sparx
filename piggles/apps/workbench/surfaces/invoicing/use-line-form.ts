@@ -240,6 +240,27 @@ export function useLineForm({ open, line, lineTypes, markupRules, onSave }: UseL
     );
   }
 
+  /**
+   * Attach a catalogue item to this line.
+   *
+   * ── WHY THIS SWITCHES THE LINE TYPE ─────────────────────────────────────
+   *
+   * The default type is "Product", which prices by MARKUP — cost in, markup on
+   * top, unit price out. That is a trades model (a garage marking up a part),
+   * and the line it produces asks a business for a **cost** it may not track.
+   *
+   * It also threw the answer away. This function has always received the
+   * product's own price, and used to end at `if (!markupMode) setUnitPrice(…)`
+   * — so on the DEFAULT type the price was discarded. A bakery picking her own
+   * sourdough got an empty money box labelled "Cost", typed her SELLING price
+   * into it, and the invoice recorded that as her cost at **0% margin**: a
+   * number nobody measured, on the report that tells her whether she makes
+   * money on wholesale.
+   *
+   * A catalogue item carries its own price — that is what the `catalog` pricing
+   * mode is FOR, and every tenant is seeded with a line type that uses it. So
+   * attaching one moves the line onto that type, and the price comes with it.
+   */
   function pickProduct(pick: {
     productId: string | null;
     variantId: string | null;
@@ -250,6 +271,16 @@ export function useLineForm({ open, line, lineTypes, markupRules, onSave }: UseL
     setVariantId(pick.variantId);
     setProductLabel(pick.description);
     setDescription(pick.description);
+
+    const catalogType = lineTypes.find((t) => t.pricingMode === 'catalog');
+    if (markupMode && catalogType) {
+      selectType(catalogType.id);
+      setUnitPrice(pick.unitPrice);
+      return;
+    }
+    // No catalogue type configured — keep the type the operator chose, and seed
+    // the price where the mode can hold one. In markup mode it cannot: the unit
+    // price is derived, so writing it would be overwritten on the next keystroke.
     if (!markupMode) setUnitPrice(pick.unitPrice);
   }
 

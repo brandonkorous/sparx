@@ -8,6 +8,7 @@
 // mobile parity is affordable at all.
 
 import type { Dispatch, SetStateAction } from 'react';
+import type { HeaderNoticeData } from '@piggles/ui';
 import { WorkbenchProvider } from '@/lib/workbench/context';
 import { StudioSessionProvider } from '@/lib/studio/provider';
 import { BackNavigation } from '@/lib/workbench/nav-history';
@@ -23,6 +24,8 @@ import { CompactConsole } from './compact-console';
 import type { NavTab } from './mobile/nav-bar';
 
 interface CompactShellProps {
+  /** What WizeWorks is announcing on this surface, or null. */
+  notice: HeaderNoticeData | null;
   windowId: string;
   userName: string;
   userEmail: string;
@@ -42,6 +45,7 @@ interface CompactShellProps {
 }
 
 export function CompactShell({
+  notice,
   windowId,
   userName,
   userEmail,
@@ -67,6 +71,7 @@ export function CompactShell({
           is the arrangement the per-document editor exists to replace. */}
         <StudioSessionProvider>
           <CompactConsole
+            notice={notice}
             nav={nav}
             userName={userName}
             userEmail={userEmail}

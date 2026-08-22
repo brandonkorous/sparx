@@ -486,6 +486,7 @@ describe('inventory external sync', () => {
         holderId: crypto.randomUUID(),
       })
     );
-    expect(res.reservationId).toBeTruthy();
+    expect(res).not.toBeNull();
+    expect(res?.reservationId).toBeTruthy();
   });
 });

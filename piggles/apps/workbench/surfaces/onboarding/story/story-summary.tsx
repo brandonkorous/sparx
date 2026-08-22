@@ -6,12 +6,7 @@ import { faCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { industryOf } from '@wizeworks/story-schemas';
 import { ModuleScope } from '../../../components/module-scope';
-import {
-  MODULE_BY_KEY,
-  moduleBilled,
-  moduleElsewhere,
-  moduleLock,
-} from '../../../lib/onboarding/modules';
+import { MODULE_BY_KEY } from '../../../lib/onboarding/modules';
 import type { SummaryPlanItem } from '../../../lib/onboarding/summary-card';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
 import {
@@ -22,6 +17,7 @@ import {
   resolveModules,
   type StoryState,
 } from '../../../lib/onboarding/story-state';
+import { PRODUCT } from '@piggles/config';
 
 const SELLING = ['commerce', 'b2b', 'dropship'];
 const FULFILMENT_TAGS: { key: string; label: string }[] = [
@@ -30,39 +26,13 @@ const FULFILMENT_TAGS: { key: string; label: string }[] = [
   { key: 'delivery', label: 'Local delivery' },
 ];
 
-/** The module rows the SummaryCard renders for a story — each with its real price /
- *  "Included" state, in enabled order. */
+/** The app rows the SummaryCard renders for a story, in enabled order. Names
+ *  only — there is no per-app price to carry (RULE #2). */
 export function storyPlanItems(story: StoryState): SummaryPlanItem[] {
-  const on = resolveModules(story);
   return enabledModuleKeys(story).flatMap((k) => {
     const m = MODULE_BY_KEY[k];
-    if (!m) return [];
-    return [
-      {
-        key: k,
-        name: m.name,
-        price: moduleBilled(on, m),
-        included: moduleLock(on, k) === 'included',
-      },
-    ];
+    return m ? [{ key: k, name: m.name }] : [];
   });
-}
-
-export function storyTotals(story: StoryState): {
-  total: number;
-  elsewhere: number;
-  savings: number;
-} {
-  const on = resolveModules(story);
-  let total = 0;
-  let elsewhere = 0;
-  for (const k of enabledModuleKeys(story)) {
-    const m = MODULE_BY_KEY[k];
-    if (!m) continue;
-    total += moduleBilled(on, m);
-    elsewhere += moduleElsewhere(on, m);
-  }
-  return { total, elsewhere, savings: Math.max(0, elsewhere - total) };
 }
 
 function Section({ label, children }: { label: string; children: ReactNode }): ReactNode {
@@ -112,7 +82,9 @@ export function StoryExtras({
 
       <Section label="Your web address">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-sm font-medium">{slug}.sparx.zone</span>
+          <span className="font-mono text-sm font-medium">
+            {slug}.{PRODUCT.tenantSites.suffix}
+          </span>
           <span className="ml-auto">
             <Badge color="success" variant="soft" size="sm">
               <Icon glyph={faCheck} className="size-3" aria-hidden /> free

@@ -51,7 +51,7 @@ import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import { VariantPicker } from './variant-picker';
 import type { VariantChoice } from './bundles-data';
 import {
@@ -587,7 +587,7 @@ function PriceListEditor({
         }
         refresh={
           /* Two queries feed this pane — the list itself and its per-product
-            prices — so one refresh reloads both. */
+                      prices — so one refresh reloads both. */
           onRefresh ? (
             <RefreshButton
               isFetching={isFetching ?? false}
@@ -609,7 +609,7 @@ function PriceListEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this price list</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -888,7 +888,7 @@ function PriceListEditor({
             description="Set what these customers pay for each product version. A fixed price replaces the normal one; a percentage takes that much off it."
           >
             {entryError && touched ? (
-              <Alert color="warning" variant="soft">
+              <Alert color="warning">
                 <AlertContent>
                   <AlertTitle>One of the prices needs a look</AlertTitle>
                   <AlertDescription>{entryError}</AlertDescription>

@@ -45,23 +45,7 @@ export function PanelHeader({
         </span>
       </SidebarHeaderBrand>
 
-      {pinnable ? (
-        <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
-          <Button
-            size="xs"
-            shape="square"
-            aria-pressed={pinned}
-            aria-label={pinned ? 'Unpin the navigation panel' : 'Pin the navigation panel'}
-            onClick={onTogglePin}
-          >
-            <Icon
-              glyph={pinned ? faThumbtackSlash : faThumbtack}
-              className="size-3.5"
-              aria-hidden
-            />
-          </Button>
-        </Tooltip>
-      ) : null}
+      {pinnable ? <PanelPin pinned={pinned} onTogglePin={onTogglePin} /> : null}
 
       {/* The way back to a walk somebody said no to months ago. Rendered only
           where a guide exists, so it is never a control that does nothing. */}
@@ -80,5 +64,27 @@ export function PanelHeader({
         </Tooltip>
       ) : null}
     </SidebarHeader>
+  );
+}
+
+/**
+ * Whether the panel is furniture or a transient overlay. Shared with the
+ * shortcut panel (./shortcut-panel.tsx), which is the same panel showing one of
+ * the person's own lists instead of an app — one control, one behaviour, one
+ * remembered choice, whichever of the two is up.
+ */
+export function PanelPin({ pinned, onTogglePin }: { pinned: boolean; onTogglePin: () => void }) {
+  return (
+    <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
+      <Button
+        size="xs"
+        shape="square"
+        aria-pressed={pinned}
+        aria-label={pinned ? 'Unpin the navigation panel' : 'Pin the navigation panel'}
+        onClick={onTogglePin}
+      >
+        <Icon glyph={pinned ? faThumbtackSlash : faThumbtack} className="size-3.5" aria-hidden />
+      </Button>
+    </Tooltip>
   );
 }

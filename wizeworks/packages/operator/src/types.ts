@@ -1201,8 +1201,9 @@ export interface OperatorSiteDetail {
   slug: string;
   status: string;
   isPrimary: boolean;
-  /** Whether the "Made with sparx" credit badge shows on this site. */
-  showSparxCredit: boolean;
+  /** Whether the platform attribution badge shows on this site. Which
+   *  product it credits is resolved per tenant from `platform_brand`. */
+  showPlatformCredit: boolean;
   /** Module slugs DISABLED for this site only (can only narrow the tenant set). */
   moduleScope: string[];
   tenantId: string;
@@ -1221,4 +1222,76 @@ export interface OperatorSiteStatusInput {
 
 export interface OperatorSiteStatusResult {
   status: string;
+}
+
+// ── Announcements (the header notice bar) ──────────────────────────────────
+//
+// One staff-authored sentence above a brand's surfaces, stored in
+// `platform_announcements` and edited in the admin console. Platform-owned, not
+// tenant-owned: this is WizeWorks talking to its own customers, so no tenant id
+// appears anywhere in these shapes.
+
+/** Where a notice shows. The three surfaces answer different questions, so a
+ *  notice states which of them it is for rather than appearing on all three. */
+export type OperatorAnnouncementSurface = 'marketing' | 'account' | 'console';
+
+/** The silica color the bar wears. Named rather than free-form so the bar is
+ *  themed by the design system and an operator cannot type a hex. */
+export type OperatorAnnouncementTone = 'primary' | 'info' | 'success' | 'warning' | 'danger';
+
+export interface OperatorAnnouncement {
+  id: string;
+  /** `sparx` | `piggles` — which product this speaks for. */
+  platformBrand: string;
+  surfaces: OperatorAnnouncementSurface[];
+  message: string;
+  linkLabel: string | null;
+  linkHref: string | null;
+  tone: OperatorAnnouncementTone;
+  dismissible: boolean;
+  /** ISO timestamps, or null for open-ended. */
+  startsAt: string | null;
+  endsAt: string | null;
+  isActive: boolean;
+  priority: number;
+  /** The wize_admin operator id that last wrote it, resolved to a name in the
+   *  console (this package holds no operator directory). */
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** DERIVED, never stored: is this on screen right now? `isActive` is the
+   *  switch and the dates are the window, and a list that showed only the switch
+   *  would report a scheduled notice as running. */
+  live: boolean;
+}
+
+/** Create / replace payload. `surfaces` must be non-empty and `linkLabel` +
+ *  `linkHref` must be supplied together or not at all — api-rest rejects the
+ *  half-filled pair rather than rendering a button that does nothing. */
+export interface OperatorAnnouncementInput {
+  platformBrand: string;
+  surfaces: OperatorAnnouncementSurface[];
+  message: string;
+  linkLabel?: string | null;
+  linkHref?: string | null;
+  tone?: OperatorAnnouncementTone;
+  dismissible?: boolean;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  isActive?: boolean;
+  priority?: number;
+}
+
+/** Every field optional — the list's on/off switch patches `isActive` alone. */
+export type OperatorAnnouncementPatch = Partial<OperatorAnnouncementInput>;
+
+export interface OperatorAnnouncementListParams {
+  /** Filter to one brand. Omitted = every brand, which is the console default:
+   *  an operator managing both products wants to see both. */
+  brand?: string;
+  surface?: OperatorAnnouncementSurface;
+}
+
+export interface OperatorAnnouncementListResult {
+  announcements: OperatorAnnouncement[];
 }

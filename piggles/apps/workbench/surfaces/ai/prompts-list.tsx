@@ -349,7 +349,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
               {/* One quiet line where the special category needs it: the persona is
                   the assistant's live personality, which is not obvious from a name. */}
               {!isFiltering && groups.some((group) => group.category === 'persona') ? (
-                <Alert color="info" variant="soft">
+                <Alert color="info">
                   <Icon glyph={faRobot} className="size-5" aria-hidden />
                   <AlertContent>
                     <AlertTitle>Your live chat uses a personality</AlertTitle>

@@ -115,7 +115,19 @@ export function ChromeColumn({
         >
           <ChromeBoundary region="app-panel" whatStopped="This app's menu has stopped working.">
             {panelList ? (
-              <ShortcutPanelHost list={panelList} />
+              // Same pin, same dismissal, same remembered choice as the app
+              // panel — it is the same panel showing one of the person's own
+              // lists instead of an app.
+              <ShortcutPanelHost
+                list={panelList}
+                pinned={pinned}
+                onTogglePin={() => {
+                  setPinned((value) => !value);
+                }}
+                onDismiss={() => {
+                  setBrowsing(null);
+                }}
+              />
             ) : panelEntry ? (
               <AppPanel
                 // Holds the LAST browsed app so the panel keeps its contents

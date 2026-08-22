@@ -267,7 +267,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto p-3">
         {staleAfterFailure ? (
-          <Alert color="warning" variant="soft" className="mb-3">
+          <Alert color="warning" className="mb-3">
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>

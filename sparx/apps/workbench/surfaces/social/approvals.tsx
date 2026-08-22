@@ -342,7 +342,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : (
             <>
               {!canDecide ? (
-                <Alert color="info" variant="soft">
+                <Alert color="info">
                   <AlertContent>
                     <AlertTitle>Only an admin can approve</AlertTitle>
                     <AlertDescription>

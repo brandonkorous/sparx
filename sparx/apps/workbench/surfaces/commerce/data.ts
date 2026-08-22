@@ -113,6 +113,12 @@ export interface Order {
   customerNote: string | null;
   internalNote: string | null;
 
+  /** Everything checkout froze onto the order that has no column of its own --
+   *  which is where HOW THE ORDER LEAVES lives (`shippingRateRef`,
+   *  `shippingProviderSlug`, `shippingDescription`). Read it through
+   *  `deliveryPlan()`; nothing else should be poking at raw keys. */
+  metadata?: Record<string, unknown> | null;
+
   /** Only on a single order — the list route does not join items. */
   items?: OrderItem[];
 }
@@ -283,9 +289,142 @@ export function useOrderRefunds(id: string) {
   });
 }
 
-/** Cancelling is the one move this surface makes. The server refuses on a
- *  delivered or refunded order with a sentence saying so — which is worth
- *  showing verbatim rather than replacing with a guess. */
+/**
+ * Record money the business took ITSELF — cash over the counter, a cheque, a
+ * bank transfer.
+ *
+ * ── WHY THIS WAS MISSING AND WHY THAT MATTERED ──────────────────────────────
+ *
+ * `POST /v1/orders/:id/payments` has always existed. The order pane READ it —
+ * the "Money in" card lists every payment and says "No payment has been
+ * recorded against this order yet" when there are none — and offered no way to
+ * add one. So the sentence was true and permanent.
+ *
+ * That is not a missing nicety. The provider picker offers **Manual payments**
+ * and describes it, in its own words, as "you mark each order paid yourself".
+ * A business that took that offer could place orders and never mark one paid.
+ * A collection-only bakery, whose entire model is money at the counter, had a
+ * shop that could take an order and no way to ever finish it.
+ *
+ * `processor: 'manual'` is the honest record: nothing was charged through a
+ * gateway, somebody was handed money. `status: 'captured'` because it is not a
+ * pending authorisation — it has already happened.
+ */
+export function useRecordOrderPayment(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: {
+      amount: number;
+      currency: string;
+      processor: string;
+      reference?: string;
+    }) =>
+      api.post<OrderPayment>(`/v1/orders/${id}/payments`, {
+        amount: input.amount,
+        currency: input.currency,
+        processor: input.processor,
+        status: 'captured',
+        capturedAt: new Date().toISOString(),
+        ...(input.reference?.trim() ? { processorRef: input.reference.trim() } : {}),
+      }),
+    onSuccess: () => {
+      // The order's own payment_status and amount_paid move with this, so the
+      // order itself is refetched, not just its payments list.
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
+ * Writing down that the goods went.
+ *
+ * ── WHY THIS WAS MISSING, AND WHY THAT MATTERED ─────────────────────────────
+ *
+ * `POST /v1/orders/:id/fulfillments` has always existed and nothing in either
+ * console called it. The order pane READ the list and said "Nothing has been
+ * sent for this order yet" -- true, and permanently true.
+ *
+ * The pane's one fulfilment-shaped action was **Send it to the warehouse**,
+ * which generates a picking walk. That is not this. A walk tells somebody what
+ * to go and fetch; it marks nothing as gone, and a business without a warehouse
+ * -- a bakery with a counter, a studio that posts from the desk -- has no use
+ * for one. So every order any of them ever took stayed open forever, and the
+ * order status never left `placed`.
+ *
+ * ── ONE OUTCOME, TWO EVENTS ─────────────────────────────────────────────────
+ *
+ * Handing something over and posting something are different facts and the
+ * record has to keep them apart, because the customer's question differs:
+ *   collected -> `delivered`. It is over. There is nothing to follow.
+ *   posted    -> `shipped`. It is in transit, and a tracking number is the
+ *                point of the record.
+ * `carrier: 'pickup'` is the API's existing word for the first, so this invents
+ * no vocabulary.
+ */
+export function useRecordFulfillment(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: {
+      status: 'shipped' | 'delivered';
+      lines: { orderItemId: string; quantity: number }[];
+      carrier?: string;
+      service?: string;
+      trackingNumber?: string;
+      notes?: string;
+    }) =>
+      api.post<OrderFulfillment>(`/v1/orders/${id}/fulfillments`, {
+        status: input.status,
+        lines: input.lines,
+        ...(input.carrier ? { carrier: input.carrier } : {}),
+        ...(input.service ? { service: input.service } : {}),
+        ...(input.trackingNumber?.trim() ? { trackingNumber: input.trackingNumber.trim() } : {}),
+        ...(input.notes?.trim() ? { notes: input.notes.trim() } : {}),
+      }),
+    onSuccess: () => {
+      // The order's own status, fulfilledAt and per-item quantityFulfilled all
+      // move with this, so the whole order is refetched rather than the list.
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/** The rate ref checkout writes when a shopper chooses to come and get it.
+ *  Mirrors COLLECTION_RATE_REF in @wizeworks/commerce (collection-option.ts);
+ *  copied rather than imported because that package is server-side and would
+ *  drag Prisma into the browser bundle. */
+const COLLECTION_RATE_REF = 'collection:in-person';
+
+export interface DeliveryPlan {
+  /** True when the customer is coming to fetch it -- so there is nothing to
+   *  post, no carrier to name, and no warehouse walk that makes sense. */
+  collected: boolean;
+  /** What the shopper chose, in their words. Null when the order predates
+   *  checkout recording it, which is NOT the same as "collection" -- an old
+   *  order with no record must not be presented as one or the other. */
+  description: string | null;
+}
+
+/**
+ * How this order leaves, according to what the shopper picked at checkout.
+ *
+ * Reads the metadata checkout froze on. `collected` is deliberately keyed on
+ * the RATE REF rather than the absence of a shipping address: a collection
+ * order still carries an address (it is the billing address, and the shop may
+ * well want it), so "no address" would call every one of them a despatch.
+ */
+export function deliveryPlan(order: Order): DeliveryPlan {
+  const meta = (order.metadata ?? {}) as Record<string, unknown>;
+  const ref = typeof meta.shippingRateRef === 'string' ? meta.shippingRateRef : null;
+  const described =
+    typeof meta.shippingDescription === 'string' && meta.shippingDescription.trim()
+      ? meta.shippingDescription.trim()
+      : null;
+  return { collected: ref === COLLECTION_RATE_REF, description: described };
+}
+
+/** The server refuses to cancel a delivered or refunded order with a sentence
+ *  saying so — which is worth showing verbatim rather than replacing with a
+ *  guess. */
 export function useCancelOrder(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -343,12 +482,17 @@ export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
  * opposite: it has just left the building.
  */
 export function shippingState(order: Order): { label: string; tone: Tone; detail: string } {
+  // Nobody delivered anything to a customer who walked in and took it. Same
+  // column, same stored status, different fact — and this is the one place both
+  // the list and the order pane read it from, so correcting it here corrects it
+  // everywhere rather than in the two call sites that happened to notice.
+  const collected = deliveryPlan(order).collected;
   switch (order.status) {
     case 'delivered':
       return {
-        label: 'Delivered',
+        label: collected ? 'Collected' : 'Delivered',
         tone: 'success',
-        detail: 'This order reached the customer.',
+        detail: collected ? 'The customer picked this up.' : 'This order reached the customer.',
       };
     case 'fulfilled':
       return {
@@ -372,9 +516,11 @@ export function shippingState(order: Order): { label: string; tone: Tone; detail
       };
     default:
       return {
-        label: 'To send',
+        label: collected ? 'To collect' : 'To send',
         tone: 'warning',
-        detail: 'Nothing has been sent to the customer yet.',
+        detail: collected
+          ? 'The customer has not picked this up yet.'
+          : 'Nothing has been sent to the customer yet.',
       };
   }
 }
@@ -451,6 +597,34 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   refunded: 'Given back',
 };
 
+/**
+ * How the money arrived, in the words a business uses.
+ *
+ * The pane printed `payment.processor` raw, so a cash sale read "$33.00 ·
+ * manual" — a column value on a screen about somebody handing over notes. Same
+ * reasoning as PAYMENT_STATUS_LABELS above: "captured" means "taken", and a
+ * payment processor's vocabulary is not the shopkeeper's.
+ *
+ * `manual` is the API's name for "the business took it themselves", and by far
+ * its commonest form is cash — but not its only one, so a recorded cheque or
+ * transfer keeps its own name.
+ */
+export const PAYMENT_PROCESSOR_LABELS: Record<string, string> = {
+  manual: 'Cash',
+  check: 'Cheque',
+  wire: 'Bank transfer',
+  net_terms: 'On account',
+  stripe: 'Card',
+  paypal: 'PayPal',
+};
+
+/** True when the money never went through a gateway, so there is nothing to
+ *  send it back to. Drives the refund wording, which used to promise every
+ *  refund went "back to the card it was paid with" — including a cash sale. */
+export function paidByHand(processor: string): boolean {
+  return processor === 'manual' || processor === 'check' || processor === 'wire';
+}
+
 export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {
   pending: 'Being packed',
   shipped: 'On the way',
@@ -458,6 +632,39 @@ export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {
   failed: 'Delivery failed',
   cancelled: 'Cancelled',
 };
+
+/** The API's `Carrier` enum in the words a business uses. `pickup` is handled
+ *  by `shipmentHeadline` rather than listed here — nothing was carried. */
+const CARRIER_LABELS: Record<string, string> = {
+  ups: 'UPS',
+  usps: 'USPS',
+  fedex: 'FedEx',
+  dhl: 'DHL',
+  digital: 'Sent electronically',
+  dropship: 'Sent by the supplier',
+  other: 'Another courier',
+};
+
+/**
+ * The one line at the top of a shipment row.
+ *
+ * A collection is not a delivery by a carrier called "pickup", so it does not
+ * render as one. `service` already holds the words the shopper chose ("Collect
+ * in person"), which reads whole on its own — the same reason `describeRate`
+ * does not prefix the carrier onto it.
+ */
+export function shipmentHeadline(shipment: OrderFulfillment): string {
+  if (shipment.carrier === 'pickup') return shipment.service ?? 'Collected in person';
+  const carrier = shipment.carrier ? (CARRIER_LABELS[shipment.carrier] ?? shipment.carrier) : '';
+  return [carrier, shipment.service].filter(Boolean).join(' · ') || 'Delivery';
+}
+
+/** "Delivered" is right for something a courier brought and wrong for something
+ *  the customer walked in and took. Same row, same column, different fact. */
+export function shipmentStatusLabel(shipment: OrderFulfillment): string {
+  if (shipment.carrier === 'pickup' && shipment.status === 'delivered') return 'Collected';
+  return FULFILLMENT_STATUS_LABELS[shipment.status] ?? shipment.status;
+}
 
 export const REFUND_STATUS_LABELS: Record<string, string> = {
   pending: 'In progress',

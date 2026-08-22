@@ -18,6 +18,7 @@ import type { OpenTarget } from '../../lib/surfaces/registry';
 import { bookingStateMeta, type BookingStatus } from './bookings-data';
 import { clockLabel, hourLabel, TONE_BLOCK, TONE_RAIL, type CalendarEvent } from './calendar-data';
 import { columnHeightClass, hourMarks, placeEvents, type TimeWindow } from './calendar-grid';
+import type { ClosedBand } from './calendar-hours';
 
 /** Same modifier contract as every list in the app: plain opens a tab, shift
  *  docks beside, alt tears off to a window. */
@@ -34,6 +35,9 @@ export interface GridColumn {
   header: ReactNode;
   /** True to mark the column that is today. */
   today?: boolean;
+  /** The hours nobody is open for — drawn behind the bookings so a week with
+   *  hours set does not look like a week with none (issue 084). */
+  closed?: ClosedBand[];
   events: CalendarEvent[];
 }
 
@@ -124,6 +128,17 @@ function Column({
 
   return (
     <div className={`border-base-200 relative flex-1 border-l ${columnMinClass} ${heightClass}`}>
+      {/* Shut hours, behind everything — a flat wash rather than stripes, so it
+          reads as "nothing happens here" and never competes with a booking. */}
+      {(column.closed ?? []).map((closed) => (
+        <div
+          key={closed.key}
+          title={closed.title}
+          className={`bg-base-200 absolute inset-x-0 ${closed.topClass} ${closed.heightClass}`}
+          aria-hidden
+        />
+      ))}
+
       {/* Faint hour lines behind the blocks. */}
       {marks.map((mark) => (
         <div

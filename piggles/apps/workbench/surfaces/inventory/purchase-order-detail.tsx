@@ -73,6 +73,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PurchaseOrderProcurement } from './purchase-order-procurement';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -500,18 +501,12 @@ function LineEditor({
                 <FieldLabel required>Cost each</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className="text-right tabular-nums"
-                      value={cost}
-                      onChange={(event) => {
-                        setCost(event.target.value);
-                      }}
+                      className="text-right"
+                      aria-label="Cost each"
+                      text={cost}
+                      onTextChange={setCost}
                     />
                   }
                 />
@@ -1489,17 +1484,14 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Shipping cost</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      inputMode="decimal"
-                      className="text-right tabular-nums"
-                      value={centsToInput(draft.header.shippingCents)}
+                      className="text-right"
+                      aria-label="Shipping cost"
                       disabled={!editable}
-                      onChange={(event) => {
-                        setHeader('shippingCents', inputToCents(event.target.value) ?? 0);
+                      text={centsToInput(draft.header.shippingCents)}
+                      onTextChange={(text) => {
+                        setHeader('shippingCents', moneyCents(text) ?? 0);
                       }}
                     />
                   }

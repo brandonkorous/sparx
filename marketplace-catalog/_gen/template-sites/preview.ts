@@ -11,7 +11,7 @@
 // touches are the SAME module instance as the ones the harness/catalog mint.
 
 import { execFileSync } from 'node:child_process';
-import { promises as fs, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { promises as fs, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -242,6 +242,28 @@ function runTailwind(
   }
 }
 
+/** WHERE the Tailwind entry has to live. The `@import`/`@source` paths in the input CSS
+ *  below are relative to THIS directory, and the compile needs a package that resolves
+ *  `tailwindcss` + the silicaui plugin — so it is a real workspace location, not a scratch
+ *  dir, and it cannot be quietly wrong. It has been quietly wrong twice: `@tailwindcss/cli`
+ *  left the workspace with `packages/site-ui`, and then `apps/site` moved under
+ *  `wizeworks/` and every service preview began throwing ENOENT part-way through a
+ *  generate — after the bundle was already written, so the run LOOKED like it worked.
+ *  Assert it, and say what to change when the tree moves again. */
+const SITE_APP_DIR = join(repoRoot, 'wizeworks', 'apps', 'site');
+
+function previewCssEntry(slug: string): string {
+  if (!existsSync(SITE_APP_DIR)) {
+    throw new Error(
+      `Preview CSS needs the site app at ${SITE_APP_DIR} — it is the package that resolves ` +
+        `tailwindcss and @wizeworks/silicaui. That directory does not exist. If the app has ` +
+        `moved, update SITE_APP_DIR and the '../../packages/silica-catalog/...' paths below, ` +
+        `which are resolved relative to it.`
+    );
+  }
+  return join(SITE_APP_DIR, `_preview-${slug}.css`);
+}
+
 /** Compile the Tailwind + silicaui CSS the rendered home markup needs, self-contained.
  *  Runs the workspace's own Tailwind v4 compiler over a temp input that scans the rendered
  *  HTML + the catalog sources. All temp paths are keyed by `slug` so parallel generators
@@ -252,7 +274,7 @@ function runTailwind(
  *  and took every template's preview step with it. See that file's header. */
 function compilePreviewCss(slug: string, bodyHtml: string, scratchDir: string): string {
   const bodyPath = join(scratchDir, `preview-${slug}.body.html`);
-  const inputPath = join(repoRoot, 'apps', 'site', `_preview-${slug}.css`);
+  const inputPath = previewCssEntry(slug);
   const outPath = join(scratchDir, `preview-${slug}.util.css`);
   const cli = join(here, 'tailwind-compile.mjs');
   const input = `@import 'tailwindcss';

@@ -219,7 +219,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
         </FormSection>
 
         {purchaseOrderId === '' ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>Choose an order to start</AlertTitle>
               <AlertDescription>

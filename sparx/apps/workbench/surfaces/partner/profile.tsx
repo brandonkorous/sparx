@@ -452,7 +452,7 @@ export function ProfileSurface({ ctx }: { ctx: SurfaceContext }) {
               />
             </div>
             {profile.data.status !== 'active' ? (
-              <Alert color="info" variant="soft">
+              <Alert color="info">
                 <AlertContent>
                   <AlertTitle>Your listing goes live once your account is active</AlertTitle>
                   <AlertDescription>

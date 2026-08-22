@@ -771,7 +771,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-semibold text-primary",
-                                "children": ["£145"],
+                                "children": ["$145"],
                                 "id": "c71c7e1d-c7f3-4ffe-ab29-530808e5a5d5",
                                 "ord": "a0"
                               },
@@ -796,7 +796,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-semibold text-primary",
-                                "children": ["£95"],
+                                "children": ["$95"],
                                 "id": "919cbcba-02c1-457f-b92d-9807c0d08b56",
                                 "ord": "a0"
                               },
@@ -1409,7 +1409,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. £145 per guest; wine pairing £95."
+                          "Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. $145 per guest; wine pairing $95."
                         ],
                         "id": "f6bb941e-3c31-430c-8775-ca9e93923ba7",
                         "ord": "a1"
@@ -1677,7 +1677,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["5"],
+                                "children": ["$5"],
                                 "id": "eff5d916-e80c-409e-9842-44fa5d633f56",
                                 "ord": "a1"
                               }
@@ -1719,7 +1719,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["24"],
+                                "children": ["$24"],
                                 "id": "a5eb931a-b8c9-4ed0-b372-259d057aadd4",
                                 "ord": "a1"
                               }
@@ -1761,7 +1761,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["26"],
+                                "children": ["$26"],
                                 "id": "5342b50f-e7ca-41e1-a6e2-25459c455671",
                                 "ord": "a1"
                               }
@@ -1805,7 +1805,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["18"],
+                                "children": ["$18"],
                                 "id": "53fb07bf-a3e5-4e49-8ea3-66b5b4b17fa0",
                                 "ord": "a1"
                               }
@@ -1892,7 +1892,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["46"],
+                                "children": ["$46"],
                                 "id": "b46b23b0-f7b4-44b7-ba6a-46fa4ebec9cb",
                                 "ord": "a1"
                               }
@@ -1936,7 +1936,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["52"],
+                                "children": ["$52"],
                                 "id": "3a33fb54-4491-47ce-8a1e-0c2dc688146f",
                                 "ord": "a1"
                               }
@@ -1980,7 +1980,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["42"],
+                                "children": ["$42"],
                                 "id": "8773a639-8488-405e-999f-41ee76aa3918",
                                 "ord": "a1"
                               }
@@ -2067,7 +2067,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["54"],
+                                "children": ["$54"],
                                 "id": "6cb3e5ff-a4e5-4899-84ab-185efecc95df",
                                 "ord": "a1"
                               }
@@ -2111,7 +2111,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["48"],
+                                "children": ["$48"],
                                 "id": "7ca905a3-a52e-46d9-b0fe-0bd6b1d26d4d",
                                 "ord": "a1"
                               }
@@ -2155,7 +2155,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["46"],
+                                "children": ["$46"],
                                 "id": "da33b563-5077-4be0-b9ef-97da297dc69b",
                                 "ord": "a1"
                               }
@@ -2242,7 +2242,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["16"],
+                                "children": ["$16"],
                                 "id": "0190a139-60fe-4932-9e81-dd331f369070",
                                 "ord": "a1"
                               }
@@ -2286,7 +2286,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["15"],
+                                "children": ["$15"],
                                 "id": "9f7f4cda-99b1-4585-b053-9db7edf220b7",
                                 "ord": "a1"
                               }
@@ -2330,7 +2330,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["22"],
+                                "children": ["$22"],
                                 "id": "b5c30f56-f502-4c7a-943a-e6c599560641",
                                 "ord": "a1"
                               }
@@ -2419,7 +2419,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["95"],
+                                "children": ["$95"],
                                 "id": "4b18b7b7-1500-4e51-b2f5-dacd17903a81",
                                 "ord": "a1"
                               }
@@ -2463,7 +2463,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-semibold text-primary",
-                                "children": ["165"],
+                                "children": ["$165"],
                                 "id": "2fc7bafc-1d14-4b7d-b331-5ab1793a4d33",
                                 "ord": "a1"
                               }
@@ -2663,7 +2663,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A £25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
+                              "A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
                             ],
                             "id": "f5003445-8cab-4631-b3c1-351b1ddd6a0d",
                             "ord": "a1"
@@ -2700,7 +2700,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The six counter seats take a £50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them."
+                              "The six counter seats take a $50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them."
                             ],
                             "id": "57903801-67cc-4793-a183-eab31a5cd30d",
                             "ord": "a1"

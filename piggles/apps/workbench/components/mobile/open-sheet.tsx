@@ -14,6 +14,7 @@
 import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
 import { getSurface } from '@/lib/surfaces/registry';
+import { useConfirm } from '@/lib/confirm';
 import { useWorkbench } from '@/lib/workbench/context';
 import type { StackPaneHost } from '@/lib/workbench/stack-host';
 import { ModuleScope } from '@/components/module-scope';
@@ -45,12 +46,31 @@ function PaneMark({ focused }: { focused: boolean }) {
 
 export function OpenSheet({ open, host, order, activeId, onDismiss }: OpenSheetProps) {
   const { controller } = useWorkbench();
+  const confirm = useConfirm();
 
-  /** Stops at the first pane somebody chose to keep, rather than closing past
-   *  it — the batch contract `requestClose` documents for exactly this. */
+  /** Asks first, then stops at the first pane somebody chose to keep — the
+   *  batch contract `requestClose` documents for exactly this.
+   *
+   *  The desktop's "Close everything and start empty" has always confirmed and
+   *  said whether anything was unsaved; the phone's did neither, so one tap
+   *  closed every pane open. Same action, same question. */
   const closeEverything = async () => {
+    const dirty = controller.dirtyPanes().length;
+    const ok = await confirm({
+      title: `Close all ${String(order.length)}?`,
+      description: dirty
+        ? `${dirty === 1 ? 'One of them has' : `${String(dirty)} of them have`} unsaved edits, and you will be asked about ${dirty === 1 ? 'it' : 'each one'} on the way through.`
+        : 'Nothing here has unsaved edits. Your saved layouts are not affected.',
+      confirmLabel: 'Close them',
+      cancelLabel: 'Keep them open',
+      color: 'danger',
+    });
+    if (!ok) return;
+
     for (const paneId of [...order]) {
       const closed = await controller.requestClose(paneId);
+      // Kept one: the sheet stays open showing what is left, rather than
+      // dismissing as though the whole thing had gone through.
       if (!closed) return;
     }
     onDismiss();

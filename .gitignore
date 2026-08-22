@@ -114,3 +114,10 @@ crash.log
 override.tf
 override_*.tf
 apps-workbench-reverted-*.patch
+
+# Rendered video work (HyperFrames projects). Each brand sting is a few hundred
+# KB per ratio per format and there are eight of those before a second video
+# exists, so this grows faster than anything else here — and every byte of it is
+# build output: `npm run marks && npm run build && npm run render:all` rebuilds
+# the whole set from @piggles/brand geometry in about two minutes.
+videos/

@@ -748,7 +748,7 @@ export function renderSiteAtom(node: BuilderNode, ctx: AtomRenderCtx): React.Rea
       const body =
         ctx.children ??
         (ctx.edit ? (
-          <div role="alert" className="alert alert-info alert-soft">
+          <div role="alert" className="alert alert-info">
             <div className="alert-content">
               <div className="alert-title">Saved</div>
               <div className="alert-description">Your changes are live.</div>

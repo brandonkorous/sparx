@@ -45,6 +45,17 @@ export function getPublisher(logger: FastifyBaseLogger): Publisher {
   return createPublisher({ logger });
 }
 
+/**
+ * Release the publisher's transport, for a caller that is not a server.
+ *
+ * A no-op on every transport but NATS, which holds an open socket — so a script
+ * that publishes and then simply falls off the end of `main()` never exits.
+ * Servers must NOT call this: the publisher is process-wide and cached.
+ */
+export async function closePublisher(logger: FastifyBaseLogger): Promise<void> {
+  await getPublisher(logger).close?.();
+}
+
 export async function publish<T extends Record<string, unknown>>(
   logger: FastifyBaseLogger,
   type: EventType,

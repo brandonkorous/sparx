@@ -353,7 +353,7 @@ function PipelineEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this pipeline</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -404,7 +404,7 @@ function PipelineEditor({
           </FormSection>
 
           {isNew ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertDescription>
                   Create the pipeline first, then its stages appear here to add and arrange.

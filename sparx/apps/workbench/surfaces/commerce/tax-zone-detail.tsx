@@ -104,7 +104,7 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this tax place</AlertTitle>
             <AlertDescription>
@@ -291,7 +291,7 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
           )}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this place</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -514,7 +514,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
   return (
     <div className="flex flex-col gap-4">
       {rates.isError ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load the rate</AlertTitle>
             <AlertDescription>
@@ -567,7 +567,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
       )}
 
       {failure ? (
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not add this rate</AlertTitle>
             <AlertDescription>{failure}</AlertDescription>

@@ -21,6 +21,7 @@ import { useActiveProperty } from './site-data';
 import { useMediaPicker } from '../../surfaces/cms/media-picker';
 import { useActivePropertyId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
+import { HostSettingsPanel } from '../../surfaces/studio/host-settings-panel';
 import { PieceSettingsPanel } from '../../surfaces/studio/piece-settings-panel';
 import { EmailTagsPanel } from '../../surfaces/studio/email-tags-panel';
 import { catalogFor } from './catalog-scope';
@@ -86,6 +87,26 @@ export function useStudioHostConfig(): StudioHost | null {
 /** A document's own settings live UNDER the document — select the page (or the piece,
  *  or the email) itself and they are there, rather than in a drawer with a second Save
  *  button of its own. */
+/**
+ * Where a bound value is set, in the words on the screen that sets it.
+ *
+ * Piggles' own names, never the platform's refs: `site.identity.email` is "Your
+ * site, under Email address" — the rail item and the field label, both read off
+ * the screen, so the sentence is a route somebody can walk rather than a
+ * description of one.
+ */
+const BINDING_HOMES: Record<string, string> = {
+  'site.identity.name': 'Your site, under Site name',
+  'site.identity.email': 'Your site, under Email address',
+  'site.identity.phone': 'Your site, under Phone number',
+  'site.identity.phoneHref': 'Your site, under Phone number',
+  'site.identity.address': 'Your site, under Address',
+};
+
+function describeSiteBinding(ref: string): string | undefined {
+  return BINDING_HOMES[ref];
+}
+
 function panelFor(kind: DocumentKind): ReactNode {
   if (kind === 'page') return <PageSettingsPanel />;
   if (kind === 'component') return <PieceSettingsPanel />;
@@ -122,6 +143,12 @@ function buildHost({
     renderIcon: renderStudioIcon,
     renderHostNode: (node) => drawHostNode(node, { preview: true }),
     resolveBinding: (ref) => preview.resolve(ref),
+    // ...and, for the ones an owner will try to type over, WHERE they live. The
+    // Contact page's email and phone are the whole reason this exists: they are
+    // bound so that typing them once fills every page, and until this said so a
+    // double-click on the placeholder did nothing and the Inspector offered a
+    // box that silently changed nothing.
+    describeBinding: describeSiteBinding,
     // The business's own picture browser, so no image field ever asks for a web
     // address. A picked asset with no URL is one still being processed — treated as
     // "nothing picked" rather than written as an empty source.
@@ -137,7 +164,13 @@ function buildHost({
     // the brand rather than quietly the wrong brand.
     ...(emailColors ? { emailColors } : {}),
     emailCatalog: () => EMAIL_CONTENT_BLOCKS,
-    inspectorPanels: (_node, ctx) => (ctx.isRoot ? panelFor(ctx.doc.kind) : null),
+    // The document's own settings at the root; below it, a live region's declared
+    // props. Without the second half a core's `props` were metadata nothing drew,
+    // so a map could be placed and never told where it is.
+    inspectorPanels: (node, ctx) => {
+      if (ctx.isRoot) return panelFor(ctx.doc.kind);
+      return node ? <HostSettingsPanel node={node} /> : null;
+    },
     // Platform policy, not a tenant setting: a viewport variant makes the device
     // toggle lie about the page, and no business benefits from opting into that.
     validateClass: (className: string) => validateResponsiveVocabulary(className),

@@ -181,7 +181,7 @@ export const xeroAdapter: AccountingAdapter = {
     const organisation = connections[0]?.tenantId ?? null;
     if (!organisation) {
       throw new AccountingAuthError(
-        'That Xero login is not connected to an organisation sparx can use.'
+        'That Xero login is not connected to an organisation that can be used here.'
       );
     }
 

@@ -166,7 +166,7 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not issue this gift card</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -332,7 +332,7 @@ function ManageGiftCard({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isError ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not load this gift card</AlertTitle>
                 <AlertDescription>

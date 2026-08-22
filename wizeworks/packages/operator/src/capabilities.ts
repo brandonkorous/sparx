@@ -51,6 +51,11 @@ export const OPERATOR_CAPABILITIES = [
   // submission; administer (delete / configure).
   'feedback:respond',
   'feedback:admin',
+  // The header notice bar (platform_announcements) — the one sentence above a
+  // brand's marketing, account and console surfaces. One capability, not a
+  // read/act pair: there is nothing sensitive to READ here (every live row is
+  // already on a public page), so the only thing worth gating is writing one.
+  'announcement:manage',
   // Manage the operator roster itself — grant/revoke capabilities, add/remove
   // operators. The ONLY capability that touches the operator identity store.
   'operator:admin',
@@ -83,6 +88,7 @@ export const OPERATOR_CAPABILITY_LABELS: Record<OperatorCapability, string> = {
   'partner:act': 'Partners — approve, tier, suspend & pay out',
   'feedback:respond': 'Feedback — respond to submissions',
   'feedback:admin': 'Feedback — administer (delete / configure)',
+  'announcement:manage': 'Announcements — write the header notice bar',
   'operator:admin': 'Operators — manage the operator roster',
 };
 

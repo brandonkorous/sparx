@@ -156,7 +156,7 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" variant="soft" className="max-w-md">
+        <Alert color="error" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this list</AlertTitle>
             <AlertDescription>
@@ -370,7 +370,7 @@ function DomainEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this list</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

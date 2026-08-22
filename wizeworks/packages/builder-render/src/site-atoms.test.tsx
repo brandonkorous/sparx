@@ -42,9 +42,7 @@ function leaf(
 
 describe('rootClass — the base class is guaranteed, never duplicated', () => {
   it('passes a class-first recipe through untouched', () => {
-    expect(rootClass('alert', 'alert alert-success alert-soft w-full')).toBe(
-      'alert alert-success alert-soft w-full'
-    );
+    expect(rootClass('alert', 'alert alert-success w-full')).toBe('alert alert-success w-full');
   });
 
   it('prepends the base when the class carries only modifiers', () => {
@@ -62,10 +60,9 @@ describe('renderSiteAtom (via renderLeaf) — real silica components + the autho
   it('Alert: the author color reaches the element, once', () => {
     const html = leaf(
       { type: 'Alert', props: { title: 'Saved', body: 'All good.' } },
-      { leafClass: 'alert alert-success alert-soft' }
+      { leafClass: 'alert alert-success' }
     );
     expect(html).toContain('alert-success');
-    expect(html).toContain('alert-soft');
     expect(html).toContain('Saved');
     expect(html).toContain('All good.');
     // No second color token fighting the author's.

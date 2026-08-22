@@ -14,9 +14,11 @@
 # are the PLATFORM. They share no application code, and that is what the boundary
 # is about.
 #
-# This pod is the simplest thing in the cluster: no database, no auth, no
-# api-rest. It is also the only Piggles surface that can ship on its own — the
-# account app before the console gives a live signup funnel with a dead end.
+# This pod is the simplest thing in the cluster: no database, no auth, and no
+# credential of any kind. Its ONE outbound call is the header notice — an
+# unauthenticated GET that fails closed to "nothing to announce". It is also the
+# only Piggles surface that can ship on its own — the account app before the
+# console gives a live signup funnel with a dead end.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,13 +58,26 @@ spec:
           ports:
             - name: http
               containerPort: 3000
-          # NO envFrom. This app reads nothing from the platform — it has no
-          # database client, no api-rest call and no auth. Mounting
+          # STILL NO envFrom, and the reason is unchanged: mounting
           # `sparx-app-secrets` here would hand every credential on the platform
-          # to the one pod that needs none of them.
+          # to the pod that needs none of them. This app holds no database
+          # client, no auth, and no credential of any kind.
+          #
+          # It does now make ONE api-rest call — the header notice, an
+          # unauthenticated GET whose entire response is already printed on a
+          # public page. That needs an address and nothing else, so the address
+          # is a plain literal below rather than a reason to mount the secret
+          # store. If api-rest is unreachable the call fails closed to "nothing
+          # to announce" and the site serves as before (@piggles/config/notice).
           env:
             - name: NODE_ENV
               value: production
+            # In-cluster, by service name. Not `api.mypiggles.com`: this call is
+            # made server-side during a render, so routing it back out through
+            # the public ingress would add a hop, a TLS handshake and a public
+            # dependency to something that is one hop away inside the cluster.
+            - name: PIGGLES_API_REST_URL
+              value: http://api-rest.sparx-prod.svc.cluster.local:3000
             - name: SERVICE_NAME
               value: piggles-web
             - name: PORT

@@ -7,6 +7,7 @@ import {
   AlertDescription,
   Button,
   Field,
+  FieldControl,
   FieldLabel,
   Input,
   PasswordInput,
@@ -68,10 +69,10 @@ export function ForgotPasswordForm() {
     <form onSubmit={submit} className="flex flex-col gap-6">
       <Field>
         <FieldLabel>Email</FieldLabel>
-        <Input
+        <FieldControl
+          render={<Input size="lg" />}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          size="lg"
           type="email"
           autoComplete="email"
           placeholder="you@yourbusiness.com"
@@ -153,10 +154,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
       <Field>
         <FieldLabel>New password</FieldLabel>
-        <PasswordInput
+        <FieldControl
+          render={<PasswordInput size="lg" />}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          size="lg"
           autoComplete="new-password"
           required
           minLength={8}
@@ -165,10 +166,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
       <Field>
         <FieldLabel>Type it once more</FieldLabel>
-        <PasswordInput
+        <FieldControl
+          render={<PasswordInput size="lg" />}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          size="lg"
           autoComplete="new-password"
           required
         />

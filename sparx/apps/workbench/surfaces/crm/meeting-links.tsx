@@ -250,7 +250,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {noServices ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>You need something bookable first</AlertTitle>
                 <AlertDescription>
@@ -455,7 +455,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                   that exists. Warning about it up front on every edit would
                   train people to ignore the one time it matters. */}
               {addressChanged ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>The old address stops working</AlertTitle>
                     <AlertDescription>

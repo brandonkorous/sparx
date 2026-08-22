@@ -273,7 +273,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       </div>
 
       {existing.data?.lastCountOpen ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>The last count from this schedule is still open</AlertTitle>
             <AlertDescription>

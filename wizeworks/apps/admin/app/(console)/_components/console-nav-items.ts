@@ -8,6 +8,7 @@ import {
   Home,
   LayoutGrid,
   LifeBuoy,
+  Megaphone,
   MessageSquare,
   TrendingUp,
   Users,
@@ -136,6 +137,21 @@ export const CONSOLE_NAV_GROUPS: ConsoleNavGroup[] = [
         label: 'Domains',
         icon: Globe,
         capability: 'domain:manage',
+        prefix: true,
+      },
+    ],
+  },
+  // Cross-brand, so NOT under a `/sparx/` href. One screen writes the header
+  // notice for sparx.works and for meetpiggles.com; filing it under one brand's
+  // section leaves an operator hunting for the other's.
+  {
+    label: 'Platform',
+    items: [
+      {
+        href: '/platform/announcements',
+        label: 'Header notices',
+        icon: Megaphone,
+        capability: 'announcement:manage',
         prefix: true,
       },
     ],

@@ -18,7 +18,9 @@ import {
   type IntegrationDescriptor,
 } from '@wizeworks/integrations';
 
-import { GATEWAY_CATALOG, type GatewayDescriptor } from './catalog';
+import { PLATFORM_TOKEN } from '@wizeworks/brand-core';
+
+import { gatewayCatalogTemplate, type GatewayDescriptor } from './catalog';
 import type { PaymentGateway } from './gateway';
 
 /** The payments kind — typed on `PaymentGateway`, so every dispatch site keeps the
@@ -62,9 +64,11 @@ export function gatewayToIntegrationDescriptor(gateway: GatewayDescriptor): Inte
     // The catalog has no vendor column because every entry was a payment processor
     // by definition. On a shared shelf "by …" is how a tenant tells a first-party
     // offer from their own account with a third party, so it is derived here.
-    vendor: gateway.sparxFee ? 'sparx' : vendorFor(gateway.id),
+    // The token, not a name: this registry is built once at boot with no brand in
+    // scope, and the route that serves it resolves per tenant. See PLATFORM_TOKEN.
+    vendor: gateway.sparxFee ? PLATFORM_TOKEN : vendorFor(gateway.id),
     blurb: gateway.blurb,
-    publisher: 'sparx',
+    publisher: PLATFORM_TOKEN,
     availability: gateway.availability === 'coming_soon' ? 'coming_soon' : 'available',
     unavailableReason:
       gateway.availability === 'coming_soon'
@@ -117,7 +121,10 @@ function vendorFor(id: string): string {
  */
 export function registerPaymentIntegrations(gateways: readonly PaymentGateway[]): void {
   const adapterById = new Map(gateways.map((g) => [g.id, g]));
-  for (const gateway of GATEWAY_CATALOG) {
+  // The UNRESOLVED catalog on purpose: descriptors are registered once, at boot,
+  // for every brand at once. `{platform}` survives into the registry and the
+  // route resolves it against the asking tenant.
+  for (const gateway of gatewayCatalogTemplate()) {
     paymentIntegrations.register(
       gatewayToIntegrationDescriptor(gateway),
       adapterById.get(gateway.id)

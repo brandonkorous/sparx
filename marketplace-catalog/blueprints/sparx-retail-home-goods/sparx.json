@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-home-goods",
   "name": "Home Goods (Homeware)",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "tagline": "A warm, working storefront for a considered homeware brand.",
   "description": "A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme — a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.",
   "payload": "blueprint.ts",

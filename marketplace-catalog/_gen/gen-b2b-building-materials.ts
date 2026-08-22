@@ -538,7 +538,7 @@ const PRODUCTS: Product[] = [
         handle: 'cls-studwork-timber',
         title: 'C16 CLS Studwork Timber, 63×38mm — Pack of 20',
         description:
-            'Kiln-dried, planed C16 CLS studwork with eased edges — the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around £2.90 a length; take it by the pack and the pallet drops it further.',
+            'Kiln-dried, planed C16 CLS studwork with eased edges — the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around $2.90 a length; take it by the pack and the pallet drops it further.',
         status: 'active',
         productType: 'Timber',
         vendor: VENDOR,

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-couture-serif",
   "name": "Couture Serif",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "tagline": "A stark, serif-everything luxury template for jewellers, perfumers and fashion houses.",
   "description": "A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.",
   "payload": "blueprint.ts",

@@ -181,9 +181,7 @@ function CameraScanner({
   return (
     <div className="flex flex-col gap-2">
       {error ? (
-        <Alert color="warning" variant="soft">
-          {error}
-        </Alert>
+        <Alert color="warning">{error}</Alert>
       ) : (
         <div className="rounded-box relative overflow-hidden">
           <video ref={videoRef} className="h-56 w-full object-cover" playsInline muted />
@@ -322,7 +320,7 @@ export function ScanInput({
       ) : null}
 
       {queued > 0 ? (
-        <Alert color="warning" variant="soft" size="sm">
+        <Alert color="warning" size="sm">
           <Icon glyph={faWifiSlash} className="size-4" aria-hidden />
           <span>
             {queued} scan{queued === 1 ? '' : 's'} saved on this device. They will sync by

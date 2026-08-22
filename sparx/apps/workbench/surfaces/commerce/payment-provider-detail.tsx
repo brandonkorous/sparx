@@ -74,7 +74,7 @@ export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="error" variant="soft" className="max-w-md">
+          <Alert color="error" className="max-w-md">
             <AlertContent>
               <AlertTitle>Could not load this provider</AlertTitle>
               <AlertDescription>
@@ -115,7 +115,7 @@ export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
-          <Alert color="warning" variant="soft" className="max-w-md">
+          <Alert color="warning" className="max-w-md">
             <AlertContent>
               <AlertTitle>Unknown payment provider</AlertTitle>
               <AlertDescription>
@@ -299,7 +299,7 @@ function SparxPayBody({
               : 'Setup takes a few minutes on a secure page (bank details and identity checks). You will be brought back here when it is finished.'}
           </Text>
           {sparxPay && started && !sparxPay.detailsSubmitted ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Details still needed</AlertTitle>
                 <AlertDescription>

@@ -182,7 +182,7 @@ function ModalBody({
     return (
       <div className="flex flex-col gap-4">
         <DialogTitle className="text-xl font-semibold">Booking</DialogTitle>
-        <Alert color="error" variant="soft">
+        <Alert color="error">
           <AlertContent>
             <AlertTitle>Could not load this booking</AlertTitle>
             <AlertDescription>
@@ -349,7 +349,7 @@ function LoadedModal({
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
         {actionError ? (
-          <Alert color="error" variant="soft">
+          <Alert color="error">
             <AlertContent>
               <AlertTitle>That did not go through</AlertTitle>
               <AlertDescription>{actionError}</AlertDescription>
@@ -358,7 +358,7 @@ function LoadedModal({
         ) : null}
 
         {booking.status === 'cancelled' && booking.cancellationReason ? (
-          <Alert color="error" variant="soft">
+          <Alert color="error">
             <AlertContent>
               <AlertTitle>Cancelled</AlertTitle>
               <AlertDescription>{booking.cancellationReason}</AlertDescription>

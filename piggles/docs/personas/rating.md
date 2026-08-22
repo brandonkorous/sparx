@@ -1,14 +1,16 @@
 # Piggles — pane ratings
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-08-21
 
 Every pane in the Piggles console, scored on **Design** and **Ease** as the ten
 personas open them. How and when to score is RULE #6 in [CLAUDE.md](CLAUDE.md);
 this file is where the numbers live.
 
-**Scored so far: 0 of 323.** Update that line as rows fill in — it is the
+**Scored so far: 20 of 323**, plus the status bar, which is console chrome rather
+than a pane and so has no row below — its score lives in
+[issue 018](issues/018-two-unsaved-changes-was-neither-two-nor-changes.md) (Ease 6 → 8). Update that line as rows fill in — it is the
 denominator, and a rating file that does not show what it has not looked at is
 the same lie as an empty issue list.
 
@@ -70,57 +72,75 @@ pane nobody removes.
 
 <!-- PANES:START -->
 
+> **P01's twelve rows carry a caveat, and it is recorded rather than hidden.**
+> RULE #6 says a pane is not scored until it has been seen in dark AND at 360px.
+> For these twelve that is only fully true of the ones where a theme or width
+> problem was the finding — the marketing header (#003), the soft alerts and
+> badges (#014), and the console chrome the neutral fix touched (#003), all of
+> which were rendered and compared in both themes. **The rest were scored in
+> light at desktop width only.** They are therefore a guess about the other two
+> states, and re-checking them at 360px and in dark is outstanding work on P01,
+> not a finished result.
+>
+> **`builder.page` is the one row that has since been re-scored** (2026-08-20),
+> after act 7 used it in earnest — still light, still desktop.
+>
+> **Console chrome is not in this table at all.** The status bar, the top bar, the
+> app rail and the panel tab strip are every-screen furniture with no surface key,
+> so a defect in one of them (like #018) shows up only in the issue list. That is a
+> gap in this file's shape, not a judgement that they are fine.
+
 ### Home — 26 panes
 
-| Pane                        | Key                               | Design | Ease | Gap to 10 | Persona |
-| --------------------------- | --------------------------------- | ------ | ---- | --------- | ------- |
-| Dashboard                   | `analytics.dashboard.view`        | —      | —    | —         | —       |
-| Dashboards                  | `analytics.dashboards.list`       | —      | —    | —         | —       |
-| What you told us            | `platform.feedback.list`          | —      | —    | —         | —       |
-| Feedback                    | `platform.feedback.thread`        | —      | —    | —         | —       |
-| Link                        | `platform.link.unresolved`        | —      | —    | —         | —       |
-| Move in from somewhere else | `platform.migrate`                | —      | —    | —         | —       |
-| Past moves                  | `platform.migrate.history`        | —      | —    | —         | —       |
-| (depends on what is open)   | `platform.migrate.run`            | —      | —    | —         | —       |
-| What has been happening     | `platform.pulse`                  | —      | —    | —         | —       |
-| AI connections              | `platform.settings.ai`            | —      | —    | —         | —       |
-| Web address                 | `platform.settings.domain`        | —      | —    | —         | —       |
-| Domains                     | `platform.settings.domains`       | —      | —    | —         | —       |
-| Business details            | `platform.settings.general`       | —      | —    | —         | —       |
-| What kind of business       | `platform.settings.industry`      | —      | —    | —         | —       |
-| Connection                  | `platform.settings.integration`   | —      | —    | —         | —       |
-| Other software              | `platform.settings.integrations`  | —      | —    | —         | —       |
-| Notifications               | `platform.settings.notifications` | —      | —    | —         | —       |
-| Practice data               | `platform.settings.sample-data`   | —      | —    | —         | —       |
-| Signing in and security     | `platform.settings.security`      | —      | —    | —         | —       |
-| Site                        | `platform.settings.site`          | —      | —    | —         | —       |
-| Sites                       | `platform.settings.sites`         | —      | —    | —         | —       |
-| Team                        | `platform.settings.team`          | —      | —    | —         | —       |
-| Teammate                    | `platform.settings.team.member`   | —      | —    | —         | —       |
-| Set up step by step         | `workbench.onboarding`            | —      | —    | —         | —       |
-| Describe your business      | `workbench.onboarding.story`      | —      | —    | —         | —       |
-| Get set up                  | `workbench.welcome`               | —      | —    | —         | —       |
+| Pane                        | Key                               | Design | Ease  | Gap to 10                                                                                          | Persona |
+| --------------------------- | --------------------------------- | ------ | ----- | -------------------------------------------------------------------------------------------------- | ------- |
+| Dashboard                   | `analytics.dashboard.view`        | —      | —     | —                                                                                                  | —       |
+| Dashboards                  | `analytics.dashboards.list`       | —      | —     | —                                                                                                  | —       |
+| What you told us            | `platform.feedback.list`          | —      | —     | —                                                                                                  | —       |
+| Feedback                    | `platform.feedback.thread`        | —      | —     | —                                                                                                  | —       |
+| Link                        | `platform.link.unresolved`        | —      | —     | —                                                                                                  | —       |
+| Move in from somewhere else | `platform.migrate`                | —      | —     | —                                                                                                  | —       |
+| Past moves                  | `platform.migrate.history`        | —      | —     | —                                                                                                  | —       |
+| (depends on what is open)   | `platform.migrate.run`            | —      | —     | —                                                                                                  | —       |
+| What has been happening     | `platform.pulse`                  | —      | —     | —                                                                                                  | —       |
+| AI connections              | `platform.settings.ai`            | —      | —     | —                                                                                                  | —       |
+| Web address                 | `platform.settings.domain`        | 6      | 4     | "Nothing to set up" is the whole pane; it will not say why the address is what it is (#010)        | P01     |
+| Domains                     | `platform.settings.domains`       | 7      | 5     | No way to change the free address, and the detail pane says it never can be (#010)                 | P01     |
+| Business details            | `platform.settings.general`       | —      | —     | not opened as the persona                                                                          | —       |
+| What kind of business       | `platform.settings.industry`      | —      | —     | not opened as the persona                                                                          | —       |
+| Connection                  | `platform.settings.integration`   | —      | —     | —                                                                                                  | —       |
+| Other software              | `platform.settings.integrations`  | —      | —     | —                                                                                                  | —       |
+| Notifications               | `platform.settings.notifications` | —      | —     | —                                                                                                  | —       |
+| Practice data               | `platform.settings.sample-data`   | 8      | 1 → 9 | Rail says "Practice data", the pane said "Sample data" — fixed. Clearing was impossible until #012 | P01     |
+| Signing in and security     | `platform.settings.security`      | —      | —     | —                                                                                                  | —       |
+| Site                        | `platform.settings.site`          | —      | —     | —                                                                                                  | —       |
+| Sites                       | `platform.settings.sites`         | 7      | 7     | Web address is read-only text with no hint that it is permanent                                    | P01     |
+| Team                        | `platform.settings.team`          | —      | —     | —                                                                                                  | —       |
+| Teammate                    | `platform.settings.team.member`   | —      | —     | —                                                                                                  | —       |
+| Set up step by step         | `workbench.onboarding`            | —      | —     | —                                                                                                  | —       |
+| Describe your business      | `workbench.onboarding.story`      | —      | —     | —                                                                                                  | —       |
+| Get set up                  | `workbench.welcome`               | 7      | 3 → 8 | Told her to redo two things she had just done, in words she has never heard (#008)                 | P01     |
 
 ### My Site — 16 panes
 
-| Pane              | Key                  | Design | Ease | Gap to 10 | Persona |
-| ----------------- | -------------------- | ------ | ---- | --------- | ------- |
-| Blueprint         | `builder.blueprint`  | —      | —    | —         | —       |
-| Ready-made sites  | `builder.blueprints` | —      | —    | —         | —       |
-| Saved piece       | `builder.component`  | —      | —    | —         | —       |
-| Saved pieces      | `builder.components` | —      | —    | —         | —       |
-| Email designs     | `builder.email`      | —      | —    | —         | —       |
-| Form replies      | `builder.forms`      | —      | —    | —         | —       |
-| History           | `builder.history`    | —      | —    | —         | —       |
-| Header & footer   | `builder.layout`     | —      | —    | —         | —       |
-| Page              | `builder.page`       | —      | —    | —         | —       |
-| How your pages do | `builder.pages`      | —      | —    | —         | —       |
-| Saved piece       | `builder.piece`      | —      | —    | —         | —       |
-| Preview           | `builder.preview`    | —      | —    | —         | —       |
-| Publish           | `builder.publish`    | —      | —    | —         | —       |
-| Your site         | `builder.site`       | —      | —    | —         | —       |
-| Submission        | `builder.submission` | —      | —    | —         | —       |
-| Look & feel       | `builder.theme`      | —      | —    | —         | —       |
+| Pane              | Key                  | Design | Ease  | Gap to 10                                                                                                                                                                                                                                                                                                  | Persona |
+| ----------------- | -------------------- | ------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Blueprint         | `builder.blueprint`  | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Ready-made sites  | `builder.blueprints` | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Saved piece       | `builder.component`  | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Saved pieces      | `builder.components` | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Email designs     | `builder.email`      | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Form replies      | `builder.forms`      | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| History           | `builder.history`    | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Header & footer   | `builder.layout`     | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Page              | `builder.page`       | 8      | 6 → 9 | List and editor both, after a whole site was written through it. Delete exists and sticks (#016, #017); words are edited where they are (#019); a value that comes from elsewhere says so (#023). Held off 10 by the layer tree being the only map of a page — 120 rows named by a café that never existed | P01     |
+| How your pages do | `builder.pages`      | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Saved piece       | `builder.piece`      | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Preview           | `builder.preview`    | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Publish           | `builder.publish`    | 8      | 9     | "Check my site" found the real problem and said it in her words. Nothing to fix beyond the thing it found                                                                                                                                                                                                  | P01     |
+| Your site         | `builder.site`       | 8      | 8     | Site identity is right and says the address plainly; the address itself is the problem (#010). "How customers reach you" is one screen that fills every page — but until #024 was fixed, filling it in changed nothing anybody could see                                                                   | P01     |
+| Submission        | `builder.submission` | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
+| Look & feel       | `builder.theme`      | —      | —     | —                                                                                                                                                                                                                                                                                                          | —       |
 
 ### Content — 18 panes
 
@@ -164,144 +184,144 @@ pane nobody removes.
 
 ### Sell — 65 panes
 
-| Pane                      | Key                                     | Design | Ease | Gap to 10 | Persona |
-| ------------------------- | --------------------------------------- | ------ | ---- | --------- | ------- |
-| (depends on what is open) | `b2b.account.detail`                    | —      | —    | —         | —       |
-| Wholesale customers       | `b2b.accounts.list`                     | —      | —    | —         | —       |
-| Orders to approve         | `b2b.approvals`                         | —      | —    | —         | —       |
-| (depends on what is open) | `b2b.invoice.detail`                    | —      | —    | —         | —       |
-| Wholesale invoices        | `b2b.invoices.list`                     | —      | —    | —         | —       |
-| Wholesale orders          | `b2b.orders.list`                       | —      | —    | —         | —       |
-| (depends on what is open) | `b2b.pricing-tier.detail`               | —      | —    | —         | —       |
-| Wholesale prices          | `b2b.pricing-tiers.list`                | —      | —    | —         | —       |
-| Quote                     | `b2b.quote.detail`                      | —      | —    | —         | —       |
-| Quotes                    | `b2b.quotes.list`                       | —      | —    | —         | —       |
-| Credit on account         | `commerce.account-credit.list`          | —      | —    | —         | —       |
-| Bundle                    | `commerce.bundle.detail`                | —      | —    | —         | —       |
-| Bundles                   | `commerce.bundles.list`                 | —      | —    | —         | —       |
-| Cart                      | `commerce.cart.detail`                  | —      | —    | —         | —       |
-| Baskets left behind       | `commerce.carts.list`                   | —      | —    | —         | —       |
-| Categories                | `commerce.categories.list`              | —      | —    | —         | —       |
-| Category                  | `commerce.category.detail`              | —      | —    | —         | —       |
-| Where you sell            | `commerce.channels.list`                | —      | —    | —         | —       |
-| Checkout session          | `commerce.checkout-session.detail`      | —      | —    | —         | —       |
-| Half-finished checkouts   | `commerce.checkout-sessions.list`       | —      | —    | —         | —       |
-| Group of products         | `commerce.collection.detail`            | —      | —    | —         | —       |
-| Groups of products        | `commerce.collections.list`             | —      | —    | —         | —       |
-| Build template            | `commerce.configurator-template.detail` | —      | —    | —         | —       |
-| Build-your-own            | `commerce.configurator.list`            | —      | —    | —         | —       |
-| Discount                  | `commerce.discount.detail`              | —      | —    | —         | —       |
-| Discounts                 | `commerce.discounts.list`               | —      | —    | —         | —       |
-| Compatibility list        | `commerce.fitment.domain.detail`        | —      | —    | —         | —       |
-| What fits what            | `commerce.fitment.list`                 | —      | —    | —         | —       |
-| Gift card                 | `commerce.giftcard.detail`              | —      | —    | —         | —       |
-| Gift cards                | `commerce.giftcards.list`               | —      | —    | —         | —       |
-| Order                     | `commerce.order.detail`                 | —      | —    | —         | —       |
-| Orders                    | `commerce.orders.list`                  | —      | —    | —         | —       |
-| Price list                | `commerce.pricelist.detail`             | —      | —    | —         | —       |
-| Special prices            | `commerce.pricing.list`                 | —      | —    | —         | —       |
-| Kind of product           | `commerce.product-types.detail`         | —      | —    | —         | —       |
-| Kinds of product          | `commerce.product-types.list`           | —      | —    | —         | —       |
-| Where it is listed        | `commerce.product.channels`             | —      | —    | —         | —       |
-| Build-your-own options    | `commerce.product.configurator`         | —      | —    | —         | —       |
-| Product                   | `commerce.product.detail`               | —      | —    | —         | —       |
-| Shipped by a supplier     | `commerce.product.dropship`             | —      | —    | —         | —       |
-| What it fits              | `commerce.product.fitment`              | —      | —    | —         | —       |
-| Reviews and questions     | `commerce.product.reviews`              | —      | —    | —         | —       |
-| Repeat order options      | `commerce.product.subscriptions`        | —      | —    | —         | —       |
-| Wholesale price           | `commerce.product.trade-pricing`        | —      | —    | —         | —       |
-| Products                  | `commerce.products.list`                | —      | —    | —         | —       |
-| Payment provider          | `commerce.provider.detail`              | —      | —    | —         | —       |
-| How you take payment      | `commerce.providers`                    | —      | —    | —         | —       |
-| Questions people ask      | `commerce.qa.list`                      | —      | —    | —         | —       |
-| Questions queue           | `commerce.qa.queue`                     | —      | —    | —         | —       |
-| How selling is going      | `commerce.reports`                      | —      | —    | —         | —       |
-| Return                    | `commerce.return.detail`                | —      | —    | —         | —       |
-| Returns                   | `commerce.returns.list`                 | —      | —    | —         | —       |
-| Reviews                   | `commerce.reviews.list`                 | —      | —    | —         | —       |
-| Reviews queue             | `commerce.reviews.queue`                | —      | —    | —         | —       |
-| Selling settings          | `commerce.settings`                     | —      | —    | —         | —       |
-| Postage and delivery      | `commerce.shipping.list`                | —      | —    | —         | —       |
-| Delivery profile          | `commerce.shipping.profile.detail`      | —      | —    | —         | —       |
-| Delivery region           | `commerce.shipping.zone.detail`         | —      | —    | —         | —       |
-| Subscription              | `commerce.subscription.detail`          | —      | —    | —         | —       |
-| Repeat orders             | `commerce.subscriptions.list`           | —      | —    | —         | —       |
-| Tax                       | `commerce.tax.list`                     | —      | —    | —         | —       |
-| Tax place                 | `commerce.tax.zone.detail`              | —      | —    | —         | —       |
-| Wishlists                 | `commerce.wishlists.list`               | —      | —    | —         | —       |
-| Supplier order            | `dropship.order.detail`                 | —      | —    | —         | —       |
-| Supplier                  | `dropship.supplier.detail`              | —      | —    | —         | —       |
+| Pane                      | Key                                     | Design | Ease | Gap to 10                                                                                                    | Persona |
+| ------------------------- | --------------------------------------- | ------ | ---- | ------------------------------------------------------------------------------------------------------------ | ------- |
+| (depends on what is open) | `b2b.account.detail`                    | —      | —    | —                                                                                                            | —       |
+| Wholesale customers       | `b2b.accounts.list`                     | —      | —    | —                                                                                                            | —       |
+| Orders to approve         | `b2b.approvals`                         | —      | —    | —                                                                                                            | —       |
+| (depends on what is open) | `b2b.invoice.detail`                    | —      | —    | —                                                                                                            | —       |
+| Wholesale invoices        | `b2b.invoices.list`                     | —      | —    | —                                                                                                            | —       |
+| Wholesale orders          | `b2b.orders.list`                       | —      | —    | —                                                                                                            | —       |
+| (depends on what is open) | `b2b.pricing-tier.detail`               | —      | —    | —                                                                                                            | —       |
+| Wholesale prices          | `b2b.pricing-tiers.list`                | —      | —    | —                                                                                                            | —       |
+| Quote                     | `b2b.quote.detail`                      | —      | —    | —                                                                                                            | —       |
+| Quotes                    | `b2b.quotes.list`                       | —      | —    | —                                                                                                            | —       |
+| Credit on account         | `commerce.account-credit.list`          | —      | —    | —                                                                                                            | —       |
+| Bundle                    | `commerce.bundle.detail`                | —      | —    | —                                                                                                            | —       |
+| Bundles                   | `commerce.bundles.list`                 | —      | —    | —                                                                                                            | —       |
+| Cart                      | `commerce.cart.detail`                  | —      | —    | —                                                                                                            | —       |
+| Baskets left behind       | `commerce.carts.list`                   | —      | —    | —                                                                                                            | —       |
+| Categories                | `commerce.categories.list`              | —      | —    | —                                                                                                            | —       |
+| Category                  | `commerce.category.detail`              | —      | —    | —                                                                                                            | —       |
+| Where you sell            | `commerce.channels.list`                | —      | —    | —                                                                                                            | —       |
+| Checkout session          | `commerce.checkout-session.detail`      | —      | —    | —                                                                                                            | —       |
+| Half-finished checkouts   | `commerce.checkout-sessions.list`       | —      | —    | —                                                                                                            | —       |
+| Group of products         | `commerce.collection.detail`            | —      | —    | —                                                                                                            | —       |
+| Groups of products        | `commerce.collections.list`             | —      | —    | —                                                                                                            | —       |
+| Build template            | `commerce.configurator-template.detail` | —      | —    | —                                                                                                            | —       |
+| Build-your-own            | `commerce.configurator.list`            | —      | —    | —                                                                                                            | —       |
+| Discount                  | `commerce.discount.detail`              | —      | —    | —                                                                                                            | —       |
+| Discounts                 | `commerce.discounts.list`               | —      | —    | —                                                                                                            | —       |
+| Compatibility list        | `commerce.fitment.domain.detail`        | —      | —    | —                                                                                                            | —       |
+| What fits what            | `commerce.fitment.list`                 | —      | —    | —                                                                                                            | —       |
+| Gift card                 | `commerce.giftcard.detail`              | —      | —    | —                                                                                                            | —       |
+| Gift cards                | `commerce.giftcards.list`               | —      | —    | —                                                                                                            | —       |
+| Order                     | `commerce.order.detail`                 | —      | —    | —                                                                                                            | —       |
+| Orders                    | `commerce.orders.list`                  | —      | —    | —                                                                                                            | —       |
+| Price list                | `commerce.pricelist.detail`             | —      | —    | —                                                                                                            | —       |
+| Special prices            | `commerce.pricing.list`                 | —      | —    | —                                                                                                            | —       |
+| Kind of product           | `commerce.product-types.detail`         | —      | —    | —                                                                                                            | —       |
+| Kinds of product          | `commerce.product-types.list`           | —      | —    | —                                                                                                            | —       |
+| Where it is listed        | `commerce.product.channels`             | —      | —    | —                                                                                                            | —       |
+| Build-your-own options    | `commerce.product.configurator`         | —      | —    | —                                                                                                            | —       |
+| Product                   | `commerce.product.detail`               | 8      | 8    | Name+price+code derived for her, on-sale explained in a callout. Accented names broke the address until #013 | P01     |
+| Shipped by a supplier     | `commerce.product.dropship`             | —      | —    | —                                                                                                            | —       |
+| What it fits              | `commerce.product.fitment`              | —      | —    | —                                                                                                            | —       |
+| Reviews and questions     | `commerce.product.reviews`              | —      | —    | —                                                                                                            | —       |
+| Repeat order options      | `commerce.product.subscriptions`        | —      | —    | —                                                                                                            | —       |
+| Wholesale price           | `commerce.product.trade-pricing`        | —      | —    | —                                                                                                            | —       |
+| Products                  | `commerce.products.list`                | 8      | 8    | Table needs a horizontal scroll at this pane width — Brand and Price clip                                    | P01     |
+| Payment provider          | `commerce.provider.detail`              | —      | —    | —                                                                                                            | —       |
+| How you take payment      | `commerce.providers`                    | —      | —    | —                                                                                                            | —       |
+| Questions people ask      | `commerce.qa.list`                      | —      | —    | —                                                                                                            | —       |
+| Questions queue           | `commerce.qa.queue`                     | —      | —    | —                                                                                                            | —       |
+| How selling is going      | `commerce.reports`                      | —      | —    | —                                                                                                            | —       |
+| Return                    | `commerce.return.detail`                | —      | —    | —                                                                                                            | —       |
+| Returns                   | `commerce.returns.list`                 | —      | —    | —                                                                                                            | —       |
+| Reviews                   | `commerce.reviews.list`                 | —      | —    | —                                                                                                            | —       |
+| Reviews queue             | `commerce.reviews.queue`                | —      | —    | —                                                                                                            | —       |
+| Selling settings          | `commerce.settings`                     | —      | —    | —                                                                                                            | —       |
+| Postage and delivery      | `commerce.shipping.list`                | —      | —    | —                                                                                                            | —       |
+| Delivery profile          | `commerce.shipping.profile.detail`      | —      | —    | —                                                                                                            | —       |
+| Delivery region           | `commerce.shipping.zone.detail`         | —      | —    | —                                                                                                            | —       |
+| Subscription              | `commerce.subscription.detail`          | —      | —    | —                                                                                                            | —       |
+| Repeat orders             | `commerce.subscriptions.list`           | —      | —    | —                                                                                                            | —       |
+| Tax                       | `commerce.tax.list`                     | —      | —    | —                                                                                                            | —       |
+| Tax place                 | `commerce.tax.zone.detail`              | —      | —    | —                                                                                                            | —       |
+| Wishlists                 | `commerce.wishlists.list`               | —      | —    | —                                                                                                            | —       |
+| Supplier order            | `dropship.order.detail`                 | —      | —    | —                                                                                                            | —       |
+| Supplier                  | `dropship.supplier.detail`              | —      | —    | —                                                                                                            | —       |
 
 ### Stock — 66 panes
 
-| Pane                        | Key                                               | Design | Ease | Gap to 10 | Persona |
-| --------------------------- | ------------------------------------------------- | ------ | ---- | --------- | ------- |
-| How many you have           | `commerce.product.stock`                          | —      | —    | —         | —       |
-| Shipment                    | `inventory.advance-ship-notices.detail`           | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.assemblies.detail`                     | —      | —    | —         | —       |
-| Making runs                 | `inventory.assemblies.list`                       | —      | —    | —         | —       |
-| Waiting list                | `inventory.backorders`                            | —      | —    | —         | —       |
-| Owed                        | `inventory.backorders.detail`                     | —      | —    | —         | —       |
-| Shared barcodes             | `inventory.barcodes.conflicts`                    | —      | —    | —         | —       |
-| Product labels              | `inventory.barcodes.labels`                       | —      | —    | —         | —       |
-| Barcodes                    | `inventory.barcodes.list`                         | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.bins.detail`                           | —      | —    | —         | —       |
-| Shelf labels                | `inventory.bins.labels`                           | —      | —    | —         | —       |
-| Shelves                     | `inventory.bins.list`                             | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.boms.detail`                           | —      | —    | —         | —       |
-| Recipes                     | `inventory.boms.list`                             | —      | —    | —         | —       |
-| Settlement                  | `inventory.consignment.detail`                    | —      | —    | —         | —       |
-| How stock is valued         | `inventory.costing.settings`                      | —      | —    | —         | —       |
-| Counting schedules          | `inventory.count-schedules`                       | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.count-schedules.detail`                | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.counts.detail`                         | —      | —    | —         | —       |
-| Stock counts                | `inventory.counts.list`                           | —      | —    | —         | —       |
-| Your own columns            | `inventory.custom-fields`                         | —      | —    | —         | —       |
-| Print a label               | `inventory.documents.label`                       | —      | —    | —         | —       |
-| Expiring stock              | `inventory.expiring`                              | —      | —    | —         | —       |
-| Things that do not add up   | `inventory.integrity`                             | —      | —    | —         | —       |
-| Batch                       | `inventory.lots.detail`                           | —      | —    | —         | —       |
-| Batches and serial numbers  | `inventory.lots.list`                             | —      | —    | —         | —       |
-| Every change                | `inventory.movements.list`                        | —      | —    | —         | —       |
-| Whose stock                 | `inventory.ownership`                             | —      | —    | —         | —       |
-| Pack bench                  | `inventory.packing.bench`                         | —      | —    | —         | —       |
-| Walk                        | `inventory.picking.detail`                        | —      | —    | —         | —       |
-| Picking                     | `inventory.picking.guided`                        | —      | —    | —         | —       |
-| Picking walks               | `inventory.picking.list`                          | —      | —    | —         | —       |
-| How fast you pack           | `inventory.picking.throughput`                    | —      | —    | —         | —       |
-| At risk                     | `inventory.planning`                              | —      | —    | —         | —       |
-| What matters most           | `inventory.planning.classes`                      | —      | —    | —         | —       |
-| Why this number             | `inventory.planning.explain`                      | —      | —    | —         | —       |
-| Cost to keep                | `inventory.planning.holding`                      | —      | —    | —         | —       |
-| Not selling                 | `inventory.planning.idle`                         | —      | —    | —         | —       |
-| Planning settings           | `inventory.planning.settings`                     | —      | —    | —         | —       |
-| Preorders                   | `inventory.preorders`                             | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.purchase-orders.approval-rules.detail` | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.purchase-orders.detail`                | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.receiving.detail`                      | —      | —    | —         | —       |
-| Scan a delivery             | `inventory.receiving.scan`                        | —      | —    | —         | —       |
-| Stock versus your books     | `inventory.reconciliation.books`                  | —      | —    | —         | —       |
-| What to reorder             | `inventory.reorder`                               | —      | —    | —         | —       |
-| Stock reports               | `inventory.reports`                               | —      | —    | —         | —       |
-| How it is performing        | `inventory.reports.performance`                   | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.reports.schedule`                      | —      | —    | —         | —       |
-| Sent to your inbox          | `inventory.reports.schedules`                     | —      | —    | —         | —       |
-| Set up your stock           | `inventory.setup`                                 | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.sources.detail`                        | —      | —    | —         | —       |
-| Edit a lot at once          | `inventory.stock.grid`                            | —      | —    | —         | —       |
-| Import from a spreadsheet   | `inventory.stock.import`                          | —      | —    | —         | —       |
-| Stock item                  | `inventory.stock.item`                            | —      | —    | —         | —       |
-| Stock                       | `inventory.stock.list`                            | —      | —    | —         | —       |
-| Where this number came from | `inventory.stock.provenance`                      | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.supplier-bills.detail`                 | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.supplier-returns.detail`               | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.suppliers.detail`                      | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.transfers.detail`                      | —      | —    | —         | —       |
-| Moving stock                | `inventory.transfers.list`                        | —      | —    | —         | —       |
-| Units of measure            | `inventory.units`                                 | —      | —    | —         | —       |
-| Scanner mode                | `inventory.warehouse`                             | —      | —    | —         | —       |
-| (depends on what is open)   | `inventory.warehouses.detail`                     | —      | —    | —         | —       |
-| Locations                   | `inventory.warehouses.list`                       | —      | —    | —         | —       |
+| Pane                        | Key                                               | Design | Ease | Gap to 10                                                                              | Persona |
+| --------------------------- | ------------------------------------------------- | ------ | ---- | -------------------------------------------------------------------------------------- | ------- |
+| How many you have           | `commerce.product.stock`                          | —      | —    | —                                                                                      | —       |
+| Shipment                    | `inventory.advance-ship-notices.detail`           | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.assemblies.detail`                     | —      | —    | —                                                                                      | —       |
+| Making runs                 | `inventory.assemblies.list`                       | —      | —    | —                                                                                      | —       |
+| Waiting list                | `inventory.backorders`                            | —      | —    | —                                                                                      | —       |
+| Owed                        | `inventory.backorders.detail`                     | —      | —    | —                                                                                      | —       |
+| Shared barcodes             | `inventory.barcodes.conflicts`                    | —      | —    | —                                                                                      | —       |
+| Product labels              | `inventory.barcodes.labels`                       | —      | —    | —                                                                                      | —       |
+| Barcodes                    | `inventory.barcodes.list`                         | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.bins.detail`                           | —      | —    | —                                                                                      | —       |
+| Shelf labels                | `inventory.bins.labels`                           | —      | —    | —                                                                                      | —       |
+| Shelves                     | `inventory.bins.list`                             | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.boms.detail`                           | —      | —    | —                                                                                      | —       |
+| Recipes                     | `inventory.boms.list`                             | —      | —    | —                                                                                      | —       |
+| Settlement                  | `inventory.consignment.detail`                    | —      | —    | —                                                                                      | —       |
+| How stock is valued         | `inventory.costing.settings`                      | —      | —    | —                                                                                      | —       |
+| Counting schedules          | `inventory.count-schedules`                       | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.count-schedules.detail`                | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.counts.detail`                         | —      | —    | —                                                                                      | —       |
+| Stock counts                | `inventory.counts.list`                           | —      | —    | —                                                                                      | —       |
+| Your own columns            | `inventory.custom-fields`                         | —      | —    | —                                                                                      | —       |
+| Print a label               | `inventory.documents.label`                       | —      | —    | —                                                                                      | —       |
+| Expiring stock              | `inventory.expiring`                              | —      | —    | —                                                                                      | —       |
+| Things that do not add up   | `inventory.integrity`                             | —      | —    | —                                                                                      | —       |
+| Batch                       | `inventory.lots.detail`                           | —      | —    | —                                                                                      | —       |
+| Batches and serial numbers  | `inventory.lots.list`                             | —      | —    | —                                                                                      | —       |
+| Every change                | `inventory.movements.list`                        | —      | —    | —                                                                                      | —       |
+| Whose stock                 | `inventory.ownership`                             | —      | —    | —                                                                                      | —       |
+| Pack bench                  | `inventory.packing.bench`                         | —      | —    | —                                                                                      | —       |
+| Walk                        | `inventory.picking.detail`                        | —      | —    | —                                                                                      | —       |
+| Picking                     | `inventory.picking.guided`                        | —      | —    | —                                                                                      | —       |
+| Picking walks               | `inventory.picking.list`                          | —      | —    | —                                                                                      | —       |
+| How fast you pack           | `inventory.picking.throughput`                    | —      | —    | —                                                                                      | —       |
+| At risk                     | `inventory.planning`                              | —      | —    | —                                                                                      | —       |
+| What matters most           | `inventory.planning.classes`                      | —      | —    | —                                                                                      | —       |
+| Why this number             | `inventory.planning.explain`                      | —      | —    | —                                                                                      | —       |
+| Cost to keep                | `inventory.planning.holding`                      | —      | —    | —                                                                                      | —       |
+| Not selling                 | `inventory.planning.idle`                         | —      | —    | —                                                                                      | —       |
+| Planning settings           | `inventory.planning.settings`                     | —      | —    | —                                                                                      | —       |
+| Preorders                   | `inventory.preorders`                             | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.purchase-orders.approval-rules.detail` | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.purchase-orders.detail`                | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.receiving.detail`                      | —      | —    | —                                                                                      | —       |
+| Scan a delivery             | `inventory.receiving.scan`                        | —      | —    | —                                                                                      | —       |
+| Stock versus your books     | `inventory.reconciliation.books`                  | —      | —    | —                                                                                      | —       |
+| What to reorder             | `inventory.reorder`                               | —      | —    | —                                                                                      | —       |
+| Stock reports               | `inventory.reports`                               | —      | —    | —                                                                                      | —       |
+| How it is performing        | `inventory.reports.performance`                   | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.reports.schedule`                      | —      | —    | —                                                                                      | —       |
+| Sent to your inbox          | `inventory.reports.schedules`                     | —      | —    | —                                                                                      | —       |
+| Set up your stock           | `inventory.setup`                                 | 5 → 8  | 7    | Amber note was 1.44:1 (#014). Five clear steps, each with a "already done this" escape | P01     |
+| (depends on what is open)   | `inventory.sources.detail`                        | —      | —    | —                                                                                      | —       |
+| Edit a lot at once          | `inventory.stock.grid`                            | —      | —    | —                                                                                      | —       |
+| Import from a spreadsheet   | `inventory.stock.import`                          | —      | —    | —                                                                                      | —       |
+| Stock item                  | `inventory.stock.item`                            | —      | —    | —                                                                                      | —       |
+| Stock                       | `inventory.stock.list`                            | —      | —    | —                                                                                      | —       |
+| Where this number came from | `inventory.stock.provenance`                      | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.supplier-bills.detail`                 | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.supplier-returns.detail`               | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.suppliers.detail`                      | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.transfers.detail`                      | —      | —    | —                                                                                      | —       |
+| Moving stock                | `inventory.transfers.list`                        | —      | —    | —                                                                                      | —       |
+| Units of measure            | `inventory.units`                                 | —      | —    | —                                                                                      | —       |
+| Scanner mode                | `inventory.warehouse`                             | —      | —    | —                                                                                      | —       |
+| (depends on what is open)   | `inventory.warehouses.detail`                     | —      | —    | —                                                                                      | —       |
+| Locations                   | `inventory.warehouses.list`                       | —      | —    | —                                                                                      | —       |
 
 ### Partners — 17 panes
 
@@ -386,25 +406,28 @@ pane nobody removes.
 
 ### Bookings — 17 panes
 
-| Pane                      | Key                               | Design | Ease | Gap to 10 | Persona |
-| ------------------------- | --------------------------------- | ------ | ---- | --------- | ------- |
-| Availability              | `scheduling.availability`         | —      | —    | —         | —       |
-| (depends on what is open) | `scheduling.bookings.detail`      | —      | —    | —         | —       |
-| Bookings                  | `scheduling.bookings.list`        | —      | —    | —         | —       |
-| Calendar                  | `scheduling.calendar`             | —      | —    | —         | —       |
-| Linked calendars          | `scheduling.calendar.connections` | —      | —    | —         | —       |
-| (depends on what is open) | `scheduling.locations.detail`     | —      | —    | —         | —       |
-| Places                    | `scheduling.locations.list`       | —      | —    | —         | —       |
-| Booking rules             | `scheduling.policies`             | —      | —    | —         | —       |
-| (depends on what is open) | `scheduling.policies.detail`      | —      | —    | —         | —       |
-| How bookings are going    | `scheduling.reports`              | —      | —    | —         | —       |
-| (depends on what is open) | `scheduling.resources.detail`     | —      | —    | —         | —       |
-| People and equipment      | `scheduling.resources.list`       | —      | —    | —         | —       |
-| (depends on what is open) | `scheduling.series.detail`        | —      | —    | —         | —       |
-| Repeating bookings        | `scheduling.series.list`          | —      | —    | —         | —       |
-| (depends on what is open) | `scheduling.services.detail`      | —      | —    | —         | —       |
-| Services                  | `scheduling.services.list`        | —      | —    | —         | —       |
-| Waiting list              | `scheduling.waitlist`             | —      | —    | —         | —       |
+| Pane                      | Key                               | Design | Ease  | Gap to 10                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Persona |
+| ------------------------- | --------------------------------- | ------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| Availability              | `scheduling.availability`         | 8      | 7     | No way to copy one day's hours to the others — a five-day salon types the same two blocks five times. Adding a second block defaults to 09:00–17:00, overlapping the first.                                                                                                                                                                                                                                                                                                                                              | P02     |
+| (depends on what is open) | `scheduling.bookings.detail`      | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| Bookings                  | `scheduling.bookings.list`        | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| Calendar                  | `scheduling.calendar`             | 5 → 8  | 4 → 8 | Shows the working week now ([084](issues/084-she-typed-her-whole-week-in-and-the-diary-looked-exactly-the-same.md)). Still: shading only when ONE person is chosen, and at 360px the person picker's label clips mid-word.                                                                                                                                                                                                                                                                                               | P02     |
+| Linked calendars          | `scheduling.calendar.connections` | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| (depends on what is open) | `scheduling.locations.detail`     | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| Places                    | `scheduling.locations.list`       | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| Booking rules             | `scheduling.policies`             | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| (depends on what is open) | `scheduling.policies.detail`      | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| How bookings are going    | `scheduling.reports`              | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| (depends on what is open) | `scheduling.resources.detail`     | 8      | 5 → 8 | Time zone now defaults to the business's own ([081](issues/081-her-salon-opens-at-nine-and-the-diary-showed-appointments-at-three-in-the-morning.md)) and the tab no longer says "resource". Still no way to set someone's hours from their own record — that is a separate pane.                                                                                                                                                                                                                                        | P02     |
+| People and equipment      | `scheduling.resources.list`       | 8      | 6     | A two-chair salon opens it and finds ten people and rooms it never hired, one of them called "Stylist". No way to clear the samples in one move.                                                                                                                                                                                                                                                                                                                                                                         | P02     |
+| (depends on what is open) | `scheduling.series.detail`        | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| Repeating bookings        | `scheduling.series.list`          | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| (depends on what is open) | `scheduling.services.detail`      | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
+| Services                  | `scheduling.services.list`        | 8      | 4     | 18 seeded services with duplicates at two prices ([085](issues/085-her-price-list-had-two-of-everything-at-two-different-prices.md)), and no way to select several — clearing them was eleven separate open-scroll-Remove-confirm rounds.                                                                                                                                                                                                                                                                                | P02     |
+| (depends on what is open) | `scheduling.services.detail`      | 8      | 3 → 8 | Was: a price typed `65,00` saved as 6500 ([086](issues/086-she-priced-a-cut-at-sixty-five-and-the-booking-page-said-six-thousand-five-hundred.md)); "Not saved" after saving ([087](issues/087-the-screen-kept-telling-her-the-change-was-not-saved-after-it-saved.md)); no way to say who can do the work ([088](issues/088-she-could-not-say-that-only-dara-does-the-fades.md)). Now the row names who fits. Still: "Offer start times every" and the two gap fields are three number boxes most owners will not need. | P02     |
+| Booking rules             | `scheduling.policies`             | 5      | 7     | The two-column table gives the name 70% of the width and wraps every value onto four lines.                                                                                                                                                                                                                                                                                                                                                                                                                              | P02     |
+| (depends on what is open) | `scheduling.policies.detail`      | 8      | 8     | The blueprint's "Colour deposit" was already $25 at 48 hours — exactly her rule, nothing to change.                                                                                                                                                                                                                                                                                                                                                                                                                      | P02     |
+| Waiting list              | `scheduling.waitlist`             | —      | —     | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | —       |
 
 ### Invoices — 6 panes
 

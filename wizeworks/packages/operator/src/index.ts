@@ -133,4 +133,11 @@ export type {
   OperatorSiteDetail,
   OperatorSiteStatusInput,
   OperatorSiteStatusResult,
+  OperatorAnnouncementSurface,
+  OperatorAnnouncementTone,
+  OperatorAnnouncement,
+  OperatorAnnouncementInput,
+  OperatorAnnouncementPatch,
+  OperatorAnnouncementListParams,
+  OperatorAnnouncementListResult,
 } from './types';

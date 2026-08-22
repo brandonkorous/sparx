@@ -37,7 +37,7 @@ import {
   useSampleDataStatus,
   type SampleDataCounts,
 } from './data';
-import { productCopy, productCopyWith } from '../../lib/product';
+import { productCopy, productCopyWith, productSurfaceTitle } from '../../lib/product';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
 
@@ -74,8 +74,12 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   const load = useLoadSampleData();
   const clear = useClearSampleData();
 
+  // The BRAND's name for this screen, not the literal. The rail calls it
+  // "Practice data" (lib/console/vocabulary.ts) and this line called the dock tab
+  // "Sample data" — one screen with two names, and the one a person clicked was
+  // not the one they landed on. Issue #012.
   useEffect(() => {
-    ctx.setTitle('Sample data');
+    ctx.setTitle(productSurfaceTitle('platform.settings.sample-data') ?? 'Sample data');
   }, [ctx]);
 
   const busy = load.isPending || clear.isPending;

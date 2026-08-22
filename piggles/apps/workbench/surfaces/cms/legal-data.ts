@@ -28,7 +28,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
-import { type EntryStatus, type Tone } from './data';
+import { contentKeys, LEGAL_QUERY_ROOT, type EntryStatus, type Tone } from './data';
 import { productCopy } from '../../lib/product';
 
 /* ── Shapes (camelCase, exactly as wizeworks/services/api-rest/src/routes/v1/legal.ts
@@ -71,9 +71,21 @@ export interface ChecklistItem {
   entry: ChecklistEntry | null;
 }
 
+/** Why we think this business posts things to people. Evidence, never a default
+ *  — see the note on ShippingEvidence in @wizeworks/cms. */
+export type ShippingEvidence = 'delivery-rates' | 'orders-shipped';
+
+export interface ShippingPolicySignal {
+  ships: boolean;
+  because: ShippingEvidence | null;
+  missingPolicy: boolean;
+}
+
 export interface LegalChecklist {
   items: ChecklistItem[];
   completeness: { requiredTotal: number; requiredComplete: number };
+  /** Absent on an older server; treat that as "no reason to ask". */
+  shipping?: ShippingPolicySignal;
 }
 
 /** One footer link to a legal (or other) page. `propertyId === null` means the
@@ -95,7 +107,7 @@ export interface LegalPlacement {
 /* ── The query-key tree ─────────────────────────────────────────────────── */
 
 export const legalKeys = {
-  all: ['cms', 'legal'] as const,
+  all: LEGAL_QUERY_ROOT,
   checklist: () => [...legalKeys.all, 'checklist'] as const,
   placements: () => [...legalKeys.all, 'placements'] as const,
 };
@@ -152,6 +164,31 @@ export function useAcknowledgeLegalPage() {
       api.post<{ id: string; acknowledgedAt: string | null }>(`/v1/legal/pages/${id}/acknowledge`),
     onSuccess: () => {
       invalidate();
+    },
+  });
+}
+
+/**
+ * Take the current starter wording for a legal page.
+ *
+ * The page's existing body is banked as a revision server-side before it is
+ * replaced, and the "I have read this" acknowledgement is cleared — the words
+ * are different now, so the old acceptance certifies text nobody has read.
+ */
+export function useTakeStarterWording() {
+  const invalidate = useInvalidateLegal();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.post<{ id: string }>(`/v1/legal/pages/${id}/starter`),
+    onSuccess: (_result, id) => {
+      invalidate();
+      // The PAGE itself changed, not just its row on this checklist. An editor
+      // open on it in another pane is holding the old wording, and its Save would
+      // put that back over the new one — so the entry and its revision list are
+      // refreshed too, and content-detail re-reads whenever its draft is clean.
+      void queryClient.invalidateQueries({ queryKey: contentKeys.detail(id) });
+      void queryClient.invalidateQueries({ queryKey: contentKeys.revisions(id) });
+      void queryClient.invalidateQueries({ queryKey: contentKeys.lists() });
     },
   });
 }
@@ -261,7 +298,13 @@ export function legalItemStatus(item: ChecklistItem): LegalStatus {
       label: 'Needs review',
       tone: 'warning',
       detail: stale
-        ? `A newer starter version is available.${live ? ' Your live page still uses the older wording — ' : ' '}open it to see what changed and update it.`
+        ? // Says what is true and what she can DO about it. It used to read "open it
+          // to see what changed and update it" — and the editor it opened offered
+          // neither, because nothing in the product ever wrote
+          // `legal_template_version` after creation. A stale page could not be made
+          // current by any means. The action beside this row is what makes the
+          // sentence keepable.
+          `The starter wording has been updated since this page was made.${live ? ' Your live page still shows the older version.' : ''} You can take the new wording — what is on the page now is kept in its history.`
         : productCopy(
             'cms.legal.unreviewed',
             'This still uses the Piggles starter wording. Read it through, make it fit your business, then mark it reviewed.'

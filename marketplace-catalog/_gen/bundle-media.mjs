@@ -10,6 +10,7 @@
 // Usage (from repo root, AFTER the generator has written .preview/preview-<slug>.html):
 //   node marketplace-catalog/_gen/bundle-media.mjs <slug> [slug...]
 //   node marketplace-catalog/_gen/bundle-media.mjs all      # every bundle missing media
+//   node marketplace-catalog/_gen/bundle-media.mjs stale    # re-shoot every bundle that has a preview
 //
 // Output, written INTO the bundle (committed, unlike .preview/):
 //   blueprints/sparx-<slug>/media/preview.png   1280x900 — the home page in its real chrome
@@ -23,7 +24,7 @@
 // WHY the .pnpm glob for Playwright: marketplace-catalog has no node_modules and pnpm does not
 // hoist to the workspace root. Same technique, same reason, as `screenshot-template.mjs`.
 
-import { readdirSync } from 'node:fs';
+import { readdirSync, existsSync } from 'node:fs';
 import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -51,26 +52,51 @@ async function loadPlaywright() {
   return mod.chromium ? mod : mod.default;
 }
 
-/** A bundle dir is `sparx-<slug>`; the preview HTML is keyed by the bare `<slug>`. */
-const bundleDirFor = (slug) => join(BLUEPRINTS_DIR, `sparx-${slug}`);
+/** A bundle is addressable by its KEY (`sparx-restaurant-cafe`) or by the bare slug
+ *  (`restaurant-cafe`) — the same directory either way. `piggles-starter` is neither, so
+ *  an existing directory always wins over the `sparx-` guess. */
+function bundleDirFor(name) {
+  const asGiven = join(BLUEPRINTS_DIR, name);
+  return existsSync(asGiven) ? asGiven : join(BLUEPRINTS_DIR, `sparx-${name}`);
+}
+
+/** The two preview writers disagree about which of those names they stamp into the
+ *  filename — `template-sites` writes `preview-<slug>.html`, `service-sites` writes
+ *  `preview-<key>.html`. That disagreement is one reason the service bundles were never
+ *  shot from a real render at all. Accept either spelling, from either caller. */
+function previewHtmlFor(name) {
+  const bare = name.replace(/^sparx-/, '');
+  for (const candidate of [`preview-${bare}.html`, `preview-sparx-${bare}.html`]) {
+    const p = join(PREVIEW_DIR, candidate);
+    if (existsSync(p)) return p;
+  }
+  return null;
+}
 
 async function slugsFromArgs() {
   const args = process.argv.slice(2);
-  if (!(args.length === 1 && args[0] === 'all')) return args;
+  if (args.length && args[0] !== 'all' && args[0] !== 'stale') return args;
 
-  // `all` = every bundle that has a preview HTML to shoot AND is missing its media.
+  // Every bundle that has a preview HTML to shoot. `all` skips the ones that already
+  // have media; `stale` re-shoots them too — which is what a bundle whose card is a
+  // synthetic placeholder rather than a picture of the site needs.
+  const reshoot = args[0] === 'stale';
   const previews = (await fs.readdir(PREVIEW_DIR).catch(() => []))
     .filter((f) => /^preview-.*\.html$/.test(f) && !f.endsWith('.body.html'))
     .map((f) => f.replace(/^preview-/, '').replace(/\.html$/, ''));
-  const missing = [];
+  const wanted = [];
   for (const slug of previews) {
+    if (reshoot) {
+      wanted.push(slug);
+      continue;
+    }
     const ok = await fs
       .access(join(bundleDirFor(slug), 'media', 'preview.png'))
       .then(() => true)
       .catch(() => false);
-    if (!ok) missing.push(slug);
+    if (!ok) wanted.push(slug);
   }
-  return missing;
+  return wanted;
 }
 
 /** Strip the review scaffolding so the shot is the storefront, not the review page: drop every
@@ -121,7 +147,16 @@ async function main() {
       const mediaDir = join(bundleDirFor(slug), 'media');
       await fs.mkdir(mediaDir, { recursive: true });
 
-      const src = pathToFileURL(join(PREVIEW_DIR, `preview-${slug}.html`)).href;
+      const htmlPath = previewHtmlFor(slug);
+      if (!htmlPath) {
+        console.warn(
+          `${slug}: SKIPPED — no .preview/preview-*.html. Run that bundle's generator first ` +
+            `(it writes the preview), then re-run this.`
+        );
+        continue;
+      }
+
+      const src = pathToFileURL(htmlPath).href;
       const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
       await page.goto(src, { waitUntil: 'networkidle', timeout: 60000 });
       await page.evaluate(HOME_ONLY);
@@ -133,8 +168,17 @@ async function main() {
       await page.screenshot({ path: join(mediaDir, 'preview.png') });
       await page.close();
 
-      await fs.copyFile(GOLDEN_ICON, join(mediaDir, 'icon.png'));
-      console.log(`${slug}: wrote media/preview.png + media/icon.png${broken ? ` (⚠ ${broken} broken imgs)` : ''}`);
+      // The icon is only WRITTEN when the bundle has none — a publish refuses a bundle
+      // without one, which is what this guarantees. It is not overwritten: a bundle that
+      // ships deliberate icon art keeps it, so re-shooting a preview can never quietly
+      // restyle 97 gallery cards as a side effect.
+      const iconPath = join(mediaDir, 'icon.png');
+      const hadIcon = existsSync(iconPath);
+      if (!hadIcon) await fs.copyFile(GOLDEN_ICON, iconPath);
+      console.log(
+        `${slug}: wrote media/preview.png${hadIcon ? '' : ' + media/icon.png'}` +
+          `${broken ? ` (⚠ ${broken} broken imgs)` : ''}`
+      );
     }
   } finally {
     await browser.close();

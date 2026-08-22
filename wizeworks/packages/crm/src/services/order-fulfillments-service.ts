@@ -31,6 +31,39 @@ export async function listForOrder(
   );
 }
 
+/**
+ * The two clocks on a new fulfillment.
+ *
+ * A fulfillment can be created ALREADY FINISHED, and for a great many
+ * businesses that is the only way it is ever created: the customer walked in
+ * and took the thing off the counter. There was no despatch and no carrier to
+ * wait on, so "shipped, then delivered" is two states the event never passed
+ * through -- it happened once, and both clocks read the same moment.
+ *
+ * `delivered` used to stamp NEITHER, because the only writer that existed was a
+ * shipping integration that always starts at `shipped`. A handover would have
+ * landed as a delivered fulfillment with no delivered_at, and the console would
+ * have read back "Created <timestamp>" for something a business had actually
+ * handed over -- a time nobody recorded, rendered as the time it happened.
+ *
+ * Anything that has not gone yet (`pending`, `failed`, `cancelled`) gets
+ * neither. An explicit `shippedAt` always wins: a shipment being backfilled
+ * after the fact knows its own date better than the clock does.
+ */
+export function fulfillmentClocks(
+  status: string,
+  shippedAtInput?: string,
+  now: Date = new Date()
+): { shippedAt: Date | null; deliveredAt: Date | null } {
+  const finished = status === 'delivered';
+  const shippedAt = shippedAtInput
+    ? new Date(shippedAtInput)
+    : status === 'shipped' || finished
+      ? now
+      : null;
+  return { shippedAt, deliveredAt: finished ? (shippedAt ?? now) : null };
+}
+
 export async function createFulfillment(
   ctx: ServiceContext,
   rawInput: unknown
@@ -59,11 +92,7 @@ export async function createFulfillment(
       }
     }
 
-    const shippedAt = input.shippedAt
-      ? new Date(input.shippedAt)
-      : input.status === 'shipped'
-        ? new Date()
-        : null;
+    const { shippedAt, deliveredAt } = fulfillmentClocks(input.status, input.shippedAt);
 
     const created = await tx.orderFulfillment.create({
       data: {
@@ -75,6 +104,7 @@ export async function createFulfillment(
         trackingNumber: input.trackingNumber ?? null,
         trackingUrl: input.trackingUrl ?? null,
         shippedAt,
+        deliveredAt,
         notes: input.notes ?? null,
         metadata: {
           ...(input.metadata ?? {}),
@@ -115,12 +145,30 @@ export async function createFulfillment(
     return created;
   });
 
-  if (fulfillment.status === 'shipped') {
+  // The goods left the building. True of a despatch and equally true of a
+  // handover, so BOTH announce it -- a fulfillment created straight to
+  // `delivered` used to announce nothing at all, so every downstream consumer
+  // (the activity feed, the customer stats, the review request) simply never
+  // heard about the sales a counter business actually completes.
+  if (fulfillment.status === 'shipped' || fulfillment.status === 'delivered') {
     await publishPlatformEvent({
       id: crypto.randomUUID(),
       topic: 'order.fulfilled',
       tenantId: ctx.tenantId,
       occurredAt: fulfillment.shippedAt ?? new Date(),
+      payload: { orderId: fulfillment.orderId, fulfillmentId: fulfillment.id },
+    });
+  }
+
+  // ...and it arrived, in the same movement. `updateFulfillment` publishes this
+  // on the shipped -> delivered transition; a handover never makes that
+  // transition, so without this the event exists for posted orders alone.
+  if (fulfillment.status === 'delivered') {
+    await publishPlatformEvent({
+      id: crypto.randomUUID(),
+      topic: 'order.delivered',
+      tenantId: ctx.tenantId,
+      occurredAt: fulfillment.deliveredAt ?? new Date(),
       payload: { orderId: fulfillment.orderId, fulfillmentId: fulfillment.id },
     });
   }
@@ -223,9 +271,17 @@ async function promoteOrderOnFulfillment(
     order.fulfillments.every((f) => f.status === 'delivered');
 
   if (allDelivered && order.status !== 'delivered') {
+    // `fulfilledAt` too, when the order never sat at `fulfilled` on its way
+    // here. An order collected over the counter goes placed -> delivered in one
+    // move, and leaving the fulfilled clock null says the goods were delivered
+    // without ever having been made ready -- which reports then read as a gap.
     await tx.order.update({
       where: { id: orderId },
-      data: { status: 'delivered', deliveredAt: new Date() },
+      data: {
+        status: 'delivered',
+        deliveredAt: new Date(),
+        ...(order.fulfilledAt ? {} : { fulfilledAt: new Date() }),
+      },
     });
   } else if (allFulfilled && order.status === 'placed') {
     await tx.order.update({

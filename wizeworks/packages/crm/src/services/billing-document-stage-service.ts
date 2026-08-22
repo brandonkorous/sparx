@@ -55,6 +55,21 @@ const DEFAULT_NUMBER_PREFIX = 'INV-';
  * a business does not have is a misrepresentation, and `taxRegistered` exists
  * precisely to gate it.
  */
+/** The company whose terms apply — the customer's employer, when the document
+ *  itself is not addressed to a company. Null for a walk-in with no employer on
+ *  file, which is the honest answer: nobody agreed any terms with them. */
+async function payerCompanyId(
+  tx: Prisma.TransactionClient,
+  customerId: string | null
+): Promise<string | null> {
+  if (!customerId) return null;
+  const customer = await tx.customer.findUnique({
+    where: { id: customerId },
+    select: { companyId: true },
+  });
+  return customer?.companyId ?? null;
+}
+
 async function snapshotIssuer(
   tx: Prisma.TransactionClient,
   tenantId: string,
@@ -205,16 +220,43 @@ export async function applyStageEntryEffects(
     if (document.issuedBy === null) {
       data.issuedBy = await snapshotIssuer(tx, ctx.tenantId, document.propertyId);
     }
-    // Net-terms B2B documents get a due date from the account's terms on finalize
-    // (§8). Retail / already-dated documents keep their dueAt.
-    if (document.companyId && document.dueAt === null) {
+  }
+
+  // ── When is it due? ───────────────────────────────────────────────────────
+  //
+  // On entering a stage that means THE MONEY IS NOW OWED. That is `open` for the
+  // default Invoice workflow every tenant starts on, and `final` for the
+  // workflows that issue after an approval step. Both mean the same thing to the
+  // customer: here is the bill.
+  //
+  // This used to live inside the `final`-only block above, bundled with
+  // `finalizedAt` and `issuedBy` -- which genuinely are facts about finalizing.
+  // A due date is not. The consequence was that the DEFAULT workflow, whose
+  // Invoice stage is `open`, could never produce one: every invoice a new tenant
+  // ever raised read "No due date", sat outside every aging bucket, and could
+  // never be chased. The terms were recorded, agreed and displayed, and reached
+  // nothing.
+  //
+  // THE TERMS FOLLOW THE PAYER'S EMPLOYER, not only a document addressed to the
+  // company. It used to read `document.companyId` alone, and nothing sets that
+  // from the console -- an invoice is raised against a PERSON. The company screen
+  // already states the rule this follows: "everything billed to this company OR
+  // TO ANYONE WHO WORKS HERE, because a contact's unpaid invoice is still this
+  // company's debt".
+  //
+  // `dueAt === null` is the idempotence guard: a date already set by hand, or on
+  // an earlier entry, is never overwritten.
+  const becomingPayable = stage.stageType === 'open' || stage.stageType === 'final';
+  if (becomingPayable && document.dueAt === null) {
+    const companyId = document.companyId ?? (await payerCompanyId(tx, document.customerId));
+    if (companyId) {
       const account = await tx.company.findUnique({
-        where: { id: document.companyId },
+        where: { id: companyId },
         select: { paymentTerms: true },
       });
       const days = netTermsDays(account?.paymentTerms);
       if (days > 0) {
-        const due = new Date(finalizedAt);
+        const due = new Date();
         due.setUTCDate(due.getUTCDate() + days);
         data.dueAt = due;
       }

@@ -111,7 +111,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
       />
 
       {unpricedTotal > 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>
               {plural(unpricedTotal, 'unit', 'units')} sold with no cost recorded
@@ -133,9 +133,9 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
               <PaneWaiting label="Working out what is owed…" />
             ) : behind.length === 0 ? (
               /* No extra card — the FormSection is one already. <PaneEmpty>
-                 because the loading branch beside it is <PaneWaiting>: leaving a
-                 grey glyph chip here made one region draw two different kinds of
-                 picture. */
+                               because the loading branch beside it is <PaneWaiting>: leaving a
+                               grey glyph chip here made one region draw two different kinds of
+                               picture. */
               <PaneEmpty
                 module={MODULE}
                 icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}

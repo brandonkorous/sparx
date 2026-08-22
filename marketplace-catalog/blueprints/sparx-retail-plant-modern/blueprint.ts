@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-plant-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'sparx — Plant Studio (Modern)',
   summary:
     'A complete, working shop for a modern plant studio: a real catalogue of sculptural plants, designed stoneware and concrete planters, oak and steel stands, a considered brass care kit and a plant-of-the-month, with categories, collections, a bespoke PDP and a merchandised home page. Architectural theme — a cool pale-stone ground, a single confident deep-green primary, a refined brass accent, and a crisp grotesk voice. Shipped as Frond.',

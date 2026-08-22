@@ -133,7 +133,7 @@ function Toolbar({
 function NoAddress() {
   return (
     <div className="bg-base-200 h-full overflow-auto p-4">
-      <Alert color="warning" variant="soft">
+      <Alert color="warning">
         This site has no web address yet, so there is nothing to show a visitor. Connect a domain
         and this will come to life.
       </Alert>

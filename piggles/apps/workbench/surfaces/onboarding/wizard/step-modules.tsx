@@ -48,8 +48,10 @@ export function StepModules({
           <div key={m.key}>
             {firstAddon ? (
               <div className="border-base-300 mt-1 border-t pt-4 pb-1">
-                <p className="text-sm font-medium">Add-ons</p>
-                <p className="text-sm">Optional extras, priced on top of your core modules.</p>
+                <p className="text-sm font-medium">Specialised</p>
+                <p className="text-sm">
+                  Less common, and in your plan exactly like everything above.
+                </p>
               </div>
             ) : null}
             <ModuleRow
@@ -118,16 +120,8 @@ function ModuleRow({
           </Badge>
         ) : null}
 
-        <span
-          className={`w-16 shrink-0 text-right text-sm tabular-nums ${
-            lock === 'included' ? 'text-success font-medium' : ''
-          }`}
-        >
-          {lock === 'included' ? 'Included' : `+ $${m.price}`}
-        </span>
-
         {/* A bundled capability has nothing to toggle — hold the switch's width so
-            the price column stays aligned across every row. */}
+            every row's right edge lines up. */}
         {lock === 'included' ? (
           <span className="w-9 shrink-0" aria-hidden />
         ) : (
@@ -152,10 +146,7 @@ function ModuleRow({
               </li>
             ))}
           </ul>
-          <p className="text-sm">
-            Replaces {m.replaces} — about <span className="font-medium">${m.elsewhere}/mo</span>{' '}
-            bought separately.
-          </p>
+          <p className="text-sm">Replaces {m.replaces}.</p>
         </div>
       ) : null}
     </ModuleScope>

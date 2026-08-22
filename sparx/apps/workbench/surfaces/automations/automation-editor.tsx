@@ -771,7 +771,7 @@ export function AutomationEditor({
       </PaneToolbar>
 
       {error ? (
-        <Alert color="error" variant="soft" className="shrink-0">
+        <Alert color="error" className="shrink-0">
           <AlertContent>
             <AlertTitle>{isNew ? 'Cannot create this yet' : 'Cannot save this yet'}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>

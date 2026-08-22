@@ -41,7 +41,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { MoneyInput } from '../invoicing/money-input';
+import { MoneyInput } from '../../components/money-input';
 import { useProductFacets } from './products-data';
 import type { CollectionPredicate, CollectionRuleSet } from './collections-data';
 
@@ -263,7 +263,7 @@ export function CollectionRulesEditor({
                 <Button
                   size="xs"
                   variant="ghost"
-                  color="neutral"
+                  color="danger"
                   onClick={() => {
                     removePredicate(entry.index);
                   }}

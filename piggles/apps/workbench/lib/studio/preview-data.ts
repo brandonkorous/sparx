@@ -22,6 +22,25 @@ export interface SiteIdentityPreview {
   tagline: string | null;
   logo: { url: string; alt: string } | null;
   logoDark: { url: string; alt: string } | null;
+  /**
+   * How customers reach this business — the same five the LIVE site resolves.
+   *
+   * They were missing here, so a starter site's Contact page went on drawing the
+   * blueprint's invented `(555) 123-4567` in the editor after the owner had typed
+   * her real number into Your site and saved it. Nothing was wrong with what she
+   * saved; the canvas simply had no source to resolve against, and an unresolved
+   * binding falls back to the authored words. She had no way to tell those apart.
+   *
+   * `null`, never '', for the same reason as `tagline` — see the live site's
+   * `siteRoot`, which this mirrors field for field.
+   */
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  /** The dialable and mailable forms, composed HERE because an attribute binding
+   *  fills a value verbatim and cannot prefix it. Same rule as the live site. */
+  phoneHref: string | null;
+  emailHref: string | null;
 }
 
 /** The tenant's real `site.*` chrome data — identity + social links — overlaid onto

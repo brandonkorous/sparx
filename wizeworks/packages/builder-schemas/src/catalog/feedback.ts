@@ -17,7 +17,7 @@ import { el, atom, behave, part, entry, type PlatformCatalogEntry } from './_kit
 // so flipping the color in the inspector recolors the WHOLE component (the
 // Layer-1 win, docs/102). Icon + title + body are the atom's slots.
 const alert = (tone: string, icon: string, title: string, message: string) =>
-  atom('Alert', `alert alert-${tone} alert-soft w-full`, { icon, title, body: message });
+  atom('Alert', `alert alert-${tone} w-full`, { icon, title, body: message });
 
 export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // ── Alert (info) — neutral, informational notice ─────────────────────────────

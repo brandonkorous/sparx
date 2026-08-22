@@ -1,4 +1,5 @@
 import * as React from 'react';
+import type { BrandWordmark } from '@wizeworks/brand-core';
 
 // The platform attribution badge — a small tab welded to the bottom edge of the
 // viewport on every tenant public site (`wizeworks/apps/site` mounts it as
@@ -50,6 +51,31 @@ export interface PlatformCreditProps {
   /** Which bottom corner to anchor to. Default 'right'; the storefront flips
    *  this to 'left' when the chat launcher (also fixed bottom-right) is on. */
   placement?: 'right' | 'left';
+  /**
+   * The brand's actual wordmark, when it has published one.
+   *
+   * `name` + `accentChars` renders a name as TYPE — the right treatment for a
+   * name whose mark is its letterforms, and the wrong one for a logo that is
+   * drawn. Piggles' wordmark carries a pink dot over the "i"; set as bold Inter
+   * it was the word and none of the mark. When this is present it replaces the
+   * type; `name` still supplies the accessible name either way, so the anchor
+   * reads "Made with Piggles" to a screen reader in both treatments.
+   */
+  wordmark?: BrandWordmark | null;
+}
+
+/** The mark's aspect, from its own canvas. Falls back to a wide-ish default
+ *  rather than to 1 — a square box around a word-shaped mark is a visible
+ *  mistake, where a slightly-off width is not. */
+function aspectOf(viewBox: string): number {
+  const parts = viewBox
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  if (parts.length !== 4) return 3;
+  const w = parts[2] ?? Number.NaN;
+  const h = parts[3] ?? Number.NaN;
+  return Number.isFinite(w) && Number.isFinite(h) && h > 0 ? w / h : 3;
 }
 
 export function PlatformCredit({
@@ -59,7 +85,12 @@ export function PlatformCredit({
   accentChars = 0,
   size = 12,
   placement = 'right',
+  wordmark = null,
 }: PlatformCreditProps) {
+  // Cap-height of the badge's type, near enough. The drawn marks carry their
+  // own padding inside the viewBox, so matching font-size exactly renders them
+  // visibly smaller than the words beside them.
+  const markHeight = Math.round(size * 1.25);
   const split = Math.min(Math.max(accentChars, 0), name.length);
   const stem = split > 0 ? name.slice(0, name.length - split) : name;
   const tail = split > 0 ? name.slice(name.length - split) : '';
@@ -152,12 +183,43 @@ export function PlatformCredit({
         }}
       >
         <span style={{ fontWeight: 500, color: 'rgba(255, 255, 255, 0.7)' }}>Made with</span>
-        <span
-          style={{ fontWeight: 700, letterSpacing: '-0.03em', color: 'rgba(255, 255, 255, 0.96)' }}
-        >
-          {stem}
-          {tail ? <span style={{ color: accentColor }}>{tail}</span> : null}
-        </span>
+        {wordmark ? (
+          <svg
+            viewBox={wordmark.viewBox}
+            // Sized off the badge's own type scale so the mark sits on the same
+            // line as "Made with" rather than next to it. Height and width are
+            // both given: a viewBox alone leaves the box to the UA, and this
+            // badge inlines every dimension it depends on.
+            height={markHeight}
+            width={Math.round(markHeight * aspectOf(wordmark.viewBox))}
+            // The letterforms inherit; only the accent shape is painted. Same
+            // split the brand's own <Wordmark> makes, for the same reason —
+            // recolouring the letters loses the mark's contrast against the
+            // badge, and letting the dot inherit loses the only brand in it.
+            fill="rgba(255, 255, 255, 0.96)"
+            // The anchor already announces "Made with <name>"; a second name
+            // here would have a screen reader say the brand twice.
+            aria-hidden={true}
+            focusable="false"
+            style={{ display: 'block', flexShrink: 0 }}
+          >
+            {wordmark.paths.map((d) => (
+              <path key={d.slice(0, 24)} d={d} />
+            ))}
+            {wordmark.accentPath ? <path d={wordmark.accentPath} fill={accentColor} /> : null}
+          </svg>
+        ) : (
+          <span
+            style={{
+              fontWeight: 700,
+              letterSpacing: '-0.03em',
+              color: 'rgba(255, 255, 255, 0.96)',
+            }}
+          >
+            {stem}
+            {tail ? <span style={{ color: accentColor }}>{tail}</span> : null}
+          </span>
+        )}
       </a>
     </>
   );

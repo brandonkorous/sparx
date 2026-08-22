@@ -223,7 +223,7 @@ function LookupJob({ warehouseId, ctx }: { warehouseId?: string; ctx: SurfaceCon
       </Card>
 
       {resolution === null ? null : resolution.matches.length === 0 ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Nothing matches {resolution.scanned}</AlertTitle>
             <AlertDescription>
@@ -529,7 +529,7 @@ function OpenSomethingJob({
       </Card>
 
       {message ? (
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>{message}</AlertTitle>
             <AlertDescription>

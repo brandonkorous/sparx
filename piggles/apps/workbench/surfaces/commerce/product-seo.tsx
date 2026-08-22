@@ -256,7 +256,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
         description="The picture that appears when this product is pasted into a message, a post or a chat."
       >
         {images.length === 0 ? (
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertTitle>No photos to choose from yet</AlertTitle>
               <AlertDescription>

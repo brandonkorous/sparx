@@ -565,7 +565,7 @@ function SequenceEditor({
       />
 
       {error ? (
-        <Alert color="error" variant="soft" className="shrink-0">
+        <Alert color="error" className="shrink-0">
           <AlertContent>
             <AlertTitle>{isNew ? 'Cannot create this yet' : 'Cannot save this yet'}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
@@ -576,7 +576,7 @@ function SequenceEditor({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {status === 'active' ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>This sequence is on</AlertTitle>
                 <AlertDescription>

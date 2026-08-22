@@ -87,7 +87,14 @@ export async function syncProductInStock(
     }),
   ]);
   const total = levels.reduce((acc, l) => acc + (l.onHand - l.allocated - l.unsellableOnHand), 0);
-  const inStock = total > 0 || sellableWithoutStock > 0;
+  // No level row anywhere means nobody has ever counted this product — the
+  // absence of a measurement, not a measurement of zero. It takes the untracked
+  // path, exactly as `computeAvailability` does, so the denormalized column and
+  // the live calc cannot disagree. Without this, every product a business typed
+  // in read "Sold out" on its own shop from the moment it was published, while
+  // the console beside it said On sale. See availability.ts's header.
+  const neverCounted = levels.length === 0;
+  const inStock = neverCounted || total > 0 || sellableWithoutStock > 0;
   // "Low stock" = still sellable, but at least one level has crossed its reorder
   // point per the module's ONE canonical predicate (isLowStock). A level with no
   // reorder point never counts (an owner who set no trigger asked for no signal),

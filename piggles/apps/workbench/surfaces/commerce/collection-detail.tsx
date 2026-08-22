@@ -462,7 +462,7 @@ function CollectionEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this collection</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -608,7 +608,7 @@ function CollectionEditor({
               }
             >
               {ruleError ? (
-                <Alert color="warning" variant="soft">
+                <Alert color="warning">
                   <AlertContent>
                     <AlertTitle>These conditions are not ready yet</AlertTitle>
                     <AlertDescription>{ruleError}</AlertDescription>

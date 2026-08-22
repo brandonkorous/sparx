@@ -397,7 +397,7 @@ function TaskEditor({
           ) : null}
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save this task</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
-import { PRODUCT } from '@piggles/config';
+import { marketingUrl, PRODUCT } from '@piggles/config';
 import { AppearanceControl } from './appearance-control';
 import { Assurances } from './assurances';
 
@@ -48,6 +48,28 @@ const GRID: Record<Shape, string> = {
   setup: 'lg:grid-cols-[minmax(0,20rem)_1fr]',
 };
 
+// `setup`'s panel STAYS PUT while the form scrolls, and that is the difference
+// between a preview and a picture. Onboarding's form is taller than a viewport —
+// name, trade, five choices, six looks — so a panel that scrolls with it leaves
+// the screen at exactly the moment the boxes it answers to are being ticked.
+// Somebody ticks "I sell things" and the thing that was supposed to show them
+// four apps arriving is a screen and a half above their thumb.
+//
+// Vertical alignment has to move with it: `items-center` sizes the column to its
+// content and centres it, which leaves `sticky` no track to travel along. So
+// `setup` starts its columns at the top and the panel sticks; `auth` keeps
+// centring, because its panel is a fixed promise beside a three-field form and
+// there is nothing to follow.
+const ALIGN: Record<Shape, string> = {
+  auth: 'items-center',
+  setup: 'items-start',
+};
+
+const PANEL: Record<Shape, string> = {
+  auth: '',
+  setup: 'lg:sticky lg:top-10 lg:self-start',
+};
+
 export function AuthShell({
   heading,
   lede,
@@ -89,16 +111,16 @@ export function AuthShell({
             somebody reading in dark should be able to fix a white sign-in page
             without hunting, and then never look at this corner again. */}
         <div className="flex items-center justify-between gap-4">
-          <Link href={`https://${PRODUCT.hosts.marketing}`} aria-label={`${PRODUCT.name} home`}>
+          <Link href={marketingUrl()} aria-label={`${PRODUCT.name} home`}>
             <Logo className="h-11 w-auto" />
           </Link>
           <AppearanceControl />
         </div>
 
         <div
-          className={`grid flex-1 items-center gap-10 py-10 lg:gap-16 lg:py-16 ${panel ? GRID[shape] : 'justify-items-center'}`}
+          className={`grid flex-1 gap-10 py-10 lg:gap-16 lg:py-16 ${panel ? `${ALIGN[shape]} ${GRID[shape]}` : 'items-center justify-items-center'}`}
         >
-          {panel ? <div className="order-2 lg:order-1">{panel}</div> : null}
+          {panel ? <div className={`order-2 lg:order-1 ${PANEL[shape]}`}>{panel}</div> : null}
 
           <div className={`order-1 w-full lg:order-2 ${panel ? '' : 'max-w-lg'}`}>
             <Card>

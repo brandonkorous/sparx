@@ -11,10 +11,10 @@
 //     app's error.tsx / global-error.tsx catch these.
 //
 // Both paths recover the same way — a full reload fetches the current build —
-// and both must respect ONE cooldown, or a genuinely broken build (one that
-// still throws after reloading) traps the tab in a refresh loop. So the
-// detector and the once-per-cooldown reload live here, shared, rather than
-// copied into each caller and left to drift.
+// and both must draw on ONE budget, or a genuinely broken build (one that still
+// throws after reloading) traps the tab in a refresh loop. So the detector and
+// the budgeted reload live here, shared, rather than copied into each caller and
+// left to drift.
 //
 // This module imports nothing. It is the entry a non-React caller (or a route
 // handler) can reach for without pulling a component in: `@wizeworks/app-kit/chunk-error`.
@@ -39,11 +39,60 @@
 const CHUNK_ERROR_RE =
   /Failed to load chunk|Loading chunk [\w-]+ failed|ChunkLoadError|Loading CSS chunk|error loading dynamically imported module|Failed to fetch dynamically imported module|Importing a module script failed/i;
 
-const RELOAD_GUARD_KEY = 'sparx:chunk-reloaded-at';
-const RELOAD_COOLDOWN_MS = 10_000;
+const RELOAD_GUARD_KEY = 'sparx:chunk-reload';
+
+// ── WHY THIS IS AN ATTEMPT BUDGET AND NOT A COOLDOWN ────────────────────────
+//
+// It was a cooldown: one timestamp in sessionStorage, reload only if the last
+// reload was more than 10s ago. That is a RATE LIMIT, not a limit — every reload
+// wrote a FRESH timestamp, so the window slid forward and the tab reloaded every
+// 10 seconds, forever, on any error that kept matching. The header above promises
+// the opposite ("or a genuinely broken build traps the tab in a refresh loop"),
+// and the promise was never kept: nothing here ever counted attempts, so there
+// was no number that could run out.
+//
+// What replaces it: a page that SURVIVES for `SETTLE_MS` has demonstrably loaded
+// a working build, so a chunk error after that is a NEW deploy and earns a fresh
+// budget. A second error inside that window is the SAME broken build throwing
+// again, and reloading into it a third time cannot help — so the budget runs out
+// and the caller shows its recover-able fallback instead.
+const SETTLE_MS = 5 * 60_000;
+const MAX_ATTEMPTS = 2;
+
+/** The reload budget as it survives in sessionStorage (per tab, per origin). */
+interface ReloadState {
+  /** When the last reload was triggered. */
+  at: number;
+  /** Reloads triggered since the page last settled. */
+  n: number;
+}
+
+function readState(): ReloadState {
+  try {
+    const raw = window.sessionStorage.getItem(RELOAD_GUARD_KEY);
+    if (!raw) return { at: 0, n: 0 };
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) return { at: 0, n: 0 };
+    const { at, n } = parsed as Partial<ReloadState>;
+    return { at: typeof at === 'number' ? at : 0, n: typeof n === 'number' ? n : 0 };
+  } catch {
+    // sessionStorage can throw in hardened privacy modes, and a hand-edited or
+    // pre-format value can fail to parse. Both mean "no prior reload".
+    return { at: 0, n: 0 };
+  }
+}
 
 /** How far to follow `cause` before giving up — a cycle must not hang the tab. */
 const MAX_CAUSE_DEPTH = 5;
+
+// The one global this module reads, declared rather than typed in from
+// `@types/node`. It is not a Node API here: every bundler that produces a
+// browser build replaces this exact member expression with a string literal, so
+// what ships is `'production' !== 'production'` and no `process` is ever
+// touched. Pulling Node's global types into a package that only ever runs in a
+// browser — to describe a value that does not survive the build — would say the
+// opposite of what is true, and would undo "this module imports nothing".
+declare const process: { env: { NODE_ENV?: string } };
 
 /**
  * Every string worth testing from whatever a listener or boundary was handed.
@@ -67,26 +116,33 @@ export function isChunkLoadError(input: unknown): boolean {
 }
 
 /**
- * Reload to fetch the current build — at most once per cooldown window.
+ * Reload to fetch the current build — at most `MAX_ATTEMPTS` times per episode.
  *
- * Returns `true` if it triggered a reload, `false` if the cooldown blocked it
- * (i.e. we already reloaded moments ago and the tab is STILL broken, which means
- * reloading again won't help — the caller should show a recover-able fallback
- * instead of looping). A user-initiated reload should bypass this and call
+ * Returns `true` if it triggered a reload, `false` if the budget blocked it —
+ * i.e. we already reloaded and the tab is STILL broken, which means reloading
+ * again won't help and the caller should show a recover-able fallback instead of
+ * looping. A user-initiated reload should bypass this and call
  * `window.location.reload()` directly.
+ *
+ * **Refuses outright outside production.** A purged chunk is a DEPLOY artifact,
+ * and there are no deploys in dev: there, every edit purges chunks by design and
+ * the dev server's own client re-syncs the tab. Auto-reloading on top of that
+ * turns routine HMR churn into a tab that reloads on a timer while someone is
+ * trying to read the error that caused it. Returning `false` is also the honest
+ * answer for a boundary — in dev the error screen is the useful outcome.
  */
 export function reloadOnceForStaleBuild(): boolean {
-  let last = 0;
-  try {
-    last = Number(window.sessionStorage.getItem(RELOAD_GUARD_KEY) ?? '0');
-  } catch {
-    // sessionStorage can throw in hardened privacy modes — treat as "no prior
-    // reload" and fall through to reload once.
-  }
-  if (Date.now() - last < RELOAD_COOLDOWN_MS) return false;
+  if (process.env.NODE_ENV !== 'production') return false;
+
+  const now = Date.now();
+  const prior = readState();
+  // Settled = the page ran long enough to prove the build works, so an error now
+  // belongs to a NEW stale build and starts its own budget.
+  const attempts = now - prior.at > SETTLE_MS ? 0 : prior.n;
+  if (attempts >= MAX_ATTEMPTS) return false;
 
   try {
-    window.sessionStorage.setItem(RELOAD_GUARD_KEY, String(Date.now()));
+    window.sessionStorage.setItem(RELOAD_GUARD_KEY, JSON.stringify({ at: now, n: attempts + 1 }));
   } catch {
     /* best-effort guard; reload anyway */
   }

@@ -5,6 +5,7 @@ import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
 import { accountUrl, APP_BY_ID, type PigglesAppId, PRODUCT } from '@piggles/config';
+import { PRICE_LABEL } from '@piggles/config/pricing';
 import { MASCOT_POSES, type MascotPoseId } from '@piggles/mascot';
 import { PigglesMascot } from '@piggles/mascot/react';
 import { CloseBand } from './close-band';
@@ -22,7 +23,7 @@ import { TwoQuestionsForm } from './two-questions';
 //   3  The turn       — stop typing the same thing three times
 //   4  The sixth place — one fact, six copies, and the fifteen that share one
 //   5  Two questions  — what actually happens when you sign up
-//   6  $49            — what your time is worth, then the one price
+//   6  the one price  — what your time is worth, then the one price
 //   7  Instead of     — the ten bills this replaces, against the one
 //   8  Questions      — the six people ask before signing anything
 //   9  Close
@@ -600,7 +601,8 @@ function Pricing() {
         <Card className="settle">
           <CardBody>
             <p className="text-6xl font-extrabold">
-              $49<span className="text-xl font-bold">/month</span>
+              {PRICE_LABEL}
+              <span className="text-xl font-bold">/month</span>
             </p>
             <p className="mt-1 text-base font-semibold">One plan. That is the whole price list.</p>
 
@@ -705,7 +707,7 @@ export function HomePage() {
         heading={`Go and run the business. ${PRODUCT.name} will handle the business software.`}
         primary={{ label: 'Get Piggles', href: accountUrl('signup', 'home-close') }}
         secondary={{ label: 'Talk to a person', href: accountUrl('contact', 'home-close') }}
-        note="$49 a month · free for 14 days · no card needed"
+        note={`${PRICE_LABEL} a month · free for 14 days · no card needed`}
       />
     </div>
   );

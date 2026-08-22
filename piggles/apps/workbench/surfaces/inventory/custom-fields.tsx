@@ -471,7 +471,7 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
-          <Alert color="info" variant="soft">
+          <Alert color="info">
             <AlertContent>
               <AlertDescription>
                 Anything you add here appears on the record straight away, in the API, and to any

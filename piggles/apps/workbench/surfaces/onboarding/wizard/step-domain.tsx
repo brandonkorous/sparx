@@ -1,7 +1,7 @@
 'use client';
 
 // Step 4 — Domain (the work pane). Two honest paths:
-//   • The free `<slug>.sparx.zone` address — always available, no card, the default
+//   • The free `<slug>.piggles.site` address — always available, no card, the default
 //     Continue keeps. Nothing to do here.
 //   • Buy a custom domain — search, pick one, and give the ICANN registrant contact.
 //     Buying is DEFERRED: the choice (domain + contact + price) is captured as a
@@ -34,8 +34,12 @@ import { api } from '../../../lib/api/client';
 import { ApiError } from '@wizeworks/api-client';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import type { PendingDomain, RegistrantContact } from '../../../lib/onboarding/types';
+import { PRODUCT } from '@piggles/config';
 
-const SITE_ZONE = 'sparx.zone';
+// The tenant-site suffix comes from the brand, never a literal. It was
+// hardcoded to sparx.zone — another product's domain, offered to a Piggles
+// customer as their own web address. Issue #009.
+const SITE_ZONE = PRODUCT.tenantSites.suffix;
 
 /** One priced availability result from POST /v1/domains/search. */
 interface DomainSuggestion {

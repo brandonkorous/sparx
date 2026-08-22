@@ -22,7 +22,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { faShareNodes } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
+import { HeaderNotice, type HeaderNoticeData, Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { MODULE_TO_APP, PRODUCT } from '@piggles/config';
@@ -41,6 +41,8 @@ import { NavBar, type NavTab } from './mobile/nav-bar';
 import { OpenSheet } from './mobile/open-sheet';
 
 interface CompactConsoleProps {
+  /** What WizeWorks is announcing on this surface, or null. */
+  notice: HeaderNoticeData | null;
   nav: ConsoleNavApp[];
   userName: string;
   userEmail: string;
@@ -57,6 +59,7 @@ interface CompactConsoleProps {
 }
 
 export function CompactConsole({
+  notice,
   nav,
   userName,
   userEmail,
@@ -110,6 +113,11 @@ export function CompactConsole({
 
   return (
     <div className="bg-base-200 flex h-dvh w-full flex-col overflow-hidden">
+      {/* ABOVE the header, inside the h-dvh column, so the bar takes its height
+          off the stack instead of pushing the thumb bar off screen. Renders
+          nothing when there is nothing to say. */}
+      <HeaderNotice notice={notice} />
+
       {/* Crash-isolated from the stack below, for the same reason as desktop:
           the panels hold the unsaved work and the header must never cost them. */}
       <ChromeBoundary

@@ -21,6 +21,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import {
   CreateDiscountInput as CreateDiscountInputSchema,
   type DiscountCondition,
@@ -290,8 +291,5 @@ export function useArchiveDiscount(id: string) {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 export function discountErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }

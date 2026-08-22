@@ -242,7 +242,7 @@ function SettingsForm({
           </Text>
 
           {failure ? (
-            <Alert color="error" variant="soft">
+            <Alert color="error">
               <AlertContent>
                 <AlertTitle>Could not save your settings</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
@@ -514,7 +514,7 @@ function FailedPaymentsSection({
       {policy.finalOutcome === 'cancel' ? (
         // The one genuinely irreversible option on this screen. A paused order
         // resumes itself; a cancelled one has to be sold again.
-        <Alert color="warning" variant="soft">
+        <Alert color="warning">
           <AlertContent>
             <AlertTitle>Cancelling ends the customer relationship</AlertTitle>
             <AlertDescription>
@@ -563,7 +563,7 @@ function FailedPaymentsSection({
         </FieldDescription>
       </Field>
 
-      <Alert color="info" variant="soft">
+      <Alert color="info">
         <AlertContent>
           <AlertTitle>What this means in practice</AlertTitle>
           <AlertDescription>{describeDunningPolicy(policy)}</AlertDescription>

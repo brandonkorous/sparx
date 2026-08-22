@@ -8,11 +8,12 @@ import {
   Button,
   Checkbox,
   Field,
+  FieldControl,
   FieldLabel,
   Input,
   PasswordInput,
 } from '@wizeworks/silicaui-react';
-import { PRODUCT } from '@piggles/config';
+import { marketingUrl, PRODUCT } from '@piggles/config';
 import { signUpAction, type SignUpState } from '@/app/signup/actions';
 import { AuthDivider, GoogleButton } from './social-sign-in';
 
@@ -102,14 +103,19 @@ export function SignUpForm({
 
         <Field>
           <FieldLabel>Your name</FieldLabel>
-          <Input name="name" size="lg" autoComplete="name" required />
+          {/* `FieldControl render={<Input/>}`, never a bare `<Input>`. Base UI's
+              Field mints one id, puts it on the CONTROL and in the label's
+              `for`; only FieldControl registers for it. A bare Input renders no
+              id at all, so the label points at nothing and a screen reader
+              announces an unnamed text box. Issue #006. */}
+          <FieldControl render={<Input size="lg" />} name="name" autoComplete="name" required />
         </Field>
 
         <Field>
           <FieldLabel>Email</FieldLabel>
-          <Input
+          <FieldControl
+            render={<Input size="lg" />}
             name="email"
-            size="lg"
             type="email"
             autoComplete="email"
             placeholder="you@yourbusiness.com"
@@ -122,9 +128,9 @@ export function SignUpForm({
           {/* A real password field with a reveal toggle, not a bare text input
               with `type="password"` — people mistype on phones and a blocked
               reveal is the single most common reason a signup is abandoned. */}
-          <PasswordInput
+          <FieldControl
+            render={<PasswordInput size="lg" />}
             name="password"
-            size="lg"
             autoComplete="new-password"
             required
             minLength={8}
@@ -166,10 +172,7 @@ export function SignUpForm({
             You came here from a link that told us where you found us, because you agreed to that on{' '}
             {PRODUCT.hosts.marketing}. It is kept with your account so we know what is worth doing
             more of, and it is listed in full on{' '}
-            <a
-              className="font-semibold underline"
-              href={`https://${PRODUCT.hosts.marketing}/cookies`}
-            >
+            <a className="font-semibold underline" href={marketingUrl('cookies')}>
               cookies
             </a>
             .

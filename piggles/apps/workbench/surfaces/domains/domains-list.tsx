@@ -27,19 +27,15 @@ import {
   SearchInput,
   Text,
 } from '@wizeworks/silicaui-react';
-import {
-  faArrowUpRightFromSquare,
-  faBagShopping,
-  faEarthAmericas,
-  faPlus,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faEarthAmericas, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useActivePropertyId } from '../../lib/api/shell-data';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../sites/data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { DOMAIN_SHOP_URL, domainState, useDomains, type Domain } from './data';
+import { useDomains, type Domain } from './data';
+import { AddressRow } from './address-row';
 import { productCopy } from '../../lib/product';
 
 /** Same modifier contract as every other list in the app. */
@@ -47,63 +43,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-function AddressRow({
-  domain,
-  onOpen,
-}: {
-  domain: Domain;
-  onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
-}) {
-  const state = domainState(domain);
-  const isLive = state.tone === 'success';
-
-  return (
-    // The row's own action is a real <button>, not a div wearing role="button":
-    // it has to be keyboard-reachable, and it cannot legally contain the
-    // external link (an anchor inside a button is invalid and unreachable by
-    // keyboard). So the link is the button's SIBLING, and the <li> is only the
-    // hover surface holding the two together.
-    <li className="border-base-300 hover:bg-base-200 flex items-center gap-2 border-b px-4 last:border-b-0">
-      <button
-        type="button"
-        className="flex min-w-0 flex-1 cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 py-3 text-left"
-        onClick={onOpen}
-      >
-        {/* The address is the content of this row — everything else is a note
-            about it, so nothing else gets to be the same size. */}
-        <span className="min-w-0 font-mono text-base break-all">{domain.host}</span>
-        {domain.isCanonical ? (
-          <Badge color="module" variant="soft" size="sm">
-            Main
-          </Badge>
-        ) : null}
-        <span className="flex-1" />
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-      </button>
-
-      {/* Only offered once it actually resolves — a link to a pending address
-          is a dead tab. The placeholder keeps the state badges in one column
-          whether or not a row has a link, so the eye runs straight down them. */}
-      {isLive ? (
-        <a
-          href={`https://${domain.host}`}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={`Open ${domain.host} in a new tab`}
-          title={`Open ${domain.host} in a new tab`}
-          className="link inline-flex shrink-0 items-center py-3"
-        >
-          <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
-        </a>
-      ) : (
-        <span className="inline-block size-4 shrink-0" aria-hidden />
-      )}
-    </li>
-  );
 }
 
 export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -175,16 +114,10 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
     // Surfaces, not one slab: the pane is base-200 and the toolbar is a base-100
     // card lifted onto it, matching invoicing and orders. The house pattern.
     <div className={PANE_SHELL}>
-      {/* Five things — search, a count, a secondary action, the primary action
-          and refresh — is more than a half-width pane holds. This toolbar does
-          NOT wrap: a second line shoves the list down and reflows as you type.
-          Instead things give way in a deliberate order as the pane narrows:
-          below @2xl "Get a domain" drops to its icon, and below @xl the count
-          disappears. That order is on purpose — the secondary label goes FIRST,
-          well before space gets tight, because search is used constantly and
-          "Get a domain" almost never; letting the label survive was squeezing
-          the search box to a stub. The search box absorbs whatever is left
-          (`min-w-0 flex-1`), and the primary action and refresh never change. */}
+      {/* This toolbar does NOT wrap: a second line shoves the list down and
+          reflows as you type. Below @xl the count gives way instead; the search
+          box absorbs whatever is left (`min-w-0 flex-1`), and the primary action
+          and refresh never change. */}
       <PaneToolbar
         label="Web address list controls"
         search={
@@ -225,28 +158,6 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
             Connect a domain
-          </Button>
-        }
-        controls={
-          /* Buying is not part of this surface yet, so "I don't have one" is
-            answered with a real place to get one rather than a dead button. */
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="shrink-0 whitespace-nowrap"
-            // Carries a title because below @lg it is icon-only, and a lone
-            // shopping bag does not say "buy a domain" to anyone.
-            title="Get a domain — opens shop.sparx.works"
-            // The anchor is empty HERE but not at runtime: silica's `render`
-            // composition moves this Button's children onto it. The a11y rule
-            // reads the source element and cannot see that.
-            // eslint-disable-next-line jsx-a11y/anchor-has-content -- children arrive via `render`
-            render={<a href={DOMAIN_SHOP_URL} target="_blank" rel="noreferrer" />}
-          >
-            <Icon glyph={faBagShopping} className="size-4" aria-hidden />
-            <span>Get a domain</span>
-            <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
           </Button>
         }
         views={{

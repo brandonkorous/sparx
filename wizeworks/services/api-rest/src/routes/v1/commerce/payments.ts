@@ -16,9 +16,10 @@ import { z } from 'zod';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { badRequest } from '@wizeworks/api-core/errors';
-import { GATEWAY_CATALOG } from '@wizeworks/payments';
+import { gatewayCatalog } from '@wizeworks/payments';
 
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
 import {
   PAYMENT_GATEWAYS,
   activateGatewayIfSelected,
@@ -101,10 +102,16 @@ const paymentsRoutes: FastifyPluginAsync = async (app) => {
   // ── Bring-your-own gateways (docs/111) ─────────────────────────────────────────
 
   // The gateway catalog — the data-driven list the dashboard renders cards + forms from.
+  //
+  // Resolved against the ASKING TENANT'S brand. The catalog is shared data serving
+  // both products, so its strings carry a `{platform}` token rather than a name;
+  // written literally they told a Piggles bakery "No sparx fee" seven times down
+  // one page, on the screen where she chooses who handles her money.
   app.get('/v1/commerce/payments/catalog', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(GATEWAY_CATALOG);
+    const ctx = toCommerceContext(request);
+    return ok(gatewayCatalog(await tenantPlatformBrand(ctx.tenantId)));
   });
 
   // The tenant's configured bring-your-own credentials, MASKED (never secrets).

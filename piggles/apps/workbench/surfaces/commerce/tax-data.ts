@@ -25,6 +25,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import type { NexusType } from '@wizeworks/commerce-schemas';
 import { api } from '../../lib/api/client';
 
@@ -189,10 +190,7 @@ export function useDeleteTaxRate() {
 /* ── Helpers ────────────────────────────────────────────────────────────── */
 
 export function taxErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** A percentage from stored basis points: 825 → "8.25%". */

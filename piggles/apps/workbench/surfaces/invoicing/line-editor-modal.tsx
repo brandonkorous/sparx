@@ -37,7 +37,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import { MoneyInput } from './money-input';
+import { MoneyInput, MoneyTextInput } from '../../components/money-input';
 import { ProductPicker } from './product-picker';
 import { ADHOC, METHOD_META, PASSTHROUGH, type MarkupRuleSummary } from './line-markup';
 import { useLineForm, type LineTypeOption } from './use-line-form';
@@ -231,17 +231,12 @@ export function LineEditorModal({
                 <FieldLabel required={form.markupMode}>Cost</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      className="text-right tabular-nums"
-                      value={form.cost}
-                      onChange={(e) => {
-                        form.setCost(e.target.value);
-                      }}
+                      className="text-right"
+                      aria-label="Cost"
+                      text={form.cost}
+                      onTextChange={form.setCost}
                     />
                   }
                 />

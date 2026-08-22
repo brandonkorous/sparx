@@ -84,10 +84,14 @@ fi
 # they catch the class of drift that otherwise surfaces minutes into a release
 # build: an event with no topic, a surface with no address, an image built
 # without a package it imports.
-step "structural checks (events, routes, dockerfiles, brand isolation, console parity)"
+step "structural checks (events, routes, dockerfiles, brand isolation, console parity, migration order, blueprint versions)"
+node scripts/check-platform-brand.mjs >/dev/null || fail "shared code gained a NEW hardcoded product name — it serves both brands, so the string is wrong in one of them. Run \`pnpm check:brand\` to see it"
 node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
+node scripts/check-worker-events.mjs >/dev/null || fail "a worker subscribes to or routes an event nobody publishes — run \`pnpm check:worker-events\` to see it. NOTE: a dead `case` reads exactly like coverage, and check:events cannot see it."
 node scripts/check-surface-routes.mjs >/dev/null || fail "surface/address parity failed — run \`pnpm check:routes\` to see it"
 node scripts/check-dockerfile-deps.mjs >/dev/null || fail "a Dockerfile is missing a workspace package it imports — run \`pnpm check:docker\` to see it"
+node scripts/check-service-env.mjs >/dev/null || fail "a service cannot start on a fresh checkout — its required env is not in its .env.example. Run \`pnpm check:service-env\` to see it. NOTE: this class of failure passes typecheck, lint and every test, because none of them boot the service."
+node scripts/check-brand-wordmark.mjs >/dev/null || fail "a brand wordmark and its deployed copy have drifted — run \`pnpm check:brand-wordmark\` to see it, and \`--update\` to rewrite it from the art. NOTE: this class of failure DEPLOYS green and draws last year's logo on every tenant site."
 node scripts/check-dockerfile-paths.mjs >/dev/null || fail "a Dockerfile path no longer resolves — run \`pnpm check:docker-paths\` to see it. NOTE: the destination class of this failure BUILDS fine and crashloops on start."
 node scripts/check-boundaries.mjs >/dev/null || fail "a product boundary broke, or piggles grew a new \`@sparx/*\` dependency — run \`pnpm check:boundaries\` to see it"
 node scripts/check-deletability.mjs >/dev/null || fail "piggles now depends on a sparx-owned package — deleting sparx would break its build. Run \`pnpm check:deletability\` for the chain"
@@ -96,6 +100,17 @@ node scripts/check-billing-plans.mjs >/dev/null || fail "a billing plan and the 
 node scripts/check-inventory-api-docs.mjs >/dev/null || fail "the inventory API reference is stale — run \`pnpm gen:inventory-api\` to rebuild it"
 node piggles/scripts/check-toolbar-primary.mjs >/dev/null || fail "a Piggles toolbar put a commit action in the relocatable `controls` slot — run `pnpm check:piggles-toolbars` to see it"
 node scripts/check-console-parity.mjs >/dev/null || fail "the two consoles have drifted — one has system furniture the other lacks. Run \`pnpm check:console-parity\` to see which, and either build it or argue it onto the exception list"
+# Compares against `origin/main` by default, which is what CI passes it on a
+# push. This is the ONE check CI ran that the hook did not, and the failure it
+# catches is the worst kind: `migrate deploy` refuses the release MID-release,
+# after the roles Job has already run, and the name cannot be renamed away.
+node scripts/check-migration-order.mjs >/dev/null || fail "a new migration sorts BEFORE one already applied — run \`pnpm check:migration-order\` to see it. NOTE: \`prisma migrate dev\` stamps the REAL clock, and this repo's prefixes run ~6 months ahead, so a fresh migration lands in the past by default. Rename the directory to sort after the newest one."
+# A blueprint's content is COPIED into a tenant's site at install, and the update
+# machinery decides there is something to offer by comparing versions. A content
+# change with no bump therefore ships, passes everything, and reaches nobody who
+# already installed it — which is how a bakery kept showing prices with no
+# currency for two days after they were "fixed".
+node scripts/check-blueprint-versions.mjs >/dev/null || fail "a blueprint's content changed with no version bump — run \`pnpm check:blueprint-versions\` to see which. NOTE: this class of failure is INVISIBLE. Every test passes, the fix ships, and not one existing tenant is ever offered it, because the catalog says nothing changed."
 ok "structure clean"
 
 step "pnpm format:check"

@@ -40,7 +40,7 @@ export function accountingProviderAvailability(provider: string): {
   reason?: string;
 } {
   const adapter = accountingAdapter(provider);
-  if (!adapter) return { available: false, reason: 'sparx does not talk to that system.' };
+  if (!adapter) return { available: false, reason: 'That system is not supported.' };
   return adapter.isConfigured()
     ? { available: true }
     : { available: false, reason: adapter.unavailableReason() };

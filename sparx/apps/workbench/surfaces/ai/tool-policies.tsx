@@ -386,7 +386,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
 
           {!canManage && !isError && !isPending ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <ShieldCheck className="size-5" aria-hidden />
               <AlertContent>
                 <AlertTitle>You can see these but not change them</AlertTitle>

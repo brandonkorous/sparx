@@ -132,7 +132,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Tooltip content="This item never had this code — drop the claim">
                   <Button
                     variant="outline"
-                    color="neutral"
+                    color="danger"
                     size="sm"
                     disabled={resolve.isPending}
                     onClick={() => {

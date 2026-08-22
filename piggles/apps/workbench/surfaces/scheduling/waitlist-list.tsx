@@ -521,7 +521,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
           <td colSpan={6} className="bg-base-200">
             <div className="flex flex-col gap-3 p-1">
               {bookError ? (
-                <Alert color="error" variant="soft">
+                <Alert color="error">
                   <AlertContent>
                     <AlertDescription>{bookError}</AlertDescription>
                   </AlertContent>
@@ -674,7 +674,7 @@ function AddToWaitlistModal({
             }}
           >
             {saveError ? (
-              <Alert color="error" variant="soft">
+              <Alert color="error">
                 <AlertContent>
                   <AlertTitle>Could not add them</AlertTitle>
                   <AlertDescription>{saveError}</AlertDescription>

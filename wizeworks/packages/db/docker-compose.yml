@@ -44,6 +44,49 @@ services:
     # migrations only gate on Postgres. Hit http://localhost:8108/health to
     # check by hand.
 
+  # NATS JetStream — the event broker, and the reason `pnpm db:up` is no longer
+  # just "the database".
+  #
+  # ── WHY THIS WAS MISSING, AND WHAT IT COST ────────────────────────────────
+  #
+  # Production has run JetStream since the Azure move (k8s/self-hosted/nats.yaml).
+  # Local dev never had a broker at all: with EVENT_BROKER unset,
+  # `resolveTransport` returns the `log` transport, which writes the event to a
+  # logger and DROPS it. Every `publishEvent` returned success, so nothing looked
+  # wrong — which is the same shape as the production incident that file's header
+  # describes, just with the blast radius of a laptop.
+  #
+  # What that actually meant while testing: publish a product and the search
+  # index never hears about it, so the shop's own product listing page is empty
+  # while the console shows a full catalogue. Place an order and no confirmation
+  # email is rendered. Verify a domain and nothing follows. All of it silent.
+  #
+  # So the local stack now runs the same broker as the cluster, on the same
+  # config, and dev exercises the code path production uses instead of a
+  # discard. `pnpm dev` picks it up via EVENT_BROKER=nats in each service's .env.
+  nats:
+    image: nats:2.10-alpine
+    container_name: sparx-nats
+    restart: unless-stopped
+    command: ['--config', '/etc/nats/nats.conf']
+    ports:
+      # 4222 clients (api-rest publishes, event-worker consumes), 8222 monitoring
+      # — http://localhost:8222/healthz answers "is JetStream ready", which is a
+      # different question from "is the process up".
+      - '4222:4222'
+      - '8222:8222'
+    volumes:
+      - ./docker/nats.conf:/etc/nats/nats.conf:ro
+      - sparx-nats-data:/data
+    healthcheck:
+      # The image ships neither curl nor wget, so probe the port with the shell's
+      # own /dev/tcp rather than adding a package just to answer a healthcheck.
+      test: ['CMD-SHELL', 'timeout 1 sh -c "</dev/tcp/127.0.0.1/8222" || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 volumes:
   sparx-pg-data:
   sparx-typesense-data:
+  sparx-nats-data:

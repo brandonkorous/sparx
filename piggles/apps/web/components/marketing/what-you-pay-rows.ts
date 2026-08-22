@@ -3,7 +3,7 @@
 //
 // ── NO PRICE BUT OURS ───────────────────────────────────────────────────────
 //
-// There is not a single dollar figure in this file except $49. Every other
+// There is not a single dollar figure in this file except ours. Every other
 // number on the section comes from the person reading it. A calculator that
 // arrives pre-filled with plausible market prices is a calculator that has
 // already decided its own answer, and this page's whole argument is that nothing
@@ -15,6 +15,8 @@
 // in search" is not a phrase anybody has on a bank statement, so the row needs
 // something a reader can match against theirs. Their prices are not ours to
 // publish and change weekly anyway.
+
+import { PRICE_MONTHLY } from '@piggles/config/pricing';
 
 export interface BillRow {
   id: BillId;
@@ -63,9 +65,11 @@ export const EMPTY_BILLS: Bills = Object.fromEntries(
   BILL_ROWS.map((row) => [row.id, { on: false, amount: '' }])
 ) as Bills;
 
-/** One plan, one price. Local, as two-questions.tsx keeps it — `PRODUCT` carries
- *  hosts and names, not commercial terms. */
-export const PRICE = 49;
+/** One plan, one price. It comes from `@piggles/config/pricing`, which is the
+ *  single place the number lives — `PRODUCT` carries hosts and names, not
+ *  commercial terms, so pricing gets a subpath of its own. Re-exported under the
+ *  local name the receipt and the calculator already use. */
+export const PRICE = PRICE_MONTHLY;
 
 const WEEKS = 52;
 
@@ -78,14 +82,14 @@ export interface Figures {
   yearly: number;
   /** What the hours cost them a year. `null` until both halves are given. */
   hoursYearly: number | null;
-  /** Their monthly total less $49. Negative when Piggles is the dearer one. */
+  /** Their monthly total less ours. Negative when Piggles is the dearer one. */
   difference: number;
 }
 
 /**
- * "$49", "$1,234.50".
+ * "$99", "$1,234.50".
  *
- * Not tools/lib's `formatMoney`, which always prints two decimals: "$49.00"
+ * Not tools/lib's `formatMoney`, which always prints two decimals: "$99.00"
  * contradicts every other statement of the price on this site, and the price is
  * the one figure here that has to match the rest of the page exactly. Cents
  * appear only when there are cents.
@@ -137,6 +141,6 @@ export function figures(bills: Bills, hours: string, rate: string): Figures {
     monthly,
     yearly: monthly * 12,
     hoursYearly: hoursNum > 0 && rateNum > 0 ? hoursNum * rateNum * WEEKS : null,
-    difference: monthly - PRICE,
+    difference: monthly - PRICE_MONTHLY,
   };
 }

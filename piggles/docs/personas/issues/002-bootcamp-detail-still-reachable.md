@@ -1,12 +1,13 @@
 # 002 — A Piggles business can still open sparx's bootcamp screen
 
-**Status:** open
+**Status:** fixed
 **Severity:** major
 **Found by:** roster design · while generating the pane list for rating.md
 **Surface:** mypiggles › (no rail entry) › `partner.bootcamp.detail`
 **Filed:** 2026-08-18
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-08-20
+**Confirmed by:** P01 · Thistle & Rye, on the screen — `/partner/bootcamps/new`
+opens nothing, while `/inventory/suppliers` (a real Piggles screen) still opens
 
 ## What happened
 
@@ -71,4 +72,42 @@ surfaces still registered.
 
 ## The fix
 
-—
+Two changes, because the missing key was the symptom and not the fault.
+
+**1. Hidden is checked where surfaces are RESOLVED, not where they are listed.**
+`productHidesSurface` was only consulted by the nav — the one door somebody has
+already come through. A deep link, a restored layout, a tab dropped from another
+window and another surface's `open()` each arrive by their own route, and every
+one of them goes through `getSurface(key)` first. So that is where the check
+belongs:
+
+```ts
+export function getSurface(key: string): SurfaceDefinition | undefined {
+  if (productHidesSurface(key)) return undefined;
+  return registry.get(key);
+}
+```
+
+Every caller already handled `undefined` — a hidden surface is now the same
+not-here that a deleted one would be. `listed: false` means "not offered";
+hidden means "not here", and the two are no longer confused.
+
+**2. The reseller programme is hidden as a NAMESPACE, not as seven keys.**
+Seven keys were written out; the eighth was missed. `hiddenSurfaces` entries may
+now be `module.*`, so:
+
+```ts
+'partner.*',            // was seven keys, one of which was missing
+'platform.settings.partner',
+```
+
+cannot miss the ninth. Checked before shipping it that no Piggles capability
+lives under `partner.` — the Piggles **Partners** app (the reader's own
+suppliers) is built entirely from `inventory.*` and `dropship.*` claims, listed
+in `@piggles/config`.
+
+## Where the fix lives
+
+- `piggles/apps/workbench/lib/surfaces/registry.ts` — `getSurface`, `listedSurfaces`
+- `piggles/apps/workbench/lib/product.ts` — `productHidesSurface`, namespace form
+- `piggles/apps/workbench/lib/console/product.tsx` — `partner.*`

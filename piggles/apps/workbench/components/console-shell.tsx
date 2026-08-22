@@ -32,11 +32,13 @@ import { useSiteBoot } from '@/lib/console/use-site-boot';
 import { useShellPrefs } from '@/lib/console/use-shell-prefs';
 import { isShortcutList } from '@/lib/console/shortcut-lists';
 import { useModuleReconcile } from '@/lib/console/reconcile';
+import type { HeaderNoticeData } from '@piggles/ui';
 import { CompactShell } from './compact-shell';
 import { DesktopShell } from './desktop-shell';
 import type { NavTab } from './mobile/nav-bar';
 
 export function ConsoleShell({
+  notice,
   userName,
   userEmail,
   initialSiteKey,
@@ -44,6 +46,9 @@ export function ConsoleShell({
   arrivalAddress,
   accountOrigin,
 }: {
+  /** What WizeWorks is announcing on this surface, or null. Server-fetched and
+   *  handed down — this shell is a client component and the read is server-only. */
+  notice: HeaderNoticeData | null;
   userName: string;
   userEmail: string;
   /** The active site read from the cookie server-side — the boot key when set,
@@ -167,6 +172,7 @@ export function ConsoleShell({
   if (isCompact) {
     return (
       <CompactShell
+        notice={notice}
         windowId={windowId}
         userName={userName}
         userEmail={userEmail}
@@ -189,6 +195,7 @@ export function ConsoleShell({
 
   return (
     <DesktopShell
+      notice={notice}
       windowId={windowId}
       userName={userName}
       userEmail={userEmail}

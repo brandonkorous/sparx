@@ -392,7 +392,7 @@ function ShortPanel({
           />
         ) : null}
 
-        <Alert color="info" variant="soft">
+        <Alert color="info">
           <AlertContent>
             <AlertDescription>
               The units you could not find go back into stock and are held for this order, so nobody
@@ -443,7 +443,7 @@ function FinishedPanel({
 }) {
   if (skipped.length > 0) {
     return (
-      <Alert color="warning" variant="soft">
+      <Alert color="warning">
         <AlertContent>
           <AlertTitle>{plural(skipped.length, 'line', 'lines')} still to come back to</AlertTitle>
           <AlertDescription>

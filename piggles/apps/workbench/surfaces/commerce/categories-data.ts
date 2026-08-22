@@ -29,7 +29,9 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { slugify as slugifyWebSegment } from '../../lib/slugify';
 
 // The tree reader + flattener are the SAME ones the product filing picker uses.
 // Re-exported so every category surface imports its tree shape from one place,
@@ -192,18 +194,11 @@ export function useDeleteCategory(id: string) {
  * code. A 5xx carries no such sentence, so it falls back to the caller's wording.
  */
 export function categoryErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+  return apiErrorMessage(error, fallback);
 }
 
 /** A handle is the part of a web address that identifies this category, so it is
  *  lowercase, digits and hyphens — matching what api-rest derives from a name. */
 export function slugifyHandle(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 120);
+  return slugifyWebSegment(value, 120);
 }

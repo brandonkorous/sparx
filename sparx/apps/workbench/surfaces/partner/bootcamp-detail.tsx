@@ -458,7 +458,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {!isNew && status === 'draft' && !isCertified ? (
-            <Alert color="info" variant="soft">
+            <Alert color="info">
               <AlertContent>
                 <AlertTitle>Publishing needs the Certified tier</AlertTitle>
                 <AlertDescription>
