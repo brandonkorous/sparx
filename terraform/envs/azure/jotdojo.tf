@@ -316,6 +316,292 @@ resource "azurerm_storage_container" "jotdojo" {
 
 
 # ---------------------------------------------------------------------------
+# Azure OpenAI - the four model seams, funded by the credit rather than a card.
+#
+# jotDOJO has four provider seams (`packages/vision`, `speech`, `embeddings`,
+# `reason`) and each already speaks Azure OpenAI: they build
+# `<endpoint>/openai/deployments/<name>/...?api-version=` and send `api-key`.
+# Nothing in the jotDOJO repo changes to adopt this - only these secrets.
+#
+# WHY THIS EXISTS AT ALL. Three of the four are not optional flourishes. An
+# agent cannot read a stroke, and jotDOJO's whole premise is that a user's own
+# assistant reads their notes over MCP: without recognition, `get_note` hands
+# that assistant a coordinate array. Recognition is the thing that makes the
+# product legible to the thing that consumes it.
+#
+# THE KEY IS WRITTEN HERE AND NEVER TYPED, which is the same property the
+# generated passwords below have and for the same reason - a hand-transcribed
+# credential is a crashloop two stages later with nothing pointing at the typo.
+#
+# WHY NOT MANAGED IDENTITY, which would mean no key anywhere. Three things
+# block it today, and none is a matter of taste:
+#   1. A role assignment needs `Microsoft.Authorization/roleAssignments/write`.
+#      THIS environment is applied by the release, whose identity holds
+#      Contributor and cannot grant roles - the 403 recorded at the foot of this
+#      file. It would have to move to bootstrap-azure, applied by a human.
+#   2. All four seams send `api-key: <key>`, not `Authorization: Bearer <token>`.
+#      Entra auth is a code change in the jotDOJO repo, times four.
+#   3. The pods would need AKS workload identity - a federated credential and a
+#      service-account annotation in jotDOJO's `infra/k8s/`.
+# Worth doing later; it is a project, not a line. Until then the key lives in
+# the vault beside DATABASE-URL, under the same RBAC, read by the same pipeline.
+# ---------------------------------------------------------------------------
+
+variable "jotdojo_ai_enabled" {
+  description = <<-EOT
+    Master switch for the account, the four deployments, and the eleven secrets
+    that point at them. Off is a real state, not a broken one: every seam's
+    `resolve*()` returns null when its PROVIDER variable is absent, so jotDOJO
+    deploys and runs with recognition, transcription, semantic search and triage
+    simply switched off.
+
+    S0 has NO BASE FEE - an idle account and idle deployments bill nothing, and
+    a deployment's `capacity` is a rate ceiling rather than a reservation. The
+    cost of this section at zero usage is zero. Turn it off to close the spend
+    ceiling, not to save a standing charge.
+  EOT
+  type        = bool
+  default     = true
+}
+
+variable "jotdojo_ai_location" {
+  description = <<-EOT
+    DELIBERATELY NOT `var.location`, and this is the one decision in this
+    section that cost a real investigation.
+
+    Postgres and AKS must share a region because the VNet is regional. Azure
+    OpenAI is reached over HTTPS from the cluster and shares nothing with the
+    VNet, so it is under no such constraint - the only thing that moves is a few
+    milliseconds on an already-asynchronous worker job.
+
+    WHISPER IS NOT DEPLOYABLE IN centralus. Verified against this subscription
+    on 2026-08-22 rather than recalled:
+
+        az cognitiveservices model list -l <region>
+          --query "[?kind=='OpenAI'].{m:model.name, sku:model.skus[0].name}"
+
+        centralus       whisper                  None      <- no deployable SKU
+        eastus2         whisper                  Standard
+        northcentralus  whisper                  Standard
+
+    A model can be LISTED in a region and carry no SKU, which is what `None`
+    means and why a plain "is it available" check is not enough. eastus2 carries
+    all three models this section needs at `Standard`, and quota is non-zero on
+    each (whisper 3, gpt-4o-mini 450, text-embedding-3-small 350).
+
+    WHY WHISPER AND NOT gpt-4o-mini-transcribe, which IS in centralus:
+    `packages/speech/src/provider.ts` asks for `verbose_json` with word and
+    segment `timestamp_granularities`, because the default response throws the
+    timestamps away and getting them back means paying to transcribe twice. The
+    gpt-4o transcribe models support neither option. The region follows the
+    model, and the model follows a decision already made in the code.
+
+    An unlisted region fails at plan time on `local.location_short` - see the
+    map in main.tf. That is deliberate there and useful here.
+  EOT
+  type        = string
+  default     = "eastus2"
+}
+
+variable "jotdojo_ai_capacity" {
+  description = <<-EOT
+    Per-deployment rate ceilings, in the units Azure quotes each model in:
+    THOUSANDS OF TOKENS PER MINUTE for the three text models, and units of
+    3 REQUESTS PER MINUTE for whisper. They are not the same scale, which is
+    why `speech = 1` sits beside `vision = 100` without being a typo.
+
+    These are LIMITS, NOT RESERVATIONS - Standard bills per token consumed, so a
+    generous ceiling on an idle deployment costs nothing. They are set to
+    isolate the seams from each other rather than to save money: a burst of
+    handwriting recognition must not starve semantic search, and the regional
+    quota is shared, so every unit given to one is unavailable to another.
+
+    The sum must fit the region's quota. eastus2 on this subscription allows
+    whisper 3, gpt-4o-mini 450 and text-embedding-3-small 350; the defaults
+    below use 150 of the 450 and 100 of the 350, leaving room to raise one
+    without a quota request.
+  EOT
+  type = object({
+    vision    = number
+    triage    = number
+    embedding = number
+    speech    = number
+  })
+  default = {
+    # Handwriting and photographed pages - the bursty one, and the seam the MCP
+    # server depends on for anything not typed.
+    vision = 100
+    # Reads one settled note and usually says nothing. Small on purpose.
+    triage = 50
+    # One vector per block on write, one per query on search.
+    embedding = 100
+    # Units of 3 RPM, and the regional limit is 3. This is a third of it.
+    speech = 1
+  }
+}
+
+locals {
+  # Both switches, because AI is a sub-unit of jotDOJO: turning jotDOJO off must
+  # take its models with it, not leave an orphaned account billing into a
+  # subscription whose owner believes the product is gone.
+  jotdojo_ai_on    = var.jotdojo_enabled && var.jotdojo_ai_enabled
+  jotdojo_ai_count = local.jotdojo_ai_on ? 1 : 0
+
+  # Named for ITS region, not the platform's. Every other jotDOJO resource ends
+  # `-cus`; this one does not live there, and a name claiming otherwise is the
+  # kind of small lie that costs somebody an hour during an incident.
+  jotdojo_ai_loc  = local.location_short[var.jotdojo_ai_location]
+  jotdojo_ai_name = "oai-jotdojo-prod-${local.jotdojo_ai_loc}"
+
+  # VERSIONS ARE PINNED. Azure retires model versions on a published schedule,
+  # and an auto-upgrade is a silent change to what the product says about
+  # somebody's handwriting. `OnceCurrentVersionExpired` below is the compromise:
+  # it will not move while the pin is valid, and it will not go dark when the
+  # pin expires.
+  jotdojo_ai_models = local.jotdojo_ai_on ? {
+    # gpt-4o-mini twice, deliberately. Vision and triage are the same model and
+    # separate deployments so their rate ceilings and their Azure cost metrics
+    # are separable - one line per feature, not one line for "chat".
+    vision    = { model = "gpt-4o-mini", version = "2024-07-18", capacity = var.jotdojo_ai_capacity.vision }
+    triage    = { model = "gpt-4o-mini", version = "2024-07-18", capacity = var.jotdojo_ai_capacity.triage }
+    embedding = { model = "text-embedding-3-small", version = "1", capacity = var.jotdojo_ai_capacity.embedding }
+    speech    = { model = "whisper", version = "001", capacity = var.jotdojo_ai_capacity.speech }
+  } : {}
+}
+
+# text-embedding-3-small IS THE 1536-DIMENSION MODEL, and that is not a
+# coincidence to be re-litigated later. jotDOJO's `block_embeddings.embedding`
+# is `vector(1536)` in 0000_init.sql, and `packages/embeddings/src/provider.ts`
+# exports EMBEDDING_DIMENSIONS = 1536 and REFUSES a response of any other width.
+# Changing this model is a migration and a full re-embed of every block.
+resource "azurerm_cognitive_account" "jotdojo" {
+  count               = local.jotdojo_ai_count
+  name                = local.jotdojo_ai_name
+  location            = var.jotdojo_ai_location
+  resource_group_name = azurerm_resource_group.main.name
+  kind                = "OpenAI"
+  sku_name            = "S0"
+  tags                = local.tags
+
+  # REQUIRED, not cosmetic. Without a custom subdomain the account answers only
+  # on the regional shared host, which does not serve the `/openai/deployments/`
+  # data plane the four resolvers build their URLs against.
+  custom_subdomain_name = local.jotdojo_ai_name
+
+  # Public, and the honest note about it: AKS here uses `outbound_type =
+  # "loadBalancer"`, so egress leaves through an AKS-MANAGED SNAT address with
+  # no stable Terraform handle to put in a network ACL. An IP allow-list built
+  # on that would break silently the first time AKS rotated it. The real
+  # hardening is the managed identity described in this section's header, which
+  # removes the key rather than the network path.
+  public_network_access_enabled = true
+
+  lifecycle {
+    # A Cognitive Services account SOFT-DELETES and holds its name - including
+    # the custom subdomain, which is a global DNS label. A careless destroy
+    # therefore costs `oai-jotdojo-prod-eus2` for the retention window, and
+    # every secret below has to be rewritten against a new name.
+    prevent_destroy = true
+  }
+}
+
+resource "azurerm_cognitive_deployment" "jotdojo" {
+  for_each = local.jotdojo_ai_models
+
+  # The seam's name, so a bill line, a metric and an env var all read the same.
+  name                 = "jotdojo-${each.key}"
+  cognitive_account_id = azurerm_cognitive_account.jotdojo[0].id
+
+  model {
+    format  = "OpenAI"
+    name    = each.value.model
+    version = each.value.version
+  }
+
+  sku {
+    # Regional Standard, not GlobalStandard: whisper offers only Standard in
+    # eastus2, and mixing the two would mean two different data-residency
+    # stories for four seams reading the same notes.
+    name     = "Standard"
+    capacity = each.value.capacity
+  }
+
+  # Hold the pin until Azure retires it, then move rather than go dark. The
+  # alternative, NoAutoUpgrade, turns a published retirement date into an
+  # outage on a morning nobody chose.
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
+locals {
+  # ELEVEN SECRETS, and seven of them are not secret at all - the PROVIDER
+  # switches, the endpoint, the API version and the deployment names. They are
+  # here because the vault is the ONLY channel jotDOJO's release reads:
+  # `release.yml` builds its env file from vault entries and nothing else, so a
+  # value that is not here cannot reach the container. AZURE-STORAGE-ACCOUNT
+  # above is carried for exactly that reason.
+  #
+  # THE PROVIDER SWITCHES ARE THE LOAD-BEARING PART. Every `resolve*()` in
+  # jotDOJO reads its `*_PROVIDER` variable FIRST and returns null when it is
+  # absent - so the endpoint, the key and all four deployment names can be
+  # present and correct and every feature still be off, with no error anywhere.
+  # That failure mode looks exactly like a working deployment.
+  jotdojo_ai_secrets = local.jotdojo_ai_on ? {
+    "VISION-PROVIDER" = {
+      value = "azure"
+      type  = "driver switch; absent means handwriting/image recognition is OFF"
+    }
+    "SPEECH-PROVIDER" = {
+      value = "azure"
+      type  = "driver switch; absent means transcription is OFF"
+    }
+    "EMBEDDING-PROVIDER" = {
+      value = "azure"
+      type  = "driver switch; absent costs search its semantic leg, not search"
+    }
+    "TRIAGE-PROVIDER" = {
+      value = "azure"
+      type  = "driver switch; absent means the triage agent never runs"
+    }
+    "AZURE-OPENAI-ENDPOINT" = {
+      value = azurerm_cognitive_account.jotdojo[0].endpoint
+      type  = "url; not secret. All four resolvers strip a trailing slash themselves"
+    }
+    "AZURE-OPENAI-API-KEY" = {
+      value = azurerm_cognitive_account.jotdojo[0].primary_access_key
+      type  = "account key; regenerating it in the portal makes this value stale"
+    }
+    "AZURE-OPENAI-API-VERSION" = {
+      # Pinned rather than left to the code's default, so a version bump is a
+      # vault edit instead of a jotDOJO release. 2024-10-21 serves both the chat
+      # completions the text seams use and the audio/transcriptions whisper needs.
+      value = "2024-10-21"
+      type  = "api version; the code defaults to this same value if absent"
+    }
+    "AZURE-OPENAI-VISION-DEPLOYMENT" = {
+      value = azurerm_cognitive_deployment.jotdojo["vision"].name
+      type  = "deployment name; not secret"
+    }
+    "AZURE-OPENAI-SPEECH-DEPLOYMENT" = {
+      value = azurerm_cognitive_deployment.jotdojo["speech"].name
+      type  = "deployment name; not secret"
+    }
+    "AZURE-OPENAI-EMBEDDING-DEPLOYMENT" = {
+      value = azurerm_cognitive_deployment.jotdojo["embedding"].name
+      type  = "deployment name; not secret. The model is 1536-dim by requirement"
+    }
+    "AZURE-OPENAI-TRIAGE-DEPLOYMENT" = {
+      value = azurerm_cognitive_deployment.jotdojo["triage"].name
+      type  = "deployment name; not secret"
+    }
+  } : {}
+}
+
+output "jotdojo_openai_endpoint" {
+  description = "Azure OpenAI data plane for jotDOJO's four model seams. Null when jotdojo_ai_enabled is false."
+  value       = local.jotdojo_ai_on ? azurerm_cognitive_account.jotdojo[0].endpoint : null
+}
+
+# ---------------------------------------------------------------------------
 # WHAT IS NOT IN THIS FILE, AND WHY — the CI identity and every role assignment.
 #
 # They live in terraform/bootstrap-azure/jotdojo.tf. They were here first, and
@@ -511,7 +797,10 @@ locals {
 }
 
 resource "azurerm_key_vault_secret" "jotdojo" {
-  for_each = local.jotdojo_secrets
+  # Two maps, one resource. The AI half is empty unless jotdojo_ai_enabled,
+  # so switching that off REMOVES its secrets rather than stranding entries
+  # pointing at a deleted account. See the Azure OpenAI section above.
+  for_each = merge(local.jotdojo_secrets, local.jotdojo_ai_secrets)
 
   name         = each.key
   value        = each.value.value
