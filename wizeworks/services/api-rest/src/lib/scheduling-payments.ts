@@ -24,7 +24,7 @@
 
 import type { FastifyBaseLogger } from 'fastify';
 import { withTenant } from '@wizeworks/db';
-import { paymentService, PaymentConfigError } from '@wizeworks/payments';
+import { paymentService, PaymentConfigError, GatewayNotFoundError } from '@wizeworks/payments';
 import {
   computeLateCancelFee,
   computeNoShowFee,
@@ -164,10 +164,16 @@ export async function createBookingDeposit(
       type: plan.type,
     };
   } catch (err) {
-    if (err instanceof PaymentConfigError) {
+    // NO WAY TO CHARGE is not an error, it is an answer — and there are two shapes
+    // of it. No config row at all, and a config row naming `manual`, which is the
+    // catalog's word for "record payments by hand" and deliberately has no adapter
+    // to register. Provisioning writes `manual` for every new tenant, so treating
+    // it as a broken gateway meant every deposit-bearing booking on a brand-new
+    // salon threw (issue 105).
+    if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
       logger.warn(
         { tenantId, bookingId },
-        'scheduling-payments: deposit policy set but no payment gateway configured — skipping deposit'
+        'scheduling-payments: deposit policy set but this business takes no online payments — skipping deposit'
       );
       return { required: false };
     }

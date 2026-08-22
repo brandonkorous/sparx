@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
-import { badRequest, moduleDisabled, notFound } from '@wizeworks/api-core/errors';
+import { badRequest, conflict, moduleDisabled, notFound } from '@wizeworks/api-core/errors';
 import {
   bookClassSeat,
   createBooking,
@@ -31,6 +31,8 @@ import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
 import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
 import { sendSeatConfirmation } from '../../../lib/scheduling-classes.js';
 import { sendOwnerBookingNotification } from '../../../lib/scheduling-owner-notify.js';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 async function requireScheduling(request: FastifyRequest): Promise<string> {
   const tenantId = await resolveTenantId(request);
@@ -224,6 +226,31 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       resourceIds = [body.resourceId];
     }
 
+    // IS THE BUSINESS EVEN OPEN THEN. `createBooking` enforces no-overlap, which is
+    // why a taken slot 409s — but nothing here asked whether the time was offered
+    // at all, so a post could land inside somebody's lunch or on a closed day
+    // (issue 106). Asking `getAvailability` — the same computation the slot grid is
+    // built from, in the route above — keeps the two from drifting apart again.
+    const startAt = new Date(body.startAt);
+    const openSlots = await getAvailability(
+      tenantId,
+      {
+        serviceId: body.serviceId,
+        // A DAY EITHER SIDE, not a one-second window. The engine lays slots out
+        // across the window it is given, so a window narrower than a slot returns
+        // nothing and would refuse every booking. Wide enough to contain the whole
+        // working day in any timezone, and this runs once, on the write path.
+        from: new Date(startAt.getTime() - DAY_MS).toISOString(),
+        to: new Date(startAt.getTime() + DAY_MS).toISOString(),
+        ...(body.partySize ? { partySize: body.partySize } : {}),
+        ...(body.resourceId ? { resourceId: body.resourceId } : {}),
+      },
+      Date.now()
+    );
+    if (!openSlots.some((slot) => slot.startAtUtc === startAt.getTime())) {
+      throw conflict('That time is no longer available');
+    }
+
     const customerId = await findOrCreateCustomer(tenantId, body.customer);
 
     const created = await createBooking(tenantId, {
@@ -247,7 +274,22 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     // Deposit / card-hold per the service's policy (docs/79 §9). Returns a
     // clientSecret the widget confirms with the gateway's card element; no policy
     // (or none) → `required:false` and the booking stands as-is.
-    const deposit = await createBookingDeposit(request.log, tenantId, created.booking.id);
+    //
+    // NEVER FATAL. The booking above is already committed, so a failure here has to
+    // choose between two lies, and "your booking failed" is the worse one: the
+    // appointment is in the diary either way, and a customer told it failed rebooks
+    // elsewhere while the chair stays held (issue 105). The reason goes to the log
+    // for the owner's support request; she also sees the booking with no deposit on
+    // it, which is the state that is actually true.
+    const deposit = await createBookingDeposit(request.log, tenantId, created.booking.id).catch(
+      (err: unknown) => {
+        request.log.error(
+          { err, tenantId, bookingId: created.booking.id },
+          'scheduling: deposit failed after the booking was created — confirming the booking without one'
+        );
+        return { required: false } as const;
+      }
+    );
 
     await publishBookingEvent('booking.created', tenantId, null, {
       bookingId: created.booking.id,
