@@ -67,6 +67,11 @@ export function PublishChecks({
   );
 }
 
+/** "1 page", "2 pages" — a count nobody has to read past. */
+function count(n: number, noun: string): string {
+  return `${String(n)} ${noun}${n === 1 ? '' : 's'}`;
+}
+
 function CheckReport({ report }: { report: SiteCheckReport }) {
   const clean = report.findings.length === 0;
   const missed = report.notChecked ?? [];
@@ -74,8 +79,8 @@ function CheckReport({ report }: { report: SiteCheckReport }) {
     <div className="flex flex-col gap-3">
       <Alert color={clean ? 'success' : 'info'} variant="soft">
         {clean
-          ? `Nothing to fix across ${String(report.pagesChecked)} pages. It reads well.`
-          : `${String(report.findings.length)} things to look at across ${String(report.pagesChecked)} pages. None of them stops you publishing.`}
+          ? `Nothing to fix across ${count(report.pagesChecked, 'page')}. It reads well.`
+          : `${count(report.findings.length, 'thing')} to look at across ${count(report.pagesChecked, 'page')}. None of them stops you publishing.`}
       </Alert>
 
       {/* Coverage, next to the result. "Nothing to fix across 7 pages" on an
