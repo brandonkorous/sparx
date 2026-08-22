@@ -6,12 +6,12 @@ import { TEMPLATE_PROPS } from '../template-fixtures';
 // does not fail loudly: the event is acked, one warning is logged, and the email
 // is gone. So this renders the real thing and reads it.
 async function render(overrides: Partial<(typeof TEMPLATE_PROPS)['invoice-sent']> = {}) {
-  const send = {
+  const send: TemplateSend = {
     template: 'invoice-sent',
     to: 'dane@ferrouscoffee.test',
     props: { ...TEMPLATE_PROPS['invoice-sent'], ...overrides },
-  } as TemplateSend;
-  return renderTemplate(send, {} as never);
+  };
+  return renderTemplate(send);
 }
 
 describe('the invoice email', () => {
