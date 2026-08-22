@@ -1,4 +1,12 @@
 {
   "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // This package re-exports @wizeworks/brand-core, and the workspace maps that
+    // to its SOURCE — so brand-core's files are compiled here, in this program.
+    // brand-core reads env (`readEnv`) and declares `types: ["node"]` for it;
+    // without the same declaration here those same lines are errors in this
+    // package and nowhere else.
+    "types": ["node"]
+  },
   "include": ["src/**/*"]
 }
