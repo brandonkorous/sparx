@@ -59,11 +59,26 @@ export interface LegalChecklist {
   shipping: ShippingPolicySignal;
 }
 
-async function commerceEnabledTx(tx: TxClient, tenantId: string): Promise<boolean> {
-  const t = await tx.tenant.findUnique({ where: { id: tenantId }, select: { settings: true } });
-  const modules = (t?.settings as { modules?: Record<string, { enabled?: boolean }> } | null)
-    ?.modules;
-  return Boolean(modules?.commerce?.enabled);
+/**
+ * Whether this business actually SELLS THINGS, on evidence — the same rule the
+ * shipping signal below already uses, for the same reason.
+ *
+ * `modules.commerce.enabled` was the old test and is not evidence. Piggles ships
+ * every app switched on for everybody (no module pricing), so that flag is true
+ * for a hair salon, a bookkeeper and a choir, and each of them was told a Return
+ * Policy was REQUIRED before their site could count as ready. A default is not a
+ * decision anybody made.
+ *
+ * A live product, or an order that has actually been placed, is one.
+ */
+async function sellsThingsTx(tx: TxClient): Promise<boolean> {
+  const product = await tx.product.findFirst({
+    where: { status: 'active', deletedAt: null },
+    select: { id: true },
+  });
+  if (product) return true;
+  const order = await tx.order.findFirst({ select: { id: true } });
+  return order !== null;
 }
 
 /**
@@ -120,10 +135,11 @@ async function shippingEvidenceTx(tx: TxClient): Promise<ShippingEvidence | null
 
 /** The legal checklist over the platform template registry: for each template, whether
  *  the tenant has a page, whether it's published, current, and placed in the footer. */
-export async function getLegalChecklistTx(tx: TxClient, tenantId: string): Promise<LegalChecklist> {
-  const required = new Set(
-    requiredLegalKinds({ commerceEnabled: await commerceEnabledTx(tx, tenantId) })
-  );
+export async function getLegalChecklistTx(
+  tx: TxClient,
+  _tenantId: string
+): Promise<LegalChecklist> {
+  const required = new Set(requiredLegalKinds({ commerceEnabled: await sellsThingsTx(tx) }));
 
   const rows = await tx.contentEntry.findMany({
     where: { typeKey: 'page', legalKind: { not: null }, deletedAt: null },
