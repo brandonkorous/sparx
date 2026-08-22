@@ -175,6 +175,39 @@ BEGIN
 END
 $$;
 
+-- ---------------------------------------------------------------------------
+-- Extensions — the third thing jotDOJO cannot do for itself, and the same shape
+-- as the first two.
+--
+-- Its 0000_init.sql opens with `CREATE EXTENSION IF NOT EXISTS vector`, and on
+-- Azure that is refused for anyone but the server admin:
+--
+--     ERROR:  Because vector isn't a trusted extension, only members of
+--             "azure_pg_admin" are allowed to use CREATE EXTENSION vector
+--     (SQLSTATE 42501)
+--
+-- The alternative — granting `jotdojo_owner` membership in `azure_pg_admin` —
+-- would hand another product's role administrative rights over the whole server
+-- to save three lines here. That is the opposite of why this file exists.
+--
+-- Creating them here is enough because every one of jotDOJO's is written
+-- `IF NOT EXISTS`: found already present, its migration is a no-op and that
+-- repository needs no change. An extension is owned by whoever created it, which
+-- is fine — using a type or a function needs USAGE, not ownership, and USAGE on
+-- these is public.
+--
+-- The list is jotDOJO's, read from its migrations rather than guessed, and it is
+-- a SUBSET of the server-level allow-list in terraform/envs/azure/main.tf
+-- (`azure.extensions` = PGCRYPTO, BTREE_GIST, VECTOR, PG_TRGM, CITEXT). That
+-- allow-list is a SERVER setting shared with sparx and piggles: an extension
+-- absent from it cannot be created here by anyone, admin or not, and adding one
+-- is a Terraform change plus a server restart — not something this file can fix
+-- at deploy time. If jotDOJO adds an extension, it goes there first.
+-- ---------------------------------------------------------------------------
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS citext;
+
 -- LAST, because it gives ownership away. Everything above needs `sparx_owner` to
 -- still hold it.
 ALTER DATABASE jotdojo OWNER TO jotdojo_owner;
