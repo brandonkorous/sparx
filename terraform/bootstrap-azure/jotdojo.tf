@@ -78,6 +78,53 @@ variable "jotdojo_github_branches" {
   default     = ["main"]
 }
 
+variable "jotdojo_github_subject_prefix" {
+  description = <<-EOT
+    The literal prefix of the OIDC `sub` claim GitHub mints for this repository.
+    Everything after it (`:ref:refs/heads/main`, `:environment:prod`) is appended
+    by the credentials below.
+
+    THIS IS NOT `repo:<owner>/<repo>`, AND THAT IS NOT A MISTAKE TO CORRECT.
+    GitHub has begun qualifying the subject with the numeric OWNER and REPOSITORY
+    ids, and it does so per repository. The two repos in this account disagree
+    RIGHT NOW, both reporting `use_default: true`:
+
+      sparx    (id 1251494871)   repo:brandonkorous/sparx
+      jotdojo  (id 1341839746)   repo:brandonkorous@13042540/jotdojo@1341839746
+
+    jotdojo is the newer repository and gets the newer format. Nothing here
+    chooses it and no setting on the repo turns it off, so the credential has to
+    match what GitHub actually sends.
+
+    This cost a red release. Entra matches the subject byte for byte and, on a
+    mismatch, says only "No matching federated identity record found for
+    presented assertion subject '<subject>'" — which names the value it received
+    and never the value it expected, so the diff has to be done by eye against
+    whatever is configured here.
+
+    READ IT BACK FROM GITHUB rather than assembling it by hand:
+
+        gh api repos/<owner>/<repo>/actions/oidc/customization/sub \
+          --jq .sub_claim_prefix
+
+    If jotDOJO ever stops authenticating with AADSTS700213, re-run that command
+    first: GitHub changing the prefix under a working credential looks exactly
+    like this failure.
+  EOT
+  type        = string
+  default     = "repo:brandonkorous@13042540/jotdojo@1341839746"
+
+  validation {
+    condition     = startswith(var.jotdojo_github_subject_prefix, "repo:")
+    error_message = "jotdojo_github_subject_prefix must start with `repo:` — paste sub_claim_prefix verbatim, without a trailing colon."
+  }
+
+  validation {
+    condition     = !endswith(var.jotdojo_github_subject_prefix, ":")
+    error_message = "jotdojo_github_subject_prefix must NOT end with a colon — the credentials append `:ref:...` and `:environment:...` themselves."
+  }
+}
+
 variable "jotdojo_key_vault_name" {
   description = <<-EOT
     The vault terraform/envs/azure/jotdojo.tf creates. Named here rather than
@@ -156,7 +203,7 @@ resource "azuread_application_federated_identity_credential" "jotdojo_branch" {
   description    = "Pushes to ${each.value} in ${local.jotdojo_repo}."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${local.jotdojo_repo}:ref:refs/heads/${each.value}"
+  subject        = "${var.jotdojo_github_subject_prefix}:ref:refs/heads/${each.value}"
 }
 
 resource "azuread_application_federated_identity_credential" "jotdojo_environment" {
@@ -166,7 +213,7 @@ resource "azuread_application_federated_identity_credential" "jotdojo_environmen
   description    = "Jobs bound to the `prod` GitHub Environment in ${local.jotdojo_repo}."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${local.jotdojo_repo}:environment:prod"
+  subject        = "${var.jotdojo_github_subject_prefix}:environment:prod"
 }
 
 # ---------------------------------------------------------------------------
