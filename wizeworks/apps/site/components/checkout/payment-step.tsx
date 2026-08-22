@@ -41,9 +41,11 @@ export interface PaymentStepProps {
 // client-supplied) gets a choice between paying now by card and billing to
 // their account on net terms; everyone else goes straight to card, unchanged
 // from before this existed.
+// It carries NO state of its own, deliberately: the branch below is an early
+// return, and a hook above one is a hook that stops being called (the card
+// screen's `useState` was, which is a render-order crash waiting for the first
+// shop to switch to manual payments).
 export function PaymentStep(props: PaymentStepProps) {
-  const { session } = props;
-
   // The shop takes payment itself — over the counter, on collection, by
   // arrangement. There is no card form to draw and nothing to charge, so this
   // branch comes first: a business on manual payments is not a B2B question and
@@ -54,9 +56,17 @@ export function PaymentStep(props: PaymentStepProps) {
   // picker had a checkout that stopped dead at the last step. The server has
   // always been able to place the order (a manual order settles outside the
   // platform, exactly like net terms) — the storefront simply never asked.
-  if (session.paymentMode === 'in_person') {
+  if (props.session.paymentMode === 'in_person') {
     return <InPersonPaymentStep {...props} />;
   }
+  return <CardOrAccountPaymentStep {...props} />;
+}
+
+// Card, or bill it to the account. Everything from here down assumes there IS
+// something to charge.
+function CardOrAccountPaymentStep(props: PaymentStepProps) {
+  const { session } = props;
+
   // A prepay-designated account has no net-terms entitlement — go straight
   // to card, same as a non-B2B shopper (server-side submitPayment() also
   // rejects a net-terms request from a prepay account either way).
