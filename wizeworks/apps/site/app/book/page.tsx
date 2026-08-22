@@ -21,7 +21,35 @@ import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 // fails at submit. Worth an origin render per visit.
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = { title: 'Book an appointment' };
+/**
+ * The booking page's OWN title and description, the same as every other page.
+ *
+ * This was `export const metadata = { title: 'Book an appointment' }` — a module
+ * constant, so the title and description a tenant typed into the page's own Search
+ * wording fields were read by nothing and every salon's booking page went to search
+ * as the platform's sentence with the site tagline under it. The shell this route
+ * renders IS a page they author; its wording is theirs too.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await resolveSite();
+  if (!site) return { title: 'Book an appointment' };
+  const published = await getPublishedSilicaPage(site.slug, 'book');
+  const clean = (value: string | null | undefined): string | undefined => {
+    const trimmed = value?.trim();
+    return trimmed && trimmed.length > 0 ? trimmed : undefined;
+  };
+  // No ` · <site>` suffix here: the root layout's title template already appends it.
+  const title = clean(published?.seoTitle) ?? 'Book an appointment';
+  const description = clean(published?.seoDescription);
+  return {
+    title,
+    ...(description ? { description } : {}),
+    openGraph: {
+      title: `${title} · ${site.name}`,
+      ...(description ? { description } : {}),
+    },
+  };
+}
 
 export default async function BookIndexPage() {
   const site = await resolveSite();
