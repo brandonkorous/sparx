@@ -18,7 +18,7 @@ import { useBrand, useSiteConfig } from './site-data';
 import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
 import { makeRenderHostNode } from './host-cores';
 import { useActiveProperty } from './site-data';
-import { useMediaPicker } from '../../surfaces/cms/media-picker';
+import { useMediaPicker, type PickedAsset } from '../../surfaces/cms/media-picker';
 import { useActivePropertyId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { HostSettingsPanel } from '../../surfaces/studio/host-settings-panel';
@@ -125,7 +125,7 @@ function buildHost({
   preview: CanvasPreview;
   emailPreview: EmailPreviewHost;
   emailColors: EmailColorDefaults | undefined;
-  pickMedia: () => Promise<{ url: string | null; filename: string } | null>;
+  pickMedia: () => Promise<PickedAsset | null>;
 }): StudioHost {
   // The same root for both, so the mark a header draws and the text a bound node
   // draws come from one answer about who this business is.
@@ -152,9 +152,16 @@ function buildHost({
     // The business's own picture browser, so no image field ever asks for a web
     // address. A picked asset with no URL is one still being processed — treated as
     // "nothing picked" rather than written as an empty source.
+    //
+    // The alt text is the LIBRARY's, and stays empty when the library has none.
+    // It used to be the filename, so a screen reader announced
+    // "salon-editorial-noor.jpeg" and the pre-publish check saw a description
+    // where there was none.
     pickAsset: async () => {
       const picked = await pickMedia();
-      return picked?.url ? { url: picked.url, alt: picked.filename } : null;
+      if (!picked?.url) return null;
+      const alt = picked.altText?.trim();
+      return alt ? { url: picked.url, alt } : { url: picked.url };
     },
     // Email resolves against its own sample recipient, never the site's preview root:
     // `customer.firstName` means the person this is being SENT to.

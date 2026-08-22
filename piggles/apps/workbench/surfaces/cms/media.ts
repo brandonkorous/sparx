@@ -27,6 +27,9 @@ export interface MediaAsset {
    *  the pane down. Callers pass `unoptimized={!canOptimize}` to be safe. */
   canOptimize: boolean;
   status: string;
+  /** What a screen reader reads out, as typed in the library. Null when nobody has
+   *  written one — the caller must not substitute the filename for it. */
+  altText: string | null;
   /** 0..1 normalized subject point, defaulting to dead centre. Used when the image is
    *  cropped to a shape other than its own (per-platform social previews). */
   focalX: number;
@@ -41,6 +44,7 @@ interface MediaAssetWire {
   mime_type: string;
   status: string;
   original_url: string | null;
+  alt_text?: string | null;
   // 0..1 normalized subject point. Set on the asset (the CMS image editor writes it),
   // so every surface that CROPS the image to a different shape — the social composer's
   // per-platform previews most of all — keeps the subject in frame instead of
@@ -79,6 +83,7 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     url,
     canOptimize: isOwnMediaUrl(url),
     status: wire.status,
+    altText: wire.alt_text ?? null,
     focalX: clampUnit(wire.focal_point_x),
     focalY: clampUnit(wire.focal_point_y),
   };

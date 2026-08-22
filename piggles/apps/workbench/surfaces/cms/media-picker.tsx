@@ -78,6 +78,9 @@ export interface PickedAsset {
   id: string;
   url: string | null;
   filename: string;
+  /** The library's own description, or null. A filename is NOT a description, so
+   *  callers writing alt text must leave it empty rather than fall back to one. */
+  altText: string | null;
 }
 
 const MediaPickerContext = createContext<{
@@ -302,7 +305,12 @@ function MediaPickerDialog({
         // real src, not just an id.
         fetchAsset(assetId)
           .then((asset) => {
-            takePicked({ id: asset.id, url: asset.url, filename: asset.filename });
+            takePicked({
+              id: asset.id,
+              url: asset.url,
+              filename: asset.filename,
+              altText: asset.altText,
+            });
           })
           .catch(() => {
             toast.add({
@@ -339,7 +347,12 @@ function MediaPickerDialog({
       }
       try {
         const asset = await fetchAsset(result.value);
-        uploaded.push({ id: asset.id, url: asset.url, filename: asset.filename });
+        uploaded.push({
+          id: asset.id,
+          url: asset.url,
+          filename: asset.filename,
+          altText: asset.altText,
+        });
       } catch {
         // Uploaded to the library but its URL would not resolve — it is still
         // pickable from the grid, so count it as a soft failure for the summary.
@@ -548,6 +561,7 @@ function MediaPickerDialog({
                     id: asset.id,
                     url: asset.url,
                     filename: asset.filename,
+                    altText: asset.altText,
                   };
                   const order = multiple ? selected.findIndex((p) => p.id === asset.id) : -1;
                   const isSelected = order >= 0;
