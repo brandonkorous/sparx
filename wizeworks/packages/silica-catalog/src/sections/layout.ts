@@ -13,6 +13,8 @@
 
 import { el, type Node } from '@wizeworks/silicaui-html';
 
+import { boundAddress, boundContactLink } from './_contact-fields';
+
 import {
   actions,
   body,
@@ -173,20 +175,20 @@ export function noticeBanner(): Node {
 /** A contact strip — phone, email and hours in one row. For the top or bottom of a
  *  page where a full "Find us" band would be too much. */
 export function contactStrip(): Node {
-  const item = (label: string, value: string, href?: string): Node =>
-    el('div', 'flex flex-col gap-1', {
-      children: [
-        caption(label),
-        href
-          ? el('a', 'text-lg font-semibold text-base-content', { attrs: { href }, text: value })
-          : el('p', 'text-lg font-semibold text-base-content', { text: value }),
-      ],
-    });
+  const item = (label: string, value: Node): Node =>
+    el('div', 'flex flex-col gap-1', { children: [caption(label), value] });
+  const LINK = 'text-lg font-semibold text-base-content';
   return sectionAlt([
     gridThree([
-      item('Call us', '(555) 123-4567', 'tel:+15551234567'),
-      item('Email', 'hello@example.com', 'mailto:hello@example.com'),
-      item('Open', 'Mon–Fri 8–5, Sat 9–1'),
+      item('Call us', boundContactLink('phone', LINK, '(555) 123-4567')),
+      item('Email', boundContactLink('email', LINK, 'hello@example.com')),
+      // The third column was opening hours, typed into the block and true of nobody.
+      // Hours have their own block; the address is the third thing Site identity
+      // holds, so all three columns now follow the business instead of the shelf.
+      item(
+        'Find us',
+        boundAddress('text-lg font-semibold text-base-content', '24 Mill Lane\nMillbrook, OR 97005')
+      ),
     ]),
   ]);
 }

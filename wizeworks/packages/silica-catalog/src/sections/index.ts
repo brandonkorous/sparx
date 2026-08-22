@@ -103,7 +103,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         key: 'contact_strip',
         label: 'Contact strip',
         icon: 'layout',
-        hint: 'Phone, email and hours in one row, for the top or bottom of a page.',
+        hint: 'Your phone, email and address in one row, for the top or bottom of a page. All three follow what you typed under Your site.',
         make: layout.contactStrip,
       },
       {

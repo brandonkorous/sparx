@@ -10,6 +10,8 @@
 
 import { el, type Node } from '@wizeworks/silicaui-html';
 
+import { boundAddress, boundContactLink } from './_contact-fields';
+
 import {
   actions,
   body,
@@ -19,7 +21,6 @@ import {
   gridThree,
   picture,
   primaryAction,
-  secondaryAction,
   section,
   sectionAlt,
   sectionHead,
@@ -76,29 +77,27 @@ export function findUs(): Node {
         el('div', 'flex flex-col gap-5', {
           children: [
             el('h2', 'text-3xl font-semibold text-base-content', { text: 'Find us' }),
-            el('address', 'flex flex-col gap-1 text-base not-italic text-base-content', {
-              children: [
-                el('span', '', { text: 'The Old Mill, 24 Mill Lane' }),
-                el('span', '', { text: 'Millbrook, OR' }),
-                el('span', '', { text: '97005' }),
-              ],
-            }),
+            boundAddress(
+              'flex flex-col gap-1 text-base text-base-content',
+              'The Old Mill, 24 Mill Lane\nMillbrook, OR\n97005'
+            ),
             el('div', 'flex flex-col gap-2', {
               children: [
-                el('a', 'text-base font-semibold text-base-content', {
-                  attrs: { href: 'tel:+15551234567' },
-                  text: '(555) 123-4567',
-                }),
-                el('a', 'text-base font-semibold text-base-content', {
-                  attrs: { href: 'mailto:hello@example.com' },
-                  text: 'hello@example.com',
-                }),
+                boundContactLink(
+                  'phone',
+                  'text-base font-semibold text-base-content',
+                  '(555) 123-4567'
+                ),
+                boundContactLink(
+                  'email',
+                  'text-base font-semibold text-base-content',
+                  'hello@example.com'
+                ),
               ],
             }),
-            actions([
-              primaryAction('Get directions'),
-              secondaryAction('Call us', 'tel:+15551234567'),
-            ]),
+            // No "Call us" button beside a pressable number: it repeated the link
+            // directly above it, and its `href` was a literal nobody could reach.
+            actions([primaryAction('Get directions')]),
           ],
         }),
       ],
