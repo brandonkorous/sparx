@@ -52,7 +52,7 @@ import { ModuleScope } from '../../components/module-scope';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
-  statusTone,
+  invoiceState,
   type BillingDocument,
 } from '../invoicing/types';
 import { formatMoney as formatDealMoney, useDeals } from './deals-data';
@@ -891,28 +891,31 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                   </tr>
                 </thead>
                 <tbody>
-                  {invoiceRows.map((doc) => (
-                    <tr
-                      key={doc.id}
-                      className="cursor-pointer"
-                      onClick={(event) => {
-                        open('invoicing.invoice.edit', doc.id, event);
-                      }}
-                    >
-                      <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
-                      <td>
-                        <Badge color={statusTone(doc.status)} variant="soft" size="sm">
-                          {doc.status}
-                        </Badge>
-                      </td>
-                      <td className="text-right font-mono text-sm tabular-nums">
-                        {formatInvoiceMoney(doc.total, doc.currency)}
-                      </td>
-                      <td className="text-right font-mono text-sm tabular-nums">
-                        {formatInvoiceMoney(doc.balance, doc.currency)}
-                      </td>
-                    </tr>
-                  ))}
+                  {invoiceRows.map((doc) => {
+                    const state = invoiceState(doc.status);
+                    return (
+                      <tr
+                        key={doc.id}
+                        className="cursor-pointer"
+                        onClick={(event) => {
+                          open('invoicing.invoice.edit', doc.id, event);
+                        }}
+                      >
+                        <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
+                        <td>
+                          <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
+                            {state.label}
+                          </Badge>
+                        </td>
+                        <td className="text-right font-mono text-sm tabular-nums">
+                          {formatInvoiceMoney(doc.total, doc.currency)}
+                        </td>
+                        <td className="text-right font-mono text-sm tabular-nums">
+                          {formatInvoiceMoney(doc.balance, doc.currency)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
             </div>

@@ -27,7 +27,7 @@ import { ModuleScope } from '../../components/module-scope';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
-  statusTone,
+  invoiceState,
   type BillingDocument,
 } from '../invoicing/types';
 import {
@@ -246,32 +246,39 @@ export function CustomerInvoicesTab({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr
-                key={row.id}
-                {...openableRowProps((event) => {
-                  ctx.open('invoicing.invoice.edit', { id: row.id }, { target: targetFor(event) });
-                })}
-              >
-                {/* A document with no number has not been issued yet — saying
+            {rows.map((row) => {
+              const state = invoiceState(row.status);
+              return (
+                <tr
+                  key={row.id}
+                  {...openableRowProps((event) => {
+                    ctx.open(
+                      'invoicing.invoice.edit',
+                      { id: row.id },
+                      { target: targetFor(event) }
+                    );
+                  })}
+                >
+                  {/* A document with no number has not been issued yet — saying
                     "Draft" is the honest reading of a blank there. */}
-                <td className="font-mono text-sm">{row.number ?? 'Draft'}</td>
-                <td className="hidden text-sm @lg:table-cell">
-                  {row.dueAt ? formatOrderDate(row.dueAt) : 'No due date'}
-                </td>
-                <td>
-                  <Badge color={statusTone(row.status)} variant="soft" size="sm">
-                    {row.status}
-                  </Badge>
-                </td>
-                <td className="text-right font-mono text-sm tabular-nums">
-                  {formatInvoiceMoney(row.total, row.currency)}
-                </td>
-                <td className="text-right font-mono text-sm tabular-nums">
-                  {formatInvoiceMoney(row.balance, row.currency)}
-                </td>
-              </tr>
-            ))}
+                  <td className="font-mono text-sm">{row.number ?? 'Draft'}</td>
+                  <td className="hidden text-sm @lg:table-cell">
+                    {row.dueAt ? formatOrderDate(row.dueAt) : 'No due date'}
+                  </td>
+                  <td>
+                    <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
+                      {state.label}
+                    </Badge>
+                  </td>
+                  <td className="text-right font-mono text-sm tabular-nums">
+                    {formatInvoiceMoney(row.total, row.currency)}
+                  </td>
+                  <td className="text-right font-mono text-sm tabular-nums">
+                    {formatInvoiceMoney(row.balance, row.currency)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </RelatedCard>

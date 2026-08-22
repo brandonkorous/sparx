@@ -414,7 +414,7 @@ export interface DeliveryPlan {
  * well want it), so "no address" would call every one of them a despatch.
  */
 export function deliveryPlan(order: Order): DeliveryPlan {
-  const meta = (order.metadata ?? {}) as Record<string, unknown>;
+  const meta = order.metadata ?? {};
   const ref = typeof meta.shippingRateRef === 'string' ? meta.shippingRateRef : null;
   const described =
     typeof meta.shippingDescription === 'string' && meta.shippingDescription.trim()
