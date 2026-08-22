@@ -77,7 +77,6 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: 'Site not found',
       robots: { index: false, follow: false },
-      icons: { icon: '/sparx-icon.svg' },
     };
   }
   // A suspended site (docs/17 §6) serves the overlay, not its content — so it must
@@ -86,7 +85,6 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: 'Temporarily unavailable',
       robots: { index: false, follow: false },
-      icons: { icon: '/sparx-icon.svg' },
     };
   }
   const favicon = mediaUrl(site.theme?.faviconMediaId ?? null, site.slug);
@@ -134,19 +132,18 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     robots: { index: true, follow: true },
-    // The tenant's own favicon always wins. Until they set one, fall back to
-    // the sparx mark (public/) rather than the browser's default globe — a
-    // brand-new site still looks finished. Deliberately favicon-only: no
-    // apple-icon / manifest, so sparx never brands a tenant's home-screen
-    // install. Assets: wizeworks/apps/site/public/{favicon.ico,sparx-icon.svg}.
-    icons: favicon
-      ? { icon: favicon }
-      : {
-          icon: [
-            { url: '/sparx-icon.svg', type: 'image/svg+xml' },
-            { url: '/favicon.ico', sizes: 'any' },
-          ],
-        },
+    // The tenant's own favicon, or NOTHING.
+    //
+    // This used to fall back to the sparx mark so a brand-new site "still looked
+    // finished". What it actually did was put the platform's logo in the browser
+    // tab and the bookmark bar of every tenant who had not uploaded one — on a
+    // customer's own website, where a second brand has no business being. Worse
+    // once there were two products: a Piggles salon's site advertised sparx, a
+    // company its owner has never heard of (piggles/CLAUDE.md RULE #0).
+    //
+    // The browser's own default is the honest fallback. It says nothing, which is
+    // the correct amount for a site whose owner has not chosen a mark yet.
+    ...(favicon ? { icons: { icon: favicon } } : {}),
   };
 }
 
