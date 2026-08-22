@@ -1066,6 +1066,126 @@ jobs:
           YAML
           ./.github/scripts/await-job.sh db-roles "$NAMESPACE" 300
 
+      # -----------------------------------------------------------------------
+      # The ONE thing sparx does for jotDOJO, and the reason it is not a chore.
+      #
+      # CLAUDE.md says never to put a task name in this pipeline, and that rule is
+      # right — `ingest`, `purge-themes` and their kind belong in ops.yml. This is
+      # not one of those. It is a database role on a server sparx OWNS, created in
+      # the stage that already exists to create database roles, on every release,
+      # idempotently. Remove it and nothing about jotDOJO can be provisioned
+      # without a human holding the server admin password.
+      #
+      # WHY SPARX AND NOT JOTDOJO. A database on Azure Flexible Server is owned by
+      # the SERVER ADMIN unless something says otherwise, and this server's only
+      # admin is `sparx_owner`. jotDOJO cannot mint its own owner, because its
+      # migrations must ALREADY be connected as an owner to run. Left alone, its
+      # DATABASE-ADMIN-URL would have to be the sparx server admin — a credential
+      # that opens `sparx` and `piggles` as readily as `jotdojo` — living in a
+      # Secret in the `jotdojo` namespace. Sparx mints one role, hands over the
+      # database, and stops there.
+      #
+      # NOTHING SENSITIVE CROSSES A NAMESPACE. This Job runs in SPARX's namespace
+      # against the `jotdojo` database. The admin credential never leaves here,
+      # and the owner password it sets is one jotDOJO already has in its vault.
+      # -----------------------------------------------------------------------
+      - name: Ensure jotDOJO owns its own database
+        if: vars.JOTDOJO_KEY_VAULT_NAME != ''
+        env:
+          JOTDOJO_VAULT: ${{ vars.JOTDOJO_KEY_VAULT_NAME }}
+        run: |
+          set -euo pipefail
+
+          # Written by terraform/envs/azure/jotdojo.tf in the infrastructure
+          # stage that precedes this one. Absent means that stage was skipped, so
+          # this is a hard failure rather than a skip: a silent no-op here leaves
+          # DATABASE-ADMIN-URL naming a role that does not exist, and jotDOJO's
+          # own deploy then fails somewhere that looks nothing like this step.
+          if ! OWNER_PW=$(az keyvault secret show --vault-name "$JOTDOJO_VAULT" \
+                            --name JOTDOJO-OWNER-PASSWORD --query value -o tsv 2>/dev/null); then
+            echo "::error::JOTDOJO-OWNER-PASSWORD is absent from $JOTDOJO_VAULT." \
+                 "It is written by terraform/envs/azure/jotdojo.tf — run the" \
+                 "infrastructure stage before the data stage."
+            exit 1
+          fi
+
+          kubectl create secret generic jotdojo-bootstrap -n "$NAMESPACE" \
+            --from-literal=OWNER_PASSWORD="$OWNER_PW" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl create configmap jotdojo-bootstrap-sql -n "$NAMESPACE" \
+            --from-file=jotdojo-bootstrap.sql=wizeworks/packages/db/sql/jotdojo-bootstrap.sql \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl delete job jotdojo-db-owner -n "$NAMESPACE" --ignore-not-found
+          # QUOTED heredoc, for the reason spelled out on the Job above: unquoted,
+          # bash runs command substitution on backticks inside the body INCLUDING
+          # ones sitting in YAML comments.
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: jotdojo-db-owner
+          spec:
+            backoffLimit: 1
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: psql
+                    image: postgres:18-alpine
+                    command: ['sh', '-c']
+                    # The database name is SWAPPED rather than configured, the
+                    # same move OPERATOR_DATABASE_URL makes with its role name a
+                    # few hundred lines up. AUTH_DATABASE_URL is sparx_owner
+                    # against `sparx`; the only difference that matters is which
+                    # database it lands in, and deriving it keeps one credential
+                    # in one place instead of two that must be kept in step.
+                    #
+                    # ANCHORED TO END OF STRING, and that is the whole substitution.
+                    # A database name is the LAST path segment, so `$` is what
+                    # distinguishes it from the same letters appearing anywhere
+                    # else in the URL. Without the anchor a server named
+                    # `sparxdb` silently becomes `jotdojodb` — a connection to a
+                    # database that does not exist, reported as an auth failure.
+                    # The optional group carries the query string through, so a
+                    # URL with no `?sslmode=` still converts instead of aborting
+                    # the stage.
+                    #
+                    # The guard is not belt-and-braces: if the substitution does
+                    # NOT match, `psql` would otherwise run happily against the
+                    # SPARX database and create jotDOJO's owner role there.
+                    args:
+                      - |
+                        set -eu
+                        URL=$(printf '%s' "$AUTH_DATABASE_URL" | sed -E 's#/sparx(\?.*)?$#/jotdojo\1#')
+                        case "$URL" in
+                          */jotdojo|*/jotdojo\?*) ;;
+                          *) echo "FATAL: could not derive a jotdojo URL from AUTH_DATABASE_URL; refusing to run against the sparx database." >&2; exit 1 ;;
+                        esac
+                        psql "$URL" -v ON_ERROR_STOP=1 -v owner_password="$OWNER_PASSWORD" -f /sql/jotdojo-bootstrap.sql
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+                      - name: OWNER_PASSWORD
+                        valueFrom:
+                          secretKeyRef: { name: jotdojo-bootstrap, key: OWNER_PASSWORD }
+                    volumeMounts:
+                      - { name: sql, mountPath: /sql, readOnly: true }
+                volumes:
+                  - name: sql
+                    configMap: { name: jotdojo-bootstrap-sql }
+          YAML
+          ./.github/scripts/await-job.sh jotdojo-db-owner "$NAMESPACE" 300
+
+          # The Secret existed only to get one value into one Job. Leaving it
+          # behind would put jotDOJO's owner password at rest in sparx's
+          # namespace for no further purpose.
+          kubectl delete secret jotdojo-bootstrap -n "$NAMESPACE" --ignore-not-found
+
       - name: Migrate the schema
         run: |
           set -euo pipefail

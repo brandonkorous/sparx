@@ -359,3 +359,172 @@ output "jotdojo_storage_account" {
   description = "Blob account for jotDOJO ink, audio and rendered previews."
   value       = var.jotdojo_enabled ? azurerm_storage_account.jotdojo[0].name : null
 }
+
+# ---------------------------------------------------------------------------
+# SECRETS THE PLATFORM CAN KNOW BY ITSELF — generated here, written here, and
+# never typed by a person.
+#
+# Eight secrets are required before jotDOJO will deploy. SIX of them are facts
+# this configuration already holds or can mint: it knows the server FQDN, it
+# knows the database name, it holds the storage key in state, and a password is
+# only a random string. Asking a human to copy those into a vault is asking them
+# to hand-transcribe values Terraform is already holding — which is not merely
+# tedious, it is the step where one wrong character becomes a crashloop two
+# stages later with nothing pointing back at the typo.
+#
+# THE TWO THAT ARE NOT HERE are AUTH-GOOGLE-ID and AUTH-GOOGLE-SECRET, absent
+# for a reason no amount of automation removes: Google issues them to a human
+# through a consent screen, against redirect URIs that same human registers.
+# Nothing in Azure can mint a credential another company controls. Those two are
+# set once, by hand, and then never again.
+#
+# WHY THIS DOES NOT WEAKEN THE POSTURE. jotDOJO's CI identity still holds
+# `Key Vault Secrets User` — get and list, never write — so the pipeline that
+# DEPLOYS jotDOJO still cannot rewrite a credential it then ships. What changes
+# is that SPARX's release identity may write them, which is a different identity
+# at a different moment: provisioning, not deploying. The property worth keeping
+# was never "no automation writes secrets", it was "the thing that deploys
+# cannot rewrite what it deploys". That still holds.
+#
+# WHERE THE VALUES LIVE. In Terraform state — the honest cost of this approach,
+# stated here rather than discovered later. State is in `stsparxprodcustfstate`
+# behind `use_azuread_auth`, and it ALREADY holds
+# `random_password.postgres_admin`, the credential to the entire server. These
+# add nothing to that blast radius.
+# ---------------------------------------------------------------------------
+
+# The owner of jotDOJO's database, and the answer to a question this file used
+# to leave open.
+#
+# An Azure Flexible Server database is owned by the SERVER ADMIN unless something
+# says otherwise, and this server's only admin is `sparx_owner`. Without this
+# role, jotDOJO's DATABASE-ADMIN-URL would have to BE that admin — a credential
+# opening the sparx and piggles databases just as readily — sitting in a
+# Kubernetes Secret in the `jotdojo` namespace, readable by anything holding
+# `get secrets` there. jotDOJO's migrations are not the threat; the blast radius
+# around them is.
+#
+# The role is created by wizeworks/packages/db/sql/jotdojo-bootstrap.sql, run as
+# a Job by the release's data stage, because the server is private-IP and
+# nothing outside the cluster can reach it. SPARX runs it because sparx owns the
+# SERVER, and a server-level role is not something a tenant of that server can
+# mint for itself.
+resource "random_password" "jotdojo_owner" {
+  count   = local.jotdojo_count
+  length  = 32
+  special = true
+  # The same exclusions as the server admin beside it. Postgres accepts more
+  # than this; these survive a connection string, a psql `-v` substitution and a
+  # dotenv line without all three having to agree about escaping.
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+# The RESTRICTED role the application actually connects as. jotDOJO's own
+# `0001_app_role.sql` creates it without a password and notes that production
+# sets one "out of band from Key Vault" — this is that out of band, and it is a
+# generated value rather than a chosen one.
+resource "random_password" "jotdojo_app" {
+  count            = local.jotdojo_count
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+# Session-signing key material, so ALPHANUMERIC ONLY — deliberately, and not out
+# of timidity about escaping.
+#
+# release.yml documents at length how OPERATOR_AUTH_SECRET's trailing CARRIAGE
+# RETURN broke every operator's 2FA: Better Auth uses the secret's exact bytes as
+# key material, a dotenv parser cannot distinguish a trailing CR from a CRLF line
+# ending, and trimming it silently reconstructs a DIFFERENT key. 48 alphanumeric
+# characters carry ~285 bits and cannot express that bug at all. Entropy was
+# never the scarce thing here; unambiguous bytes are.
+resource "random_password" "jotdojo_auth_secret" {
+  count   = local.jotdojo_count
+  length  = 48
+  special = false
+  upper   = true
+  lower   = true
+  numeric = true
+}
+
+locals {
+  jotdojo_server = var.jotdojo_enabled ? azurerm_postgresql_flexible_server.main.fqdn : ""
+
+  # NAMES ARE UPPERCASE-KEBAB, matching jotDOJO's release, which maps a vault
+  # name to an env name with `${name//_/-}` — a case-PRESERVING substitution.
+  # sparx's own pipeline uses `tr 'a-z-' 'A-Z_'` and therefore lowercase names.
+  # Two conventions, each internally consistent, and mixing them produces a
+  # secret that reads as present in the portal and is never found at deploy time.
+  #
+  # `content_type` is not decoration: `az keyvault secret show` prints it, so it
+  # is the only thing telling whoever opens this vault which values may safely be
+  # regenerated and which would strand something. Said here, next to the secret,
+  # rather than in a document nobody has open at the time.
+  jotdojo_secrets = var.jotdojo_enabled ? {
+    "DATABASE-URL" = {
+      # The restricted role. NEVER the owner — Postgres exempts superusers and
+      # BYPASSRLS roles from every policy, so an owner connection string turns
+      # jotDOJO's whole space boundary off while every policy still reads as
+      # though it were being enforced.
+      value = "postgresql://jotdojo_app:${urlencode(random_password.jotdojo_app[0].result)}@${local.jotdojo_server}:5432/jotdojo?sslmode=require"
+      type  = "connection-string; rotate by tainting random_password.jotdojo_app"
+    }
+    "DATABASE-ADMIN-URL" = {
+      # Migrations only, and `jotdojo_owner` rather than `sparx_owner` — see the
+      # note on random_password.jotdojo_owner above.
+      value = "postgresql://jotdojo_owner:${urlencode(random_password.jotdojo_owner[0].result)}@${local.jotdojo_server}:5432/jotdojo?sslmode=require"
+      type  = "connection-string; migrations only, never the application"
+    }
+    "JOTDOJO-OWNER-PASSWORD" = {
+      # Not on jotDOJO's required list and not read by its release — this one is
+      # for SPARX. The data stage passes it to jotdojo-bootstrap.sql as
+      # `-v owner_password=`, which is how the role in DATABASE-ADMIN-URL comes
+      # to exist at all.
+      #
+      # It is carried in jotDOJO's vault rather than sparx's so that the password
+      # and the connection string containing it cannot drift apart: they are
+      # written by the same apply, from the same resource, into the same vault.
+      value = random_password.jotdojo_owner[0].result
+      type  = "password; read by SPARX's data stage, not by jotDOJO"
+    }
+    "JOTDOJO-APP-PASSWORD" = {
+      # The same password as the one inside DATABASE-URL, carried separately
+      # because jotDOJO's migration Job runs `ALTER ROLE jotdojo_app PASSWORD`
+      # with it. Two names, one value, on purpose.
+      value = random_password.jotdojo_app[0].result
+      type  = "password; must match the role embedded in DATABASE-URL"
+    }
+    "AUTH-SECRET" = {
+      value = random_password.jotdojo_auth_secret[0].result
+      type  = "key material; ROTATING THIS SIGNS EVERY USER OUT"
+    }
+    "AZURE-STORAGE-ACCOUNT" = {
+      value = azurerm_storage_account.jotdojo[0].name
+      type  = "account name; not secret, carried here so one lookup finds all eight"
+    }
+    "AZURE-STORAGE-KEY" = {
+      value = azurerm_storage_account.jotdojo[0].primary_access_key
+      type  = "storage key; regenerating it in the portal makes this value stale"
+    }
+  } : {}
+}
+
+resource "azurerm_key_vault_secret" "jotdojo" {
+  for_each = local.jotdojo_secrets
+
+  name         = each.key
+  value        = each.value.value
+  key_vault_id = azurerm_key_vault.jotdojo[0].id
+  content_type = each.value.type
+  tags         = local.tags
+
+  lifecycle {
+    # A vault secret is VERSIONED, so rewriting one is additive and safe. A
+    # DESTROY is not: it soft-deletes the NAME, and with purge protection
+    # deliberately off until launch that is a name held hostage for the whole
+    # retention window. The values here are all regenerable; the availability of
+    # the name during an incident is not.
+    prevent_destroy = true
+  }
+}
