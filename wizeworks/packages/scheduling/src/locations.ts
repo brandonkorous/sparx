@@ -47,9 +47,20 @@ type LocationWithScope = BusinessLocation & {
   _count: { resources: number; services: number; bookings: number };
 };
 
+// A DELETED person or service is not filed anywhere any more. An unfiltered
+// `_count` reported a starter's discarded demo staff and menu as live, so a place
+// nothing used read "3 people & things · 7 services · In use" and its delete
+// warned about ten records that no longer existed. Bookings carry no `deletedAt`,
+// so that one counts every row on purpose.
 const INCLUDE = {
   siteLinks: { select: { propertyId: true } },
-  _count: { select: { resources: true, services: true, bookings: true } },
+  _count: {
+    select: {
+      resources: { where: { deletedAt: null } },
+      services: { where: { deletedAt: null } },
+      bookings: true,
+    },
+  },
 } satisfies Prisma.BusinessLocationInclude;
 
 function serialize(row: LocationWithScope): LocationRow {
