@@ -25,7 +25,14 @@ step "pnpm install --frozen-lockfile (lockfile drift check)"
 # to verify lockfile consistency, not regenerate the client. Avoids the
 # Windows EPERM file-lock that postinstall is prone to on already-built
 # Prisma engines.
-pnpm install --frozen-lockfile --ignore-scripts --silent || fail "pnpm-lock.yaml out of sync with a package.json — run \`pnpm install\` and commit the updated lockfile"
+#
+# `< /dev/null` is load-bearing, not tidiness. Git hands a pre-push hook the
+# ref list on stdin, and pnpm inherits it and blocks on it forever: the process
+# sits at 1.1s of CPU and never returns, so the push hangs with NO output at all.
+# Two pushes wedged that way on 2026-08-23, one of them for 8.5 hours, and 15
+# commits sat unpushed behind them. The identical command finishes in seconds
+# once stdin is closed.
+pnpm install --frozen-lockfile --ignore-scripts --silent < /dev/null || fail "pnpm-lock.yaml out of sync with a package.json — run \`pnpm install\` and commit the updated lockfile"
 ok "lockfile in sync"
 
 # `--ignore-scripts` above means NOTHING here generates the Prisma client, and
