@@ -169,7 +169,7 @@ export function AppPanel({
         // width, while silica's Sidebar sizes itself from its own `--sidebar-w`,
         // which defaults to 16rem. Widening only the wrapper left four rems of
         // dead space with the labels still truncating.
-        className={`text-neutral-dark-content h-full bg-transparent ${
+        className={`text-chrome-deep-content h-full bg-transparent ${
           width === 'fill' ? 'w-full [--sidebar-w:100%]' : '[--sidebar-w:20rem]'
         }`}
       >

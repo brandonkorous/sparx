@@ -121,7 +121,7 @@ export function PanelSections({
                 click to reveal six screens read as smaller print than the
                 screens. Same fix, same reason, as the rail's groups. */}
             <SidebarItem
-              className="bg-neutral-dark sticky top-0 z-10"
+              className="bg-chrome-deep sticky top-0 z-10"
               aria-expanded={!shut}
               // Chevron on the RIGHT, and nothing on the left: the icon slot is
               // where every row under this one keeps its subject, so a disclosure

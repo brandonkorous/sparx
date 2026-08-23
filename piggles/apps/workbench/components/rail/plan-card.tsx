@@ -72,7 +72,7 @@ export function PlanCard({ accountOrigin }: { accountOrigin: string }) {
   return (
     <div
       data-plan-tone={tone}
-      className="rounded-box border-base-300 bg-neutral-dark mx-1 mb-2 border p-3"
+      className="rounded-box border-base-300 bg-chrome-deep mx-1 mb-2 border p-3"
     >
       <div className="flex items-center gap-2">
         <Mark className="text-primary size-5 shrink-0" />

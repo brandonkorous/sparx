@@ -77,7 +77,7 @@ export function Sheet({ open, title, hint, footer, children, onDismiss }: SheetP
         //
         // No border: two floating objects that share an edge must not each draw
         // one. The shadow separates them from the work, as it does up there.
-        className={`bg-neutral-dark text-neutral-dark-content rounded-box absolute inset-x-3 bottom-3 z-20 flex flex-col overflow-hidden transition-[max-height] duration-200 ease-out motion-reduce:transition-none ${
+        className={`bg-chrome-deep text-chrome-deep-content rounded-box absolute inset-x-3 bottom-3 z-20 flex flex-col overflow-hidden transition-[max-height] duration-200 ease-out motion-reduce:transition-none ${
           open ? 'max-h-[78dvh] shadow-lg' : 'pointer-events-none max-h-0'
         }`}
         // Shut, it is collapsed to nothing but still in the tree so the close

@@ -60,7 +60,7 @@ export function ChromeColumn({
         device rather than sparx's hairline (piggles/DESIGN.md §4). */}
       <div
         data-chrome="column"
-        className="bg-neutral-dark text-neutral-dark-content rounded-box relative m-2 flex p-1.5 shadow-lg"
+        className="bg-chrome-deep text-chrome-deep-content rounded-box relative m-2 flex p-1.5 shadow-lg"
       >
         <SidebarProvider
           collapsed={!railExpanded}

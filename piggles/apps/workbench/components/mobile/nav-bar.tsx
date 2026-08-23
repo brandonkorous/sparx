@@ -92,7 +92,7 @@ export function NavBar({ active, openCount, activeApp, onSelect }: NavBarProps) 
         //
         // No border. It shares an edge with the sheet growing out from behind it,
         // and two floating objects that meet must not each draw their own.
-        className="bg-neutral text-neutral-content rounded-selector pointer-events-auto flex items-center justify-around p-1 shadow-lg"
+        className="bg-chrome text-chrome-content rounded-selector pointer-events-auto flex items-center justify-around p-1 shadow-lg"
       >
         {tabs.map((tab) => {
           const on = active === tab.key;
@@ -101,7 +101,7 @@ export function NavBar({ active, openCount, activeApp, onSelect }: NavBarProps) 
               <button
                 type="button"
                 // `dock-item`, not `btn`. A nav item is `color: inherit`, so the
-                // bar's own `text-neutral-content` reaches it; a `.btn` PAINTS
+                // bar's own `text-chrome-content` reaches it; a `.btn` PAINTS
                 // itself from `--color-base-content` — the page's ink — and went
                 // near-black on the dark bar (1.79:1) in the light theme.
                 //

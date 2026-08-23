@@ -95,7 +95,7 @@ export function AppRail({
         // density, in the one mode a returning person sits in all day.
         // Set through the component's own documented CSS variable via a Tailwind
         // arbitrary property; never an inline style.
-        className="bg-neutral text-neutral-content rounded-field shrink-0 [--sidebar-w-collapsed:3.75rem]"
+        className="bg-chrome text-chrome-content rounded-field shrink-0 [--sidebar-w-collapsed:3.75rem]"
       >
         {/* Padding tracks the width, so the row keeps a real hit area. */}
         {/* ── ORDER: yours, then the apps ──────────────────────────────────

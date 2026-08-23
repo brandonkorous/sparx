@@ -77,7 +77,7 @@ export function ShortcutPanel({
   };
 
   return (
-    <Sidebar className="text-neutral-dark-content h-full bg-transparent [--sidebar-w:20rem]">
+    <Sidebar className="text-chrome-deep-content h-full bg-transparent [--sidebar-w:20rem]">
       <SidebarHeader>
         <SidebarHeaderBrand>
           {/* The same glyph the rail row wears, for the same reason the app panel
