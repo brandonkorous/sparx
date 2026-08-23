@@ -362,24 +362,32 @@ import mode.caddy
 # time and does NOT follow a redirect, so serving the app at the apex even once
 # means every user who installed it must delete and reinstall to move. The split
 # has to be right before the first deploy rather than corrected after it.
-# THE TARGETS NOW FOLLOW THE BRAND, because the cluster finally does. These five
-# pointed at `jotdojo` for as long as that was the only namespace holding web,
-# api and mcp — this file cannot lead a namespace created by jotacular's OWN
-# repository, and pointing at one that does not exist yet does not fail an apply
-# (Caddy resolves an upstream per request) but 502s every request to the product.
+# THESE TARGETS STAY ON `jotdojo` UNTIL THE OTHER NAMESPACE HOLDS PODS. This is
+# a revert, and the outage it undoes is the argument for the rule.
 #
-# This is the flip the previous comment asked for, made in the window it named.
-# It is ORDERED against jotacular's release and is unsafe alone in EITHER
-# direction: their migration 0034 renames the Postgres role the `jotdojo` pods
-# authenticate as, so their deploy breaks the pods these targets reach today,
-# while flipping ahead of their deploy points at an empty namespace. Their pods
-# have to be healthy in `jotacular` before this config reaches Caddy.
+# WHAT HAPPENED, 2026-08-23. The flip to `jotacular` was made and shipped on the
+# agreed understanding that jotDOJO's own release would put pods in that
+# namespace inside the same window. It did not — their deploy never ran. Stage 1
+# applied at ~22:51Z, every one of these five names began answering 502, and it
+# stayed that way for an hour until somebody looked. The `jotdojo` pods were
+# healthy and idle throughout, 1/1 Running with no restarts, serving nothing,
+# because nothing routed to them any more.
 #
-# Applying it is not instant, and that is what decides the order: this file ships
-# in the release's stage 1, so it is a push plus about six minutes of pipeline,
-# behind a pre-push guard that takes longer again. Starting that BEFORE their
-# deploy is what holds the dark window to the length of their rollout rather than
-# the length of ours.
+# THE LESSON IS ABOUT EVIDENCE, NOT ORDER. The ordering reasoning was right and
+# the flip still caused an outage, because it shipped on a PROMISE that the other
+# side would be ready rather than on a CHECK that it was. `kubectl get pods -n
+# jotacular` answered "No resources found" before the flip, during it, and an
+# hour after. One command, available the whole time, would have stopped it.
+#
+# So the precondition is a fact, not a plan: DO NOT flip these five until
+# `kubectl get pods -n jotacular` shows Running pods for web, api and mcp. Not
+# when their release is queued, not when someone says GO — when the pods answer.
+#
+# And note what a revert costs, because it decides who should hold the lever:
+# this file ships in the release's stage 1, so undoing it is a push plus a
+# pre-push guard plus a pipeline, 20-25 minutes. A `kubectl rollout undo` on the
+# caddy Deployment is seconds and belongs to whoever is watching, not to the
+# pipeline. An hour of 502 is what the gap between those two numbers buys.
 #
 # Renaming a namespace is cheap in a way the Azure names are not: nothing durable
 # lives in one. The rows are in Postgres and the uploads are in blob storage, and
@@ -387,13 +395,13 @@ import mode.caddy
 {$SX_SCHEME:https}://jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotacular.svc.cluster.local:80
+	reverse_proxy web.jotdojo.svc.cluster.local:80
 }
 
 {$SX_SCHEME:https}://app.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotacular.svc.cluster.local:80
+	reverse_proxy web.jotdojo.svc.cluster.local:80
 }
 
 # `www` is MATCHED BY THE APP, not redirected here — same Service again, so the
@@ -402,7 +410,7 @@ import mode.caddy
 {$SX_SCHEME:https}://www.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotacular.svc.cluster.local:80
+	reverse_proxy web.jotdojo.svc.cluster.local:80
 }
 
 # The REST v1 surface Apple Shortcuts and third parties call. A separate
@@ -412,7 +420,7 @@ import mode.caddy
 {$SX_SCHEME:https}://api.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy api.jotacular.svc.cluster.local:80
+	reverse_proxy api.jotdojo.svc.cluster.local:80
 }
 
 # The MCP server: streamable HTTP transport, OAuth 2.1 resource server.
@@ -429,7 +437,7 @@ import mode.caddy
 {$SX_SCHEME:https}://mcp.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy mcp.jotacular.svc.cluster.local:80
+	reverse_proxy mcp.jotdojo.svc.cluster.local:80
 }
 
 # ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
