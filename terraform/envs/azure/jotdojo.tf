@@ -418,7 +418,7 @@ variable "jotdojo_ai_location" {
     A model can be LISTED in a region and carry no SKU, which is what `None`
     means and why a plain "is it available" check is not enough. eastus2 carries
     all three models this section needs at `Standard`, and quota is non-zero on
-    each (whisper 3, gpt-4o-mini 450, text-embedding-3-small 350).
+    each (whisper 3, gpt-4.1-mini 5000, text-embedding-3-small 350).
 
     WHY WHISPER AND NOT gpt-4o-mini-transcribe, which IS in centralus:
     `packages/speech/src/provider.ts` asks for `verbose_json` with word and
@@ -448,9 +448,14 @@ variable "jotdojo_ai_capacity" {
     quota is shared, so every unit given to one is unavailable to another.
 
     The sum must fit the region's quota. eastus2 on this subscription allows
-    whisper 3, gpt-4o-mini 450 and text-embedding-3-small 350; the defaults
-    below use 150 of the 450 and 100 of the 350, leaving room to raise one
-    without a quota request.
+    whisper 3, gpt-4.1-mini 5000 and text-embedding-3-small 350; the defaults
+    below use 150 of the 5000 and 100 of the 350, leaving generous room to raise
+    either without a quota request.
+
+    Read the quota for the model you actually DEPLOY. These figures moved when
+    the pin moved off gpt-4o-mini (450) - a capacity that fits one model's
+    ceiling and not another's is a failed apply, and the error names the SKU
+    rather than the reason.
   EOT
   type = object({
     vision    = number
@@ -489,12 +494,32 @@ locals {
   # somebody's handwriting. `OnceCurrentVersionExpired` below is the compromise:
   # it will not move while the pin is valid, and it will not go dark when the
   # pin expires.
+  #
+  # A PIN CAN GO STALE BEFORE ANYTHING NOTICES, and this one did. gpt-4o-mini
+  # 2024-07-18 stopped being DEPLOYABLE on 2026-03-31 while remaining
+  # INFERENCE-valid until 2027-04-14 - two different dates, and `az
+  # cognitiveservices model list` reports only the second. So the catalogue said
+  # the model was fine, `version_upgrade_option` had nothing expired to move off,
+  # and the create call failed with ServiceModelDeprecated. The account and two
+  # of the four deployments came up; vision and triage did not, and the eleven
+  # secrets that depend on them were never written - so recognition, triage and
+  # the MCP server's sight were off in production behind an apply that had
+  # reported success for everything it did manage.
+  #
+  # The lesson is the failure mode rather than the model: an EXISTING deployment
+  # survives its own deprecation, so a stale pin only bites on a rebuild, which
+  # is precisely when nobody is watching.
   jotdojo_ai_models = local.jotdojo_ai_on ? {
-    # gpt-4o-mini twice, deliberately. Vision and triage are the same model and
+    # gpt-4.1-mini twice, deliberately. Vision and triage are the same model and
     # separate deployments so their rate ceilings and their Azure cost metrics
     # are separable - one line per feature, not one line for "chat".
-    vision    = { model = "gpt-4o-mini", version = "2024-07-18", capacity = var.jotdojo_ai_capacity.vision }
-    triage    = { model = "gpt-4o-mini", version = "2024-07-18", capacity = var.jotdojo_ai_capacity.triage }
+    #
+    # gpt-4.1-mini is gpt-4o-mini's successor: the same small-and-cheap class,
+    # still MULTIMODAL - jotDOJO's vision seam sends images and a text-only
+    # model would fail every page - Standard SKU in eastus2, deployable until
+    # 2027-04-14.
+    vision    = { model = "gpt-4.1-mini", version = "2025-04-14", capacity = var.jotdojo_ai_capacity.vision }
+    triage    = { model = "gpt-4.1-mini", version = "2025-04-14", capacity = var.jotdojo_ai_capacity.triage }
     embedding = { model = "text-embedding-3-small", version = "1", capacity = var.jotdojo_ai_capacity.embedding }
     speech    = { model = "whisper", version = "001", capacity = var.jotdojo_ai_capacity.speech }
   } : {}
