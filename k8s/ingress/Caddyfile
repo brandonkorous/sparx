@@ -362,16 +362,24 @@ import mode.caddy
 # time and does NOT follow a redirect, so serving the app at the apex even once
 # means every user who installed it must delete and reinstall to move. The split
 # has to be right before the first deploy rather than corrected after it.
-# THE NAMESPACE IS STILL `jotdojo`, AND THESE TARGETS FOLLOW THE CLUSTER RATHER
-# THAN THE BRAND. The hostnames above renamed; the namespace has not, because it
-# is created by jotacular's OWN repository and this file cannot lead it. Pointing
-# at a namespace that does not exist yet does not fail an apply — Caddy resolves
-# an upstream per request — it just 502s every request to the product, which
-# reads as an outage rather than as a config that ran ahead of itself.
+# THE TARGETS NOW FOLLOW THE BRAND, because the cluster finally does. These five
+# pointed at `jotdojo` for as long as that was the only namespace holding web,
+# api and mcp — this file cannot lead a namespace created by jotacular's OWN
+# repository, and pointing at one that does not exist yet does not fail an apply
+# (Caddy resolves an upstream per request) but 502s every request to the product.
 #
-# Verified against the cluster: `jotdojo` holds web, api and mcp; there is no
-# `jotacular` namespace. FLIP THESE FIVE IN THE SAME WINDOW as jotacular's own
-# release creates the new namespace — not before it, and not after.
+# This is the flip the previous comment asked for, made in the window it named.
+# It is ORDERED against jotacular's release and is unsafe alone in EITHER
+# direction: their migration 0034 renames the Postgres role the `jotdojo` pods
+# authenticate as, so their deploy breaks the pods these targets reach today,
+# while flipping ahead of their deploy points at an empty namespace. Their pods
+# have to be healthy in `jotacular` before this config reaches Caddy.
+#
+# Applying it is not instant, and that is what decides the order: this file ships
+# in the release's stage 1, so it is a push plus about six minutes of pipeline,
+# behind a pre-push guard that takes longer again. Starting that BEFORE their
+# deploy is what holds the dark window to the length of their rollout rather than
+# the length of ours.
 #
 # Renaming a namespace is cheap in a way the Azure names are not: nothing durable
 # lives in one. The rows are in Postgres and the uploads are in blob storage, and
@@ -379,13 +387,13 @@ import mode.caddy
 {$SX_SCHEME:https}://jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 {$SX_SCHEME:https}://app.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 # `www` is MATCHED BY THE APP, not redirected here — same Service again, so the
@@ -394,7 +402,7 @@ import mode.caddy
 {$SX_SCHEME:https}://www.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 # The REST v1 surface Apple Shortcuts and third parties call. A separate
@@ -404,7 +412,7 @@ import mode.caddy
 {$SX_SCHEME:https}://api.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy api.jotdojo.svc.cluster.local:80
+	reverse_proxy api.jotacular.svc.cluster.local:80
 }
 
 # The MCP server: streamable HTTP transport, OAuth 2.1 resource server.
@@ -421,7 +429,7 @@ import mode.caddy
 {$SX_SCHEME:https}://mcp.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy mcp.jotdojo.svc.cluster.local:80
+	reverse_proxy mcp.jotacular.svc.cluster.local:80
 }
 
 # ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
