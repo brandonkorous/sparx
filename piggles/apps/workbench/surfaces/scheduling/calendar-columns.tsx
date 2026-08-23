@@ -7,7 +7,7 @@
 // calendar.tsx answers "which strips, and what is in the toolbar".
 
 import { useMemo } from 'react';
-import { useExceptions, useResourceWindows } from './setup-data';
+import { useExceptions, useResourceWindows, useResourcesWindows } from './setup-data';
 import { closedBandsFor, worksOn, type ClosedBand } from './calendar-hours';
 import type { TimeWindow } from './calendar-grid';
 import { isSameDay, isToday, weekDays, weekdayHeading, type CalendarEvent } from './calendar-data';
@@ -82,23 +82,39 @@ export interface ShutHours {
   known: boolean;
 }
 
-export function useShutHours(resourceId: string, view: TimeWindow): ShutHours {
-  const windows = useResourceWindows(resourceId || null);
+export function useShutHours(
+  resourceId: string,
+  resources: { id: string }[],
+  view: TimeWindow
+): ShutHours {
+  const one = useResourceWindows(resourceId || null);
+  // The everyone view asks for everybody's hours; the single view does not need
+  // them, so it asks for none. Both land in the same per-resource cache.
+  const everyone = useResourcesWindows(resourceId ? [] : resources.map((r) => r.id));
   const exceptions = useExceptions();
-  const rows = windows.data;
+  const rows = resourceId ? one.data : everyone.rows;
   const closures = exceptions.data;
+  const ids = useMemo(
+    () => (resourceId ? [resourceId] : resources.map((r) => r.id)),
+    [resourceId, resources]
+  );
 
   return useMemo(() => {
-    const known = Boolean(resourceId) && rows !== undefined && closures !== undefined;
-    if (!known || !rows || !closures) {
+    if (ids.length === 0 || !rows || !closures) {
       return { on: () => undefined, worksOn: () => true, known: false };
     }
     return {
-      on: (date: Date) => closedBandsFor(date, resourceId, rows, closures, view),
-      worksOn: (date: Date) => worksOn(date, resourceId, rows, closures),
+      // Only a SINGLE person's day can be shaded: with several on screen at once
+      // there is no one set of hours to draw, and shading the union would claim
+      // the shop is open when only one chair is.
+      on: (date: Date) =>
+        resourceId ? closedBandsFor(date, resourceId, rows, closures, view) : undefined,
+      // Anybody at all. On the everyone view "is this day workable" is the only
+      // question the screen can answer, and it is the one being asked.
+      worksOn: (date: Date) => ids.some((id) => worksOn(date, id, rows, closures)),
       known: true,
     };
-  }, [resourceId, rows, closures, view]);
+  }, [ids, resourceId, rows, closures, view]);
 }
 
 /**
@@ -107,21 +123,40 @@ export function useShutHours(resourceId: string, view: TimeWindow): ShutHours {
  * "An open diary" was said to everyone, including someone whose week is shut on
  * two of its days — right after they set those days, which reads as the hours
  * not having saved (issue 084). And "resource" is the schema's word for a chair.
+ *
+ * That fix reached only the view showing ONE person, and the diary opens showing
+ * everybody: a Sunday nobody works still read "Nothing is booked yet. New
+ * bookings appear here as soon as they are made", which invites an owner to
+ * expect a day the shop is shut. A closed day is not an empty one, and the
+ * difference is the whole reason anybody looks.
  */
 export function emptyLine(resourceId: string, view: View, anchor: Date, shut: ShutHours): string {
-  if (!resourceId)
-    return 'Nothing is booked yet. New bookings appear here as soon as they are made.';
-  if (!shut.known) return 'Nothing is booked here. Try a different week, or show everyone.';
+  if (!shut.known) {
+    return resourceId
+      ? 'Nothing is booked here. Try a different week, or show everyone.'
+      : 'Nothing is booked yet. New bookings appear here as soon as they are made.';
+  }
   const days = view === 'week' ? weekDays(anchor) : [anchor];
   const open = days.filter((date) => shut.worksOn(date));
-  if (open.length === 0) {
-    return view === 'week'
-      ? 'They are not working at all this week, so nothing can be booked in it.'
-      : 'They are not working this day, so nothing can be booked in it.';
+  if (open.length === 0) return shutLine(Boolean(resourceId), view);
+  if (!resourceId) {
+    return 'Nothing is booked yet. New bookings appear here as soon as they are made.';
   }
   // Never "the parts left white": in dark mode the shut hours are the DARK ones
   // and the sentence would be backwards.
   return 'The shaded parts are when they are not working. Nothing is booked in the rest yet.';
+}
+
+/** Nobody can be booked, said about one person or about the whole shop. */
+function shutLine(one: boolean, view: View): string {
+  if (view === 'week') {
+    return one
+      ? 'They are not working at all this week, so nothing can be booked in it.'
+      : 'Nobody is working at all this week, so nothing can be booked in it.';
+  }
+  return one
+    ? 'They are not working this day, so nothing can be booked in it.'
+    : 'Nobody is working this day, so nothing can be booked in it.';
 }
 
 function headerText(label: string) {

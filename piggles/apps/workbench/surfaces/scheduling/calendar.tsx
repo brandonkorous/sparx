@@ -47,16 +47,24 @@ import {
 import { windowForEvents } from './calendar-grid';
 import { TimeGrid, targetFor } from './calendar-timegrid';
 import { dayColumns, emptyLine, useShutHours, weekColumns, type View } from './calendar-columns';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const [view, setView] = useState<View>('week');
   const [anchor, setAnchor] = useState<Date>(() => new Date());
   const [resourceId, setResourceId] = useState('');
+  // Bumped whenever the diary has moved you in time, so the grid can put today's
+  // column back on screen — see TimeGrid's `revealNonce`. A counter rather than
+  // the anchor, because pressing Today while already inside this week changes no
+  // state at all and still has to bring today back from wherever you scrolled.
+  const [revealNonce, setRevealNonce] = useState(0);
   // The booking shown in the quick-look modal, or null when it is closed.
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
   const resources = useSchedulingResources();
-  const activeResources = resources.data ?? [];
+  // Memoized because it is a dependency of the working-hours read below, and a
+  // fresh `[]` every render would re-run it every render.
+  const activeResources = useMemo(() => resources.data ?? [], [resources.data]);
 
   const range = view === 'week' ? weekWindow(anchor) : dayWindow(anchor);
   const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useCalendarRange({
@@ -67,7 +75,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const events = useMemo(() => data ?? [], [data]);
   const timeWindow = useMemo(() => windowForEvents(events), [events]);
 
-  const shut = useShutHours(resourceId, timeWindow);
+  const shut = useShutHours(resourceId, activeResources, timeWindow);
 
   const columns = useMemo(
     () =>
@@ -78,9 +86,20 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 
   const label = view === 'week' ? weekLabel(anchor) : dayLabel(anchor);
-  const columnMinClass = view === 'week' ? 'min-w-[7rem]' : 'min-w-[12rem]';
+  // A day's columns are people, and a two-chair shop has two: at a flat 12rem
+  // they did not fit a phone, so half of the second chair sat off the edge with
+  // its name cut in the middle. The floor drops on a narrow pane and the columns
+  // stretch to fill a wide one, which is what `flex-1` was always for. A week's
+  // seven never fit a phone at any readable width — that one scrolls, and the
+  // grid opens it on today (TimeGrid's `revealNonce`).
+  const columnMinClass = view === 'week' ? 'min-w-[7rem]' : 'min-w-[9rem] @md:min-w-[12rem]';
+
+  const reveal = () => {
+    setRevealNonce((current) => current + 1);
+  };
 
   const step = (direction: 1 | -1) => {
+    reveal();
     setAnchor((current) =>
       view === 'week' ? addWeeks(current, direction) : addDays(current, direction)
     );
@@ -122,6 +141,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
           columns={columns}
           window={timeWindow}
           columnMinClass={columnMinClass}
+          revealNonce={revealNonce}
           onOpenEvent={openBooking}
         />
         {events.length === 0 ? (
@@ -147,8 +167,14 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
         resources={activeResources}
         isFetching={isFetching}
         updatedAt={data ? dataUpdatedAt : undefined}
-        onSetView={setView}
-        onSetAnchor={setAnchor}
+        onSetView={(next) => {
+          reveal();
+          setView(next);
+        }}
+        onSetAnchor={(date) => {
+          reveal();
+          setAnchor(date);
+        }}
         onSetResourceId={setResourceId}
         onStep={step}
         onRefresh={() => {
@@ -167,11 +193,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
           surfaces with (DESIGN.md §4) instead of a hairline nobody can see. */}
       <Card className="min-h-0 flex-1 overflow-hidden">{body()}</Card>
 
-      {events.length > 0 ? (
-        <Text className="hidden shrink-0 px-1 text-sm @lg:block">
-          Click a booking to open it · Shift-click alongside · Alt-click in a new window
-        </Text>
-      ) : null}
+      {events.length > 0 ? <RowOpenHint what="a booking to open it" /> : null}
 
       {/* The quick-look modal floats over the diary — the grid above stays mounted
           and live behind it, so a booking is opened without losing the week. */}

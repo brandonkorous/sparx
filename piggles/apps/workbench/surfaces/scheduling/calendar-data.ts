@@ -53,6 +53,10 @@ export interface CalendarEvent {
   endAt: string;
   color: string | null;
   customerId: string | null;
+  /** Who it is for, named — the guest name written on the booking, else the
+   *  linked customer's. Null when nobody was recorded, which is a real answer
+   *  and the one a block must not dress up. Resolved server-side. */
+  customerName: string | null;
   resourceIds: string[];
   resourceNames: string[];
   partySize: number | null;
@@ -293,10 +297,16 @@ export function providerLabel(provider: string): string {
  * A soft tinted block per status, plus a solid rail of the same color.
  *
  * `bg-<tone> soft` is the sanctioned soft treatment — the color utility sets an
- * accent, `soft` mixes 15% of it into base-100 — so the block reads as tinted
- * without an inline style and its text stays a real, readable ink. The rail is a
- * separate solid element, because a 15% tint alone is too quiet to scan a busy
- * day by.
+ * accent, `soft` mixes it into base-100, and the ACCENT ITSELF becomes the ink.
+ * That last part is why it only works for a colour that inverts with the canvas,
+ * and why `neutral` did not: it was Piggles' CHROME colour, pinned dark in both
+ * themes, so every completed booking in the dark diary was drawn #27232a on
+ * #272b37 — a contrast ratio of 1.09, which is not a faint block but a blank
+ * one. The chrome and the semantic grey are two tokens now (see @piggles/brand's
+ * palette.css), so all five tones read the same way again.
+ *
+ * The rail is a separate solid element, because a tint alone is too quiet to
+ * scan a busy day by.
  */
 export const TONE_BLOCK: Record<Tone, string> = {
   success: 'bg-success soft',
@@ -385,25 +395,23 @@ export function dayLabel(date: Date): string {
   }).format(date);
 }
 
-/** The heading for a week, e.g. "12–18 May 2026" or "28 Apr – 4 May 2026". */
+/**
+ * The heading for a week, e.g. "Aug 17 – 23, 2026" or "Apr 28 – May 4, 2026".
+ *
+ * `formatRange` rather than three hand-assembled branches. The branches put the
+ * day before the month and pasted the pieces together, which is right in one
+ * locale and wrong in the runtime's actual one: en-US produced "17–Aug 23, 2026"
+ * for every same-month week — the start month simply gone, four weeks in five.
+ * Intl already knows where each locale puts the parts and which parts a range
+ * may share, so it is asked instead of guessed at.
+ */
 export function weekLabel(anchor: Date): string {
   const start = startOfWeek(anchor);
-  const end = addDays(start, 6);
-  const sameMonth =
-    start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-  const sameYear = start.getFullYear() === end.getFullYear();
-  const day = (date: Date) => new Intl.DateTimeFormat(undefined, { day: 'numeric' }).format(date);
-  const dayMonth = (date: Date) =>
-    new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(date);
-  const dayMonthYear = (date: Date) =>
-    new Intl.DateTimeFormat(undefined, {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(date);
-  if (sameMonth) return `${day(start)}–${dayMonthYear(end)}`;
-  if (sameYear) return `${dayMonth(start)} – ${dayMonthYear(end)}`;
-  return `${dayMonthYear(start)} – ${dayMonthYear(end)}`;
+  return new Intl.DateTimeFormat(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).formatRange(start, addDays(start, 6));
 }
 
 /** A short column heading for a week day, e.g. "Mon 12". */

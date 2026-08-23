@@ -7,16 +7,18 @@
 // top and height come from the quantised class lookups in calendar-grid.ts — no
 // inline style anywhere, which is the whole reason that file exists.
 //
+// A single booking's block lives next door in calendar-event-block.tsx.
+//
 // The grid scrolls as one: the header row is sticky, the columns hold a min
 // width so seven of them in a narrow pane become a horizontal scroll rather than
 // seven unreadable slivers. Color is status: a soft-tinted block plus a solid
 // rail of the same tone, so a busy day is scannable at a glance — what is
 // confirmed, what still needs a nod, what is already under way.
 
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import type { OpenTarget } from '../../lib/surfaces/registry';
-import { bookingStateMeta, type BookingStatus } from './bookings-data';
-import { clockLabel, hourLabel, TONE_BLOCK, TONE_RAIL, type CalendarEvent } from './calendar-data';
+import { hourLabel, type CalendarEvent } from './calendar-data';
+import { EventBlock } from './calendar-event-block';
 import { columnHeightClass, hourMarks, placeEvents, type TimeWindow } from './calendar-grid';
 import type { ClosedBand } from './calendar-hours';
 
@@ -47,28 +49,81 @@ interface TimeGridProps {
   /** Tailwind min-width for each column — wider for a roomy day, tighter for a
    *  seven-across week. */
   columnMinClass: string;
+  /**
+   * Bumped by the surface whenever it has moved you in time, so the grid puts
+   * today's column back where you can see it.
+   *
+   * Seven columns at their floor width are wider than a phone, so a week opens
+   * as a horizontal scroll — and it opens on MONDAY. On a Saturday that left
+   * today three columns off the right edge, and pressing Today did nothing
+   * visible because the anchor was already inside this week. The diary's whole
+   * job is "what is on now", and the phone was the one place it could not say.
+   */
+  revealNonce: number;
   onOpenEvent: (event: CalendarEvent, modifiers: { shiftKey: boolean; altKey: boolean }) => void;
 }
 
-const GUTTER = 'w-14 shrink-0';
+// The time axis. STICKY, because a grid whose columns are wider than the pane
+// scrolls sideways — and the moment it does, a non-sticky gutter leaves with the
+// leftmost column, so the diary becomes blocks with no hours against them. It
+// carries its own ground for the columns to slide under.
+//
+// Two elements, not one: the hour labels are positioned against the gutter, and
+// `relative` and `sticky` are the same CSS property. Stacking them in one class
+// string would leave which of them applies to the order Tailwind happened to
+// emit them in. The outer one pins; the inner one is the labels' frame.
+const GUTTER = 'bg-base-100 sticky left-0 w-14 shrink-0';
+/** The gutter sits above the blocks; the header row above both, and its own
+ *  gutter cell above everything, because it is sticky on both axes at once. */
+const GUTTER_LAYER = 'z-10';
+const HEADER_LAYER = 'z-20';
+const CORNER_LAYER = 'z-30';
 
-export function TimeGrid({ columns, window, columnMinClass, onOpenEvent }: TimeGridProps) {
+export function TimeGrid({
+  columns,
+  window,
+  columnMinClass,
+  revealNonce,
+  onOpenEvent,
+}: TimeGridProps) {
   const marks = hourMarks(window.startMin, window.endMin);
   const heightClass = columnHeightClass(window.slots);
+  const scroller = useRef<HTMLDivElement>(null);
+  const todayCell = useRef<HTMLDivElement | null>(null);
+
+  // Centred where there is room, clamped to the ends where there is not, so the
+  // first and last days of a week never leave a band of empty grid beside them.
+  // Measured off rectangles rather than `offsetLeft`: the header is sticky and
+  // the offset parent is not the scroller, so the two disagree.
+  useEffect(() => {
+    const box = scroller.current;
+    const cell = todayCell.current;
+    if (!box || !cell) return;
+    const into = cell.getBoundingClientRect().left - box.getBoundingClientRect().left;
+    const centred = box.scrollLeft + into - (box.clientWidth - cell.offsetWidth) / 2;
+    box.scrollLeft = Math.max(0, Math.min(centred, box.scrollWidth - box.clientWidth));
+  }, [revealNonce, columns]);
 
   return (
-    <div className="h-full overflow-auto">
+    <div ref={scroller} className="h-full overflow-auto">
       {/* `w-max min-w-full` is what lets the grid do both: grow columns to fill a
           wide pane, yet in a narrow one become a horizontal scroll whose sticky
           header still spans the full width rather than tearing off at the edge. */}
       <div className="w-max min-w-full">
         {/* Column headings — sticky, so the day/resource a block sits under stays
             named however far down you scroll. */}
-        <div className="bg-base-100 border-base-200 sticky top-0 z-10 flex border-b">
-          <div className={GUTTER} />
+        <div className={`bg-base-100 border-base-200 sticky top-0 flex border-b ${HEADER_LAYER}`}>
+          <div className={`${GUTTER} ${CORNER_LAYER}`} />
           {columns.map((column) => (
             <div
               key={column.key}
+              ref={
+                column.today
+                  ? (node) => {
+                      todayCell.current = node;
+                    }
+                  : undefined
+              }
               className={`border-base-200 flex-1 border-l px-2 py-1.5 text-center ${columnMinClass} ${
                 column.today ? 'bg-info soft' : ''
               }`}
@@ -81,15 +136,17 @@ export function TimeGrid({ columns, window, columnMinClass, onOpenEvent }: TimeG
         {/* The grid body — gutter + columns, all the same pixel height so the hour
           lines meet across every column. */}
         <div className="flex">
-          <div className={`${GUTTER} relative ${heightClass}`}>
-            {marks.map((mark) => (
-              <div
-                key={mark.hour}
-                className={`absolute right-1 ${mark.topClass} -translate-y-1/2 text-xs tabular-nums`}
-              >
-                {hourLabel(mark.hour)}
-              </div>
-            ))}
+          <div className={`${GUTTER} ${GUTTER_LAYER} ${heightClass}`}>
+            <div className={`relative ${heightClass}`}>
+              {marks.map((mark) => (
+                <div
+                  key={mark.hour}
+                  className={`absolute right-1 ${mark.topClass} -translate-y-1/2 text-xs tabular-nums`}
+                >
+                  {hourLabel(mark.hour)}
+                </div>
+              ))}
+            </div>
           </div>
 
           {columns.map((column) => (
@@ -152,44 +209,5 @@ function Column({
         <EventBlock key={item.id} event={item} placement={placement} onOpen={onOpenEvent} />
       ))}
     </div>
-  );
-}
-
-function EventBlock({
-  event,
-  placement,
-  onOpen,
-}: {
-  event: CalendarEvent;
-  placement: { topClass: string; heightClass: string; widthClass: string; leftClass: string };
-  onOpen: (event: CalendarEvent, modifiers: { shiftKey: boolean; altKey: boolean }) => void;
-}) {
-  const meta = bookingStateMeta(event.status as BookingStatus);
-  const who =
-    event.resourceNames.length > 0
-      ? event.resourceNames.join(', ')
-      : event.partySize && event.partySize > 1
-        ? `Party of ${String(event.partySize)}`
-        : null;
-
-  return (
-    <button
-      type="button"
-      title={`${clockLabel(event.startAt)} · ${event.serviceName} · ${meta.label}`}
-      onClick={(domEvent) => {
-        onOpen(event, domEvent);
-      }}
-      className={`absolute flex gap-1.5 overflow-hidden rounded-md p-1 text-left ${placement.topClass} ${placement.heightClass} ${placement.widthClass} ${placement.leftClass} ${TONE_BLOCK[meta.tone]}`}
-    >
-      {/* The solid rail — a 15% tint alone is too quiet to scan a busy day by. */}
-      <span className={`mt-0.5 w-1 shrink-0 rounded-full ${TONE_RAIL[meta.tone]}`} aria-hidden />
-      <span className="flex min-w-0 flex-col leading-tight">
-        <span className="truncate text-xs font-medium tabular-nums">
-          {clockLabel(event.startAt)}
-        </span>
-        <span className="truncate text-sm font-semibold">{event.serviceName}</span>
-        {who ? <span className="truncate text-xs">{who}</span> : null}
-      </span>
-    </button>
   );
 }

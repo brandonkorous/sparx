@@ -6,9 +6,12 @@
 // state: every control reports upward and the surface decides.
 //
 // The chrome buttons wear no `color` at all. These are secondary controls — step
-// a week, jump to today, open the linked-calendar list — and a bare `.btn`
-// resolves to `base-content`, which is theme-correct without naming `neutral`
-// (root RULE #4). Four `color="neutral"` came across with the move and are gone.
+// a week, jump to today — and a bare `.btn` resolves to `base-content`, which is
+// theme-correct without naming `neutral` (root RULE #4). Four `color="neutral"`
+// came across with the move and are gone.
+//
+// Linked calendars rides `actions` rather than `controls`, which is what lets a
+// narrow bar fold it away WITH ITS NAME. See the note beside it.
 
 import {
   Button,
@@ -17,7 +20,6 @@ import {
   Text,
   ToggleGroup,
   ToggleGroupItem,
-  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { faChevronLeft, faChevronRight, faLink } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -60,8 +62,12 @@ export function CalendarToolbar({
       status={
         /* The "where am I in time" anchor. In the day view especially — whose
         columns are resource names, not dates — this is the only thing naming
-        the day. Truncates rather than wraps the bar. */
-        <Text className="hidden min-w-0 truncate font-medium @sm:block">{label}</Text>
+        the day, which is why it is never hidden: it carried `hidden @sm:block`
+        and a phone-width diary therefore showed an empty bar, seven unlabelled
+        weekday numbers, and no month or year anywhere on the screen. `status`
+        is the slot for information rather than a control, and PaneToolbar's
+        contract for it is one word: never hidden. It truncates instead. */
+        <Text className="min-w-0 truncate font-medium">{label}</Text>
       }
       controls={
         <>
@@ -98,10 +104,15 @@ export function CalendarToolbar({
               <Icon glyph={faChevronRight} className="size-4" aria-hidden />
             </Button>
           </Join>
+          {/* No `ml-auto`. These five are one run of chrome — where in time, which
+              shape, whose diary — and an auto margin in the middle of a run only
+              opens a gap. It also travelled: `controls` is RELOCATED verbatim
+              into the narrow bar's popover, where a column of full-width rows
+              had one control shoved against the right edge for no reason. */}
           <ToggleGroup
             size="sm"
             color="module"
-            className="ml-auto shrink-0"
+            className="shrink-0"
             value={[view]}
             onValueChange={(next: unknown[]) => {
               const picked = next.at(-1);
@@ -115,7 +126,11 @@ export function CalendarToolbar({
         and twenty chips is a bar taller than the grid. */}
           <NativeSelect
             size="sm"
-            className="max-w-40 shrink"
+            /* Wide enough for its own default option: at `max-w-40` the picker
+               read "Everyone & equip" at every width, including inside a popover
+               with room to spare. Still capped, because a business may name a
+               chair a whole sentence. */
+            className="max-w-56 shrink"
             aria-label="Show the diary for"
             value={resourceId}
             disabled={resources.length === 0}
@@ -130,21 +145,22 @@ export function CalendarToolbar({
               </option>
             ))}
           </NativeSelect>
-          <Tooltip content="Linked outside calendars" align="end">
-            <Button
-              size="sm"
-              variant="ghost"
-              shape="square"
-              aria-label="Linked outside calendars"
-              onClick={() => {
-                onOpenLinkedCalendars();
-              }}
-            >
-              <Icon glyph={faLink} className="size-4" aria-hidden />
-            </Button>
-          </Tooltip>
         </>
       }
+      /* Linked calendars is an ACTION, not a control: it does something to the
+         pane rather than narrowing what the pane shows. Written as a value so
+         the narrow bar can give it its name — as bespoke `controls` JSX it was
+         relocated verbatim, and a popover row holding one bare chain glyph and
+         no words is a button with no meaning on a device that cannot hover. */
+      actions={[
+        {
+          label: 'Linked outside calendars',
+          icon: faLink,
+          onClick: () => {
+            onOpenLinkedCalendars();
+          },
+        },
+      ]}
       refresh={
         /* ALWAYS the last child of a list toolbar — see RefreshButton. */
         <RefreshButton
