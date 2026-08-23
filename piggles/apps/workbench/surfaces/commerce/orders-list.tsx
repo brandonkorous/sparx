@@ -2,85 +2,25 @@
 
 // Orders — every sale, and what still needs doing about it.
 //
-// Two things shape this beyond a plain table.
+// An order carries TWO states, not one: has it been paid for, and has it been
+// sent. They are independent columns because they genuinely are, so the table
+// shows both and the chips are phrased as the work rather than as the enum.
 //
-// FIRST: an order carries TWO states, not one. Has it been paid for, and has it
-// been sent — stored as independent columns because they genuinely are. So the
-// table shows both, and the filter chips are phrased as the work rather than as
-// the enum: "Not paid" and "To send" are the two questions this list gets opened
-// to answer, and neither is a single status value.
-//
-// SECOND: it lives in a pane of unknown width — 320px beside an order, or the
-// whole window. Columns disclose with @container, never a viewport query: pane
-// width and screen width are unrelated here, and a viewport breakpoint leaves a
-// narrow pane on a wide monitor rendering six columns into 300px.
+// It leads with **Take a sale**, because most of what this audience sells is
+// sold in the room. An order arriving from a website is one way in, not the way.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faArrowDown, faArrowUp, faBagShopping } from '@fortawesome/pro-solid-svg-icons';
+import { Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { faBagShopping, faCashRegister } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import {
-  customerName,
-  formatDate,
-  formatMoney,
-  paymentState,
-  shippingState,
-  useOrders,
-  type Order,
-  type OrderSortKey,
-  type SortDirection,
-} from './data';
-
-/**
- * The chips are work states, not status values.
- *
- * Each maps to ONE server filter, so what is on screen is always exactly one
- * server answer — no chip means "these two statuses, sort of". "Refunded" is
- * deliberately absent as a chip: it is rare, it is visible on any row it applies
- * to, and a sixth chip costs every operator a wider bar forever to save a few
- * people one search.
- */
-const FILTERS = [
-  { value: 'all', label: 'All', status: undefined, paymentStatus: undefined },
-  { value: 'unpaid', label: 'Not paid', status: undefined, paymentStatus: 'unpaid' },
-  { value: 'to_send', label: 'To send', status: 'placed', paymentStatus: undefined },
-  { value: 'sent', label: 'On the way', status: 'fulfilled', paymentStatus: undefined },
-  { value: 'delivered', label: 'Delivered', status: 'delivered', paymentStatus: undefined },
-  { value: 'cancelled', label: 'Cancelled', status: 'cancelled', paymentStatus: undefined },
-] as const;
-
-type FilterValue = (typeof FILTERS)[number]['value'];
-
-/**
- * What to try when nothing matched — naming ONLY what is actually narrowing the
- * list. Telling someone to clear a filter they never set sends them looking for
- * a control that is already off, and a search box they did not type in.
- */
-function emptyAdvice(search: string, filterLabel: string | null): string {
-  const parts: string[] = [];
-  if (search) {
-    parts.push('Try part of an order number, or the customer’s name, company or email.');
-  }
-  if (filterLabel) {
-    parts.push(
-      `You are only seeing orders marked “${filterLabel}” — switch back to All for the rest.`
-    );
-  }
-  return parts.join(' ');
-}
-
-/** Same modifier contract as every other list in the app. */
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
-}
+import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { useOrders, type Order, type OrderSortKey, type SortDirection } from './data';
+import { FILTERS, emptyAdvice, targetFor, type FilterValue } from './orders-list-filters';
+import { OrdersTable } from './orders-table';
 
 export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
@@ -132,38 +72,13 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     resetWindow();
   };
 
-  const header = (key: OrderSortKey, label: string, extra = '') => (
-    <th
-      className={extra}
-      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-    >
-      <button
-        type="button"
-        className="link link-hover inline-flex items-center gap-1"
-        onClick={() => {
-          toggleSort(key);
-        }}
-      >
-        {label}
-        {sort.key === key ? (
-          sort.dir === 'asc' ? (
-            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
-          ) : (
-            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
-          )
-        ) : null}
-      </button>
-    </th>
-  );
-
-  const open = (order: Order, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('commerce.order.detail', { id: order.id }, { target: targetFor(event) });
+  const takeASale = () => {
+    ctx.open('commerce.sale.new', {}, { target: 'tab' });
   };
 
   return (
     // Surfaces, not one slab: the pane is base-200, the toolbar and table are
-    // base-100 cards lifted onto it. The gutter shrinks to nothing under 30rem —
-    // in a pane docked beside an order, 12px a side is real column width.
+    // base-100 cards lifted onto it.
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Order list controls"
@@ -207,10 +122,14 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           },
         }}
+        primary={
+          <Button color="module" size="sm" className="shrink-0" onClick={takeASale}>
+            <Icon glyph={faCashRegister} className="size-4" aria-hidden />
+            Take a sale
+          </Button>
+        }
         refresh={
-          /* ALWAYS the last child of a list toolbar — see RefreshButton. This
-            list has no primary action: orders arrive from customers, they are
-            not something you create here. */
+          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
           <RefreshButton
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
@@ -240,63 +159,26 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               filtered
                 ? emptyAdvice(search.trim(), filter === 'all' ? null : active.label)
-                : 'When someone buys from you, the order shows up here with what they bought and what they owe.'
+                : 'Sales show up here with what was bought and what is owed — the ones people place on your website, and the ones you take in person.'
+            }
+            actions={
+              filtered ? undefined : (
+                <Button color="module" size="sm" onClick={takeASale}>
+                  <Icon glyph={faCashRegister} className="size-4" aria-hidden />
+                  Take a sale
+                </Button>
+              )
             }
           />
         ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                <th>Order</th>
-                <th className="hidden @lg:table-cell">Customer</th>
-                {header('placedAt', 'Placed', 'hidden @2xl:table-cell')}
-                <th>Payment</th>
-                <th className="hidden @xl:table-cell">Delivery</th>
-                {header('total', 'Total', 'text-right')}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((order) => {
-                const paid = paymentState(order);
-                const shipped = shippingState(order);
-                return (
-                  <tr
-                    key={order.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      open(order, event);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      open(order, event);
-                    }}
-                  >
-                    <td className="font-mono text-sm">{order.orderNumber}</td>
-                    <td className="hidden max-w-48 truncate @lg:table-cell">
-                      {customerName(order.customer)}
-                    </td>
-                    <td className="hidden text-sm @2xl:table-cell">{formatDate(order.placedAt)}</td>
-                    <td>
-                      <Badge color={paid.tone} variant="soft" size="sm">
-                        {paid.label}
-                      </Badge>
-                    </td>
-                    <td className="hidden @xl:table-cell">
-                      <Badge color={shipped.tone} variant="soft" size="sm">
-                        {shipped.label}
-                      </Badge>
-                    </td>
-                    <td className="text-right font-medium tabular-nums">
-                      {formatMoney(order.total, order.currency)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+          <OrdersTable
+            rows={rows}
+            sort={sort}
+            onSort={toggleSort}
+            onOpen={(order: Order, event) => {
+              ctx.open('commerce.order.detail', { id: order.id }, { target: targetFor(event) });
+            }}
+          />
         )}
       </Card>
 
