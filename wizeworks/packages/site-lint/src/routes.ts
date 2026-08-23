@@ -51,7 +51,13 @@ export const BUILTIN_PATHS: readonly string[] = [
  * the link-checking this table feeds has nothing to check. A `DYNAMIC_ROUTES`
  * entry would have to invent a roster and a noun for a route that has neither.
  *
- * `/meet/*` (docs/144 §12) is the booking-link page, and its reason is a third
+ * `/booking/*` is `/sign/*`'s twin and shares its reason exactly: one leaf, whose
+ * parameter is an HMAC naming one booking, mailed to the one person who made it.
+ * There is no roster of valid tokens and nothing on the storefront links to it —
+ * the confirmation email does. It exists so a guest who booked without an account
+ * can reach her own appointment (issue 153); a login wall was the alternative.
+ *
+ * `/meet/*` (docs/144 §12) is the booking-link page, and its reason is a fourth
  * one again. Its parameter is NOT opaque — a meeting-link slug is tenant-chosen
  * and could be enumerated, unlike a signing token — so this is the one entry
  * here that a roster could one day promote into `DYNAMIC_ROUTES`. It stays open
@@ -62,7 +68,13 @@ export const BUILTIN_PATHS: readonly string[] = [
  * it is worse than the miss — a link a customer was emailed directly is not one
  * the link checker was ever protecting.
  */
-export const OPEN_SUBTREES: readonly string[] = ['/account/', '/api/', '/sign/', '/meet/'];
+export const OPEN_SUBTREES: readonly string[] = [
+  '/account/',
+  '/api/',
+  '/sign/',
+  '/booking/',
+  '/meet/',
+];
 
 /** Which caller-supplied roster backs each parameterized route. */
 export type RosterKey =
