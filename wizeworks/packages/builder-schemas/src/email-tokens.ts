@@ -227,15 +227,59 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     trackingUrl: '#',
     shippedAt: 'Jun 13, 2026',
   },
-  appointment: {
-    service: 'Oil Change',
-    date: 'Jun 14, 2026',
+  // The Scheduling booking every booking email is about. This was `appointment` —
+  // the B2B-only source retired 2026-07-14 (binding.ts) — so the five shipped booking
+  // emails resolved nothing: the canvas drew raw braces and the preview rendered a
+  // card with the labels and no facts under them, which is what the author proofread.
+  // Deliberately industry-neutral: this sample is read by a salon and a plumber alike.
+  booking: {
+    service: 'Consultation',
+    date: 'Sat, Jun 14, 2026',
     time: '2:30 PM',
-    when: 'Jun 14, 2026 at 2:30 PM',
-    duration: '60 min',
+    when: 'Sat, Jun 14, 2026 at 2:30 PM',
+    duration: '45 min',
+    location: 'Main room',
+    staff: 'Sam Whitfield',
+    partySize: '2',
     status: 'confirmed',
-    vehicle: '2021 Toyota Corolla',
-    cancellationReason: '',
+    // Only the cancellation email draws this, and only the internal alert draws the
+    // approval pair — filled so their authors can SEE the row they are editing.
+    cancellationReason: 'Something came up',
+    manageUrl: '#',
+    bookUrl: '#',
+    addToCalendarUrl: '#',
+    newHeadline: 'New booking',
+    pendingApproval: '',
+  },
+  waitlist: {
+    service: 'Consultation',
+    window: 'Weekday mornings, next two weeks',
+    offerExpires: 'Fri, Jun 12, 2026 at 6:00 PM',
+    bookUrl: '#',
+    manageUrl: '#',
+  },
+  subscription: {
+    status: 'active',
+    interval: 'every 4 weeks',
+    amount: '$42.00',
+    itemCount: '2',
+    nextOrderDate: 'Jul 10, 2026',
+    currentPeriodEnd: 'Jul 9, 2026',
+    manageUrl: '#',
+    // Empty by design: a paused date, a card that needs re-confirming, and an unpaid
+    // invoice are each true of ONE subscription email, and a row bound to them
+    // self-drops on the rest. A sample that filled them would show four phantom rows.
+    pausedUntil: '',
+    confirmUrl: '',
+    payUrl: '',
+  },
+  return: {
+    status: 'refunded',
+    outcome: 'Refund',
+    refundAmount: '$36.00',
+    refundMethod: 'Back to the card they paid with',
+    labelUrl: '#',
+    hasLabel: 'yes',
     manageUrl: '#',
   },
   cart: {
@@ -303,7 +347,10 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
       },
     ],
   },
-  company: {
+  // `b2bAccount`, not `company`: every shipped template and the token catalog say
+  // `{{b2bAccount.*}}`, so the old key resolved for nothing and the account-approved
+  // email previewed with no company, no credit line and no terms.
+  b2bAccount: {
     companyName: 'Rivera & Co.',
     status: 'approved',
     paymentTerms: 'Net 30',
@@ -360,6 +407,52 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     ],
   },
 };
+
+/** Is this a resolved value, or is it the absence of one? An empty string, an empty
+ *  array and an empty object all mean "nothing was found here". */
+function isEmptyValue(value: unknown): boolean {
+  if (value == null || value === '') return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === 'object') return Object.keys(value as object).length === 0;
+  return false;
+}
+
+/**
+ * Lay the SAMPLE placeholders UNDER resolved data, leaf by leaf, so a preview of an
+ * email nobody has received yet reads like an email instead of a form with the answers
+ * rubbed out.
+ *
+ * The preview render has no recipient — that is by design, there is no one to preview
+ * as — so every per-recipient source came back empty and the author proofread a card of
+ * labels with nothing beside them. Merging at the LEAF means anything genuinely resolved
+ * (the site's own name, its support address) still wins; only the gaps get filled.
+ *
+ * Preview-only. A real send has its recipient and must never print a sample.
+ */
+export function withSampleEmailData(
+  data: Record<string, unknown>,
+  sample: Record<string, unknown> = SAMPLE_EMAIL_DATA
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...data };
+  for (const [key, fallback] of Object.entries(sample)) {
+    const current = out[key];
+    if (isEmptyValue(current)) {
+      out[key] = fallback;
+    } else if (
+      typeof current === 'object' &&
+      !Array.isArray(current) &&
+      typeof fallback === 'object' &&
+      fallback !== null &&
+      !Array.isArray(fallback)
+    ) {
+      out[key] = withSampleEmailData(
+        current as Record<string, unknown>,
+        fallback as Record<string, unknown>
+      );
+    }
+  }
+  return out;
+}
 
 /** Interpolate an authored string's merge tokens against editor SAMPLE data
  *  (docs/93) — the canvas's "reads like a real email" gloss. `data` defaults to the

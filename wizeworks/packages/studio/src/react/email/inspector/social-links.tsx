@@ -35,8 +35,11 @@ export function SocialLinks({ node }: { node: SocialNode }) {
 
   return (
     <div className="flex flex-col gap-3">
+      {/* The address box is uncontrolled, so each row's key must change whenever the
+          ROW's data does. Keyed by position alone, deleting the first of two Instagram
+          links leaves the deleted address sitting in the surviving row's box. */}
       {node.links.map((link, index) => (
-        <Field key={`${link.platform}-${index}`}>
+        <Field key={`${index}-${link.platform}-${link.url}`}>
           <FieldLabel>Place {index + 1}</FieldLabel>
           <div className="flex items-center gap-2">
             <NativeSelect

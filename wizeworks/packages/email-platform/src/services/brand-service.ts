@@ -9,7 +9,7 @@
 // socials) — the LOOK no longer derives from them. It comes from the site's published
 // silica theme, or BASE_SILICA_THEME until one is stored; see resolveEmailBrand. A
 // tenant with no identity at all still yields null (caller renders @wizeworks/email's
-// sparx defaults).
+// unbranded floor — achromatic, and nobody's).
 //
 // Light palette is the base; the brand also carries its site's DARK neutrals
 // (`BrandTokens.dark`, from the preset's dark tokens) so the silica send can emit an
@@ -23,6 +23,7 @@
 import { withTenant } from '@wizeworks/db';
 import { colorToHex } from '@wizeworks/site-themes';
 import { BASE_SILICA_THEME } from '@wizeworks/silica-catalog';
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 import type { BrandTokens } from '@wizeworks/email';
 
 import type { ServiceContext } from '../errors';
@@ -78,7 +79,14 @@ export function siteThemeToBrand(
     fontHeading: fontStack(firstFamily(headStack) ?? ''),
     fontBody: fontStack(firstFamily(light['--font-sans']) ?? ''),
     ...(extras.logoUrl ? { logoUrl: extras.logoUrl } : {}),
-    ...(extras.siteName ? { siteName: extras.siteName } : {}),
+    // The flag as well as the name. `defaultBrand` ships it as `true` and NOTHING
+    // ever set it false, so it merged through as true for a fully-branded tenant —
+    // and the three things that read it (the footer's sign-off, the sender name on
+    // a platform template, the wordmark's text fallback) all concluded the shop had
+    // no name of its own. Whoever supplies the name is the only one who knows.
+    ...(extras.siteName
+      ? { siteName: extras.siteName, siteNameIsPlatformDefault: false }
+      : { siteNameIsPlatformDefault: true }),
     ...(extras.socials?.length ? { socials: extras.socials } : {}),
     dark: {
       background: hex(dark, '--color-base-100', '#0b0b0c'),
@@ -158,13 +166,53 @@ function extractSocials(settings: unknown): { platform: string; url: string }[] 
 }
 
 /**
+ * WHICH PRODUCT this tenant signed up under, for the footer's sign-off and the
+ * "Sent with …" line — us, as distinct from the shop the mail is on behalf of.
+ *
+ * The React template path gets this from `email-worker`'s overlay. The SILICA path
+ * — which is every transactional email a tenant sends, plus the studio preview —
+ * had no route to it at all, so its footer fell back to a literal and put one
+ * product's name and marketing link under the other product's tenants' mail.
+ * Resolved here, once, so every silica caller inherits it without asking.
+ *
+ * Best-effort, and deliberately partial: `palette` and `appUrl` describe PLATFORM
+ * mail (us writing to the owner) and are the sender's to resolve — the worker still
+ * spreads its fuller overlay over this one.
+ */
+async function platformIdentityFor(ctx: ServiceContext): Promise<BrandTokens['platform']> {
+  const row = await withTenant(ctx, (tx) =>
+    tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { platformBrand: true } })
+  );
+  const identity = platformBrandIdentity(row?.platformBrand ?? null);
+  return {
+    name: identity.name,
+    url: identity.siteUrl,
+    accentChars: identity.accentChars,
+    billingEmail: identity.billingEmail,
+  };
+}
+
+/**
  * Resolve the email brand for a send, or `null` when there's no brand identity
- * (the caller then renders with @wizeworks/email's sparx defaults). When `propertyId`
+ * (the caller then renders with @wizeworks/email's unbranded floor). When `propertyId`
  * is given (docs/49 Phase 7), the site's `brand_override` is merged field-by-field
  * OVER the tenant brand, so an email sent on behalf of a site renders that site's
  * name / colors / fonts / logo — exactly the merge the site payload does.
  */
 export async function resolveEmailBrand(
+  ctx: ServiceContext,
+  propertyId?: string | null
+): Promise<BrandTokens | null> {
+  const [look, platform] = await Promise.all([
+    resolveTenantLook(ctx, propertyId),
+    platformIdentityFor(ctx),
+  ]);
+  if (!look) return null;
+  return { ...look, platform };
+}
+
+/** The tenant's own look + identity — everything above except who WE are. */
+function resolveTenantLook(
   ctx: ServiceContext,
   propertyId?: string | null
 ): Promise<BrandTokens | null> {

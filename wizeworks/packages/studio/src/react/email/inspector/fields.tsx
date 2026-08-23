@@ -8,9 +8,12 @@
 // through the author's typing a letter at a time. A colour drag or a toggle IS
 // one gesture, and the author ends it themselves.
 //
-// Every field is `key`ed by the node id at the call site, so selecting a
-// different block re-mounts the row with that block's value rather than leaving
-// the previous one in an uncontrolled input.
+// Committing on blur means these rows CANNOT also be controlled, so the value is
+// read once at mount and the remount is what follows the selection. That remount
+// is owned by the Inspector, which keys the whole panel on the selected node —
+// one key, not one per row. This comment used to claim each call site keyed its
+// own field; none of them did, and clicking a second paragraph then typing wrote
+// the first one's words over it.
 
 import { useCallback, type ReactNode } from 'react';
 import {

@@ -27,6 +27,7 @@ import type {
   FooterLink,
 } from '@wizeworks/email/silica';
 import { defaultBrand } from '@wizeworks/email';
+import { withSampleEmailData } from '@wizeworks/builder-schemas';
 import type { DataSources, SilicaEmailDocument } from '@wizeworks/builder-schemas';
 
 import { TestSendInput } from '../schemas/templates';
@@ -85,7 +86,8 @@ export interface RenderedPreview {
  *  the same `resolveEmailBrand(ctx, propertyId)` merge the real send uses — so the
  *  preview can't diverge from the canvas. Absent → the tenant brand (single-site).
  *  The injected `resolveData` resolves the document's bound sources so the preview
- *  shows real data; per-recipient sources resolve empty here (no recipient). */
+ *  shows real data; per-recipient sources have no recipient to resolve against, so
+ *  those gaps fall back to the editor's sample values (`withSampleEmailData`). */
 export async function renderPreview(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
@@ -94,10 +96,15 @@ export async function renderPreview(
   footerLinks?: FooterLink[],
   tracking?: EmailLinkTracking
 ): Promise<RenderedPreview> {
-  const [brand, data] = await Promise.all([
+  const [brand, resolved] = await Promise.all([
     resolveEmailBrand(ctx, propertyId),
     resolveSilicaData(doc.silicaDoc),
   ]);
+  // There is no recipient to preview AS, so every per-recipient source comes back
+  // empty and the author was proofreading a card of labels with nothing beside them.
+  // Sample values go UNDER the resolved ones, so the site's real name still wins.
+  // Preview only — `prepareTestSend` and the real send never see this.
+  const data = withSampleEmailData(resolved);
   const rendered = renderSilicaEmail(
     {
       doc: doc.silicaDoc,

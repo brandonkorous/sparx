@@ -27,7 +27,11 @@ import {
 } from './fields';
 import { SocialLinks } from './social-links';
 
-const MERGE_HINT = 'Type {{customer.firstName ?? "there"}} to greet someone by name.';
+// `{{customer.firstName ?? "there"}}` is developer syntax, and it is the one tag
+// shape the canvas cannot draw, so an author who typed it correctly still saw raw
+// braces while they worked. `greeting` already falls back on its own.
+const MERGE_HINT =
+  'Type {{customer.greeting}} to greet someone by name. It says "there" when you have not got one.';
 
 export function TextPanel({ node }: { node: TextNode }) {
   const patch = usePatch(node.id);

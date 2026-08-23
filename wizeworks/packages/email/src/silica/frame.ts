@@ -171,6 +171,34 @@ function socialLinks(brand: BrandTokens): FooterLink[] {
     });
 }
 
+/** `?ref=powered-by` on the product's home, whatever query it already carries. */
+function withPoweredByRef(url: string): string {
+  return `${url}${url.includes('?') ? '&' : '?'}ref=powered-by`;
+}
+
+/**
+ * "Sent with <product>" — the quiet who-powers-this line at the very bottom.
+ *
+ * The product's OWN name and home, read from the resolved brand, never a literal.
+ * Hardcoded, it put one brand's name and marketing site under every email the other
+ * brand's tenants sent, in front of their customers, on every send.
+ *
+ * A send that cannot say which product it is from says nothing at all: crediting a
+ * guess is worse than crediting no one, and it is the same call the palette floor
+ * makes when it renders achromatic rather than wearing somebody's colors.
+ */
+function attributionHtml(brand: BrandTokens, base: string): string {
+  const product = brand.platform?.name?.trim();
+  if (!product) return '';
+  const home = brand.platform?.url?.trim();
+  const mark = home
+    ? `<a href="${escapeHtml(withPoweredByRef(home))}" style="color:${
+        brand.primary
+      };text-decoration:none;font-weight:600">${escapeHtml(product)}</a>`
+    : `<span style="font-weight:600">${escapeHtml(product)}</span>`;
+  return `<p style="margin:14px 0 0;font-size:12px;line-height:1.5;${base}">Sent with ${mark}</p>`;
+}
+
 /**
  * The footer, composed on EVERY send — so no email just stops dead after the last
  * button. A hairline rule sets it off from the body, then, centered and tiered from
@@ -194,13 +222,21 @@ function footerSection(
   opts: { marketing: boolean; compliance?: EmailCompliance; footerLinks?: FooterLink[] },
   id: () => string
 ): SectionNode {
-  const name = escapeHtml(brand.siteName ?? 'sparx');
+  // Whose name signs this off: the SHOP's, or the PRODUCT's when the send found no
+  // tenant identity — the same question `_layout.tsx` asks, and the same answer.
+  // It used to fall back to a brand literal, which signed one product's name onto
+  // every unbranded send the other product made.
+  const signature =
+    brand.siteNameIsPlatformDefault || !brand.siteName ? brand.platform?.name : brand.siteName;
+  const name = escapeHtml(signature ?? '');
   const base = `font-family:${brand.fontBody};color:${brand.foreground};text-align:center`;
   const parts: string[] = [
     // `{{site.url}}` resolves in the shared token pass over the composed document —
     // the same site this send is on behalf of, so the sign-off links home.
-    `<p style="margin:0 0 12px;font-size:15px;font-weight:bold;line-height:1.4;${base}">` +
-      `<a href="{{site.url}}" style="color:inherit;text-decoration:none">${name}</a></p>`,
+    name
+      ? `<p style="margin:0 0 12px;font-size:15px;font-weight:bold;line-height:1.4;${base}">` +
+        `<a href="{{site.url}}" style="color:inherit;text-decoration:none">${name}</a></p>`
+      : '',
     // Utility + legal links (account, contact, privacy, terms…) then socials — both
     // in the brand link color so the two rows read as one link block.
     linkRow(opts.footerLinks ?? [], base, brand.primary, 8),
@@ -218,19 +254,12 @@ function footerSection(
   // better with it too.
   if (opts.compliance?.physicalAddress) {
     parts.push(
-      `<p style="margin:0;font-size:12px;line-height:1.5;${base}">${name} &middot; ${escapeHtml(
-        opts.compliance.physicalAddress
-      )}</p>`
+      `<p style="margin:0;font-size:12px;line-height:1.5;${base}">${
+        name ? `${name} &middot; ` : ''
+      }${escapeHtml(opts.compliance.physicalAddress)}</p>`
     );
   }
-  // sparx attribution — the tenant's customer sees who powers the business, a quiet
-  // "who built this?" lead-gen signal, and parity with the legacy `EmailLayout` footer
-  // that already carries it. Smallest tier, links home with a source tag; "sparx" takes
-  // the brand link color so it sits inside the tenant's palette rather than shouting.
-  parts.push(
-    `<p style="margin:14px 0 0;font-size:12px;line-height:1.5;${base}">Sent with ` +
-      `<a href="https://sparx.works/?ref=powered-by" style="color:${brand.primary};text-decoration:none;font-weight:600">sparx</a></p>`
-  );
+  parts.push(attributionHtml(brand, base));
   // A top rule inside the footer content gives the separation a section can't (no
   // border on sections) without depending on the faint muted-vs-white bg contrast.
   const html = `<div style="border-top:1px solid ${brand.border};padding-top:20px">${parts

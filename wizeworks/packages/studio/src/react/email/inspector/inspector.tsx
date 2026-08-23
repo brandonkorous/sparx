@@ -42,7 +42,13 @@ export function EmailInspector() {
       <div className="flex flex-col gap-4">
         {node ? (
           <>
-            <BlockPanel node={node} />
+            {/* Keyed by the selected node, because the panels are built from
+                uncontrolled fields (fields.tsx: text commits on blur, so it cannot
+                also be controlled). Without a remount, clicking a second block of
+                the same kind leaves the FIRST one's words in the box, and typing
+                into it writes them onto the second — silent loss of the paragraph
+                the author never touched. One key here beats forty at the rows. */}
+            <BlockPanel key={node.id} node={node} />
             <NameRow node={node} />
           </>
         ) : (

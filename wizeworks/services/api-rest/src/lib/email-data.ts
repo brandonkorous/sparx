@@ -27,6 +27,7 @@ import {
   type DataSources,
   type SilicaEmailDocument,
 } from '@wizeworks/builder-schemas';
+import { findBookingPlace, joinNames } from '@wizeworks/scheduling';
 import type { ServiceContext } from '@wizeworks/email-platform';
 
 import { resolveActivePropertyName, resolvePrimaryPropertyId } from './property.js';
@@ -492,8 +493,9 @@ async function resolveBooking(
         status: true,
         partySize: true,
         cancellationReason: true,
+        locationId: true,
+        serviceId: true,
         service: { select: { name: true, durationMinutes: true } },
-        location: { select: { name: true } },
         resources: {
           select: { resource: { select: { name: true, kind: true } } },
         },
@@ -501,6 +503,14 @@ async function resolveBooking(
     })
   );
   if (!b) return {};
+  // The "Location" row on the booking email is the one a customer reads in the
+  // car. It carried the place's NAME, which the business already knows and the
+  // customer cannot navigate to — and it was empty besides, because a one-chair
+  // business never files a service under a location (issue 107).
+  const place = await findBookingPlace(ctx.tenantId, {
+    locationId: b.locationId,
+    serviceId: b.serviceId,
+  });
   const tz = b.timezone || 'UTC';
   const date = inZone(b.startAt, tz, {
     weekday: 'short',
@@ -514,16 +524,15 @@ async function resolveBooking(
   const staff = b.resources
     .map((r) => r.resource)
     .filter((r) => r.kind === 'staff')
-    .map((r) => r.name)
-    .join(', ');
+    .map((r) => r.name);
   return {
     service: b.service?.name ?? '',
     date,
     time,
     when: date && time ? `${date} at ${time}` : date || time,
     duration: b.service?.durationMinutes ? `${b.service.durationMinutes} min` : '',
-    location: b.location?.name ?? '',
-    staff,
+    location: place?.line ?? '',
+    staff: joinNames(staff),
     partySize: b.partySize != null ? String(b.partySize) : '',
     status: b.status,
     cancellationReason: b.cancellationReason ?? '',
