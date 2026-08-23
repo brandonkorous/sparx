@@ -2,17 +2,21 @@
 
 // The outcomes nobody wants — a no-show and a cancellation. Rare and hard to
 // undo, so they sit under a divider after the work rather than competing with
-// Save. Each says WHAT HAPPENS TO THE MONEY for this booking before she commits,
-// rather than "any fee in your rules" (issue 112).
+// Save.
+//
+// The two questions themselves live in booking-endings-copy.ts, shared with the
+// diary's quick-look modal: each says WHAT HAPPENS TO THE MONEY (issue 112),
+// each NAMES THE PERSON (issue 142), and neither can drift from the other.
 
 import { Button, Text } from '@wizeworks/silicaui-react';
 import { Icon } from '@piggles/ui';
 import { faCalendarXmark, faUserXmark } from '@fortawesome/pro-solid-svg-icons';
 
 import { useConfirm } from '../../lib/confirm';
-import { cancelMoney, noShowMoney } from './booking-money';
+import { noShowMoney } from './booking-money';
+import { cancelAsk, cancelReach, noShowAsk } from './booking-endings-copy';
 import type { BookingPolicy } from './setup-data';
-import { formatWhen, type Booking } from './bookings-data';
+import type { Booking } from './bookings-data';
 
 interface Action {
   isPending: boolean;
@@ -33,17 +37,9 @@ export function BookingEndings({
   onDone: (title: string) => void;
 }) {
   const confirmDialog = useConfirm();
-  const when = formatWhen(booking.startAt, booking.timezone);
 
   const onNoShow = async () => {
-    const ok = await confirmDialog({
-      title: 'Mark as a no-show?',
-      description: `This records that the customer did not turn up for the ${when} booking and frees the slot. ${noShowMoney(booking, policy)}`,
-      confirmLabel: 'They did not turn up',
-      cancelLabel: 'Back',
-      color: 'danger',
-    });
-    if (!ok) return;
+    if (!(await confirmDialog(noShowAsk(booking, policy)))) return;
     noShow.mutate({ waiveFee: false } as never, {
       onSuccess: () => {
         onDone('Marked as a no-show');
@@ -52,14 +48,7 @@ export function BookingEndings({
   };
 
   const onCancel = async () => {
-    const ok = await confirmDialog({
-      title: `Cancel ${booking.service.name}?`,
-      description: `This releases the ${when} slot so someone else can take it, and lets the customer know. ${cancelMoney(booking, policy)} This cannot be undone.`,
-      confirmLabel: 'Cancel this booking',
-      cancelLabel: 'Keep it',
-      color: 'danger',
-    });
-    if (!ok) return;
+    if (!(await confirmDialog(cancelAsk(booking, policy)))) return;
     cancel.mutate({ reason: null, waiveFee: false, notifyCustomer: true } as never, {
       onSuccess: () => {
         onDone('Booking cancelled');
@@ -90,8 +79,10 @@ export function BookingEndings({
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* The standing sentence takes the same branches as the dialog, so the
+            screen never promises a message the dialog then withdraws. */}
         <Text className="text-sm">
-          Cancelling releases the slot and lets the customer know. It cannot be undone.
+          Cancelling frees the slot. {cancelReach(booking)} It cannot be undone.
         </Text>
         <Button
           size="sm"

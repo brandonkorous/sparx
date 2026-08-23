@@ -21,74 +21,43 @@
 //
 // Deliberately the SAME shape as the full booking pane (bookings-detail.tsx), so
 // the two never read as different features: a header that states identity + when +
-// who + status; then grouped `FormSection`s for the substantive parts (Move it,
-// Change history). Actions fall into four consistent roles, each in one place —
-// the primary lifecycle step (module, solid), Move (module, outline, exactly as
-// the pane), the two destructive moves (ghost, semantic — kept apart at the
-// bottom), and the footer's dismiss + hand-off. No ad-hoc dividers, no button zoo.
+// who + status; then grouped sections for the substantive parts (Move it, Change
+// history). Actions fall into four consistent roles, each in one place — the
+// primary lifecycle step (module, solid), Move (module, outline, exactly as the
+// pane), the two destructive moves (ghost, semantic — kept apart at the bottom),
+// and the footer's dismiss + hand-off. No ad-hoc dividers, no button zoo.
+//
+// This file owns the SHAPE. What a booking looks like is calendar-booking-parts,
+// what can be done to it is calendar-booking-actions;
+// what the modal knows and does is calendar-booking-state; the wording of the two
+// confirms is booking-endings-copy, shared with the full pane so a fix to either
+// question can never again land on only one of them (issue 142).
 //
 // Every move refreshes the diary the moment it lands (the calendar mutations
 // invalidate the range), so the block on the grid behind the modal is never
 // stale, and the modal's own read re-reflects the new time.
 
-import { useEffect, useState } from 'react';
 import {
   Alert,
   AlertContent,
   AlertDescription,
   AlertTitle,
-  Badge,
   Button,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
-  Field,
-  FieldControl,
-  FieldLabel,
-  Heading,
-  Input,
   Text,
 } from '@wizeworks/silicaui-react';
-import {
-  faArrowUpRight,
-  faCalendarClock,
-  faCheck,
-  faCheckCircle,
-  faRightToBracket,
-  faUserXmark,
-  faXmark,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faArrowUpRight } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-// The pane's imperative-confirm wrapper — the app standardised on this over the
-// raw silica hook (it yields the flushSync commit before returning).
-import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingTimeline } from './booking-timeline';
-import {
-  bookingResourceLabel,
-  bookingStateMeta,
-  bookingTypeLabel,
-  customerName,
-  formatClock,
-  formatWhen,
-  fromLocalInputValue,
-  isTerminalBooking,
-  toLocalInputValue,
-  useBooking,
-  useCustomer,
-  type Booking,
-} from './bookings-data';
-import {
-  calendarErrorMessage,
-  useCancel,
-  useCheckIn,
-  useComplete,
-  useConfirm as useConfirmBooking,
-  useNoShow,
-  useReschedule,
-} from './calendar-data';
+import { useBooking, type Booking } from './bookings-data';
+import { useCalendarBooking } from './calendar-booking-state';
+import { EndingsRow, LifecycleRow, MoveSection } from './calendar-booking-actions';
+import { ModalHeader, Section } from './calendar-booking-parts';
 
 interface CalendarBookingModalProps {
   /** The booking to show, or null when nothing is selected (modal closed). */
@@ -96,49 +65,6 @@ interface CalendarBookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   ctx: SurfaceContext;
-}
-
-/** A labelled group inside the modal.
- *
- *  The full pane groups with `FormSection`, whose `card bg-base-100` box lifts off
- *  the pane's recessed `base-200` shell. A dialog is itself `base-100`, so that same
- *  card lands box-on-box — card-in-card, the patchwork look. This is the flat
- *  equivalent: the SAME heading rank and underline rhythm the pane uses (so the two
- *  still read as one feature), minus the box, matching the gold-standard modal's
- *  flat sections. */
-function Section({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="flex flex-col gap-4">
-      <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
-        <Heading level={2} className="text-lg font-semibold">
-          {title}
-        </Heading>
-        {description ? <Text className="text-sm">{description}</Text> : null}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-/** A booking's length in plain words, e.g. "45 min" or "1 hr 30 min". */
-function durationLabel(booking: Booking): string {
-  const minutes = Math.round(
-    (new Date(booking.endAt).getTime() - new Date(booking.startAt).getTime()) / 60000
-  );
-  if (minutes <= 0) return '';
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  if (hours === 0) return `${String(rest)} min`;
-  if (rest === 0) return `${String(hours)} hr`;
-  return `${String(hours)} hr ${String(rest)} min`;
 }
 
 export function CalendarBookingModal({
@@ -228,131 +154,25 @@ function LoadedModal({
   ctx: SurfaceContext;
   onClose: () => void;
 }) {
-  const id = booking.id;
-  const confirmDialog = useConfirm();
-  const { data: customer } = useCustomer(booking.customerId);
-
-  const confirm = useConfirmBooking(id);
-  const checkIn = useCheckIn(id);
-  const complete = useComplete(id);
-  const noShow = useNoShow(id);
-  const cancel = useCancel(id);
-  const reschedule = useReschedule(id);
-
-  // The pending new time. Re-seeds from the booking whenever its start moves, so
-  // after a successful reschedule the field shows the time it now sits at.
-  const [when, setWhen] = useState(() => toLocalInputValue(booking.startAt));
-  useEffect(() => {
-    setWhen(toLocalInputValue(booking.startAt));
-  }, [booking.startAt]);
-
-  const state = bookingStateMeta(booking.status);
-  const terminal = isTerminalBooking(booking.status);
-  const canConfirm = booking.status === 'requested' || booking.status === 'waitlisted';
-  const canCheckIn = booking.status === 'confirmed';
-  const canComplete = booking.status === 'in_progress';
-  const canNoShow = booking.status === 'confirmed' || booking.status === 'in_progress';
-  const canCancel = !terminal;
-  const canReschedule = booking.status === 'requested' || booking.status === 'confirmed';
-  const duration = durationLabel(booking);
-
-  const movedTo = fromLocalInputValue(when);
-  const canMove = movedTo !== null && movedTo !== booking.startAt && !reschedule.isPending;
-
-  const anyPending =
-    confirm.isPending ||
-    checkIn.isPending ||
-    complete.isPending ||
-    noShow.isPending ||
-    cancel.isPending ||
-    reschedule.isPending;
-
-  // ONE message, the most specific one — the latest action that was refused,
-  // named verbatim by the server (a clash, a closed hour).
-  const failed = [confirm, checkIn, complete, noShow, cancel, reschedule].find((m) => m.isError);
-  const actionError = failed
-    ? calendarErrorMessage(failed.error, 'That did not go through. Nothing was changed.')
-    : null;
-
-  const who = booking.customerId ? customerName(customer) : null;
-  const facts = [
-    bookingTypeLabel(booking.bookingType),
-    `With ${bookingResourceLabel(booking)}`,
-    ...(who ? [`For ${who}`] : []),
-  ].join(' · ');
-
-  const onConfirm = () => {
-    confirm.mutate({});
-  };
-  const onCheckIn = () => {
-    checkIn.mutate({});
-  };
-  const onComplete = () => {
-    complete.mutate({});
-  };
-  const onMove = () => {
-    if (!movedTo) return;
-    reschedule.mutate({ startAt: movedTo });
-  };
-
-  const onCancel = async () => {
-    const ok = await confirmDialog({
-      title: `Cancel this ${bookingTypeLabel(booking.bookingType).toLowerCase()}?`,
-      description: `${booking.service.name} at ${formatWhen(booking.startAt, booking.timezone)} will be cancelled and its slot freed for someone else. Any deposit is settled by your booking rules. This cannot be undone.`,
-      confirmLabel: 'Cancel the booking',
-      cancelLabel: 'Keep it',
-      color: 'error',
-    });
-    if (!ok) return;
-    cancel.mutate({});
-  };
-
-  const onNoShow = async () => {
-    const ok = await confirmDialog({
-      title: 'Mark as a no-show?',
-      description: `This records that the customer did not turn up for ${booking.service.name} at ${formatWhen(booking.startAt, booking.timezone)}. Any no-show fee in your booking rules is applied, and the slot is freed.`,
-      confirmLabel: 'Mark no-show',
-      cancelLabel: 'Not yet',
-      color: 'warning',
-    });
-    if (!ok) return;
-    noShow.mutate({});
-  };
+  const state = useCalendarBooking(booking);
 
   const openFullBooking = () => {
     // The deep, durable place — notes, parts, everything. Close the quick-look and
     // hand off to its own pane.
     onClose();
-    ctx.open('scheduling.bookings.detail', { id });
+    ctx.open('scheduling.bookings.detail', { id: booking.id });
   };
 
   return (
     <>
-      {/* Header — identity, when, who, and where it stands. The same block the
-          full pane opens with, so the two read as one feature. */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <DialogTitle className="text-xl font-semibold break-words">
-            {booking.service.name}
-          </DialogTitle>
-          <Text className="text-base">
-            {formatWhen(booking.startAt, booking.timezone)} –{' '}
-            {formatClock(booking.endAt, booking.timezone)}
-            {duration ? ` · ${duration}` : ''}
-          </Text>
-          <Text className="text-sm break-words">{facts}</Text>
-        </div>
-        <Badge color={state.tone} variant="soft" size="sm" className="shrink-0">
-          {state.label}
-        </Badge>
-      </div>
+      <ModalHeader booking={booking} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
-        {actionError ? (
+        {state.actionError ? (
           <Alert color="error">
             <AlertContent>
               <AlertTitle>That did not go through</AlertTitle>
-              <AlertDescription>{actionError}</AlertDescription>
+              <AlertDescription>{state.actionError}</AlertDescription>
             </AlertContent>
           </Alert>
         ) : null}
@@ -366,133 +186,41 @@ function LoadedModal({
           </Alert>
         ) : null}
 
-        {/* The one primary next step for where this booking stands. Usually just
-            one applies — a single, module-colored action, never a rainbow row. */}
-        {canConfirm || canCheckIn || canComplete ? (
-          <div className="flex flex-wrap gap-2">
-            {canConfirm ? (
-              <Button
-                size="sm"
-                color="module"
-                loading={confirm.isPending}
-                disabled={anyPending}
-                onClick={onConfirm}
-              >
-                <Icon glyph={faCheck} className="size-4" aria-hidden />
-                Confirm
-              </Button>
-            ) : null}
-            {canCheckIn ? (
-              <Button
-                size="sm"
-                color="module"
-                loading={checkIn.isPending}
-                disabled={anyPending}
-                onClick={onCheckIn}
-              >
-                <Icon glyph={faRightToBracket} className="size-4" aria-hidden />
-                Check in
-              </Button>
-            ) : null}
-            {canComplete ? (
-              <Button
-                size="sm"
-                color="module"
-                loading={complete.isPending}
-                disabled={anyPending}
-                onClick={onComplete}
-              >
-                <Icon glyph={faCheckCircle} className="size-4" aria-hidden />
-                Complete
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
+        <LifecycleRow
+          moves={state.moves}
+          busy={state.busy}
+          anyPending={state.anyPending}
+          act={state.act}
+        />
 
-        {/* Reschedule — the same "Move it" group the full pane uses, verbatim, so
-            the interaction is identical wherever the operator meets it. */}
-        {canReschedule ? (
-          <Section
-            title="Move it"
-            description="Shown in your own time zone. A time that clashes or falls outside opening hours is refused, and nothing changes."
-          >
-            <div className="flex flex-wrap items-end gap-3">
-              <Field className="min-w-0">
-                <FieldLabel>New start</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      type="datetime-local"
-                      color="module"
-                      className="max-w-xs"
-                      value={when}
-                      onChange={(domEvent) => {
-                        setWhen(domEvent.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Button
-                size="sm"
-                variant="outline"
-                color="module"
-                loading={reschedule.isPending}
-                disabled={!canMove}
-                onClick={onMove}
-              >
-                <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
-                Move booking
-              </Button>
-            </div>
-          </Section>
+        {state.moves.reschedule ? (
+          <MoveSection
+            when={state.when}
+            setWhen={state.setWhen}
+            canMove={state.canMove}
+            busy={state.busy.reschedule}
+            onMove={state.act.move}
+          />
         ) : null}
 
         {/* Change history — the old versions the booking row no longer keeps. */}
         <Section title="Change history">
-          <BookingTimeline bookingId={id} timezone={booking.timezone} />
+          <BookingTimeline bookingId={booking.id} timezone={booking.timezone} />
         </Section>
 
-        {/* The two hard-to-undo moves, kept apart at the bottom and quiet, so they
-            never compete with the primary step above. */}
-        {canNoShow || canCancel ? (
-          <div className="flex flex-wrap gap-2">
-            {canNoShow ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                color="warning"
-                loading={noShow.isPending}
-                disabled={anyPending}
-                onClick={() => {
-                  void onNoShow();
-                }}
-              >
-                <Icon glyph={faUserXmark} className="size-4" aria-hidden />
-                Mark no-show
-              </Button>
-            ) : null}
-            {canCancel ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                loading={cancel.isPending}
-                disabled={anyPending}
-                onClick={() => {
-                  void onCancel();
-                }}
-              >
-                <Icon glyph={faXmark} className="size-4" aria-hidden />
-                Cancel booking
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
+        <EndingsRow
+          moves={state.moves}
+          busy={state.busy}
+          anyPending={state.anyPending}
+          act={state.act}
+        />
       </div>
 
       <DialogFooter>
-        <Button color="neutral" variant="ghost" size="sm" onClick={onClose}>
+        {/* The dismiss half of the pair, COLOURLESS: a bare `.btn` resolves to
+            `base-content` and is theme-correct without naming `neutral`, which is
+            not mine to choose (root RULE #4). */}
+        <Button size="sm" onClick={onClose}>
           Close
         </Button>
         <Button color="module" variant="soft" size="sm" onClick={openFullBooking}>

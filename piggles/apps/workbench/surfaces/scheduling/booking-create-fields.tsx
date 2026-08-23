@@ -20,8 +20,8 @@ import {
 
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { CustomerPicker } from './bookings-customer-picker';
 import { BookingResourcePicker } from './booking-resource-picker';
+import { BookingCreateWho } from './booking-create-who';
 import {
   bookingTypeLabel,
   formatMoney,
@@ -39,6 +39,8 @@ export interface BookingDraft {
   setStartLocal: (value: string) => void;
   customer: CustomerLite | null;
   setCustomer: (value: CustomerLite | null) => void;
+  guestName: string;
+  setGuestName: (value: string) => void;
   partySize: string;
   setPartySize: (value: string) => void;
   resourceIds: string[];
@@ -77,6 +79,8 @@ export function BookingCreateFields({
     setStartLocal,
     customer,
     setCustomer,
+    guestName,
+    setGuestName,
     partySize,
     setPartySize,
     resourceIds,
@@ -175,34 +179,14 @@ export function BookingCreateFields({
           <FieldDescription>The day and time it begins, in your own time zone.</FieldDescription>
         </Field>
       </FormSection>
-      <FormSection
-        title="Who it is for"
-        description="Link the customer this is booked for, so it shows on their record and their reminders reach them. Leave it blank for a booking with no account — a walk-in you are writing down."
-      >
-        <CustomerPicker value={customer} onChange={setCustomer} />
-
-        <Field>
-          <FieldLabel>How many people (optional)</FieldLabel>
-          <FieldControl
-            render={
-              <Input
-                color="module"
-                type="number"
-                min={1}
-                className="max-w-32"
-                value={partySize}
-                placeholder="1"
-                onChange={(event) => {
-                  setPartySize(event.target.value);
-                }}
-              />
-            }
-          />
-          <FieldDescription>
-            For a table or a group — how many are coming. Leave blank for one.
-          </FieldDescription>
-        </Field>
-      </FormSection>
+      <BookingCreateWho
+        customer={customer}
+        setCustomer={setCustomer}
+        guestName={guestName}
+        setGuestName={setGuestName}
+        partySize={partySize}
+        setPartySize={setPartySize}
+      />
       <BookingResourcePicker
         resourceList={resourceList}
         loading={resourcesLoading}

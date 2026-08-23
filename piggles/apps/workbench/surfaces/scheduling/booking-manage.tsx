@@ -78,6 +78,11 @@ export function BookingManage({
     lifecycleBusy,
   } = useBookingManage(ctx, booking);
   const meta = bookingStateMeta(booking.status);
+  // Whether anything CAN be sent, which is a question about an ACCOUNT and not
+  // about a person: `reachableChannels` in the scheduling engine returns nothing
+  // for a booking with no `customerId`, so a walk-in written down by name is as
+  // unreachable as an empty one. A name is not an address.
+  const reachable = Boolean(booking.customerId);
 
   return (
     <div className={PANE_SHELL}>
@@ -162,13 +167,23 @@ export function BookingManage({
           {/* What the CUSTOMER has been told, as opposed to what happened. It sits
               above the history because "will they be reminded" is a question about
               tomorrow, and the history is a question about yesterday. */}
+          {/* "This customer" is only true when there is one. A booking taken
+              without an account said "everything this customer is told" and
+              "nothing was ever sent to this customer" about a customer that does
+              not exist, which reads as a delivery failure rather than as there
+              being nobody to deliver to. */}
           <FormSection
             title="What reaches them"
-            description="Everything this customer is told about their booking, sent and still to come."
+            description={
+              reachable
+                ? 'Everything this customer is told about their booking, sent and still to come.'
+                : 'Nobody on this booking has an account, so there is no address to send a confirmation or a reminder to.'
+            }
           >
             <BookingNotices
               bookingId={id}
               timezone={booking.timezone}
+              reachable={reachable}
               stillAhead={!terminal && new Date(booking.startAt).getTime() > Date.now()}
             />
           </FormSection>

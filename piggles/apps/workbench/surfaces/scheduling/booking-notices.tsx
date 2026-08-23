@@ -92,6 +92,7 @@ export function BookingNotices({
   bookingId,
   timezone,
   stillAhead,
+  reachable,
 }: {
   bookingId: string;
   timezone?: string | null;
@@ -99,6 +100,12 @@ export function BookingNotices({
    *  finished, where "no reminder is due" is just the passage of time and blaming
    *  the rule set for it would be wrong. */
   stillAhead: boolean;
+  /** Whether there is an ACCOUNT to reach. A name written on a walk-in is not
+   *  one: the engine's `reachableChannels` answers nothing without a customer, so
+   *  no notice is ever laid. Without this the pane blamed the service's rule set
+   *  for silence the rule set had nothing to do with, and sent someone to fix a
+   *  setting that was already right. */
+  reachable: boolean;
 }) {
   const { data, isPending, isError } = useBookingNotices(bookingId);
 
@@ -141,8 +148,15 @@ export function BookingNotices({
         </ul>
       )}
 
-      {stillAhead && !reminderComing ? <NoReminder anySent={rows.length > 0} /> : null}
-      {!stillAhead && rows.length === 0 ? (
+      {!reachable ? (
+        <Text className="text-sm">
+          Nothing was sent and nothing will be. Confirmations and reminders go to the email or phone
+          on a customer&apos;s record, and this booking has no account attached — a name written on
+          it is not an address. Link a customer when you take the booking and both follow.
+        </Text>
+      ) : stillAhead && !reminderComing ? (
+        <NoReminder anySent={rows.length > 0} />
+      ) : !stillAhead && rows.length === 0 ? (
         <Text className="text-sm">Nothing was ever sent to this customer about this booking.</Text>
       ) : null}
     </div>

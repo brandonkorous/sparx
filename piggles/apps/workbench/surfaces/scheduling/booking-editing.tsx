@@ -16,6 +16,7 @@ import { Icon } from '@piggles/ui';
 import { faCalendarClock, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 
 import { FormSection } from '../../components/form-section';
+import { MOVE_EXPLAINER } from './booking-move-copy';
 
 export function BookingMove({
   rescheduleLocal,
@@ -33,10 +34,7 @@ export function BookingMove({
   // The caller hides this once the booking is over — a completed or cancelled
   // booking does not move.
   return (
-    <FormSection
-      title="Move it"
-      description="Change when this happens. The new time is checked for a clash before it takes, and the customer is told."
-    >
+    <FormSection title="Move it" description={MOVE_EXPLAINER}>
       <div className="flex flex-wrap items-end gap-3">
         <Field className="min-w-0">
           <FieldLabel>New start</FieldLabel>

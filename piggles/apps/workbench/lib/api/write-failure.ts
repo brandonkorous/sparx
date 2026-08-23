@@ -125,9 +125,33 @@ export function describeWriteFailure(error: unknown): WriteFailure {
     };
   }
 
-  // 409 — someone else got there first. The one failure where "try again" is
-  // actively wrong advice: retrying would overwrite whatever they did.
+  // 409 — someone else got there first. Two different things wear this code and
+  // their remedies are opposite, which is exactly the split this file's header
+  // rule exists for (issue 146).
   if (error.status === 409) {
+    // A time that got taken while she was filling the form in. Nobody edited
+    // anything of hers, and there is usually nothing to reopen — it is a NEW
+    // booking. She needs another time, not somebody else's version.
+    if (error.code === 'SLOT_UNAVAILABLE') {
+      return {
+        message:
+          'That time was taken while you were filling this in, so nothing was booked. Pick another time and everything else you typed is still here.',
+        showReference: false,
+        code: 'slot-taken',
+      };
+    }
+    // The record moved on underneath her — confirmed, cancelled, completed by
+    // somebody else. Reopening shows where it actually stands.
+    if (error.code === 'INVALID_BOOKING_STATE') {
+      return {
+        message:
+          'This has already moved on since you opened it, so nothing was changed. Reopen it to see where it stands now.',
+        showReference: false,
+        code: 'stale-state',
+      };
+    }
+    // The one failure where "try again" is actively wrong advice: retrying would
+    // overwrite whatever they did.
     return {
       message:
         'Someone else changed this while you had it open, so it was not saved over. Reopen it to see their version, then make your change again.',

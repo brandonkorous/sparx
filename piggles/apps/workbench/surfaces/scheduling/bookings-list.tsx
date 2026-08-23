@@ -257,7 +257,12 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>When</th>
                 <th>What</th>
                 <th className="hidden @2xl:table-cell">With</th>
-                <th className="text-right">State</th>
+                {/* A phone pane holds two columns of this, not four. State is the
+                    one that travels well — a badge is small and belongs to the
+                    booking rather than to a column — so below `@md` it moves
+                    INTO What and the column goes. Three columns fighting for
+                    357px is how a date came to take five lines. */}
+                <th className="hidden text-right @md:table-cell">State</th>
               </tr>
             </thead>
             <tbody>
@@ -278,7 +283,12 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(booking, event);
                     }}
                   >
-                    <td className="align-top">
+                    {/* `whitespace-nowrap`: WHEN is the column this list exists
+                        to be read down, and left to wrap it took five lines on a
+                        phone — "Aug / 31, / 2026 / 5:00 / PM" — turning every row
+                        into a paragraph and squeezing the service name beside it
+                        into three. A date is one thing; it breaks nowhere. */}
+                    <td className="align-top whitespace-nowrap">
                       <div className="font-medium">
                         {formatDay(booking.startAt, booking.timezone)}
                       </div>
@@ -291,11 +301,14 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <div className="text-sm">
                         {bookingTypeLabel(booking.bookingType)} · {bookingWhoLabel(booking)}
                       </div>
+                      <Badge color={meta.tone} variant="soft" size="sm" className="mt-1 @md:hidden">
+                        {meta.label}
+                      </Badge>
                     </td>
                     <td className="hidden align-top text-sm @2xl:table-cell">
                       {bookingResourceLabel(booking)}
                     </td>
-                    <td className="text-right align-top">
+                    <td className="hidden text-right align-top @md:table-cell">
                       <Badge color={meta.tone} variant="soft" size="sm">
                         {meta.label}
                       </Badge>

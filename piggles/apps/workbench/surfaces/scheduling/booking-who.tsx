@@ -27,6 +27,20 @@ function GuestOnly({ name }: { name: string }) {
   );
 }
 
+/** No account and no name. Says so, and says what it costs — a reminder needs
+ *  somewhere to go. */
+function NobodyNamed() {
+  return (
+    <FormSection title="Who it is for" description="Nobody is recorded on this booking.">
+      <Text className="text-sm">
+        It was taken without an account and without a name, so nothing about it can reach anyone and
+        it will not appear on anybody&apos;s record. You can write who it was in the private note
+        below.
+      </Text>
+    </FormSection>
+  );
+}
+
 function ContactLine({ customer }: { customer: CustomerLite }) {
   const bits = [customer.phone, customer.email].filter(Boolean) as string[];
   if (bits.length === 0) return null;
@@ -78,9 +92,12 @@ export function BookingWho({
   customer: CustomerLite | undefined;
   guestName: string | null;
 }) {
-  if (!customerId) {
-    return guestName ? <GuestOnly name={guestName} /> : null;
-  }
+  // NOBODY, said out loud. Returning null here meant a booking taken with no
+  // customer and no name simply had no "who" section at all, so the pane looked
+  // like a complete record of a booking it could not say a single thing about
+  // the person for. An absent answer that renders as nothing renders exactly
+  // like a correct one.
+  if (!customerId) return guestName ? <GuestOnly name={guestName} /> : <NobodyNamed />;
   const name = customer ? customerName(customer) : (guestName ?? 'This customer');
   return (
     <FormSection

@@ -35,6 +35,11 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
   const [serviceId, setServiceId] = useState('');
   const [startLocal, setStartLocal] = useState('');
   const [customer, setCustomer] = useState<CustomerLite | null>(null);
+  // A walk-in's name. The form has always invited one — "leave it blank for a
+  // booking with no account, a walk-in you are writing down" — and had nowhere
+  // to write it, so every walk-in read "No one assigned" for ever after and
+  // could never be given a name (issue 139). The API always accepted it.
+  const [guestName, setGuestName] = useState('');
   const [partySize, setPartySize] = useState('');
   const [resourceIds, setResourceIds] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
@@ -52,6 +57,7 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
     serviceId !== '' ||
     startLocal !== '' ||
     customer !== null ||
+    guestName.trim() !== '' ||
     partySize !== '' ||
     resourceIds.length > 0 ||
     notes.trim() !== '';
@@ -84,6 +90,12 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
         startAt: startIso,
         timezone: localTimezone(),
         ...(customer ? { customerId: customer.id } : {}),
+        // One attendee carrying the written name. Only when there is no account
+        // to link: with a customer attached the engine builds the attendee from
+        // them, and a name typed here would shadow the record's own.
+        ...(!customer && guestName.trim()
+          ? { attendees: [{ guestName: guestName.trim(), partySize: 1 }] }
+          : {}),
         ...(Number.isFinite(size) && size > 1 ? { partySize: size } : {}),
         resourceIds,
         ...(notes.trim() ? { notes: notes.trim() } : {}),
@@ -109,6 +121,8 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
     setStartLocal,
     customer,
     setCustomer,
+    guestName,
+    setGuestName,
     partySize,
     setPartySize,
     resourceIds,

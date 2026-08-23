@@ -127,6 +127,19 @@ export interface Booking {
   service: ServiceLite;
   resources: BookingResourceRow[];
   attendees: BookingAttendeeRow[];
+  /** Who it is for, NAMED — null for a walk-in with no account. The list used to
+   *  have only `customerId` and printed the words "A customer" beside a booking
+   *  whose customer the database could name (issue 138). */
+  customer: BookedCustomer | null;
+}
+
+/** The part of a customer a booking surface needs to say who turned up. */
+export interface BookedCustomer {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  phone: string | null;
 }
 
 /* ── Shapes: recurring series ───────────────────────────────────────────── */
@@ -201,6 +214,18 @@ export interface BookingQuery {
   q?: string;
   status?: BookingStatus | '';
   bookingType?: BookingType | '';
+  /** Only this customer's bookings. The API has always taken it; nothing asked,
+   *  so a person's record could not show what they had ever been booked for. */
+  customerId?: string;
+  /** Only bookings for this service. Also always taken by the API, also never
+   *  asked for — so nothing could count what a service was about to lose when
+   *  someone removed it (issue 145). */
+  serviceId?: string;
+  /** ISO instant; bookings that start at or after it. 'What is still to come'. */
+  from?: string;
+  /** Any of these statuses. A cancelled appointment in the future is not one
+   *  that is still to come, so counting what is ahead has to say which. */
+  statusIn?: BookingStatus[];
   order: BookingOrder;
   take: number;
   skip: number;
@@ -265,6 +290,10 @@ export function useBookings(query: BookingQuery) {
         ...(query.q ? { q: query.q } : {}),
         ...(query.status ? { status: query.status } : {}),
         ...(query.bookingType ? { bookingType: query.bookingType } : {}),
+        ...(query.customerId ? { customerId: query.customerId } : {}),
+        ...(query.serviceId ? { serviceId: query.serviceId } : {}),
+        ...(query.from ? { from: query.from } : {}),
+        ...(query.statusIn?.length ? { statusIn: query.statusIn.join(',') } : {}),
         order: query.order,
         take: query.take,
         skip: query.skip,
@@ -704,14 +733,36 @@ export function customerName(customer: CustomerLite | null | undefined): string 
 /** Who a booking is for, from what the list actually carries. There is no
  *  customer name on a booking row (the API does not join it), so this reads the
  *  guest name off a single-attendee booking, or falls back to the party count. */
+/**
+ * Who a booking is for, in the fewest words that are true.
+ *
+ * The ladder runs from the most specific thing anyone wrote down to the least:
+ * a name typed onto the booking, then the linked customer's own name, then a
+ * count, then the honest admission that nobody was recorded.
+ *
+ * The customer step is new. It used to end at `customerId ? 'A customer' : …`,
+ * which meant a booking with a customer attached — the ordinary case — printed
+ * the words "A customer" while the name sat one join away, unfetched. Both ends
+ * of that are fixed: the read now carries the name, and a booking with nobody at
+ * all says so rather than borrowing the same sentence.
+ */
 export function bookingWhoLabel(booking: Booking): string {
   const named = booking.attendees.find((a) => a.guestName?.trim());
   if (named?.guestName) return named.guestName;
+  if (booking.customer) return bookedCustomerName(booking.customer);
   if (booking.attendees.length > 1) return `${String(booking.attendees.length)} people`;
   if (booking.partySize && booking.partySize > 1) {
     return `Party of ${String(booking.partySize)}`;
   }
   return booking.customerId ? 'A customer' : 'No one assigned';
+}
+
+/** A booked customer's name, falling back to whatever else identifies them. */
+export function bookedCustomerName(customer: BookedCustomer): string {
+  const full = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+  if (full) return full;
+  if (customer.email?.trim()) return customer.email;
+  return 'A customer';
 }
 
 /** The staff / rooms a booking is with, named. */
