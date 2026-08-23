@@ -243,8 +243,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Ever After Events",
-      "timezone": "UTC"
+      "name": "Ever After Events"
     }
   ]
 }

@@ -268,8 +268,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "ProWash Exterior Cleaning",
-      "timezone": "UTC"
+      "name": "ProWash Exterior Cleaning"
     }
   ]
 }

@@ -329,8 +329,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Gilded",
-      "timezone": "UTC"
+      "name": "Gilded"
     }
   ]
 }

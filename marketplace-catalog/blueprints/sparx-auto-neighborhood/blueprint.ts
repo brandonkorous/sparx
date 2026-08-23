@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-auto-neighborhood',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Auto Repair (Neighborhood)',
   summary:
     'A warm, honest template for a family-run neighborhood auto shop — a racing-blue palette with a warm-red accent and real shop photography. Installs online booking from day one: a menu of visits (free estimate, oil, brakes, diagnostics, inspections) with three mechanics AND two service bays as bookable resources, plus a drop-off policy. Ships as "Sparrow & Sons Auto", the shop that tells you what it actually needs.',

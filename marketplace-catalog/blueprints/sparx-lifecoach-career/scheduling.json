@@ -252,8 +252,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Ascend Coaching",
-      "timezone": "UTC"
+      "name": "Ascend Coaching"
     }
   ]
 }

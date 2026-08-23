@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-interior-luxe',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Interior Design (Luxe)',
   summary:
     'A refined, editorial site for a high-end interior design studio — a deep charcoal palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary discovery call to full-service and in-home design, three designers you book by name with their own hours, and a design-deposit policy. Ships as "Atelier Nord", a residential design studio.',

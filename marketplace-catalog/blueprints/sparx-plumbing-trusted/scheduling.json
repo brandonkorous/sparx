@@ -251,8 +251,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Copper & Main Plumbing",
-      "timezone": "UTC"
+      "name": "Copper & Main Plumbing"
     }
   ]
 }

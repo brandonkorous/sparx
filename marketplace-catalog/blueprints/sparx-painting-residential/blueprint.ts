@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-painting-residential',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Painting (Residential)',
   summary:
     'A clean, reliable residential-painting site — a fresh near-white palette with a clean-blue primary and warm accent, photo-led throughout. Installs a working online booking flow: homeowners book a free estimate or consult and get a real time slot. Ships a full visit menu (free, interior, exterior, cabinet, color, drywall, trim), three painters as dispatchable staff with their own hours, and a standard visit policy. Ships as "Brushworks Painting".',

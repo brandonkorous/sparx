@@ -341,8 +341,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "The Groom Room",
-      "timezone": "UTC"
+      "name": "The Groom Room"
     }
   ]
 }

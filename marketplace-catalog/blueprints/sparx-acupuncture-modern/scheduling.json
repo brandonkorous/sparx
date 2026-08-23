@@ -361,8 +361,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Meridian Wellness",
-      "timezone": "UTC"
+      "name": "Meridian Wellness"
     }
   ]
 }

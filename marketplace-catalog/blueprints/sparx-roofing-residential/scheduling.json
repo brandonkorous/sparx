@@ -243,8 +243,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Summit Roofing",
-      "timezone": "UTC"
+      "name": "Summit Roofing"
     }
   ]
 }

@@ -247,8 +247,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "GreenBlade Lawn Care",
-      "timezone": "UTC"
+      "name": "GreenBlade Lawn Care"
     }
   ]
 }

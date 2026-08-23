@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-tattoo-dark',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Tattoo (Dark Studio)',
   summary:
     'A dark, gallery-first tattoo-studio site — a warm ink-black palette in both modes, an old-gold primary over an oxblood accent, a condensed gothic display, and real ink photography carrying the page. Installs a working booking flow: a free consultation, priced session tiers (small, fine-line, half-day, full-day), three artists you book by name with their own late hours, and a $50 session-deposit policy. Ships as "Ironwood Tattoo", a private three-chair studio.',

@@ -368,8 +368,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "RoadReady Driving School",
-      "timezone": "UTC"
+      "name": "RoadReady Driving School"
     }
   ]
 }

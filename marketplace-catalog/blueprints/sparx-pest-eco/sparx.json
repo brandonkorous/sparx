@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-pest-eco",
   "name": "Pest Control (Eco)",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "tagline": "A natural, prevention-first template for pest-control services — book online from day one.",
   "description": "An eco, botanical pest-control site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, natural photography. Installs a working booking flow: real inspections and treatments (free inspection, botanical treatment, natural rodent control, IPM assessment, ant and mosquito treatments, recurring-plan setup), three technicians you book by name with their own hours, and a low-toxicity promise safe for kids and pets. Ships as \"GreenShield Pest Solutions\".",
   "payload": "blueprint.ts",

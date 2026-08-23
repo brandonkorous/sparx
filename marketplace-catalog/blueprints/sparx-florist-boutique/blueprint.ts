@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-florist-boutique',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Florist (Boutique)',
   summary:
     'A romantic, editorial site for a wedding & event florist — a soft blush palette over ivory with a sage accent and an elegant serif display, with arrangement photography carrying the page. Installs a working booking flow: consultation types from a free discovery call to full event design, floral designers you book by name with their own hours, and an event booking-deposit policy. Ships as "Wildstem Floral", an artful boutique studio for weddings and celebrations.',

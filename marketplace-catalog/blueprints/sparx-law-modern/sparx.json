@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-law-modern",
   "name": "Law Firm (Modern)",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "tagline": "A sharp, modern template for business & litigation firms — book consultations from day one.",
   "description": "A sharp, modern business & litigation law-firm site — a midnight-slate palette, a confident blue accent and a precise modern sans. Installs a working consultation-booking flow: real consult types (litigation, formation, M&A, IP, employment), three partner attorneys booked by name with their own hours, and a credited-deposit policy. Ships as \"Meridian Law Group\", a boutique with big-firm reach.",
   "payload": "blueprint.ts",

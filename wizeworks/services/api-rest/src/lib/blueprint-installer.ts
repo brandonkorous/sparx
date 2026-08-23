@@ -1278,6 +1278,16 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
  *  activation-seeded 'Main location' (bootstrapSchedulingDefaults), reused not
  *  duplicated. Handle-based `resourceRequirements` route to resources by kind+skill
  *  at booking time (no id wiring here). */
+/** The zone the tenant has said it works in, or 'UTC' when it has said nothing.
+ *  Never the SERVER's zone: a machine in another region would silently stamp its
+ *  own clock onto somebody else's shop. */
+async function zoneOfBusiness(ctx: SliceEnv['ctx'], tenantId: string): Promise<string> {
+  const business = await withTenant(ctx, (tx) =>
+    tx.tenantBusiness.findUnique({ where: { tenantId }, select: { timezone: true } })
+  );
+  return business?.timezone ?? 'UTC';
+}
+
 export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
   const { tenantId, propertyId, blueprint, result, ctx } = env;
 
@@ -1313,6 +1323,17 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
   // gets the default, but a captured or hand-assembled one need not have gone
   // through Zod — and the failure mode without this is a hard crash mid-install.
   const declaredLocations = sched.locations ?? [];
+
+  // The clock this business runs on. A design cannot know it, so it no longer
+  // guesses: an unstated zone is filled from what the tenant has recorded, and
+  // 'UTC' is the answer only when the tenant has recorded nothing either.
+  //
+  // The old default was a plain 'UTC' on every place and every person, which is
+  // not a neutral value but a claim — and it is the claim the whole availability
+  // engine reads weekly hours through, so a salon's 9am chair opened at 2am and
+  // its own website offered the middle of the night (issue 151).
+  const tenantZone = await zoneOfBusiness(ctx, tenantId);
+
   const locationIds = new Map<string, string>();
   for (const l of declaredLocations) {
     const existing = await withTenant(ctx, (tx) =>
@@ -1341,7 +1362,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
     // business is, and an invented one reads as real (the contact-spine rule).
     const created = await createLocation(tenantId, {
       name: l.name,
-      timezone: l.timezone,
+      timezone: l.timezone ?? tenantZone,
       propertyIds: [propertyId],
     });
     locationIds.set(l.handle, created.id);
@@ -1423,7 +1444,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
         CreateResourceInput.parse({
           kind: r.kind,
           name: r.name,
-          timezone: r.timezone,
+          timezone: r.timezone ?? tenantZone,
           capacity: r.capacity,
           capacityMin: r.capacityMin ?? null,
           capacityMax: r.capacityMax ?? null,

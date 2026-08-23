@@ -462,8 +462,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Verdure",
-      "timezone": "UTC"
+      "name": "Verdure"
     }
   ]
 }

@@ -248,8 +248,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "ShieldGuard Pest Control",
-      "timezone": "UTC"
+      "name": "ShieldGuard Pest Control"
     }
   ]
 }

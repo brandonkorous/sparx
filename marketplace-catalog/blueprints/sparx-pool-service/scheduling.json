@@ -247,8 +247,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "BlueWave Pool Care",
-      "timezone": "UTC"
+      "name": "BlueWave Pool Care"
     }
   ]
 }

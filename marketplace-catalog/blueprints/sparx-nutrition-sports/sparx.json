@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-nutrition-sports",
   "name": "Nutrition (Sports & Performance)",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "tagline": "A bold, data-driven template for sports & performance nutrition — book consults from day one.",
   "description": "A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as \"Fuel Performance Nutrition\".",
   "payload": "blueprint.ts",

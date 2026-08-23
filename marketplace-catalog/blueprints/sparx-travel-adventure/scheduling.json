@@ -243,8 +243,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Trailhead Travel",
-      "timezone": "UTC"
+      "name": "Trailhead Travel"
     }
   ]
 }

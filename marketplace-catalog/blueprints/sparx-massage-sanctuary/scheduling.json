@@ -399,8 +399,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Stillwater",
-      "timezone": "UTC"
+      "name": "Stillwater"
     }
   ]
 }

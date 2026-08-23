@@ -258,8 +258,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "FixList",
-      "timezone": "UTC"
+      "name": "FixList"
     }
   ]
 }

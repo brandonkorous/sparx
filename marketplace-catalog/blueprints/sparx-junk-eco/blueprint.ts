@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-junk-eco',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Junk Removal (Eco)',
   summary:
     'A natural palette and online booking for an eco, donation-first junk removal and hauling service — free quotes and pickups booked online, three crews as dispatchable resources with their own hours, and a donate-recycle-divert promise that keeps most of every load out of the landfill. Ships as "Green Haul", a conscientious, community-minded hauler.',

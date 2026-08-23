@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-esthetics-results',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Esthetics (Results)',
   summary:
     'A luminous, results-driven esthetics studio site — a soft-plum palette, a warm-peach accent and a clean near-white ground, with glowing-skin photography. Installs a working booking flow: a real treatment menu (signature facials, chemical peels, dermaplaning, microneedling), licensed estheticians you book by name, two treatment rooms as bookable resources, and a deposit policy. Ships as "Lumière Skin Studio", a clean, expert skincare studio.',

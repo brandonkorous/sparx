@@ -227,8 +227,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Faint",
-      "timezone": "UTC"
+      "name": "Faint"
     }
   ]
 }

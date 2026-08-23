@@ -357,8 +357,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Summit Learning",
-      "timezone": "UTC"
+      "name": "Summit Learning"
     }
   ]
 }

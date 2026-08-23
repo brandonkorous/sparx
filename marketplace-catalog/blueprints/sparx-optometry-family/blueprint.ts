@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-optometry-family',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Optometry (Family)',
   summary:
     'A warm, family-friendly optometry site — a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as "Clearview Eye Care", a family eye-care practice.',

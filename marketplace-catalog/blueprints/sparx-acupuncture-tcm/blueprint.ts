@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-acupuncture-tcm',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Acupuncture (Traditional)',
   summary:
     'An earthy, serene template for a traditional Chinese-medicine acupuncture clinic — warm clay and gold on a soft sand ground, with a calm serif display. Installs a working booking flow: acupuncture, cupping, herbal and fertility treatments; three licensed acupuncturists booked by name with their own hours; and two treatment rooms as bookable resources. Ships as "Five Elements Acupuncture", a grounded, holistic healing space rooted in TCM tradition.',

@@ -338,8 +338,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Lacquer",
-      "timezone": "UTC"
+      "name": "Lacquer"
     }
   ]
 }

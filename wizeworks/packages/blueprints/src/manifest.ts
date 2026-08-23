@@ -410,8 +410,11 @@ export const SchedulingResourceDecl = z.object({
   capacity: z.number().int().min(1).max(100_000).default(1),
   capacityMin: z.number().int().min(1).max(100_000).optional(),
   capacityMax: z.number().int().min(1).max(100_000).optional(),
-  /** IANA zone the weekly windows are authored in (the engine resolves DST). */
-  timezone: z.string().min(1).max(64).default('UTC'),
+  /** IANA zone the weekly windows are authored in (the engine resolves DST).
+   *  OMITTED means unstated, and the installer fills it from the tenant. It used
+   *  to default to 'UTC', which is not a neutral value — it is a claim, and it
+   *  made a Sacramento salon's 9am staff shift start at 2am (issue 151). */
+  timezone: z.string().min(1).max(64).optional(),
   bookableOnline: z.boolean().default(true),
   imageAssetId: ManifestId.optional(),
   windows: z.array(SchedulingWindowDecl).max(100).default([]),
@@ -428,16 +431,19 @@ export type SchedulingResourceDecl = z.infer<typeof SchedulingResourceDecl>;
  *  and a grooming design on another, and each business gets its own place, scoped
  *  to its own site, rather than both sharing the seeded 'Main location'.
  *
- *  DELIBERATELY NO ADDRESS. A blueprint cannot know where the business actually
- *  is, and an invented street address reads as real — the same rule the contact
- *  spine follows, where an unfilled field renders nothing rather than a plausible
- *  lie. The owner fills the address in on the Places surface; the blueprint only
- *  supplies the NAME and the zone, which are safe to guess and easy to correct. */
+ *  DELIBERATELY NO ADDRESS, AND NO ZONE. A blueprint cannot know where the
+ *  business actually is, and an invented street address reads as real — the same
+ *  rule the contact spine follows, where an unfilled field renders nothing rather
+ *  than a plausible lie. This comment used to say the zone was "safe to guess and
+ *  easy to correct"; it is neither. A guessed zone is invisible, and it decides
+ *  what hour the shop's own hours mean (issue 151). The owner fills in the address
+ *  on the Places surface; the blueprint supplies only the NAME. */
 export const SchedulingLocationDecl = z.object({
   handle: Handle,
   name: z.string().min(1).max(255),
-  /** IANA zone the place is in. Same default as a resource's. */
-  timezone: z.string().min(1).max(64).default('UTC'),
+  /** IANA zone the place is in, when the design genuinely knows it. Same rule as
+   *  a resource's: omitted = unstated, and the installer fills it from the tenant. */
+  timezone: z.string().min(1).max(64).optional(),
 });
 export type SchedulingLocationDecl = z.infer<typeof SchedulingLocationDecl>;
 

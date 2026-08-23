@@ -387,8 +387,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Prana",
-      "timezone": "UTC"
+      "name": "Prana"
     }
   ]
 }

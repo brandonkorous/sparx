@@ -240,8 +240,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Brushworks Painting",
-      "timezone": "UTC"
+      "name": "Brushworks Painting"
     }
   ]
 }

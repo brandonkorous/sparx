@@ -397,8 +397,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Cedar Paws Veterinary",
-      "timezone": "UTC"
+      "name": "Cedar Paws Veterinary"
     }
   ]
 }

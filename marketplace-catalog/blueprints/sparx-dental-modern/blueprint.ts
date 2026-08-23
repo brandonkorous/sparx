@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-dental-modern',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Dental (Modern Cosmetic)',
   summary:
     'A modern cosmetic-and-general dental studio site — a crisp porcelain palette, a deep-teal primary and a refined serif display, with a calm, spa-like structure. Installs a working booking flow: free consults plus whitening, aligners, veneers and implants, clinicians and treatment suites as bookable resources (a visit reserves a provider AND a suite), and a cosmetic-consult deposit policy. Ships as "Arch Dental Studio".',

@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-plumbing-trusted',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Plumbing (Trusted Local)',
   summary:
     'A warm, trusted local-plumber site — a deep navy palette with a brass accent, sturdy sans display and photo-led reliability. Installs a working online booking flow: homeowners book a free estimate or a service call and get a real time slot. Ships a full visit menu (estimate, drain, leak, water-heater, fixture install, emergency), three plumbers as dispatchable staff with their own hours, and standard + emergency policies. Ships as "Copper & Main Plumbing".',

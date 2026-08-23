@@ -243,8 +243,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Atelier Nord",
-      "timezone": "UTC"
+      "name": "Atelier Nord"
     }
   ]
 }

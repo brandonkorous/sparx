@@ -314,8 +314,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Frame & Field",
-      "timezone": "UTC"
+      "name": "Frame & Field"
     }
   ]
 }

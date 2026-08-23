@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-salon-modern",
   "name": "Salon (Modern)",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "tagline": "A warm, modern-boho template for hair salons — book online from day one.",
   "description": "A modern, warm, boho hair-salon site — an oat-cream palette, a terracotta primary and a sage-green accent, with natural-light photography and a relaxed, friendly voice. Installs a working booking flow: a real service menu (cuts, curly & textured cuts, color, balayage), three stylists you book by name with their own hours, and a color-deposit policy. Ships as \"Wildroot\", a plant-filled little studio that specialises in curls and texture.",
   "payload": "blueprint.ts",

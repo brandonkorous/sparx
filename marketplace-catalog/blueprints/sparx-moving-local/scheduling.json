@@ -248,8 +248,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Sure Hands Moving",
-      "timezone": "UTC"
+      "name": "Sure Hands Moving"
     }
   ]
 }

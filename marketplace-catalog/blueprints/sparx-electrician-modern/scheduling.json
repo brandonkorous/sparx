@@ -243,8 +243,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Voltline Electric",
-      "timezone": "UTC"
+      "name": "Voltline Electric"
     }
   ]
 }

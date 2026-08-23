@@ -333,8 +333,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Kettle & Crumb",
-      "timezone": "UTC"
+      "name": "Kettle & Crumb"
     }
   ]
 }

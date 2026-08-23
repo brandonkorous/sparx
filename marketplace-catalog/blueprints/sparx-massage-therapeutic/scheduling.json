@@ -365,8 +365,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Meridian Bodywork",
-      "timezone": "UTC"
+      "name": "Meridian Bodywork"
     }
   ]
 }

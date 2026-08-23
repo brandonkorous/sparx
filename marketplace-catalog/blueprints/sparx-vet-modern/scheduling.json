@@ -386,8 +386,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Fauna Veterinary",
-      "timezone": "UTC"
+      "name": "Fauna Veterinary"
     }
   ]
 }

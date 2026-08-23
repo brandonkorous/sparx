@@ -373,8 +373,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Amp Room",
-      "timezone": "UTC"
+      "name": "Amp Room"
     }
   ]
 }

@@ -367,8 +367,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Crescendo Music School",
-      "timezone": "UTC"
+      "name": "Crescendo Music School"
     }
   ]
 }

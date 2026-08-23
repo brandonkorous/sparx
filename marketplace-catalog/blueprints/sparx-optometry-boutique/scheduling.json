@@ -375,8 +375,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Iris Optical",
-      "timezone": "UTC"
+      "name": "Iris Optical"
     }
   ]
 }

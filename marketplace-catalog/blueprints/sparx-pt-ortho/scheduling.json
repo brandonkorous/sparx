@@ -331,8 +331,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Momentum Physical Therapy",
-      "timezone": "UTC"
+      "name": "Momentum Physical Therapy"
     }
   ]
 }

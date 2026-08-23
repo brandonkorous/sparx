@@ -273,8 +273,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Petal & Post",
-      "timezone": "UTC"
+      "name": "Petal & Post"
     }
   ]
 }

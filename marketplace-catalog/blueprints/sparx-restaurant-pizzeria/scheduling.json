@@ -453,8 +453,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Forno",
-      "timezone": "UTC"
+      "name": "Forno"
     }
   ]
 }

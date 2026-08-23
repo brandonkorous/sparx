@@ -357,8 +357,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Apex Driving Academy",
-      "timezone": "UTC"
+      "name": "Apex Driving Academy"
     }
   ]
 }

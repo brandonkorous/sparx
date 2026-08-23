@@ -239,8 +239,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Ace & Able Handyman",
-      "timezone": "UTC"
+      "name": "Ace & Able Handyman"
     }
   ]
 }

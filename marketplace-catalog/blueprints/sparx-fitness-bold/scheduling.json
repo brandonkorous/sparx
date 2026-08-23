@@ -373,8 +373,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Forge",
-      "timezone": "UTC"
+      "name": "Forge"
     }
   ]
 }

@@ -360,8 +360,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Sparrow & Sons Auto",
-      "timezone": "UTC"
+      "name": "Sparrow & Sons Auto"
     }
   ]
 }

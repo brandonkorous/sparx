@@ -251,8 +251,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Brightwire Electric",
-      "timezone": "UTC"
+      "name": "Brightwire Electric"
     }
   ]
 }

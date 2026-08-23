@@ -242,8 +242,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Maison Élan",
-      "timezone": "UTC"
+      "name": "Maison Élan"
     }
   ]
 }

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-fitness-bold",
   "name": "Fitness (Bold)",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "tagline": "A loud, high-energy template for gyms & studios — book classes and 1:1s from day one.",
   "description": "A dark, electric strength & conditioning studio site — near-black charcoal ground, a volt-green primary and a bold condensed display. Installs a working booking flow: capacity-based GROUP CLASSES (strength, HIIT, metcon, foundations, conditioning) with per-class caps, plus 1:1 personal training and a free intro assessment. Coaches and the gym floor are bookable resources with early-morning and evening hours. Ships as \"Forge\".",
   "payload": "blueprint.ts",

@@ -311,8 +311,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Vesper",
-      "timezone": "UTC"
+      "name": "Vesper"
     }
   ]
 }

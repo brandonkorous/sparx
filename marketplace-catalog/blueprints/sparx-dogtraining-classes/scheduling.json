@@ -288,8 +288,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Good Dog Academy",
-      "timezone": "UTC"
+      "name": "Good Dog Academy"
     }
   ]
 }

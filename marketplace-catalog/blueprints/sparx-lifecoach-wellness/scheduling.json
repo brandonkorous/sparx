@@ -227,8 +227,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Brightpath Life Coaching",
-      "timezone": "UTC"
+      "name": "Brightpath Life Coaching"
     }
   ]
 }

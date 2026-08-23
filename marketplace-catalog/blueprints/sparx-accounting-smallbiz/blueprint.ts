@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-accounting-smallbiz',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Accounting (Small Business)',
   summary:
     'A warm, friendly small-business accounting site — a fresh teal palette, a coral accent and a clean, approachable look. Installs a working booking flow: three accountants you book by name, and a real menu of consultations (a free consult, bookkeeping, payroll, quarterly taxes, new-business setup). Ships as "Ledger & Co.", the everyday bookkeeping & tax practice for freelancers and small businesses.',

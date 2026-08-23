@@ -239,8 +239,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Copper & Cole",
-      "timezone": "UTC"
+      "name": "Copper & Cole"
     }
   ]
 }

@@ -823,8 +823,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Nori",
-      "timezone": "UTC"
+      "name": "Nori"
     }
   ]
 }

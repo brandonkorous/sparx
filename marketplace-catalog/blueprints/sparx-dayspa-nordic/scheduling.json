@@ -388,8 +388,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Kald",
-      "timezone": "UTC"
+      "name": "Kald"
     }
   ]
 }

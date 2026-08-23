@@ -69,7 +69,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
  *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.3.1';
+const BUNDLE_VERSION = '1.3.2';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -421,7 +421,9 @@ function withPremises(spec: ServiceSiteSpec): unknown {
         ...sched,
         // First (and only) declared location, so every resource and service that names
         // none files here — no per-entry `locationHandle` churn across 90 bundles.
-        locations: [{ handle: 'premises', name: spec.brand.businessName, timezone: 'UTC' }],
+        // NO TIMEZONE: a bundle has no idea where the business is, and 'UTC' was a
+        // guess that read as a statement (issue 151). The installer fills it in.
+        locations: [{ handle: 'premises', name: spec.brand.businessName }],
     };
 }
 

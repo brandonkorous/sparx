@@ -394,8 +394,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Maple Grove Dental",
-      "timezone": "UTC"
+      "name": "Maple Grove Dental"
     }
   ]
 }

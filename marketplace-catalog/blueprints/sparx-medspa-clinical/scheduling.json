@@ -352,8 +352,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Lumen",
-      "timezone": "UTC"
+      "name": "Lumen"
     }
   ]
 }

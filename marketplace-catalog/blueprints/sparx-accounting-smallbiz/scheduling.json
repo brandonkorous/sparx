@@ -224,8 +224,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Ledger & Co.",
-      "timezone": "UTC"
+      "name": "Ledger & Co."
     }
   ]
 }

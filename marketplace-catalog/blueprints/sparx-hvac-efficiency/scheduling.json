@@ -248,8 +248,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Northline Climate",
-      "timezone": "UTC"
+      "name": "Northline Climate"
     }
   ]
 }

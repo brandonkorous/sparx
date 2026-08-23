@@ -230,8 +230,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Fade Room",
-      "timezone": "UTC"
+      "name": "Fade Room"
     }
   ]
 }

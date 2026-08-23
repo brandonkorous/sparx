@@ -250,8 +250,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Evenair Heating & Cooling",
-      "timezone": "UTC"
+      "name": "Evenair Heating & Cooling"
     }
   ]
 }

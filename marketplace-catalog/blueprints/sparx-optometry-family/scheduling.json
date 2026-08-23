@@ -366,8 +366,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Clearview Eye Care",
-      "timezone": "UTC"
+      "name": "Clearview Eye Care"
     }
   ]
 }

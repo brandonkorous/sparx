@@ -234,8 +234,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Apex Test Prep",
-      "timezone": "UTC"
+      "name": "Apex Test Prep"
     }
   ]
 }

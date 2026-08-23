@@ -231,8 +231,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Ironwood Tattoo",
-      "timezone": "UTC"
+      "name": "Ironwood Tattoo"
     }
   ]
 }

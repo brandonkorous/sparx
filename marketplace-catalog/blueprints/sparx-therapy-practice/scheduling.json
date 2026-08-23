@@ -370,8 +370,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Anchor Counseling",
-      "timezone": "UTC"
+      "name": "Anchor Counseling"
     }
   ]
 }

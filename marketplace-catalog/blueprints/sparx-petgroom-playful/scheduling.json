@@ -378,8 +378,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Scrub & Wag",
-      "timezone": "UTC"
+      "name": "Scrub & Wag"
     }
   ]
 }

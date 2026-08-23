@@ -238,8 +238,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Meridian Law Group",
-      "timezone": "UTC"
+      "name": "Meridian Law Group"
     }
   ]
 }

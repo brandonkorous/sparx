@@ -227,8 +227,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Nourish Nutrition",
-      "timezone": "UTC"
+      "name": "Nourish Nutrition"
     }
   ]
 }

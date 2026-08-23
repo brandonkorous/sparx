@@ -346,8 +346,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Arch Dental Studio",
-      "timezone": "UTC"
+      "name": "Arch Dental Studio"
     }
   ]
 }

@@ -229,8 +229,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Room & Co.",
-      "timezone": "UTC"
+      "name": "Room & Co."
     }
   ]
 }

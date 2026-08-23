@@ -339,8 +339,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Decant",
-      "timezone": "UTC"
+      "name": "Decant"
     }
   ]
 }

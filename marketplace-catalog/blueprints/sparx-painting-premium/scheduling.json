@@ -243,8 +243,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Heritage Painters",
-      "timezone": "UTC"
+      "name": "Heritage Painters"
     }
   ]
 }

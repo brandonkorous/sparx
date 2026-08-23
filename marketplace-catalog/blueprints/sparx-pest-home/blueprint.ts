@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pest-home',
-  version: '1.3.0',
+  version: '1.3.2',
   name: 'sparx — Pest Control (Home)',
   summary:
     'A friendly residential pest-control site built on a reliable teal-and-green palette over a clean near-white ground. Installs a working booking flow: free inspections plus general, ant/roach, rodent, termite and mosquito treatments and recurring protection plans, three licensed technicians dispatched by skill with their own hours, and a plan policy. Ships as "ShieldGuard Pest Control".',

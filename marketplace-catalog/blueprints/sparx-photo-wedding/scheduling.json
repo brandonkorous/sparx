@@ -238,8 +238,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Golden Hour Studio",
-      "timezone": "UTC"
+      "name": "Golden Hour Studio"
     }
   ]
 }

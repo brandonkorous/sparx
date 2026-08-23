@@ -238,8 +238,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Assembly Events",
-      "timezone": "UTC"
+      "name": "Assembly Events"
     }
   ]
 }

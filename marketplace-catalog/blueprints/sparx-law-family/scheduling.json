@@ -233,8 +233,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Hearth & Stone Law",
-      "timezone": "UTC"
+      "name": "Hearth & Stone Law"
     }
   ]
 }

@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-fine-dining',
-  version: '1.3.1',
+  version: '1.3.2',
   name: 'sparx — Fine Dining',
   summary:
     'A complete, working site for a tasting-menu restaurant: a real seven-course menu with à la carte and wine pairing, and a live reservations flow (tables and a chef’s counter as bookable resources, party-size services, dinner-only hours, a per-cover deposit) on the /reserve page. Dark, candle-lit theme — warm charcoal, gold, copper. Pages: Home, Menu, Reserve, About, Visit. Shipped as Vesper.',

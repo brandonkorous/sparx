@@ -242,8 +242,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Clearmind Therapy",
-      "timezone": "UTC"
+      "name": "Clearmind Therapy"
     }
   ]
 }

@@ -453,8 +453,7 @@
   "locations": [
     {
       "handle": "premises",
-      "name": "Sprout & Vine",
-      "timezone": "UTC"
+      "name": "Sprout & Vine"
     }
   ]
 }
