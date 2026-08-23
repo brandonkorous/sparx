@@ -191,7 +191,7 @@ async function resolveBookingCustomer(
     const me = await withTenant({ tenantId }, (tx) =>
       tx.customer.findUnique({ where: { id: signedIn.customerId }, select: { email: true } })
     );
-    if (me?.email && me.email.toLowerCase() === email) return signedIn.customerId;
+    if (me?.email?.toLowerCase() === email) return signedIn.customerId;
   }
   return findOrCreateCustomer(tenantId, info, propertyId);
 }

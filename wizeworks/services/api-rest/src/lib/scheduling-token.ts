@@ -68,7 +68,7 @@ export function readSchedulingToken(
   scope: SchedulingTokenScope
 ): { tenantId: string; id: string } | null {
   const decoded = verifySchedulingToken(token);
-  if (!decoded || decoded.scope !== scope) return null;
+  if (decoded?.scope !== scope) return null;
   return { tenantId: decoded.tenantId, id: decoded.id };
 }
 
