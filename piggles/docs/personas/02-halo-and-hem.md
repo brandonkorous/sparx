@@ -1,11 +1,11 @@
 # P02 — Nia Okafor · Halo & Hem
 
-**Version:** 1.2
+**Version:** 1.5
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-22
 
 **Status:** in progress
-**Run:** started 2026-08-21. **Acts 1–5 done; 6–10 outstanding.**
+**Run:** started 2026-08-21. **Acts 1–8 done; 9–10 outstanding.**
 Machine clock is **PDT (UTC-7)**. Three standing checks are done and recorded
 below (reload · deep link · restore, someone else's business, money at the
 edges); wrong moves, dates, the buyer's side and one job without a mouse are not.
@@ -18,12 +18,20 @@ services block, so it can never drift from what she charges. Eight issues came
 out of it ([093](issues/093-her-contact-page-showed-a-map-of-another-salons-street-and-no-screen-could-move-it.md)–[100](issues/100-the-check-before-publishing-said-1-things-to-look-at.md)),
 six of them fixed and re-proved on the screen that found them.
 
-**Act 6 is part-done.** Four real bookings exist, made through the public form as
-four different clients, and the availability engine is proved right to the minute
-from the customer's side. What is NOT done: the confirmation still does not say
-**where** the salon is or **who** the client picked, the consultation rule before
-colour is words on a page and nothing enforces it, and a deposit cannot be paid at
-all because every new tenant is provisioned onto the `manual` payment gateway
+**Act 6 is done.** Six real bookings exist, made through the public form as six
+different clients, and the availability engine is proved right to the minute from
+the customer's side. The confirmation now names **who** and **where**, and says
+which clock it means. Three defects came out of the confirmation alone, and two of
+them were the same shape: a value nobody had ever supplied, quietly standing in
+for one nobody had measured.
+
+- [107](issues/107-the-booking-confirmation-does-not-say-where-the-salon-is-or-who-she-booked.md) — the confirmation gave a time and nothing else. **Fixed:** the panel, the `.ics` and the email all read one resolver, and a booking at a business with one address now carries it even though nothing on that booking ever named a location.
+- [108](issues/108-every-booking-made-from-her-website-lands-in-her-diary-seven-hours-late.md) — **blocker.** Every website booking was stamped `UTC`, so Nia's own diary showed her clients seven hours late, three of them after she had locked up. **Fixed** at the engine, plus a migration that repairs the rows already written.
+- [109](issues/109-the-booking-page-shows-its-times-in-the-visitors-timezone-not-the-salons.md) — the booking page drew every time in the reader's timezone, so a client booking from out of town read the whole grid shifted. **Fixed:** the page shows the salon's clock and names it, but only for a reader whose own would say something else.
+
+Still open from act 6: the consultation rule before colour is words on a page and
+nothing enforces it, and a deposit cannot be paid at all because every new tenant
+is provisioned onto the `manual` payment gateway
 ([105](issues/105-a-client-booked-her-most-expensive-appointment-and-was-told-it-had-failed.md)).
 
 **Three probe bookings need clearing in act 7** — `Refusal Probe`, at Thursday
@@ -32,9 +40,36 @@ defect in [106](issues/106-a-client-could-book-inside-her-lunch-and-on-the-day-s
 before it was fixed and are exactly the impossible appointments it describes;
 cancelling them is act 7's cancel step doing real work.
 
-**Next:** finish act 6 — the confirmation's missing where/who
-([107](issues/107-the-booking-confirmation-does-not-say-where-the-salon-is-or-who-she-booked.md)) —
-then act 7 behind the chair, and 8 to 10.
+**Act 7 is done.** All five steps driven, three probe bookings cancelled, Margot
+moved from Thursday to Friday (and told, on email AND text), a past appointment
+marked a no-show, Yusuf checked in and completed. Four more defects, two fixed:
+
+- [110](issues/110-her-diary-follows-the-laptops-clock-so-a-thursday-appointment-can-land-on-friday.md) — **open.** Her calendar draws in the laptop's timezone, so from Lisbon her Thursday runs 4 PM to 2 AM and one appointment lands on Friday. Right today only because her laptop is in Sacramento.
+- [111](issues/111-the-appointment-does-not-know-who-it-is-for-so-an-allergy-sits-four-screens-away.md) — **fixed.** Priyanka's ammonia allergy was four screens from her colour appointment, and the client's name on the booking was not even a link. The appointment now carries who it is for, how to reach them, and what is written down about them.
+- [112](issues/112-she-marked-a-no-show-and-was-never-told-whether-anyone-had-been-charged.md) — **fixed.** Marking a $180 no-show said a fee "is applied" and then never said whether one was. Both dialogs and the booking now say what actually happens to the money.
+- [113](issues/113-a-clients-record-in-a-booking-business-has-no-appointments-on-it.md) — **open.** A client with a booked $180 appointment reads "no deals, tasks, orders or logged activity", Total spent $0.00, and is labelled a Lead. The customer record has no appointments on it at all.
+
+**Act 8 is done, and it was the biggest one.** There was no way to take money in
+person — in a product whose audience takes most of its money in person. A **Take
+a sale** surface now exists, three real sales went through it, and Dara's $600
+chair rent is invoiced and showing under what she is owed. Eight issues, five
+fixed. Detail below.
+
+**Next: act 9 — reminders.** Set up the reminder that goes out the day before an
+appointment, in Nia's words rather than the default, and write down what actually
+sends in dev. Done when the reminder exists and its real dev behaviour is
+recorded. Two things known going in: `email.send` is a **logged no-op** in dev
+and `email_events` stores no body, so the reminder's text cannot be read back
+from a delivery — read the queued event or the notification ledger
+(`scheduling_booking_notifications`, which act 7 already proved carries both the
+email and the sms row). And **seven of the ten bookings in her diary still carry
+`UTC`** rather than the salon's zone, because they predate the
+[108](issues/108-every-booking-made-from-her-website-lands-in-her-diary-seven-hours-late.md)
+fix and the repair migration has not been run — so any reminder timed off those
+rows will be seven hours out, and that is expected until it lands.
+
+Then act 10 (the phone at 390px), and the four standing checks still outstanding:
+wrong moves, dates, the buyer's side, and one job without a mouse.
 
 ### Ids, so they are not looked up twice
 
@@ -62,114 +97,41 @@ Pages: Home `0d2e3c5b-67b2-468e-9877-1b6348fe8805` · Book
 `26098707-9ed6-45dc-9aa3-4d14ce9e78d6` · Deposits and changes
 `aad42687-34d2-400e-8b74-fcaf4fa84923`.
 
-### The diary as it stands, for act 7
+### The diary as it stands, for act 9
 
-| When (PDT)       | Who                   | What                 | With |
-| ---------------- | --------------------- | -------------------- | ---- |
-| Thu 27 Aug 13:15 | **Refusal Probe**     | Cut and finish       | Dara |
-| Thu 27 Aug 14:00 | Margot Lindqvist      | Cut and finish       | Nia  |
-| Thu 27 Aug 15:00 | **Refusal Probe**     | Cut and finish       | Nia  |
-| Fri 28 Aug 09:00 | Priyanka Deshmukh     | Full head highlights | Nia  |
-| Fri 28 Aug 10:30 | Rob Alvarez           | Barbering, skin fade | Dara |
-| Mon 31 Aug 10:00 | **Refusal Probe**     | Cut and finish       | Nia  |
-| Sat 29 Aug 11:00 | Ekaterina Volkonskaya | Restyle, long hair   | Nia  |
+Real times, in the salon's own clock. Six live appointments, three cancelled
+probes, and two finished.
 
-The three `Refusal Probe` rows are the ones to cancel. Note the Thursday 13:15 one
-was assigned to **Dara on a day she does not work** — further proof of
-[106](issues/106-a-client-could-book-inside-her-lunch-and-on-the-day-she-is-shut.md).
+| When (PDT)       | Who                   | What                 | State               |
+| ---------------- | --------------------- | -------------------- | ------------------- |
+| Thu 20 Aug 14:00 | Margot Lindqvist      | Full head highlights | **Did not turn up** |
+| Sat 22 Aug 15:00 | Yusuf Karadeniz       | Cut and finish       | **Completed**       |
+| Thu 27 Aug 13:15 | Refusal Probe         | Cut and finish       | Cancelled           |
+| Thu 27 Aug 15:00 | Refusal Probe         | Cut and finish       | Cancelled           |
+| Thu 27 Aug 16:00 | Colette Mbeki         | Cut and finish       | Confirmed           |
+| Fri 28 Aug 09:00 | Priyanka Deshmukh     | Full head highlights | Confirmed           |
+| Fri 28 Aug 10:30 | Rob Alvarez           | Barbering, skin fade | Confirmed           |
+| Fri 28 Aug 14:00 | Margot Lindqvist      | Cut and finish       | Confirmed           |
+| Sat 29 Aug 11:00 | Ekaterina Volkonskaya | Restyle, long hair   | Confirmed           |
+| Mon 31 Aug 10:00 | Refusal Probe         | Cut and finish       | Cancelled           |
 
-Act 7 also needs a **past** booking for Margot to mark as a no-show; there is none
-yet, so one has to be made first (the console can book in the past; the public
-endpoint cannot).
+**Only three rows carry the right stored zone** — Margot's no-show, Yusuf's
+completed cut and Colette's Thursday, all written after
+[108](issues/108-every-booking-made-from-her-website-lands-in-her-diary-seven-hours-late.md)
+was fixed. The other seven still say `UTC`, so the bookings LIST and the booking
+header show them seven hours late until the backfill migration runs. **The
+calendar shows them all correctly**, because it reads the laptop's clock — which
+is the coincidence [110](issues/110-her-diary-follows-the-laptops-clock-so-a-thursday-appointment-can-land-on-friday.md)
+is about. The table above is what the clients actually booked.
 
-**The site is built.** Seven pages live — Home, Book, The team, Our work, About,
-Contact, and Deposits, changes and no-shows — plus Privacy, Terms and Cookie
-published with their footer links resolving, a real 404, and her own mark in the
-tab. The one page in the persona's inventory with no page of its own is **Services
-& prices**: `/book` is that page, and it is better than a separate one because it
-renders her ten services live rather than as a hand-typed copy. **Find us** is
-`/contact`, which carries the address, the hours, the parking, the map and the
-form.
+Margot's Friday cut is the one moved in act 7 (from Thursday 14:00); she was
+told on email and text. Her Thursday 20 Aug colour is the past booking created
+so a no-show could be marked, and it settled to nothing — no deposit was ever
+taken, because none can be
+([105](issues/105-a-client-booked-her-most-expensive-appointment-and-was-told-it-had-failed.md)).
 
-**Still open on the site:** photographs are the starter pack's stock, not
-photographs of this salon — there are no real ones to be had for a business that
-does not exist, and the alt text on every one of them is now hers rather than a
-file name ([102](issues/102-picking-a-photo-wrote-the-file-name-where-the-description-should-go.md)).
-Responsive at 390px and both themes are **not checked yet**.
-
-**Trade:** Beauty & salon (`salon`) · **Rail groups:** people · web · money
-
-## Account
-
-| Field         | Value                                                                                                                                                                                                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Email         | `p02.nia@piggles.test`                                                                                                                                                                                                                     |
-| Tenant id     | `dfdffe98-154f-473b-946d-6e60b03aa2c5`                                                                                                                                                                                                     |
-| Site id       | `6282b2b1-a7b0-4ef2-90eb-e3dbfe1e729d` (slug `primary`)                                                                                                                                                                                    |
-| Subdomain     | `halo-and-hem.piggles.site`                                                                                                                                                                                                                |
-| Published URL | `swift-horizon-4860.piggles.site` — stored, but dead; her site resolves at `halo-and-hem.piggles.site` ([089](issues/089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)). Dev: `localhost:3004/?tenant=halo-and-hem` |
-
-## The person
-
-Nia Okafor, 41, she/her. Twenty years behind a chair, six years running her own
-salon. She rents a second chair to Dara Bell, who keeps her own diary and her own
-clients but books through the same page.
-
-Nia lives in her appointment book. Her current one is a paper diary plus a phone
-that rings during colour services, and she loses roughly two bookings a week to
-voicemail. She has tried two booking apps; both wanted a deposit setup she did
-not understand, so both got deleted.
-
-**What made her look:** a client rebooked with a competitor because Nia did not
-call back until Tuesday.
-
-## The business
-
-**Halo & Hem** — a two-chair salon. Tuesday to Saturday. Cuts, colour and
-barbering. She sells almost nothing physical — four retail products on a shelf by
-the till, and that is it.
-
-- **Time is the product.** Every service has a length, and colour has two lengths
-  depending on hair
-- Colour needs a **free consultation first** — non-negotiable, and it is the
-  thing every booking system gets wrong
-- She takes a **$25 deposit** on anything over 90 minutes because no-shows cost
-  her a half day
-- Closed Mondays; she takes a 45-minute lunch at 13:00; the first week of August
-  she is away
-
-**Where she is, and how she is reached.** Not given when this persona was written,
-and RULE #8 wants the same name, address and phone in the footer, on Contact and
-in the structured data — so these were settled in act 5 and are now the fixture.
-Reserved-for-fiction phone range, deliberately.
-
-| Fact    | Value                                           |
-| ------- | ----------------------------------------------- |
-| Address | 214 Bower Street, Suite B, Sacramento, CA 95811 |
-| Phone   | (916) 555-0146                                  |
-| Email   | hello@haloandhem.com                            |
-| Social  | instagram.com/haloandhemsalon                   |
-| Tagline | Two chairs, no rush.                            |
-
-## Why she is here today
-
-1. "Clients book themselves, without ringing me."
-2. "Nobody books a full head of colour without talking to me first."
-3. "If they do not turn up, I am not out of pocket."
-
-## Onboarding answers
-
-| Question       | Answer                                                      |
-| -------------- | ----------------------------------------------------------- |
-| Business name  | `Halo & Hem`                                                |
-| Trade          | Beauty & salon                                              |
-| What do you do | I deal with customers · I need a website · I invoice people |
-| Look           | first services-shelf option; record which                   |
-
-She does **not** tick "I sell things". Watch what that costs her later — she has
-four retail products, and the promise is that nothing is locked.
-
-## The data
+Priyanka's record carries the ammonia note, and it now shows on her appointment
+([111](issues/111-the-appointment-does-not-know-who-it-is-for-so-an-allergy-sits-four-screens-away.md)).
 
 ### Services
 
@@ -203,6 +165,31 @@ Away: **1–8 August**, whole salon.
 | Sea salt texture spray, 200ml | $24.00 |
 | Wide-tooth comb               | $9.00  |
 | Silk scrunchie, set of three  | $14.00 |
+
+### The money as it stands, for act 9
+
+Written during act 8, all of it real and none of it seeded.
+
+| What                                 | Who               | Amount  | State                        |
+| ------------------------------------ | ----------------- | ------- | ---------------------------- |
+| O-000001 · Bond repair treatment     | Priyanka Deshmukh | $45.00  | Paid on **card** · _To send_ |
+| O-000002 · Bond repair take-home kit | Priyanka Deshmukh | $22.00  | Paid in cash · **Collected** |
+| O-000003 · Dry cut                   | Rob Alvarez       | $40.00  | Paid in cash · **Collected** |
+| INV-000001 · Chair rent, September   | Dara Bell         | $600.00 | Owed, due 1 Sep 2026         |
+
+Only **O-000001** still reads To send — it is the one written before
+[116](issues/116-a-sale-taken-at-the-counter-waits-forever-to-be-sent-to-a-warehouse.md)
+was fixed. The first **two** are missing from Money, because both predate
+[117](issues/117-the-money-she-took-over-the-counter-never-reached-her-money-screens.md)
+and carry no origin site. Left exactly as they
+are, because they are the evidence — `What you kept` reading **$40.00** rather
+than $107.00 is the defect staying visible instead of being tidied away.
+
+**Dara Bell is now a customer as well as a stylist**
+(`d992ef70-fdc7-4b6c-93d8-9de2fa49457f`), because the person who pays you rent is
+a customer. She is still not in My Team
+([120](issues/120-her-two-stylists-are-staff-in-bookings-and-nobody-in-my-team.md)),
+so no sale can be credited to her.
 
 ### Clients to load
 
@@ -328,6 +315,29 @@ Then invoice Dara for her chair rent, $600, monthly.
 
 **Done when:** both exist and Money shows takings and rent apart from each other.
 
+**Done.** Both exist, and Money shows them apart: **Money paid to you** lists the
+counter sale, **Owed to you** carries the rent. Getting there meant building the
+till, because there was none — the single largest gap this persona has found. The
+act produced eight issues, five of them fixed and re-proved on the screen that
+found them.
+
+- [114](issues/114-she-cannot-write-down-money-she-took-in-the-room.md) — **blocker.** There was no way to write down money taken in the room. Not a missing button: `POST /v1/orders` had `channel: 'admin'` in its enum the whole time and nothing in either console called it. **Fixed:** a **Take a sale** surface that sells her diary services and her products from one list, takes a written-in one-off, and records the money.
+- [117](issues/117-the-money-she-took-over-the-counter-never-reached-her-money-screens.md) — **blocker.** $67 in the till and Money said "No payments yet" and "No money came in". Two causes: the sale carried no origin site, and **Rebuild figures** rebuilt a cache of a cache — the revenue it subtracts from is owned by a nightly job. **Fixed** at both.
+- [116](issues/116-a-sale-taken-at-the-counter-waits-forever-to-be-sent-to-a-warehouse.md) — a $45 treatment closed as **To send**, offering **Send to the warehouse**. **Fixed:** a counter sale records as collected and closes.
+- [118](issues/118-there-was-no-way-to-say-a-card-was-taken-on-her-own-machine.md) — Cash, Cheque or Wire transfer, and most of her money arrives on the reader on her counter. **Fixed:** `card` is a real way to be paid, and refunding one no longer promises a credit nothing can make.
+- [115](issues/115-she-typed-600-into-the-invoice-and-it-billed-dara-nothing.md) — she typed 600 into the box marked **Cost** and invoiced Dara **$0.00**, with the figure shown nowhere. **Fixed:** **Price each** and **Cost to you**, each saying which is which, and the tax rate asked for out of a hundred.
+
+Still open from act 8: the search rejects the sentence it invites
+([119](issues/119-the-search-only-finds-you-what-you-already-know-the-name-of.md)),
+her two stylists are staff in Bookings and nobody in My Team so a sale cannot be
+credited ([120](issues/120-her-two-stylists-are-staff-in-bookings-and-nobody-in-my-team.md)),
+and a monthly rent has to be re-keyed every month
+([121](issues/121-rent-is-due-every-month-and-the-invoice-can-only-be-raised-once.md)).
+
+Act 7's open question is answered: completing Yusuf's cut produced no order and
+no money **because nothing on the platform could produce one**. That was the
+defect, and it is [114].
+
 ### Act 9 — Reminders
 
 Set up the reminder the day before an appointment, in Nia's words rather than the
@@ -378,7 +388,12 @@ salon that did not tick "I sell things" can still ring up a bottle of shampoo.
 | 2026-08-22 | 5   | **Act 5 finished.** Wrote and published Home, About, Contact and Book in her voice; filled Site identity (phone, email, address, Instagram, tagline) and rebuilt the footer around it. Replaced the starter's hand-typed four-service price list with the **live** Booking services block — her ten real services, prices and lengths, on the homepage, unable to drift. Eight issues out of one act: her contact page carried a **map of the demo salon's street in Portland** with no field anywhere to move it, because five host cores declared author props that nothing in the console ever drew ([093](issues/093-her-contact-page-showed-a-map-of-another-salons-street-and-no-screen-could-move-it.md), fixed); the palette's Contact strip and Find us blocks shipped **(555) 123-4567 and hello@example.com** while the identical blocks the starter installed were bound to Site identity and said so on screen ([094](issues/094-the-blocks-for-how-to-reach-us-shipped-a-strangers-phone-number.md), fixed); `/book` went to search as a module constant rather than the title she typed ([096](issues/096-her-booking-page-went-to-search-as-the-platforms-sentence-not-hers.md), fixed); Bookings › Places claimed two places were in use by **four people and eleven services she had deleted**, and the delete confirmation warned her off removing one on the strength of it ([097](issues/097-her-bookings-said-two-places-were-in-use-by-people-she-had-deleted.md), fixed). Open: the live services block emits a second `<h1>` and two sentences she cannot edit ([095](issues/095-the-booking-list-put-a-second-page-title-on-her-homepage-in-words-she-cannot-change.md)), a Bookings place called **Maison Élan** ([098](issues/098-a-place-in-her-bookings-was-called-maison-elan.md)), and `site.map` printed as a layer name ([099](issues/099-the-layers-list-called-her-map-site-map.md)). |
 | 2026-08-22 | 5   | **The rest of the site.** Built and published **The team**, **Our work** and **Deposits, changes and no-shows**, put all three in the header, the mobile drawer and the footer, and published Privacy, Terms and Cookie after rewriting the commerce language out of each (a salon does not have "orders, payments and deliveries"). Four more issues, all fixed and re-proved: every page of her website carried **sparx's logo in the browser tab** ([101](issues/101-her-salons-website-put-another-companys-logo-in-the-browser-tab.md)); picking a photograph wrote the **file name** into the field a screen reader reads, which also satisfied the pre-publish check that exists to catch a missing one ([102](issues/102-picking-a-photo-wrote-the-file-name-where-the-description-should-go.md)); Legal pages told a hair salon it was **"0 of 4 required"** because one of the four was a returns policy ([103](issues/103-a-hair-salon-was-told-it-had-to-publish-a-returns-policy.md)); and the count on the pre-publish check read "1 things" ([100](issues/100-the-check-before-publishing-said-1-things-to-look-at.md)). The check itself is good — it caught an image with no picture in it, and a skipped heading level on the gallery, both fixed. Site now: 7 pages live, 3 legal pages published with their footer links resolving, a real 404, her own favicon and logo, and one live services block that cannot drift from her prices.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 2026-08-22 | 6   | **As the client, on the live site.** Three real bookings made through the public form: Margot's cut with **Nia** on Thursday at 2:00, Priyanka's full head of highlights on Friday at 9:00 with her ammonia note, Ekaterina's restyle on Saturday at 11:00, and Rob's skin fade with **Dara** on Friday at 10:30. **The availability engine is right to the minute from the customer's side** — with Nia chosen on a Thursday the grid runs 9:00–12:00 then jumps to 1:45, which is her 45-minute lunch and a one-hour service; with Dara on a Friday there is no gap at all, because Dara takes no lunch; Monday returns "No open times that day" and offers the waitlist. Three defects, two of them blockers. Her booking page offered **no way to choose a stylist** — the setting existed but was hidden on every service more than one person can do ([104](issues/104-a-two-chair-salon-could-not-let-a-client-choose-their-stylist.md)). Priyanka's $180 highlight booking answered **"An internal error occurred"** while creating the appointment anyway, because every new tenant is provisioned onto the `manual` payment gateway and the deposit step treated that as a broken one ([105](issues/105-a-client-booked-her-most-expensive-appointment-and-was-told-it-had-failed.md)). And the public endpoint **accepted a booking inside Nia's lunch and one on the Monday she is shut** — the slot grid was the only thing enforcing her hours ([106](issues/106-a-client-could-book-inside-her-lunch-and-on-the-day-she-is-shut.md)). All three fixed and re-proved from the screen.                                                                                                                                                                                                                                                                                                                       |
+| 2026-08-22 | 6   | **Act 6 finished — reading the confirmation.** It said WHEN and what happens next, and nothing about **where** or **who** ([107](issues/107-the-booking-confirmation-does-not-say-where-the-salon-is-or-who-she-booked.md)) — a client who has never been to Halo & Hem got a time and three calendar links. Fixing it meant asking where a booking happens, and that question turned up the run's third blocker: **`location_id` is null on every row Nia owns**, because a two-chair salon never picks a location anywhere, and `createBooking` fell through the same missing answer to stamp `timezone: 'UTC'` on every booking made from her website. Her own diary was showing Margot at **9:00 PM** for a 2:00 PM cut, and three clients arriving after she had locked up ([108](issues/108-every-booking-made-from-her-website-lands-in-her-diary-seven-hours-late.md)). The same thread ran one step further out: the booking PAGE drew its times in the reader's own timezone, so a client booking from out of town read the whole grid shifted with nothing saying so ([109](issues/109-the-booking-page-shows-its-times-in-the-visitors-timezone-not-the-salons.md)). All three fixed and proved on the screen: Yusuf's booking confirms as "Cut and finish **with Nia Okafor** … Saturday, August 22 at 3:00 PM" over **Halo & Hem, 214 Bower Street, Suite B, Sacramento, CA 95811**, the `.ics` carries the same address in `LOCATION` and "With Nia Okafor" in its description, the diary reads **3:00 PM**, and a browser pretending to be in New York sees the salon's own 9:00 AM–4:30 PM with "All times shown are our local time (PDT)" beneath it.                                                                                                                                                                                                                                                   |
+| 2026-08-22 | 7   | **Behind the chair.** Cancelled the three `Refusal Probe` bookings (each one warned properly — it named the slot, said the customer is told, and the dismiss button reads "Keep it"), moved Margot's cut from Thursday to Friday, and confirmed **the client really is told**: a `change` notice went out on email AND text within the minute, and the three cancelled probes got cancellation emails. Took a booking in the past for a client who did not turn up, marked it a **no-show**, checked Yusuf in and completed his cut — the history reads back cleanly, and it distinguishes "Automatic" (the website took it) from "A team member". Four defects. Her **calendar** turns out to be drawn in the laptop's clock, so from Lisbon her Thursday runs 4 PM to 2 AM and a 4 o'clock appointment lands on Friday ([110](issues/110-her-diary-follows-the-laptops-clock-so-a-thursday-appointment-can-land-on-friday.md), open). Priyanka's ammonia allergy went onto her record and was **four screens away from the colour appointment it exists for** — the client's own name on the booking was not even a link ([111](issues/111-the-appointment-does-not-know-who-it-is-for-so-an-allergy-sits-four-screens-away.md), fixed; the 835-line pane came apart into nine files on the way). Marking a **$180 no-show** said "any no-show fee in your booking rules is applied" and then never said whether one was — her colour rule sets no fee, and no deposit exists to keep ([112](issues/112-she-marked-a-no-show-and-was-never-told-whether-anyone-had-been-charged.md), fixed). And Priyanka's customer record, with $180 booked for Friday, reads "no deals, tasks, orders or logged activity", **Total spent $0.00**, and calls her a **Lead** ([113](issues/113-a-clients-record-in-a-booking-business-has-no-appointments-on-it.md), open).                                                            |
 | 2026-08-21 | —   | Standing check **someone else's business**: deep-linked one of Marisol's orders (`ee8bd403…`, Thistle & Rye). `GET /v1/orders/…` → **404**, nothing leaked. The panel then spun for ever instead of saying so — [083](issues/083-a-link-to-an-order-this-salon-cannot-see-spun-for-ever.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 2026-08-22 | 8   | **The till that was not there.** Nia finished a bond repair on Priyanka in the chair and had nowhere to write down the $45. `take a payment` in the box that asks what she wants to do returned **Nothing matches that** ([119](issues/119-the-search-only-finds-you-what-you-already-know-the-name-of.md)); Orders offered no way to make one and said so in its own code — _"orders are placed by customers, or by checkout on their behalf"_. Built **Take a sale** ([114](issues/114-she-cannot-write-down-money-she-took-in-the-room.md)) and sold her three things through it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 2026-08-22 | 8   | **Three defects fell out of the first sale.** It closed as **To send** with **Send to the warehouse** as its next step, in a salon with no warehouse ([116](issues/116-a-sale-taken-at-the-counter-waits-forever-to-be-sent-to-a-warehouse.md)). There was no way to say the card was taken on her own reader, and refunding one promised the platform would send the money back ([118](issues/118-there-was-no-way-to-say-a-card-was-taken-on-her-own-machine.md)). And $67 of takings never reached Money at all — two causes, one symptom ([117](issues/117-the-money-she-took-over-the-counter-never-reached-her-money-screens.md)). All three fixed and re-proved.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 2026-08-22 | 8   | **Dara’s chair rent.** Added Dara Bell as a customer (she was staff in Bookings and no one anywhere else — [120](issues/120-her-two-stylists-are-staff-in-bookings-and-nobody-in-my-team.md)) and raised **INV-000001**, $600, due 1 Sep. Typing 600 into the box labelled **Cost** produced a **$0.00** invoice with the figure nowhere on screen ([115](issues/115-she-typed-600-into-the-invoice-and-it-billed-dara-nothing.md)). Nothing on the editor can say the rent repeats ([121](issues/121-rent-is-due-every-month-and-the-invoice-can-only-be-raised-once.md)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## Act 5 — what the live booking page actually offers
 
@@ -490,4 +505,18 @@ A row with no confirmation is not a fixed defect.
 | [104](issues/104-a-two-chair-salon-could-not-let-a-client-choose-their-stylist.md)                       | major    | A two-chair salon could not let a client choose their stylist                        | yes   | "Choose your team member — Any available · Dara Bell · Nia Okafor" is live  |
 | [105](issues/105-a-client-booked-her-most-expensive-appointment-and-was-told-it-had-failed.md)           | blocker  | A client booked her most expensive appointment and was told it had failed            | yes   | A deposit service books cleanly and says "You're booked"                    |
 | [106](issues/106-a-client-could-book-inside-her-lunch-and-on-the-day-she-is-shut.md)                     | blocker  | A client could book inside her lunch, and on the day she is shut                     | yes   | Both refused 409; a genuinely open time still books                         |
-| [107](issues/107-the-booking-confirmation-does-not-say-where-the-salon-is-or-who-she-booked.md)          | major    | The booking confirmation does not say where the salon is, or who she booked          | no    | Blocked on scope: one widget, its `.ics` and its email must change together |
+| [107](issues/107-the-booking-confirmation-does-not-say-where-the-salon-is-or-who-she-booked.md)          | major    | The booking confirmation does not say where the salon is, or who she booked          | yes   | "with Nia Okafor", the address beneath, and the same in the `.ics` LOCATION |
+| [108](issues/108-every-booking-made-from-her-website-lands-in-her-diary-seven-hours-late.md)             | blocker  | Every booking made from her website lands in her diary seven hours late              | yes   | A 3:00 PM booking now reads 3:00 PM in her diary; old rows backfilled       |
+| [109](issues/109-the-booking-page-shows-its-times-in-the-visitors-timezone-not-the-salons.md)            | major    | The booking page shows its times in the visitor's timezone, not the salon's          | yes   | An out-of-town reader sees the salon's hours + "our local time (PDT)"       |
+| [110](issues/110-her-diary-follows-the-laptops-clock-so-a-thursday-appointment-can-land-on-friday.md)    | major    | Her diary follows the laptop's clock, so a Thursday appointment can land on Friday   | no    | Recommended fix written; needs the multi-zone case decided                  |
+| [111](issues/111-the-appointment-does-not-know-who-it-is-for-so-an-allergy-sits-four-screens-away.md)    | major    | The appointment does not know who it is for, so an allergy sits four screens away    | yes   | The allergy is on the appointment; their record is one click away           |
+| [112](issues/112-she-marked-a-no-show-and-was-never-told-whether-anyone-had-been-charged.md)             | major    | She marked a no-show and was never told whether anyone had been charged              | yes   | Both dialogs and the booking say what happens to the money                  |
+| [113](issues/113-a-clients-record-in-a-booking-business-has-no-appointments-on-it.md)                    | major    | A client's record, in a booking business, has no appointments on it                  | no    | Filed; the other half of 111                                                |
+| [114](issues/114-she-cannot-write-down-money-she-took-in-the-room.md)                                    | blocker  | She cannot write down money she took in the room                                     |
+| [115](issues/115-she-typed-600-into-the-invoice-and-it-billed-dara-nothing.md)                           | major    | She typed 600 into the invoice and it billed Dara nothing                            |
+| [116](issues/116-a-sale-taken-at-the-counter-waits-forever-to-be-sent-to-a-warehouse.md)                 | major    | A sale taken at the counter waits forever to be sent to a warehouse                  |
+| [117](issues/117-the-money-she-took-over-the-counter-never-reached-her-money-screens.md)                 | blocker  | The money she took over the counter never reached her money screens                  |
+| [118](issues/118-there-was-no-way-to-say-a-card-was-taken-on-her-own-machine.md)                         | major    | There was no way to say a card was taken on her own machine                          |
+| [119](issues/119-the-search-only-finds-you-what-you-already-know-the-name-of.md)                         | minor    | The search only finds you what you already know the name of                          |
+| [120](issues/120-her-two-stylists-are-staff-in-bookings-and-nobody-in-my-team.md)                        | major    | Her two stylists are staff in Bookings and nobody in My Team                         |
+| [121](issues/121-rent-is-due-every-month-and-the-invoice-can-only-be-raised-once.md)                     | minor    | Rent is due every month and the invoice can only be raised once                      |
