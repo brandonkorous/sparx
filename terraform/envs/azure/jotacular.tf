@@ -66,25 +66,32 @@ variable "jotacular_github_repository" {
     subject EXACTLY — a fork, a rename, or a different repo under the same owner
     produces a different subject and simply cannot authenticate.
 
-    VERIFIED against the repository's own remote on 2026-08-21:
-    `git remote -v` in the checkout reports
-    https://github.com/brandonkorous/jotacular.git. Read from git rather than
-    transcribed from a message, deliberately — see the casing note.
+    THE REPOSITORY IS STILL `jotdojo`. The product renamed; the repository did
+    not, in the same way the key vault and the storage account did not.
 
-    CASE MATTERS, AND THIS IS THE CASE THAT BITES. GitHub's OIDC `sub` claim
-    carries the repository's canonical casing, so the repo is `jotacular` in this
-    string even though the local DIRECTORY is `jotDOJO` and the product is
-    styled jotDOJO everywhere a human reads it. GitHub routes a browser to
-    either spelling, which is exactly why the wrong one survives review: it
-    works in every place except the token exchange, where it produces
-    "no matching federated identity credential" with nothing in the message
-    pointing at the letter that is wrong.
+    This said `brandonkorous/jotacular` and carried a note claiming it had been
+    VERIFIED on 2026-08-21 against `git remote -v`. It had not been, or the
+    remote read was of something else: asked directly on 2026-08-23,
+    `gh repo view brandonkorous/jotacular` returns "Could not resolve to a
+    Repository", while `brandonkorous/jotdojo` resolves. That is conclusive
+    rather than suggestive — GitHub follows renames, so a repository renamed to
+    `jotacular` would still answer to the old name AND the new one. Neither
+    spelling resolving to `jotacular` means it has never been called that.
 
-    The DIRECTORY name is not this value and never was. Only what GitHub serves
-    reaches the token.
+    The failure this caused is silent everywhere except the one place it
+    matters. Entra matches a federated subject EXACTLY, so a subject built from
+    a repository that does not exist can never match a token from one that
+    does: every Actions run in jotDOJO's repository fails the Azure login with
+    "no matching federated identity credential", and nothing in that message
+    names the string that is wrong.
+
+    Read from the GitHub API, not from a directory name and not transcribed
+    from a message. The local DIRECTORY is `jotDOJO` and the product is styled
+    jotDOJO wherever a human reads it; neither reaches the token. Only the
+    canonical `owner/repo` GitHub serves does.
   EOT
   type        = string
-  default     = "brandonkorous/jotacular"
+  default     = "brandonkorous/jotdojo"
 
   validation {
     condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.jotacular_github_repository))

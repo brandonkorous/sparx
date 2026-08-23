@@ -669,11 +669,18 @@ resource "cloudflare_record" "piggles_site_customers" {
 #
 # FIVE NAMES, FOUR OF THEM DISTINCT SERVICES — and one pair that is not:
 #
-#   jotacular.com      the MARKETING site   → jotacular-web
-#   www.jotacular.com  the same, by CNAME   → jotacular-web
-#   app.jotacular.com  the PWA              → jotacular-web   ← same Service
-#   api.jotacular.com  REST v1              → jotacular-api
-#   mcp.jotacular.com  MCP server           → jotacular-mcp
+#   jotacular.com      the MARKETING site   → web    (jotacular namespace)
+#   www.jotacular.com  the same, by CNAME   → web
+#   app.jotacular.com  the PWA              → web             ← same Service
+#   api.jotacular.com  REST v1              → api
+#   mcp.jotacular.com  MCP server           → mcp
+#
+# The Services are named plainly — `web` / `api` / `mcp`, no product prefix —
+# and are distinguished by NAMESPACE, which is what k8s/ingress/Caddyfile
+# proxies to. This block previously wrote them `jotacular-web` / `-api` / `-mcp`,
+# which has never been any Service's name: the rename sweep rewrote an already
+# wrong `jotdojo-web` into a differently wrong spelling. Confirmed against the
+# cluster on 2026-08-23 (`kubectl get svc -n jotdojo` → api, mcp, web).
 #
 # THE APEX AND `app.` ARE ONE DEPLOYMENT, split by Host inside the app
 # (`apps/web/middleware.ts`, its ADR-040). So they need identical DNS and

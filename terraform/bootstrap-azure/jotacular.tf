@@ -45,19 +45,27 @@ variable "jotacular_github_repository" {
   description = <<-EOT
     `owner/repo` whose Actions runs may assume jotDOJO's Azure identity.
 
-    VERIFIED against the repository's own remote on 2026-08-21: `git remote -v`
-    in the checkout reports https://github.com/brandonkorous/jotacular.git.
+    THE REPOSITORY IS STILL `jotdojo` — the product renamed, the repository did
+    not, exactly like the key vault and the storage account.
 
-    CASE MATTERS. GitHub's OIDC `sub` claim carries the repository's canonical
-    casing, so the repo is `jotacular` here even though the local DIRECTORY is
-    `jotDOJO` and the product is styled jotDOJO everywhere a human reads it.
-    GitHub routes a browser to either spelling, which is exactly why the wrong
-    one survives review: it works everywhere except the token exchange, where it
-    produces "no matching federated identity credential" with nothing in the
-    message pointing at the letter that is wrong.
+    This said `brandonkorous/jotacular` under a note claiming verification on
+    2026-08-21. Asked directly on 2026-08-23, `gh repo view` resolves
+    `brandonkorous/jotdojo` and returns "Could not resolve to a Repository" for
+    `brandonkorous/jotacular`. GitHub follows renames, so a repository that had
+    been renamed would answer to BOTH names; answering to neither means it was
+    never called that.
+
+    Entra matches a federated subject EXACTLY, so a subject built from a
+    repository that does not exist cannot match a token from one that does —
+    every Actions run fails the Azure login with "no matching federated identity
+    credential", and the message never names the string at fault.
+
+    Read from the GitHub API. The local DIRECTORY is `jotDOJO` and the product
+    is styled jotDOJO wherever a human reads it; only the canonical `owner/repo`
+    GitHub serves reaches the token.
   EOT
   type        = string
-  default     = "brandonkorous/jotacular"
+  default     = "brandonkorous/jotdojo"
 
   validation {
     condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.jotacular_github_repository))
