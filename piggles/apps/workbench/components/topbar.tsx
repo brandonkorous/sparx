@@ -11,51 +11,31 @@
 // There is deliberately NO breadcrumb. A breadcrumb narrates one location, and
 // this app is in several at once — the tabs are the orientation. What earns a
 // place up here is only what applies to the whole window.
+//
+// Each control owns its own file under components/topbar/; this states the shape
+// of the bar and nothing else (RULE #0.5).
 
-import { useRef } from 'react';
 import {
-  Avatar,
   Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
   Kbd,
   Navbar,
   NavbarCenter,
   NavbarEnd,
   NavbarStart,
   Tooltip,
-  useToast,
 } from '@wizeworks/silicaui-react';
-import {
-  faBuilding,
-  faCheck,
-  faChevronDown,
-  faCookie,
-  faCopy,
-  faCreditCard,
-  faGlobe,
-  faGrid,
-  faMagnifyingGlass,
-  faPlus,
-  faRightFromBracket,
-} from '@fortawesome/pro-solid-svg-icons';
+import { faCopy, faGrid, faMagnifyingGlass } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Logo } from '@piggles/brand/react';
 import { PRODUCT } from '@piggles/config';
-import { switchSite, useSites, useTenant } from '@/lib/api/shell-data';
-import { useConfirm } from '@/lib/confirm';
-import { deferTick } from '@/lib/defer';
-import { useWorkbench } from '@/lib/workbench/context';
+import { useTenant } from '@/lib/api/shell-data';
 import { AppearanceMenu } from '@/components/appearance-menu';
 import { NotificationCenter } from '@/components/notification-center';
 import { FeedbackButton } from '@/components/feedback/button';
-import { useViewer } from '@/lib/api/shell-data';
-import { switchBusiness, useBusinesses } from '@/lib/console/businesses';
+import { BusinessSwitcher } from '@/components/topbar/business-switcher';
+import { QuickAdd } from '@/components/topbar/quick-add';
+import { SiteSwitcher } from '@/components/topbar/site-switcher';
+import { ViewerMenu } from '@/components/topbar/viewer-menu';
 import type { Theme, ThemeChoice } from '@/lib/theme';
 import type { WindowMode } from '@/lib/window-mode';
 
@@ -75,11 +55,10 @@ interface TopbarProps {
   /**
    * Where the account app lives, e.g. `https://getpiggles.com`.
    *
-   * Threaded down from the server rather than computed here, and that is not
-   * fussiness: the origin comes from `PIGGLES_ACCOUNT_ORIGIN`, a server-only
-   * variable, and the helper that reads it lives in @piggles/auth-handoff —
-   * which imports @wizeworks/db. Reaching for it from a client component would pull
-   * Prisma into the browser bundle to answer a question the server already knew.
+   * Threaded down from the server rather than computed here: the origin comes
+   * from `PIGGLES_ACCOUNT_ORIGIN`, and the helper that reads it imports
+   * @wizeworks/db — reaching for it from a client component would pull Prisma
+   * into the browser bundle to answer a question the server already knew.
    */
   accountOrigin: string;
   /** Windows or tabs — how open panes are presented. Piggles chrome; sparx has
@@ -90,38 +69,37 @@ interface TopbarProps {
   onOpenLauncher: () => void;
 }
 
-// Quick add. Only surfaces VERIFIED to exist and to accept `{ id: 'new' }` —
-// a key that does not resolve opens nothing and reports nothing, so a menu of
-// guesses would read as a broken product rather than a missing one.
-const QUICK_ADD: { surface: string; label: string }[] = [
-  { surface: 'commerce.product.detail', label: 'A product' },
-  { surface: 'invoicing.invoice.edit', label: 'An invoice' },
-  { surface: 'crm.customer.detail', label: 'A customer' },
-];
-
-/** The person's role, in words a business owner uses. The platform's roles are
- *  `owner` / `admin` / `editor` / `viewer`; nobody calls themselves an editor of
- *  their own shop. */
-function roleLabel(role: string | undefined): string {
-  switch (role) {
-    case 'owner':
-      return 'Owner';
-    case 'admin':
-      return 'Runs the place';
-    case 'viewer':
-      return 'Can look, not touch';
-    default:
-      return 'Team member';
-  }
-}
-
-/** Two-letter fallback for the avatar chip. */
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  const first = parts[0];
-  if (!first) return '?';
-  if (parts.length === 1) return first.slice(0, 2).toUpperCase();
-  return `${first.charAt(0)}${parts[parts.length - 1]?.charAt(0) ?? ''}`.toUpperCase();
+/** Windows ⇄ tabs. An icon toggle rather than two buttons: it is one setting
+ *  with two states, and the icon shows the state you would be switching TO. */
+function WindowModeToggle({
+  windowMode,
+  onChangeWindowMode,
+}: {
+  windowMode: WindowMode;
+  onChangeWindowMode: (mode: WindowMode) => void;
+}) {
+  const toTabs = windowMode === 'windows';
+  return (
+    <Tooltip
+      content={
+        toTabs
+          ? 'Tidy everything back into a grid'
+          : 'Show each thing in its own window you can move around'
+      }
+    >
+      <Button
+        variant="ghost"
+        shape="square"
+        aria-label={toTabs ? 'Switch to a tidy grid' : 'Switch to movable windows'}
+        aria-pressed={windowMode === 'windows'}
+        onClick={() => {
+          onChangeWindowMode(toTabs ? 'tabs' : 'windows');
+        }}
+      >
+        <Icon glyph={toTabs ? faGrid : faCopy} className="size-4" aria-hidden />
+      </Button>
+    </Tooltip>
+  );
 }
 
 export function Topbar({
@@ -136,416 +114,60 @@ export function Topbar({
   onSetTheme,
   onOpenLauncher,
 }: TopbarProps) {
-  const { controller } = useWorkbench();
-  const signOutForm = useRef<HTMLFormElement>(null);
-  const confirm = useConfirm();
   const { data: tenant } = useTenant();
-  const { data: sites } = useSites();
-  const { data: viewer } = useViewer();
-
-  const activeSite = sites?.find((site) => site.id === siteKey) ?? null;
-
-  // A site switch is a full context change (layouts are per-site), so unsaved
-  // work gets a real conversation first — an async dialog, never
-  // `window.confirm`, which blocks inside a Base UI menu's close and freezes it
-  // mid-flight.
-  const onSwitchSite = async (nextSiteId: string) => {
-    if (nextSiteId === siteKey) return;
-    await deferTick();
-    if (controller.hasUnsavedWork()) {
-      const ok = await confirm({
-        title: 'Switch sites with unsaved changes?',
-        description:
-          'Something here has edits that were never saved. Switching sites reloads the page and those edits are gone.',
-        confirmLabel: 'Switch anyway',
-        cancelLabel: 'Stay here',
-        color: 'danger',
-      });
-      if (!ok) return;
-    }
-    await switchSite(controller, siteKey, nextSiteId);
-  };
 
   return (
     <Navbar className="border-base-300 bg-base-100 min-h-0 shrink-0 gap-2 border-b py-1.5 pr-3 pl-0">
       <NavbarStart className="gap-1">
         {/* The delivered lockup — one <svg> on the lockup canvas, never the mark
             and the wordmark set side by side with a guessed gap. Their padded
-            boxes overlap in the real artwork, so no positive gap can reproduce
-            it. See @piggles/brand's marks.ts. */}
+            boxes overlap in the real artwork. See @piggles/brand's marks.ts. */}
         <span className="flex shrink-0 justify-center" data-guide="business">
           <Logo className="mx-3 h-7 w-auto" title={PRODUCT.name} />
         </span>
 
-        {/* The BUSINESS switcher — the first of two, and the more consequential.
-            "Business", never "tenant" (piggles/CLAUDE.md RULE #3).
-
-            This was plain text, with a comment claiming there was nothing to
-            switch to. That was wrong: people genuinely belong to several
-            businesses (a bookkeeper, a partner, an owner with two shops), the
-            memberships have existed all along, and the platform's `getSession`
-            has always resolved the request's tenant from the session's active
-            organization — re-checking membership every time. The capability was
-            complete on the server and simply unreachable, because the browser
-            had no organization client. sparx still has no switcher; this is the
-            first surface to offer one.
-
-            Rendered only when there is more than one, so the overwhelming
-            majority who have exactly one business see a name, not a control
-            implying a choice they do not have. */}
+        {/* "Business", never "tenant" (piggles/CLAUDE.md RULE #3). Rendered as a
+            switcher only when there is more than one, so the majority who have
+            exactly one see a name rather than a control implying a choice they
+            do not have. */}
         <BusinessSwitcher siteKey={siteKey} fallbackName={tenant?.name ?? null} />
-
-        {sites && sites.length > 0 ? (
-          <span className="inline-flex items-center gap-1">
-            <span className="text-base-300 select-none" aria-hidden>
-              /
-            </span>
-            <DropdownMenu>
-              <Tooltip content="Switch site — each one keeps its own arrangement">
-                <DropdownMenuTrigger>
-                  {/* `text-sm` because silica bakes a font-size into every
-                      btn-<size> (btn-sm is 12px), which would render the site
-                      name a size smaller than the business name sitting right
-                      beside it. The bar speaks in one voice: 14px. */}
-                  <Button variant="ghost" className="gap-1.5 text-sm">
-                    <Icon glyph={faGlobe} className="size-3.5" aria-hidden />
-                    <span className="max-w-44 truncate">{activeSite?.name ?? 'Site'}</span>
-                    <Icon glyph={faChevronDown} className="size-3" aria-hidden />
-                  </Button>
-                </DropdownMenuTrigger>
-              </Tooltip>
-              <DropdownMenuContent align="start">
-                {/* Base UI requires a label to live inside a Group — a bare
-                    DropdownMenuLabel throws MenuGroupRootContext at runtime. */}
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>Your sites</DropdownMenuLabel>
-                  {sites.map((site) => (
-                    <DropdownMenuItem
-                      key={site.id}
-                      onClick={() => {
-                        void onSwitchSite(site.id);
-                      }}
-                    >
-                      <span className="flex w-full items-center gap-2">
-                        <span className="flex-1 truncate">{site.name}</span>
-                        {site.id === siteKey ? (
-                          <Icon glyph={faCheck} className="size-4" aria-hidden />
-                        ) : null}
-                      </span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem disabled>Each site keeps its own arrangement</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </span>
-        ) : null}
+        <SiteSwitcher siteKey={siteKey} />
       </NavbarStart>
 
       <NavbarCenter className="min-w-0 flex-1">
-        {/* The launcher's front door, and the mockup's centrepiece: "What do you
-            want to do?" rather than "Search". The wording is the point — this
-            audience does not arrive thinking "I will search for the invoices
-            screen", they arrive thinking "I need to bill someone".
+        {/* The launcher's front door: "What do you want to do?" rather than
+            "Search". The wording is the point — this audience does not arrive
+            thinking "I will search for the invoices screen", they arrive
+            thinking "I need to bill someone".
 
-            ⌘K works everywhere; this is for the person who has not learned that,
-            which for this audience is most people. An `outline` Button rather
-            than an Input because it OPENS something — it never holds text, and a
-            real field that cannot be typed into is a worse lie than a button
-            shaped like one. The variant does the painting; nothing here sets a
-            background or a border by hand — and no `color` either, so it wears
-            the base ink the theme resolves rather than an assigned grey. */}
+            A Button, not an Input, because it OPENS something: a real field that
+            cannot be typed into is a worse lie than a button shaped like one. */}
         <div className="mx-auto flex w-full max-w-2xl" data-guide="search">
-          <Button
-            // variant="outline"
-            className="w-full justify-start gap-2.5 font-normal"
-            onClick={onOpenLauncher}
-          >
+          <Button className="w-full justify-start gap-2.5 font-normal" onClick={onOpenLauncher}>
             <Icon glyph={faMagnifyingGlass} className="size-4 shrink-0" aria-hidden />
             <span className="flex-1 truncate text-left">What do you want to do?</span>
-            <Kbd /*size="sm"*/>⌘K</Kbd>
+            <Kbd>⌘K</Kbd>
           </Button>
         </div>
       </NavbarCenter>
 
       <NavbarEnd className="gap-1">
-        {/* Windows ⇄ tabs. An icon toggle rather than two buttons: it is one
-            setting with two states, and the icon shows the state you would be
-            switching TO, which is the convention every view-mode control uses.
-
-            It sits with the other whole-window controls (theme, notifications)
-            because that is what it is — a preference about the workspace, not
-            an action on anything in it. */}
-        <Tooltip
-          content={
-            windowMode === 'tabs'
-              ? 'Show each thing in its own window you can move around'
-              : 'Tidy everything back into a grid'
-          }
-        >
-          <Button
-            variant="ghost"
-            /*size="sm"*/
-            shape="square"
-            aria-label={
-              windowMode === 'tabs' ? 'Switch to movable windows' : 'Switch to a tidy grid'
-            }
-            aria-pressed={windowMode === 'windows'}
-            onClick={() => {
-              onChangeWindowMode(windowMode === 'tabs' ? 'windows' : 'tabs');
-            }}
-          >
-            {windowMode === 'tabs' ? (
-              <Icon glyph={faCopy} className="size-4" aria-hidden />
-            ) : (
-              <Icon glyph={faGrid} className="size-4" aria-hidden />
-            )}
-          </Button>
-        </Tooltip>
-
-        {/* Quick add. Every item opens a real create surface — the platform's
-            `{ id: 'new' }` convention, where create and edit are the same
-            screen. Nothing here is a placeholder. */}
-        <DropdownMenu>
-          <Tooltip content="Add something">
-            <DropdownMenuTrigger>
-              <Button color="primary" /*size="sm"*/ shape="square" aria-label="Add something">
-                <Icon glyph={faPlus} className="size-4" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-          </Tooltip>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>Add something</DropdownMenuLabel>
-              {QUICK_ADD.map((item) => (
-                <DropdownMenuItem
-                  key={item.surface}
-                  onClick={() => {
-                    controller.open(item.surface, { id: 'new' });
-                  }}
-                >
-                  {item.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <WindowModeToggle windowMode={windowMode} onChangeWindowMode={onChangeWindowMode} />
+        <QuickAdd />
 
         {/* The favourite control lives on each pane's TAB, not here. A star in
             the app toolbar acts on "whichever pane has focus", which in a
-            workbench holding five panes is a control with no visible subject.
-            See FavouriteButton in lib/dock/pane-tab.tsx. */}
+            workbench holding five panes is a control with no visible subject. */}
 
         <NotificationCenter />
 
         {/* Help opens a real conversation with a real person at the other end —
-            deliberately not a link to a help site, because there isn't one.
-            The control itself lives in components/feedback/button.tsx so it can
-            also carry the unread dot; this was a second copy that could not. */}
+            deliberately not a link to a help site, because there isn't one. */}
         <FeedbackButton />
 
         <AppearanceMenu choice={themeChoice} theme={theme} onSetTheme={onSetTheme} />
-
-        <DropdownMenu>
-          <Tooltip content={userName}>
-            <DropdownMenuTrigger>
-              {/* Name and role beside the avatar, as the mockup has it. Not
-                  vanity: this console can act as several BUSINESSES and the role
-                  differs per business (owner here, bookkeeper there), so "who am
-                  I being right now" is a real question the chrome should answer
-                  without a click. Hidden below `md`, where the bar has no room. */}
-              <Button
-                variant="ghost"
-                /*size="sm"*/
-                className="gap-2 pr-2 pl-1"
-                aria-label={`You — ${userName}`}
-              >
-                <Avatar size="md" alt={userName}>
-                  {initials(userName)}
-                </Avatar>
-                <span className="hidden min-w-0 flex-col items-start leading-tight md:flex">
-                  <span className="max-w-32 truncate text-sm font-semibold">{userName}</span>
-                  <span className="max-w-32 truncate text-xs">{roleLabel(viewer?.role)}</span>
-                </span>
-                <Icon glyph={faChevronDown} className="size-3 shrink-0" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-          </Tooltip>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>
-                <span className="flex flex-col">
-                  <span className="font-medium">{userName}</span>
-                  <span className="text-sm font-normal">{userEmail}</span>
-                </span>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            {/* Off to the account app, because that is where the subscription
-                lives. The console never shows a price and never takes a payment
-                (piggles/CLAUDE.md RULE #2) — it points at the one place that
-                does, so there is never a second answer to "what am I paying". */}
-            <DropdownMenuItem
-              onClick={() => {
-                window.location.href = `${accountOrigin}/account`;
-              }}
-            >
-              <Icon glyph={faCreditCard} className="size-4" aria-hidden />
-              Your plan and billing
-            </DropdownMenuItem>
-            {/* The way back to the consent decision — a LINK OUT, like the
-                billing item above it and for the same reason. The answer lives
-                on the account, not on this domain, so the screen that can change
-                it is the screen that asked for it. A choice somebody can make
-                once and never revisit is a dark pattern with extra steps, which
-                is why this exists; putting a second editor for it in here would
-                be two places that own one record. */}
-            <DropdownMenuItem
-              onClick={() => {
-                window.location.href = `${accountOrigin}/cookie-choices`;
-              }}
-            >
-              <Icon glyph={faCookie} className="size-4" aria-hidden />
-              Cookie choices
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                // Submits the form below rather than navigating. Signing out
-                // changes state on the server — it revokes the session row AND
-                // clears this domain's cookie — so it has to be a POST: a GET
-                // that does that is one pixel-tracker away from being triggered
-                // by any page the person happens to visit.
-                //
-                // `requestSubmit()` on a form with no submit button is the
-                // sanctioned way to do this. A full-page navigation follows, on
-                // purpose: everything held in memory should go with it.
-                signOutForm.current?.requestSubmit();
-              }}
-            >
-              <Icon glyph={faRightFromBracket} className="size-4" aria-hidden />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Outside the menu, because the menu's content is portalled and unmounts
-            the moment an item is clicked — a form living inside it would be gone
-            before it could be submitted. */}
-        <form ref={signOutForm} action="/sign-out" method="post" className="hidden" />
+        <ViewerMenu userName={userName} userEmail={userEmail} accountOrigin={accountOrigin} />
       </NavbarEnd>
     </Navbar>
-  );
-}
-
-/**
- * Which business you are acting as.
- *
- * ── WHY THIS IS A DIFFERENT CONTROL FROM THE SITE SWITCHER ──────────────────
- *
- * A business is a TENANT — its own customers, invoices, staff, books and
- * row-level isolation. A site is one web property inside a business, and a
- * business can own several. Two switchers because they answer two questions:
- * "whose books am I in" and "which of their shopfronts am I editing".
- *
- * Merging them would put "Copperleaf Studio" and "Copperleaf's second shop" in
- * one list, where picking wrongly is either a mistake or a breach depending on
- * which line you hit. They stay apart, and the business sits FIRST because it is
- * the outer scope: the site list only means anything once the business is known.
- *
- * Switching is guarded like every other destructive context change in this app —
- * unsaved work gets a real conversation before the window reloads.
- */
-function BusinessSwitcher({
-  siteKey,
-  fallbackName,
-}: {
-  siteKey: string;
-  fallbackName: string | null;
-}) {
-  const { controller } = useWorkbench();
-  const confirm = useConfirm();
-  const toast = useToast();
-  const { data: businesses } = useBusinesses();
-  const { data: tenant } = useTenant();
-
-  const activeName = tenant?.name ?? fallbackName;
-
-  // One business — the common case by far — is a FACT, not a choice. A dropdown
-  // offering a single option is a control that wastes a click to tell you what
-  // the label already said.
-  if (!businesses || businesses.length <= 1) {
-    return (
-      <span className="max-w-40 truncate text-sm font-medium" title={activeName ?? undefined}>
-        {activeName ?? ' '}
-      </span>
-    );
-  }
-
-  const onSwitch = async (nextId: string) => {
-    if (nextId === tenant?.id) return;
-    await deferTick();
-    const next = businesses.find((business) => business.id === nextId);
-
-    const ok = await confirm({
-      title: `Switch to ${next?.name ?? 'another business'}?`,
-      description: controller.hasUnsavedWork()
-        ? 'Something here has edits that were never saved. Switching business reloads everything and those edits are gone.'
-        : 'Everything reloads for that business — its own customers, orders and invoices. What you have open here is saved and waiting when you come back.',
-      confirmLabel: 'Switch business',
-      cancelLabel: 'Stay here',
-      color: controller.hasUnsavedWork() ? 'danger' : 'primary',
-    });
-    if (!ok) return;
-
-    try {
-      await switchBusiness(controller, siteKey, nextId);
-    } catch {
-      // Reaching here means the server refused — almost always a membership
-      // that has been revoked since the list was fetched. Said plainly, because
-      // "something went wrong" would leave somebody clicking it again.
-      toast.add({
-        title: 'Could not switch business',
-        description: 'You may no longer have access to it. Nothing here has changed.',
-        type: 'error',
-      });
-    }
-  };
-
-  return (
-    <DropdownMenu>
-      <Tooltip content="Switch business — each one is completely separate">
-        <DropdownMenuTrigger>
-          <Button color="neutral" /*size="sm"*/ className="gap-1.5 text-sm">
-            <Icon glyph={faBuilding} className="size-3.5" aria-hidden />
-            <span className="max-w-44 truncate">{activeName ?? 'Business'}</span>
-            <Icon glyph={faChevronDown} className="size-3" aria-hidden />
-          </Button>
-        </DropdownMenuTrigger>
-      </Tooltip>
-      <DropdownMenuContent align="start">
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Your businesses</DropdownMenuLabel>
-          {businesses.map((business) => (
-            <DropdownMenuItem
-              key={business.id}
-              onClick={() => {
-                void onSwitch(business.id);
-              }}
-            >
-              <span className="flex w-full items-center gap-2">
-                <span className="flex-1 truncate">{business.name}</span>
-                {business.id === tenant?.id ? (
-                  <Icon glyph={faCheck} className="size-4" aria-hidden />
-                ) : null}
-              </span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled>Each business keeps its own everything</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
