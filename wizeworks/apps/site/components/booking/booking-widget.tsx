@@ -6,6 +6,7 @@
 // the engine's no-overlap guarantee will accept, so a confirmed time is real.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 
 import { Alert, Button, Input, Label } from '@wizeworks/silicaui-react';
 import { cn } from '@/lib/cn';
@@ -300,6 +301,18 @@ export function BookingWidget({
           <address className="text-base-content not-italic">{confirmation.location}</address>
         ) : null}
         {confirmation.calendar ? <AddToCalendar links={confirmation.calendar} /> : null}
+        {/* THE WAY BACK. This screen offered three ways to add the appointment to
+            a calendar and none to change it, at the moment somebody is likeliest
+            to notice they picked the wrong day (issue 153). The link is signed
+            and needs no account — the same one the confirmation email carries. */}
+        {confirmation.manageUrl ? (
+          <p className="text-base-content text-sm">
+            Need to change it?{' '}
+            <Link className="link link-primary" href={confirmation.manageUrl}>
+              Change or cancel this appointment
+            </Link>
+          </p>
+        ) : null}
       </div>
     );
   }

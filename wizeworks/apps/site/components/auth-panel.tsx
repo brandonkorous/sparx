@@ -73,22 +73,25 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
         </TabsList>
       </Tabs>
 
-      <h1
-        className="text-base-content text-3xl font-semibold tracking-tight"
-        style={{ marginBottom: '0.5rem' }}
-      >
-        {mode === 'signin' ? 'Welcome back' : 'Create your account'}
+      {/* SAYS NOTHING ABOUT A SHOP. This renderer serves every kind of business,
+          and most of them sell nothing at all — a two-chair salon's customer
+          following a "change my appointment" link was met with "Welcome back",
+          "track orders" and "check out faster", three sentences in a row about a
+          shop she had never been in (issue 153). Selling is one capability here,
+          never the assumption. */}
+      <h1 className="text-base-content mb-2 text-3xl font-semibold tracking-tight">
+        {mode === 'signin' ? 'Sign in' : 'Create your account'}
       </h1>
-      <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
+      <p className="text-base-content mb-6">
         {mode === 'signin'
-          ? 'Sign in to track orders and check out faster.'
-          : 'Save your details for a faster checkout next time.'}
+          ? 'Sign in to see everything you have with us and keep your details up to date.'
+          : 'An account keeps your details to hand, so you never type them twice.'}
       </p>
 
       <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
         {mode === 'register' ? (
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <label className="flex flex-col gap-1.5" style={{ flex: 1 }}>
+          <div className="flex gap-3">
+            <label className="flex flex-1 flex-col gap-1.5">
               <span className="text-base-content text-sm font-medium">First name</span>
               <Input
                 autoComplete="given-name"
@@ -96,7 +99,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
                 onChange={(e) => setFirstName(e.target.value)}
               />
             </label>
-            <label className="flex flex-col gap-1.5" style={{ flex: 1 }}>
+            <label className="flex flex-1 flex-col gap-1.5">
               <span className="text-base-content text-sm font-medium">Last name</span>
               <Input
                 autoComplete="family-name"
@@ -129,9 +132,9 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
             onChange={(e) => setPassword(e.target.value)}
           />
           {mode === 'register' ? (
-            <span className="text-base-content text-xs">At least 8 characters.</span>
+            <span className="text-base-content text-sm">At least 8 characters.</span>
           ) : (
-            <Link href="/account/forgot" className="link link-primary self-start text-xs">
+            <Link href="/account/forgot" className="link link-primary self-start text-sm">
               Forgot your password?
             </Link>
           )}

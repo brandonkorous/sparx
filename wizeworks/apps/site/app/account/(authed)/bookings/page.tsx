@@ -1,18 +1,25 @@
 'use client';
 
-// Customer self-service bookings (docs/79 §15 Phase 3c) — the page the booking
-// confirmation/reminder emails' "Manage booking" link points at. Signed-in
-// customers see their own bookings and can cancel or reschedule the upcoming ones.
+// Customer self-service bookings (docs/79 §15 Phase 3c) — what a SIGNED-IN
+// customer sees of her own appointments. The guest who booked without an account
+// reaches the same booking through the signed link in her confirmation
+// (components/booking/manage-booking.tsx); both go through one server-side view,
+// so the two can't offer different rules.
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { useCustomer } from '@/components/customer-provider';
-import { cancelMyBooking, getMyBookings, type CustomerBooking } from '@/lib/customer-client';
+import {
+  cancelMyBooking,
+  getMyBookings,
+  rescheduleMyBooking,
+  type CustomerBooking,
+} from '@/lib/customer-client';
 
 import { AddToCalendar } from '@/components/booking/add-to-calendar';
+import { ReschedulePicker } from '@/components/booking/reschedule-picker';
 
-import { ReschedulePanel } from './reschedule-panel';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
@@ -37,9 +44,8 @@ function bookingStatusTone(status: string) {
     case 'in_progress':
       return 'info';
     case 'cancelled':
-      return 'danger';
     case 'no_show':
-      return 'neutral';
+      return 'danger';
     default:
       return 'warning';
   }
@@ -64,6 +70,7 @@ export default function BookingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [rescheduling, setRescheduling] = useState<string | null>(null);
+  const [confirmingCancel, setConfirmingCancel] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setBookings(null);
@@ -82,18 +89,20 @@ export default function BookingsPage() {
 
   function switchScope(next: Scope): void {
     setRescheduling(null);
+    setConfirmingCancel(null);
     setPage(1);
     setScope(next);
   }
 
   async function handleCancel(id: string): Promise<void> {
-    if (!confirm('Cancel this booking? This cannot be undone.')) return;
     setBusy(id);
+    setError(null);
     try {
       await cancelMyBooking(tenantSlug, id);
+      setConfirmingCancel(null);
       load();
-    } catch {
-      alert('Could not cancel the booking. Please try again.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not cancel the booking. Please try again.');
     } finally {
       setBusy(null);
     }
@@ -108,24 +117,17 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem',
-          marginBottom: '1rem',
-        }}
-      >
+      <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="text-base-content text-3xl font-semibold tracking-tight">My bookings</h1>
-        <Button
-          type="button"
-          color="primary"
-          render={<Link href="/book">Book an appointment</Link>}
-        />
+        {/* The label is the Button's CHILDREN. Putting it inside the render
+            element instead drew a correctly styled anchor with nothing in it —
+            a blank square, and the only thing to click on an empty page (issue 154). */}
+        <Button color="primary" render={<Link href="/book" />}>
+          Book an appointment
+        </Button>
       </div>
 
-      <div role="tablist" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
+      <div role="tablist" className="mb-5 flex gap-2">
         {(['upcoming', 'past'] as const).map((s) => (
           <Button
             key={s}
@@ -144,69 +146,37 @@ export default function BookingsPage() {
           {error}
         </Alert>
       ) : bookings === null ? (
-        <div className="skeleton" style={{ height: 200 }} />
+        <div className="skeleton h-[200px]" />
       ) : bookings.length === 0 ? (
-        <div
-          className="card border-base-300 border"
-          style={{ padding: '2rem', textAlign: 'center' }}
-        >
+        <div className="card border-base-300 border p-8 text-center">
           <p className="text-base-content">
             {scope === 'upcoming' ? 'You have no upcoming bookings.' : 'No past bookings.'}
           </p>
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="flex flex-col gap-2">
             {bookings.map((b) => (
               <div key={b.id}>
-                <div
-                  className="card border-base-300 border"
-                  style={{
-                    padding: '0.875rem 1rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: '1rem',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="card border-base-300 flex flex-wrap items-start justify-between gap-4 border px-4 py-3.5">
+                  <div className="min-w-0 flex-1">
                     <strong>{b.serviceName}</strong>
-                    <div
-                      className="text-base-content"
-                      style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}
-                    >
+                    <div className="text-base-content mt-1 text-sm">
                       {formatDateTime(b.startAt)} · {b.durationMinutes} min
                     </div>
                     {b.staff.length > 0 && (
-                      <div className="text-base-content" style={{ fontSize: '0.82rem' }}>
-                        With {b.staff.join(', ')}
-                      </div>
+                      <div className="text-base-content text-sm">With {b.staff.join(', ')}</div>
                     )}
                     {b.cancellationReason && (
-                      <div
-                        className="text-base-content"
-                        style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}
-                      >
+                      <div className="text-base-content mt-1 text-sm">
                         Reason: {b.cancellationReason}
                       </div>
                     )}
                     {b.calendar && (
-                      <AddToCalendar
-                        links={b.calendar}
-                        className="mt-2 !justify-start text-[0.82rem]"
-                      />
+                      <AddToCalendar links={b.calendar} className="mt-2 !justify-start text-sm" />
                     )}
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.6rem',
-                      flexShrink: 0,
-                      flexWrap: 'wrap',
-                    }}
-                  >
+                  <div className="flex shrink-0 flex-wrap items-center gap-2.5">
                     <Badge color={bookingStatusTone(b.status)} variant="soft">
                       {STATUS_LABEL[b.status] ?? b.status}
                     </Badge>
@@ -215,30 +185,54 @@ export default function BookingsPage() {
                         type="button"
                         color="primary"
                         variant="outline"
-                        style={{ fontSize: '0.82rem', padding: '0.25rem 0.6rem' }}
+                        size="sm"
                         onClick={() => setRescheduling(rescheduling === b.id ? null : b.id)}
                       >
-                        {rescheduling === b.id ? 'Cancel' : 'Reschedule'}
+                        {rescheduling === b.id ? 'Keep this time' : 'Reschedule'}
                       </Button>
                     )}
                     {b.canCancel && (
                       <Button
                         type="button"
-                        color="neutral"
+                        color="danger"
                         variant="ghost"
-                        style={{ fontSize: '0.82rem', padding: '0.25rem 0.6rem' }}
+                        size="sm"
                         disabled={busy === b.id}
-                        onClick={() => void handleCancel(b.id)}
+                        onClick={() => setConfirmingCancel(b.id)}
                       >
                         {busy === b.id ? 'Cancelling…' : 'Cancel'}
                       </Button>
                     )}
                   </div>
                 </div>
+                {/* Names the appointment rather than saying "this booking" — the
+                    same rule as issue 142, on the customer's side of it. */}
+                {confirmingCancel === b.id && (
+                  <Alert color="warning" role="alertdialog" className="mt-2 flex-col items-start">
+                    <p>
+                      Cancel {b.serviceName} on {formatDateTime(b.startAt)}? The time goes back to
+                      whoever wants it, and this cannot be undone.
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button
+                        color="danger"
+                        size="sm"
+                        disabled={busy === b.id}
+                        onClick={() => void handleCancel(b.id)}
+                      >
+                        {busy === b.id ? 'Cancelling…' : 'Yes, cancel it'}
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => setConfirmingCancel(null)}>
+                        Keep the appointment
+                      </Button>
+                    </div>
+                  </Alert>
+                )}
                 {rescheduling === b.id && (
-                  <ReschedulePanel
+                  <ReschedulePicker
                     tenantSlug={tenantSlug}
                     booking={b}
+                    submit={(startAt) => rescheduleMyBooking(tenantSlug, b.id, startAt)}
                     onDone={onRescheduled}
                     onClose={() => setRescheduling(null)}
                   />
@@ -248,7 +242,7 @@ export default function BookingsPage() {
           </div>
 
           {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+            <div className="mt-4 flex justify-between">
               <Button
                 type="button"
                 color="primary"
@@ -258,10 +252,7 @@ export default function BookingsPage() {
               >
                 Previous
               </Button>
-              <span
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
-              >
+              <span className="text-base-content self-center text-sm">
                 Page {page} of {totalPages}
               </span>
               <Button
@@ -269,7 +260,7 @@ export default function BookingsPage() {
                 color="primary"
                 variant="outline"
                 disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               >
                 Next
               </Button>

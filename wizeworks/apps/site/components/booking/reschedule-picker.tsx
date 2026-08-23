@@ -1,15 +1,19 @@
 'use client';
 
-// Inline reschedule picker for one booking (docs/79 §15 Phase 3c). Reuses the
-// public availability lookup (loadSlots) and the customer reschedule endpoint;
-// the engine's EXCLUDE constraint re-checks the slot on submit, so a slot that
-// was taken between load and click surfaces as a clean "no longer available".
+// Pick a new time for a booking you already have (docs/79 §15 Phase 3c).
+//
+// Used from BOTH doors onto a booking — the signed-in account portal and the
+// signed link a guest gets in her confirmation (issue 153) — so it takes the
+// submit as a prop and knows nothing about which one it is inside. The slot list
+// comes from the same public availability lookup the front of the site uses, so
+// the times offered here are the times a stranger would be offered, and the
+// engine re-checks on submit: a slot taken between load and click comes back as
+// a clean refusal in the salon's own words.
 
 import { useState } from 'react';
 
 import { loadSlots, type PublicSlot } from '@/lib/scheduling-client';
-import { rescheduleMyBooking, type CustomerBooking } from '@/lib/customer-client';
-import { Alert, Button, Input, Label } from '@wizeworks/silicaui-react';
+import { Alert, Input, Label } from '@wizeworks/silicaui-react';
 
 import { cn } from '@/lib/cn';
 
@@ -29,12 +33,16 @@ function todayLocal(): string {
 
 interface Props {
   tenantSlug: string;
-  booking: CustomerBooking;
+  booking: { id: string; serviceId: string; partySize: number | null };
+  /** Move the booking. Rejecting with an Error shows its message as-is — the
+   *  engine's refusals already name the reason (a clash, a closure, nobody
+   *  working), so restating them here would only make them vaguer. */
+  submit: (startAt: string) => Promise<unknown>;
   onDone: () => void;
   onClose: () => void;
 }
 
-export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props) {
+export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose }: Props) {
   const [date, setDate] = useState('');
   const [slots, setSlots] = useState<PublicSlot[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -51,14 +59,15 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
       // The whole local day → [midnight, next midnight).
       const from = new Date(`${value}T00:00:00`);
       const to = new Date(from.getTime() + DAY_MS);
-      const res = await loadSlots(
-        tenantSlug,
-        booking.serviceId,
-        from.toISOString(),
-        to.toISOString(),
-        booking.partySize ?? undefined
+      setSlots(
+        await loadSlots(
+          tenantSlug,
+          booking.serviceId,
+          from.toISOString(),
+          to.toISOString(),
+          booking.partySize ?? undefined
+        )
       );
-      setSlots(res);
     } catch {
       setError('Could not load available times. Please try another day.');
     } finally {
@@ -70,31 +79,28 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
     setSubmitting(startAt);
     setError(null);
     try {
-      await rescheduleMyBooking(tenantSlug, booking.id, startAt);
+      await submit(startAt);
       onDone();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not reschedule. The time may be taken.');
+      setError(e instanceof Error ? e.message : 'Could not change the time. It may be taken.');
       setSubmitting(null);
     }
   }
 
   return (
-    <div
-      className="card border-base-300 border"
-      style={{ padding: '1rem', marginTop: '0.5rem', display: 'grid', gap: '0.75rem' }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <strong style={{ fontSize: '0.9rem' }}>Pick a new time</strong>
+    <div className="card border-base-300 mt-2 grid gap-3 border p-4">
+      <div className="flex items-center justify-between">
+        <strong className="text-sm">Pick a new time</strong>
         <button type="button" className="link link-primary text-sm" onClick={onClose}>
           Close
         </button>
       </div>
 
-      {error && (
+      {error ? (
         <Alert color="danger" role="alert">
           {error}
         </Alert>
-      )}
+      ) : null}
 
       <div>
         <Label htmlFor={`reschedule-date-${booking.id}`}>Date</Label>
@@ -108,23 +114,22 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
       </div>
 
       {loading ? (
-        <div className="skeleton" style={{ height: 64 }} />
+        <div className="skeleton h-16" />
       ) : slots === null ? (
-        <p className="text-base-content" style={{ fontSize: '0.85rem' }}>
-          Choose a day to see available times.
-        </p>
+        <p className="text-base-content text-sm">Choose a day to see available times.</p>
       ) : slots.length === 0 ? (
-        <p className="text-base-content" style={{ fontSize: '0.85rem' }}>
-          No openings that day — try another date.
-        </p>
+        <p className="text-base-content text-sm">No openings that day — try another date.</p>
       ) : (
-        <div className="grid gap-[0.6rem]">
+        <div className="flex flex-wrap gap-2">
           {slots.map((s) => (
             <button
               key={s.startAt}
               type="button"
               className={cn(
-                'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary cursor-pointer border px-[0.9rem] py-2 text-sm transition-colors',
+                // The same chip the front of the site offers times in, so a
+                // customer moving an appointment reads the same shape she booked
+                // from rather than a column of full-width rows.
+                'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary cursor-pointer border px-3.5 py-2 text-sm transition-colors',
                 submitting === s.startAt && 'border-primary bg-primary text-primary-content'
               )}
               disabled={submitting !== null}
@@ -136,11 +141,6 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
         </div>
       )}
 
-      <div>
-        <Button type="button" color="neutral" variant="ghost" onClick={onClose}>
-          Keep current time
-        </Button>
-      </div>
     </div>
   );
 }

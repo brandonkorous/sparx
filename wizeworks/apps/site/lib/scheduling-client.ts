@@ -44,6 +44,11 @@ export interface BookingConfirmation {
     type: DepositType;
   } | null;
   calendar?: CalendarLinks | null;
+  /** Site-relative address of the CHANGE-OR-CANCEL page for this booking — a
+   *  signed link that needs no account (issue 153). The confirmation offers it
+   *  beside the calendar links, so the way back exists while she is still
+   *  looking at what she just booked. */
+  manageUrl?: string | null;
 }
 
 export interface CreateBookingBody {
@@ -183,4 +188,64 @@ export async function joinWaitlist(
     body: JSON.stringify(body),
   });
   return unwrap<{ id: string; status: string }>(res);
+}
+
+// ── Managing one booking from a signed link (issue 153) ──────────────────────
+//
+// No session and no tenant slug: the token in the link names the booking AND the
+// business it belongs to, which is the whole point — the person reading it
+// booked as a guest and has no account to sign in to.
+
+/** One booking as its own customer may see it. Matches the account portal's
+ *  projection exactly, because both come from the same server-side view. */
+export interface ManagedBooking {
+  id: string;
+  serviceId: string;
+  serviceName: string;
+  status: string;
+  startAt: string;
+  endAt: string;
+  timezone: string;
+  durationMinutes: number;
+  partySize: number | null;
+  staff: string[];
+  notes: string | null;
+  cancellationReason: string | null;
+  canCancel: boolean;
+  canReschedule: boolean;
+  calendar: CalendarLinks | null;
+  where: string | null;
+}
+
+function manageEndpoint(token: string, action?: string): string {
+  const suffix = action ? `/${action}` : '';
+  return `${API_BASE}/v1/public/scheduling/manage${suffix}?t=${encodeURIComponent(token)}`;
+}
+
+export async function loadManagedBooking(token: string): Promise<ManagedBooking> {
+  return unwrap<ManagedBooking>(await fetch(manageEndpoint(token), { cache: 'no-store' }));
+}
+
+export async function rescheduleManagedBooking(
+  token: string,
+  startAt: string
+): Promise<ManagedBooking> {
+  const res = await fetch(manageEndpoint(token, 'reschedule'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ startAt }),
+  });
+  return unwrap<ManagedBooking>(res);
+}
+
+export async function cancelManagedBooking(
+  token: string,
+  reason?: string
+): Promise<ManagedBooking> {
+  const res = await fetch(manageEndpoint(token, 'cancel'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(reason ? { reason } : {}),
+  });
+  return unwrap<ManagedBooking>(res);
 }
