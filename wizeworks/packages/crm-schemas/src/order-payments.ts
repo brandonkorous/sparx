@@ -10,9 +10,14 @@ import { z } from 'zod';
 import { Currency, Money } from './common-commerce';
 import { Uuid } from './common';
 
+// `card` is a card taken on the business's OWN terminal — a reader on the
+// counter, a bank machine — money sparx never touched. `stripe`/`paypal` mean a
+// gateway processed it and wrote its own record, so calling a counter sale one
+// of those claims a charge that exists nowhere.
 export const PaymentProcessor = z.enum([
   'stripe',
   'paypal',
+  'card',
   'manual',
   'check',
   'wire',

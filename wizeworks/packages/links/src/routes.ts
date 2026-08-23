@@ -90,6 +90,9 @@ export const ROUTES: readonly AppRoute[] = [
 
   /* ── Selling ──────────────────────────────────────────────────────────── */
   { path: '/commerce/orders', surface: 'commerce.orders.list' },
+  // Ahead of `/commerce/orders/:id` would be ambiguous, so the till gets its own
+  // noun rather than an `orders/new` that an order id could impersonate.
+  { path: '/commerce/sale', surface: 'commerce.sale.new' },
   {
     path: '/commerce/orders/:id',
     surface: 'commerce.order.detail',

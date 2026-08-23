@@ -15,6 +15,7 @@ import { queryBool } from '@wizeworks/api-core/query';
 import { prisma } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
+import { commerceSchedulers } from '@wizeworks/commerce';
 import { profitForRange, recomputeRange, utcMidnight } from '@wizeworks/finance';
 import { requireFinanceModule, toFinanceContext } from '../../../lib/finance-context.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
@@ -41,6 +42,27 @@ function previousRange(from: Date, to: Date): { from: Date; to: Date } {
   return { from: new Date(prevTo.getTime() - span), to: prevTo };
 }
 
+/**
+ * Rebuild the profit rollup for a range, from source.
+ *
+ * The profit rollup reads REVENUE out of `rollup_commerce_daily_revenue`, which
+ * a nightly job owns. Recomputing profit alone therefore rebuilt a cache of a
+ * cache: a shopkeeper who took forty dollars over the counter, pressed "Rebuild
+ * figures" and was told "no money came in" was reading a revenue rollup that had
+ * not been touched since the small hours. So the revenue window is reconciled
+ * first, and the button means what it says.
+ */
+async function rebuild(tenantId: string, from: Date, to: Date): Promise<number> {
+  const dayMs = 24 * 60 * 60 * 1000;
+  const spanDays = Math.ceil((Date.now() - utcMidnight(from).getTime()) / dayMs);
+  await commerceSchedulers.reconcileRevenueRollup({
+    tenantId,
+    sinceDays: Math.min(Math.max(spanDays, 1), 400),
+  });
+  const rows = await recomputeRange(tenantId, from, to);
+  return rows.length;
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
 const financeProfitRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/finance/profit', async (request) => {
@@ -58,7 +80,7 @@ const financeProfitRoutes: FastifyPluginAsync = async (app) => {
     // what an owner of two businesses wants from the all-sites view.
     const propertyId = propertyIds?.length === 1 ? propertyIds[0] : undefined;
 
-    if (query.refresh) await recomputeRange(tenantId, query.from, query.to);
+    if (query.refresh) await rebuild(tenantId, query.from, query.to);
 
     const prev = previousRange(query.from, query.to);
     const [current, previous] = await Promise.all([
@@ -110,8 +132,8 @@ const financeProfitRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     const { tenantId } = toFinanceContext(request);
     const { from, to } = RecomputeBody.parse(request.body);
-    const rows = await recomputeRange(tenantId, from, to);
-    return ok({ recomputed: rows.length });
+    const recomputed = await rebuild(tenantId, from, to);
+    return ok({ recomputed });
   });
 };
 
