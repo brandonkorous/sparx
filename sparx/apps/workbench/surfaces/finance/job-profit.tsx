@@ -37,6 +37,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useJobProfit, type JobProfit } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import { formatCents, formatCentsSigned, formatDate, formatRate } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const SORTS = [
   { value: 'margin_asc', label: 'Worst first' },
@@ -320,9 +321,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
             </Card>
 
             <div className="flex flex-col gap-1 px-1 pb-2">
-              <p className="text-xs">
-                Click a job to open it · Shift-click alongside · Alt-click new window
-              </p>
+              <RowOpenHint what="a job to open it" />
               <Text className="text-sm">
                 &ldquo;Cost&rdquo; is the goods consumed, what a marketplace kept, and any spending
                 you charged to that job. Wages and running costs are not divided up here — they sit

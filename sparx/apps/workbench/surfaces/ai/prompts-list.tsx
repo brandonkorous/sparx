@@ -55,6 +55,7 @@ import {
   type PromptCategory,
   type PromptTemplateDto,
 } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const EDITOR_SURFACE = 'ai.prompts.edit';
 
@@ -373,9 +374,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Card>
               ))}
 
-              <p className="hidden px-1 text-sm @xl:block">
-                Click to open · Shift-click alongside · Alt-click new window
-              </p>
+              <RowOpenHint />
             </>
           )}
         </div>

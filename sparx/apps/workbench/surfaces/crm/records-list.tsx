@@ -25,6 +25,7 @@ import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu
 import type { SavedView } from './workspace-data';
 import { useObjectType } from './object-types-data';
 import { cellText, recordErrorMessage, recordTitle, useRecords } from './records-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Shift opens alongside, Alt pops out — the same modifier contract every other
  *  list in the workbench uses. */
@@ -237,9 +238,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <p className="text-xs">
-          Click to open · Shift-click to open alongside · Alt-click for a new window
-        </p>
+        <RowOpenHint />
         {typeof total === 'number' && !records.isPending ? (
           <p className="text-xs">
             {filtered

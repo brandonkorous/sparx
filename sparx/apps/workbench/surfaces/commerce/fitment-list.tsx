@@ -28,6 +28,7 @@ import {
   useFitmentDomains,
   type FitmentDomain,
 } from './fitment-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -229,9 +230,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a list to manage it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a list to manage it" />
 
       {pickerOpen ? (
         <FitmentDictionaryPicker

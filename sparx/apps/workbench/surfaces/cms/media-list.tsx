@@ -28,7 +28,6 @@ import {
   Filter,
   FilterItem,
   SearchInput,
-  Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { File, FileText, Film, ImageIcon, ImageOff, Music, Upload } from 'lucide-react';
@@ -47,6 +46,7 @@ import {
   type MediaKind,
   type MediaListQuery,
 } from './media-admin';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** The chips ARE the questions people open the library to answer: "where are my
  *  videos", "what's still processing". */
@@ -424,9 +424,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

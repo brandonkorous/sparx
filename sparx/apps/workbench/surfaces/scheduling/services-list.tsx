@@ -22,7 +22,6 @@ import {
   NativeSelect,
   SearchInput,
   Table,
-  Text,
   ToggleGroup,
   ToggleGroupItem,
   ToolbarSeparator,
@@ -43,6 +42,7 @@ import {
   type BookingType,
   type SchedulingService,
 } from './setup-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const DETAIL_KEY = 'scheduling.services.detail';
 
@@ -324,11 +324,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

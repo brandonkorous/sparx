@@ -140,7 +140,6 @@ export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose 
           ))}
         </div>
       )}
-
     </div>
   );
 }

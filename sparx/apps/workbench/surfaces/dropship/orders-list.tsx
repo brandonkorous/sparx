@@ -40,6 +40,7 @@ import {
   type OrderSort,
   type SortDir,
 } from './dropship-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -332,9 +333,7 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click an order to see its items and tracking · Shift-click alongside
-        </p>
+        <RowOpenHint what="an order to see its items and tracking" />
       </div>
     </div>
   );

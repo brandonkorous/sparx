@@ -15,6 +15,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { discountSummary, formatCents, useTiers, type TierRow } from './pricing-tiers-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -105,9 +106,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click to open · Shift-click to open alongside · Alt-click to open in a new window
-      </p>
+      <RowOpenHint />
     </div>
   );
 }

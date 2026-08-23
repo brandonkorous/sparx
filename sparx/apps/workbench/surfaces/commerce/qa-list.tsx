@@ -42,6 +42,7 @@ import {
   type ModerationSortDir,
   type QuestionSort,
 } from './moderation-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Plain-language filter over the stored statuses. Default is "Waiting" — the
  *  queue's whole job is the backlog, so that is what opens. */
@@ -479,9 +480,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
             clearSelection();
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a row to open it in the queue · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint what="a row to open it in the queue" />
       </div>
     </div>
   );

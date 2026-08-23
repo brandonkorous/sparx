@@ -22,6 +22,7 @@ import {
   type CheckoutRow,
   type CheckoutStep,
 } from './checkout-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
   { value: 'all', label: 'All', step: undefined },
@@ -189,9 +190,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

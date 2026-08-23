@@ -21,6 +21,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 // way the content editor's asset fields do.
 import { useMediaAssets, type MediaAsset } from './media';
 import { authorName, useAuthorsList, type Author } from './authors-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -259,9 +260,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click an author to edit · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="an author to edit" />
     </div>
   );
 }

@@ -34,6 +34,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useCertifications } from './data';
 import { certificationLabel, formatDate } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const HORIZONS = [
   { value: 'attention', label: 'Needs attention' },
@@ -250,9 +251,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Card>
             )}
 
-            <p className="px-1 pb-2 text-xs">
-              Click a row to open the person who holds it · Shift-click alongside
-            </p>
+            <RowOpenHint what="a row to open the person who holds it" />
           </div>
         )}
       </div>

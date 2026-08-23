@@ -15,6 +15,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayout, type PayoutSale } from './payouts-data';
 import { channelLabel, formatMoney, formatDate, methodLabel, payoutState } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -150,9 +151,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               )}
             </Card>
 
-            <p className="px-1 text-xs">
-              Click a sale to open its order · Shift-click alongside · Alt-click new window
-            </p>
+            <RowOpenHint what="a sale to open its order" />
           </div>
         )}
       </div>

@@ -20,6 +20,7 @@ import { useActiveSiteId } from '../../lib/api/shell-data';
 import { switchSite } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains, useSites, type Domain, type Site } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as the launcher and every other list. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -401,9 +402,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
       ) : null}
 
-      <p className="border-base-300 shrink-0 border-t px-4 py-2 text-xs">
-        Click a site to manage it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a site to manage it" />
     </div>
   );
 }

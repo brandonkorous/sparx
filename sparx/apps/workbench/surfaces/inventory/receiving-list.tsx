@@ -17,7 +17,7 @@
 // books a new delivery.
 
 import { useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Table, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { PackageCheck, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -25,6 +25,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatDay } from './purchase-orders-data';
 import { useReceipts, type GoodsReceipt } from './receiving-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -219,11 +220,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

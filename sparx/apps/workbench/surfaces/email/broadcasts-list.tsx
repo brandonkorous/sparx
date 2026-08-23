@@ -39,6 +39,7 @@ import {
   useBroadcastStats,
   type Broadcast,
 } from './broadcasts-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const DETAIL_KEY = 'email.broadcasts.detail';
 
@@ -270,9 +271,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a broadcast to open it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a broadcast to open it" />
     </div>
   );
 }

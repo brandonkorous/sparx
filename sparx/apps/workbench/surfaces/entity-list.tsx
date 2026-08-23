@@ -16,6 +16,7 @@ import type { OpenTarget, SurfaceContext } from '../lib/surfaces/registry';
 import { RefreshButton } from '../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
 import { ListEmptyState } from '../components/list-empty-state';
+import { RowOpenHint } from '../components/row-open-hint';
 
 export interface ListColumn<T> {
   key: string;
@@ -210,9 +211,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
         {config.detailSurface ? (
           // Sits on the pane rather than in a docked strip, so no border — a rule
           // here would underline nothing. Full ink for the same reason as above.
-          <p className="shrink-0 px-1 text-xs">
-            Click to open · Shift-click to open alongside · Alt-click to open in a new window
-          </p>
+          <RowOpenHint />
         ) : null}
       </div>
     );

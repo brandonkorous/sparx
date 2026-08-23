@@ -64,6 +64,7 @@ import {
   type Deal,
   type DealListParams,
 } from './deals-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const SURFACE_KEY = 'crm.deals.list';
 
@@ -495,11 +496,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between gap-3 px-1">
-        <p className="text-xs">
-          {isBoard
-            ? 'Click a card to open it · Shift-click to open alongside · Alt-click for a new window'
-            : 'Click to open · Shift-click to open alongside · Alt-click for a new window'}
-        </p>
+        <RowOpenHint what={isBoard ? 'a card to open it' : undefined} className="px-0" />
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {/* Say so when the board is not showing everything. A column that

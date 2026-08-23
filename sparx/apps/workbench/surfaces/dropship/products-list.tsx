@@ -47,6 +47,7 @@ import {
   type ProductSort,
   type SortDir,
 } from './dropship-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 type StatusFilter = 'all' | 'imported' | 'available';
 
@@ -431,10 +432,10 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Import a product to add it to your catalog · click an imported product to open it ·
-          Shift-click alongside
-        </p>
+        <Text className="hidden shrink-0 px-1 text-sm @md:block">
+          Import a product to add it to your catalog.
+        </Text>
+        <RowOpenHint what="an imported product to open it" />
       </div>
     </div>
   );

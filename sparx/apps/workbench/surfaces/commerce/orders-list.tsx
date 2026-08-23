@@ -42,6 +42,7 @@ import {
   type OrderSortKey,
   type SortDirection,
 } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /**
  * The chips are work states, not status values.
@@ -331,9 +332,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* Only where there is a pointer to do them with — on the stack these
             three modifiers do not exist. */}
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

@@ -27,6 +27,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { sequenceState, useSequences, type SequenceRow } from './sequences-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -231,9 +232,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a sequence to open it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a sequence to open it" />
     </div>
   );
 }

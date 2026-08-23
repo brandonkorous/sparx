@@ -20,7 +20,6 @@ import {
   FilterItem,
   SearchInput,
   Table,
-  Text,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
 import { ShoppingCart, X } from 'lucide-react';
@@ -37,6 +36,7 @@ import {
   useWholesaleOrders,
   type Order,
 } from './orders-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined, paymentStatus: undefined },
@@ -258,9 +258,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text as="p" className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

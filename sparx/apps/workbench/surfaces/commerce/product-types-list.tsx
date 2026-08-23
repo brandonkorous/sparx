@@ -34,6 +34,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProductTypeList, type ProductType } from './product-types-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const KIND_FILTERS = [
   { value: 'all', label: 'All' },
@@ -218,9 +219,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <Text className="hidden shrink-0 px-1 text-sm @xl:block">
-        Click to open · Shift-click alongside · Alt-click new window
-      </Text>
+      <RowOpenHint />
     </div>
   );
 }

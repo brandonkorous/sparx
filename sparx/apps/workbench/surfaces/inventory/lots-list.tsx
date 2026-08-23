@@ -64,6 +64,7 @@ import {
   type LotRow,
   type SerialRow,
 } from './lots-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 type Mode = 'lots' | 'serials';
 
@@ -386,11 +387,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 && mode === 'lots' ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click a batch to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 && mode === 'lots' ? <RowOpenHint what="a batch to open" /> : null}
       </div>
     </div>
   );

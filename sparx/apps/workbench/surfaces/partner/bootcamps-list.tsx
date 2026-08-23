@@ -26,6 +26,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useBootcamps, usePartnerProfile, type Bootcamp } from './data';
 import { bootcampState, formatDate, formatLabel } from './format';
 import { PartnerLoadError, PartnerLoading } from './gate';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -190,10 +191,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
             )}
           </div>
 
-          <p className="shrink-0 px-1 pt-2 text-xs">
-            Click a bootcamp to manage it · Shift-click to open alongside · Alt-click for a new
-            window
-          </p>
+          <RowOpenHint what="a bootcamp to manage it" />
         </div>
       )}
     </div>

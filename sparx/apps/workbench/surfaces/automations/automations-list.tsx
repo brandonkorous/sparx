@@ -37,6 +37,7 @@ import {
   TierBadge,
 } from './automations-presentation';
 import { useAutomations, type Automation } from './automations-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 type SortKey = 'name' | 'trigger' | 'runs' | 'lastRun' | 'status';
 type Dir = 'asc' | 'desc';
@@ -335,9 +336,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a rule to open it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a rule to open it" />
     </div>
   );
 }

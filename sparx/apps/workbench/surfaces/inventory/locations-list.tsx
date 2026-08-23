@@ -34,7 +34,6 @@ import {
   NativeSelect,
   SearchInput,
   Table,
-  Text,
   ToggleGroup,
   ToggleGroupItem,
   ToolbarSeparator,
@@ -53,6 +52,7 @@ import {
   useLocations,
   type Location,
 } from './locations-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const DETAIL_KEY = 'inventory.warehouses.detail';
 
@@ -359,11 +359,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

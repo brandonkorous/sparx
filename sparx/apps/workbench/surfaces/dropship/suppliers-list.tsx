@@ -21,6 +21,7 @@ import {
   SearchInput,
   Select,
   Table,
+  Text,
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
@@ -31,6 +32,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { supplierState, useSuppliersPage, type SortDir, type SupplierSort } from './dropship-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -305,10 +307,10 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a supplier to manage it · the browse icon opens what it offers · Shift-click
-          alongside
-        </p>
+        <RowOpenHint what="a supplier to manage it" />
+        <Text className="hidden shrink-0 px-1 text-sm @md:block">
+          The browse icon opens what a supplier offers.
+        </Text>
       </div>
     </div>
   );

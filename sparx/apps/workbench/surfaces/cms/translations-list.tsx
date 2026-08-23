@@ -45,6 +45,7 @@ import {
   type ProductStatus,
   type TranslatableProduct,
 } from './translations-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** The status chips ARE questions someone opens this list to answer. Each maps
  *  to a server-side filter, never a browser sieve over the loaded page. */
@@ -278,9 +279,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </ModuleScope>
   );

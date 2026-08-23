@@ -37,6 +37,7 @@ import {
   type DiscountSort,
   type SortDir,
 } from './discounts-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -313,9 +314,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

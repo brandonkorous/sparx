@@ -32,6 +32,7 @@ import {
   type PieceGroup,
   type PieceSummary,
 } from './saved-pieces-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -248,9 +249,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a piece to manage it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a piece to manage it" />
     </div>
   );
 }

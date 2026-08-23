@@ -27,7 +27,6 @@ import {
   NativeSelect,
   SearchInput,
   Table,
-  Text,
 } from '@wizeworks/silicaui-react';
 import { FileText, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -45,6 +44,7 @@ import {
   type ContentEntry,
   type EntryStatus,
 } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** The chips ARE the questions people open this list to answer. */
 const STATUS_FILTERS = [
@@ -375,9 +375,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

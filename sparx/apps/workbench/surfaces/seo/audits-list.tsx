@@ -41,6 +41,7 @@ import {
   type ChecklistCheck,
   type Tone,
 } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -396,9 +397,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a page to see what to fix · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a page to see what to fix" />
     </div>
   );
 }

@@ -23,6 +23,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { ruleCount, segmentMembership, useSegments, type Segment } from './segments-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -211,9 +212,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <p className="text-xs">
-          Click to open · Shift-click to open alongside · Alt-click for a new window
-        </p>
+        <RowOpenHint />
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered

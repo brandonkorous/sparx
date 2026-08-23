@@ -29,6 +29,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { accountState, formatCents, useAccounts, type AccountRow } from './accounts-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined },
@@ -191,9 +192,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

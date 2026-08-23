@@ -16,6 +16,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { CATEGORY_ICON, FeedbackStatusBadge, deriveTitle } from '../../components/feedback/format';
 import { useFeedback } from '../../components/feedback/provider';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as the launcher and every other list. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -163,10 +164,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="border-base-300 shrink-0 border-t px-4 py-2 text-xs">
-        Click a message to read the conversation · Shift-click to open alongside · Alt-click for a
-        new window
-      </p>
+      <RowOpenHint what="a message to read the conversation" />
     </div>
   );
 }

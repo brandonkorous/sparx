@@ -10,7 +10,7 @@
 // state to badge — a policy is a set of terms, not a thing with a lifecycle.
 
 import { useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Table, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { Plus, ShieldCheck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -18,6 +18,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { policySummary, usePolicies, type BookingPolicy } from './setup-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const DETAIL_KEY = 'scheduling.policies.detail';
 
@@ -217,11 +218,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

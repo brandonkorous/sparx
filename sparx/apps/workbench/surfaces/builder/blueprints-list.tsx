@@ -35,6 +35,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { contentsSummary, installState, useBlueprints, type Blueprint } from './blueprints-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -276,9 +277,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a design to preview it · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint what="a design to preview it" />
       </div>
     </div>
   );

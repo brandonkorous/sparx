@@ -39,6 +39,7 @@ import {
   type CollectionType,
   type SortDir,
 } from './collections-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const TYPE_FILTERS = [
   { value: 'all', label: 'All' },
@@ -294,9 +295,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

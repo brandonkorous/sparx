@@ -418,6 +418,12 @@ const EXCEPTIONS = [
   {
     axis: 'components',
     only: 'piggles',
+    path: 'components/~topbar/business-switcher',
+    why: 'a Piggles owner can hold several BUSINESSES and act as one at a time, so the console carries a tenant switcher beside the site switcher. sparx’s workbench is entered for one tenant and the workspace renders as plain identity — there is nothing in this window to switch it to. The capability itself is not missing: sparx switches tenants through api-rest (see app/api/businesses), and if the workbench ever grows the control it belongs here, next to components/toolbar/site-switcher.tsx.',
+  },
+  {
+    axis: 'components',
+    only: 'piggles',
     path: 'components/oauth-popup-relay',
     why: 'both consoles land OAuth popups on the same three callback routes; Piggles factored the identical postMessage-and-close into one component where sparx repeats it per page. Capability paired, factoring differs.',
   },

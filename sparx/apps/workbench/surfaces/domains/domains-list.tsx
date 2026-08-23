@@ -24,6 +24,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../sites/data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { DOMAIN_SHOP_URL, domainState, useDomains, type Domain } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -296,9 +297,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
       {/* No border now that the pane is base-200 — the hint sits ON the pane
           rather than in a docked strip, so a rule above it would be drawing a
           line under nothing. */}
-      <p className="shrink-0 px-1 text-xs">
-        Click an address to set it up · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="an address to set it up" />
     </div>
   );
 }

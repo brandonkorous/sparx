@@ -19,6 +19,7 @@ import {
 } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { analyticsErrorMessage, useDashboards, type DashboardSummary } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function asModule(module: string): WorkbenchModule {
   return (WORKBENCH_MODULES as readonly string[]).includes(module)
@@ -109,10 +110,8 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           ) : (
             <>
-              <Text className="text-sm">
-                Each dashboard answers one set of questions. Open one in a tab, Shift-click to place
-                it alongside your work, or Alt-click to send it to another window.
-              </Text>
+              <Text className="text-sm">Each dashboard answers one set of questions.</Text>
+              <RowOpenHint what="a dashboard to open it" className="px-0" />
               {(dashboards.data ?? []).map((dashboard) => (
                 <DashboardRow key={dashboard.id} dashboard={dashboard} onOpen={open} />
               ))}

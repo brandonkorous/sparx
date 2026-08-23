@@ -21,7 +21,6 @@ import {
   EmptyState,
   SearchInput,
   Table,
-  Text,
 } from '@wizeworks/silicaui-react';
 import { Plus, Webhook } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -35,6 +34,7 @@ import {
   webhookState,
   type WebhookSubscription,
 } from './webhooks-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -236,9 +236,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <Text className="hidden shrink-0 px-1 text-sm @xl:block">
-        Click to open · Shift-click alongside · Alt-click new window
-      </Text>
+      <RowOpenHint />
     </div>
   );
 }

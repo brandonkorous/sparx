@@ -53,6 +53,7 @@ import {
 } from './calendar-data';
 import { windowForEvents } from './calendar-grid';
 import { TimeGrid, targetFor, type GridColumn } from './calendar-timegrid';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 type View = 'week' | 'day';
 
@@ -327,11 +328,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
           columns, not a paragraph pinned to the left. */}
       <div className="bg-base-100 min-h-0 flex-1 overflow-hidden rounded-lg">{body()}</div>
 
-      {events.length > 0 ? (
-        <Text className="hidden shrink-0 px-1 text-sm @lg:block">
-          Click a booking to open it · Shift-click alongside · Alt-click in a new window
-        </Text>
-      ) : null}
+      {events.length > 0 ? <RowOpenHint what="a booking to open it" /> : null}
 
       {/* The quick-look modal floats over the diary — the grid above stays mounted
           and live behind it, so a booking is opened without losing the week. */}

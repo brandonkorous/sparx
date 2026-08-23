@@ -56,6 +56,7 @@ import {
   type IntegrationCategory,
   type IntegrationCategoryView,
 } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -461,10 +462,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a service to connect or manage it · Shift-click to open alongside · Alt-click for a
-        new window
-      </p>
+      <RowOpenHint what="a service to connect or manage it" />
     </div>
   );
 }

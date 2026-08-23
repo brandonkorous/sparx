@@ -55,6 +55,7 @@ import {
 } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import { billState, formatCents, formatDay, kindColor, sourceLabel } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const PAID_FILTERS = [
   { value: 'all', label: 'All' },
@@ -530,11 +531,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
               </Button>
             ) : null}
 
-            {rows.length > 0 ? (
-              <p className="px-1 pb-2 text-xs">
-                Click a cost to open it · Shift-click alongside · Alt-click new window
-              </p>
-            ) : null}
+            {rows.length > 0 ? <RowOpenHint what="a cost to open it" /> : null}
           </div>
         )}
       </div>

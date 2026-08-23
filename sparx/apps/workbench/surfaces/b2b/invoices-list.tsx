@@ -18,7 +18,6 @@ import {
   FilterItem,
   SearchInput,
   Table,
-  Text,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
 import { Plus, Receipt, X } from 'lucide-react';
@@ -34,6 +33,7 @@ import {
   useInvoices,
   type InvoiceRow,
 } from './invoices-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined },
@@ -272,9 +272,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text as="p" className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );
