@@ -42,7 +42,7 @@ export const WELCOME_GUIDE: Guide = {
       id: 'app-rail',
       anchor: 'app-rail',
       title: 'Every one of these is yours',
-      body: 'These are your apps, and you have all of them — nothing here costs extra and nothing is a trial. They are grouped and coloured by what they are for, so the orange ones are about selling and the green ones are about money.',
+      body: 'These are your apps, and you have all of them — nothing here costs extra and nothing is a trial. They are grouped and colored by what they are for, so the orange ones are about selling and the green ones are about money.',
     },
     {
       id: 'app-panel',

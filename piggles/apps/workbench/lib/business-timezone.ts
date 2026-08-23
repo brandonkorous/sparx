@@ -5,7 +5,7 @@
 // Anything that stores an hour has to know it. A salon typing "nine o'clock"
 // means nine in her salon, and if nothing asks which clock that is, the answer
 // defaults to somebody else's — Nia set her week to 09:00-17:30 and her diary
-// showed a full head of colour at three in the morning (issue 081).
+// showed a full head of color at three in the morning (issue 081).
 //
 // One reader rather than a default per form: three scheduling forms already
 // wanted this, and each had written `'UTC'` by hand.

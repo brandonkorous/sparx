@@ -500,7 +500,7 @@ export async function emitServiceBundle(
     // Emitting a bundle RENDERS ITS PREVIEW. That belongs here rather than in each
     // generator because 90 of the 96 generators simply never called it — so no preview
     // HTML existed, `bundle-media.mjs` had nothing to shoot, and every one of those
-    // templates fell back to a synthetic card: a flat colour block with a wordmark, in a
+    // templates fell back to a synthetic card: a flat color block with a wordmark, in a
     // gallery where the picture IS how a business owner chooses. A step a generator can
     // forget is a step most generators will forget.
     //

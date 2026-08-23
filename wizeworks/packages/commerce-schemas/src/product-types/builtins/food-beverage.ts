@@ -7,7 +7,7 @@ export const foodBeverageType: ProductTypeDefinition = {
   name: 'Food & Beverage',
   pluralName: 'Food & Beverage',
   description: 'Edible and drinkable goods — ingredients, allergens, storage, and nutrition.',
-  icon: 'utensils-crossed',
+  icon: '🍽️',
   attributeSchema: {
     fields: [
       { key: 'ingredients', type: 'long_text', label: 'Ingredients', max: 3000 },

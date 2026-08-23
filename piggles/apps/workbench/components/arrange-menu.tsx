@@ -75,7 +75,7 @@ export function ArrangeMenu({ onArrange }: { onArrange: (style: ArrangeStyle) =>
                 onArrange(choice.style);
               }}
             >
-              {/* Colourless, like the top bar's other chrome icons: these are
+              {/* Colorless, like the top bar's other chrome icons: these are
                   untyped actions on the workspace and belong to no app. */}
               <Icon glyph={choice.glyph} className="size-4 shrink-0" aria-hidden />
               <span className="flex flex-col gap-0.5">

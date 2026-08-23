@@ -13,7 +13,7 @@
 
 import type { OperatorAnnouncementTone } from '@wizeworks/operator';
 
-/** Tone → the silica fill + its resolved ink. Nothing here is a colour value —
+/** Tone → the silica fill + its resolved ink. Nothing here is a color value —
  *  `bg-<color>` and `text-<color>-content` are a matched pair the theme owns. */
 const TONE_CLASS: Record<OperatorAnnouncementTone, string> = {
   primary: 'bg-primary text-primary-content',

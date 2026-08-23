@@ -75,7 +75,7 @@ business somebody deals with._
 **Every one of these is yours**
 
 > These are your apps, and you have all of them — nothing here costs extra and
-> nothing is a trial. They are grouped and coloured by what they are for, so the
+> nothing is a trial. They are grouped and colored by what they are for, so the
 > orange ones are about selling and the green ones are about money.
 
 ### 5 · `all-apps` — `all-apps`

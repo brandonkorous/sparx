@@ -35,7 +35,7 @@ export function ConsentChange() {
 
   return (
     <div className="border-base-300 bg-base-100 flex flex-wrap items-center gap-3 rounded-xl border p-4">
-      {/* Three answers, three colours. A single grey pill for all of them would
+      {/* Three answers, three colors. A single grey pill for all of them would
           make "you have not been asked" look like "you said no". */}
       {state === undefined ? null : state === null ? (
         <Badge color="warning" variant="soft" size="lg">

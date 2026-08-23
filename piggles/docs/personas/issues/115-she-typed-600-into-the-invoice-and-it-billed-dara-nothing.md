@@ -74,7 +74,7 @@ The numbers row moved to its own file
 ([line-editor-numbers.tsx](../../../apps/workbench/surfaces/invoicing/line-editor-numbers.tsx)),
 and the row's shape and badges to
 [line-row-parts.tsx](../../../apps/workbench/surfaces/invoicing/line-row-parts.tsx),
-per piggles RULE #0.5. Two badges naming `neutral` became colourless while those
+per piggles RULE #0.5. Two badges naming `neutral` became colorless while those
 lines were being moved (root RULE #4).
 
 Not fixed here, and worth its own decision: nothing stops a document totalling

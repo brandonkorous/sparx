@@ -5,13 +5,13 @@ import * as React from 'react';
 // One letter carries the identity — the same move sparx makes with its "x",
 // which gives a family resemblance without imitation. The `z` is the right
 // letter because it is the name's own quirk: it is what makes it *Wize* and not
-// *Wise*. Colouring the whole "ize" was the original brief; it was built and
+// *Wise*. Coloring the whole "ize" was the original brief; it was built and
 // rejected, because it splits the read into "W-ize-Works" and dilutes a
 // one-letter idea across three.
 //
 // Set as TYPE rather than shipped as the SVG asset, deliberately. The asset is
-// 3492 × 798 and its colours are baked per surface (four files: light, dark,
-// one-colour black, one-colour white); as type, the `z` reads from
+// 3492 × 798 and its colors are baked per surface (four files: light, dark,
+// one-color black, one-color white); as type, the `z` reads from
 // `--color-primary`, so it follows the theme in both modes with one component
 // instead of a file-picking branch. The brand spec's own minimum — 92px wide,
 // ≈20px cap-height — is what `size` defaults around.

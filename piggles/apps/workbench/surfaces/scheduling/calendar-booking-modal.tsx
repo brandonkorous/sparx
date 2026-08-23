@@ -217,7 +217,7 @@ function LoadedModal({
       </div>
 
       <DialogFooter>
-        {/* The dismiss half of the pair, COLOURLESS: a bare `.btn` resolves to
+        {/* The dismiss half of the pair, COLORLESS: a bare `.btn` resolves to
             `base-content` and is theme-correct without naming `neutral`, which is
             not mine to choose (root RULE #4). */}
         <Button size="sm" onClick={onClose}>

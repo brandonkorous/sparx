@@ -127,7 +127,7 @@ describe('coalescing a continuous edit', () => {
   const START = themeDoc().theme.tokens['--color-primary'];
 
   it('folds every frame of one drag into a single undo step', () => {
-    // Without this, dragging a colour picker pushes a batch per frame and the
+    // Without this, dragging a color picker pushes a batch per frame and the
     // 200-deep stack throws away the work the author actually wants back.
     const store = new DocumentStore(themeDoc());
     const key = 'theme.setToken:light:--color-primary';
@@ -170,7 +170,7 @@ describe('coalescing a continuous edit', () => {
     expect(store.current.theme.tokens['--radius-box']).toBe(
       themeDoc().theme.tokens['--radius-box']
     );
-    // The colour edit is its own step and survives.
+    // The color edit is its own step and survives.
     expect(store.current.theme.tokens['--color-primary']).toBe('#111111');
   });
 

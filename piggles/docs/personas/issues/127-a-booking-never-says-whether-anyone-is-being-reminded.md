@@ -76,7 +76,7 @@ was caught by clicking a no-show two minutes after building it.
 
 ## Confirmed by
 
-> Re-ran act 9 as Nia. Priyanka's Friday colour: confirmation sent, three reminders
+> Re-ran act 9 as Nia. Priyanka's Friday color: confirmation sent, three reminders
 > listed with their dates. Margot's Friday cut: confirmation and change notice sent
 > on both email and text, then the line saying no reminder is due and why — which is
 > true, and was invisible an hour earlier. Yusuf's completed cut: what was sent, and

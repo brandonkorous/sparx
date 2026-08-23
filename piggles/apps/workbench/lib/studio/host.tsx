@@ -166,7 +166,7 @@ function buildHost({
     // Email resolves against its own sample recipient, never the site's preview root:
     // `customer.firstName` means the person this is being SENT to.
     emailPreview,
-    // The exact colours the send paints with, so a new block lands on brand. Absent
+    // The exact colors the send paints with, so a new block lands on brand. Absent
     // until the read settles — silica's neutral default then, which is visibly not
     // the brand rather than quietly the wrong brand.
     ...(emailColors ? { emailColors } : {}),

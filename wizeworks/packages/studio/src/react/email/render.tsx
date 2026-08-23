@@ -5,7 +5,7 @@
 // An approximation, and honestly so: the thing a recipient opens is table-based
 // HTML shaped by Outlook's quirks, and the Preview is where that is checked. What
 // this has to get right is what the AUTHOR is deciding — the order of the blocks,
-// their colours, their spacing, and what their merge tags say. Everything the
+// their colors, their spacing, and what their merge tags say. Everything the
 // author typed is drawn from the document; nothing is invented.
 //
 // STYLING RULE (hard): every class here is a LITERAL string, so a consuming app's

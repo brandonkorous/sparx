@@ -9,7 +9,7 @@
 //
 // This is the console's ONLY fold store now. The rail had one too, for its app
 // families and for Recent; neither folds any more — the families are named by
-// colour and Recent is one row that opens into this panel — so the rail's height
+// color and Recent is one row that opens into this panel — so the rail's height
 // is fixed and there is nothing left about it to remember.
 //
 // Three states, not two. A section is folded because the person folded it, open

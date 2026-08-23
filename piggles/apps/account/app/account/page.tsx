@@ -95,7 +95,7 @@ export default async function AccountPage() {
           <AppearanceControl />
           {/* A FORM, not a link. Signing out is a state change, so it must not be
               reachable by a prefetch, a crawler or an <img> — see the note in
-              /sign-out. Colourless: `neutral` on a bar like this is issue #003. */}
+              /sign-out. Colorless: `neutral` on a bar like this is issue #003. */}
           <form action="/sign-out" method="post">
             <button className={buttonClasses({ variant: 'ghost' })} type="submit">
               Sign out

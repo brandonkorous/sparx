@@ -11,8 +11,8 @@
 ## What happened
 
 Nia opened the booking reminder to check what her clients actually receive, and
-pressed Preview. Her logo, her colours, her footer links, her Instagram. Then, at
-the very bottom, in her own brand colour:
+pressed Preview. Her logo, her colors, her footer links, her Instagram. Then, at
+the very bottom, in her own brand color:
 
 > Sent with **sparx**
 
@@ -63,7 +63,7 @@ Two halves, because the leak had two causes.
 own name and home from `brand.platform` and renders nothing at all when the send
 cannot say which product it is from. Crediting a guess is worse than crediting
 nobody, and it is the same call the palette floor already makes when it renders
-achromatic rather than wearing somebody's colours.
+achromatic rather than wearing somebody's colors.
 
 **The brand resolver started supplying it.** `brand.platform` was only ever set by
 `email-worker`, on the React template path. The silica path — every transactional

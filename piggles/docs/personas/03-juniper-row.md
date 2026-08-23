@@ -38,7 +38,7 @@ whole margin.
 **Juniper Row** — small-batch womenswear, made in a rented studio, sold online
 only. No shop, no counter.
 
-- Everything is **size × colour**: five sizes, two or three colourways
+- Everything is **size × color**: five sizes, two or three colorways
 - Stock is genuinely finite — 12 of a size, then it is gone
 - Two drops a year plus a permanent core range
 - **Returns are 22% of orders.** Exchanges are the normal case, refunds the
@@ -66,7 +66,7 @@ only. No shop, no counter.
 
 Sizes **XS · S · M · L · XL** throughout.
 
-| Product                              | Colourways           | Price   | Stock per variant |
+| Product                              | Colorways            | Price   | Stock per variant |
 | ------------------------------------ | -------------------- | ------- | ----------------- |
 | The Ash Overshirt                    | Clay · Slate · Bone  | $128.00 | 6                 |
 | Sunday Trouser, wide leg             | Ink · Sand           | $110.00 | 8                 |
@@ -74,7 +74,7 @@ Sizes **XS · S · M · L · XL** throughout.
 | The Everyday Tee, boxy               | White · Black · Clay | $42.00  | 20                |
 | Linen Shirtdress with removable belt | Chalk · Indigo       | $145.00 | 4                 |
 
-That is **5 products, 12 colourways, 60 variants**. The Ash Overshirt alone is 15
+That is **5 products, 12 colorways, 60 variants**. The Ash Overshirt alone is 15
 — enough to find out whether a variant grid is usable or a form to be endured.
 
 ### One-size accessories
@@ -113,19 +113,19 @@ anywhere, and the whole thing working from the public side.
 She is leaving a marketplace. The site has to do everything that marketplace did
 and look better than it.
 
-| Page                                  | What is really on it                                                    |
-| ------------------------------------- | ----------------------------------------------------------------------- |
-| Home                                  | Leads with New in, one photograph doing the selling                     |
-| Shop                                  | Everything, filterable, with stock states honest                        |
-| New in · The core range · Last chance | Three real collection pages, not one page three times                   |
-| Product pages                         | Every colourway shown, size chart where the eye goes, fabric, fit, care |
-| Size guide                            | Real measurements — the single biggest cause of returns                 |
-| Made in the studio                    | Who makes it and where. Her whole premium                               |
-| Shipping & returns                    | Flat $9, free over $150, 22% come back — say it plainly                 |
-| Account                               | Order history, and starting an exchange without emailing her            |
-| Contact                               | A form that reaches her                                                 |
-| Privacy · Terms · Refund policy       | Real, published, linked                                                 |
-| 404                                   | Offers New in                                                           |
+| Page                                  | What is really on it                                                   |
+| ------------------------------------- | ---------------------------------------------------------------------- |
+| Home                                  | Leads with New in, one photograph doing the selling                    |
+| Shop                                  | Everything, filterable, with stock states honest                       |
+| New in · The core range · Last chance | Three real collection pages, not one page three times                  |
+| Product pages                         | Every colorway shown, size chart where the eye goes, fabric, fit, care |
+| Size guide                            | Real measurements — the single biggest cause of returns                |
+| Made in the studio                    | Who makes it and where. Her whole premium                              |
+| Shipping & returns                    | Flat $9, free over $150, 22% come back — say it plainly                |
+| Account                               | Order history, and starting an exchange without emailing her           |
+| Contact                               | A form that reaches her                                                |
+| Privacy · Terms · Refund policy       | Real, published, linked                                                |
+| 404                                   | Offers New in                                                          |
 
 **Working end to end:** variant picker across 15 combinations, out-of-stock
 unbuyable, cart, `SPRING15` accepted and refused for the right reasons, the
@@ -154,7 +154,7 @@ arriving and two catalogues in one shop is a mess she would not tolerate.
 
 ### Act 2 — Options before products
 
-Set up size and colour as real options once, before entering anything. If that is
+Set up size and color as real options once, before entering anything. If that is
 not possible and every product re-declares its own sizes, that is the finding —
 file it before working around it.
 
@@ -162,19 +162,19 @@ file it before working around it.
 
 ### Act 3 — The variant grid
 
-Build the Ash Overshirt: 5 sizes × 3 colours, one price for all 15, stock 6 each.
+Build the Ash Overshirt: 5 sizes × 3 colors, one price for all 15, stock 6 each.
 Time it honestly. Then do the remaining four products.
 
 Watch for: whether one price can be applied to all variants at once, whether
 stock can be set in bulk, whether SKUs generate, whether the grid survives at
-360px, and what happens when a colourway is removed after variants exist.
+360px, and what happens when a colorway is removed after variants exist.
 
 **Done when:** 60 variants exist with correct prices and stock, plus the two
 accessories.
 
 ### Act 4 — Photographs and words
 
-At least three products with real images including one per colourway, size chart
+At least three products with real images including one per colorway, size chart
 information where a customer will look for it, and descriptions in her voice —
 fabric, fit, care. One description deliberately long.
 
@@ -290,7 +290,7 @@ The run-wide list is in [CLAUDE.md](CLAUDE.md). These are Devi's instances of
 it, and they are worked into the acts rather than saved for the end.
 
 **Wrong moves.** Import the 25-customer CSV a second time. Refund the same Tee
-line twice. Delete the Clay colourway with an open order against it. Apply
+line twice. Delete the Clay colorway with an open order against it. Apply
 `SPRING15` to an order that has already been refunded.
 
 **Dates.** The 14-day expiry boundary — the last hour the code works and the

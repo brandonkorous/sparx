@@ -1,14 +1,14 @@
-// What an invoice is doing, in words, with its semantic colour.
+// What an invoice is doing, in words, with its semantic color.
 //
 // Two panes carry the same five-value column and drifted apart: the wholesale
 // list said "Part paid" and "Written off", the invoicing list printed the raw
 // value — `unpaid`, `partial` — beside a tone it had already worked out. So the
-// colour was the business's and the word was the database's.
+// color was the business's and the word was the database's.
 
 /** The five states an invoice can be in. One union, both panes. */
 export type InvoiceStatus = 'unpaid' | 'partial' | 'paid' | 'overdue' | 'void';
 
-/** Status is its own colour axis, independent of the module hue (docs/23).
+/** Status is its own color axis, independent of the module hue (docs/23).
  *  `undefined` is a deliberate member: see `void` below. */
 export type InvoiceTone = 'success' | 'warning' | 'danger' | 'info' | undefined;
 
@@ -23,8 +23,8 @@ export interface InvoiceState {
  * money actually needs; where it is not, "Late" is the whole truth available and
  * a made-up day count would be worse than none.
  *
- * `void` gets NO colour rather than a grey one. A written-off invoice is a real
- * outcome carrying no semantic tone, and a colourless badge resolves to base ink
+ * `void` gets NO color rather than a grey one. A written-off invoice is a real
+ * outcome carrying no semantic tone, and a colorless badge resolves to base ink
  * in both themes — where `color="neutral"` is a choice that needs approval.
  */
 export function invoiceState(status: InvoiceStatus, overdueDays?: number | null): InvoiceState {

@@ -19,7 +19,7 @@ import { searchTitleFor } from './tool-metadata';
  *   • the headline is the SEARCHABLE title — the phrase somebody typed to find
  *     this, which is the right thing to confirm back to them in a preview;
  *   • the accent is the hue of the app the tool hands you on to, so the card and
- *     the page it opens are the same colour;
+ *     the page it opens are the same color;
  *   • the pose is that app's own pose, from MASCOT_BY_APP. The QR code maker
  *     wears My Site's; the margin calculator wears Money's. The picture says
  *     which part of the product this is a free sample of before a word is read.

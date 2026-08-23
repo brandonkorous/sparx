@@ -12,7 +12,7 @@
 
 The invoice list showed a status chip on every row reading **`unpaid`** — lower
 case, the column value, straight out of Postgres. A part-paid invoice read
-**`partial`**. The colour beside the word was already right: `unpaid` came up
+**`partial`**. The color beside the word was already right: `unpaid` came up
 amber, `partial` blue, `paid` green. So the pane had worked out what the row
 _meant_ and then printed what the database _called_ it.
 
@@ -62,11 +62,11 @@ Two decisions inside it:
   it knows, the badge says _Late by 6 days_ — the thing somebody chasing money
   needs; where it does not, "Late" is the whole truth available, and inventing a
   day count would be worse than none (RULE #4 of the persona rules).
-- **`void` returns no colour at all**, not `'neutral'`. A written-off invoice is
-  a real outcome carrying no semantic tone, and a colourless badge resolves to
+- **`void` returns no color at all**, not `'neutral'`. A written-off invoice is
+  a real outcome carrying no semantic tone, and a colorless badge resolves to
   base ink in both themes — where `color="neutral"` is a choice that needs
   Brandon's approval every time (root RULE #4). The badge drops `variant` with
-  it, since a variant is how a colour is applied and there is no colour.
+  it, since a variant is how a color is applied and there is no color.
 
 `STATUS_FILTERS` now takes its words from the same function, so the filter and
 the rows say the same thing.

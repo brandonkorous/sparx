@@ -424,7 +424,7 @@ sites are unchanged and sparx renders byte-identically.
 The accent is a HEX in configuration (`<BRAND>_BRAND_ACCENT`), not a token, and
 that is deliberate: this badge renders on a tenant's own site and must be immune
 to the tenant's CSS, so it inlines everything it paints. A token would resolve
-against the tenant's theme and the badge would change colour from one site to the
+against the tenant's theme and the badge would change color from one site to the
 next.
 
 **And `site` turned out to need nothing else from `@sparx/brand`.** Its base
@@ -754,7 +754,7 @@ what are all these, where does my work go, how do I find anything" in seven step
 
 **Tier 2 walks the app's PANEL, not its buttons.** Nobody here is stuck for want of
 an Add button; they are stuck for want of knowing which of twenty screens they
-want. 14 app guides, 47 steps, one file per colour group. Every anchor is verified
+want. 14 app guides, 47 steps, one file per color group. Every anchor is verified
 to name a real surface that genuinely belongs to that app.
 
 It **offers** rather than auto-starts, records a decline as an answer so it never

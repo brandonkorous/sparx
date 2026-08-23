@@ -16,7 +16,7 @@
 //
 // Only the glyph carries its module's hue. Twenty soft-tinted tiles is twenty
 // competing washes rather than wayfinding, which DESIGN.md rules out directly.
-// The tile is a plain outline; the colour sits on the icon, where it separates.
+// The tile is a plain outline; the color sits on the icon, where it separates.
 
 import { Button } from '@wizeworks/silicaui-react';
 import type { NavModule } from '../../lib/surfaces/nav';
@@ -34,8 +34,8 @@ export function ModuleGrid({ nav, onPick }: ModuleGridProps) {
         <ModuleScope key={entry.module} module={entry.module}>
           <Button
             block
-            // Colourless on purpose: the tile is a container and names no
-            // colour, so it resolves to base-content and stays right in both
+            // Colorless on purpose: the tile is a container and names no
+            // color, so it resolves to base-content and stays right in both
             // themes. The hue lives on the glyph.
             variant="outline"
             // 96px — a comfortable thumb target that still fits five rows of

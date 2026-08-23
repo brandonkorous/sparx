@@ -2,10 +2,10 @@
 
 // The Inspector's field primitives, bound to one email node.
 //
-// Text and numbers commit on BLUR, colours and switches on change. That split is
+// Text and numbers commit on BLUR, colors and switches on change. That split is
 // deliberate: a keystroke is not a decision — committing each one would put forty
 // entries on the undo stack for one sentence, and ⌘Z would then walk backwards
-// through the author's typing a letter at a time. A colour drag or a toggle IS
+// through the author's typing a letter at a time. A color drag or a toggle IS
 // one gesture, and the author ends it themselves.
 //
 // Committing on blur means these rows CANNOT also be controlled, so the value is
@@ -151,9 +151,9 @@ export function NumberRow({
 }
 
 /**
- * A colour, always as literal hex.
+ * A color, always as literal hex.
  *
- * `format="hex"` is not a preference — an email carries frozen colour values
+ * `format="hex"` is not a preference — an email carries frozen color values
  * because email clients do not support `oklch()` or CSS custom properties. A
  * token written here would reach an inbox as an unparseable string.
  */

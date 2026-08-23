@@ -45,7 +45,7 @@ The data needed nothing new: the booking list endpoint has always taken a
 `customerId` filter and nothing had ever passed one — the console's own query
 type did not carry the field. Three lines in the data layer and a tab.
 
-It wears the Bookings app's hue rather than the CRM's, because colour follows
+It wears the Bookings app's hue rather than the CRM's, because color follows
 functionality: these rows belong to another app and say so.
 
 ## Confirmed by

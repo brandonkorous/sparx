@@ -43,7 +43,7 @@ near-black on a dark strip. Measured on the live page:
 
 This is exactly the case the [[feedback_no_monotone_use_full_palette]] memory
 describes: grey re-enters through SECONDARY controls, the ones that feel like
-"just chrome", and the answer is to name no colour at all so the control resolves
+"just chrome", and the answer is to name no color at all so the control resolves
 to `base-content` and is theme-correct by construction.
 
 ## The fix
@@ -55,7 +55,7 @@ and both in [jobs-chip](../../../apps/workbench/components/status/jobs-chip.tsx)
 
 `variant="ghost"` is kept, and deliberately: a bare `btn` measures marginally
 better but paints a filled chip, and these are quiet chrome in a 32px strip. A
-colourless ghost is transparent AND theme-correct, which is what was wanted in
+colorless ghost is transparent AND theme-correct, which is what was wanted in
 the first place.
 
 Four fewer `color="neutral"` call sites. Counted properly at the end of the

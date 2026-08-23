@@ -26,7 +26,7 @@ wear its name there. This one was not using it.
 a column of full-width rows, where an auto margin means nothing and looked like a
 mistake.
 
-**The wrong colour.** `--color-module` is set by a `data-module` attribute, and
+**The wrong color.** `--color-module` is set by a `data-module` attribute, and
 CSS custom properties cascade by DOM rather than by React tree — a fact
 ModuleScope's own header records for panes rendered into another window. A
 Popover's panel is portalled to the document body, outside the pane that set it.

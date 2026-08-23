@@ -23,8 +23,8 @@
 // ── THE COUNT WEARS THE BRAND, NOT THE FOCUSED PANE ─────────────────────────
 //
 // It used to take the hue of whatever pane was in front, on the reasoning that a
-// phone has nowhere else to carry module colour once the rail is gone. That was
-// the wrong thing to spend it on. A number that recolours every time you switch
+// phone has nowhere else to carry module color once the rail is gone. That was
+// the wrong thing to spend it on. A number that recolors every time you switch
 // panes reads as a change in what it MEANS, and it means the same thing every
 // time: this many things are open.
 //

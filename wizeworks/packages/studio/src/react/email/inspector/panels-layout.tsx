@@ -67,14 +67,14 @@ export function SectionPanel({ node }: { node: SectionNode }) {
     <>
       <Group title="Background">
         <ColorRow
-          label="Colour"
+          label="Color"
           value={node.bg}
-          onCommit={(bg) => patch('Change band colour', { bg, bgAuto: false })}
+          onCommit={(bg) => patch('Change band color', { bg, bgAuto: false })}
         />
         <PictureRow
           label="Picture behind"
           value={node.bgImage ?? ''}
-          hint="Some inboxes ignore this, so the colour above always shows underneath."
+          hint="Some inboxes ignore this, so the color above always shows underneath."
           onCommit={(value) => patch('Change band picture', { bgImage: value || undefined })}
         />
       </Group>
@@ -124,10 +124,10 @@ export function SectionPanel({ node }: { node: SectionNode }) {
         />
         {node.borderWidth ? (
           <ColorRow
-            label="Border colour"
+            label="Border color"
             value={node.borderColor ?? node.bg}
             onCommit={(borderColor) =>
-              patch('Change border colour', { borderColor, borderColorAuto: false })
+              patch('Change border color', { borderColor, borderColorAuto: false })
             }
           />
         ) : null}

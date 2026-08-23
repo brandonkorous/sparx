@@ -97,7 +97,7 @@ export function PlatformCredit({
 
   // Scoped to the accent so two brands' badges can't collide in one stylesheet
   // — which cannot happen today, but a global class name that encodes one
-  // brand's colour is how it would start.
+  // brand's color is how it would start.
   const style = `
 .wz-platform-credit {
   transition:
@@ -194,7 +194,7 @@ export function PlatformCredit({
             width={Math.round(markHeight * aspectOf(wordmark.viewBox))}
             // The letterforms inherit; only the accent shape is painted. Same
             // split the brand's own <Wordmark> makes, for the same reason —
-            // recolouring the letters loses the mark's contrast against the
+            // recoloring the letters loses the mark's contrast against the
             // badge, and letting the dot inherit loses the only brand in it.
             fill="rgba(255, 255, 255, 0.96)"
             // The anchor already announces "Made with <name>"; a second name

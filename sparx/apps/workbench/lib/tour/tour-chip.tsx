@@ -124,8 +124,8 @@ export function TourChip() {
   );
 
   // A module tour's steps wear that module's hue, which is the same
-  // colour-follows-functionality rule the rest of the app obeys — so the card is
-  // scoped rather than reading a colour from a table.
+  // color-follows-functionality rule the rest of the app obeys — so the card is
+  // scoped rather than reading a color from a table.
   return step.module ? <ModuleScope module={step.module}>{card}</ModuleScope> : card;
 }
 

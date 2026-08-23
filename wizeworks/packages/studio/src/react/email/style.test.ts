@@ -24,7 +24,7 @@ describe('emailStylesheet', () => {
   });
 
   it('cannot be escaped by a value the author typed', () => {
-    // A colour box is a text field, and a stylesheet is the one place a stray
+    // A color box is a text field, and a stylesheet is the one place a stray
     // brace stops being a typo and starts writing rules for the rest of the page.
     const root = emailBody();
     root.children[0]!.children[0] = {

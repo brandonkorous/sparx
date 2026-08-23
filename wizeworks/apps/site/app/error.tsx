@@ -8,7 +8,7 @@
 //
 // The same person `not-found.tsx` is written for: a tenant's own customer, on a
 // real business's website, who is not a developer and did nothing wrong. It
-// renders INSIDE the tenant's layout, so their header, footer, colours and type
+// renders INSIDE the tenant's layout, so their header, footer, colors and type
 // are already around these words — the rest of the site is visibly still there,
 // which is most of the reassurance this page has to give.
 //

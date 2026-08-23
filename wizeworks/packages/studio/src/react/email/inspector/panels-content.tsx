@@ -48,9 +48,9 @@ export function TextPanel({ node }: { node: TextNode }) {
       </Group>
       <Group title="Look">
         <ColorRow
-          label="Colour"
+          label="Color"
           value={node.color}
-          onCommit={(color) => patch('Change colour', { color, colorAuto: false })}
+          onCommit={(color) => patch('Change color', { color, colorAuto: false })}
         />
         <NumberRow
           label="Size"
@@ -80,10 +80,10 @@ export function TextPanel({ node }: { node: TextNode }) {
           onCommit={(align) => patch('Change alignment', { align })}
         />
         <ColorRow
-          label="Link colour"
+          label="Link color"
           value={node.linkColor ?? node.color}
           hint="Links inside this copy."
-          onCommit={(linkColor) => patch('Change link colour', { linkColor, linkColorAuto: false })}
+          onCommit={(linkColor) => patch('Change link color', { linkColor, linkColorAuto: false })}
         />
       </Group>
     </>
@@ -124,13 +124,13 @@ export function ButtonPanel({ node }: { node: ButtonNode }) {
           <ColorRow
             label="Background"
             value={node.bg}
-            onCommit={(bg) => patch('Change button colour', { bg, bgAuto: false })}
+            onCommit={(bg) => patch('Change button color', { bg, bgAuto: false })}
           />
         )}
         <ColorRow
           label="Words"
           value={node.color}
-          onCommit={(color) => patch('Change button words colour', { color, colorAuto: false })}
+          onCommit={(color) => patch('Change button words color', { color, colorAuto: false })}
         />
         <ColorRow
           label="Border"
@@ -255,9 +255,9 @@ export function DividerPanel({ node }: { node: DividerNode }) {
   return (
     <Group title="Line">
       <ColorRow
-        label="Colour"
+        label="Color"
         value={node.color}
-        onCommit={(color) => patch('Change line colour', { color, colorAuto: false })}
+        onCommit={(color) => patch('Change line color', { color, colorAuto: false })}
       />
       <NumberRow
         label="Thickness"

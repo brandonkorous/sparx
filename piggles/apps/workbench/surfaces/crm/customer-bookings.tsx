@@ -48,7 +48,7 @@ export function CustomerBookingsTab({
   const rows = data?.items ?? [];
 
   return (
-    // The Bookings app's data, wearing the Bookings app's hue — colour follows
+    // The Bookings app's data, wearing the Bookings app's hue — color follows
     // functionality, so a badge here says which app it came from.
     <ModuleScope module="scheduling">
       <RelatedCard

@@ -14,7 +14,7 @@ to be a panel **I added yesterday** (#073). Measuring it rather than squinting a
 it showed **2.17:1** — and then showed that the panel was not the problem.
 
 Silica's `soft` variant paints the background as a 12–15% tint of the accent
-colour and **the text in the accent colour itself**:
+color and **the text in the accent color itself**:
 
 ```js
 // @wizeworks/silicaui/src/components/alert.js  (badge.js and button.js identical)
@@ -29,7 +29,7 @@ On a saturated palette that lands somewhere near legible. **Piggles' palette is
 deliberately soft and warm**, so hue-on-tint-of-hue collapses. Measured in the
 running console against the actual rendered background:
 
-| colour                | soft contrast | badge size | AA needs |
+| color                 | soft contrast | badge size | AA needs |
 | --------------------- | ------------- | ---------- | -------- |
 | `warning` `#ffd166`   | **1.37:1**    | 13px       | 4.5:1    |
 | `success` `#5ecf8b`   | **1.77:1**    | 13px       | 4.5:1    |
@@ -40,7 +40,7 @@ running console against the actual rendered background:
 | `secondary` `#2d3443` | 9.18:1        | 13px       | — passes |
 
 `secondary` passes only because Piggles' secondary happens to be a dark ink. Every
-colour that is actually a _colour_ fails, and `warning` — the one that means
+color that is actually a _color_ fails, and `warning` — the one that means
 "look at this" — is the worst on the list at **1.37:1**, which is pale yellow on
 pale yellow.
 
@@ -64,7 +64,7 @@ Every Alert in the console that names a variant names `soft`. There is not one
 `<Badge color={statusTone(s)} variant="soft">` is the documented pattern for
 every status pill ([[feedback_status_badges_semantic_color]]), so all 689 of them
 render Paid, Draft, Overdue and Out of stock at 1.4–2.3:1. The rule that says
-status must carry semantic colour and the recipe that renders semantic colour
+status must carry semantic color and the recipe that renders semantic color
 unreadably are pointing in opposite directions.
 
 It also sits directly on top of [[feedback_no_faded_text]] — a CORE rule, and one
@@ -89,7 +89,7 @@ first.
 
 ## What this is NOT
 
-Not a palette bug. `#ffd166` is a fine warning colour: the **solid** variant puts
+Not a palette bug. `#ffd166` is a fine warning color: the **solid** variant puts
 dark ink on it and measures **6.35:1**. The hue is right; using it as ink on a
 tint of itself is what fails.
 
@@ -137,9 +137,9 @@ on Home was the worst text on the screen at 2.17:1 / 14px. It now uses the solid
 | button ink  | 6.35:1        | **14.29:1**       |
 
 The button drops its `color="module"`: the alert is already wearing the module
-hue, so a module-coloured button on it measures **1:1** — invisible. A colourless
+hue, so a module-colored button on it measures **1:1** — invisible. A colorless
 `btn btn-sm` is the right control there and needs no approval (RULE #4 covers the
-_naming_ of `neutral`, not a control with no colour at all).
+_naming_ of `neutral`, not a control with no color at all).
 
 **The other 1,004 were left alone deliberately.** Changing them one at a time is
 exactly the deferred fix RULE #1 exists to prevent, and the systemic fix is one

@@ -67,7 +67,7 @@ inside `panels-content.tsx` and `panels-layout.tsx` had no key at all, so moving
 between two blocks of the same kind reused one `<Textarea>` and one stale value.
 
 `ColorRow`, `SelectRow` and `SwitchRow` are controlled and were always right, which
-is why Weight and Colour updated while Copy did not — the panel looked like it was
+is why Weight and Color updated while Copy did not — the panel looked like it was
 following the selection.
 
 The site/page inspector next door does it correctly, with a `fieldKey(id, …)` helper

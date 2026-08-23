@@ -47,16 +47,16 @@
      the same distance from the work either way.
 
      They were called `neutral` and `neutral-dark`, and that is what broke: one
-     token was doing two jobs. `neutral` is also a REGISTERED SEMANTIC COLOUR —
+     token was doing two jobs. `neutral` is also a REGISTERED SEMANTIC COLOR —
      400-odd controls say `color="neutral"` — and silica resolves a `soft`,
-     `outline` or `ghost` variant by using the colour ITSELF as the ink. A colour
+     `outline` or `ghost` variant by using the color ITSELF as the ink. A color
      pinned dark in both themes is a fine fill and an unreadable ink, so on the
      dark canvas every one of those controls came out at a contrast ratio of 1.1:
      #27232a on #272d39. Not faint. Absent. Completed bookings were blank
      rectangles in the diary and a "Previous" button was a button-shaped hole.
 
      So the two meanings are two tokens now. The chrome keeps its exact values
-     under its own name; `neutral` becomes what every other registered colour in
+     under its own name; `neutral` becomes what every other registered color in
      this file already is — a value that inverts with the canvas so it can be
      read on it. */
   --color-chrome: #514b52;
@@ -123,7 +123,7 @@
      canvas exactly as success, info, warning and error are just above. This is
      the value that makes a soft badge, an outline button and a ghost icon
      legible here; see the note in the light block for what happened when it was
-     the chrome's colour instead. */
+     the chrome's color instead. */
   --color-neutral: #b3adb5;
   --color-neutral-content: #211e24;
 

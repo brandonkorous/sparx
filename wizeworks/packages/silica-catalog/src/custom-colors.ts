@@ -368,13 +368,13 @@ export function buildCustomColorCss(theme: Theme, opts: BuildCustomColorCssOptio
  *
  * Without this, silicaui's CSS resolves `var(--color-<role>-content, oklch(from …))`
  * through its documented LAST RESORT: a lightness-threshold approximation. On a
- * mid-tone brand colour the approximation and the measurement disagree — a theme
+ * mid-tone brand color the approximation and the measurement disagree — a theme
  * editor that reports the measured ink ("we would put near-black on this orange")
  * while the page paints the approximated one (white) is describing a site that
  * does not exist.
  *
  * Emitted as tokens rather than baked into the stored `Theme` on purpose: a stored
- * pair goes stale the moment the author edits the role colour, and nothing in the
+ * pair goes stale the moment the author edits the role color, and nothing in the
  * schema records whether it was authored or derived. An AUTHORED `-content` always
  * wins — this only fills gaps.
  */

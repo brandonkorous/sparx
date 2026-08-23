@@ -48,7 +48,7 @@ export interface ToolbarAction {
   /**
    * Wear ANOTHER module's hue.
    *
-   * Colour follows functionality, not the page: a "write a social post" action
+   * Color follows functionality, not the page: a "write a social post" action
    * on a commerce surface is Social's, and says so. Without this the action
    * would have to stay bespoke JSX in `controls` purely to keep its provider —
    * and bespoke JSX is what looks foreign in the popover.
@@ -129,7 +129,7 @@ export function ToolbarActionRows({ actions }: { actions: readonly ToolbarAction
 /**
  * The primary action, when it is a simple icon + label.
  *
- * Filled and coloured, because it is the thing the surface exists for — never
+ * Filled and colored, because it is the thing the surface exists for — never
  * ghost like the secondaries beside it.
  *
  * ── WHY THIS SLOT EXISTS RATHER THAN A CLASS AT THE CALL SITE ──────────────

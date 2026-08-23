@@ -100,7 +100,7 @@ Re-run on the live site 2026-08-22: `rel="icon"` is absent from Halo & Hem's pag
 entirely.
 
 Then, as Nia, closing it properly rather than leaving her site iconless: uploaded a
-mark (a brass ring over an ivory H, in her own theme colours) from
+mark (a brass ring over an ivory H, in her own theme colors) from
 Your site › Logo & favicon, and the live pages now carry
 `<link rel="icon" href="…/v1/public/media/c69c440d…">` — her own.
 

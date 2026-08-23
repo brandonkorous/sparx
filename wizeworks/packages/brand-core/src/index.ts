@@ -79,7 +79,7 @@ export const DEFAULT_GOLDEN_BLUEPRINT = 'sparx';
  * `wizeworks/apps/site`, which serves BOTH brands off one deployment and
  * therefore may not import `@sparx/*` or `@piggles/*` (check-boundaries RULE 1).
  * So it cannot reach either brand's marks package, and the badge set the name as
- * bold type with an optional coloured tail — which is a reasonable rendering of
+ * bold type with an optional colored tail — which is a reasonable rendering of
  * "sparx" and is simply not what Piggles' logo is. Piggles' wordmark has a pink
  * dot over the "i"; set as type it was just the word, in the wrong weight, with
  * none of the mark in it.
@@ -102,9 +102,9 @@ export interface BrandWordmark {
   /**
    * The one shape painted in the brand accent — Piggles' dot over the "i".
    *
-   * Kept separate from `paths` rather than carrying its own colour, because the
+   * Kept separate from `paths` rather than carrying its own color, because the
    * badge is self-contained by construction: it inlines every value it paints so
-   * a tenant's own CSS cannot reach it, and a colour baked into the art here
+   * a tenant's own CSS cannot reach it, and a color baked into the art here
    * would be the one thing on the badge that did not come from configuration.
    */
   accentPath: string | null;
@@ -210,11 +210,11 @@ export interface PlatformBrandIdentity {
    * A hex in configuration rather than a token, deliberately: the one consumer
    * is the attribution badge on a TENANT's public site, which must be immune to
    * the tenant's own CSS and therefore inlines every value it paints. A token
-   * would resolve against the tenant's theme and the badge would change colour
+   * would resolve against the tenant's theme and the badge would change color
    * from one site to the next.
    *
    * Null when the brand has published none — the badge then sets its name in one
-   * weight rather than inventing a colour.
+   * weight rather than inventing a color.
    */
   accentHex: string | null;
   /**

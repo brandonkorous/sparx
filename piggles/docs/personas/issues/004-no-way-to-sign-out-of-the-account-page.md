@@ -65,11 +65,11 @@ Two files, both in `apps/account`:
   the cookie alone leaves a live session that the OTHER domain's cookie still
   addresses, which is the specific way a cross-domain sign-out goes wrong here.
 - **`app/account/page.tsx`** — a `<form method="post" action="/sign-out">` with a
-  colourless ghost `<button>` beside the appearance control. A form, not a link:
+  colorless ghost `<button>` beside the appearance control. A form, not a link:
   signing out is a state change and must not be reachable by a prefetch or a
   crawler.
 
-Colourless deliberately — `neutral` on that bar is what issue #003 was.
+Colorless deliberately — `neutral` on that bar is what issue #003 was.
 
 ## Confirmed by
 

@@ -32,7 +32,7 @@ not in the history, and not on the booking.
 
 Three separate things, none of them visible:
 
-1. Her **Colour deposit** rule sets a $25 deposit and **no no-show fee at all**,
+1. Her **Color deposit** rule sets a $25 deposit and **no no-show fee at all**,
    so no fee could ever have applied. The dialog's "any no-show fee … is applied"
    was, for this business, always going to mean nothing.
 2. No deposit was held either, because this tenant has no way to take one
@@ -89,7 +89,7 @@ handles by saying nothing.
 
 ## Confirmed by
 
-Re-run 2026-08-22, on the same $180 colour appointment:
+Re-run 2026-08-22, on the same $180 color appointment:
 
 | Where          | Before                                              | After                                                       |
 | -------------- | --------------------------------------------------- | ----------------------------------------------------------- |

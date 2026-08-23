@@ -10,7 +10,7 @@
 
 ## What happened
 
-Two chairs, two people, and they do different work. Nia does colour; Dara does
+Two chairs, two people, and they do different work. Nia does color; Dara does
 the barbering. Act 4's whole point is saying so.
 
 On **Barbering, skin fade** she opened **Who or what it needs**, pressed **Add
@@ -119,7 +119,7 @@ Re-run as Nia on 2026-08-21, on all three services that belong to one person:
 | -------------------- | ---------------- | ------------------------------------------------------------- |
 | Barbering, skin fade | `barbering`      | **Only Dara Bell can take this booking.**                     |
 | Beard trim and shape | `barbering`      | **Only Dara Bell can take this booking.**                     |
-| Full head highlights | `colour`         | Ava Bennett, Nia Okafor and Noor Rahim can take this booking. |
+| Full head highlights | `color`          | Ava Bennett, Nia Okafor and Noor Rahim can take this booking. |
 
 That third line is the fix earning its keep on its first day: it named two people
 Nia has never employed — leftovers the sample clear did not take

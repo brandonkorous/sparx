@@ -3,7 +3,7 @@
 // What every color in the theme is FOR — once, in a modal, rather than as a
 // paragraph beside each of twelve swatches.
 //
-// The grid answers "what colour is this" without a word. This answers "which one
+// The grid answers "what color is this" without a word. This answers "which one
 // should I change", which is a different question, asked far less often, and the
 // only one that needs sentences.
 
@@ -71,7 +71,7 @@ function GuideRow({ role }: { role: ColorRole }) {
 
   return (
     <li className="flex items-center gap-3">
-      {/* Console chrome outside, theme colour inside — see `color-swatch`. */}
+      {/* Console chrome outside, theme color inside — see `color-swatch`. */}
       <span className="border-base-300 block shrink-0 overflow-hidden rounded-lg border">
         <ThemeChip mode={mode} className="block">
           <span

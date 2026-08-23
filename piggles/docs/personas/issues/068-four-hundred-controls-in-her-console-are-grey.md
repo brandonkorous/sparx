@@ -36,11 +36,11 @@ instance is obviously fine."** 440 instances is not 440 approvals.
 
 Each of these is one of three things, and only the last needs the word `neutral`:
 
-1. **Something with a meaning its colour should carry** — destructive is `danger`,
+1. **Something with a meaning its color should carry** — destructive is `danger`,
    app-owned is `module`, a favourite is `primary`, a state is whatever
    `statusTone` says.
 2. **Genuinely untyped chrome** — an icon button, a toolbar control, a Cancel.
-   The right control there is a **colourless** one: pass neither `color` nor
+   The right control there is a **colorless** one: pass neither `color` nor
    `variant`, and a bare `.btn` resolves to `base-content`, correct in both
    themes. That needs no approval and is what the memory records Brandon saying
    explicitly.
@@ -87,7 +87,7 @@ the answer for them outright (_"a destructive control is `danger`"_), and
 | [inventory/stock-grid.tsx](../../../apps/workbench/surfaces/inventory/stock-grid.tsx)                   | Discard                          |
 | [social/cadence.tsx](../../../apps/workbench/surfaces/social/cadence.tsx)                               | "Just a reminder" badge → `info` |
 
-Each keeps its `variant`, so meaning comes from the colour and loudness from the
+Each keeps its `variant`, so meaning comes from the color and loudness from the
 variant — a `danger ghost` Remove is quiet and still says what it does.
 
 Four more were closed on the invoice panes as part of
@@ -96,7 +96,7 @@ Four more were closed on the invoice panes as part of
 
 **The remaining 432 need a decision, and there are three plausible shapes:**
 
-- **Colourless by default.** Strip `color` and `variant` from every button that
+- **Colorless by default.** Strip `color` and `variant` from every button that
   is chrome, leaving `<Button size="sm">`. Mechanical, reversible, and the
   memory records this as the answer Brandon gave for secondary controls. The
   risk is that ~54 `Cancel` buttons currently sitting quiet as `ghost` become

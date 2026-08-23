@@ -6,7 +6,7 @@ import { appsInGroup } from '@piggles/config';
 
 // "What do you do" — the second and last question.
 //
-// The options are the colour groups, described by what a person DOES rather than
+// The options are the color groups, described by what a person DOES rather than
 // by what the software is. Picking some is optional and picking none is fine:
 // the answer only decides what starts on the rail.
 //

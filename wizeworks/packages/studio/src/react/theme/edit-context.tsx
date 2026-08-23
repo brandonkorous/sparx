@@ -15,7 +15,7 @@
 // and not a single scalar. Routing those writes by mode meant setting the corners
 // while Dark was selected wrote `--radius-box` into the dark delta, so the change
 // vanished on switching back to Light and looked like a save that did not take —
-// and on the published site the visitor's colour-scheme setting reshaped the
+// and on the published site the visitor's color-scheme setting reshaped the
 // cards.
 
 import { createContext, useContext, useMemo } from 'react';

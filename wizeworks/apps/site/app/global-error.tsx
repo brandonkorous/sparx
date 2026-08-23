@@ -23,7 +23,7 @@ import { useEffect } from 'react';
 const INK = '#14142b';
 const INK_QUIET = '#6b6b86';
 // The one control on the page, filled in the INK rather than any brand's accent.
-// It was a literal sparx Ember, which is one company's colour on the other
+// It was a literal sparx Ember, which is one company's color on the other
 // company's tenants' error page — and this file cannot look a brand up: it runs
 // in the browser after the root layout threw, with no theme and no stylesheet.
 // Ink on white is high-contrast, unmistakably a button, and belongs to nobody.

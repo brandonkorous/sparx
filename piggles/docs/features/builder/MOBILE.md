@@ -108,7 +108,7 @@ variants.
 ### Drawers, not a view switch
 
 The current switcher **replaces** the canvas: you tap Change, the page
-disappears, you adjust a colour, and you cannot see what it did until you tap
+disappears, you adjust a color, and you cannot see what it did until you tap
 back. A drawer keeps the work on screen and returns you to exactly where you
 were.
 

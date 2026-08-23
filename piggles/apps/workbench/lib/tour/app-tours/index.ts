@@ -13,7 +13,7 @@
 // step, and one file carries every anchor these guides depend on
 // (components/app-panel.tsx) rather than thirteen apps' worth of buttons.
 //
-// Split by the six colour groups the product already organises itself by, so
+// Split by the six color groups the product already organises itself by, so
 // finding the words for an app means opening the file its rail hue names.
 
 import type { Guide, GuideKey } from '../types';

@@ -56,9 +56,9 @@ The same structural mistake as issue #003, one family over.
 
 `piggles/packages/brand/src/theme/palette.css` chooses the semantic hues as
 **fills** — light, warm, friendly, each with a dark `-content` to sit on it. That
-is the brand and it is right; those colours are lovely as a filled badge.
+is the brand and it is right; those colors are lovely as a filled badge.
 
-silica then uses the same token as **ink**. A colour class is a pure var-setter:
+silica then uses the same token as **ink**. A color class is a pure var-setter:
 `.alert-warning` assigns `--alert-bg`/`--alert-fg` (the solid look) and
 `--alert-accent`, and `--alert-accent` is what `soft`, `outline`, `ghost`, `dash`
 and `link` paint the TEXT with. So a hue picked to be sat on gets painted onto a
@@ -68,17 +68,17 @@ Dark mode is fine, because a light hue on a dark surface is exactly what it is
 good at. This is a light-theme failure of a token that has to serve both.
 
 - **The hue is kept and given somewhere to go.** 60% of the hue mixed with the
-  surface's own content colour. Because `--color-base-content` flips with the
+  surface's own content color. Because `--color-base-content` flips with the
   theme, ONE rule darkens in light and lightens in dark — a warning stays amber
   and a success stays green in both.
 - **60% was chosen by looking, not by arithmetic.** 40/50/60/70/100 were rendered
   in both themes and compared: below 60 the hue drifts toward grey and stops
   carrying meaning, at 100 it is the defect.
 - **Solid fills are untouched.** `--alert-bg`, `--badge-bg` and `--btn-bg` still
-  take the raw hue with `-content` on top. That is where these colours are at
+  take the raw hue with `-content` on top. That is where these colors are at
   their best and where the brand actually lives.
 
-Five families, seven colours: button, badge, alert, link, tabs.
+Five families, seven colors: button, badge, alert, link, tabs.
 
 ## Confirmed by
 
@@ -87,7 +87,7 @@ Five families, seven colours: button, badge, alert, link, tabs.
 > green.
 >
 > Then rendered all five soft alerts and four soft badges as a probe, in **light**
-> and again in **dark**, and looked at both: every line readable, every colour
+> and again in **dark**, and looked at both: every line readable, every color
 > still recognisably itself. Before and after screenshots are the evidence — the
 > "before" light probe has a warning line that is genuinely hard to find on the
 > panel.

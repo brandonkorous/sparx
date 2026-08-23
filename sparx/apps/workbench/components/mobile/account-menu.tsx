@@ -41,8 +41,8 @@ export function AccountMenu({ userName, userEmail, themeChoice, onSetTheme }: Ac
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        {/* Colourless on purpose: this is chrome, and a bare `.btn` resolves to
-            base-content in both themes without naming a colour it does not
+        {/* Colorless on purpose: this is chrome, and a bare `.btn` resolves to
+            base-content in both themes without naming a color it does not
             mean. */}
         <Button variant="ghost" shape="circle" className="min-h-11 min-w-11" aria-label="You">
           {initials(userName, userEmail)}

@@ -170,7 +170,7 @@ export function ServiceRequirements({
                   <Input
                     color="module"
                     value={requirement.skillTags.join(', ')}
-                    placeholder="barbering, colour"
+                    placeholder="barbering, color"
                     aria-label="Skills this needs"
                     onChange={(event) => {
                       update(index, { skillTags: parseSkills(event.target.value) });

@@ -21,12 +21,12 @@ export interface OgCardParams {
   accent?: string | null;
   /**
    * Which product this tenant signed up under, for the accent to fall back to
-   * when the tenant has set no colour of their own.
+   * when the tenant has set no color of their own.
    *
    * Resolved HERE and sent as a parameter, because the generator is an edge
    * route that performs no lookup by design — so its own fallback was a literal
    * sparx Ember, painting the top edge of a Piggles business's social card in
-   * another company's colour whenever that business had not picked one.
+   * another company's color whenever that business had not picked one.
    */
   platformBrand?: string | null;
 }

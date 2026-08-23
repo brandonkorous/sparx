@@ -6,7 +6,7 @@
 **Surface:** mypiggles › Bookings › a booking
 **Filed:** 2026-08-22
 **Fixed:** 2026-08-22
-**Confirmed by:** P02 · Nia · on Priyanka's Friday colour appointment 2026-08-22
+**Confirmed by:** P02 · Nia · on Priyanka's Friday color appointment 2026-08-22
 
 ## What happened
 
@@ -19,7 +19,7 @@ It is buried four screens away.
 Her record took the note perfectly — CRM › Priyanka Deshmukh › Notes › Note,
 saved onto her timeline with a time against it:
 
-> ALLERGY: ammonia. Ammonia-free colour line only — check every tube before
+> ALLERGY: ammonia. Ammonia-free color line only — check every tube before
 > mixing. She reacts within minutes.
 
 Her **Full head highlights** appointment on Friday shows, in full: the service,
@@ -31,7 +31,7 @@ tab.
 
 ## Why it matters
 
-**Nia mixes colour standing at that screen.** The appointment is what is open in
+**Nia mixes color standing at that screen.** The appointment is what is open in
 front of her at the moment the decision is made, and it is the one screen that
 does not carry the fact that decides it. A note that is technically on file and
 practically unreachable is worse than no note, because everybody believes it has
@@ -39,7 +39,7 @@ been dealt with.
 
 It is not only allergies. Nothing the salon knows about the client reaches the
 appointment: no phone number to ring when she is late, no email, no "third visit
-this year", no previous colour formula. A booking business's booking screen is
+this year", no previous color formula. A booking business's booking screen is
 about the service and silent about the person.
 
 ## The data is already loaded
@@ -82,7 +82,7 @@ Re-run 2026-08-22. Priyanka's **Full head highlights** on Friday now opens with:
 > **Who it is for** — What you know about them, where you are about to serve them.
 > · **Open their record**
 > Priyanka Deshmukh · priyanka.d@example.test
-> **ALLERGY: ammonia. Ammonia-free colour line only — check every tube before
+> **ALLERGY: ammonia. Ammonia-free color line only — check every tube before
 > mixing. She reacts within minutes.**
 
 The note is on the appointment, marked down the left edge in `warning`, above the

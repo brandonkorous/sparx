@@ -8,7 +8,7 @@ export const autoPartType: ProductTypeDefinition = {
   name: 'Auto Part',
   pluralName: 'Auto Parts',
   description: 'Vehicle parts — fitment, specifications, and warranty.',
-  icon: 'wrench',
+  icon: '🔧',
   attributeSchema: {
     fields: [
       {

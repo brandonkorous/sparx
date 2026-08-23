@@ -41,7 +41,7 @@
   --color-accent: #9c4a2f;
   --color-accent-content: #ffffff;
 
-  /* ── Layer 5: semantics — a separate axis from brand colour ────────────
+  /* ── Layer 5: semantics — a separate axis from brand color ────────────
    * Resolved via `statusTone()`. These say what STATE a thing is in, never
    * whose product it is, so they are shared with sparx's set rather than
    * re-picked: a success green that differs between two consoles would be a

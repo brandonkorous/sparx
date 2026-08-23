@@ -4,7 +4,7 @@
 //
 // ONE control, because every pane that can show both has to agree about what the
 // choice is called and what it does. It began as a private pair of buttons in the
-// theme builder, which is why for a long time a theme's dark colours could only be
+// theme builder, which is why for a long time a theme's dark colors could only be
 // SEEN in the pane where they were typed: an author set them, went to look at a
 // page, and saw the day palette with nothing to say otherwise.
 //
@@ -14,7 +14,7 @@
 //
 // A theme pane EDITS the mode it is switched to; a page, layout or piece pane only
 // LOOKS at it. Same words either way, because it is the same question about the
-// same two bags of colour.
+// same two bags of color.
 
 import { Button } from '@wizeworks/silicaui-react';
 import { StudioIcon } from './icon';
@@ -22,7 +22,7 @@ import { StudioIcon } from './icon';
 /** Which palette is on screen. Never a theme's NAME: silica emits its dark delta
  *  under `[data-theme="dark"]` and under a `prefers-color-scheme` media query
  *  guarded by `:not([data-theme="light"])`, so anything else fails the guard and
- *  a dark-mode computer silently repaints the canvas in night colours. */
+ *  a dark-mode computer silently repaints the canvas in night colors. */
 export type StudioMode = 'light' | 'dark';
 
 export function ModeSwitch({
@@ -73,7 +73,7 @@ function ModeButton({
       size="sm"
       aria-pressed={selected}
       aria-label={label}
-      title={compact ? `Show the ${label.toLowerCase()} colours` : undefined}
+      title={compact ? `Show the ${label.toLowerCase()} colors` : undefined}
       {...(compact ? { shape: 'square' as const } : {})}
       {...(selected ? { color: 'primary' as const } : {})}
       onClick={onSelect}

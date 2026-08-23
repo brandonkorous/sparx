@@ -130,7 +130,7 @@ function ActionRows({ actions }: { actions: readonly BuilderAction[] }) {
           key={action.label}
           size="sm"
           // Ghost so the rows read as a menu rather than as a stack of buttons; the
-          // loud one keeps its colour, because Publish is still the loud one after
+          // loud one keeps its color, because Publish is still the loud one after
           // it moves.
           variant="ghost"
           {...(action.emphasis === 'loud' ? { color: 'primary' as const } : {})}

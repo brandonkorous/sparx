@@ -80,7 +80,7 @@ export function PaneToolbarOverflow({
   // `data-module` attribute and CSS custom properties cascade by DOM, not by
   // React tree (see ModuleScope's header) — and a Popover's panel is portalled
   // to the document body, outside the pane that set it. So the same action was
-  // this app's colour in the bar and the brand's default pink one tap later,
+  // this app's color in the bar and the brand's default pink one tap later,
   // which on a narrow screen is the ONLY version most people ever see.
   //
   // Read off the trigger, which IS inside the pane, at the moment of opening.

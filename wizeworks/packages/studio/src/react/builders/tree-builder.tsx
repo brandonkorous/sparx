@@ -139,7 +139,7 @@ export function TreeBuilder({
               options: DEVICES,
             },
             {
-              label: 'Show the colours for',
+              label: 'Show the colors for',
               value: mode,
               onValue: (next) => setMode(next as StudioMode),
               options: MODES,

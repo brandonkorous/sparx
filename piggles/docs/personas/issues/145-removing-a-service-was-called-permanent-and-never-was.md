@@ -45,7 +45,7 @@ sees. "Your booking page" understates that: a business owner reads it as `/book`
 ## What turning the light on found
 
 The new filter shows Halo & Hem has **twelve removed services** sitting in the
-database — Balayage, Bridal styling, Full colour, Manicure, Gloss & toner and the
+database — Balayage, Bridal styling, Full color, Manicure, Gloss & toner and the
 rest of the starter pack she replaced in act 3. They have been invisible and
 unrecoverable since the day she cleared them out.
 

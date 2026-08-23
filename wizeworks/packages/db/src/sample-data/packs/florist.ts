@@ -966,7 +966,7 @@ export const floristPack: SampleDataPack = {
         ),
         h2('Late winter'),
         p(
-          'Ranunculus, anemone, narcissus and the first blossom. Short stems, extraordinary colour, and a vase life of five or six days rather than ten — worth knowing if you are planning something and want it to last the weekend.'
+          'Ranunculus, anemone, narcissus and the first blossom. Short stems, extraordinary color, and a vase life of five or six days rather than ten — worth knowing if you are planning something and want it to last the weekend.'
         ),
         h2('Spring'),
         p(

@@ -18,7 +18,7 @@ export const SITE_GUIDE: Guide = {
       app: 'site',
       anchor: 'nav-builder.theme',
       title: 'The look, in one place',
-      body: 'Colours, fonts and spacing for the whole site. Change them here and every page follows — you never have to restyle a page one at a time.',
+      body: 'Colors, fonts and spacing for the whole site. Change them here and every page follows — you never have to restyle a page one at a time.',
     },
     {
       id: 'site.preview',

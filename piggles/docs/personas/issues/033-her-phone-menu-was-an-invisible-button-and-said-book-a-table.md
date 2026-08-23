@@ -17,7 +17,7 @@ no menu, no links, no button. A customer on a phone could reach the front page
 and nothing beyond it.
 
 The button was there. It was a 32×32 transparent square containing an empty
-`<span data-icon="menu">`. Tappable, correctly positioned, correctly coloured,
+`<span data-icon="menu">`. Tappable, correctly positioned, correctly colored,
 and completely invisible.
 
 Tapping the spot it should be opened her menu — and its primary button read

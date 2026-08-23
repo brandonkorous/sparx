@@ -10,7 +10,7 @@
 
 ## What happened
 
-Priyanka Deshmukh has a **$180 colour appointment booked for Friday**. Her record
+Priyanka Deshmukh has a **$180 color appointment booked for Friday**. Her record
 in the console says:
 
 > **Nothing here yet** — Priyanka Deshmukh has no deals, tasks, orders or logged

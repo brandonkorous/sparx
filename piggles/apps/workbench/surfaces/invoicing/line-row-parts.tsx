@@ -39,7 +39,7 @@ export function LineMeta({
   const margin = line.appliedMarkup?.marginPct;
   const bits: React.ReactNode[] = [];
   // The kind of charge and "no tax" are plain facts about the line with no
-  // meaning to carry, so they take no colour at all rather than being named
+  // meaning to carry, so they take no color at all rather than being named
   // grey — a bare badge resolves to the surface's own ink.
   if (typeLabel) {
     bits.push(

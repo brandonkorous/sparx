@@ -12,7 +12,7 @@
 //
 // Favourites lead, then Recent — ONE ROW EACH, at every rail width, browsing
 // into the panel the same way an app does (./rail/shortcuts.tsx). Then every app,
-// in colour families that no longer fold (./rail/app-groups.tsx). Everything else
+// in color families that no longer fold (./rail/app-groups.tsx). Everything else
 // is behind All apps in the footer.
 //
 // Nothing on this rail is a list of its own contents. Twenty-five rows in the

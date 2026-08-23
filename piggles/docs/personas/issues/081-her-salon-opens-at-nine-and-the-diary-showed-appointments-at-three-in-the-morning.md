@@ -24,7 +24,7 @@ Her week reads:
 | Deep-Tissue Massage | **8:00 AM** |
 
 A two-chair salon that has never opened before nine, showing a full head of
-colour at three in the morning.
+color at three in the morning.
 
 Nothing warned her. The **Time zone** field on the new-person form said `UTC`
 and she had no reason to touch it: it was already filled in, and the sentence

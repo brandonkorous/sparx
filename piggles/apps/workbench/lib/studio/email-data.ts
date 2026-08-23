@@ -149,12 +149,12 @@ export function useCustomiseForSite() {
 }
 
 /**
- * The exact colours a real send paints with, resolved server-side from this
+ * The exact colors a real send paints with, resolved server-side from this
  * site's brand.
  *
  * Feeding these to the canvas is what makes a NEW block land on brand. They are
  * literal hex on purpose — an email cannot ship a CSS custom property, so every
- * colour in a sent email is frozen when it is authored.
+ * color in a sent email is frozen when it is authored.
  */
 export function useEmailColors() {
   return useQuery({

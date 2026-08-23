@@ -78,7 +78,7 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
    * — one per control, e.g. `theme.setToken:light:--color-primary` — and the
    * previous batch is undone before these ops are applied, so what lands on the
    * stack still describes a single step from where the drag began. Without it a
-   * colour drag would push a batch per frame and push real work off the 200-deep
+   * color drag would push a batch per frame and push real work off the 200-deep
    * stack; with a key per control, moving to a DIFFERENT one starts a new step.
    */
   apply(label: string, ops: StudioOp[], coalesce?: string): boolean {

@@ -21,7 +21,7 @@
 //   All     every module, then that module's surfaces.
 //
 // Open wears the hue of the pane you are looking at, which is the only place a
-// phone can carry module colour once the rail is gone.
+// phone can carry module color once the rail is gone.
 //
 // It FLOATS, and it floats OVER the sheets rather than under them: navigation is
 // never the thing you have to dismiss something else to reach.
@@ -76,7 +76,7 @@ export function NavBar({ active, openCount, activeModule, onSelect }: NavBarProp
                 block
                 // Selection is a FILLED SHAPE (RULE #4) — the 2px underline this
                 // pattern usually gets says "you are here" slower than the label
-                // can be read. Inactive tabs name NO colour: a colourless ghost
+                // can be read. Inactive tabs name NO color: a colorless ghost
                 // resolves to base-content and stays right in both themes.
                 color={on ? 'module' : undefined}
                 variant={on ? 'soft' : 'ghost'}

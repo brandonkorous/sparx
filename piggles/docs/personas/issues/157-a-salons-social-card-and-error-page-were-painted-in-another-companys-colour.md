@@ -1,4 +1,4 @@
-# 157 — A salon's social card and error page were painted in another company's colour
+# 157 — A salon's social card and error page were painted in another company's color
 
 **Status:** fixed
 **Severity:** major
@@ -18,7 +18,7 @@ Ember, hardcoded:
 - **The social card.** `app/api/og/route.tsx` had
   `const DEFAULT_ACCENT = '#e04631'; // sparx Ember, when the tenant set no brand color`.
   That is the rule across the top edge of the 1200×630 card a link preview shows when
-  Nia's page is pasted into a message. She has not set a brand colour, so she got it.
+  Nia's page is pasted into a message. She has not set a brand color, so she got it.
 - **The error page.** `app/global-error.tsx` filled its one button — "Try again" —
   with the same hex.
 
@@ -38,7 +38,7 @@ reads.
 
 A link preview is the most-shared thing a small business has. Nia's is the image
 that shows up when a client forwards her booking page to a friend, and the one
-coloured element on it belonged to a company she has never heard of. The error page
+colored element on it belonged to a company she has never heard of. The error page
 is rarer but worse, because it is the one screen that appears when everything else
 has failed and there is nothing else on it to look at.
 
@@ -59,9 +59,9 @@ fast and cacheable — so it has no way to ask whose site it is drawing. The fal
 therefore has to arrive as a parameter, and `lib/og.ts` is where it is resolved:
 `OgCardParams` gained `platformBrand`, filled from `site.platformBrand` (already in
 the site context) at all nine call sites, and `ogImageUrl` falls back to
-`platformBrandIdentity(platformBrand).accentHex` when the tenant has set no colour of
+`platformBrandIdentity(platformBrand).accentHex` when the tenant has set no color of
 her own. The route's own `DEFAULT_ACCENT` is now the card's own ink — reached only
-when neither the tenant nor her platform has published a colour.
+when neither the tenant nor her platform has published a color.
 
 **The error page.** It is a client component rendering after the layout threw, so it
 cannot look anything up and adding `NEXT_PUBLIC_*` plumbing to an error boundary is
@@ -83,10 +83,10 @@ the mechanism is proven — but this stays worth a look when the browser is back
 
 The **default tenant theme** is a separate question and not this issue: the starter
 palette in `site-themes/src/presets` and `silica-catalog/src/base-theme` is also
-`#e04631`, which is what a brand-new site opens in before anyone picks a colour. That
+`#e04631`, which is what a brand-new site opens in before anyone picks a color. That
 is tenant content rather than platform chrome (`wizeworks/CLAUDE.md`: "builder output
 is tenant content with full design freedom"), and each brand's golden blueprint
 dresses a new site anyway — `piggles-starter` sets `colorPrimary: '#ff6f86'`, so a
 Piggles business born through the normal path never sees the Ember default. The
 preset only shows through where no blueprint was installed at all, which is a
-provisioning gap rather than a colour bug.
+provisioning gap rather than a color bug.

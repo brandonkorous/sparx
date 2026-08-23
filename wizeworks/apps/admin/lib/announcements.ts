@@ -61,10 +61,10 @@ export const BRAND_LABELS: Record<string, string> = {
  * on a row that expired last week will go looking for a bug in the website.
  * Every state here is derived from `live` plus the window — nothing is guessed.
  *
- * `tone: undefined` on Draft is a COLOURLESS badge, not a grey one. A draft is
+ * `tone: undefined` on Draft is a COLORLESS badge, not a grey one. A draft is
  * the one state here that carries no signal — it is not good, not urgent, and
  * not waiting on anything — so it gets no `color` prop and inherits the surface
- * ink. That is different from naming `neutral`, which is a colour choice.
+ * ink. That is different from naming `neutral`, which is a color choice.
  */
 export function announcementState(a: OperatorAnnouncement): {
   label: string;

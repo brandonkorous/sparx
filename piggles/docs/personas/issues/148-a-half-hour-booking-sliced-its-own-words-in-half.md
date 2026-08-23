@@ -27,12 +27,12 @@ rendering fault.
 A block is as tall as the appointment is long. That is the whole point of a
 diary, and it means the space is not the designer's to choose:
 
-| Appointment                 | Slots | Block     | Three lines need        |
-| --------------------------- | ----- | --------- | ----------------------- |
-| Cut and finish, 60 min      | 4     | 64 px     | ~48 px ✓                |
-| Toner and gloss, 45 min     | 3     | 48 px     | ~48 px, no padding left |
-| **Dry cut, 30 min**         | **2** | **32 px** | **~48 px ✗**            |
-| Colour consultation, 20 min | 2     | 32 px     | ~48 px ✗                |
+| Appointment                | Slots | Block     | Three lines need        |
+| -------------------------- | ----- | --------- | ----------------------- |
+| Cut and finish, 60 min     | 4     | 64 px     | ~48 px ✓                |
+| Toner and gloss, 45 min    | 3     | 48 px     | ~48 px, no padding left |
+| **Dry cut, 30 min**        | **2** | **32 px** | **~48 px ✗**            |
+| Color consultation, 20 min | 2     | 32 px     | ~48 px ✗                |
 
 `EventBlock` drew time, service and client on every block regardless. Three of
 this salon's ten services are half an hour or less, so this was not an edge: it
@@ -68,7 +68,7 @@ being cut through its middle. An ellipsis says "there is more"; a sliced letter
 says "this is broken".
 
 The status rail is now full height on every block, so a one-line booking still
-carries its colour, and the hover title still names the whole of it whatever the
+carries its color, and the hover title still names the whole of it whatever the
 block itself had room for.
 
 ## Confirmed by

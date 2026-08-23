@@ -101,6 +101,6 @@ that is a decision rather than a repair.
 > Re-ran act 9 as Nia. Opened _Cut and finish_: the new section shows the warning in
 > full. Chose **Salon cancellation** and the line under the field became "No deposit
 > · 24h cancellation notice · Reminder 1 day and 2 hours before". Saved. Did the same
-> for the other six — five onto Salon cancellation, and the free _Colour
+> for the other six — five onto Salon cancellation, and the free _Color
 > consultation_ onto **Standard**, which asks the same notice without the $25 late
 > fee. All ten of her live services now carry a rule set with reminders.

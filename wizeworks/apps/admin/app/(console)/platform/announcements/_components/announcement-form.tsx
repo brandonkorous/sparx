@@ -166,7 +166,7 @@ export function AnnouncementForm({ announcement }: { announcement?: OperatorAnno
 
             <Field>
               <FieldLabel htmlFor="tone">What kind of notice</FieldLabel>
-              <FieldDescription>This sets the colour of the bar.</FieldDescription>
+              <FieldDescription>This sets the color of the bar.</FieldDescription>
               <NativeSelect
                 id="tone"
                 name="tone"

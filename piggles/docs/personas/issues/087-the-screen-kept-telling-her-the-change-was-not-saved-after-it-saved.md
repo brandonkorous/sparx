@@ -10,7 +10,7 @@
 
 ## What happened
 
-Nia opened **Full head highlights**, said who it needs (a colourist), and pressed
+Nia opened **Full head highlights**, said who it needs (a colorist), and pressed
 **Save**.
 
 The bottom-left of the window said **"Saved just now"**. At the same moment the

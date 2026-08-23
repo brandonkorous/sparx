@@ -7,7 +7,7 @@
 // their computer. What they want is to get on with what they came for, and the
 // only thing that helps is a way back into the shop.
 //
-// This renders INSIDE the tenant's own layout, so the header, footer, colours
+// This renders INSIDE the tenant's own layout, so the header, footer, colors
 // and type are theirs — which means the shop's navigation and its contact
 // details are already on the page, underneath these words. That is the real
 // answer to "offer the shop and the hours rather than an apology": not a bigger

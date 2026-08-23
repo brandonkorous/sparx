@@ -10,7 +10,7 @@
 // (piggles/CLAUDE.md RULE #2 — everything is included, and the only thing that
 // makes that true rather than stated is whether somebody can SEE it).
 //
-// It is also the one place the six colour groups pay off hardest. At tile size
+// It is also the one place the six color groups pay off hardest. At tile size
 // the families read instantly — three indigo, three orange, three cyan — which a
 // column of rows cannot show you because you only ever see part of it.
 //
@@ -18,7 +18,7 @@
 //
 // Only the glyph carries its app's hue. Fifteen soft-tinted tiles is fifteen
 // competing washes rather than wayfinding, which DESIGN.md rules out directly.
-// The tile is a plain outline; the colour sits on the icon, where it separates.
+// The tile is a plain outline; the color sits on the icon, where it separates.
 
 import { Icon } from '@piggles/ui';
 import { Badge, Button } from '@wizeworks/silicaui-react';
@@ -44,8 +44,8 @@ export function AppGrid({ nav, attention, onPick }: AppGridProps) {
           <AppScope key={entry.app.id} app={entry.app.id} className="relative">
             <Button
               block
-              // Colourless on purpose: the tile is a container and names no
-              // colour, so it resolves to base-content and stays right in both
+              // Colorless on purpose: the tile is a container and names no
+              // color, so it resolves to base-content and stays right in both
               // themes. The hue lives on the glyph.
               variant="outline"
               // 96px — a comfortable thumb target that still fits five rows of

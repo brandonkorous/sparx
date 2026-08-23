@@ -288,7 +288,7 @@ export function renderOg(opts: {
               // It was `<span>{title}</span>` beside the dot, which is right until
               // the headline wraps: a flex item is as wide as its LONGEST line, so
               // on a two-line title the dot lands at the end of line one's width
-              // rather than after the final word — a coloured circle floating in
+              // rather than after the final word — a colored circle floating in
               // the middle of nowhere. Wrapping is now the common case, because the
               // mascot took 420px of the width the headline used to have.
               //

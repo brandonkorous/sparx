@@ -106,7 +106,7 @@ places where a hex is the only thing that can be written. What the paragraph was
 reaching for is root RULE #1, which is about feature code painting a control, and
 that lives in the ESLint rule and in review. Two real brand hexes turned up while
 taking the inventory and are filed separately as
-[157](157-a-salons-social-card-and-error-page-were-painted-in-another-companys-colour.md).
+[157](157-a-salons-social-card-and-error-page-were-painted-in-another-companys-color.md).
 
 **A line-number bug in `code()`, fixed on the way past.** Block comments were being
 deleted outright, taking their newlines with them, so every rule in this file had been

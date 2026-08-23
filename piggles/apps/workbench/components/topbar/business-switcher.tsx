@@ -92,7 +92,7 @@ export function BusinessSwitcher({
     <DropdownMenu>
       <Tooltip content="Switch business — each one is completely separate">
         <DropdownMenuTrigger>
-          {/* COLOURLESS: a bare `.btn` resolves to `base-content` and is
+          {/* COLORLESS: a bare `.btn` resolves to `base-content` and is
               theme-correct without naming `neutral`, which is not mine to
               choose (root RULE #4). */}
           <Button className="gap-1.5 text-sm">

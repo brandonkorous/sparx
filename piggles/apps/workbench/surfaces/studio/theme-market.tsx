@@ -57,7 +57,7 @@ export function ThemeMarket({ onInstalled }: { onInstalled: (id: string) => void
         afterwards.
       </p>
       {/* One stylesheet for the shelf, scoped per look, so each swatch means THAT
-          look's colours. No inline style and no runtime-computed class name. */}
+          look's colors. No inline style and no runtime-computed class name. */}
       <style>
         {rows
           .map((look) =>

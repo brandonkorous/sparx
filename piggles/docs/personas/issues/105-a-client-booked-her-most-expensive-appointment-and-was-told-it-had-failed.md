@@ -146,7 +146,7 @@ takes no online payments, and is now reached quietly instead of by a 500.
 ## What is still open after the fix
 
 **Nobody tells Nia her deposit is not being taken.** Her Booking rules pane says
-"Colour deposit · $25 · 48 hours", her booking page tells clients a deposit holds
+"Color deposit · $25 · 48 hours", her booking page tells clients a deposit holds
 their place, and neither is true until she connects a card processor. That is
 [[feedback_never_present_absence_as_measurement]] on the owner's side and wants
 its own answer — a line on the booking rule, or on the service, saying "no deposit

@@ -110,7 +110,7 @@ already 354 lines before this): `calendar.tsx` is now 190, with
 `calendar-columns.tsx` (127) holding the column builders and the empty line, and
 `calendar-toolbar.tsx` (159) holding the toolbar. Four `color="neutral"` came
 across with the toolbar and were dropped — those are secondary chrome, and a bare
-`.btn` resolves to `base-content` without naming a colour (root RULE #4).
+`.btn` resolves to `base-content` without naming a color (root RULE #4).
 
 ## Confirmed by
 

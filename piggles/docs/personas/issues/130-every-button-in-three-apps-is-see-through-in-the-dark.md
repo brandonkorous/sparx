@@ -20,12 +20,12 @@ The cause is two characters:
 
 ```css
 [data-theme='dark'] {
-  --color-group-people: #8fc2c06e; /* six digits of colour, then an alpha byte */
+  --color-group-people: #8fc2c06e; /* six digits of color, then an alpha byte */
   --color-group-people-content: #ffffff;
 }
 ```
 
-`6e` is 110 of 255 — **43% opacity**, baked into a colour token. Everything
+`6e` is 110 of 255 — **43% opacity**, baked into a color token. Everything
 painted from that token inherits it: fills, ink, borders, focus rings. Nothing
 asked for it. Somebody then set that group's `-content` to `#ffffff`, apparently
 to compensate for the washed-out fill, which is how a two-character slip becomes
@@ -59,13 +59,13 @@ declared as an eight-digit hex, across every stylesheet in `piggles/`. It was
 shown to go **red on the real defect** before being trusted green:
 
 ```
-A colour token is declared with transparency:
+A color token is declared with transparency:
   packages/brand/src/theme/groups.css:61  --color-group-people: #8fc2c06e  →  #8fc2c0
 ```
 
 Transparency itself is not banned — a scrim, a hover wash and a focus ring all
 need it, written as `color-mix(…, transparent)` where they are used. What is
-banned is a NAMED COLOUR that arrives already faded, because every downstream
+banned is a NAMED COLOR that arrives already faded, because every downstream
 use inherits a fade none of them chose.
 
 ## Confirmed by

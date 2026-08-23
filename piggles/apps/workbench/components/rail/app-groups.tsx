@@ -1,15 +1,15 @@
 'use client';
 
-// The apps on the rail, in colour families.
+// The apps on the rail, in color families.
 //
 // No headings, no folding. A rail that changes height under you is a rail you
 // have to re-read: the same fifteen apps sat in a different place depending on
 // what was folded when you last left, which is the one thing the most-looked-at
 // element in the product must never do.
 //
-// The families survive without the headings — they are already named by colour,
+// The families survive without the headings — they are already named by color,
 // and the gap between groups (`.sidebar-content`, @piggles/brand chrome.css) is
-// what separated them anyway. A label over a family the colour states is an
+// what separated them anyway. A label over a family the color states is an
 // eyebrow (root CLAUDE.md RULE #2).
 //
 // Sections in the app PANEL still fold, and should: forty rows is a different

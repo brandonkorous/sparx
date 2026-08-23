@@ -7,7 +7,7 @@ export const homeGoodsType: ProductTypeDefinition = {
   name: 'Home & Objects',
   pluralName: 'Home & Objects',
   description: 'Furniture, homeware, and objects — materials, dimensions, and care.',
-  icon: 'lamp',
+  icon: '💡',
   attributeSchema: {
     fields: [
       { key: 'materials', type: 'long_text', label: 'Materials', max: 2000 },

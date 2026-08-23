@@ -41,7 +41,7 @@ function UpdateOffer({ blueprint, ctx }: { blueprint: Blueprint; ctx: SurfaceCon
   return (
     <ModuleScope module="builder">
       {/* Solid at 16px: measured on her Home, `alert-soft` puts this ink at
-          2.17:1 and solid at 6.35:1 (issue 076). The button wears no colour —
+          2.17:1 and solid at 6.35:1 (issue 076). The button wears no color —
           the alert already has the hue, and repeating it hides the button. */}
       <Alert color="module" className="mt-6 text-base">
         <AlertContent>

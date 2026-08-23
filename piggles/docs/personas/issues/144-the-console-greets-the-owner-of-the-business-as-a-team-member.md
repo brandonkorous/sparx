@@ -78,9 +78,9 @@ topbar.tsx was 551 lines. Touching it means splitting it (RULE #0.5), so the fou
 controls it had grown moved into `components/topbar/`: the business switcher, the
 site switcher, quick add, and this menu. What is left states the shape of the bar
 and nothing else. Two unapproved `color="neutral"` buttons went with them — the
-business switcher's trigger and the modal's Close — replaced by colourless
+business switcher's trigger and the modal's Close — replaced by colorless
 buttons, which resolve to `base-content` and are theme-correct without naming a
-colour that is Brandon's to choose (root RULE #4).
+color that is Brandon's to choose (root RULE #4).
 
 ## Confirmed by
 

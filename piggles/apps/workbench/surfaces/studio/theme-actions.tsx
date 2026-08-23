@@ -3,7 +3,7 @@
 // Duplicate, rename and delete a look, from the row it belongs to.
 //
 // DELETE IS REFUSED while a site is wearing it, and the server is the one that
-// refuses — a dangling look falls back to the brand colours, which is safe, but it
+// refuses — a dangling look falls back to the brand colors, which is safe, but it
 // happens on the LIVE site the moment the row goes, and nobody deleting a look they
 // think is unused expects to repaint a shop.
 //
@@ -84,7 +84,7 @@ function RenameField({ row, onDone }: { row: ThemeRow; onDone: () => void }) {
         onDone();
         if (name && name !== row.name) {
           // `draft` is the look as it stands — a rename must not also roll its
-          // colours back to whatever was published.
+          // colors back to whatever was published.
           void saveTheme.mutateAsync({ id: row.id, name, theme: row.draft });
         }
       }}

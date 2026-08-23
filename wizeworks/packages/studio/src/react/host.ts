@@ -105,9 +105,9 @@ export interface StudioHost {
   emailCatalog?: () => EmailPaletteItem[];
 
   /**
-   * The literal colours a NEW email block is seeded with.
+   * The literal colors a NEW email block is seeded with.
    *
-   * Literal, because email HTML cannot ship CSS custom properties — every colour
+   * Literal, because email HTML cannot ship CSS custom properties — every color
    * in a sent email is frozen at the moment it is authored. Supplying the
    * tenant's own resolved palette here is what makes a fresh button land on
    * brand instead of on silica's neutral grey.

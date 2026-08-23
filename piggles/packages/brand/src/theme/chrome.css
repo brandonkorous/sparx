@@ -101,7 +101,7 @@
 
 /* Inside an app, the thumb wears that app's hue. `--color-module` is bound on
  * `[data-module]` (see workbench components/module-scope.tsx), so this
- * re-resolves per subtree for nothing — a Sell pane scrolls in Sell's colour
+ * re-resolves per subtree for nothing — a Sell pane scrolls in Sell's color
  * and a Stock pane in Stock's. */
 [data-module] {
   scrollbar-color: color-mix(in oklab, var(--color-module) 55%, transparent) transparent;

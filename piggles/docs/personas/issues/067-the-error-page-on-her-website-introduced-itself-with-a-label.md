@@ -61,8 +61,8 @@ Both rewritten against `not-found.tsx` as the house exemplar — same layout, sa
 voice, same reader.
 
 `error.tsx` renders inside the tenant's layout, so it uses the real components:
-`<Button color="primary" size="lg">` for Try again, and a colourless
-`<ButtonLink size="lg">` for the way out — no colour and no variant, since the
+`<Button color="primary" size="lg">` for Try again, and a colorless
+`<ButtonLink size="lg">` for the way out — no color and no variant, since the
 escape from an error has no meaning to carry and `neutral` is not mine to choose.
 Ink is `text-base-content` throughout, body is `text-lg`.
 
@@ -96,9 +96,9 @@ Measured on the page rather than eyeballed:
 
 - **no eyebrow** — nothing above the heading
 - **`fadedReadableText: []`** — no `opacity-*`, `text-soft` or `text-muted` on anything readable
-- **`Try again → btn btn-primary btn-lg`** and **`Go to the front page → btn btn-lg`** — a real primary, and a colourless second action
+- **`Try again → btn btn-primary btn-lg`** and **`Go to the front page → btn btn-lg`** — a real primary, and a colorless second action
 - no mention of a store
 
-And it renders inside **her** header, footer, type and colours, which is the part
+And it renders inside **her** header, footer, type and colors, which is the part
 that makes it read as her shop having a bad moment rather than the software
 breaking.

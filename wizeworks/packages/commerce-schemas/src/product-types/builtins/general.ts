@@ -7,7 +7,7 @@ export const generalType: ProductTypeDefinition = {
   name: 'General',
   pluralName: 'General',
   description: 'A flexible fallback — a free list of labeled detail sections for any product.',
-  icon: 'tag',
+  icon: '🏷️',
   attributeSchema: {
     fields: [
       {

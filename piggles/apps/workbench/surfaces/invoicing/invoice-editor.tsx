@@ -264,8 +264,8 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         }
       >
-        {/* Toolbar chrome, so no colour: a bare `.btn` resolves to base ink and
-            stays right in both themes. `variant` without a colour is nothing to
+        {/* Toolbar chrome, so no color: a bare `.btn` resolves to base ink and
+            stays right in both themes. `variant` without a color is nothing to
             apply, and `neutral` is not a choice to make unasked (RULE #4). */}
         <Button
           size="sm"

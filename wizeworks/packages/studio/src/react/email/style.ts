@@ -10,7 +10,7 @@
 // canvas does with its theme.
 //
 // Every value is passed through `safe`. These strings come from an author typing
-// into a colour box, and a stylesheet is the one place a stray `}` stops being a
+// into a color box, and a stylesheet is the one place a stray `}` stops being a
 // typo and starts being a way to write rules for the rest of the page.
 
 import type { Align, EmailNode, FontWeight } from '@wizeworks/silicaui-builder/email';

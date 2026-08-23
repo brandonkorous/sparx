@@ -97,8 +97,8 @@ const VOID_TAGS = new Set(['br', 'hr', 'img', 'input', 'source', 'track', 'wbr',
  * `@media (prefers-color-scheme:dark){…:not([data-theme="light"])}`, so a frame
  * marked with anything else fails the guard: on an author whose computer is set
  * to dark, every page, layout and piece silently painted the theme's NIGHT
- * colours while the theme pane beside it, correctly marked, showed the day ones.
- * Editing a colour then appeared to do nothing on the page — the value changed,
+ * colors while the theme pane beside it, correctly marked, showed the day ones.
+ * Editing a color then appeared to do nothing on the page — the value changed,
  * and the rule the author was looking at came from the other bag.
  *
  * The theme island already carried this fix. The canvas is the second place that
@@ -378,15 +378,15 @@ export function Canvas({
 
   return (
     /* A click here SELECTS a node on a design surface, and the keyboard route to
-       the same thing is the Layers rail beside it — a real `role="tree"` with
-       arrow keys, Enter and F2 — plus the pane's own shortcuts. Selection is
-       deliberately NOT reachable from this div's own key handler: that would put
-       a second, worse route to the same nodes in the tab order.
-
-       The `onKeyDown` here does something else entirely — it belongs to the
-       caret, and only ever fires for a node already being typed into, where
-       Enter and Escape have to mean finish and put-it-back rather than reaching
-       the pane's block shortcuts. */
+           the same thing is the Layers rail beside it — a real `role="tree"` with
+           arrow keys, Enter and F2 — plus the pane's own shortcuts. Selection is
+           deliberately NOT reachable from this div's own key handler: that would put
+           a second, worse route to the same nodes in the tab order.
+    
+           The `onKeyDown` here does something else entirely — it belongs to the
+           caret, and only ever fires for a node already being typed into, where
+           Enter and Escape have to mean finish and put-it-back rather than reaching
+           the pane's block shortcuts. */
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       // `application`, because that is what it is: a design surface where the

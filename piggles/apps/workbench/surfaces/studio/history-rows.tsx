@@ -7,7 +7,7 @@
 // reading "3 hours ago" is a list with no information in it. So rows show clock times
 // under day headings.
 //
-// WHO or WHAT saved it is a colour, not a word. A person saving, an assistant saving
+// WHO or WHAT saved it is a color, not a word. A person saving, an assistant saving
 // and a restore are three different events; one grey badge on all three asserts they
 // are the same thing.
 
@@ -15,7 +15,7 @@ import { Fragment } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import type { HistoryEntry } from '../../lib/studio/history-data';
 
-/** What produced an entry, in words and in a colour that distinguishes it. */
+/** What produced an entry, in words and in a color that distinguishes it. */
 function describe(source: string): {
   label: string;
   tone: 'info' | 'module-ai' | 'warning' | 'success';

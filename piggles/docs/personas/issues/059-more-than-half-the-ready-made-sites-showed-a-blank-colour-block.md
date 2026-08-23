@@ -1,4 +1,4 @@
-# 059 — More than half the ready-made sites showed a blank colour block instead of the site
+# 059 — More than half the ready-made sites showed a blank color block instead of the site
 
 **Status:** fixed
 **Severity:** **major** (the picture IS how a non-technical owner picks a template; 96 of 191 had none)
@@ -16,7 +16,7 @@ Portal shows a city hall with a services grid, Glossy Fashion shows an editorial
 Then the service templates. **Maple Grove Dental** is a flat teal rectangle with the
 business name on it. **Vesper**, the fine-dining one, is a flat mustard rectangle. So is
 every barber, plumber, vet, salon, yoga studio, therapist, café and restaurant — **96 of
-191 templates**, each a solid block of its brand colour carrying a wordmark, a tagline,
+191 templates**, each a solid block of its brand color carrying a wordmark, a tagline,
 an uppercase kicker reading `● BOOK ONLINE`, and one coral button that says
 **"Book an appointment"** — on the restaurants too.
 
@@ -31,7 +31,7 @@ you pick the one that looks like your business. Ninety-five of them keep that pr
 
 1. Sign in, **My Site › Ready-made sites**.
 2. Scroll to any service business — dentist, barber, plumber, vet, café.
-3. Every card is a single flat colour with text on it. Compare with Civic Portal or
+3. Every card is a single flat color with text on it. Compare with Civic Portal or
    Glossy Fashion two rows up.
 
 Every time — it is committed art, not a render.
@@ -61,7 +61,7 @@ A four-link chain, each link hiding the one before it:
    header calls itself _"the fourth build oracle, and the one that was missing"_, had
    nothing to shoot.
 4. Which is why **`media-service.mjs`** exists at all: a synthetic card, built from the
-   bundle's colours and fonts, so that the publish check (`blueprint-bundles.ts` refuses
+   bundle's colors and fonts, so that the publish check (`blueprint-bundles.ts` refuses
    a bundle with no `media/preview.png`) would pass. Its own header says it — _"the
    installed site is the real thing, this is just the catalog card."_
 

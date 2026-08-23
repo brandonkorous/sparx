@@ -7,7 +7,7 @@ export const apparelType: ProductTypeDefinition = {
   name: 'Apparel',
   pluralName: 'Apparel',
   description: 'Clothing and worn goods — fabric, fit, care, and material composition.',
-  icon: 'shirt',
+  icon: '👕',
   attributeSchema: {
     fields: [
       {

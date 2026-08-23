@@ -42,7 +42,7 @@ service to particular people. So the setting appeared exactly backwards:
 | -------------------- | --------------------- | --------------------------------------- |
 | Barbering, skin fade | Dara only (barbering) | **shown** — a choice between one person |
 | Beard trim and shape | Dara only             | **shown**                               |
-| Full head highlights | Nia only (colour)     | **shown**                               |
+| Full head highlights | Nia only (color)      | **shown**                               |
 | **Cut and finish**   | **either**            | **hidden**                              |
 | **Dry cut**          | **either**            | **hidden**                              |
 | **Blow dry**         | **either**            | **hidden**                              |
@@ -114,9 +114,9 @@ Re-run 2026-08-22, as the owner and then as the client:
 
 Two things worth their own attention, recorded in act 6 rather than here:
 
-- **Nothing stops Dara being booked for colour.** Root tint, Toner and gloss and
-  Colour consultation carry no skill requirement, so the engine will hand them to
-  whoever is free — and Dara has `cut, barbering, styling`, not `colour`. That is
+- **Nothing stops Dara being booked for color.** Root tint, Toner and gloss and
+  Color consultation carry no skill requirement, so the engine will hand them to
+  whoever is free — and Dara has `cut, barbering, styling`, not `color`. That is
   a setup gap in act 4, fixed as Nia rather than filed.
 - **The default is "Whoever is free" for every new service**, which is right for a
   van or a table and wrong for a salon chair with a name on it. Whether the default

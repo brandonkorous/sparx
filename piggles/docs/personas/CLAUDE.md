@@ -147,7 +147,7 @@ operate is not an 8, and a plain pane that gets the job done in two taps is not 
 
 **A pane is not scored until you have seen it in dark and at 360px.** Not once
 per run, per pane — the two largest finds in this whole build were invisible to
-every automated check, and one of them was every app colour becoming unreadable
+every automated check, and one of them was every app color becoming unreadable
 as ink in dark mode. A score taken in one theme at one width is a guess about the
 other three.
 
@@ -244,7 +244,7 @@ exercised.
 ### Tenant sites have full design freedom — do not apply sparx's restraints
 
 This is the mistake to avoid, and it is easy to make while holding the rest of
-this file in mind. **No shadows, no gradients, restraint about colour and soft
+this file in mind. **No shadows, no gradients, restraint about color and soft
 tints — those govern sparx's own product surfaces, and Piggles' console. They do
 not govern a tenant's website.** A customer's site is the customer's brand: it
 may have a gradient, a hero image, a shadow, a display typeface, anything the

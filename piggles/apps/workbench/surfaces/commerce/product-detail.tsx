@@ -49,18 +49,10 @@ import {
   Badge,
   Button,
   Card,
-  Field,
-  FieldControl,
-  FieldDescription,
-  FieldLabel,
-  FieldStatus,
-  Input,
-  Switch,
   Tabs,
   TabsList,
   TabsPanel,
   TabsTab,
-  Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -72,13 +64,11 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import { FormSection } from '../../components/form-section';
-import { MoneyInput } from '../../components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ScrollStrip } from '../../components/scroll-strip';
+import { AddProduct } from './product-add';
 import { useDomains } from '../domains/data';
 import { useAnnounceProduct } from './product-scope';
 import { ProductOverviewTab } from './product-overview';
@@ -89,275 +79,11 @@ import { ProductMediaTab } from './product-media';
 import { ProductPricingTab } from './product-pricing';
 import { ProductAttributesTab } from './product-attributes';
 import { ProductSeoTab } from './product-seo';
-import {
-  productErrorMessage,
-  productState,
-  slugifyHandle,
-  suggestSku,
-  useCreateProduct,
-  useProduct,
-  usePublishProduct,
-  VariantAfterCreateError,
-} from './products-data';
+import { productErrorMessage, productState, useProduct, usePublishProduct } from './products-data';
 
 /** The one column everything in this pane sits in. Centred and capped, because a
  *  pane torn onto a second monitor is otherwise 2000px of dead grey. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-/* ── Adding ─────────────────────────────────────────────────────────────── */
-
-function AddProduct({ ctx }: { ctx: SurfaceContext }) {
-  const toast = useToast();
-  const create = useCreateProduct();
-
-  const [title, setTitle] = useState('');
-  const [handle, setHandle] = useState('');
-  const [touchedHandle, setTouchedHandle] = useState(false);
-  const [sku, setSku] = useState('');
-  const [touchedSku, setTouchedSku] = useState(false);
-  const [price, setPrice] = useState(0);
-  const [onSale, setOnSale] = useState(false);
-
-  useEffect(() => {
-    ctx.setTitle('New product');
-  }, [ctx]);
-
-  // The web address and the code follow the name until someone edits one
-  // themselves, at which point it is theirs and typing more of the name must not
-  // overwrite it.
-  const effectiveHandle = touchedHandle ? handle : slugifyHandle(title);
-  const effectiveSku = touchedSku ? sku : suggestSku(title);
-
-  const trimmed = title.trim();
-  const dirty = trimmed !== '' || touchedHandle || touchedSku || price > 0;
-  useDirtySource(dirty && !create.isSuccess, 'This product has not been added yet. Close anyway?');
-
-  const titleError = trimmed === '' ? 'Give the product a name.' : null;
-  const skuError = effectiveSku.trim() === '' ? 'Give the product a code.' : null;
-
-  /**
-   * Whether the code's error may be SHOWN yet — which is not the same question
-   * as whether it is true.
-   *
-   * The very first product form a new business ever opens greeted them with a
-   * red field and "Give the product a code." before they had typed a character,
-   * and the message took the place of the description explaining what a product
-   * code even is. So the one screen that had to be welcoming opened by telling
-   * somebody off for not doing a thing nobody had asked them to do yet.
-   *
-   * It is hidden only while the form is untouched. The code follows the name, so
-   * the moment there is a name there is normally a code — and if there is NOT
-   * (a name of nothing but punctuation slugifies to empty) the error appears and
-   * explains the disabled button, which is the case where staying quiet would
-   * strand somebody. Touching the field yourself also counts as asking.
-   */
-  const started = trimmed !== '' || touchedSku;
-  const shownSkuError = started ? skuError : null;
-
-  // A half-created product is a real outcome, not a hypothetical: the product and
-  // its price are two writes. If the second fails, the product EXISTS, so the only
-  // honest thing to do is say so and land on it — a generic "could not create"
-  // would send someone to add it again and end up with two.
-  const halfCreated = create.error instanceof VariantAfterCreateError;
-  const failure = create.isError
-    ? productErrorMessage(create.error, 'Could not add that product. Nothing was created.')
-    : null;
-
-  const submit = () => {
-    if (titleError || skuError) return;
-    create.mutate(
-      {
-        title: trimmed,
-        ...(effectiveHandle ? { handle: effectiveHandle } : {}),
-        status: onSale ? 'active' : 'draft',
-        sku: effectiveSku.trim(),
-        priceCents: Math.round(price * 100),
-      },
-      {
-        onSuccess: (created) => {
-          // Becomes the manage view for the product that now exists, rather than
-          // leaving a spent form open beside a list that has moved on. The toast
-          // follows the swap rather than sharing its commit; see afterPaneChange.
-          ctx.open('commerce.product.detail', { id: created.id }, { target: 'replace' });
-          afterPaneChange(() => {
-            toast.add({
-              title: `${trimmed} added`,
-              description: onSale
-                ? 'It is on your website now.'
-                : 'It is saved but not on sale yet — put it on sale when you are ready.',
-              type: 'success',
-            });
-          });
-        },
-        onError: (error) => {
-          if (!(error instanceof VariantAfterCreateError)) return;
-          ctx.open('commerce.product.detail', { id: error.productId }, { target: 'replace' });
-          afterPaneChange(() => {
-            toast.add({
-              title: `${trimmed} was added without a price`,
-              description: 'Set its price here — nobody can buy it until you do.',
-              type: 'warning',
-            });
-          });
-        },
-      }
-    );
-  };
-
-  return (
-    <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="New product actions"
-        primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={create.isPending}
-            disabled={Boolean(titleError) || Boolean(skuError)}
-            onClick={submit}
-          >
-            Add product
-          </Button>
-        }
-      />
-
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className={COLUMN}>
-          <Text>
-            A product is one thing you sell. Give it a name and a price now — the description,
-            photos and everything else can follow once it exists.
-          </Text>
-
-          {/* ONE message, the most specific one. When the product itself was
-              created and only its price failed, the pane is already moving to
-              that product, so this says what happened rather than claiming
-              nothing was created. */}
-          {failure ? (
-            <Alert color={halfCreated ? 'warning' : 'error'} variant="soft">
-              <AlertContent>
-                <AlertTitle>
-                  {halfCreated
-                    ? 'The product was added, but its price was not'
-                    : 'Could not add that product'}
-                </AlertTitle>
-                <AlertDescription>{failure}</AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
-
-          <FormSection title="What you are selling">
-            <Field>
-              <FieldLabel>Name</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={title}
-                    placeholder="Handmade leather satchel"
-                    onChange={(event) => {
-                      setTitle(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>What shoppers see. You can change this later.</FieldDescription>
-            </Field>
-
-            <Field>
-              <FieldLabel>Web address</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={effectiveHandle}
-                    placeholder="handmade-leather-satchel"
-                    spellCheck={false}
-                    autoComplete="off"
-                    onChange={(event) => {
-                      setTouchedHandle(true);
-                      setHandle(slugifyHandle(event.target.value));
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                The end of this product&apos;s page address on your website — yoursite.com/products/
-                {effectiveHandle || '…'}
-              </FieldDescription>
-            </Field>
-          </FormSection>
-
-          <FormSection
-            title="Price"
-            description="Every product needs a price and a code before anyone can buy it, so both are set up here. Once it exists you can add sizes, colors and their own prices on the Options and Variants tabs."
-          >
-            <Field>
-              <FieldLabel>Price</FieldLabel>
-              <FieldControl
-                render={
-                  <MoneyInput
-                    color="module"
-                    value={price}
-                    aria-label="Price"
-                    onValueChange={setPrice}
-                  />
-                }
-              />
-              <FieldDescription>What a shopper pays. You can change it any time.</FieldDescription>
-            </Field>
-
-            <Field>
-              <FieldLabel>Product code</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color={shownSkuError ? 'error' : 'module'}
-                    value={effectiveSku}
-                    placeholder="SATCHEL-1"
-                    spellCheck={false}
-                    autoComplete="off"
-                    onChange={(event) => {
-                      setTouchedSku(true);
-                      setSku(event.target.value);
-                    }}
-                  />
-                }
-              />
-              {shownSkuError ? (
-                <FieldStatus status="error">{shownSkuError}</FieldStatus>
-              ) : (
-                <FieldDescription>
-                  Your own reference for this product — on labels, on invoices, in your records. It
-                  has to be different from every other code you use.
-                </FieldDescription>
-              )}
-            </Field>
-
-            <Field>
-              <FieldLabel>Put it on sale straight away</FieldLabel>
-              <FieldControl
-                render={
-                  <Switch
-                    color="module"
-                    checked={onSale}
-                    onCheckedChange={(next: boolean) => {
-                      setOnSale(next);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                Leave this off to save it out of sight and finish it first. Either way you can
-                change your mind in one click.
-              </FieldDescription>
-            </Field>
-          </FormSection>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ── Managing: the tabbed shell ─────────────────────────────────────────── */
 
@@ -576,7 +302,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 },
               ]),
           // The moment someone is most likely to want a social post is right
-          // after putting something on sale. Wears SOCIAL's hue, because colour
+          // after putting something on sale. Wears SOCIAL's hue, because color
           // follows functionality rather than the page it appears on.
           ...(onSale
             ? [

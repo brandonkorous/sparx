@@ -19,14 +19,14 @@ four of them were the same service twice:
 | Balayage                                  | 3 hr   | **$220.00** |
 | Balayage                                  | 3 hr   | **$240.00** |
 | Full Color                                | 2 hr   | **$135.00** |
-| Full colour                               | 2 hr   | **$160.00** |
+| Full color                                | 2 hr   | **$160.00** |
 | Manicure                                  | 45 min | $40.00      |
 | Manicure                                  | 45 min | $40.00      |
 | Men's Cut / Men's cut                     | 30 min | two rows    |
 | Women's Cut & Style / Women's cut & style | 1 hr   | two rows    |
 
 Every one of them is marked **Bookable**, so this is what a client is offered.
-Somebody booking a full head of colour at Halo & Hem picks between $135 and
+Somebody booking a full head of color at Halo & Hem picks between $135 and
 $160 for the same three hours, and whichever they pick, Nia charges her own
 price and looks like she is inventing it at the chair.
 
@@ -37,10 +37,10 @@ for a two-chair hair salon.
 
 Two seeders run at signup and neither knows about the other:
 
-| Source                      | Rows | Spelling      | Marked as a sample? |
-| --------------------------- | ---- | ------------- | ------------------- |
-| the trade's **sample pack** | 7    | US ("Color")  | yes                 |
-| the **blueprint** she chose | 11   | UK ("colour") | **no**              |
+| Source                      | Rows | Spelling     | Marked as a sample? |
+| --------------------------- | ---- | ------------ | ------------------- |
+| the trade's **sample pack** | 7    | US ("Color") | yes                 |
+| the **blueprint** she chose | 11   | UK ("color") | **no**              |
 
 Read back from her tenant, `settings.sample` is `true` on exactly seven of the
 eighteen. The other eleven came from `sparx-salon-editorial`'s `scheduling.json`
@@ -90,8 +90,8 @@ six of them and left four — Ava Bennett, Maya Cole, Noor Rahim and "Stylist" �
 because those four are the blueprint's and carry no marker, the exact mirror of
 the services.
 
-That mattered more than clutter: three of the four carry the skill `colour`, so
-when Nia said her highlights need a colourist the screen answered **"Ava Bennett,
+That mattered more than clutter: three of the four carry the skill `color`, so
+when Nia said her highlights need a colorist the screen answered **"Ava Bennett,
 Nia Okafor and Noor Rahim can take this booking"** — two people who do not work
 at Halo & Hem, offered to her clients. She deleted them one at a time.
 

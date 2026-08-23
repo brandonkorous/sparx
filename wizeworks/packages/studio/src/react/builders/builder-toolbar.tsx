@@ -89,7 +89,7 @@ export interface BuilderAction {
    * where nothing carries itself.
    */
   compact?: boolean;
-  /** Filled and coloured: the one action loud enough to sit beside Save. */
+  /** Filled and colored: the one action loud enough to sit beside Save. */
   emphasis?: 'loud';
 }
 
@@ -274,7 +274,7 @@ function FoldedView({ group }: { group: BuilderViewGroup }) {
  * Two states, so: one button that switches to the other one.
  *
  * It shows the state it will GIVE you, not the one you are in. The canvas behind it
- * is already saying which palette is on screen, loudly and in full colour, so a
+ * is already saying which palette is on screen, loudly and in full color, so a
  * button repeating that would be the second answer to a question nothing asked —
  * whereas "what happens if I press this" has no other answer anywhere.
  *

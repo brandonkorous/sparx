@@ -73,7 +73,7 @@ and from there it behaves like text:
 | Gesture      | What happens                                                                    |
 | ------------ | ------------------------------------------------------------------------------- |
 | Double-click | Caret lands where you aimed                                                     |
-| Type         | The words change on the page, at the size and colour they really are            |
+| Type         | The words change on the page, at the size and color they really are             |
 | `Enter`      | Finishes the edit. Never inserts a line break — the tree cannot hold one        |
 | `Escape`     | Puts the original words back, and writes nothing                                |
 | Click away   | Finishes, same as `Enter`                                                       |

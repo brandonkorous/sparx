@@ -84,7 +84,7 @@ in both the generator and the payload.
 by class and by the child being a bare number, and re-prettied. The diff is
 **162 insertions / 162 deletions** — one line per price, nothing else. Regenerating
 instead would have re-minted every node id and reverted the bundles' name/author drift
-(see [059](059-more-than-half-the-ready-made-sites-showed-a-blank-colour-block.md)).
+(see [059](059-more-than-half-the-ready-made-sites-showed-a-blank-color-block.md)).
 
 **The pounds** are dollars now, in the generators and the payloads both. Nothing in the
 catalog outside the harness's own guard regex carries a `£` any more.

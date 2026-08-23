@@ -1,6 +1,6 @@
 'use client';
 
-// What a state MEANS, in a word and a colour.
+// What a state MEANS, in a word and a color.
 //
 // An order carries two states, not one — has it been paid for, and has it been
 // sent. They are independent columns because they genuinely are, so there are

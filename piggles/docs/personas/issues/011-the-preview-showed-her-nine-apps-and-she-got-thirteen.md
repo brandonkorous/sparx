@@ -16,7 +16,7 @@ see"**. Marisol ticks website · sell · invoice and it says:
 
 > **9 apps, ready to go.** The rest are one tap away whenever you want them.
 
-— with nine tiles coloured in and the other six plain. Before she ticked
+— with nine tiles colored in and the other six plain. Before she ticked
 anything it said **"Just Home for now — tick anything on the right and it lands
 here."**
 
@@ -82,7 +82,7 @@ high is the point — a tick ADDS to a working rail rather than unlocking one.
 
 > Re-opened `localhost:3021/onboarding` as Marisol. Nothing ticked: **"12 apps,
 > ready to go"**, with Home · My Site · Content · Get Found · Sell · Stock ·
-> Customers · Messages · Bookings · Invoices · Money · My Team coloured, and
+> Customers · Messages · Bookings · Invoices · Money · My Team colored, and
 > Partners · Automations · Connections plain. Ticked "I sell things" → **13**,
 > Partners lights up. Ticked website and invoice as well → still 13.
 >

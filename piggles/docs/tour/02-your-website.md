@@ -33,7 +33,7 @@ survives reading it.
 
 **The look, in one place**
 
-> Colours, fonts and spacing for the whole site. Change them here and every page
+> Colors, fonts and spacing for the whole site. Change them here and every page
 > follows — you never have to restyle a page one at a time.
 
 ### 4 · `site.email` — `nav-builder.email`

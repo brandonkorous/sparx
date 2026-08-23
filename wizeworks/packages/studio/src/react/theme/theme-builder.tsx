@@ -38,7 +38,7 @@ import { ThemeRail } from './rail';
 
 /** The same two names, the same two glyphs, as every other builder's palette
  *  switch — this pane EDITS the mode it is switched to and the others only LOOK
- *  at it, but it is the same question about the same two bags of colour. */
+ *  at it, but it is the same question about the same two bags of color. */
 const MODES = [
   { value: 'light', label: 'Light', icon: 'sun' },
   { value: 'dark', label: 'Dark', icon: 'moon' },
@@ -87,7 +87,7 @@ export function ThemeBuilder({
           collapsed={collapsed}
           views={[
             {
-              label: 'Edit the colours for',
+              label: 'Edit the colors for',
               value: mode,
               onValue: (next) => setMode(next as ThemeMode),
               options: MODES,

@@ -298,8 +298,8 @@ export function providerLabel(provider: string): string {
  *
  * `bg-<tone> soft` is the sanctioned soft treatment — the color utility sets an
  * accent, `soft` mixes it into base-100, and the ACCENT ITSELF becomes the ink.
- * That last part is why it only works for a colour that inverts with the canvas,
- * and why `neutral` did not: it was Piggles' CHROME colour, pinned dark in both
+ * That last part is why it only works for a color that inverts with the canvas,
+ * and why `neutral` did not: it was Piggles' CHROME color, pinned dark in both
  * themes, so every completed booking in the dark diary was drawn #27232a on
  * #272b37 — a contrast ratio of 1.09, which is not a faint block but a blank
  * one. The chrome and the semantic grey are two tokens now (see @piggles/brand's

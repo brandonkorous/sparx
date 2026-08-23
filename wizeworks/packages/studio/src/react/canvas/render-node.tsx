@@ -103,13 +103,13 @@ export function isEditable(ctx: RenderContext, id: string | undefined): boolean 
  *
  * These classes are painted on nodes INSIDE the canvas, which is scoped to the
  * theme being edited, so `outline-primary` here resolved to the SITE's primary.
- * A tenant whose brand colour sits near their own background got a selection
- * outline they could not see, and every author saw the outline change colour when
+ * A tenant whose brand color sits near their own background got a selection
+ * outline they could not see, and every author saw the outline change color when
  * they changed their brand — chrome reporting on the thing it is chrome for.
  *
  * `--studio-select` / `--studio-drop` are set on the scroll container in
  * `canvas.tsx`, one level OUTSIDE the theme scope, so they inherit in carrying the
- * console's own primary and secondary. Same rule as the theme builder's colour
+ * console's own primary and secondary. Same rule as the theme builder's color
  * tiles: a control must not wear the thing it edits.
  */
 function stateClasses(ctx: RenderContext, node: AddressableNode): string {

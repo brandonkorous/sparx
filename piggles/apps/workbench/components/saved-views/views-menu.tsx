@@ -83,7 +83,7 @@ function ViewsMenu({ target, params, onApply, onSave, presentation, className }:
     </Button>
   ) : (
     // Same geometry as Refresh and Copy link — this is pane chrome, and the
-    // three of them read as one group only if they are one shape. Colour is the
+    // three of them read as one group only if they are one shape. Color is the
     // one thing that still varies: a view being applied is a fact about what you
     // are looking at, and grey cannot say it.
     <Button

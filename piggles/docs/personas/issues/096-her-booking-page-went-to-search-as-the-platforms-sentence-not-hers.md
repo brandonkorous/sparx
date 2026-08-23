@@ -90,7 +90,7 @@ Re-run on the live site 2026-08-22:
 ```
 <title>Book a chair at Halo &amp; Hem — live times, real prices · Halo &amp; Hem</title>
 <meta name="description" content="All ten services at Halo &amp; Hem with their real
-prices and lengths, and the times Nia and Dara actually have free. Colour needs a
+prices and lengths, and the times Nia and Dara actually have free. Color needs a
 free consultation first, and three appointments hold a $25 deposit."/>
 ```
 

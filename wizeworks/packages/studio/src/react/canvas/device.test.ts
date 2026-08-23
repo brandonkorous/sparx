@@ -55,7 +55,7 @@ describe('the palette the canvas paints in', () => {
 
     // The frame carried `data-theme={theme.name}` — "workshop" here. It is not
     // "light", so on a dark-mode machine this rule applied and every page, layout
-    // and piece painted the theme's NIGHT colours while the theme pane showed day.
+    // and piece painted the theme's NIGHT colors while the theme pane showed day.
     expect(css).toContain('@media (prefers-color-scheme:dark)');
     expect(css).toContain(':not([data-theme="light"])');
     expect(css).not.toContain('data-theme="workshop"');

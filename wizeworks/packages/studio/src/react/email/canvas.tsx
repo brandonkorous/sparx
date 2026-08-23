@@ -6,7 +6,7 @@
 //
 //  · Not the sent HTML. That is table-based markup shaped by Outlook's rendering
 //    engine, and the Preview is where it is checked. This is the surface the
-//    author DECIDES on — order, colour, spacing, and what the merge tags say.
+//    author DECIDES on — order, color, spacing, and what the merge tags say.
 //  · Not styled by inline `style`. Every authored value goes into a stylesheet
 //    scoped to this canvas by attribute (`style.ts`), the same way the site
 //    canvas scopes its theme.
@@ -17,7 +17,7 @@
 //
 // There is no Light/Dark switch here, and that is not an omission. A site canvas
 // has two palettes to choose between because a theme carries a dark delta; an
-// email carries no theme at all — every colour is authored literally on the node,
+// email carries no theme at all — every color is authored literally on the node,
 // because email HTML cannot ship CSS custom properties. A mode switch would be a
 // control with nothing behind it.
 
@@ -270,7 +270,7 @@ export function EmailCanvas({ device = 'desktop' }: { device?: CanvasDevice }) {
 
   return (
     /* A click here SELECTS a block on a design surface; the keyboard route to the
-       same blocks is the Layers rail beside it, plus the pane's own shortcuts. */
+           same blocks is the Layers rail beside it, plus the pane's own shortcuts. */
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <div
       role="application"

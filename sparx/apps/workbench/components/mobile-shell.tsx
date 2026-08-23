@@ -84,7 +84,7 @@ export function MobileShell({
     () => null
   );
   // Which module the focused pane belongs to. The bar's Open tab wears its hue —
-  // the only place a phone can carry module colour once the rail is gone.
+  // the only place a phone can carry module color once the rail is gone.
   const activeModule = (active ? getSurface(active.surface)?.module : undefined) ?? 'platform';
 
   // The Back button walks the shell's own navigation by driving `navOpen` false

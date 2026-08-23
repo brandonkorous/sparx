@@ -232,7 +232,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // their visitors to it.
   //
   // A brand with no accent configured renders its name in one weight rather than
-  // borrowing whichever colour happened to be the default.
+  // borrowing whichever color happened to be the default.
   const brand = platformBrandIdentity(site?.platformBrand);
   const creditBrand = {
     name: brand.name,

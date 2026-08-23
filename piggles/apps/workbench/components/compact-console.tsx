@@ -98,7 +98,7 @@ export function CompactConsole({
     () => null
   );
   // Which app the focused pane belongs to. The bar's Open tab wears its hue —
-  // the only place a phone can carry module colour once the rail is gone.
+  // the only place a phone can carry module color once the rail is gone.
   const activeSurface = active ? getSurface(active.surface) : undefined;
   const activeApp = activeSurface ? (MODULE_TO_APP[activeSurface.module] ?? 'home') : 'home';
 

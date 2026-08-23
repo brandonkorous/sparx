@@ -74,7 +74,7 @@ export function OpenSheet({ open, host, order, activeId, onDismiss }: OpenSheetP
                 <Button
                   block
                   // The one you are looking at is filled; the rest are
-                  // colourless, which resolves to base-content in both themes.
+                  // colorless, which resolves to base-content in both themes.
                   color={focused ? 'module' : undefined}
                   variant={focused ? 'soft' : 'ghost'}
                   aria-current={focused ? 'true' : undefined}

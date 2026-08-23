@@ -11,7 +11,7 @@
 
 ## What happened
 
-The same button, two screens, two colours.
+The same button, two screens, two colors.
 
 On the **canvas**, "Change or cancel" is a near-black slab, and the inspector's
 **Background** swatch beside it reads `#111827`. In the **Preview**, and therefore
@@ -33,15 +33,15 @@ screen an author looks at while deciding, so it should be showing the same thing
 Low stakes today — the preview is one click away and is correct. It matters
 because the inspector shows a hex box with a value in it, and an author who edits
 that box is editing something the canvas obeys and the send may not. A control
-that appears to set a colour and does not is worse than no control.
+that appears to set a color and does not is worse than no control.
 
 ## Not diagnosed
 
 Two candidates, and this was not chased because it is a canvas-theming question
 rather than anything to do with the act that found it:
 
-1. **`colorAuto`.** Email nodes carry it: unset means "take the brand's colour at
-   render", and setting a colour in the inspector pins it (`colorAuto: false`,
+1. **`colorAuto`.** Email nodes carry it: unset means "take the brand's color at
+   render", and setting a color in the inspector pins it (`colorAuto: false`,
    `panels-content.tsx`). If the shipped default tree leaves it unset, the send
    repaints from the brand and the canvas may be drawing the stored literal.
 2. **The canvas theme.** `buildChrome` returns a `colors` map and its comment says
@@ -49,5 +49,5 @@ rather than anything to do with the act that found it:
    every block in exactly the brand + fixed-semantic colors the inbox gets". If the
    mechanism is right, something is not reaching it.
 
-Whichever it is, the inspector's swatch should show the colour that will actually
+Whichever it is, the inspector's swatch should show the color that will actually
 be sent, and say when it is following the brand rather than a value.

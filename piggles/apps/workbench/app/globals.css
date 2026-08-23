@@ -132,8 +132,8 @@
  *                    shared surface.
  *   • `chrome`     — the rail and the app panel, dark in both themes. Its own
  *   • `chrome-deep`  name because it used to BE `neutral`, and `neutral` is also
- *                    a semantic colour whose soft/outline/ghost variants are
- *                    inked with the colour itself — so a value pinned dark made
+ *                    a semantic color whose soft/outline/ghost variants are
+ *                    inked with the color itself — so a value pinned dark made
  *                    every one of them invisible on the dark canvas. See
  *                    @piggles/brand's palette.css.
  *   • `module`     — the active-app bridge. `data-app` / `data-group` /
@@ -567,9 +567,9 @@ h6 {
  * dark surface that produced near-black ink on near-black ground and white
  * rectangles where a seam belonged.
  *
- * Pointing the four base tokens at the chrome's own colours settles all of it at
+ * Pointing the four base tokens at the chrome's own colors settles all of it at
  * once, and anything dropped in here later is right without being told. The
- * colours still come from `chrome` / `chrome-deep` — this only makes what
+ * colors still come from `chrome` / `chrome-deep` — this only makes what
  * silica DERIVES agree with what is actually painted.
  *
  * Any `data-chrome` value: the desktop column, the phone's bar, its sheets. They

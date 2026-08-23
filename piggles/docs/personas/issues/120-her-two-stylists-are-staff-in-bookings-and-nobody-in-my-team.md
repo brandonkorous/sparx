@@ -61,7 +61,7 @@ Three ways to go, and it is not mine to pick:
 1. **One roster.** A person is a person; a scheduling resource of kind `staff`
    IS a staff member, and creating one creates the other. Cleanest, and the most
    invasive — the two models carry different fields (pay rates, certifications,
-   shifts on one side; hours, colour, bookability on the other).
+   shifts on one side; hours, color, bookability on the other).
 2. **A bridge.** Keep both tables, and offer "these people are in Bookings — add
    them to your team?" wherever the gap shows. Cheap, honest, and leaves the
    duplication in place for somebody to trip on later.
