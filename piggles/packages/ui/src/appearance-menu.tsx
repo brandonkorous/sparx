@@ -71,7 +71,9 @@ interface AppearanceProps {
   glyphs: AppearanceGlyphs;
 }
 
-function glyphFor(
+/** The TRIGGER's glyph: what the current choice resolves to right now, which is
+ *  why `system` reads the theme rather than assuming. */
+function triggerGlyph(
   choice: Appearance,
   theme: ResolvedAppearance,
   glyphs: AppearanceGlyphs
@@ -80,12 +82,23 @@ function glyphFor(
   return theme === 'dark' ? glyphs.dark : glyphs.light;
 }
 
+/** An ITEM's glyph: what that item MEANS. A row draws its own answer, never the
+ *  current one — sharing the trigger's rule put the same sun beside both Light
+ *  and Dark in a light workspace, and the same moon beside both in a dark one
+ *  (issue 171). Two rows meaning opposite things cannot wear one glyph. */
+function itemGlyph(choice: Appearance, glyphs: AppearanceGlyphs): IconGlyph {
+  if (choice === 'system') return glyphs.system;
+  return choice === 'dark' ? glyphs.dark : glyphs.light;
+}
+
 /**
  * The three items on their own, for chrome that already has a menu to put them
  * in — a phone header hangs everything off one account menu, because a bar the
  * height of a thumb has no room for a second trigger.
  */
-export function AppearanceMenuItems({ choice, theme, onChoose, glyphs }: AppearanceProps) {
+// `theme` is in the props because the trigger beside these needs it and callers
+// pass one object; the rows themselves do not — see `itemGlyph`.
+export function AppearanceMenuItems({ choice, onChoose, glyphs }: AppearanceProps) {
   return (
     <DropdownMenuGroup>
       <DropdownMenuLabel>Appearance</DropdownMenuLabel>
@@ -97,7 +110,7 @@ export function AppearanceMenuItems({ choice, theme, onChoose, glyphs }: Appeara
           }}
         >
           <span className="flex w-full items-center gap-2">
-            <Icon glyph={glyphFor(option.choice, theme, glyphs)} className="size-4" />
+            <Icon glyph={itemGlyph(option.choice, glyphs)} className="size-4" />
             <span className="flex-1 truncate">{option.label}</span>
             {option.choice === choice ? <Icon glyph={glyphs.check} className="size-4" /> : null}
           </span>
@@ -129,7 +142,7 @@ export function AppearanceMenu({
       <Tooltip content={described}>
         <DropdownMenuTrigger>
           <Button variant="ghost" shape={shape} aria-label={`Appearance: ${described}`}>
-            <Icon glyph={glyphFor(choice, theme, glyphs)} className="size-4" />
+            <Icon glyph={triggerGlyph(choice, theme, glyphs)} className="size-4" />
           </Button>
         </DropdownMenuTrigger>
       </Tooltip>
