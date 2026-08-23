@@ -94,6 +94,7 @@ import {
   CustomerSubscriptionsTab,
   CustomerTasksTab,
 } from './customer-related';
+import { CustomerBookingsTab } from './customer-bookings';
 import {
   LEAD_STATUSES,
   LIFECYCLE_STAGES,
@@ -135,6 +136,10 @@ const CONTACT_METHOD_LABEL: Record<string, string> = {
 const TABS: { value: string; label: string }[] = [
   { value: 'overview', label: 'Overview' },
   { value: 'notes', label: 'Notes' },
+  // Before the money tabs: for a service business — a salon, a clinic, a garage
+  // — what someone has been booked for IS their history with you, and it is the
+  // thing you check before they sit down.
+  { value: 'bookings', label: 'Bookings' },
   { value: 'orders', label: 'Orders' },
   // Next to Orders on purpose: what they bought and what they were asked to pay
   // are the two money questions, and a business can have either without the other.
@@ -958,6 +963,11 @@ function CustomerEditor({
                 <TabsPanel value="notes">
                   {visited.current.has('notes') ? (
                     <CustomerNotesTab customerId={customer.id} canEmail={Boolean(customer.email)} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="bookings">
+                  {visited.current.has('bookings') ? (
+                    <CustomerBookingsTab ctx={ctx} customerId={customer.id} />
                   ) : null}
                 </TabsPanel>
                 <TabsPanel value="orders">
