@@ -6,13 +6,22 @@
 // exactly what makes them reusable: fork them per brand and every future
 // improvement stops at the brand boundary.
 //
-// The exception is the SHOWCASE family — the ~21 whose `brand.businessName` is
-// the platform's own name. Those are not vertical templates, they are the
-// platform demonstrating itself, and a demonstration is brand identity by
-// definition. There is no neutral version of one: strip the brand and you have a
-// bare template, which is what the other 169 already are. So each brand keeps its
-// own, and they must not cross — a Piggles business offered a site branded
-// "sparx" is a bug with a support ticket attached.
+// The exception is the SHOWCASE family — the ~21 built from the golden bundle,
+// one per first-party theme. They are restricted, and the reason has CHANGED, so
+// it is worth stating precisely rather than inheriting.
+//
+// It used to be a content fact: their `brand.businessName` was the platform's own
+// name and their page copy and demo products said it too, so handing one to
+// another brand's customer shipped that name into their catalog, their published
+// shop and their invoices (piggles/docs/personas/issues/091, /165). That is fixed
+// at the source — the family now carries the same invented demo business as the
+// other 169, and nothing in it would leak a brand if it crossed.
+//
+// What remains is a PRODUCT decision about which marketplace shows those 21 theme
+// looks, not a safety one. It stays until somebody decides otherwise. Read that
+// way, this file no longer protects against a leak; it enforces a catalog split,
+// and the leak it used to catch is now caught upstream by the bundles themselves
+// being neutral.
 //
 // ── WHY A SLUG LIST AND NOT A COLUMN ────────────────────────────────────────
 //

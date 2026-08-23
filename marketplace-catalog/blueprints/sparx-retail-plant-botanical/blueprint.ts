@@ -1,4 +1,4 @@
-// sparx — Plant Nursery (Botanical): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Plant Nursery (Botanical): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-plant-botanical',
-  version: '1.4.1',
-  name: 'sparx — Plant Nursery (Botanical)',
+  version: '1.4.2',
+  name: 'Plant Nursery (Botanical)',
   summary:
     'A complete, working shop for a houseplant nursery: a real catalogue of easy-care starters, statement plants, pots, tools and a monthly plant subscription, with categories, collections, a bespoke plant PDP and a merchandised home page. Botanical theme — soft sage ground, deep leaf green, a warm terracotta accent. A care-first, beginner-friendly voice. Shipped as Fernwood Plant Co.',
   vertical: 'retail',

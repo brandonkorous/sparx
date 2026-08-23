@@ -84,10 +84,11 @@ const ManifestSchema = z.object({
    * and a template that has to name its brands to be visible would quietly fork
    * the library the first time somebody forgot.
    *
-   * Set it only on a listing that IS brand identity rather than a vertical
-   * template — the showcase family whose `brand.businessName` is the platform's
-   * own name. Those are the ones that must not cross: a Piggles business offered
-   * a site branded "sparx" is a bug with a support ticket attached.
+   * Set it only on a listing that a single brand's marketplace should own — today
+   * that is the ~21 showcase bundles built from the golden, one per first-party
+   * theme. It is a catalog-split decision, NOT a safety one: no bundle names a
+   * brand in its content any more, so nothing leaks if one crosses. See
+   * `brand-scope.ts` for why that distinction is worth keeping straight.
    *
    * NOT a browse facet. `facets` is what a person filters by; this decides
    * whether the row exists for them at all.

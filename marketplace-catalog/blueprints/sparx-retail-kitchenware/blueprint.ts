@@ -1,4 +1,4 @@
-// sparx — Kitchenware & Cookware: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Kitchenware & Cookware: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-kitchenware',
-  version: '1.4.1',
-  name: 'sparx — Kitchenware & Cookware',
+  version: '1.4.2',
+  name: 'Kitchenware & Cookware',
   summary:
     'A complete, working shop for a chef-grade kitchenware store: a real catalogue of carbon-steel pans, cast-iron Dutch ovens, forged knives, and honest tools, with categories, collections, a bespoke cookware PDP and a full merchandised home page. Warm kitchen theme — slate-cream ground, deep copper, a verdigris accent. Shipped as Copper & Cast.',
   vertical: 'retail',

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-b2b-janitorial",
   "name": "Janitorial & Facility Supply (B2B)",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "tagline": "A trade-account storefront for a janitorial & facility-supply distributor.",
   "description": "A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.",
   "payload": "blueprint.ts",

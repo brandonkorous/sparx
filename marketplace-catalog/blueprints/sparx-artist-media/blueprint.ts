@@ -1,4 +1,4 @@
-// sparx — Artist Media: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Artist Media: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-artist-media',
-  version: '1.4.0',
-  name: 'sparx — Artist Media',
+  version: '1.4.2',
+  name: 'Artist Media',
   summary:
     'A media-forward, stage-dark site for a recording artist or band — a poster-scale artist hero, a latest-release feature with streaming links, a tour-dates run, a live journal, and a bespoke article page, in a near-black theme with a vivid magenta accent. Modelled on the recording-artist archetype; shipped as Vela. Ships a light music + merch store (vinyl, a tee, a hoodie, a digital album) to demonstrate content + commerce together.',
   vertical: 'content',

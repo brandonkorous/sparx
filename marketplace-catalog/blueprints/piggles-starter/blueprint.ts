@@ -13,7 +13,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'piggles-starter',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'Universal Starter',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',

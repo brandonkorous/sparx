@@ -63,7 +63,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  is the full 9-page sites (bespoke PDP + Collections/Cart/Search/Journal framing) over the
  *  original 1.0.0 home-only pass. Both the blueprint.ts and sparx.json versions read this, so
  *  they can't disagree (the loader cross-checks them). */
-const BUNDLE_VERSION = '1.4.1';
+const BUNDLE_VERSION = '1.4.2';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -523,7 +523,7 @@ function manifestJson(opts: {
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
             { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
         ],
-        author: { displayName: 'sparx' },
+        author: { displayName: 'WizeWorks' },
         accent: opts.accent,
         sortWeight: opts.sortWeight,
     };

@@ -1,4 +1,4 @@
-// sparx — Pet Supplies (Premium): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Pet Supplies (Premium): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-pet-supplies',
-  version: '1.4.1',
-  name: 'sparx — Pet Supplies (Premium)',
+  version: '1.4.2',
+  name: 'Pet Supplies (Premium)',
   summary:
     'A complete, working shop for a premium modern pet brand: a real catalogue of a hand-stitched leather collar and matching lead, an adventure harness, an orthopedic dog bed, a ceramic bowl, natural treats, a rope toy, a travel bottle, a grooming brush and a flexible subscription box, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Warm, friendly-but-premium theme — a cream ground, a deep teal primary and a warm coral accent. Shipped as Barkwell.',
   vertical: 'retail',

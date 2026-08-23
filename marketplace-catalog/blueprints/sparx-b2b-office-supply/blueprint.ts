@@ -1,4 +1,4 @@
-// sparx — Office Supply (B2B / Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Office Supply (B2B / Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-office-supply',
-  version: '1.4.0',
-  name: 'sparx — Office Supply (B2B / Wholesale)',
+  version: '1.4.2',
+  name: 'Office Supply (B2B / Wholesale)',
   summary:
     'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
   vertical: 'b2b',

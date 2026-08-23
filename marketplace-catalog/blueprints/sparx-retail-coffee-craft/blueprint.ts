@@ -1,4 +1,4 @@
-// sparx — Coffee Roaster (Craft): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Coffee Roaster (Craft): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-coffee-craft',
-  version: '1.4.1',
-  name: 'sparx — Coffee Roaster (Craft)',
+  version: '1.4.2',
+  name: 'Coffee Roaster (Craft)',
   summary:
     'A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme — cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.',
   vertical: 'retail',

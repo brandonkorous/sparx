@@ -16,17 +16,19 @@
 //
 // ── THE DEMO BUSINESS IS NEUTRAL, AND THAT IS THE POINT ─────────────────────
 //
-// sparx's showcase calls its demo business "sparx", and its own payload concedes
-// the cost: "the installing tenant rebrands this to their own business; a missed
-// spot ships 'sparx'". Two spots do — a home-page sentence and the site name —
-// and they are why a Piggles customer could not be handed that bundle.
+// The golden's showcase USED to call its demo business "sparx" and prefix all six
+// of its demo goods with it, and its own payload conceded the cost: "a missed spot
+// ships 'sparx'". Several spots did — a home-page sentence, the site name, and six
+// products that installed straight into a tenant's own catalog and published shop.
+// That is fixed at the source: the golden's demo business is now an invented
+// 'Alder & Ash' and its goods carry no company name at all.
 //
-// Copying that trade-off with a different word would reproduce the bug, not fix
-// it: a Piggles business finding a stray "Piggles" where its own name belongs is
-// the same defect. So this bundle's demo business is an INVENTED one, the way
-// all ~169 vertical templates do it, and the two known spots are rewritten to
-// name no product at all. A missed spot then ships a plausible shop name rather
-// than somebody else's brand.
+// This bundle keeps its own invented demo business anyway, and that is deliberate.
+// Copying the platform's name with a different word would reproduce the original
+// bug, not fix it: a Piggles business finding a stray "Piggles" where its own name
+// belongs is the same defect. So the demo business here is INVENTED, the way all
+// ~169 vertical templates do it, and a missed spot ships a plausible shop name
+// rather than somebody else's brand.
 //
 // ── WHY THE THEME IS A TOKEN SUBSTITUTION, NOT A NEW SILICA THEME ───────────
 //
@@ -99,28 +101,54 @@ const DARK: Record<string, string> = {
     '--color-highlight': '#ff7c91',
 };
 
-// Every place the golden names the platform, and what it becomes here.
+// The golden's neutral demo identity, and what it becomes here.
 //
-// ORDER MATTERS: the whole-sentence rewrite runs before the bare-word one, so
-// the sentence is replaced as a sentence rather than being left as itself with
-// one word swapped. The last two are substring rules and must come last.
+// WHAT CHANGED, AND WHY THIS LIST IS SHORTER THAN IT WAS. The golden used to name
+// the platform in its page copy, its `brand.businessName`, and all six of its demo
+// goods ("sparx Field Notebook", handle `sparx-field-notebook`) — so this file's
+// job was to STRIP a brand, and its guard looked for the word "sparx". The golden
+// no longer names the platform anywhere: its demo business is an invented
+// 'Alder & Ash', its goods are unprefixed, and its vendor is the same 'House Goods'
+// the platform's own generic sample pack uses. Nothing to strip.
 //
-// This list covers MORE than the captured site, because the leak did. The golden
-// ships six demo goods called "sparx Field Notebook" (handle
-// `sparx-field-notebook`) in commerce.json — those install straight into the
-// tenant's catalog, so a Piggles business would open its shop and find another
-// company's products in it. The first pass here rewrote only the site and the
-// guard only checked the site, which is exactly how it was nearly missed.
+// So the job is now the opposite one — REBRANDING neutral content into this
+// bundle's own invented demo business, which is what makes `piggles-starter`
+// recognisably its own shop rather than a second copy of the golden. The guard
+// below moved with it: it looks for the GOLDEN's demo identity leaking through,
+// because that is the string that would now be wrong here.
+//
+// ORDER MATTERS: the whole-sentence rewrite runs first so the sentence is replaced
+// as a sentence, and handles run before display names so `field-notebook` is not
+// half-rewritten by the title rule.
+
+/** The six demo goods the golden ships, unprefixed. Each gets this bundle's own
+ *  short name, because "Enamel Mug" with no shop behind it is nobody's product and
+ *  "Rowan & Rye Enamel Mug" is nobody's product name either. */
+const DEMO_GOODS: [handle: string, title: string][] = [
+    ['field-notebook', 'Field Notebook'],
+    ['everyday-tee', 'Everyday Tee'],
+    ['enamel-mug', 'Enamel Mug'],
+    ['canvas-tote', 'Canvas Tote'],
+    ['ripstop-cap', 'Ripstop Cap'],
+    ['insulated-bottle', 'Insulated Bottle'],
+];
+
+/** The golden's own demo identity. Named here so the guard can assert it never
+ *  reaches this bundle — the failure this whole file exists to prevent, restated
+ *  for content that is neutral rather than branded. */
+const GOLDEN_BUSINESS = 'Alder & Ash';
+const GOLDEN_VENDOR = 'House Goods';
+
 const REWRITES: [string, string][] = [
     [
-        'sparx brings your site, your store, your content, and your customers together — so you can run the whole business from one place. This is a starter you can make entirely your own.',
+        'Your site, your store, your content, and your customers, all together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
         'Your site, your shop, your writing, and your customers — together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
     ],
-    // Handles + ids before display names: `sparx-everyday-tee` would otherwise be
-    // half-rewritten by the bare-word rule into `Harlow-everyday-tee`.
-    ['sparx-', `${DEMO_SLUG}-`],
-    ['sparx ', `${DEMO_SHORT} `],
-    ['sparx', DEMO_BUSINESS],
+    // Handles before display names, and both before the identity rules.
+    ...DEMO_GOODS.map(([handle]): [string, string] => [handle, `${DEMO_SLUG}-${handle}`]),
+    ...DEMO_GOODS.map(([, title]): [string, string] => [title, `${DEMO_SHORT} ${title}`]),
+    [GOLDEN_VENDOR, DEMO_BUSINESS],
+    [GOLDEN_BUSINESS, DEMO_BUSINESS],
 ];
 
 /** Rewrite every branded string in one authored part. Runs over the SERIALIZED
@@ -136,12 +164,21 @@ function debrand<T>(part: T): T {
  *  the whole file — a bundle that quietly carries the other brand's name looks
  *  completely normal until a customer reads it. */
 function assertUnbranded(label: string, part: unknown): void {
-    const hits = JSON.stringify(part).match(/sparx/gi);
-    if (hits) {
-        throw new Error(
-            `gen-piggles-showcase: ${hits.length} unhandled "sparx" string(s) remain in ${label} — ` +
-            'add a rule to REWRITES rather than shipping a bundle that names another brand.'
-        );
+    const raw = JSON.stringify(part);
+    // "sparx" stays in the list even though the golden no longer writes it: this
+    // guard's whole value is catching a REGRESSION upstream, and the day somebody
+    // reintroduces the platform's name to the golden is the day it has to fire.
+    // The other two are the live risk — the golden's own invented demo identity,
+    // which is correct there and wrong in every byte of this bundle.
+    for (const needle of ['sparx', GOLDEN_BUSINESS, GOLDEN_VENDOR]) {
+        const hits = raw.match(new RegExp(needle.replace(/[&]/g, '\&'), 'gi'));
+        if (hits) {
+            throw new Error(
+                `gen-piggles-showcase: ${hits.length} unhandled "${needle}" string(s) remain in ` +
+                `${label} — add a rule to REWRITES rather than shipping a bundle that names ` +
+                'another business.'
+            );
+        }
     }
 }
 
@@ -266,7 +303,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(KEY)},
-  version: '1.0.0',
+  version: '1.1.0',
   name: ${JSON.stringify(name)},
   summary: ${JSON.stringify(summary)},
   vertical: 'retail',
@@ -303,7 +340,7 @@ export default blueprint;
             category: 'blueprint',
             slug: KEY,
             name,
-            version: '1.0.0',
+            version: '1.1.0',
             tagline: 'A complete multi-module starter — shop, journal, bookings, and wholesale.',
             description: summary,
             payload: 'blueprint.ts',

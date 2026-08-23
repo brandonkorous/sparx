@@ -1,4 +1,4 @@
-// sparx — Ideas & Talks: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Ideas & Talks: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-ideas-talks',
-  version: '1.4.1',
-  name: 'sparx — Ideas & Talks',
+  version: '1.4.2',
+  name: 'Ideas & Talks',
   summary:
     'A video-forward home for an ideas-and-talks nonprofit — a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
   vertical: 'content',

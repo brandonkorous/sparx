@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-plant-botanical",
   "name": "Plant Nursery (Botanical)",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "tagline": "A warm, working storefront for a houseplant nursery.",
   "description": "A complete, working shop for a houseplant nursery: a real catalogue of easy-care starters, statement plants, pots, tools and a monthly plant subscription, with categories, collections, a bespoke plant PDP and a merchandised home page. Botanical theme — soft sage ground, deep leaf green, a warm terracotta accent. A care-first, beginner-friendly voice. Shipped as Fernwood Plant Co.",
   "payload": "blueprint.ts",

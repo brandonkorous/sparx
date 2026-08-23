@@ -1,4 +1,4 @@
-// sparx — Janitorial & Facility Supply (B2B): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Janitorial & Facility Supply (B2B): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-janitorial',
-  version: '1.4.0',
-  name: 'sparx — Janitorial & Facility Supply (B2B)',
+  version: '1.4.2',
+  name: 'Janitorial & Facility Supply (B2B)',
   summary:
     'A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.',
   vertical: 'b2b',

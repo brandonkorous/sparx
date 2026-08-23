@@ -55,6 +55,28 @@ by a regen. They DO emit their own `sparx.json`, though — unlike the rule belo
 so a manifest edit that is not also made in the generator is reverted by the next
 run.
 
+## A bundle's demo content lands in a REAL tenant's account
+
+Products, vendor, SKUs and `brand.businessName` are not preview copy — the installer
+writes them as rows the tenant owns, and they publish. `brand.businessName` in
+particular goes straight into the property's `brand_override`, where invoice and
+packing-slip rendering print it as the **seller name**.
+
+So: **never the platform's name, never a real company's.** Use an invented demo
+business the way all 191 bundles now do (`Alder & Ash`, `Rowan & Rye`, `Foundry
+Coffee Trade`), and keep the goods themselves unprefixed with vendor `House Goods`
+— the same convention the platform's own generic sample pack
+(`wizeworks/packages/db/src/sample-data/packs/generic.ts`) already uses. Six products
+called "sparx Canvas Tote" shipped to every tenant on every brand for months before
+anyone opened a published homepage and read it (`piggles/docs/personas/issues/091`,
+`/165`).
+
+**The golden owns this for its whole family.** `blueprints/sparx/blueprint.ts` is the
+only place the six goods and the demo business are written; `gen-sparx-themed.ts`
+reads `brand.businessName` from it rather than declaring one, and
+`gen-piggles-showcase.ts` rebrands from it and asserts the golden's identity never
+survives into the Piggles bundle. Edit the golden, regenerate, and all 21 follow.
+
 ## Brand scoping: who may SEE a bundle
 
 A manifest may declare `brands: ['sparx']` / `['piggles']`. **Omitted means every
@@ -62,9 +84,14 @@ brand, and that default must stay the default** — a template that has to name 
 brands to be visible forks the catalog the first time somebody forgets. Of 191
 bundles: 169 shared, 21 sparx's showcase family, 1 Piggles'.
 
-Only a SHOWCASE is ever restricted — a bundle whose `brand.businessName` is the
-platform's own name, which is the product demonstrating itself rather than a
-vertical template. Enforced in `wizeworks/services/api-rest/src/lib/marketplace/brand-scope.ts`
+Only a SHOWCASE is ever restricted — today the 21 built from the golden bundle, one
+per first-party theme. That restriction is now a **catalog-split decision, not a
+safety one**, and the difference matters: it used to be justified by content (the
+family's `brand.businessName` was the platform's own name and its demo products
+carried it too), so crossing brands shipped that name into a customer's catalog,
+published shop and invoices. **No bundle names a brand in its content any more** —
+every one carries an invented demo business, so nothing leaks if one crosses.
+Enforced in `wizeworks/services/api-rest/src/lib/marketplace/brand-scope.ts`
 at three points (the listing's `notIn`, the v1 install route, and the internal
 furnish path), because a key posted from a browser form reaches install without
 passing the list.

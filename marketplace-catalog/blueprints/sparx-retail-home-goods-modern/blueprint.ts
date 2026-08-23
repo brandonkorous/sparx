@@ -1,4 +1,4 @@
-// sparx — Home Goods (Modern Design): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Home Goods (Modern Design): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-home-goods-modern',
-  version: '1.4.1',
-  name: 'sparx — Home Goods (Modern Design)',
+  version: '1.4.2',
+  name: 'Home Goods (Modern Design)',
   summary:
     'A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.',
   vertical: 'retail',

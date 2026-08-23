@@ -11,7 +11,7 @@
 //     DATA by `blueprint:capture` (or the MCP `get_silica_site` read) and imported
 //     from ./site.json — never hand-transcribed.
 //   · `brand` / `theme` / `commerce` / `content` / `emails` — hand-authored here,
-//     mirrored from the live tenant for coherence (the 6 neutral sparx goods, the 3
+//     mirrored from the live tenant for coherence (the 6 neutral demo goods, the 3
 //     universal journal posts) so the bundle is a transcript of something proven,
 //     not invented.
 //
@@ -46,19 +46,23 @@ import content from './content.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx',
-  version: '1.4.0',
-  name: 'sparx',
+  version: '1.5.0',
+  name: 'Universal Starter',
   summary:
-    'A complete, multi-module starter — shop, journal, booking, and wholesale — in the sparx Ember look. Install it, make it yours, and launch a polished working site in minutes.',
+    'A complete, multi-module starter — shop, journal, booking, and wholesale — in the Ember look. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // ── Brand (sparx Ember, vertical-neutral) ────────────────────────────────────
-  // The installing tenant rebrands this to their own business; a missed spot ships
-  // "sparx" (an accepted trade-off, per the doc's locked decision #1).
+  // ── Brand (Ember, vertical-neutral) ──────────────────────────────────────────
+  // The demo business the bundle is authored around, and the installing tenant
+  // rebrands it to their own. It is an INVENTED name, never the platform's: the
+  // installer writes `businessName` unconditionally into the property's
+  // brand_override, and invoice/packing-slip rendering prints it as the SELLER.
+  // A tenant born with the platform's name on its invoices is the defect this
+  // avoids (piggles/docs/personas/issues/091, /165).
   brand: {
-    businessName: 'sparx',
+    businessName: 'Alder & Ash',
     tagline: 'Everything you sell, publish, and book — in one place.',
     colors: {
       primary: '#e04631', // Ember — the sparx brand primary
@@ -80,7 +84,7 @@ const blueprint = {
   // The base was `apex`, one of six retired presets, so the flagship's saved theme
   // layered Ember identity over a generic indigo palette rather than over Ember.
   theme: {
-    name: 'sparx',
+    name: 'Ember',
     basePresetKey: 'sparx',
     presentation: { v: 2, containerWidth: '1152px' },
     brand: {
@@ -153,7 +157,7 @@ const blueprint = {
   // Mirrored from the live Template journal (list_content_entries) — see content.json.
   content,
 
-  // ── Commerce (the 6 neutral sparx goods) ─────────────────────────────────────
+  // ── Commerce (the 6 neutral demo goods) ──────────────────────────────────────
   // Mirrored from the live Template catalog via `get_products`/`get_product` (exact
   // titles, descriptions, types, tags, prices, image URLs). One `goods` category +
   // one featured `bestsellers` collection group them — the live catalog has neither
@@ -161,7 +165,9 @@ const blueprint = {
   // facet and makes Home's `commerce.featured` bind resolve to a curated set. SKUs
   // are clean bundle-derived values (each install mints fresh variants). Variants use
   // `continue` inventory so a fresh install never shows "Sold out" before the tenant
-  // sets stock (docs/impl perfect-template BUG-009).
+  // sets stock (docs/impl perfect-template BUG-009). Titles/handles/vendor/SKUs carry
+  // NO product name — they land in a real tenant's catalog and on their published
+  // shop, so `House Goods` mirrors the platform's own generic sample pack.
   commerce: {
     categories: [
       {
@@ -179,129 +185,129 @@ const blueprint = {
         type: 'manual',
         featured: true,
         productHandles: [
-          'sparx-field-notebook',
-          'sparx-everyday-tee',
-          'sparx-enamel-mug',
-          'sparx-canvas-tote',
-          'sparx-ripstop-cap',
-          'sparx-insulated-bottle',
+          'field-notebook',
+          'everyday-tee',
+          'enamel-mug',
+          'canvas-tote',
+          'ripstop-cap',
+          'insulated-bottle',
         ],
       },
     ],
     products: [
       {
-        handle: 'sparx-field-notebook',
-        title: 'sparx Field Notebook',
+        handle: 'field-notebook',
+        title: 'Field Notebook',
         description:
           'A pocket-size dot-grid notebook for lists, sketches, and half-formed ideas. Lay-flat binding, 120 pages of thick cream paper that won’t bleed, and a cover that softens the more you carry it.',
         status: 'active',
         productType: 'Paper',
-        vendor: 'sparx',
+        vendor: 'House Goods',
         tags: ['notebook', 'everyday', 'dot-grid', 'stationery'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'sparx Field Notebook — pocket dot-grid notebook',
+        seoTitle: 'Field Notebook — pocket dot-grid notebook',
         seoDescription:
           'A pocket-size, lay-flat dot-grid notebook with 120 pages of bleed-resistant cream paper.',
         variants: [
-          { sku: 'SPX-NOTEBOOK', priceCents: 1400, isDefault: true, inventoryPolicy: 'continue' },
+          { sku: 'NB-DOT-A6', priceCents: 1400, isDefault: true, inventoryPolicy: 'continue' },
         ],
-        images: [{ assetId: 'img-notebook', isPrimary: true, alt: 'sparx Field Notebook' }],
+        images: [{ assetId: 'img-notebook', isPrimary: true, alt: 'Field Notebook' }],
       },
       {
-        handle: 'sparx-everyday-tee',
-        title: 'sparx Everyday Tee',
+        handle: 'everyday-tee',
+        title: 'Everyday Tee',
         description:
           'The one you reach for first. Mid-weight combed cotton with a relaxed, true-to-size fit and a collar that keeps its shape wash after wash. Built to be worn, not saved for later.',
         status: 'active',
         productType: 'Apparel',
-        vendor: 'sparx',
+        vendor: 'House Goods',
         tags: ['tee', 'cotton', 'unisex', 'apparel'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'sparx Everyday Tee — mid-weight combed cotton',
+        seoTitle: 'Everyday Tee — mid-weight combed cotton',
         seoDescription:
           'A relaxed-fit, mid-weight combed-cotton tee with a collar that holds its shape.',
         variants: [
-          { sku: 'SPX-TEE', priceCents: 2800, isDefault: true, inventoryPolicy: 'continue' },
+          { sku: 'TEE-CTN-MID', priceCents: 2800, isDefault: true, inventoryPolicy: 'continue' },
         ],
-        images: [{ assetId: 'img-tee', isPrimary: true, alt: 'sparx Everyday Tee' }],
+        images: [{ assetId: 'img-tee', isPrimary: true, alt: 'Everyday Tee' }],
       },
       {
-        handle: 'sparx-enamel-mug',
-        title: 'sparx Enamel Mug',
+        handle: 'enamel-mug',
+        title: 'Enamel Mug',
         description:
           'A proper camp mug in speckled enamel over steel. Holds twelve ounces, shrugs off drops, and goes from desk to trailhead to campfire without complaint. A little chip only makes it look better.',
         status: 'active',
         productType: 'Drinkware',
-        vendor: 'sparx',
+        vendor: 'House Goods',
         tags: ['mug', 'enamel', 'camp', 'drinkware'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'sparx Enamel Mug — 12oz speckled camp mug',
+        seoTitle: 'Enamel Mug — 12oz speckled camp mug',
         seoDescription:
           'A 12oz speckled enamel-over-steel camp mug built for desk, trail, and campfire.',
         variants: [
-          { sku: 'SPX-MUG', priceCents: 1800, isDefault: true, inventoryPolicy: 'continue' },
+          { sku: 'MUG-12-ENAM', priceCents: 1800, isDefault: true, inventoryPolicy: 'continue' },
         ],
-        images: [{ assetId: 'img-mug', isPrimary: true, alt: 'sparx Enamel Mug' }],
+        images: [{ assetId: 'img-mug', isPrimary: true, alt: 'Enamel Mug' }],
       },
       {
-        handle: 'sparx-canvas-tote',
-        title: 'sparx Canvas Tote',
+        handle: 'canvas-tote',
+        title: 'Canvas Tote',
         description:
           'Heavy 12oz cotton canvas with real box corners and long shoulder-length handles. Carries a week of groceries or a laptop and lunch, and stands up on its own when you set it down. Machine-washable, gets softer with age.',
         status: 'active',
         productType: 'Accessories',
-        vendor: 'sparx',
+        vendor: 'House Goods',
         tags: ['tote', 'canvas', 'everyday', 'accessories'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'sparx Canvas Tote — heavy 12oz cotton tote bag',
+        seoTitle: 'Canvas Tote — heavy 12oz cotton tote bag',
         seoDescription:
           'A heavy 12oz cotton-canvas tote with box corners and shoulder-length handles.',
         variants: [
-          { sku: 'SPX-TOTE', priceCents: 2200, isDefault: true, inventoryPolicy: 'continue' },
+          { sku: 'TOTE-CTN-12', priceCents: 2200, isDefault: true, inventoryPolicy: 'continue' },
         ],
-        images: [{ assetId: 'img-tote', isPrimary: true, alt: 'sparx Canvas Tote' }],
+        images: [{ assetId: 'img-tote', isPrimary: true, alt: 'Canvas Tote' }],
       },
       {
-        handle: 'sparx-ripstop-cap',
-        title: 'sparx Ripstop Cap',
+        handle: 'ripstop-cap',
+        title: 'Ripstop Cap',
         description:
           'A lightweight six-panel cap in packable ripstop, with a curved brim you can bend by hand and an adjustable strap that fits nearly everyone. Folds into a pocket and springs back into shape.',
         status: 'active',
         productType: 'Apparel',
-        vendor: 'sparx',
+        vendor: 'House Goods',
         tags: ['cap', 'adjustable', 'ripstop', 'apparel'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'sparx Ripstop Cap — packable six-panel cap',
+        seoTitle: 'Ripstop Cap — packable six-panel cap',
         seoDescription:
           'A lightweight, packable six-panel ripstop cap with a hand-bendable brim and adjustable strap.',
         variants: [
-          { sku: 'SPX-CAP', priceCents: 2600, isDefault: true, inventoryPolicy: 'continue' },
+          { sku: 'CAP-RIP-6P', priceCents: 2600, isDefault: true, inventoryPolicy: 'continue' },
         ],
-        images: [{ assetId: 'img-cap', isPrimary: true, alt: 'sparx Ripstop Cap' }],
+        images: [{ assetId: 'img-cap', isPrimary: true, alt: 'Ripstop Cap' }],
       },
       {
-        handle: 'sparx-insulated-bottle',
-        title: 'sparx Insulated Bottle',
+        handle: 'insulated-bottle',
+        title: 'Insulated Bottle',
         description:
           'Double-walled stainless steel that keeps cold drinks cold for 24 hours and hot ones hot for 12. A soft matte finish that doesn’t sweat, a leak-proof cap, and a slim profile that fits a standard cup holder. Holds 17 oz.',
         status: 'active',
         productType: 'Drinkware',
-        vendor: 'sparx',
+        vendor: 'House Goods',
         tags: ['bottle', 'insulated', 'steel', 'drinkware', 'everyday'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'sparx Insulated Bottle — 17oz double-walled steel',
+        seoTitle: 'Insulated Bottle — 17oz double-walled steel',
         seoDescription:
           'A 17oz double-walled stainless bottle: cold for 24h, hot for 12h, leak-proof, matte finish.',
         variants: [
-          { sku: 'SPX-BOTTLE', priceCents: 3200, isDefault: true, inventoryPolicy: 'continue' },
+          { sku: 'BOT-17-STL', priceCents: 3200, isDefault: true, inventoryPolicy: 'continue' },
         ],
-        images: [{ assetId: 'img-bottle', isPrimary: true, alt: 'sparx Insulated Bottle' }],
+        images: [{ assetId: 'img-bottle', isPrimary: true, alt: 'Insulated Bottle' }],
       },
     ],
   },

@@ -1,4 +1,4 @@
-// sparx — Tech Cinematic: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Tech Cinematic: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-tech-cinematic',
-  version: '1.4.0',
-  name: 'sparx — Tech Cinematic',
+  version: '1.4.2',
+  name: 'Tech Cinematic',
   summary:
     'A dark, spec-forward storefront for engineered hardware — a full-bleed cinematic hero over a repeating capability-band and shoppable-carousel rhythm, on a genuinely dark page with one electric-blue signal. Modelled on the tech/cinematic product archetype; shipped as Aphelion, a premium-audio brand.',
   vertical: 'retail',

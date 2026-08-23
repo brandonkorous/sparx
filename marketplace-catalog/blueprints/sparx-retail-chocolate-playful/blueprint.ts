@@ -1,4 +1,4 @@
-// sparx — Chocolate & Sweets (Playful): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Chocolate & Sweets (Playful): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-chocolate-playful',
-  version: '1.4.1',
-  name: 'sparx — Chocolate & Sweets (Playful)',
+  version: '1.4.2',
+  name: 'Chocolate & Sweets (Playful)',
   summary:
     'A complete, working shop for a bright, gift-forward chocolate & sweets maker: colorful bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, a birthday box, a kids’ bundle and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Joyful sweet-shop theme — vanilla cream, a raspberry candy primary, a berry-grape pop accent, a rounded display and playful hovers. Shipped as Sweet Tooth Co.',
   vertical: 'retail',

@@ -1,4 +1,4 @@
-// sparx — Independent Bookshop: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Independent Bookshop: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-bookstore-indie',
-  version: '1.4.1',
-  name: 'sparx — Independent Bookshop',
+  version: '1.4.2',
+  name: 'Independent Bookshop',
   summary:
     'A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme — cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.',
   vertical: 'retail',

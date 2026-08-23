@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-bold-athletic",
   "name": "Bold Athletic",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "tagline": "A bold, high-energy template for performance and athletic apparel brands.",
   "description": "A bold-athletic DTC storefront for a performance apparel label — a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.",
   "payload": "blueprint.ts",

@@ -57,7 +57,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  changes — a marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without
  *  a bump the catalog keeps serving the OLD payload and a fresh install never sees the new
  *  pages. 1.0.0 is the first, full five-page portfolio pass. */
-const BUNDLE_VERSION = '1.2.0';
+const BUNDLE_VERSION = '1.2.1';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -427,7 +427,7 @@ function manifestJson(opts: {
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
             { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
         ],
-        author: { displayName: 'sparx' },
+        author: { displayName: 'WizeWorks' },
         accent: opts.accent,
         sortWeight: opts.sortWeight,
     };

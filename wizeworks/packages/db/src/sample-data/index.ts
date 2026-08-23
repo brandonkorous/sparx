@@ -153,6 +153,14 @@ async function applyPack(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
 }
 
 /**
+ * How long a pack may take. Prisma's 5-second default governs a request, not a
+ * bulk write: apparel spends 4.25s inserting 559 rows and used to fail on
+ * whichever attempt happened to be slower (issue 164). Generous, but still
+ * bounded — a load that runs for a minute is stuck, not busy.
+ */
+const PACK_TIMEOUT_MS = 60_000;
+
+/**
  * Load a pack into a tenant. Clears prior sample rows first (idempotent), then
  * provisions into the enabled modules only. Returns the per-entity counts created.
  * Runs in one tenant-scoped transaction — a failure rolls the whole load back.
@@ -162,37 +170,55 @@ export async function loadSampleData(
   pack: SampleDataPack,
   enabledModules: string[]
 ): Promise<SampleDataCounts> {
-  return withTenant(ctx, async (tx) => {
-    const [owner, property] = await Promise.all([
-      tx.user.findFirst({ where: { role: 'owner' }, select: { id: true } }),
-      tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }),
-    ]);
-    // Sample invoices need a real issuer (docs/131 §3.6) — `property_id` is NOT
-    // NULL on billing_documents, because a document nobody issued is the state
-    // that migration removes. Every tenant has a primary site, seeded at
-    // provisioning, so this is an invariant violation rather than a routine miss.
-    if (!property) {
-      throw new Error(
-        `Cannot load sample data: tenant ${ctx.tenantId} has no primary site. ` +
-          'Every tenant gets one at provisioning — this tenant was built by a ' +
-          'fixture that skips it.'
+  return withTenant(
+    ctx,
+    async (tx) => {
+      const [owner, property] = await Promise.all([
+        tx.user.findFirst({ where: { role: 'owner' }, select: { id: true } }),
+        tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }),
+      ]);
+      // Sample invoices need a real issuer (docs/131 §3.6) — `property_id` is NOT
+      // NULL on billing_documents, because a document nobody issued is the state
+      // that migration removes. Every tenant has a primary site, seeded at
+      // provisioning, so this is an invariant violation rather than a routine miss.
+      if (!property) {
+        throw new Error(
+          `Cannot load sample data: tenant ${ctx.tenantId} has no primary site. ` +
+            'Every tenant gets one at provisioning — this tenant was built by a ' +
+            'fixture that skips it.'
+        );
+      }
+      const applyCtx = buildCtx(
+        tx,
+        ctx,
+        owner?.id ?? null,
+        property.id,
+        property.id,
+        enabledModules
       );
-    }
-    const applyCtx = buildCtx(tx, ctx, owner?.id ?? null, property.id, property.id, enabledModules);
-    await clearSampleDataOnTx(tx, ctx.tenantId);
-    await applyPack(applyCtx, pack);
-    return applyCtx.counts;
-  });
+      await clearSampleDataOnTx(tx, ctx.tenantId);
+      await applyPack(applyCtx, pack);
+      return applyCtx.counts;
+    },
+    undefined,
+    { timeoutMs: PACK_TIMEOUT_MS }
+  );
 }
 
 /** Remove every sample row for a tenant. Returns the counts removed (snapshot
  *  taken before the delete) so the caller can report what was cleared. */
 export async function clearSampleData(ctx: TenantContext): Promise<SampleDataCounts> {
-  return withTenant(ctx, async (tx) => {
-    const counts = await summarizeSampleDataOnTx(tx, ctx.tenantId);
-    await clearSampleDataOnTx(tx, ctx.tenantId);
-    return counts;
-  });
+  // The same bulk write in reverse — apparel's 559 rows have to come back out.
+  return withTenant(
+    ctx,
+    async (tx) => {
+      const counts = await summarizeSampleDataOnTx(tx, ctx.tenantId);
+      await clearSampleDataOnTx(tx, ctx.tenantId);
+      return counts;
+    },
+    undefined,
+    { timeoutMs: PACK_TIMEOUT_MS }
+  );
 }
 
 /** The tenant's sample-data status: which pack applies, what's loaded, counts. */

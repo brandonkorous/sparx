@@ -1,4 +1,4 @@
-// sparx — Immersive Photo: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Immersive Photo: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-immersive-photo',
-  version: '1.4.1',
-  name: 'sparx — Immersive Photo',
+  version: '1.4.2',
+  name: 'Immersive Photo',
   summary:
     'An immersive, photo-led journal on a near-black cinematic ground where the photography carries all the color — a full-bleed photo cover, a photo-forward feed, a chaptered photo-essay band, and a bespoke photo-forward article reader, lit by one luminous solar-amber accent. Modelled on the immersive-photojournalism archetype; shipped as Wayfarer, a travel & photography journal. Ships a light store (fine-art prints, field gear, a photobook) to demonstrate content + commerce together.',
   vertical: 'content',

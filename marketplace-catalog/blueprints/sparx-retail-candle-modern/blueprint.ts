@@ -1,4 +1,4 @@
-// sparx — Candle Studio (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Candle Studio (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-candle-modern',
-  version: '1.4.1',
-  name: 'sparx — Candle Studio (Modern)',
+  version: '1.4.2',
+  name: 'Candle Studio (Modern)',
   summary:
     'A complete, working shop for a modern, clean candle & home-fragrance studio: a real catalogue of clean-fragrance candles with scent options, a ceramic travel candle, a reed diffuser, a room spray, a refill, a matches set and gift sets, with categories, collections, a bespoke bright PDP and a fully merchandised home page. Fresh, minimalist theme — a pale blush-white ground, a single sage accent, a clean grotesk. Shipped as Lumen.',
   vertical: 'retail',

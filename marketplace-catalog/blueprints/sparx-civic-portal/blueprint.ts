@@ -1,4 +1,4 @@
-// sparx — Civic Portal: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Civic Portal: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-civic-portal',
-  version: '1.4.0',
-  name: 'sparx — Civic Portal',
+  version: '1.4.2',
+  name: 'Civic Portal',
   summary:
     'An accessibility-first portal for a city or public agency — a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
   vertical: 'content',

@@ -1,4 +1,4 @@
-// sparx — Matcha & Tea (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Matcha & Tea (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-tea-modern',
-  version: '1.4.1',
-  name: 'sparx — Matcha & Tea (Modern)',
+  version: '1.4.2',
+  name: 'Matcha & Tea (Modern)',
   summary:
     'A complete, working shop for a modern matcha and tea brand: ceremonial and daily matcha with grade and size options, functional focus / calm / sleep blends, grab-and-go iced sachets, a starter kit, a bamboo whisk, a travel shaker and a flexible club subscription, with categories, collections, a bespoke product-forward PDP and a merchandised home page. Bright wellness-modern theme — soft-mint ground, vibrant matcha-green, a punchy coral accent. Shipped as Matcha Club.',
   vertical: 'retail',

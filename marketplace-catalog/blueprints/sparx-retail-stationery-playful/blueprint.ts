@@ -1,4 +1,4 @@
-// sparx — Stationery & Gifts (Playful): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Stationery & Gifts (Playful): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-stationery-playful',
-  version: '1.4.1',
-  name: 'sparx — Stationery & Gifts (Playful)',
+  version: '1.4.2',
+  name: 'Stationery & Gifts (Playful)',
   summary:
     'A complete, working shop for a bright, playful stationery & gifts store: a real catalogue of color-pop notebooks, a gel-pen set, sticker packs, an enamel pin, a desk calendar, greeting cards, washi tape, a sticky-note cube and a fun gift bundle, with categories, collections, a bespoke PDP and a loud, merchandised home page. Joyful pop theme — soft lemon ground, a bubblegum-pink primary, a grape-purple accent, a rounded Fredoka display. Shipped as Pencil Club.',
   vertical: 'retail',

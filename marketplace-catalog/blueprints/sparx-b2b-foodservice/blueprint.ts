@@ -1,4 +1,4 @@
-// sparx — Foodservice Wholesale: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Foodservice Wholesale: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-foodservice',
-  version: '1.4.1',
-  name: 'sparx — Foodservice Wholesale',
+  version: '1.4.2',
+  name: 'Foodservice Wholesale',
   summary:
     'A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton — bulk pantry, oils and staples, packaging and disposables — with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme — cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.',
   vertical: 'b2b',

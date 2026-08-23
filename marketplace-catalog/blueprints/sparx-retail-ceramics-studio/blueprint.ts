@@ -1,4 +1,4 @@
-// sparx — Ceramics Studio (Handmade): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Ceramics Studio (Handmade): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-ceramics-studio',
-  version: '1.4.0',
-  name: 'sparx — Ceramics Studio (Handmade)',
+  version: '1.4.2',
+  name: 'Ceramics Studio (Handmade)',
   summary:
     'A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.',
   vertical: 'retail',

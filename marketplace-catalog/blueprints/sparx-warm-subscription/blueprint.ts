@@ -1,4 +1,4 @@
-// sparx — Warm Subscription: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Warm Subscription: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-warm-subscription',
-  version: '1.4.1',
-  name: 'sparx — Warm Subscription',
+  version: '1.4.2',
+  name: 'Warm Subscription',
   summary:
     'A warm, editorial storefront for a subscription food & drink brand — a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
   vertical: 'retail',

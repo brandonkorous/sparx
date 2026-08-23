@@ -1,4 +1,4 @@
-// sparx — Pet Supplies (Playful): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Pet Supplies (Playful): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-pet-playful',
-  version: '1.4.1',
-  name: 'sparx — Pet Supplies (Playful)',
+  version: '1.4.2',
+  name: 'Pet Supplies (Playful)',
   summary:
     'A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme — a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.',
   vertical: 'retail',

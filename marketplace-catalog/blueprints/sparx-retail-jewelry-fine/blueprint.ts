@@ -1,4 +1,4 @@
-// sparx — Fine Jeweler: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Fine Jeweler: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-jewelry-fine',
-  version: '1.4.1',
-  name: 'sparx — Fine Jeweler',
+  version: '1.4.2',
+  name: 'Fine Jeweler',
   summary:
     'A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces — a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme — a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.',
   vertical: 'retail',

@@ -1,4 +1,4 @@
-// sparx — Brand Newsroom: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Brand Newsroom: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-brand-newsroom',
-  version: '1.4.0',
-  name: 'sparx — Brand Newsroom',
+  version: '1.4.2',
+  name: 'Brand Newsroom',
   summary:
     'A first-party brand newsroom for a product studio — a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.',
   vertical: 'content',

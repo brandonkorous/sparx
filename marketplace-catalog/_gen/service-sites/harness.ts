@@ -386,7 +386,7 @@ function manifestJson(opts: {
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
             { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
         ],
-        author: { displayName: 'sparx' },
+        author: { displayName: 'WizeWorks' },
         accent: opts.accent,
         sortWeight: opts.sortWeight,
     };

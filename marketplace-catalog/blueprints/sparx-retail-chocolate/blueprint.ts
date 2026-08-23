@@ -1,4 +1,4 @@
-// sparx — Chocolatier (Artisan): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Chocolatier (Artisan): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-chocolate',
-  version: '1.4.1',
-  name: 'sparx — Chocolatier (Artisan)',
+  version: '1.4.2',
+  name: 'Chocolatier (Artisan)',
   summary:
     'A complete, working shop for a bean-to-bar chocolatier: a real catalogue of single-origin bars, truffle and confection boxes, drinking chocolate, gift sets and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Rich, low-lit chocolate-room theme — deep cocoa grounds, a burgundy primary, a warm gold accent. Shipped as Cacao & Co.',
   vertical: 'retail',

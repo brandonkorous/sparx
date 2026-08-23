@@ -1,4 +1,4 @@
-// sparx — Natural Clean: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Natural Clean: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-natural-clean',
-  version: '1.4.1',
-  name: 'sparx — Natural Clean',
+  version: '1.4.2',
+  name: 'Natural Clean',
   summary:
     'A calm, oat-tinted storefront for a natural or sustainable brand — a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',
   vertical: 'retail',

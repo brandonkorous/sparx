@@ -1,4 +1,4 @@
-// sparx — Building Materials (B2B / Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Building Materials (B2B / Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-building-materials',
-  version: '1.4.1',
-  name: 'sparx — Building Materials (B2B / Wholesale)',
+  version: '1.4.2',
+  name: 'Building Materials (B2B / Wholesale)',
   summary:
     'A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag — timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety — with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme — warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.',
   vertical: 'b2b',

@@ -1,4 +1,4 @@
-// sparx — Tea House (Loose Leaf): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Tea House (Loose Leaf): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-tea-house',
-  version: '1.4.1',
-  name: 'sparx — Tea House (Loose Leaf)',
+  version: '1.4.2',
+  name: 'Tea House (Loose Leaf)',
   summary:
     'A complete, working shop for a loose-leaf tea house: a real catalogue of single-origin greens, whites, blacks, oolong, chai and caffeine-free herbals, a matcha, a sampler set, brewing teaware and a flexible tea-club subscription, with categories, collections, a bespoke tea-shop PDP and a full merchandised home page. Calm botanical theme — soft oat-green paper, a muted jade primary, a warm clay accent. Shipped as Steepwell Tea House.',
   vertical: 'retail',

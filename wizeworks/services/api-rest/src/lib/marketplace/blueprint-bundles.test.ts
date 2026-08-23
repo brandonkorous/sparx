@@ -123,12 +123,12 @@ describe('blueprint emails bind the tenant, they do not name the author', () => 
     for (const b of withEmails) {
       const business = b.blueprint.brand?.businessName;
       if (!business) continue;
-      // The themed clones all declare 'sparx' — the platform's own name, which appears
-      // legitimately in slugs, keys and asset URLs throughout a bundle. Matching it would
-      // report a false positive on every one of them, and a guard that cries wolf on 21
-      // packs is a guard someone deletes. Those bundles are covered by the POSITIVE check
-      // below instead, which is the property actually worth having.
-      if (business.toLowerCase() === 'sparx') continue;
+      // NO EXEMPTIONS. This used to skip any bundle declaring 'sparx', because the 21
+      // showcase bundles named the platform as their demo business and the word appears
+      // legitimately in slugs, keys and asset URLs — so matching it reported a false
+      // positive on every one of them. That exemption is gone with its cause: those
+      // bundles now declare an invented demo business like every other pack, so the
+      // guard covers all 191 and the 21 that were hardest to check are checked.
       for (const email of b.blueprint.emails ?? []) {
         for (const s of strings(email.doc)) {
           expect(

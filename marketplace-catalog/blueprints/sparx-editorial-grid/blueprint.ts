@@ -1,4 +1,4 @@
-// sparx — Editorial Grid: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Editorial Grid: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-editorial-grid',
-  version: '1.4.1',
-  name: 'sparx — Editorial Grid',
+  version: '1.4.2',
+  name: 'Editorial Grid',
   summary:
     'A magazine-quiet storefront for design furniture and objects — a full-bleed serif hero over a repeating editorial-band and shoppable-carousel rhythm, in a paper-ground mono theme. Modelled on the editorial-streetwear archetype; shipped as Atelier Nord.',
   vertical: 'retail',

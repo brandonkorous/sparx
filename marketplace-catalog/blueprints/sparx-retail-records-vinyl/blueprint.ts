@@ -1,4 +1,4 @@
-// sparx — Record Shop (Vinyl): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Record Shop (Vinyl): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-records-vinyl',
-  version: '1.4.1',
-  name: 'sparx — Record Shop (Vinyl)',
+  version: '1.4.2',
+  name: 'Record Shop (Vinyl)',
   summary:
     'A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme — near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the color. Shipped as Third Side Records.',
   vertical: 'retail',

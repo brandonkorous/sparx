@@ -39,7 +39,7 @@
       "seoDescription": "A pocket-size, lay-flat dot-grid notebook with 120 pages of bleed-resistant cream paper.",
       "variants": [
         {
-          "sku": "SPX-NOTEBOOK",
+          "sku": "NB-DOT-A6",
           "priceCents": 1400,
           "isDefault": true,
           "inventoryPolicy": "continue"
@@ -67,7 +67,7 @@
       "seoDescription": "A relaxed-fit, mid-weight combed-cotton tee with a collar that holds its shape.",
       "variants": [
         {
-          "sku": "SPX-TEE",
+          "sku": "TEE-CTN-MID",
           "priceCents": 2800,
           "isDefault": true,
           "inventoryPolicy": "continue"
@@ -95,7 +95,7 @@
       "seoDescription": "A 12oz speckled enamel-over-steel camp mug built for desk, trail, and campfire.",
       "variants": [
         {
-          "sku": "SPX-MUG",
+          "sku": "MUG-12-ENAM",
           "priceCents": 1800,
           "isDefault": true,
           "inventoryPolicy": "continue"
@@ -123,7 +123,7 @@
       "seoDescription": "A heavy 12oz cotton-canvas tote with box corners and shoulder-length handles.",
       "variants": [
         {
-          "sku": "SPX-TOTE",
+          "sku": "TOTE-CTN-12",
           "priceCents": 2200,
           "isDefault": true,
           "inventoryPolicy": "continue"
@@ -151,7 +151,7 @@
       "seoDescription": "A lightweight, packable six-panel ripstop cap with a hand-bendable brim and adjustable strap.",
       "variants": [
         {
-          "sku": "SPX-CAP",
+          "sku": "CAP-RIP-6P",
           "priceCents": 2600,
           "isDefault": true,
           "inventoryPolicy": "continue"
@@ -179,7 +179,7 @@
       "seoDescription": "A 17oz double-walled stainless bottle: cold for 24h, hot for 12h, leak-proof, matte finish.",
       "variants": [
         {
-          "sku": "SPX-BOTTLE",
+          "sku": "BOT-17-STL",
           "priceCents": 3200,
           "isDefault": true,
           "inventoryPolicy": "continue"

@@ -1,4 +1,4 @@
-// sparx — Home Goods (Homeware): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Home Goods (Homeware): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-home-goods',
-  version: '1.4.1',
-  name: 'sparx — Home Goods (Homeware)',
+  version: '1.4.2',
+  name: 'Home Goods (Homeware)',
   summary:
     'A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme — a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.',
   vertical: 'retail',

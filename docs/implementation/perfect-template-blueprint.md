@@ -1,8 +1,8 @@
 # Perfect Template → sparx Blueprint
 
-Version: 1.5.0
+Version: 1.6.0
 Author: Brandon Korous
-Last Updated: 2026-07-28
+Last Updated: 2026-08-23
 
 > **Living build doc.** The single source of truth for the "perfect template" effort so
 > it survives context compaction. Update the **Status** table + **Log** as work lands.
@@ -88,12 +88,20 @@ will never turn those modules on.
 
 ## Locked decisions (do not re-litigate)
 
-1. **Identity = sparx-branded, vertical-neutral showcase.** The template wears the
-   **sparx** brand (name "sparx", Ember `#e04631` primary), in a **universal voice** that
-   fits any business (clothing, consulting, food…). NOT a specific vertical (Farm-Fresh
-   smoothies made it "weird for a clothing brand") and NOT soulless-generic.
-   - Accepted trade-off: installing tenants must fully rebrand; a missed spot ships
-     "sparx" as their store name. User chose this knowingly.
+1. ~~**Identity = sparx-branded, vertical-neutral showcase.**~~ **SUPERSEDED 2026-08-23 —
+   the trade-off was not survivable.** The template kept the **Ember** look (`#e04631`
+   primary) and the universal voice — NOT a specific vertical (Farm-Fresh smoothies made
+   it "weird for a clothing brand") and NOT soulless-generic — but it no longer wears the
+   platform's NAME.
+   - The original decision accepted that "a missed spot ships 'sparx' as their store
+     name". Several spots did, and they were not cosmetic: `brand.businessName` is written
+     unconditionally into the property's `brand_override`, where invoice and packing-slip
+     rendering print it as the **seller**, and the six demo goods installed as `active`
+     products that published to the tenant's own shop. Every tenant on every brand got
+     them (`piggles/docs/personas/issues/091`, `/165`).
+   - **Now:** demo business `Alder & Ash` (invented, like the other 169 bundles), six
+     unprefixed goods with vendor `House Goods`, and no platform name anywhere a tenant
+     can read. The Ember look and the universal voice are unchanged.
 2. **The blueprint ships its theme** (capture the sparx Ember theme verbatim, not
    `--omit-theme`).
 3. **Content must be coherent** — one brand, universal voice. Off-brand data purged.
@@ -513,6 +521,25 @@ self-indexes).
 
 ## Log
 
+- **2026-08-23 (the platform's name comes out of the demo catalog)** — Locked decision #1
+  reversed. The golden bundle's six demo goods lost their `sparx ` prefix (`sparx-canvas-tote`
+  → `canvas-tote`, titles/SEO titles/image alts with them), `vendor` went from `sparx` to
+  `House Goods` and the `SPX-*` SKUs to descriptive ones (`NB-DOT-A6`, `TOTE-CTN-12`, …) —
+  all matching the convention the platform's own generic sample pack already used.
+  `brand.businessName` is now the invented `Alder & Ash`, which matters more than it looks:
+  the installer writes it straight into `brand_override` and invoice rendering prints it as
+  the seller. `blueprint.name` became `Universal Starter` (it suffixes colliding email names,
+  so a tenant saw "Welcome (sparx)"), the saved theme it installs is now called `Ember`, and
+  the home-page sentence that opened "sparx brings your site…" is second-person.
+  `basePresetKey: 'sparx'`, `key: 'sparx'` and the slugs are identifiers and stayed.
+  Golden → **1.5.0**, the 20 themed clones → **1.3.0** (regenerated; `gen-sparx-themed.ts`
+  now READS `brand.businessName` from the golden instead of hardcoding it), `piggles-starter`
+  → **1.1.0** (its generator's job flipped from stripping a brand to rebranding neutral
+  content, and its guard now asserts the golden's own demo identity never survives). Version
+  bumps are load-bearing: the marketplace artifact is immutable per version, so an unbumped
+  edit would have kept serving the old products forever. The `sparx` exemption came out of
+  the email-naming guard in `blueprint-bundles.test.ts`, so all 191 bundles are now checked.
+
 - **2026-07-29 (session 9 — theming spine + 20 themed clones)** — Made `site.theme` the
   SINGLE source of the look for storefront **and** transactional email (OKLCH→hex per send is a
   format conversion of one source, not a second source), the golden `sparx` template the default
@@ -759,7 +786,8 @@ processed` (no schema-drop), confirming the `to` fix end-to-end. Brandon flagged
   pages + frame + Ember theme. The frame uses the `site.brand` host core (NO baked logo media ids →
   re-skins to the installer's own logo). **`commerce`** from `get_products`/`get_product` (6 goods
   verbatim) + ADDED a `goods` category + featured `bestsellers` collection (live had neither; makes
-  the /shop facet + Home `commerce.featured` resolve); clean `SPX-*` SKUs, `inventoryPolicy:'continue'`
+  the /shop facet + Home `commerce.featured` resolve); `SPX-*` SKUs (renamed 2026-08-23 — see
+  decision #1), `inventoryPolicy:'continue'`
   (BUG-009). **`content.json`** from `list_content_entries` (3 posts, tiptap verbatim, featuredImage
   → `{$asset}`; the media proxy 302'd to the original Unsplash URLs, used directly). **`icon.png`** =
   the sparx spark (`images/favicons/icon-512.png`). **`preview.png`** = a 1600×1000 shot of the live

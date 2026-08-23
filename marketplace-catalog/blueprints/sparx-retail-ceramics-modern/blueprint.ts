@@ -1,4 +1,4 @@
-// sparx — Ceramics Studio (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Ceramics Studio (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-ceramics-modern',
-  version: '1.4.1',
-  name: 'sparx — Ceramics Studio (Modern)',
+  version: '1.4.2',
+  name: 'Ceramics Studio (Modern)',
   summary:
     'A complete, working shop for a contemporary ceramics studio: a real catalogue of modern tableware — a cylinder mug, nesting bowls, a coupe plate set, a carafe & cup, a tumbler set, two sculptural vases, a cylinder planter and a full table set, each in three house colors — with categories, collections, a crisp-on-white PDP and a fully merchandised home page. Bright cool-white theme, near-black ink and a single bold clay-coral accent, in a geometric grotesk with sharp corners. Shipped as Form.',
   vertical: 'retail',

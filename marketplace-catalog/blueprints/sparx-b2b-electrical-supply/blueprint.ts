@@ -1,4 +1,4 @@
-// sparx — Electrical Supply (B2B / Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Electrical Supply (B2B / Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-electrical-supply',
-  version: '1.4.0',
-  name: 'sparx — Electrical Supply (B2B / Wholesale)',
+  version: '1.4.2',
+  name: 'Electrical Supply (B2B / Wholesale)',
   summary:
     'A complete, working wholesale shop for an electrical wholesaler: a real trade catalogue sold by the reel, box and pack — twin & earth cable, consumer units, sockets & switches, LED downlights, circuit breakers, conduit and a tester — with categories, collections, a bespoke trade PDP (per-unit pricing, volume breaks, net-30), and a full merchandised home page. Cool electrical theme — slate ground, deep electric-blue, live-amber accent. Shipped as Livewire Trade.',
   vertical: 'b2b',

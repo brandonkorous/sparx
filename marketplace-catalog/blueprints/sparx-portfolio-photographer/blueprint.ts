@@ -1,4 +1,4 @@
-// sparx — Photographer Portfolio: a personal-portfolio SITE TEMPLATE, composed distinct — its own home,
+// Photographer Portfolio: a personal-portfolio SITE TEMPLATE, composed distinct — its own home,
 // a live work index, a bespoke case-study page, about + contact — dressed in the bespoke
 // theme its persona pins.
 //
@@ -14,8 +14,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-portfolio-photographer',
-  version: '1.2.0',
-  name: 'sparx — Photographer Portfolio',
+  version: '1.2.1',
+  name: 'Photographer Portfolio',
   summary:
     'An image-first portfolio for a photographer: a centered wordmark, a near-full-bleed hero, selected series as large edge-to-edge frames, and photo-story pages that read like a gallery wall. Chrome recedes and type stays recessive so the photographs carry all the color. Dressed in a cool gallery-white theme with a near-black mono primary, zero radius and a serif display. Shipped as Mara Ilić.',
   vertical: 'content',

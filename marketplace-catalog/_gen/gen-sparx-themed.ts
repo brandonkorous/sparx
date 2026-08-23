@@ -1,7 +1,7 @@
 // Generator: the 20 THEMED CLONES of the golden `sparx` blueprint — one per sparx
 // silica theme (`SPARX_THEMES`, wizeworks/packages/silica-catalog). Each clone is the SAME
 // complete multi-module starter (shop · journal · booking · wholesale, the 6 neutral
-// goods, the 3 journal posts, the 2-touch welcome series) re-dressed in one theme's
+// demo goods, the 3 journal posts, the 2-touch welcome series) re-dressed in one theme's
 // look. Together with the flagship `sparx` (Ember) bundle that is 21 blueprints.
 //
 // Run (docs marketplace-catalog/CLAUDE.md — generator is the source of truth):
@@ -83,6 +83,7 @@ function faces(theme: Theme): { heading: string; body: string } {
 
 /** The shared parts of the golden bundle, read once and cloned into every theme. */
 interface Golden {
+    brandBusinessName: string;
     brandTagline: string;
     assets: unknown;
     commerce: unknown;
@@ -102,8 +103,18 @@ async function loadGolden(): Promise<Golden> {
     if (emails.length !== 2) {
         throw new Error(`gen-sparx-themed: expected golden to ship 2 emails, found ${emails.length}`);
     }
-    const brand = bp.brand as { tagline?: string };
+    const brand = bp.brand as { businessName?: string; tagline?: string };
+    // READ, never hardcoded. This is the demo business the whole family is authored
+    // around, and the installer writes it straight into the property's brand_override,
+    // where invoice + packing-slip rendering print it as the SELLER NAME. A literal here
+    // is how 21 bundles came to seed a tenant's own catalog and invoices with the
+    // platform's name (piggles/docs/personas/issues/091, /165). Taking it from the golden
+    // means one edit there moves all 21.
+    if (!brand.businessName) {
+        throw new Error('gen-sparx-themed: golden declares no brand.businessName');
+    }
     return {
+        brandBusinessName: brand.businessName,
         brandTagline: brand.tagline ?? 'Everything you sell, publish, and book — in one place.',
         assets: bp.assets,
         commerce: bp.commerce,
@@ -138,7 +149,7 @@ function blueprintTs(opts: {
                 `{ name: ${JSON.stringify(e.name)}, doc: ${emailVars[i]}, publish: ${String(e.publish)} }`
         )
         .join(',\n    ');
-    return `// sparx — ${title(opts.key.replace(/^sparx-/, ''))}: a THEMED CLONE of the golden \`sparx\`
+    return `// ${title(opts.key.replace(/^sparx-/, ''))}: a THEMED CLONE of the golden \`sparx\`
 // blueprint, re-dressed in the '${opts.key.replace(/^sparx-/, '')}' silica theme. Same
 // complete multi-module starter (shop · journal · booking · wholesale), captured once
 // and re-themed — content, commerce, and emails are identical to the flagship; only the
@@ -156,7 +167,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.2.0',
+  version: '1.3.0',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -206,7 +217,7 @@ function manifestJson(opts: {
         category: 'blueprint',
         slug: opts.key,
         name: opts.name,
-        version: '1.2.0',
+        version: '1.3.0',
         tagline: opts.tagline,
         description: opts.summary,
         payload: 'blueprint.ts',
@@ -225,12 +236,17 @@ function manifestJson(opts: {
             { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
         ],
         author: { displayName: 'WizeWorks' },
-        // THIS FAMILY IS SPARX'S OWN SHOWCASE, and that is what makes it restricted.
-        // Its captured site says "sparx" in the page copy and its `brand.businessName`
-        // is "sparx" — it is the product demonstrating itself, not a vertical template.
-        // The other ~169 bundles carry no `brands` and are shared by every brand, which
-        // is the default and should stay the default: a template that must name its
-        // brands to be seen forks the catalog the first time someone forgets.
+        // Restricted to sparx as a DELIBERATE SCOPING CHOICE, and no longer because of
+        // anything in the content. This family used to name the platform in its page copy
+        // and its `brand.businessName`, which is what the restriction originally described
+        // and protected against; that naming is gone — the bundles now carry the same
+        // invented demo business as the other 169, so nothing here would leak a brand if
+        // it crossed. What remains is a product decision about which marketplace shows the
+        // 21 theme looks, and it stays as-is until somebody decides otherwise.
+        //
+        // The other ~169 bundles carry no `brands` and are shared by every brand, which is
+        // the default and should stay the default: a template that must name its brands to
+        // be seen forks the catalog the first time someone forgets.
         brands: ['sparx'],
         accent: opts.accent,
         sortWeight: opts.sortWeight,
@@ -291,7 +307,7 @@ async function main(): Promise<void> {
         const tagline = `A complete multi-module starter in the ${t} look — for ${desc.audience}.`;
 
         const brand = {
-            businessName: 'sparx',
+            businessName: golden.brandBusinessName,
             tagline: golden.brandTagline,
             colors: { primary, primaryForeground, accent, secondary },
             fonts: { heading, body },

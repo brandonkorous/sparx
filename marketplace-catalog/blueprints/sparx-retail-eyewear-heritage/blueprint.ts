@@ -1,4 +1,4 @@
-// sparx — Eyewear (Heritage): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Eyewear (Heritage): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-eyewear-heritage',
-  version: '1.4.0',
-  name: 'sparx — Eyewear (Heritage)',
+  version: '1.4.2',
+  name: 'Eyewear (Heritage)',
   summary:
     'A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colorways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme — bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.',
   vertical: 'retail',

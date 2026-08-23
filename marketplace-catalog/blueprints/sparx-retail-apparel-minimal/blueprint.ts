@@ -1,4 +1,4 @@
-// sparx — Fashion Boutique (Minimal): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Fashion Boutique (Minimal): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-apparel-minimal',
-  version: '1.4.1',
-  name: 'sparx — Fashion Boutique (Minimal)',
+  version: '1.4.2',
+  name: 'Fashion Boutique (Minimal)',
   summary:
     'A complete, working shop for a quiet-luxury clothing boutique: a real wardrobe of essentials — tees, an oxford shirt, heavyweight and fine knitwear, tailored and wide-leg trousers, an overcoat, a scarf and a leather tote — each sized XS–XL in a tight color palette, with categories, collections, a bespoke editorial PDP and a merchandised home page. Warm bone paper, near-black mono type, no accent — the clothes are the color. Shipped as Kestrel.',
   vertical: 'retail',

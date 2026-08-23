@@ -1,4 +1,4 @@
-// sparx — Designer Portfolio: a personal-portfolio SITE TEMPLATE, composed distinct — its own home,
+// Designer Portfolio: a personal-portfolio SITE TEMPLATE, composed distinct — its own home,
 // a live work index, a bespoke case-study page, about + contact — dressed in the bespoke
 // theme its persona pins.
 //
@@ -14,8 +14,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-portfolio-designer',
-  version: '1.2.0',
-  name: 'sparx — Designer Portfolio',
+  version: '1.2.1',
+  name: 'Designer Portfolio',
   summary:
     'A hire-me portfolio for a product / UX / design-systems designer: a plain-spoken statement hero, selected work as outcome-led rows, a short “how I work” band, and case-study pages that walk the brief, the work and the result. Restraint over decoration — the typography and the thinking do the work. Dressed in a cool near-white theme carried by one electric signal-blue. Shipped as Sasha Rourke.',
   vertical: 'content',

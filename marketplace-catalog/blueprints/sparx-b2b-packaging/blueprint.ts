@@ -1,4 +1,4 @@
-// sparx — Packaging Supplies (Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Packaging Supplies (Wholesale): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-packaging',
-  version: '1.4.0',
-  name: 'sparx — Packaging Supplies (Wholesale)',
+  version: '1.4.2',
+  name: 'Packaging Supplies (Wholesale)',
   summary:
     'A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll — boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit — with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme — corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.',
   vertical: 'b2b',

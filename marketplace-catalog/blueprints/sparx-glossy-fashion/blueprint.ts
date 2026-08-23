@@ -1,4 +1,4 @@
-// sparx — Glossy Fashion: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Glossy Fashion: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-glossy-fashion',
-  version: '1.4.1',
-  name: 'sparx — Glossy Fashion',
+  version: '1.4.2',
+  name: 'Glossy Fashion',
   summary:
     'An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every color. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.',
   vertical: 'content',

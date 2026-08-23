@@ -1,4 +1,4 @@
-// sparx — Luxe Minimal: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Luxe Minimal: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-luxe-minimal',
-  version: '1.4.1',
-  name: 'sparx — Luxe Minimal',
+  version: '1.4.2',
+  name: 'Luxe Minimal',
   summary:
     'A quiet-luxury storefront where imagery carries the weight and type stays out of the way — a full-bleed hero with a bottom-left headline, a 4-up category-tile row, best-sellers and treatment carousels, full-bleed editorial bands and a centered mission statement, all warm-neutral monochrome with no accent. Modelled on the minimal-luxury archetype; shipped as Nue Skincare, a premium-skincare essentials brand.',
   vertical: 'retail',

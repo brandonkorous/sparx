@@ -1,4 +1,4 @@
-// sparx — Workshop: a THEMED CLONE of the golden `sparx`
+// Workshop: a THEMED CLONE of the golden `sparx`
 // blueprint, re-dressed in the 'workshop' silica theme. Same
 // complete multi-module starter (shop · journal · booking · wholesale), captured once
 // and re-themed — content, commerce, and emails are identical to the flagship; only the
@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-workshop',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'Workshop',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Workshop look, tuned for fabrication, joinery, and general trade. Install it, make it yours, and launch a polished working site in minutes.',
@@ -27,7 +27,7 @@ const blueprint = {
   // Identity only (business name + fonts + the theme's hex colors). The look itself
   // rides site.theme (below) + this theme; the installing tenant rebrands the name.
   brand: {
-    businessName: 'sparx',
+    businessName: 'Alder & Ash',
     tagline: 'Everything you sell, publish, and book — in one place.',
     colors: {
       primary: '#ff992b',

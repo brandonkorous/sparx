@@ -1,4 +1,4 @@
-// sparx — Outdoor Essentials (Minimal): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Outdoor Essentials (Minimal): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-outdoor-minimal',
-  version: '1.4.1',
-  name: 'sparx — Outdoor Essentials (Minimal)',
+  version: '1.4.2',
+  name: 'Outdoor Essentials (Minimal)',
   summary:
     'A complete, working shop for a clean, design-led urban-outdoor label: a real catalogue of a packable shell, a merino tee, technical trousers, a commuter pack, a packable tote, a cap, an insulated bottle and merino socks — with categories, collections, a minimal PDP and a fully merchandised home page. Design-studio theme — a cool near-white ground, a near-black primary and a single restrained blue accent, under a crisp grotesk. Shipped as Tarn.',
   vertical: 'retail',

@@ -1,4 +1,4 @@
-// sparx — Natural Wine Shop: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Natural Wine Shop: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-wine-shop',
-  version: '1.4.1',
-  name: 'sparx — Natural Wine Shop',
+  version: '1.4.2',
+  name: 'Natural Wine Shop',
   summary:
     'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',
   vertical: 'retail',

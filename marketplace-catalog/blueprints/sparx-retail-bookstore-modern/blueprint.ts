@@ -1,4 +1,4 @@
-// sparx — Modern Bookshop: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Modern Bookshop: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-bookstore-modern',
-  version: '1.4.1',
-  name: 'sparx — Modern Bookshop',
+  version: '1.4.2',
+  name: 'Modern Bookshop',
   summary:
     'A complete, working shop for a bright, contemporary bookshop: a real catalogue of new releases, fiction, nonfiction and books for young readers, plus an enamel-pin set, a clip reading light and a monthly reading subscription — with categories, collections, a bespoke cover-forward PDP and a full merchandised home page led by new releases. Crisp modern theme — a near-white ground, a confident blue, a coral accent, a clean grotesk display. Shipped as Volume Books.',
   vertical: 'retail',

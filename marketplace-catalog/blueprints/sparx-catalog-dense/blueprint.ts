@@ -1,4 +1,4 @@
-// sparx — Catalog Dense: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Catalog Dense: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-catalog-dense',
-  version: '1.4.0',
-  name: 'sparx — Catalog Dense',
+  version: '1.4.2',
+  name: 'Catalog Dense',
   summary:
     'A high-volume, discount-forward storefront for a fast-fashion apparel shop — a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.',
   vertical: 'retail',

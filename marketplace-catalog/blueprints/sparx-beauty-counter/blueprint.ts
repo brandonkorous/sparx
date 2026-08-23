@@ -1,4 +1,4 @@
-// sparx — Beauty Counter: a reference-driven SITE TEMPLATE (docs/templates/*),
+// Beauty Counter: a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-beauty-counter',
-  version: '1.4.0',
-  name: 'sparx — Beauty Counter',
+  version: '1.4.2',
+  name: 'Beauty Counter',
   summary:
     'A shade-forward storefront for an own-brand color-cosmetics house — a full-bleed lifestyle hero over a "find your perfect match" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.',
   vertical: 'retail',

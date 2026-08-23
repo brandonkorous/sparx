@@ -1,4 +1,4 @@
-// sparx — Eyewear (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
+// Eyewear (Modern): a reference-driven SITE TEMPLATE (docs/templates/*),
 // composed distinct — its own home section sequence, example commerce, and journal —
 // and dressed in the bespoke theme its DESIGN.md pins.
 //
@@ -15,8 +15,8 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-eyewear',
-  version: '1.4.1',
-  name: 'sparx — Eyewear (Modern)',
+  version: '1.4.2',
+  name: 'Eyewear (Modern)',
   summary:
     'A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colorways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme — crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.',
   vertical: 'retail',
