@@ -322,11 +322,11 @@ import mode.caddy
 	redir https://silicaui.com{uri} permanent
 }
 
-# ----- jotDOJO (co-tenant in the `jotdojo` namespace) -------------------------
+# ----- jotDOJO (co-tenant in the `jotacular` namespace) -------------------------
 # A THIRD product on this cluster, living in a repository of its own. It shares
 # the cluster and the Postgres SERVER and nothing else — its own namespace, its
 # own database, its own Key Vault, its own pipeline. The Azure side is
-# terraform/envs/azure/jotdojo.tf; the workloads are plain YAML in that repo
+# terraform/envs/azure/jotacular.tf; the workloads are plain YAML in that repo
 # under infra/k8s/ (its ADR-026 rules out Helm and Kustomize).
 #
 # Reached cross-namespace via ClusterIP Services on port 80, the same shape as
@@ -362,40 +362,40 @@ import mode.caddy
 # time and does NOT follow a redirect, so serving the app at the apex even once
 # means every user who installed it must delete and reinstall to move. The split
 # has to be right before the first deploy rather than corrected after it.
-{$SX_SCHEME:https}://jotdojo.com {
+{$SX_SCHEME:https}://jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
-{$SX_SCHEME:https}://app.jotdojo.com {
+{$SX_SCHEME:https}://app.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 # `www` is MATCHED BY THE APP, not redirected here — same Service again, so the
 # canonical-host decision stays in one place (the middleware) instead of being
 # split between Caddy and the app, which is how the two drift.
-{$SX_SCHEME:https}://www.jotdojo.com {
+{$SX_SCHEME:https}://www.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 # The REST v1 surface Apple Shortcuts and third parties call. A separate
 # hostname rather than a path prefix on the apex because jotDOJO hands this
 # origin to code it does not control — a Shortcut on someone's phone — and a
 # hostname can be re-pointed later without every installed Shortcut breaking.
-{$SX_SCHEME:https}://api.jotdojo.com {
+{$SX_SCHEME:https}://api.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy api.jotdojo.svc.cluster.local:80
+	reverse_proxy api.jotacular.svc.cluster.local:80
 }
 
 # The MCP server: streamable HTTP transport, OAuth 2.1 resource server.
 #
-# `MCP_RESOURCE` in jotDOJO's config must equal `https://mcp.jotdojo.com/mcp`
+# `MCP_RESOURCE` in jotDOJO's config must equal `https://mcp.jotacular.com/mcp`
 # EXACTLY — RFC 8707 binds an access token to that literal string, and it is what
 # stops a jotDOJO token being replayed against another MCP server. If the
 # hostname here and the advertised resource identifier ever disagree, every token
@@ -404,10 +404,10 @@ import mode.caddy
 # Streaming: no `flush_interval` override is needed. Caddy's reverse_proxy
 # disables response buffering automatically for text/event-stream, which is what
 # the transport uses.
-{$SX_SCHEME:https}://mcp.jotdojo.com {
+{$SX_SCHEME:https}://mcp.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy mcp.jotdojo.svc.cluster.local:80
+	reverse_proxy mcp.jotacular.svc.cluster.local:80
 }
 
 # ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----

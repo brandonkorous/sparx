@@ -1,9 +1,9 @@
 # ---------------------------------------------------------------------------
 # jotDOJO's CI identity — the privileged half of that product's onboarding.
 #
-# jotDOJO (jotdojo.com) is a third product on this subscription, in its own
+# jotDOJO (jotacular.com) is a third product on this subscription, in its own
 # repository, deploying into its own namespace on the shared cluster. Its
-# DATABASE, KEY VAULT and BLOB ACCOUNT are in terraform/envs/azure/jotdojo.tf.
+# DATABASE, KEY VAULT and BLOB ACCOUNT are in terraform/envs/azure/jotacular.tf.
 # What is here is everything that environment is not permitted to create.
 #
 # WHY THE SPLIT IS NOT ARBITRARY. envs/azure is applied by the RELEASE, using an
@@ -26,7 +26,7 @@
 # of the bootstrap. It is not part of any pipeline.
 # ---------------------------------------------------------------------------
 
-variable "jotdojo_enabled" {
+variable "jotacular_enabled" {
   description = <<-EOT
     Master switch. Off leaves jotDOJO's repository with no Azure identity, which
     is the correct state until that repository is actually ready to deploy — an
@@ -41,15 +41,15 @@ variable "jotdojo_enabled" {
   default     = true
 }
 
-variable "jotdojo_github_repository" {
+variable "jotacular_github_repository" {
   description = <<-EOT
     `owner/repo` whose Actions runs may assume jotDOJO's Azure identity.
 
     VERIFIED against the repository's own remote on 2026-08-21: `git remote -v`
-    in the checkout reports https://github.com/brandonkorous/jotdojo.git.
+    in the checkout reports https://github.com/brandonkorous/jotacular.git.
 
     CASE MATTERS. GitHub's OIDC `sub` claim carries the repository's canonical
-    casing, so the repo is `jotdojo` here even though the local DIRECTORY is
+    casing, so the repo is `jotacular` here even though the local DIRECTORY is
     `jotDOJO` and the product is styled jotDOJO everywhere a human reads it.
     GitHub routes a browser to either spelling, which is exactly why the wrong
     one survives review: it works everywhere except the token exchange, where it
@@ -57,15 +57,15 @@ variable "jotdojo_github_repository" {
     message pointing at the letter that is wrong.
   EOT
   type        = string
-  default     = "brandonkorous/jotdojo"
+  default     = "brandonkorous/jotacular"
 
   validation {
-    condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.jotdojo_github_repository))
-    error_message = "jotdojo_github_repository must be in `owner/repo` form."
+    condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.jotacular_github_repository))
+    error_message = "jotacular_github_repository must be in `owner/repo` form."
   }
 }
 
-variable "jotdojo_github_branches" {
+variable "jotacular_github_branches" {
   description = <<-EOT
     Branches whose pushes may assume the identity. One federated credential per
     entry; Entra matches a subject EXACTLY, with no wildcard for a branch.
@@ -78,7 +78,7 @@ variable "jotdojo_github_branches" {
   default     = ["main"]
 }
 
-variable "jotdojo_github_subject_prefix" {
+variable "jotacular_github_subject_prefix" {
   description = <<-EOT
     The literal prefix of the OIDC `sub` claim GitHub mints for this repository.
     Everything after it (`:ref:refs/heads/main`, `:environment:prod`) is appended
@@ -90,9 +90,9 @@ variable "jotdojo_github_subject_prefix" {
     RIGHT NOW, both reporting `use_default: true`:
 
       sparx    (id 1251494871)   repo:brandonkorous/sparx
-      jotdojo  (id 1341839746)   repo:brandonkorous@13042540/jotdojo@1341839746
+      jotacular  (id 1341839746)   repo:brandonkorous@13042540/jotacular@1341839746
 
-    jotdojo is the newer repository and gets the newer format. Nothing here
+    jotacular is the newer repository and gets the newer format. Nothing here
     chooses it and no setting on the repo turns it off, so the credential has to
     match what GitHub actually sends.
 
@@ -112,22 +112,22 @@ variable "jotdojo_github_subject_prefix" {
     like this failure.
   EOT
   type        = string
-  default     = "repo:brandonkorous@13042540/jotdojo@1341839746"
+  default     = "repo:brandonkorous@13042540/jotacular@1341839746"
 
   validation {
-    condition     = startswith(var.jotdojo_github_subject_prefix, "repo:")
-    error_message = "jotdojo_github_subject_prefix must start with `repo:` — paste sub_claim_prefix verbatim, without a trailing colon."
+    condition     = startswith(var.jotacular_github_subject_prefix, "repo:")
+    error_message = "jotacular_github_subject_prefix must start with `repo:` — paste sub_claim_prefix verbatim, without a trailing colon."
   }
 
   validation {
-    condition     = !endswith(var.jotdojo_github_subject_prefix, ":")
-    error_message = "jotdojo_github_subject_prefix must NOT end with a colon — the credentials append `:ref:...` and `:environment:...` themselves."
+    condition     = !endswith(var.jotacular_github_subject_prefix, ":")
+    error_message = "jotacular_github_subject_prefix must NOT end with a colon — the credentials append `:ref:...` and `:environment:...` themselves."
   }
 }
 
-variable "jotdojo_key_vault_name" {
+variable "jotacular_key_vault_name" {
   description = <<-EOT
-    The vault terraform/envs/azure/jotdojo.tf creates. Named here rather than
+    The vault terraform/envs/azure/jotacular.tf creates. Named here rather than
     referenced, because the two live in different Terraform states and this
     bootstrap must not take a dependency on that environment's outputs.
 
@@ -137,27 +137,27 @@ variable "jotdojo_key_vault_name" {
     order is wrong is a clean plan-time "Key Vault not found", not a mystery.
   EOT
   type        = string
-  default     = "kv-jotdojo-prod-cus"
+  default     = "kv-jotacular-prod-cus"
 }
 
 locals {
-  jotdojo_count = var.jotdojo_enabled ? 1 : 0
-  jotdojo_repo  = var.jotdojo_github_repository
+  jotacular_count = var.jotacular_enabled ? 1 : 0
+  jotacular_repo  = var.jotacular_github_repository
 }
 
 # The vault whose secrets this identity may read. A LOOKUP, not a resource — it
 # belongs to envs/azure and is created there.
-data "azurerm_key_vault" "jotdojo" {
-  count               = local.jotdojo_count
-  name                = var.jotdojo_key_vault_name
-  resource_group_name = "rg-${var.workload}-${var.environment}-${local.jotdojo_loc}"
+data "azurerm_key_vault" "jotacular" {
+  count               = local.jotacular_count
+  name                = var.jotacular_key_vault_name
+  resource_group_name = "rg-${var.workload}-${var.environment}-${local.jotacular_loc}"
 }
 
 locals {
   # The same short-region map envs/azure uses to build resource names. Duplicated
   # rather than shared because these are separate root modules with no common
   # module between them; keep the two in step if a region is ever added.
-  jotdojo_location_short = {
+  jotacular_location_short = {
     eastus         = "eus"
     eastus2        = "eus2"
     centralus      = "cus"
@@ -171,7 +171,7 @@ locals {
     westeurope     = "weu"
     uksouth        = "uks"
   }
-  jotdojo_loc = local.jotdojo_location_short[var.location]
+  jotacular_loc = local.jotacular_location_short[var.location]
 }
 
 # ---------------------------------------------------------------------------
@@ -183,37 +183,37 @@ locals {
 # worth keeping regardless: jotDOJO's pipeline should never hold a token that can
 # read sparx's Key Vault or roll sparx's Deployments.
 # ---------------------------------------------------------------------------
-resource "azuread_application" "jotdojo_gha" {
-  count        = local.jotdojo_count
-  display_name = "gha-jotdojo-prod"
+resource "azuread_application" "jotacular_gha" {
+  count        = local.jotacular_count
+  display_name = "gha-jotacular-prod"
   owners       = [data.azurerm_client_config.current.object_id]
 }
 
-resource "azuread_service_principal" "jotdojo_gha" {
-  count     = local.jotdojo_count
-  client_id = azuread_application.jotdojo_gha[0].client_id
+resource "azuread_service_principal" "jotacular_gha" {
+  count     = local.jotacular_count
+  client_id = azuread_application.jotacular_gha[0].client_id
   owners    = [data.azurerm_client_config.current.object_id]
 }
 
-resource "azuread_application_federated_identity_credential" "jotdojo_branch" {
-  for_each = var.jotdojo_enabled ? var.jotdojo_github_branches : toset([])
+resource "azuread_application_federated_identity_credential" "jotacular_branch" {
+  for_each = var.jotacular_enabled ? var.jotacular_github_branches : toset([])
 
-  application_id = azuread_application.jotdojo_gha[0].id
+  application_id = azuread_application.jotacular_gha[0].id
   display_name   = "github-${each.value}"
-  description    = "Pushes to ${each.value} in ${local.jotdojo_repo}."
+  description    = "Pushes to ${each.value} in ${local.jotacular_repo}."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "${var.jotdojo_github_subject_prefix}:ref:refs/heads/${each.value}"
+  subject        = "${var.jotacular_github_subject_prefix}:ref:refs/heads/${each.value}"
 }
 
-resource "azuread_application_federated_identity_credential" "jotdojo_environment" {
-  count          = local.jotdojo_count
-  application_id = azuread_application.jotdojo_gha[0].id
+resource "azuread_application_federated_identity_credential" "jotacular_environment" {
+  count          = local.jotacular_count
+  application_id = azuread_application.jotacular_gha[0].id
   display_name   = "github-environment-prod"
-  description    = "Jobs bound to the `prod` GitHub Environment in ${local.jotdojo_repo}."
+  description    = "Jobs bound to the `prod` GitHub Environment in ${local.jotacular_repo}."
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "${var.jotdojo_github_subject_prefix}:environment:prod"
+  subject        = "${var.jotacular_github_subject_prefix}:environment:prod"
 }
 
 # ---------------------------------------------------------------------------
@@ -234,11 +234,11 @@ resource "azuread_application_federated_identity_credential" "jotdojo_environmen
 
 # Read its OWN vault. Get and list, never write: a compromised workflow must not
 # be able to rewrite a credential the product then deploys.
-resource "azurerm_role_assignment" "jotdojo_gha_kv" {
-  count                = local.jotdojo_count
-  scope                = data.azurerm_key_vault.jotdojo[0].id
+resource "azurerm_role_assignment" "jotacular_gha_kv" {
+  count                = local.jotacular_count
+  scope                = data.azurerm_key_vault.jotacular[0].id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = azuread_service_principal.jotdojo_gha[0].object_id
+  principal_id         = azuread_service_principal.jotacular_gha[0].object_id
 }
 
 # `Azure Kubernetes Service Cluster User` — enough to FETCH a kubeconfig and
@@ -254,11 +254,11 @@ resource "azurerm_role_assignment" "jotdojo_gha_kv" {
 # means disabling local accounts and moving the cluster to Entra RBAC with a
 # namespace-scoped binding — a change to the cluster, not to this grant. Recorded
 # so the role reads as what it currently is rather than what its name suggests.
-resource "azurerm_role_assignment" "jotdojo_gha_aks" {
-  count                = local.jotdojo_count
+resource "azurerm_role_assignment" "jotacular_gha_aks" {
+  count                = local.jotacular_count
   scope                = "/subscriptions/${var.subscription_id}"
   role_definition_name = "Azure Kubernetes Service Cluster User Role"
-  principal_id         = azuread_service_principal.jotdojo_gha[0].object_id
+  principal_id         = azuread_service_principal.jotacular_gha[0].object_id
 }
 
 # The HUMAN loading jotDOJO's secrets needs WRITE, and being subscription Owner
@@ -269,9 +269,9 @@ resource "azurerm_role_assignment" "jotdojo_gha_aks" {
 # This lands on whoever APPLIES this file, which is the other half of why it
 # belongs in the bootstrap: applied by the release, the grant would have gone to
 # the pipeline's service principal rather than to a person.
-resource "azurerm_role_assignment" "jotdojo_operator_kv" {
-  count                = local.jotdojo_count
-  scope                = data.azurerm_key_vault.jotdojo[0].id
+resource "azurerm_role_assignment" "jotacular_operator_kv" {
+  count                = local.jotacular_count
+  scope                = data.azurerm_key_vault.jotacular[0].id
   role_definition_name = "Key Vault Secrets Officer"
   principal_id         = data.azurerm_client_config.current.object_id
 }
@@ -279,7 +279,7 @@ resource "azurerm_role_assignment" "jotdojo_operator_kv" {
 # SPARX's release identity also needs WRITE on jotDOJO's vault, because six of
 # jotDOJO's eight required secrets are now generated by `envs/azure` and written
 # straight into the vault rather than transcribed by a person
-# (`azurerm_key_vault_secret.jotdojo`).
+# (`azurerm_key_vault_secret.jotacular`).
 #
 # READ THE ASYMMETRY HERE, IT IS THE WHOLE POINT. Two pipelines touch this vault
 # and they hold deliberately different rights:
@@ -298,22 +298,22 @@ resource "azurerm_role_assignment" "jotdojo_operator_kv" {
 # Contributor does NOT imply this. Key Vault's data plane is its own RBAC
 # surface, so without this assignment the release fails at
 # `azurerm_key_vault_secret` with a 403 that never mentions a missing role.
-resource "azurerm_role_assignment" "jotdojo_sparx_release_kv" {
-  count                = local.jotdojo_count
-  scope                = data.azurerm_key_vault.jotdojo[0].id
+resource "azurerm_role_assignment" "jotacular_sparx_release_kv" {
+  count                = local.jotacular_count
+  scope                = data.azurerm_key_vault.jotacular[0].id
   role_definition_name = "Key Vault Secrets Officer"
   principal_id         = azuread_service_principal.gha.object_id
 }
 
 # ---------------------------------------------------------------------------
-# Outputs — `terraform output jotdojo_github_setup` prints the commands verbatim.
+# Outputs — `terraform output jotacular_github_setup` prints the commands verbatim.
 # ---------------------------------------------------------------------------
-output "jotdojo_github_setup" {
+output "jotacular_github_setup" {
   description = "Repository variables to set on the jotDOJO repo so its pipeline can authenticate."
-  value = var.jotdojo_enabled ? [
-    "gh variable set AZURE_CLIENT_ID       -R ${local.jotdojo_repo} -b '${azuread_application.jotdojo_gha[0].client_id}'",
-    "gh variable set AZURE_TENANT_ID       -R ${local.jotdojo_repo} -b '${data.azurerm_client_config.current.tenant_id}'",
-    "gh variable set AZURE_SUBSCRIPTION_ID -R ${local.jotdojo_repo} -b '${data.azurerm_client_config.current.subscription_id}'",
-    "gh variable set AZURE_KEY_VAULT_NAME  -R ${local.jotdojo_repo} -b '${var.jotdojo_key_vault_name}'",
+  value = var.jotacular_enabled ? [
+    "gh variable set AZURE_CLIENT_ID       -R ${local.jotacular_repo} -b '${azuread_application.jotacular_gha[0].client_id}'",
+    "gh variable set AZURE_TENANT_ID       -R ${local.jotacular_repo} -b '${data.azurerm_client_config.current.tenant_id}'",
+    "gh variable set AZURE_SUBSCRIPTION_ID -R ${local.jotacular_repo} -b '${data.azurerm_client_config.current.subscription_id}'",
+    "gh variable set AZURE_KEY_VAULT_NAME  -R ${local.jotacular_repo} -b '${var.jotacular_key_vault_name}'",
   ] : []
 }

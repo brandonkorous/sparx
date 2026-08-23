@@ -66,7 +66,7 @@ terraform {
     // configuration fails with `Authorization_RequestDenied` no matter how the
     // provider is configured. Identity belongs in terraform/bootstrap-azure,
     // which a human applies. jotDOJO's briefly lived here and 403'd exactly that
-    // way; the note at the foot of jotdojo.tf records it.
+    // way; the note at the foot of jotacular.tf records it.
   }
 }
 

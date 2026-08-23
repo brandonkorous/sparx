@@ -660,20 +660,20 @@ resource "cloudflare_record" "piggles_site_customers" {
 }
 
 # =========================================================================
-# jotdojo.com — jotDOJO, a THIRD product on the same cluster
+# jotacular.com — jotDOJO, a THIRD product on the same cluster
 # =========================================================================
 # Same ingress IP and same Caddy as everything above. jotDOJO lives in its own
-# repository and its own `jotdojo` namespace; Caddy reaches it cross-namespace by
+# repository and its own `jotacular` namespace; Caddy reaches it cross-namespace by
 # ClusterIP, so nothing about these records is special — they exist here because
 # this module is where the platform's DNS lives, not because sparx serves it.
 #
 # FIVE NAMES, FOUR OF THEM DISTINCT SERVICES — and one pair that is not:
 #
-#   jotdojo.com      the MARKETING site   → jotdojo-web
-#   www.jotdojo.com  the same, by CNAME   → jotdojo-web
-#   app.jotdojo.com  the PWA              → jotdojo-web   ← same Service
-#   api.jotdojo.com  REST v1              → jotdojo-api
-#   mcp.jotdojo.com  MCP server           → jotdojo-mcp
+#   jotacular.com      the MARKETING site   → jotacular-web
+#   www.jotacular.com  the same, by CNAME   → jotacular-web
+#   app.jotacular.com  the PWA              → jotacular-web   ← same Service
+#   api.jotacular.com  REST v1              → jotacular-api
+#   mcp.jotacular.com  MCP server           → jotacular-mcp
 #
 # THE APEX AND `app.` ARE ONE DEPLOYMENT, split by Host inside the app
 # (`apps/web/middleware.ts`, its ADR-040). So they need identical DNS and
@@ -697,21 +697,21 @@ resource "cloudflare_record" "piggles_site_customers" {
 # never receives a certificate, and Cloudflare answers 525 for that hostname
 # alone — which reads like a routing bug and is an allow-list omission.
 locals {
-  jotdojo_enabled = var.cloudflare_enabled && var.jotdojo_dns_enabled
+  jotacular_enabled = var.cloudflare_enabled && var.jotacular_dns_enabled
 
   # Subdomains taking an A record straight at the ingress. The apex and `www` are
   # handled separately below because their record types differ.
-  jotdojo_hosts = local.jotdojo_enabled ? toset(["app", "api", "mcp"]) : toset([])
+  jotacular_hosts = local.jotacular_enabled ? toset(["app", "api", "mcp"]) : toset([])
 }
 
-data "cloudflare_zone" "jotdojo" {
-  count = local.jotdojo_enabled ? 1 : 0
-  name  = "jotdojo.com"
+data "cloudflare_zone" "jotacular" {
+  count = local.jotacular_enabled ? 1 : 0
+  name  = "jotacular.com"
 }
 
-resource "cloudflare_record" "jotdojo_root" {
-  count           = local.jotdojo_enabled ? 1 : 0
-  zone_id         = data.cloudflare_zone.jotdojo[0].id
+resource "cloudflare_record" "jotacular_root" {
+  count           = local.jotacular_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.jotacular[0].id
   name            = "@"
   type            = "A"
   content         = var.ingress_ip
@@ -723,27 +723,27 @@ resource "cloudflare_record" "jotdojo_root" {
 
 # CNAME rather than a second A record, so the apex is the single place the
 # address is stated. Matched by the app itself rather than redirected in Caddy.
-resource "cloudflare_record" "jotdojo_www" {
-  count           = local.jotdojo_enabled ? 1 : 0
-  zone_id         = data.cloudflare_zone.jotdojo[0].id
+resource "cloudflare_record" "jotacular_www" {
+  count           = local.jotacular_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.jotacular[0].id
   name            = "www"
   type            = "CNAME"
-  content         = "jotdojo.com"
+  content         = "jotacular.com"
   ttl             = 1
   proxied         = true
   allow_overwrite = true
 }
 
-resource "cloudflare_record" "jotdojo_hosts" {
-  for_each        = local.jotdojo_hosts
-  zone_id         = data.cloudflare_zone.jotdojo[0].id
+resource "cloudflare_record" "jotacular_hosts" {
+  for_each        = local.jotacular_hosts
+  zone_id         = data.cloudflare_zone.jotacular[0].id
   name            = each.value
   type            = "A"
   content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
-  comment         = "jotDOJO ${each.value} — shared Caddy, jotdojo namespace"
+  comment         = "jotDOJO ${each.value} — shared Caddy, jotacular namespace"
 }
 
 # =========================================================================

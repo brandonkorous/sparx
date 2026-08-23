@@ -6,7 +6,7 @@ Working state as of 2026-08-21. Delete this file once the open items below are c
 
 - **`dd1c3e61a`** — node `Standard_D2ads_v7` → `D4ads_v7` (one bigger node, not a
   second; identical cost, ~2 GiB more usable memory), `os_disk_size_gb` 110 → 220,
-  plus `terraform/envs/azure/jotdojo.tf` (jotDOJO database, Key Vault, blob
+  plus `terraform/envs/azure/jotacular.tf` (jotDOJO database, Key Vault, blob
   account, container), the `VECTOR/PG_TRGM/CITEXT` extension allow-list, Caddy
   routes and the TLS allow-list entries.
 - **`b31b685c8`** — moved jotDOJO's app registration and role assignments out of
@@ -16,16 +16,16 @@ Working state as of 2026-08-21. Delete this file once the open items below are c
 - **Release `32500071470` succeeded — `v1.223.0`.** Every stage green. The thing
   that had actually kept the pipeline red since 2026-08-19 was nine missing
   Piggles Stripe secrets, now loaded into `kv-sparx-prod-cus` (vault at 85).
-- **`bootstrap-azure` applied.** `gha-jotdojo-prod` exists
+- **`bootstrap-azure` applied.** `gha-jotacular-prod` exists
   (`AZURE_CLIENT_ID=3b699e03-a984-48b2-b5cd-ca9824a680c7`), plan now reports
-  "No changes". One 409 on `jotdojo_operator_kv` was a pre-existing identical
+  "No changes". One 409 on `jotacular_operator_kv` was a pre-existing identical
   assignment and was imported rather than recreated.
 - **`2a1388473` — shipped as `v1.224.0`.** Release `32533830105` green end to
   end: every build, infrastructure, data, containers, cleanup, tag. All five
   jotDOJO hostnames now resolve to Cloudflare's anycast pair, which is what
   `proxied = true` looks like from outside.
 
-  The commit itself is the `jotdojo.com` zone in the DNS module, the corrected
+  The commit itself is the `jotacular.com` zone in the DNS module, the corrected
   Caddy blocks, and the five-name TLS allow-list.
   The first push attempt died on `@wizeworks/builder` lint with 120
   "type that cannot be resolved" errors against Prisma accessors — nothing to do
@@ -39,15 +39,15 @@ Working state as of 2026-08-21. Delete this file once the open items below are c
 ~~Mine, ready to commit~~ — **all three shipped in `2a1388473`.** Kept below
 because the reasoning is worth having:
 
-- `terraform/modules/dns/main.tf` + `variables.tf` — the `jotdojo.com` zone:
+- `terraform/modules/dns/main.tf` + `variables.tf` — the `jotacular.com` zone:
   apex A, `www` CNAME, A records for `app`/`api`/`mcp`, all proxied at the
-  ingress IP `20.12.217.0`. New `jotdojo_dns_enabled` variable (defaults true).
+  ingress IP `20.12.217.0`. New `jotacular_dns_enabled` variable (defaults true).
 - `k8s/ingress/Caddyfile` — apex, `app.` and `www` now ALL proxy to
-  `web.jotdojo.svc.cluster.local:80`. The apex is the MARKETING SITE, `app.` is
+  `web.jotacular.svc.cluster.local:80`. The apex is the MARKETING SITE, `app.` is
   the PWA, and they are one Deployment split on Host in the app's middleware
   (ADR-040). `www` is matched by the app, not redirected in Caddy.
 - `wizeworks/services/api-rest/.../internal/domain-check.ts` — five hostnames
-  allow-listed, `app.jotdojo.com` included.
+  allow-listed, `app.jotacular.com` included.
 
 Verified: `terraform fmt -check -recursive` clean, `envs/azure` validates,
 `kubectl kustomize k8s/azure/infra` builds, prettier clean.
@@ -83,13 +83,13 @@ the client the running dev stack holds open.
 ## Open items
 
 1. ~~Set jotDOJO's four repo variables.~~ **DONE** — all four are set on
-   `brandonkorous/jotdojo` (`gh variable list -R brandonkorous/jotdojo`).
-   For the record: `terraform output jotdojo_github_setup` in
+   `brandonkorous/jotacular` (`gh variable list -R brandonkorous/jotacular`).
+   For the record: `terraform output jotacular_github_setup` in
    `terraform/bootstrap-azure` prints them verbatim, and
    `TF_VAR_subscription_id` must be set first — in PowerShell that is
    `$env:TF_VAR_subscription_id='...'`, because bash `VAR=x cmd` prefixing is
    not valid PowerShell.
-2. **Purge nine soft-deleted secrets from `kv-jotdojo-prod-cus`.** Less urgent
+2. **Purge nine soft-deleted secrets from `kv-jotacular-prod-cus`.** Less urgent
    than this file first claimed, and the correction matters because it changes
    whether this is a rush. jotDOJO's CI identity holds `Key Vault Secrets User`,
    which is `getSecret` and list — it does NOT include `recover`, so that pipeline
@@ -102,7 +102,7 @@ the client the running dev stack holds open.
    and release `v1.223.0` went green reading them from there, so purging the
    jotDOJO copies loses nothing.
 
-   `az keyvault secret purge --vault-name kv-jotdojo-prod-cus --name <n>`.
+   `az keyvault secret purge --vault-name kv-jotacular-prod-cus --name <n>`.
    Irreversible, so it is left for a human to say go.
 
 3. ~~Rename jotDOJO's branch.~~ **ALREADY DONE** — the local branch is `main`
@@ -123,7 +123,7 @@ the client the running dev stack holds open.
    api-rest's sparx-worded copy into the Piggles lexicon; sparx needs nothing
    because api-rest already speaks sparx). `lib/slugify` is undecided.
 5. **jotDOJO's Key Vault is EMPTY, and its release refuses to deploy without
-   eight secrets.** `kv-jotdojo-prod-cus` holds zero live secrets; the only
+   eight secrets.** `kv-jotacular-prod-cus` holds zero live secrets; the only
    things in it are the nine soft-deleted Piggles ones from item 2. The release's
    "Read secrets from Key Vault" step fails the run by design when any required
    name is absent, so the first deploy stops there. Required, stored kebab-cased
@@ -134,8 +134,8 @@ the client the running dev stack holds open.
    `AZURE_STORAGE_KEY`.
 
    Six are derivable here — the server is
-   `psql-sparx-prod-cus.postgres.database.azure.com`, the database is `jotdojo`,
-   the storage account is `stjotdojoprodcus`, and `AUTH_SECRET` +
+   `psql-sparx-prod-cus.postgres.database.azure.com`, the database is `jotacular`,
+   the storage account is `stjotacularprodcus`, and `AUTH_SECRET` +
    `JOTDOJO_APP_PASSWORD` are simply generated. Only the two Google OAuth values
    have to come from a Google Cloud console. Loading them is a human action on
    purpose: jotDOJO's CI identity holds Key Vault Secrets **User** (get + list,
@@ -145,15 +145,15 @@ the client the running dev stack holds open.
 6. **`DATABASE_ADMIN_URL` would hand jotDOJO the SPARX server admin.** Worth
    settling before it is loaded rather than after. The server's only
    administrator is `sparx_owner`, jotDOJO creates no owner role of its own
-   (`0000_init.sql` makes `jotdojo_worker`, `0001_app_role.sql` makes
-   `jotdojo_app`, neither owns anything), and an Azure Flexible Server database
+   (`0000_init.sql` makes `jotacular_worker`, `0001_app_role.sql` makes
+   `jotacular_app`, neither owns anything), and an Azure Flexible Server database
    is owned by the server admin unless something says otherwise. So the migration
    Job's connection string is `sparx_owner`, which reaches the sparx and piggles
-   databases just as easily as it reaches `jotdojo` — and it would live in a
-   Kubernetes Secret in the `jotdojo` namespace.
+   databases just as easily as it reaches `jotacular` — and it would live in a
+   Kubernetes Secret in the `jotacular` namespace.
 
-   The fix is a `jotdojo_owner` role owning the `jotdojo` database, after which
-   jotDOJO's vault holds only jotdojo credentials. It cannot be created from
+   The fix is a `jotacular_owner` role owning the `jotacular` database, after which
+   jotDOJO's vault holds only jotacular credentials. It cannot be created from
    outside: the server is private-IP, so the role has to be minted by a Job in
    the cluster, which means the FIRST run still uses `sparx_owner` and hands over
    before the second. That bootstrap-once shape is the decision to make.

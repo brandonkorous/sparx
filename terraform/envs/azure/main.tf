@@ -359,7 +359,7 @@ resource "azurerm_postgresql_flexible_server_database" "sparx" {
 #
 # THE LAST THREE BELONG TO jotDOJO, NOT sparx, and they sit here because
 # `azure.extensions` is a SERVER-level parameter — Flexible Server has no
-# per-database allow-list. jotdojo.tf adds a second DATABASE to this same
+# per-database allow-list. jotacular.tf adds a second DATABASE to this same
 # server; its first migration opens with `CREATE EXTENSION vector / pg_trgm /
 # citext` (packages/db/migrations/0000_init.sql in the jotDOJO repo), and
 # without these names that migration fails in exactly the way the paragraph

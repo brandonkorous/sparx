@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
 # jotDOJO — everything a SECOND product needs from sparx's Azure footprint.
 #
-# jotDOJO (jotdojo.com) lives in its own repository (jotDOJO) and deploys from
+# jotDOJO (jotacular.com) lives in its own repository (jotDOJO) and deploys from
 # its own pipeline. It is NOT part of sparx and not part of piggles: piggles
 # ships inside this repo and therefore shares this repo's Key Vault, its
 # `sparx-app-secrets`, and its release. jotDOJO shares none of those — only the
@@ -24,7 +24,7 @@
 # wizeworks/services/api-rest/src/routes/internal/domain-check.ts.
 # ---------------------------------------------------------------------------
 
-variable "jotdojo_enabled" {
+variable "jotacular_enabled" {
   description = <<-EOT
     Master switch for the whole file. Off leaves jotDOJO with no database, no
     vault, no storage and no CI identity — which is the correct state until the
@@ -39,7 +39,7 @@ variable "jotdojo_enabled" {
   default     = true
 }
 
-variable "jotdojo_github_repository" {
+variable "jotacular_github_repository" {
   description = <<-EOT
     `owner/repo` of the repository whose Actions runs may assume jotDOJO's Azure
     identity. The FEDERATED SUBJECT is built from this string, and Entra matches a
@@ -48,11 +48,11 @@ variable "jotdojo_github_repository" {
 
     VERIFIED against the repository's own remote on 2026-08-21:
     `git remote -v` in the checkout reports
-    https://github.com/brandonkorous/jotdojo.git. Read from git rather than
+    https://github.com/brandonkorous/jotacular.git. Read from git rather than
     transcribed from a message, deliberately — see the casing note.
 
     CASE MATTERS, AND THIS IS THE CASE THAT BITES. GitHub's OIDC `sub` claim
-    carries the repository's canonical casing, so the repo is `jotdojo` in this
+    carries the repository's canonical casing, so the repo is `jotacular` in this
     string even though the local DIRECTORY is `jotDOJO` and the product is
     styled jotDOJO everywhere a human reads it. GitHub routes a browser to
     either spelling, which is exactly why the wrong one survives review: it
@@ -64,15 +64,15 @@ variable "jotdojo_github_repository" {
     reaches the token.
   EOT
   type        = string
-  default     = "brandonkorous/jotdojo"
+  default     = "brandonkorous/jotacular"
 
   validation {
-    condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.jotdojo_github_repository))
-    error_message = "jotdojo_github_repository must be in `owner/repo` form."
+    condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.jotacular_github_repository))
+    error_message = "jotacular_github_repository must be in `owner/repo` form."
   }
 }
 
-variable "jotdojo_github_branches" {
+variable "jotacular_github_branches" {
   description = <<-EOT
     Branches whose pushes may assume the identity. One federated credential is
     created per entry.
@@ -96,7 +96,7 @@ variable "jotdojo_github_branches" {
   default     = ["main"]
 }
 
-variable "jotdojo_key_vault_name" {
+variable "jotacular_key_vault_name" {
   description = <<-EOT
     GLOBALLY unique across all of Azure (it is a DNS label), 3-24 characters,
     alphanumerics and hyphens, must start with a letter.
@@ -108,17 +108,17 @@ variable "jotdojo_key_vault_name" {
     `Key Vault Secrets User` role below would otherwise grant exactly that.
   EOT
   type        = string
-  default     = "kv-jotdojo-prod-cus"
+  default     = "kv-jotacular-prod-cus"
 
   validation {
-    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9]$", var.jotdojo_key_vault_name))
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9]$", var.jotacular_key_vault_name))
     error_message = "Key Vault names are 3-24 chars, start with a letter, end alphanumeric, and allow only letters, digits and hyphens."
   }
 }
 
 locals {
-  jotdojo_count = var.jotdojo_enabled ? 1 : 0
-  jotdojo_repo  = var.jotdojo_github_repository
+  jotacular_count = var.jotacular_enabled ? 1 : 0
+  jotacular_repo  = var.jotacular_github_repository
 }
 
 # The caller's tenant, subscription and object id. bootstrap-azure declares its
@@ -149,7 +149,7 @@ data "azurerm_client_config" "current" {}
 #      possible without touching the other.
 #   2. ROLES AND RLS. Both products enforce tenancy with row-level security and
 #      a restricted application role. sparx's is `sparx_app` against
-#      `current_tenant_id()`; jotDOJO's is `jotdojo_app` against
+#      `current_tenant_id()`; jotDOJO's is `jotacular_app` against
 #      `app.actor_id`. Two RLS regimes sharing a database means one `GRANT` typo
 #      is a cross-PRODUCT data leak rather than a bug in one of them.
 #   3. EXTENSIONS ARE PER-DATABASE OBJECTS. `CREATE EXTENSION vector` installs
@@ -170,9 +170,9 @@ data "azurerm_client_config" "current" {}
 # double, because Azure prices the burstable series per vCore-hour and B2s is
 # also a bigger core. Do not scale it reflexively; cap the pools first.
 # ---------------------------------------------------------------------------
-resource "azurerm_postgresql_flexible_server_database" "jotdojo" {
-  count     = local.jotdojo_count
-  name      = "jotdojo"
+resource "azurerm_postgresql_flexible_server_database" "jotacular" {
+  count     = local.jotacular_count
+  name      = "jotacular"
   server_id = azurerm_postgresql_flexible_server.main.id
   collation = "en_US.utf8"
   charset   = "utf8"
@@ -195,7 +195,7 @@ resource "azurerm_postgresql_flexible_server_database" "jotdojo" {
 # uses.
 #
 # WHAT GOES IN IT (jotDOJO's .env.example is the authority, not this list):
-#   DATABASE_URL              the RESTRICTED jotdojo_app role. Never the owner —
+#   DATABASE_URL              the RESTRICTED jotacular_app role. Never the owner —
 #                             PostgreSQL exempts superusers and BYPASSRLS roles
 #                             from every policy, so an admin connection string
 #                             turns the tenancy boundary off while every policy
@@ -209,9 +209,9 @@ resource "azurerm_postgresql_flexible_server_database" "jotdojo" {
 #   OPENAI_API_KEY or the AZURE_OPENAI_* trio, if embeddings are switched on.
 #   ANTHROPIC_API_KEY         if handwriting recognition is switched on.
 # ---------------------------------------------------------------------------
-resource "azurerm_key_vault" "jotdojo" {
-  count               = local.jotdojo_count
-  name                = var.jotdojo_key_vault_name
+resource "azurerm_key_vault" "jotacular" {
+  count               = local.jotacular_count
+  name                = var.jotacular_key_vault_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -230,7 +230,7 @@ resource "azurerm_key_vault" "jotdojo" {
   # retention window, so rebuilding means picking a new name. sparx's vault holds
   # the credentials of a live platform and is worth that price. jotDOJO has not
   # launched; locking its vault name before the first deploy would mean a single
-  # early teardown costs the name `kv-jotdojo-prod-cus` for a week.
+  # early teardown costs the name `kv-jotacular-prod-cus` for a week.
   #
   # FLIP THIS TO TRUE AT LAUNCH. It is the same one-line change either way, and
   # after there are real users the argument reverses completely.
@@ -268,12 +268,12 @@ resource "azurerm_key_vault" "jotdojo" {
 # ever needs anonymous access, so the account refuses to grant it at all rather
 # than relying on every future container getting its access level right.
 # ---------------------------------------------------------------------------
-resource "azurerm_storage_account" "jotdojo" {
-  count = local.jotdojo_count
+resource "azurerm_storage_account" "jotacular" {
+  count = local.jotacular_count
 
   # Storage account names are globally unique, 3-24 chars, lowercase alphanumeric
   # ONLY — no hyphens, which is why this does not read like the other names here.
-  name                     = "stjotdojoprodcus"
+  name                     = "stjotacularprodcus"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
@@ -292,7 +292,7 @@ resource "azurerm_storage_account" "jotdojo" {
   # `Photos.tsx` asks the app for a short-lived SAS URL and then PUTs the file
   # to it directly. That keeps whole images out of the app's request path,
   # which is the right shape — and it makes the upload a cross-origin request
-  # from https://app.jotdojo.com to *.blob.core.windows.net. Without a matching
+  # from https://app.jotacular.com to *.blob.core.windows.net. Without a matching
   # rule Azure answers the preflight with "403 CORS not enabled or no matching
   # rule found for this request", the PUT never runs, and the app sees only a
   # failed fetch with nothing useful to report.
@@ -302,7 +302,7 @@ resource "azurerm_storage_account" "jotdojo" {
   # origin would.
   blob_properties {
     cors_rule {
-      allowed_origins = ["https://app.jotdojo.com"]
+      allowed_origins = ["https://app.jotacular.com"]
       allowed_methods = ["GET", "HEAD", "PUT", "OPTIONS"]
       allowed_headers = [
         "x-ms-blob-type",
@@ -333,12 +333,12 @@ resource "azurerm_storage_account" "jotdojo" {
 # packages/domain/src/media.ts), which a blob lifecycle rule can match on just as
 # well. If the split ever needs to be physical, it is a container per store
 # instance and a config change in that package — not something to pre-build here.
-resource "azurerm_storage_container" "jotdojo" {
-  count = local.jotdojo_count
+resource "azurerm_storage_container" "jotacular" {
+  count = local.jotacular_count
 
   # Must equal AZURE_STORAGE_CONTAINER in the deployment's config.
   name               = "media"
-  storage_account_id = azurerm_storage_account.jotdojo[0].id
+  storage_account_id = azurerm_storage_account.jotacular[0].id
 
   # Private. Reads happen through short-lived SAS URLs the domain layer mints;
   # there is no anonymous path and there should never be one.
@@ -378,7 +378,7 @@ resource "azurerm_storage_container" "jotdojo" {
 # the vault beside DATABASE-URL, under the same RBAC, read by the same pipeline.
 # ---------------------------------------------------------------------------
 
-variable "jotdojo_ai_enabled" {
+variable "jotacular_ai_enabled" {
   description = <<-EOT
     Master switch for the account, the four deployments, and the eleven secrets
     that point at them. Off is a real state, not a broken one: every seam's
@@ -395,7 +395,7 @@ variable "jotdojo_ai_enabled" {
   default     = true
 }
 
-variable "jotdojo_ai_location" {
+variable "jotacular_ai_location" {
   description = <<-EOT
     DELIBERATELY NOT `var.location`, and this is the one decision in this
     section that cost a real investigation.
@@ -434,7 +434,7 @@ variable "jotdojo_ai_location" {
   default     = "eastus2"
 }
 
-variable "jotdojo_ai_capacity" {
+variable "jotacular_ai_capacity" {
   description = <<-EOT
     Per-deployment rate ceilings, in the units Azure quotes each model in:
     THOUSANDS OF TOKENS PER MINUTE for the three text models, and units of
@@ -480,14 +480,14 @@ locals {
   # Both switches, because AI is a sub-unit of jotDOJO: turning jotDOJO off must
   # take its models with it, not leave an orphaned account billing into a
   # subscription whose owner believes the product is gone.
-  jotdojo_ai_on    = var.jotdojo_enabled && var.jotdojo_ai_enabled
-  jotdojo_ai_count = local.jotdojo_ai_on ? 1 : 0
+  jotacular_ai_on    = var.jotacular_enabled && var.jotacular_ai_enabled
+  jotacular_ai_count = local.jotacular_ai_on ? 1 : 0
 
   # Named for ITS region, not the platform's. Every other jotDOJO resource ends
   # `-cus`; this one does not live there, and a name claiming otherwise is the
   # kind of small lie that costs somebody an hour during an incident.
-  jotdojo_ai_loc  = local.location_short[var.jotdojo_ai_location]
-  jotdojo_ai_name = "oai-jotdojo-prod-${local.jotdojo_ai_loc}"
+  jotacular_ai_loc  = local.location_short[var.jotacular_ai_location]
+  jotacular_ai_name = "oai-jotacular-prod-${local.jotacular_ai_loc}"
 
   # VERSIONS ARE PINNED. Azure retires model versions on a published schedule,
   # and an auto-upgrade is a silent change to what the product says about
@@ -509,7 +509,7 @@ locals {
   # The lesson is the failure mode rather than the model: an EXISTING deployment
   # survives its own deprecation, so a stale pin only bites on a rebuild, which
   # is precisely when nobody is watching.
-  jotdojo_ai_models = local.jotdojo_ai_on ? {
+  jotacular_ai_models = local.jotacular_ai_on ? {
     # gpt-4.1-mini twice, deliberately. Vision and triage are the same model and
     # separate deployments so their rate ceilings and their Azure cost metrics
     # are separable - one line per feature, not one line for "chat".
@@ -518,10 +518,10 @@ locals {
     # still MULTIMODAL - jotDOJO's vision seam sends images and a text-only
     # model would fail every page - Standard SKU in eastus2, deployable until
     # 2027-04-14.
-    vision    = { model = "gpt-4.1-mini", version = "2025-04-14", capacity = var.jotdojo_ai_capacity.vision }
-    triage    = { model = "gpt-4.1-mini", version = "2025-04-14", capacity = var.jotdojo_ai_capacity.triage }
-    embedding = { model = "text-embedding-3-small", version = "1", capacity = var.jotdojo_ai_capacity.embedding }
-    speech    = { model = "whisper", version = "001", capacity = var.jotdojo_ai_capacity.speech }
+    vision    = { model = "gpt-4.1-mini", version = "2025-04-14", capacity = var.jotacular_ai_capacity.vision }
+    triage    = { model = "gpt-4.1-mini", version = "2025-04-14", capacity = var.jotacular_ai_capacity.triage }
+    embedding = { model = "text-embedding-3-small", version = "1", capacity = var.jotacular_ai_capacity.embedding }
+    speech    = { model = "whisper", version = "001", capacity = var.jotacular_ai_capacity.speech }
   } : {}
 }
 
@@ -530,10 +530,10 @@ locals {
 # is `vector(1536)` in 0000_init.sql, and `packages/embeddings/src/provider.ts`
 # exports EMBEDDING_DIMENSIONS = 1536 and REFUSES a response of any other width.
 # Changing this model is a migration and a full re-embed of every block.
-resource "azurerm_cognitive_account" "jotdojo" {
-  count               = local.jotdojo_ai_count
-  name                = local.jotdojo_ai_name
-  location            = var.jotdojo_ai_location
+resource "azurerm_cognitive_account" "jotacular" {
+  count               = local.jotacular_ai_count
+  name                = local.jotacular_ai_name
+  location            = var.jotacular_ai_location
   resource_group_name = azurerm_resource_group.main.name
   kind                = "OpenAI"
   sku_name            = "S0"
@@ -542,7 +542,7 @@ resource "azurerm_cognitive_account" "jotdojo" {
   # REQUIRED, not cosmetic. Without a custom subdomain the account answers only
   # on the regional shared host, which does not serve the `/openai/deployments/`
   # data plane the four resolvers build their URLs against.
-  custom_subdomain_name = local.jotdojo_ai_name
+  custom_subdomain_name = local.jotacular_ai_name
 
   # Public, and the honest note about it: AKS here uses `outbound_type =
   # "loadBalancer"`, so egress leaves through an AKS-MANAGED SNAT address with
@@ -555,18 +555,18 @@ resource "azurerm_cognitive_account" "jotdojo" {
   lifecycle {
     # A Cognitive Services account SOFT-DELETES and holds its name - including
     # the custom subdomain, which is a global DNS label. A careless destroy
-    # therefore costs `oai-jotdojo-prod-eus2` for the retention window, and
+    # therefore costs `oai-jotacular-prod-eus2` for the retention window, and
     # every secret below has to be rewritten against a new name.
     prevent_destroy = true
   }
 }
 
-resource "azurerm_cognitive_deployment" "jotdojo" {
-  for_each = local.jotdojo_ai_models
+resource "azurerm_cognitive_deployment" "jotacular" {
+  for_each = local.jotacular_ai_models
 
   # The seam's name, so a bill line, a metric and an env var all read the same.
-  name                 = "jotdojo-${each.key}"
-  cognitive_account_id = azurerm_cognitive_account.jotdojo[0].id
+  name                 = "jotacular-${each.key}"
+  cognitive_account_id = azurerm_cognitive_account.jotacular[0].id
 
   model {
     format  = "OpenAI"
@@ -601,7 +601,7 @@ locals {
   # absent - so the endpoint, the key and all four deployment names can be
   # present and correct and every feature still be off, with no error anywhere.
   # That failure mode looks exactly like a working deployment.
-  jotdojo_ai_secrets = local.jotdojo_ai_on ? {
+  jotacular_ai_secrets = local.jotacular_ai_on ? {
     "VISION-PROVIDER" = {
       value = "azure"
       type  = "driver switch; absent means handwriting/image recognition is OFF"
@@ -619,11 +619,11 @@ locals {
       type  = "driver switch; absent means the triage agent never runs"
     }
     "AZURE-OPENAI-ENDPOINT" = {
-      value = azurerm_cognitive_account.jotdojo[0].endpoint
+      value = azurerm_cognitive_account.jotacular[0].endpoint
       type  = "url; not secret. All four resolvers strip a trailing slash themselves"
     }
     "AZURE-OPENAI-API-KEY" = {
-      value = azurerm_cognitive_account.jotdojo[0].primary_access_key
+      value = azurerm_cognitive_account.jotacular[0].primary_access_key
       type  = "account key; regenerating it in the portal makes this value stale"
     }
     "AZURE-OPENAI-API-VERSION" = {
@@ -634,33 +634,33 @@ locals {
       type  = "api version; the code defaults to this same value if absent"
     }
     "AZURE-OPENAI-VISION-DEPLOYMENT" = {
-      value = azurerm_cognitive_deployment.jotdojo["vision"].name
+      value = azurerm_cognitive_deployment.jotacular["vision"].name
       type  = "deployment name; not secret"
     }
     "AZURE-OPENAI-SPEECH-DEPLOYMENT" = {
-      value = azurerm_cognitive_deployment.jotdojo["speech"].name
+      value = azurerm_cognitive_deployment.jotacular["speech"].name
       type  = "deployment name; not secret"
     }
     "AZURE-OPENAI-EMBEDDING-DEPLOYMENT" = {
-      value = azurerm_cognitive_deployment.jotdojo["embedding"].name
+      value = azurerm_cognitive_deployment.jotacular["embedding"].name
       type  = "deployment name; not secret. The model is 1536-dim by requirement"
     }
     "AZURE-OPENAI-TRIAGE-DEPLOYMENT" = {
-      value = azurerm_cognitive_deployment.jotdojo["triage"].name
+      value = azurerm_cognitive_deployment.jotacular["triage"].name
       type  = "deployment name; not secret"
     }
   } : {}
 }
 
-output "jotdojo_openai_endpoint" {
-  description = "Azure OpenAI data plane for jotDOJO's four model seams. Null when jotdojo_ai_enabled is false."
-  value       = local.jotdojo_ai_on ? azurerm_cognitive_account.jotdojo[0].endpoint : null
+output "jotacular_openai_endpoint" {
+  description = "Azure OpenAI data plane for jotDOJO's four model seams. Null when jotacular_ai_enabled is false."
+  value       = local.jotacular_ai_on ? azurerm_cognitive_account.jotacular[0].endpoint : null
 }
 
 # ---------------------------------------------------------------------------
 # WHAT IS NOT IN THIS FILE, AND WHY — the CI identity and every role assignment.
 #
-# They live in terraform/bootstrap-azure/jotdojo.tf. They were here first, and
+# They live in terraform/bootstrap-azure/jotacular.tf. They were here first, and
 # the release failed on them with two 403s that are worth recording, because the
 # plan and the validate were both perfectly green:
 #
@@ -692,14 +692,14 @@ output "jotdojo_openai_endpoint" {
 # soft-delete window, so the move would cost the name for a week to fix nothing.
 # ---------------------------------------------------------------------------
 
-output "jotdojo_key_vault_name" {
+output "jotacular_key_vault_name" {
   description = "Key Vault holding jotDOJO's secrets. Set as AZURE_KEY_VAULT_NAME on the jotDOJO repo."
-  value       = var.jotdojo_enabled ? azurerm_key_vault.jotdojo[0].name : null
+  value       = var.jotacular_enabled ? azurerm_key_vault.jotacular[0].name : null
 }
 
-output "jotdojo_storage_account" {
+output "jotacular_storage_account" {
   description = "Blob account for jotDOJO ink, audio and rendered previews."
-  value       = var.jotdojo_enabled ? azurerm_storage_account.jotdojo[0].name : null
+  value       = var.jotacular_enabled ? azurerm_storage_account.jotacular[0].name : null
 }
 
 # ---------------------------------------------------------------------------
@@ -742,17 +742,17 @@ output "jotdojo_storage_account" {
 # says otherwise, and this server's only admin is `sparx_owner`. Without this
 # role, jotDOJO's DATABASE-ADMIN-URL would have to BE that admin — a credential
 # opening the sparx and piggles databases just as readily — sitting in a
-# Kubernetes Secret in the `jotdojo` namespace, readable by anything holding
+# Kubernetes Secret in the `jotacular` namespace, readable by anything holding
 # `get secrets` there. jotDOJO's migrations are not the threat; the blast radius
 # around them is.
 #
-# The role is created by wizeworks/packages/db/sql/jotdojo-bootstrap.sql, run as
+# The role is created by wizeworks/packages/db/sql/jotacular-bootstrap.sql, run as
 # a Job by the release's data stage, because the server is private-IP and
 # nothing outside the cluster can reach it. SPARX runs it because sparx owns the
 # SERVER, and a server-level role is not something a tenant of that server can
 # mint for itself.
-resource "random_password" "jotdojo_owner" {
-  count   = local.jotdojo_count
+resource "random_password" "jotacular_owner" {
+  count   = local.jotacular_count
   length  = 32
   special = true
   # The same exclusions as the server admin beside it. Postgres accepts more
@@ -765,8 +765,8 @@ resource "random_password" "jotdojo_owner" {
 # `0001_app_role.sql` creates it without a password and notes that production
 # sets one "out of band from Key Vault" — this is that out of band, and it is a
 # generated value rather than a chosen one.
-resource "random_password" "jotdojo_app" {
-  count            = local.jotdojo_count
+resource "random_password" "jotacular_app" {
+  count            = local.jotacular_count
   length           = 32
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
@@ -781,8 +781,8 @@ resource "random_password" "jotdojo_app" {
 # ending, and trimming it silently reconstructs a DIFFERENT key. 48 alphanumeric
 # characters carry ~285 bits and cannot express that bug at all. Entropy was
 # never the scarce thing here; unambiguous bytes are.
-resource "random_password" "jotdojo_auth_secret" {
-  count   = local.jotdojo_count
+resource "random_password" "jotacular_auth_secret" {
+  count   = local.jotacular_count
   length  = 48
   special = false
   upper   = true
@@ -791,7 +791,7 @@ resource "random_password" "jotdojo_auth_secret" {
 }
 
 locals {
-  jotdojo_server = var.jotdojo_enabled ? azurerm_postgresql_flexible_server.main.fqdn : ""
+  jotacular_server = var.jotacular_enabled ? azurerm_postgresql_flexible_server.main.fqdn : ""
 
   # NAMES ARE UPPERCASE-KEBAB, matching jotDOJO's release, which maps a vault
   # name to an env name with `${name//_/-}` — a case-PRESERVING substitution.
@@ -803,64 +803,64 @@ locals {
   # is the only thing telling whoever opens this vault which values may safely be
   # regenerated and which would strand something. Said here, next to the secret,
   # rather than in a document nobody has open at the time.
-  jotdojo_secrets = var.jotdojo_enabled ? {
+  jotacular_secrets = var.jotacular_enabled ? {
     "DATABASE-URL" = {
       # The restricted role. NEVER the owner — Postgres exempts superusers and
       # BYPASSRLS roles from every policy, so an owner connection string turns
       # jotDOJO's whole space boundary off while every policy still reads as
       # though it were being enforced.
-      value = "postgresql://jotdojo_app:${urlencode(random_password.jotdojo_app[0].result)}@${local.jotdojo_server}:5432/jotdojo?sslmode=require"
-      type  = "connection-string; rotate by tainting random_password.jotdojo_app"
+      value = "postgresql://jotacular_app:${urlencode(random_password.jotacular_app[0].result)}@${local.jotacular_server}:5432/jotacular?sslmode=require"
+      type  = "connection-string; rotate by tainting random_password.jotacular_app"
     }
     "DATABASE-ADMIN-URL" = {
-      # Migrations only, and `jotdojo_owner` rather than `sparx_owner` — see the
-      # note on random_password.jotdojo_owner above.
-      value = "postgresql://jotdojo_owner:${urlencode(random_password.jotdojo_owner[0].result)}@${local.jotdojo_server}:5432/jotdojo?sslmode=require"
+      # Migrations only, and `jotacular_owner` rather than `sparx_owner` — see the
+      # note on random_password.jotacular_owner above.
+      value = "postgresql://jotacular_owner:${urlencode(random_password.jotacular_owner[0].result)}@${local.jotacular_server}:5432/jotacular?sslmode=require"
       type  = "connection-string; migrations only, never the application"
     }
     "JOTDOJO-OWNER-PASSWORD" = {
       # Not on jotDOJO's required list and not read by its release — this one is
-      # for SPARX. The data stage passes it to jotdojo-bootstrap.sql as
+      # for SPARX. The data stage passes it to jotacular-bootstrap.sql as
       # `-v owner_password=`, which is how the role in DATABASE-ADMIN-URL comes
       # to exist at all.
       #
       # It is carried in jotDOJO's vault rather than sparx's so that the password
       # and the connection string containing it cannot drift apart: they are
       # written by the same apply, from the same resource, into the same vault.
-      value = random_password.jotdojo_owner[0].result
+      value = random_password.jotacular_owner[0].result
       type  = "password; read by SPARX's data stage, not by jotDOJO"
     }
     "JOTDOJO-APP-PASSWORD" = {
       # The same password as the one inside DATABASE-URL, carried separately
-      # because jotDOJO's migration Job runs `ALTER ROLE jotdojo_app PASSWORD`
+      # because jotDOJO's migration Job runs `ALTER ROLE jotacular_app PASSWORD`
       # with it. Two names, one value, on purpose.
-      value = random_password.jotdojo_app[0].result
+      value = random_password.jotacular_app[0].result
       type  = "password; must match the role embedded in DATABASE-URL"
     }
     "AUTH-SECRET" = {
-      value = random_password.jotdojo_auth_secret[0].result
+      value = random_password.jotacular_auth_secret[0].result
       type  = "key material; ROTATING THIS SIGNS EVERY USER OUT"
     }
     "AZURE-STORAGE-ACCOUNT" = {
-      value = azurerm_storage_account.jotdojo[0].name
+      value = azurerm_storage_account.jotacular[0].name
       type  = "account name; not secret, carried here so one lookup finds all eight"
     }
     "AZURE-STORAGE-KEY" = {
-      value = azurerm_storage_account.jotdojo[0].primary_access_key
+      value = azurerm_storage_account.jotacular[0].primary_access_key
       type  = "storage key; regenerating it in the portal makes this value stale"
     }
   } : {}
 }
 
-resource "azurerm_key_vault_secret" "jotdojo" {
-  # Two maps, one resource. The AI half is empty unless jotdojo_ai_enabled,
+resource "azurerm_key_vault_secret" "jotacular" {
+  # Two maps, one resource. The AI half is empty unless jotacular_ai_enabled,
   # so switching that off REMOVES its secrets rather than stranding entries
   # pointing at a deleted account. See the Azure OpenAI section above.
-  for_each = merge(local.jotdojo_secrets, local.jotdojo_ai_secrets)
+  for_each = merge(local.jotacular_secrets, local.jotacular_ai_secrets)
 
   name         = each.key
   value        = each.value.value
-  key_vault_id = azurerm_key_vault.jotdojo[0].id
+  key_vault_id = azurerm_key_vault.jotacular[0].id
   content_type = each.value.type
   tags         = local.tags
 
