@@ -31,7 +31,7 @@ function whoFor(event: CalendarEvent): string | null {
   return event.resourceNames.length > 0 ? event.resourceNames.join(', ') : null;
 }
 
-/** Lines the block has room for: three from an hour up, two at three quarters,
+/** Rows the block has room for: three from an hour up, two at three quarters,
  *  one at a half hour or less. */
 function linesFor(slots: number): 1 | 2 | 3 {
   if (slots >= 4) return 3;
@@ -53,6 +53,12 @@ function OneLine({ event, who }: { event: CalendarEvent; who: string | null }) {
   );
 }
 
+/** Two rows and three: the difference is WHERE the time goes, not whether the
+ *  client is named. She is the one fact on a block that is nowhere else on the
+ *  screen — the service repeats down the column and the chair is the column
+ *  heading — so at two rows the time moves up beside the service to make room
+ *  for her, rather than the name being the thing that gets dropped. Every blow
+ *  dry in the diary read "3:15 PM / Blow dry" and named nobody. */
 function Stacked({
   event,
   who,
@@ -62,11 +68,24 @@ function Stacked({
   who: string | null;
   lines: 2 | 3;
 }) {
+  if (lines === 2) {
+    return (
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="flex min-w-0 items-baseline gap-1.5">
+          <span className="shrink-0 text-xs font-medium tabular-nums">
+            {clockLabel(event.startAt)}
+          </span>
+          <span className="truncate text-sm font-semibold">{event.serviceName}</span>
+        </span>
+        {who ? <span className="truncate text-xs">{who}</span> : null}
+      </span>
+    );
+  }
   return (
     <span className="flex min-w-0 flex-col leading-tight">
       <span className="truncate text-xs font-medium tabular-nums">{clockLabel(event.startAt)}</span>
       <span className="truncate text-sm font-semibold">{event.serviceName}</span>
-      {lines === 3 && who ? <span className="truncate text-xs">{who}</span> : null}
+      {who ? <span className="truncate text-xs">{who}</span> : null}
     </span>
   );
 }

@@ -1,21 +1,23 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-08-23
 
-**Status:** not started
-**Run:** —
+**Status:** in progress
+**Run:** 2026-08-23
 **Trade:** Clothing & accessories (`apparel`) · **Rail groups:** sell · web · people
 
 ## Account
 
-| Field         | Value                   |
-| ------------- | ----------------------- |
-| Email         | `p03.devi@piggles.test` |
-| Tenant id     | —                       |
-| Subdomain     | —                       |
-| Published URL | —                       |
+| Field         | Value                                                   |
+| ------------- | ------------------------------------------------------- |
+| Email         | `p03.devi@piggles.test`                                 |
+| Tenant id     | `2e78fb6c-a823-4698-bcb9-58a4f17710a0`                  |
+| Slug          | `juniper-row`                                           |
+| Property id   | `a3fd094d-c8fe-48fd-b8e7-d1e0dbb42586` (slug `primary`) |
+| Subdomain     | slug is `juniper-row`; the address not checked yet      |
+| Published URL | —                                                       |
 
 ## The person
 
@@ -273,9 +275,14 @@ abandoned cart, and a broadcast with merge tags.
 
 ## Run log
 
-| Date | Act | What happened |
-| ---- | --- | ------------- |
-| —    | —   | —             |
+Machine clock: **PDT (UTC−7)**. Run opened 2026-08-23 02:53 PDT.
+
+| Date       | Act | What happened                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-08-23 | 0   | meetpiggles on a phone. The bar had no way into the site and the menu opened behind it — [160], [161], both fixed and re-proved at 360px. The bill calculator is right to the dollar. [162] filed (7px of sideways scroll on home) and left, because the one-class fix drags a 714-line file's split with it.                                                                                                                                                                                       |
+| 2026-08-23 | 1   | Signed up from `/pricing` (`?from=pricing-hero`), onboarded as **Juniper Row · Clothing & accessories** with website + sell + customers ticked. Setup failed: "could not finish setting things up", and the form replaced her answers with **Devi's workspace / Food & drink / nothing ticked** — [163], fixed and re-proved. Furnishing then failed twice more and worked on the third press — [164], a 4.25s bulk load against Prisma's 5s ceiling, fixed and re-proved by three console reloads. |
+| 2026-08-23 | 1   | Look chosen: **Fashion Boutique (Minimal)** (`sparx-retail-apparel-minimal`) — the shelf re-ranked to apparel as soon as the trade was picked, offering it ahead of Streetwear Label, Bold Athletic, Couture Serif and Glossy Fashion.                                                                                                                                                                                                                                                              |
+| 2026-08-23 | 1   | Cleared the decks. Practice data removed in one press. Then found six products named **sparx …** in her own shop, on every Piggles tenant in the database — [165], fixed at the config AND the gate. Removed those and the nine template products: 15 deletions, one at a time, no way to select more than one — [166], `Blocked on: scope`. **Act 1 done**: `industry = 'apparel'`, Products reads "Nothing to sell yet".                                                                          |
 
 ## Standing checks
 
@@ -306,16 +313,16 @@ how the lists feel at this business's volume, whether the growth board got its
 contact + deal + `brand:piggles` tag, and whether the usage meters read sensibly
 for this tenant.
 
-| Standing check               | Result |
-| ---------------------------- | ------ |
-| Wrong moves                  | —      |
-| Reload · deep link · restore | —      |
-| Dates                        | —      |
-| Money edge                   | —      |
-| Buyer's side                 | —      |
-| Someone else's business      | —      |
-| One job without a mouse      | —      |
-| Time to live site            | —      |
+| Standing check               | Result                                                                                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Wrong moves                  | not checked                                                                                                                                                              |
+| Reload · deep link · restore | Partly. Reloaded onboarding after the failure: the name came back from the tenant, the trade and the ticks did not — which is the reverse of what was saved (see [163]). |
+| Dates                        | not checked                                                                                                                                                              |
+| Money edge                   | not checked                                                                                                                                                              |
+| Buyer's side                 | not checked                                                                                                                                                              |
+| Someone else's business      | not checked                                                                                                                                                              |
+| One job without a mouse      | not checked                                                                                                                                                              |
+| Time to live site            | Not measurable yet — the run stopped at act 1. Started 02:53 PDT.                                                                                                        |
 
 ## Panes rated
 
@@ -332,6 +339,9 @@ leave it, not from memory at the end.
 Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
 A row with no confirmation is not a fixed defect.
 
-| #   | Severity | What (in her words) | Fixed | Confirmed by |
-| --- | -------- | ------------------- | ----- | ------------ |
-| —   | —        | —                   | —     | —            |
+| #                                                                        | Severity | What (in her words)                                   | Fixed | Confirmed by                                                         |
+| ------------------------------------------------------------------------ | -------- | ----------------------------------------------------- | ----- | -------------------------------------------------------------------- |
+| [160](issues/160-on-her-phone-the-menu-is-off-the-edge-of-the-screen.md) | major    | On her phone, the menu is off the edge of the screen  | yes   | Four pages at 360px, no sideways scroll, ☰ at 269–317               |
+| [161](issues/161-the-phone-menu-opens-behind-the-bar-that-opened-it.md)  | major    | The phone menu opens behind the bar that opened it    | yes   | Reopened it — all five items whole, bar behind the panel             |
+| [162](issues/162-one-button-drags-the-home-page-sideways-on-a-phone.md)  | minor    | One button drags the home page sideways on a phone    | no    | Blocked on scope — one class, plus a 714-line file's split           |
+| [163](issues/163-setting-up-failed-and-the-form-answered-for-her.md)     | major    | Setting up failed, and then the form answered for her | yes   | Resubmitted with furnishing still failing — all three answers stayed |

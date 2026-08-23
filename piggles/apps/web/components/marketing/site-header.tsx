@@ -1,74 +1,35 @@
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
-import {
-  Button,
-  Drawer,
-  DrawerContent,
-  DrawerTitle,
-  DrawerTrigger,
-  Navbar,
-  NavbarCenter,
-  NavbarEnd,
-  NavbarStart,
-} from '@wizeworks/silicaui-react';
+import { Navbar, NavbarCenter, NavbarEnd, NavbarStart } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { Logo } from '@piggles/brand/react';
+import { Logo, Mark } from '@piggles/brand/react';
 import { accountUrl } from '@piggles/config';
 import { ThemeToggle } from './theme-toggle';
+import { HeaderMenu } from './header-menu';
+import { HEADER_LINKS } from './header-links';
 
-// The site header. Solid, not laid over the hero.
-//
-// A transparent bar floating on the video is the reflex, and it is wrong here:
-// the montage cuts between eight clips whose brightness is nothing alike, so a
-// bar that reads over one of them is unreadable over the next. The header sits
-// on `base-100` above the footage instead. It also means the wordmark keeps its
-// own ink and the mark keeps its pink — a logo knocked out to white over video is
-// a logo that stopped being the brand color.
+// Solid, not laid over the hero: the montage cuts between clips whose brightness
+// is nothing alike, so a bar readable over one is unreadable over the next.
+// Sticky, so the action survives a 7,000px page.
 
-const LINKS = [
-  { href: '/apps', label: 'Apps' },
-  { href: '/pricing', label: 'Pricing' },
-  // Ahead of Trust deliberately. Most people arriving at the free tools come
-  // from a search that has nothing to do with Piggles, and this is the one nav
-  // item that gives an existing visitor a reason to look at a second page.
-  { href: '/tools', label: 'Free tools' },
-  { href: '/trust', label: 'Trust' },
-];
-
+// `z-30`, never 40 or above. Silica's overlays — drawers, dialogs, sheets — sit
+// at 40, so chrome that outranks them opens underneath the bar that opened it:
+// at z-50 this header hid two of the four links in its own menu (issue 161).
 export function SiteHeader() {
-  // The drawer is CONTROLLED rather than closed with <DrawerClose>.
-  //
-  // DrawerClose is a Base UI close control: it assumes it wraps a real
-  // <button>, and wrapping a nav link in it logs "a component that acts as a
-  // button was not rendered as a native <button>" on every open. Base UI's own
-  // escape hatch is `nativeButton={false}`, but silica's DrawerClose takes only
-  // `children` and does not forward it.
-  //
-  // Swapping the anchors for buttons would silence it and would be wrong: a nav
-  // item has to be middle-clickable, copyable and crawlable, and none of those
-  // survive becoming a <button>. So the links stay links and closing becomes an
-  // onClick — which is all DrawerClose was doing anyway.
-  const [open, setOpen] = useState(false);
-
   return (
-    // Sticky, so the CTA survives a 7,000px page. Navigation on a landing page
-    // is part of the conversion path, not a directory you visit once at the top —
-    // and the alternative (a floating pill that appears on scroll) is a second
-    // component that can disagree with this one about what the primary action is.
-    // `bg-base-100` is opaque on purpose: a translucent bar over the module-tinted
-    // bento gives the brand six different header colors on the way down.
-    <header className="bg-base-100 border-base-300 sticky top-0 z-50 border-b">
+    <header className="bg-base-100 border-base-300 sticky top-0 z-30 border-b">
       <Navbar className="mx-auto max-w-7xl px-6">
         <NavbarStart>
-          <Link href="/" aria-label={`${'Piggles'} home`}>
-            <Logo />
+          <Link href="/" aria-label="Piggles home">
+            {/* The lockup is 124px of a 360px bar, spent saying a name the tab
+                is already showing. The mark carries it at phone width and gives
+                the row back the space the ☰ needs (issue 160). */}
+            <Logo className="h-10 w-auto max-sm:hidden" />
+            <Mark className="text-primary h-10 w-10 sm:hidden" />
           </Link>
         </NavbarStart>
 
         <NavbarCenter className="hidden gap-8 lg:flex">
-          {LINKS.map((l) => (
+          {HEADER_LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="text-base font-semibold">
               {l.label}
             </Link>
@@ -76,31 +37,17 @@ export function SiteHeader() {
         </NavbarCenter>
 
         <NavbarEnd className="items-center gap-2">
-          {/* Before the two actions, not after: it is chrome, and putting it
-              on the outside edge would make the last thing on the bar something
-              other than the thing the bar is for. Visible at every width — a
+          {/* Chrome, so it comes before the two actions — the last thing on the
+              bar should be the thing the bar is for. Visible at every width: a
               person who reads in dark mode reads in dark mode on a phone. */}
           <ThemeToggle />
-          {/* Real anchors carrying `buttonClasses`, NOT `<Button render={<a/>}>`.
-              Both work here — this is a client component — but the render form
-              hands jsx-a11y an empty `<a>` whose text lives in a sibling prop,
-              so every one of these trips anchor-has-content. Styling the anchor
-              directly is the same output with the content where a linter, and a
-              screen reader, can actually see it. It is also the one pattern used
-              on every other page, all of which are server components and cannot
-              use `render` at all.
 
-              Sign in and the drawer trigger are COLORLESS — no `color`, so
-              `--btn-accent` stays unset and silica falls back to
-              `var(--color-base-content)`. `neutral` cannot be used here: it is
-              Piggles' chrome FILL (dark in both themes, palette.css), and
-              `ghost`/`outline` paint the ink with it, which put both controls at
-              1.12:1 on the dark header. Issue #003. */}
-          {/* `max-sm:hidden`, not `hidden sm:inline-flex`. The second form
-              re-declares `display` on a `.btn`, which overrides whatever silica
-              set and leaves the label sitting off-centre against the button
-              beside it. Hiding by breakpoint upward never touches the class the
-              component relies on. */}
+          {/* Real anchors carrying `buttonClasses`, never `<Button render={<a/>}>`:
+              the render form hands jsx-a11y an empty <a> whose text lives in a
+              sibling prop, and every other page here is a server component. */}
+          {/* COLORLESS on purpose. `neutral` is Piggles' chrome FILL, dark in both
+              themes, and ghost/outline paint the ink with it — 1.12:1 on this
+              header (issue 003). No `color` leaves silica on base-content. */}
           <a
             className={`${buttonClasses({ variant: 'ghost' })} max-sm:hidden`}
             href={accountUrl('sign-in')}
@@ -111,40 +58,7 @@ export function SiteHeader() {
             Get Piggles
           </a>
 
-          <Drawer open={open} onOpenChange={setOpen}>
-            {/* DrawerTrigger takes a single element CHILD and clones it — it has
-                no `render` prop, unlike Button. Passing one typechecks as an
-                unknown attribute and silently does nothing. */}
-            <DrawerTrigger>
-              <Button variant="ghost" shape="square" className="lg:hidden">
-                <span aria-hidden>☰</span>
-                <span className="sr-only">Menu</span>
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent side="right">
-              <DrawerTitle>Piggles</DrawerTitle>
-              <nav className="mt-6 flex flex-col gap-1">
-                {LINKS.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className="block py-3 text-lg font-semibold"
-                    onClick={() => setOpen(false)}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
-              </nav>
-              <div className="border-base-300 mt-6 border-t pt-6">
-                <a
-                  className={buttonClasses({ variant: 'outline', block: true })}
-                  href={accountUrl('sign-in')}
-                >
-                  Sign in
-                </a>
-              </div>
-            </DrawerContent>
-          </Drawer>
+          <HeaderMenu />
         </NavbarEnd>
       </Navbar>
     </header>
