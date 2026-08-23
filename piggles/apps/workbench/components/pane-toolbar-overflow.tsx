@@ -31,7 +31,7 @@
 // dock group's window menu wears one on the tab strip just above, and two identical
 // glyphs a few pixels apart read as one control someone split in half.
 
-import { cloneElement, isValidElement, useId } from 'react';
+import { cloneElement, isValidElement, useId, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -73,9 +73,26 @@ export function PaneToolbarOverflow({
   label,
 }: PaneToolbarOverflowProps) {
   const titleId = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [module, setModule] = useState<string | null>(null);
+
+  // THE HUE DOES NOT SURVIVE THE PORTAL. `--color-module` is set by a
+  // `data-module` attribute and CSS custom properties cascade by DOM, not by
+  // React tree (see ModuleScope's header) — and a Popover's panel is portalled
+  // to the document body, outside the pane that set it. So the same action was
+  // this app's colour in the bar and the brand's default pink one tap later,
+  // which on a narrow screen is the ONLY version most people ever see.
+  //
+  // Read off the trigger, which IS inside the pane, at the moment of opening.
+  // The attribute rather than a prop, because the popover is mounted by
+  // PaneToolbar and the module belongs to whatever surface is above it.
+  const carryHue = (open: boolean) => {
+    if (!open) return;
+    setModule(trigger.current?.closest('[data-module]')?.getAttribute('data-module') ?? null);
+  };
 
   return (
-    <Popover>
+    <Popover onOpenChange={carryHue}>
       <Tooltip
         // Right-most control on the bar, so a centred tooltip hangs off the pane
         // edge — same reasoning as RefreshButton.
@@ -84,6 +101,7 @@ export function PaneToolbarOverflow({
       >
         <PopoverTrigger>
           <Button
+            ref={trigger}
             size="sm"
             shape="circle"
             className="relative shrink-0"
@@ -104,6 +122,7 @@ export function PaneToolbarOverflow({
       </Tooltip>
 
       <PopoverContent
+        {...(module ? { 'data-module': module } : {})}
         side="bottom"
         align="end"
         // `@container` so a control that still carries its own container query
