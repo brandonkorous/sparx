@@ -75,7 +75,7 @@ export default async function PartnersPage({
     <Stack gap={6}>
       <PageHeader
         title="Partners"
-        description="The Sparx Partner Program — review applications, manage the partner roster and tiers, and run commission payouts. Freelancers, agencies, and educators who refer and build on Sparx."
+        description="The Partner Program — review applications, manage the partner roster and tiers, and run commission payouts. Freelancers, agencies, and educators who refer business and build on the platform."
       />
 
       {error ? (

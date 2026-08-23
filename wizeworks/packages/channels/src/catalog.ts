@@ -119,7 +119,7 @@ export const CHANNEL_CATALOG: readonly ChannelDescriptor[] = [
     slug: 'sparx_market',
     name: 'sparx.market',
     shape: 'first_party',
-    tagline: 'List on the sparx marketplace — we process payment and settle to you.',
+    tagline: 'List on the {platform} marketplace — we process payment and settle to you.',
     managesOrders: true,
     bestFor: 'Cross-tenant discovery with zero payment setup',
     phase: 'P5',

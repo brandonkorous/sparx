@@ -68,7 +68,7 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'list_themes',
     description:
-      'List every theme sparx ships — forty of them, in two shelves: `sparx` themes named for the ' +
+      'List every theme this software ships — forty of them, in two shelves: `sparx` themes named for the ' +
       'BUSINESS they suit (clinic, workshop, kitchen, …) and `silica` themes named for the LOOK ' +
       '(quartz, midnight, neon, …). Each entry carries its tagline, description and browse facets ' +
       '(industry, mood, colorFamily, density) — enough to choose one. Pass a `slug` to select_theme ' +

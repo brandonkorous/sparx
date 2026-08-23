@@ -10,6 +10,8 @@
 // `needs_platform_setup` under a local name. It is spelled the shared way here so
 // every category gets it, rather than the three that happened to invent it.
 
+import { PLATFORM_TOKEN } from '@wizeworks/brand-core';
+
 import {
   defineIntegrationKind,
   type IntegrationAvailability,
@@ -57,7 +59,7 @@ function resolveAvailability(
   if (!adapter.isConfigured()) {
     return {
       availability: 'needs_platform_setup',
-      reason: `sparx is finishing its ${descriptor.name} app approval. Nothing for you to do — this will switch on by itself.`,
+      reason: `{platform} is finishing its ${descriptor.name} app approval. Nothing for you to do — this will switch on by itself.`,
     };
   }
   return { availability: 'available' };
@@ -66,7 +68,7 @@ function resolveAvailability(
 /** What connecting the account gets you, from the platform's own constraints — so the
  *  catalog never claims a capability the adapter does not have. */
 function capabilityPhrases(adapter: SocialAdapter | undefined): string[] {
-  const phrases = ['Publish posts from sparx', 'See how each post performed'];
+  const phrases = ['Publish posts from {platform}', 'See how each post performed'];
   const media = adapter?.constraints.supportedMedia ?? [];
   if (media.includes('video')) phrases.push('Photos and video');
   else if (media.includes('image')) phrases.push('Photos');
@@ -85,7 +87,7 @@ export function socialToIntegrationDescriptor(
     name: descriptor.name,
     vendor: vendorFor(descriptor.platform),
     blurb: descriptor.blurb,
-    publisher: 'sparx',
+    publisher: PLATFORM_TOKEN,
     availability,
     unavailableReason: reason,
     // Always OAuth — a tenant approves sparx against their own account; nothing is typed.

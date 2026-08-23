@@ -93,7 +93,7 @@ export type ParseBrandPaletteResult =
 /** Parse + validate pasted text into a palette, with friendly errors. */
 export function parseBrandPalette(text: string): ParseBrandPaletteResult {
   const trimmed = text.trim();
-  if (!trimmed) return { ok: false, error: 'Paste a sparx palette to import.' };
+  if (!trimmed) return { ok: false, error: 'Paste a color palette to import.' };
 
   let raw: unknown;
   try {
@@ -101,24 +101,25 @@ export function parseBrandPalette(text: string): ParseBrandPaletteResult {
   } catch {
     return {
       ok: false,
-      error: 'That isn’t valid JSON. Paste the full “Copy for sparx” output from the palette tool.',
+      error: 'That isn’t valid JSON. Paste the whole thing the color palette tool copied for you.',
     };
   }
   if (!raw || typeof raw !== 'object') {
-    return { ok: false, error: 'Expected a sparx palette object.' };
+    return { ok: false, error: 'Expected a color palette object.' };
   }
 
   const o = raw as Record<string, unknown>;
   if (o.sparx !== BRAND_PALETTE_KIND) {
     return {
       ok: false,
-      error: 'Not a sparx palette. Use the “Copy for sparx” button on the color palette tool.',
+      error: 'Not a color palette. Use the copy button on the color palette tool.',
     };
   }
   if (typeof o.version !== 'number' || o.version > BRAND_PALETTE_VERSION) {
     return {
       ok: false,
-      error: 'This palette was made with a newer version of sparx. Update and try again.',
+      error:
+        'This palette was made with a newer version of the palette format. Update and try again.',
     };
   }
 

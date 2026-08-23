@@ -425,7 +425,7 @@ export const hubspotConnector: Connector = {
   vendors: ['hubspot'],
   instructions: [
     'In HubSpot, go to Settings (the cog, top right) → Integrations → Private apps.',
-    'Click "Create a private app" and name it anything — "sparx migration" is fine.',
+    'Click "Create a private app" and name it anything — "site migration" is fine.',
     'On the Scopes tab, tick the read boxes for crm.objects.contacts, crm.objects.companies, crm.objects.deals, tickets, crm.objects.owners and crm.pipelines.',
     'Create the app, then copy the access token from the Auth tab. It starts with pat-.',
     'Everything requested is read-only. Nothing here can change anything in HubSpot.',

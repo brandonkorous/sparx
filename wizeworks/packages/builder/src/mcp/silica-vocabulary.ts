@@ -30,7 +30,7 @@ export const SILICA_STYLE_GUIDE = {
     '{ kind:"component", component, class, props, children } for a @wizeworks/silicaui component. `upsert_silica_page` ' +
     'takes ONLY the page-body CHILDREN (an array of Nodes) — never the outer page wrapper and never ids; the service ' +
     'wraps and stamps them. Compose pages from real, pre-built material rather than inventing markup from scratch: ' +
-    "fetch a silica-native BLOCK (get_silica_block) or a sparx domain COMPOSITE (from list_silica_blocks' sparx group) " +
+    "fetch a silica-native BLOCK (get_silica_block) or a domain COMPOSITE (from list_silica_blocks' `sparx` group) " +
     'and edit its text/props/hrefs in place — every block is already responsive, themed, and allowlist-safe. ' +
     'NON-NEGOTIABLE: every page — and especially the frame — MUST work at phone width; blocks already satisfy this, so ' +
     "preserve their layout classes when you edit copy, don't replace them with a fixed-width arrangement.",
@@ -126,9 +126,9 @@ export const SILICA_STYLE_GUIDE = {
     description:
       "Two catalogs, merged in list_silica_blocks / get_silica_block: silica's own NATIVE blocks (marketing/content " +
       'patterns — hero, feature grid, testimonials, pricing, team, stats, FAQ, contact form, nav/footer chrome) and ' +
-      "sparx's domain COMPOSITES (@wizeworks/silica-catalog — commerce/content patterns silica has no concept of: product " +
-      'grid/card, buy box, featured products, collection header, the sparx-branded navbar/footer). Prefer a native ' +
-      'block for anything generic; reach for a sparx composite only when the section needs real commerce/CMS data.',
+      "the platform's domain COMPOSITES (@wizeworks/silica-catalog — commerce/content patterns silica has no concept of: product " +
+      'grid/card, buy box, featured products, collection header, the site-branded navbar/footer). Prefer a native ' +
+      'block for anything generic; reach for a domain composite only when the section needs real commerce/CMS data.',
     // The REAL block keys, as `listBlocks()`/`getBlock()` key them — snake_case, and
     // `get_silica_block` takes them `native.`-prefixed (e.g. `native.hero_split_cta`).
     // Do NOT guess a camelCase name here: an unknown key is a hard BuilderNotFoundError,
@@ -167,7 +167,7 @@ export const SILICA_STYLE_GUIDE = {
       'class on the heading ITSELF (`<h2 class="… text-neutral-content">`) every single time. This is the most ' +
       'common way an otherwise-correct dark section ships broken.',
     houseStyle:
-      'sparx bans EYEBROWS (a small uppercase kicker label above a heading) — hierarchy is carried by scale/weight/' +
+      'EYEBROWS ARE BANNED (a small uppercase kicker label above a heading) — hierarchy is carried by scale/weight/' +
       'color. `native.content_prose` and `native.feature_media` ship an eyebrow node: DELETE it when you stamp them. ' +
       'Also banned: gradients as a visual device. Body text floors at 16px. ' +
       'FADED TEXT IS BANNED TOO, and this one bites on nearly every block: the native blocks ship subheads, stat ' +
@@ -335,13 +335,13 @@ export const SILICA_STYLE_GUIDE = {
       "(from the authoring kit's `outlet()`, or copy the outlet placement from get_silica_frame's current tree) — a " +
       'frame missing it renders chrome with no page body.',
     identity:
-      'Bind the brand mark to the platform-owned site data via siteNavbar/siteFooter (sparx composites, bound to ' +
+      'Bind the brand mark to the platform-owned site data via siteNavbar/siteFooter (domain composites, bound to ' +
       'site.identity/site.social automatically) rather than a hand-bound native navbar/footer block.',
   },
 
   metadata: {
     description:
-      'SEO, chrome, and collection-template targeting live on the sparx BuilderPage row, not the silica tree — set ' +
+      'SEO, chrome, and collection-template targeting live on the BuilderPage row, not the silica tree — set ' +
       'them via these EXISTING legacy-surface tools (they work identically on a silica-materialized page, since a ' +
       'silica page id IS the row id): set_page_seo (pageId + seoTitle/seoDescription/canonical/ogImage/noindex — omit ' +
       'a field to leave it, empty string clears it), set_page_frame (pageId + frameId — which header/footer wraps ' +

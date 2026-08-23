@@ -1507,6 +1507,9 @@ importers:
 
   wizeworks/packages/channels:
     dependencies:
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
       '@wizeworks/integrations':
         specifier: workspace:*
         version: link:../integrations
@@ -2730,6 +2733,9 @@ importers:
 
   wizeworks/packages/platform-crm:
     dependencies:
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
       '@wizeworks/crm':
         specifier: workspace:*
         version: link:../crm
@@ -3213,6 +3219,9 @@ importers:
       '@wizeworks/api-core':
         specifier: workspace:*
         version: link:../api-core
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
       '@wizeworks/db':
         specifier: workspace:*
         version: link:../db

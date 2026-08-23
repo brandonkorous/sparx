@@ -30,7 +30,7 @@ export const describeSilicaAuthoring: McpToolDefinition = {
   name: 'describe_silica_authoring',
   description:
     'The silica authoring guide: the Site/Page/Frame/Theme model, the authoring-kit primitives, native blocks vs ' +
-    'sparx domain composites and when to use each, the data-binding model, the theme token model, and the SEO/' +
+    'domain composites and when to use each, the data-binding model, the theme token model, and the SEO/' +
     'recordType metadata side-channel. Call this BEFORE authoring so pages compose from real, pre-built material ' +
     'instead of freehand markup.',
   scope: 'read:builder',
@@ -42,7 +42,7 @@ export const describeSilicaAuthoring: McpToolDefinition = {
 export const listSilicaBlocks: McpToolDefinition = {
   name: 'list_silica_blocks',
   description:
-    'List available silica blocks (native marketing/content patterns) and sparx composites (commerce/content ' +
+    'List available silica blocks (native marketing/content patterns) and domain composites (commerce/content ' +
     'patterns), the MCP equivalent of the Insert palette. Trees are omitted for compactness — call get_silica_block ' +
     'for one entry’s full tree. Optionally filter by `category`.',
   scope: 'read:builder',

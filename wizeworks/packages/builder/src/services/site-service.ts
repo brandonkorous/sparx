@@ -391,8 +391,8 @@ function addressOf(slug: string): RecordAddress | null {
   if (!address && slug.includes(':')) {
     throw new BuilderValidationError(
       `"${slug}" is not a valid page address. Page addresses use lowercase letters, ` +
-        `numbers and hyphens; the only addresses containing ":" are the pages sparx ` +
-        `provides for your records (${RECORD_ADDRESS_SLUGS.join(', ')}), which cannot ` +
+        `numbers and hyphens; the only addresses containing ":" are the pages ` +
+        `provided for your records (${RECORD_ADDRESS_SLUGS.join(', ')}), which cannot ` +
         `be created or renamed.`,
       [{ field: 'slug', message: 'Not a valid page address.' }]
     );

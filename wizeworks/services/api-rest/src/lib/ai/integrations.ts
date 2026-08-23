@@ -1,7 +1,7 @@
 // AI accounts' entry in the shared integration plane (@wizeworks/integrations).
 //
 // The catalog face for BYOK: the tenant's OWN Anthropic or OpenAI account, which is
-// the only credential any AI feature in sparx ever runs on. Registering it here is
+// the only credential any AI feature here ever runs on. Registering it here is
 // what puts "connect your AI account" in the same list as connecting a card processor
 // or a carrier, instead of on a separate screen a tenant has to already know about.
 //
@@ -14,6 +14,7 @@
 // grants, not outside services the business connects to. Listing them beside carriers
 // and processors would put two opposite directions of trust under one heading.
 
+import { PLATFORM_TOKEN } from '@wizeworks/brand-core';
 import { defineIntegrationKind, type IntegrationDescriptor } from '@wizeworks/integrations';
 
 import { AI_PROVIDERS, type AiProvider } from '../chat/types.js';
@@ -36,7 +37,7 @@ const COPY: Record<AiProvider, AiVendorCopy> = {
     name: 'Anthropic',
     vendor: 'Anthropic',
     blurb:
-      'Use your own Anthropic account to power the AI features in sparx — writing product descriptions, drafting emails, answering questions about your business.',
+      'Use your own Anthropic account to power the AI features in {platform} — writing product descriptions, drafting emails, answering questions about your business.',
     keyHelp: 'Anthropic Console → Settings → API keys.',
     placeholder: 'sk-ant-…',
     docsUrl: 'https://console.anthropic.com/settings/keys',
@@ -45,7 +46,7 @@ const COPY: Record<AiProvider, AiVendorCopy> = {
     name: 'OpenAI',
     vendor: 'OpenAI',
     blurb:
-      'Use your own OpenAI account to power the AI features in sparx — writing product descriptions, drafting emails, answering questions about your business.',
+      'Use your own OpenAI account to power the AI features in {platform} — writing product descriptions, drafting emails, answering questions about your business.',
     keyHelp: 'OpenAI dashboard → API keys.',
     placeholder: 'sk-…',
     docsUrl: 'https://platform.openai.com/api-keys',
@@ -60,7 +61,7 @@ export function aiProviderDescriptor(provider: AiProvider): IntegrationDescripto
     name: copy.name,
     vendor: copy.vendor,
     blurb: copy.blurb,
-    publisher: 'sparx',
+    publisher: PLATFORM_TOKEN,
     availability: 'available',
     connect: 'api_keys',
     credentialFields: [
@@ -77,7 +78,7 @@ export function aiProviderDescriptor(provider: AiProvider): IntegrationDescripto
     capabilities: [
       'Writes product and page copy',
       'Answers questions about your own data',
-      'You are billed by them directly, not by sparx',
+      'You are billed by them directly, not by {platform}',
     ],
     docsUrl: copy.docsUrl,
   };

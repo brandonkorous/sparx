@@ -61,6 +61,7 @@ export async function generateMetadata({ searchParams }: RootPageProps): Promise
       eyebrow: 'Home',
       brand: site.name,
       accent: site.theme?.colorPrimary,
+      platformBrand: site.platformBrand,
     });
   return {
     title,

@@ -281,7 +281,7 @@ const financeAccountingRoutes: FastifyPluginAsync = async (app) => {
 
     const adapter = accountingAdapter(connection.provider);
     if (!adapter) {
-      throw badRequest(`sparx does not sign in to ${connection.provider}. Use the export instead.`);
+      throw badRequest(`We do not sign in to ${connection.provider}. Use the export instead.`);
     }
     if (!adapter.isConfigured()) {
       throw badRequest(adapter.unavailableReason());

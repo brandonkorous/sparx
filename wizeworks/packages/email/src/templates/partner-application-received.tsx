@@ -6,6 +6,7 @@ import {
   EmailLineItems,
   EmailParagraph,
   EmailSectionLabel,
+  usePlatformName,
   type LineItem,
 } from '../components';
 
@@ -34,6 +35,7 @@ export function PartnerApplicationReceivedEmail({
   kind,
   reviewUrl,
 }: PartnerApplicationReceivedEmailProps) {
+  const platform = usePlatformName();
   const rows: LineItem[] = [
     { title: 'Applicant', subtitle: applicantEmail, amount: applicantName },
   ];
@@ -45,12 +47,12 @@ export function PartnerApplicationReceivedEmail({
     <PlatformEmailLayout
       preview={`New partner application — ${applicantName}`}
       mastheadRight="partners"
-      footerReason="You're receiving this because you handle partner applications for sparx."
+      footerReason={`You're receiving this because you handle partner applications for ${platform}.`}
     >
       <EmailDisplayHeading>New partner application</EmailDisplayHeading>
       <EmailParagraph>
-        <strong>{applicantName}</strong> applied to the sparx Partner Program. The details are below
-        — review and approve or decline from the console.
+        <strong>{applicantName}</strong> applied to the {platform} Partner Program. The details are
+        below — review and approve or decline from the console.
       </EmailParagraph>
 
       <EmailSectionLabel>Application</EmailSectionLabel>

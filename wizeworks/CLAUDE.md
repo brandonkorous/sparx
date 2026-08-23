@@ -237,13 +237,34 @@ pre-push guard. It fails on:
 
 - an import from `wizeworks/**` reaching into `sparx/**` or `piggles/**`
 - an import crossing between `sparx/**` and `piggles/**`
-- a literal hex color under `wizeworks/**` outside the two sanctioned
-  exceptions (edge-runtime OG images, which cannot resolve custom properties;
-  and third-party brand marks)
-- a brand name literal in a user-facing string under `wizeworks/**`
+- a **brand name in a sentence** under `wizeworks/**` — the brand standing as
+  its own word inside a string of four words or more. That is the shape of
+  "sparx cannot read balances from Xero yet" and not the shape of the hostname
+  `sparx.works`, the route `/sparx/tenants`, or the block id `sparx.navbar`,
+  which are identifiers and stay. Tests and `package.json` are exempt (a test
+  asserting brand-resolved output has to name a brand); anything else is an
+  allowlist entry with a written reason. Fix it with
+  `platformBrandIdentity(brand).name` where a tenant is in scope, or
+  `{platform}` + `fillPlatformName` for data declared at module scope.
+- `@sparx/*` usage under `piggles/` growing past its baseline, and any use of
+  `@sparx/brand` there at all
+
+**This paragraph used to claim a fourth rule and a different third one, and the
+check ran green on both because neither existed.** "Sent with sparx" reached the
+footer of every email the other brand's tenants sent while the prose said a guard
+was watching for it, and 81 more sentences were still standing when the rule was
+finally written (`piggles/docs/personas/issues/128`). The claimed hex rule is
+**not** written and the claim is withdrawn: 1,049 literal hexes live under
+`wizeworks/`, nearly all of them the theme system defining its own tokens, the
+email palette (mail clients cannot resolve a custom property), and document
+renderers — places where a hex is the only thing that can be written. A rule
+firing on all of them is a rule somebody switches off. **No brand hexes** (RULE
+#0) still binds, and is enforced by review rather than by a script.
 
 A red check blocks the push. That is intentional — `--no-verify` is not an
-acceptable bypass.
+acceptable bypass. And a new guard must be shown to go **red** before it is
+trusted green; reverting `packages/email/src/silica/frame.ts`'s credit line to
+"Sent with sparx" is the ready-made red case for the rule above.
 
 ## Environment
 

@@ -275,7 +275,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'blockquote',
               'text-2xl font-medium leading-relaxed text-base-content @3xl:text-3xl',
               {
-                text: '“sparx replaced four separate tools for us. We relaunched our store in a weekend and orders climbed 38% the first month.”',
+                text: '“They replaced four separate tools for us. We relaunched in a weekend, and orders climbed 38% the first month.”',
               }
             ),
             el('figcaption', 'flex items-center gap-4', {
@@ -318,7 +318,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               text: 'Loved by thousands of merchants',
             }),
             el('p', 'text-lg text-base-content', {
-              text: 'From first-time sellers to established wholesalers, teams ship faster on sparx.',
+              text: 'From first-time buyers to long-standing trade accounts, people keep coming back.',
             }),
           ],
         }),
@@ -999,7 +999,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
           children: [
             atom('Image', 'w-full rounded-box object-cover shadow-md', {
               ratio: 'wide',
-              alt: 'The sparx storefront editor in action',
+              alt: 'The work in progress',
             }),
             el('div', 'flex flex-col items-start gap-5', {
               children: [

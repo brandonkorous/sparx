@@ -16,7 +16,7 @@ const interWordmark = Inter({
 
 export const metadata: Metadata = {
   title: 'WizeWorks Operator Console',
-  description: 'Internal cross-tenant operations console for the sparx platform.',
+  description: 'Internal cross-tenant operations console for the WizeWorks platform.',
   // Never index the operator console — it lives behind Cloudflare Access but a
   // robots directive is cheap defence-in-depth.
   robots: { index: false, follow: false },

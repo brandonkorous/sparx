@@ -139,7 +139,7 @@ export function ApplicationsTable({
                         title={
                           canApprove
                             ? undefined
-                            : 'This applicant has no Sparx account and no email to invite.'
+                            : 'This applicant has no account and no email to invite.'
                         }
                         onClick={act(a, 'approve', () => approveApplicationAction(a.id))}
                       >

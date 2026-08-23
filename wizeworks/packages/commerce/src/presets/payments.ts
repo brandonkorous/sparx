@@ -90,7 +90,7 @@ export const paymentPresets: ModulePreset[] = [
     gatewayId: 'stripe_direct',
     name: 'Bring your own Stripe',
     description:
-      'Route checkout through your own Stripe account — you keep the full Stripe relationship, payouts, and disputes, with no sparx markup. Installs the gateway; add your API keys in Finance → Payments to go live.',
+      'Route checkout through your own Stripe account — you keep the full Stripe relationship, payouts, and disputes, with no platform markup. Installs the gateway; add your API keys in Finance → Payments to go live.',
     iconKey: 'credit-card',
     tags: ['stripe', 'bring-your-own', 'cards'],
     summary: [

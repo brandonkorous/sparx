@@ -212,7 +212,7 @@ export function PurchaseHistoryCard({ domain }: { domain: OperatorDomainDetail }
           <Text variant="muted">
             {domain.type === 'purchased'
               ? 'No purchase records on file.'
-              : 'This domain wasn’t bought through sparx, so there’s no registration billing to show.'}
+              : 'This domain wasn’t bought through us, so there’s no registration billing to show.'}
           </Text>
         ) : (
           <Table>

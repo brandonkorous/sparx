@@ -22,7 +22,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const SKIP_DIRS = new Set(['node_modules', '.next', '.turbo', 'dist', '.git', 'coverage']);
+const SKIP_DIRS = new Set([
+  'node_modules',
+  '.next',
+  '.turbo',
+  'dist',
+  '.git',
+  'coverage',
+  // Runtime media cache (gitignored). It holds downloaded marketplace bundles,
+  // so it is full of other people's strings and is not source.
+  '.media-tmp',
+]);
 const EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.json']);
 const BASELINE = path.join(ROOT, 'piggles/docs/migration/sparx-usage-baseline.json');
 
@@ -123,16 +133,136 @@ function walk(dir, out = []) {
   return out;
 }
 
-/** Strip comments, so prose ABOUT the boundary never trips the check on it. */
+/**
+ * Strip comments, so prose ABOUT the boundary never trips the check on it.
+ *
+ * A block comment is blanked IN PLACE rather than deleted, because deleting it
+ * takes its newlines with it and every line number after it shifts. Reproducing
+ * the "Sent with sparx" leak to prove RULE 3 goes red reported it on line 173 of
+ * a file where it sits on 199 — 26 lines of header comment above it. Every rule
+ * in this file has been reporting shifted numbers.
+ */
 function code(source) {
   return source
-    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, (block) => block.replace(/[^\n]/g, ' '))
     .split('\n')
     .map((line) => (/^\s*(\/\/|\*|#)/.test(line) ? '' : line.replace(/([^:'"`])\/\/.*$/, '$1')))
     .join('\n');
 }
 
 const rel = (file) => path.relative(ROOT, file).replace(/\\/g, '/');
+
+/**
+ * RULE 3 — no brand's name in a sentence the shared platform says out loud.
+ *
+ * wizeworks/CLAUDE.md has listed this among the things `check:boundaries` fails
+ * on since the tree move. It did not check it, and the pass was indistinguishable
+ * from a real one: "Sent with sparx" survived a documented sweep of 110 brand
+ * literals in the footer of every email the OTHER brand's tenants sent, and 97
+ * more sentences were still standing when the rule was finally written
+ * (piggles/docs/personas/issues/128).
+ *
+ * ── WHY PROSE AND NOT EVERY LITERAL ─────────────────────────────────────────
+ *
+ * "Any brand name in any string" is 3,131 hits, and almost all of them are
+ * IDENTIFIERS: the hostname `sparx.works`, the database role `sparx_owner`, the
+ * staff console's `/sparx/tenants` route, the header `x-sparx-internal-cron-token`,
+ * the block namespace `sparx.navbar`, the gateway id `sparx-pay`. Renaming those
+ * is a migration, not a fix, and a check that fires on all of them is a check
+ * somebody switches off on the second afternoon.
+ *
+ * What actually reaches a customer is a SENTENCE. So the rule is: the brand
+ * standing as its own word, inside a string of four words or more. That is the
+ * shape of "sparx cannot read balances from Xero yet" and is not the shape of any
+ * identifier, and it is what `{platform}` + `fillPlatformName` exist to fix.
+ *
+ * Backtick-quoted (`` `sparx` ``) is treated as an identifier being NAMED rather
+ * than the platform speaking — which is how an MCP tool description can still
+ * tell an AI that the composites live under the `sparx` namespace.
+ */
+const BRAND_WORDS = ['sparx', 'piggles'];
+
+/** The brand standing alone: not glued into an identifier by a leading word
+ *  char / @ / slash / dot / hyphen / backtick, and not the head of a dotted path
+ *  (`sparx.works`) or a longer token. A trailing `.` IS allowed — that is a
+ *  sentence ending, and "a newer version of sparx." is exactly the leak. */
+const BRAND_WORD = new RegExp(
+  `(?<![\\w@/_.\`-])(${BRAND_WORDS.join('|')})(?![\\w/_\`-])(?!\\.\\w)`,
+  'i'
+);
+
+/** Every quoted run on a line, single/double/backtick, without crossing lines. */
+const STRING_LITERAL = /(['"`])((?:(?!\1)[^\n])*)\1/g;
+
+/** A sentence, not a slug: four or more words is the floor that separates
+ *  "sparx cannot read balances" from "sparx-pay" and "Stock value in sparx". */
+const isSentence = (text) => text.trim().split(/\s+/).length >= 4;
+
+/**
+ * Files this rule does not read, and why each is not a loophole.
+ *
+ *   · Tests and fixtures ASSERT brand-resolved output — `expect(name).toBe('sparx
+ *     Support')` is the guard working, and failing it would delete the proof.
+ *   · `package.json` is npm metadata read by developers and registries, never by
+ *     a tenant. (Excluded by extension: this rule reads code, not data.)
+ */
+const isTestFile = (p) =>
+  /(\.test\.|\.spec\.|\/__tests__\/|\/test\/|\/fixtures?\/|-fixtures\.)/.test(p);
+
+const BRAND_PROSE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
+
+/**
+ * Named exceptions, by FILE, with the reason beside each — same shape as
+ * RULE_1_EXCEPTIONS above and for the same reason: an allowlist entry has to be
+ * added in a diff somebody reads, where a softened pattern lets the next one in
+ * silently.
+ *
+ * The bar is "this sentence is ABOUT that brand", not "this sentence is
+ * inconvenient to fix". Everything a tenant could read has to be resolved
+ * through `platformBrandIdentity` or `{platform}` instead.
+ */
+const RULE_3_EXCEPTIONS = new Map([
+  [
+    'wizeworks/packages/db/prisma/seed.ts',
+    'Demo content for the development tenant, which IS a sparx tenant. Never runs against a customer database.',
+  ],
+  [
+    'wizeworks/packages/billing/scripts/provision-stripe.ts',
+    "Provisions products in sparx's OWN Stripe account. The name is that account's, and another brand provisions its own.",
+  ],
+  [
+    'wizeworks/services/api-rest/src/scripts/verify-self-register-prune.ts',
+    'A developer script; the "sparx row" it names is the fixture row it just seeded, printed to a terminal.',
+  ],
+]);
+
+function checkBrandProse() {
+  const problems = [];
+  for (const file of walk(path.join(ROOT, 'wizeworks'))) {
+    const name = rel(file);
+    if (!BRAND_PROSE_EXTENSIONS.has(path.extname(file))) continue;
+    if (isTestFile(name) || RULE_3_EXCEPTIONS.has(name)) continue;
+    const source = code(fs.readFileSync(file, 'utf8'));
+    source.split('\n').forEach((line, index) => {
+      for (const match of line.matchAll(STRING_LITERAL)) {
+        const text = match[2];
+        if (!isSentence(text) || !BRAND_WORD.test(text)) continue;
+        problems.push(`${name}:${index + 1}: ${text.trim().slice(0, 110)}`);
+      }
+    });
+  }
+  if (problems.length) {
+    console.error(`\n✖ a brand's name in the shared platform's own words — ${problems.length}:\n`);
+    for (const problem of problems) console.error('   ' + problem);
+    console.error(
+      `\n   wizeworks/ serves every brand from one deployment, so a sentence with a\n` +
+        `   product's name baked in is right for one tenant and wrong for the other.\n` +
+        `   Resolve it: platformBrandIdentity(brand).name where a tenant is in scope,\n` +
+        `   or {platform} + fillPlatformName for data declared at module scope.\n`
+    );
+  }
+  return problems.length;
+}
 
 function scan(root, patterns, label, exceptions) {
   const problems = [];
@@ -278,13 +408,18 @@ failures += scan(
 // regenerate should be able to absorb, and the whole reason this rule exists is
 // that five of them survived the fork by being invisible.
 failures += checkBanned(banned);
+failures += checkBrandProse();
 failures += checkRatchet(counts, update, banned);
 
-// Rule 1 from wizeworks/CLAUDE.md is LIVE — see WIZEWORKS_TO_BRAND above; the
-// tree move gave it a directory to scan. Rules 3 and 4 (no literal hex under
-// wizeworks/, no brand name in a user-facing string there) remain unwritten:
-// both need a real inventory of legitimate exceptions first, and a check that
-// fires on every chart palette gets switched off within a day.
+// Rule 1 (WIZEWORKS_TO_BRAND) and rule 3 (checkBrandProse) are both LIVE. The
+// hex rule the same paragraph claimed is NOT, and the inventory is why: 1,049
+// literal hexes live under wizeworks/, and the overwhelming majority are the
+// theme system DEFINING its tokens, the email palette (mail clients cannot
+// resolve a custom property) and document renderers — all places a hex is the
+// only thing that can be written. The rule as stated fires on every one of them.
+// What it was reaching for is root RULE #1, which is about feature code PAINTING
+// a control, and that lives in the ESLint rule and in review. wizeworks/CLAUDE.md
+// now says three rules because there are three.
 
 if (failures > 0) {
   console.error(

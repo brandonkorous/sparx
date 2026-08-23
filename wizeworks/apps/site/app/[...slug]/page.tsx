@@ -76,6 +76,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
         eyebrow: 'Page',
         brand: site.name,
         accent: site.theme?.colorPrimary,
+        platformBrand: site.platformBrand,
       });
     return {
       title,
@@ -120,6 +121,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
         eyebrow: 'Page',
         brand: site.name,
         accent: site.theme?.colorPrimary,
+        platformBrand: site.platformBrand,
       });
     return {
       title,
@@ -161,6 +163,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
             eyebrow: 'Page',
             brand: site.name,
             accent: site.theme?.colorPrimary,
+            platformBrand: site.platformBrand,
           }),
         },
       ],

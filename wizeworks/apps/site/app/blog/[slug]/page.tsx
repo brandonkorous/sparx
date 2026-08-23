@@ -68,6 +68,7 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
       eyebrow: 'Article',
       brand: site.name,
       accent: site.theme?.colorPrimary,
+      platformBrand: site.platformBrand,
     });
   // Indexable only when published AND the author hasn't flagged the entry noindex.
   const noindex = typeof seo.robots === 'string' && seo.robots.includes('noindex');

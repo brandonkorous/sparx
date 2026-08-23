@@ -17,6 +17,7 @@
 // email to these contacts needs its own opt-in, exactly as it would for any
 // tenant's customers.
 
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 import { prisma, withTenant } from '@wizeworks/db';
 import { activityService, customerService, dealService } from '@wizeworks/crm/services';
 import { isModuleEnabled } from '@wizeworks/modules';
@@ -108,7 +109,7 @@ interface TenantFacts {
     composedAt: string | null;
   };
   /** Piggles' day-one rail preference, from ITS onboarding. Piggles asks a
-   *  different, shorter question than sparx's story composer, so it lands in its
+   *  different, shorter question than the story composer, so it lands in its
    *  own namespaced key rather than pretending to be the same answer. */
   railGroups: string[];
 }
@@ -436,7 +437,9 @@ function dealMetadata(facts: TenantFacts): Record<string, unknown> {
 }
 
 function signupDescription(facts: TenantFacts): string {
-  const parts = [`Signed up for sparx and started a workspace, "${facts.name}".`];
+  const parts = [
+    `Signed up for ${platformBrandIdentity(facts.platformBrand).name} and started a workspace, "${facts.name}".`,
+  ];
   if (facts.trialEndsAt) parts.push(`The free trial runs until ${longDate(facts.trialEndsAt)}.`);
   if (facts.acquisitionChannel) parts.push(`Came in through ${facts.acquisitionChannel}.`);
   return parts.join(' ');

@@ -43,10 +43,14 @@ import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
 /**
  * Fill a descriptor's `{platform}` tokens with the tenant's own product name.
  *
- * The three fields that can carry one are the three a person reads: what it is
- * called, what it does, and whose it is. `vendor` and `publisher` are the ones
- * that bit — every first-party entry on this shelf was published by a literal
- * "sparx", which a Piggles business has never heard of.
+ * EVERY field on a descriptor that holds a sentence goes through this, because
+ * the one that does not is the one that leaks. `vendor` and `publisher` are what
+ * bit first — every first-party entry on this shelf was published by a literal
+ * "sparx", which a Piggles business has never heard of. `capabilities` was the
+ * second: "Brings orders into sparx" and "Publish posts from sparx" sat in the
+ * bullet list under every channel and social platform, unresolved, because the
+ * fill covered the fields somebody thought of rather than the fields that exist
+ * (piggles/docs/personas/issues/128).
  */
 function brandDescriptor<
   T extends {
@@ -55,17 +59,20 @@ function brandDescriptor<
     vendor?: string;
     publisher?: string;
     unavailableReason?: string;
+    capabilities?: readonly string[];
   },
 >(descriptor: T, brand: string): T {
+  const fill = (text: string) => fillPlatformName(text, brand);
   return {
     ...descriptor,
-    name: fillPlatformName(descriptor.name, brand),
-    blurb: fillPlatformName(descriptor.blurb, brand),
-    ...(descriptor.vendor ? { vendor: fillPlatformName(descriptor.vendor, brand) } : {}),
-    ...(descriptor.publisher ? { publisher: fillPlatformName(descriptor.publisher, brand) } : {}),
+    name: fill(descriptor.name),
+    blurb: fill(descriptor.blurb),
+    ...(descriptor.vendor ? { vendor: fill(descriptor.vendor) } : {}),
+    ...(descriptor.publisher ? { publisher: fill(descriptor.publisher) } : {}),
     ...(descriptor.unavailableReason
-      ? { unavailableReason: fillPlatformName(descriptor.unavailableReason, brand) }
+      ? { unavailableReason: fill(descriptor.unavailableReason) }
       : {}),
+    ...(descriptor.capabilities ? { capabilities: descriptor.capabilities.map(fill) } : {}),
   };
 }
 

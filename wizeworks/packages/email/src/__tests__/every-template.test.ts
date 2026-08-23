@@ -109,18 +109,27 @@ describe('every coded template renders', () => {
 // supplied by whoever resolves the send (email-worker, from the tenant's
 // `platform_brand`); here it is supplied directly.
 
-/** Templates that name sparx because sparx is what they are ABOUT — its
- *  marketplace, its partner programme, its own job ads. A Piggles tenant never
- *  receives one: there is no Piggles marketplace to settle from and no Piggles
- *  partner programme to be welcomed to (piggles/CLAUDE.md, "A sparx PRODUCT is
- *  not a Piggles capability"). Renaming them would produce a grammatical
- *  sentence about a product nobody can sign up for, which is worse than the
- *  leak because nothing then looks wrong. */
+/**
+ * Templates that name sparx because sparx is what they are ABOUT — its
+ * marketplace, its own job ads. A Piggles tenant never receives one: there is no
+ * Piggles marketplace to settle from (piggles/CLAUDE.md, "A sparx PRODUCT is not
+ * a Piggles capability"). Renaming them would produce a grammatical sentence
+ * about a product nobody can sign up for, which is worse than the leak because
+ * nothing then looks wrong.
+ *
+ * THE PARTNER THREE CAME OFF THIS LIST. They were exempted on the same reasoning
+ * and it did not survive contact: the programme is run out of shared platform
+ * code (`services/api-rest/src/lib/partners/`), so "there is no Piggles partner
+ * programme" is a statement about today's marketing rather than about the
+ * software — and the exemption was doing real work in the meantime, holding
+ * three subjects, two footer reasons and a hardcoded `sparx.works/partners` link
+ * out of the sweep that fixed 110 others. They now resolve through
+ * `usePlatformName()` like every other template, which renders identically for a
+ * sparx partner and correctly for anyone else, and the two assertions below are
+ * what keeps it that way (piggles/docs/personas/issues/128).
+ */
 const SPARX_OWN_PRODUCTS = new Set<TemplateId>([
   'market-settlement-report',
-  'partner-welcome',
-  'partner-application-received',
-  'partner-earnings',
   'job-application-received',
   'job-application-confirmation',
 ]);

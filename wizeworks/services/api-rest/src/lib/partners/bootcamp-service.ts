@@ -30,7 +30,7 @@ async function requireActivePartner(tx: TxClient, tenantId: string) {
     select: { id: true, tier: true, status: true, displayName: true },
   });
   if (partner?.status !== 'active') {
-    throw forbidden('Only active Sparx partners can host bootcamps.');
+    throw forbidden('Only active partners can host bootcamps.');
   }
   return partner;
 }

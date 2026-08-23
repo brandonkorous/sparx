@@ -59,6 +59,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       eyebrow: 'Product',
       brand: site.name,
       accent: site.theme?.colorPrimary,
+      platformBrand: site.platformBrand,
     });
   return {
     title: product.seoTitle ?? product.title,

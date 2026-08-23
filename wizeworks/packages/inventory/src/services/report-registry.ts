@@ -932,7 +932,7 @@ const glReconciliation: ReportDefinition<GlReconciliationReport> = {
   key: 'gl_reconciliation',
   label: 'Stock versus your books',
   description:
-    'What sparx says your stock is worth against your accounting inventory account, with every difference itemised.',
+    'What your stock is worth here against your accounting inventory account, with every difference itemised.',
   windowed: true,
   run: (ctx, filters) =>
     glReconciliationReport(ctx, {
@@ -952,7 +952,7 @@ const glReconciliation: ReportDefinition<GlReconciliationReport> = {
     ]),
   }),
   summary: (r) => [
-    { label: 'Stock value in sparx', value: money(r.sparxValueCents, r.currency) },
+    { label: 'Stock value here', value: money(r.sparxValueCents, r.currency) },
     {
       label: 'Inventory account in your books',
       value: r.ledgerValueCents === null ? 'not connected' : money(r.ledgerValueCents, r.currency),

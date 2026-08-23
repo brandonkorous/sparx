@@ -318,7 +318,7 @@ export async function probeMetaAccess(
   }
 
   const caveat = insider
-    ? 'This account has a role on the sparx developer app, so Meta hands it every permission whether or not App Review approved them. Its permission list proves nothing — to test a review, connect an account with no role on the app.'
+    ? 'This account has a role on our own developer app, so Meta hands it every permission whether or not App Review approved them. Its permission list proves nothing — to test a review, connect an account with no role on the app.'
     : undefined;
 
   return {

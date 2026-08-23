@@ -28,7 +28,7 @@ const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 // default to the tenant's PRIMARY site, so an agent that never targets a site can
 // overwrite the wrong one (this happened). Keep it short and imperative.
 const SERVER_INSTRUCTIONS = [
-  'This server manages one sparx tenant — its content, commerce, CRM, email, and one or more SITES (web properties).',
+  'This server manages one tenant — its content, commerce, CRM, email, and one or more SITES (web properties).',
   'MULTISITE — READ FIRST: a tenant can own MORE THAN ONE site. Before you create or edit any page, theme, ' +
     'layout, or site setting, call `list_sites` and pass the intended site’s `id` as the `propertyId` argument. ' +
     'Omitting `propertyId` silently targets the tenant’s PRIMARY site — which overwrites the wrong site if you ' +

@@ -137,7 +137,7 @@ export function judgeSocialReadiness({
       headline: `Missing ${missing.length} permission${missing.length === 1 ? '' : 's'}`,
       detail:
         `${platformName} has not given this connection: ${missing.join(', ')}. ` +
-        'Either the platform has not approved sparx for them yet, or this account was connected before they were added — reconnecting the account will tell you which.',
+        'Either the platform has not approved this app for them yet, or this account was connected before they were added — reconnecting the account will tell you which.',
       missing,
     };
   }

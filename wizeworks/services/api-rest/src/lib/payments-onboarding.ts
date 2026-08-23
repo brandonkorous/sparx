@@ -69,7 +69,7 @@ export interface SparxPayBalance {
 
 export class PaymentsUnconfiguredError extends Error {
   constructor() {
-    super('sparx Pay is unavailable — the platform Stripe key is not configured.');
+    super('Card payments are unavailable — the platform Stripe key is not configured.');
     this.name = 'PaymentsUnconfiguredError';
   }
 }

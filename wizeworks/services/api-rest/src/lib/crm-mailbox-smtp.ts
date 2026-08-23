@@ -158,7 +158,7 @@ export async function sendSmtpMessage(config: SmtpConfig, message: SmtpMessage):
     if (!implicitTls) {
       if (!ehloSupports(greeting, 'STARTTLS')) {
         throw new SmtpPermanentError(
-          `${config.host} will not encrypt the connection, so sparx will not send through it.`
+          `${config.host} will not encrypt the connection, so mail cannot be sent through it.`
         );
       }
       await session.command('STARTTLS');

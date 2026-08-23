@@ -68,7 +68,7 @@ const callRoutes: FastifyPluginAsync = (app) => {
 
     const device = toE164(body.fromDeviceNumber);
     if (!device) {
-      throw badRequest('That does not look like a phone number sparx can ring.');
+      throw badRequest('That does not look like a phone number we can ring.');
     }
 
     const auth = requireAuth(request);

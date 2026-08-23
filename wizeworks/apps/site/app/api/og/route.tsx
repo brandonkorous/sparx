@@ -10,7 +10,12 @@ import { ImageResponse } from 'next/og';
 export const runtime = 'edge';
 
 const SIZE = { width: 1200, height: 630 };
-const DEFAULT_ACCENT = '#e04631'; // sparx Ember, when the tenant set no brand color
+// The card's own ink, used as the accent rule when NOBODY has published a colour
+// — not the tenant, not the product they signed up under. It was a literal sparx
+// Ember, which put one company's brand colour on the other's social cards; the
+// platform's own accent now arrives as a parameter (see lib/og.ts), because this
+// route performs no lookup and has no way to ask whose site it is drawing.
+const DEFAULT_ACCENT = '#E5E5EC';
 const HEX = /^[0-9a-fA-F]{6}$/;
 
 // Title type scales down as it gets longer so it always fits the card.

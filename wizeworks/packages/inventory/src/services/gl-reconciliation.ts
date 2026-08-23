@@ -235,7 +235,7 @@ export async function glReconciliationReport(
       {
         kind: 'non_owned_stock',
         description:
-          'Consigned or customer-owned stock in your building. sparx leaves it out of your value; if your books include it, this is the difference (measured today, not at the date above — ownership is not dated)',
+          'Consigned or customer-owned stock in your building. It is left out of your value here; if your books include it, this is the difference (measured today, not at the date above — ownership is not dated)',
         amountCents: nonOwnedCents,
         source: 'sparx',
         reference: `${Number(nonOwned?.levels ?? 0)} lines`,
@@ -244,7 +244,7 @@ export async function glReconciliationReport(
         kind: 'uncosted_units',
         description:
           uncostedUnits > 0
-            ? `${uncostedUnits} units counted with no purchase behind them. sparx values them at nothing; an opening balance in your books may not have`
+            ? `${uncostedUnits} units counted with no purchase behind them. They are valued at nothing here; an opening balance in your books may not have`
             : 'Every unit on hand has a cost behind it',
         // Deliberately null and not zero: the units exist and their value is
         // genuinely unknown. Reporting £0 would assert they are worthless.

@@ -37,8 +37,10 @@ import { startConsumer, type RunningConsumer } from '@wizeworks/events';
 
 import { platformBrandIdentity } from '@wizeworks/brand-core';
 import { installBlueprint } from './blueprint-installer.js';
+import { blueprintVisibleTo } from './marketplace/brand-scope.js';
 import { resolveBlueprintManifest } from './marketplace/resolve.js';
 import { resolvePrimaryPropertyId } from './property.js';
+import { tenantPlatformBrand } from './tenant-brand.js';
 
 /**
  * Which starter site a tenant gets, asked of its BRAND rather than stated here.
@@ -69,7 +71,7 @@ const CONSUMER_DURABLE = 'api-rest-golden-blueprint';
 
 export type GoldenInstallOutcome =
   | { installed: true; installId: string }
-  | { installed: false; reason: 'already-installed' };
+  | { installed: false; reason: 'already-installed' | 'not-this-brand' };
 
 /**
  * Install the golden blueprint onto a tenant's primary property, unless it already
@@ -96,6 +98,26 @@ export async function installGoldenForTenant(
   if (existing) return { installed: false, reason: 'already-installed' };
 
   const goldenKey = await goldenBlueprintKeyFor(tenantId);
+
+  // The SAME gate furnishing applies before it installs a chosen template, for the
+  // same reason: a key that is not this brand's must never dress this brand's
+  // tenant. Here it guards a misconfiguration rather than a posted form field —
+  // `GOLDEN_BLUEPRINT` unset falls back to the default brand's key, and every
+  // Piggles business in dev was born selling six products named for sparx while
+  // the code above was already asking the brand correctly (issue 165).
+  //
+  // Refusing leaves the tenant undressed, which onboarding then fixes with the
+  // template the person actually picked. A bare site is recoverable; the wrong
+  // company's shop is what somebody publishes without noticing.
+  const brand = await tenantPlatformBrand(tenantId);
+  if (!(await blueprintVisibleTo(goldenKey, brand))) {
+    logger.error(
+      { tenantId, goldenKey, brand },
+      'golden-blueprint: refusing a starter that does not belong to this brand — check <BRAND>_GOLDEN_BLUEPRINT'
+    );
+    return { installed: false, reason: 'not-this-brand' };
+  }
+
   const blueprint = await resolveBlueprintManifest(tenantId, goldenKey);
   if (!blueprint) {
     // Transient at boot (catalog not yet self-registered); persistent only if the image

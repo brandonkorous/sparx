@@ -749,7 +749,7 @@ export const shopifyConnector: Connector = {
   vendors: ['shopify'],
   instructions: [
     'In Shopify, go to Settings → Apps and sales channels → Develop apps.',
-    'Click "Create an app", give it any name — "sparx migration" does fine — and create it.',
+    'Click "Create an app", give it any name — "site migration" does fine — and create it.',
     'Open Configuration → Admin API integration → Configure, and tick the read permissions for products, inventory, customers, orders, discounts, content and online store navigation.',
     'Save, then go to API credentials and click "Install app". Copy the Admin API access token it shows you — Shopify only shows it once.',
     'Orders older than sixty days need the "read all orders" permission, which Shopify makes you request on the same screen.',

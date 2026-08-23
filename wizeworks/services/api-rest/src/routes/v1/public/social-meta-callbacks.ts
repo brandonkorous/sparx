@@ -169,8 +169,7 @@ const socialMetaCallbackRoutes: FastifyPluginAsync = (app) => {
     return reply.status(200).send({
       status: 'completed',
       confirmation_code: code ?? null,
-      detail:
-        'Any social account connections associated with this Meta account have been removed from sparx.',
+      detail: 'Any social account connections associated with this Meta account have been removed.',
     });
   });
 

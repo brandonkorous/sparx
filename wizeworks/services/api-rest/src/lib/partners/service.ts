@@ -601,7 +601,7 @@ export const partnerService = {
     let applicantTenantId = app.applicantTenantId;
     if (!applicantTenantId) {
       if (!app.email) {
-        throw badRequest('This applicant has no Sparx account and no email to invite.');
+        throw badRequest('This applicant has no account and no email to invite.');
       }
       try {
         // Provisioning handles both cases: a brand-new account (with set-password

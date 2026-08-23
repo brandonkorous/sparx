@@ -93,7 +93,7 @@ const listConnections: McpToolDefinition = {
 const checkConnections: McpToolDefinition = {
   name: 'check_social_connections',
   description:
-    'Check whether each connected social account can actually do what sparx needs, by comparing the permissions the platform granted against the ones the module asks for. Use this when a post failed for no obvious reason, when an account was just reconnected, or to find out whether a platform has finished reviewing sparx’s app. Each result carries a `verdict` (ready / permissions_missing / awaiting_review / reconnect_required / unverifiable) and a plain-language `detail`; `caveat` is set when something about that account makes the answer unreliable. Makes a live call to each platform, so it is slower than list_social_connections — do not use it just to list accounts.',
+    'Check whether each connected social account can actually do what this software needs, by comparing the permissions the platform granted against the ones the module asks for. Use this when a post failed for no obvious reason, when an account was just reconnected, or to find out whether a platform has finished reviewing this app. Each result carries a `verdict` (ready / permissions_missing / awaiting_review / reconnect_required / unverifiable) and a plain-language `detail`; `caveat` is set when something about that account makes the answer unreliable. Makes a live call to each platform, so it is slower than list_social_connections — do not use it just to list accounts.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({ propertyId: uuid().nullable().optional() }),
@@ -483,7 +483,7 @@ const listSlots: McpToolDefinition = {
 const saveSlot: McpToolDefinition = {
   name: 'save_social_posting_slot',
   description:
-    'Create or update a weekly posting time. Omit `id` to create. `timezone` is an IANA zone — a slot is a recurring LOCAL time, so 9am stays 9am across daylight saving. Turning `autoFill` on lets sparx schedule an evergreen post here when nothing is planned; it never replaces a real post and still respects the approval gate.',
+    'Create or update a weekly posting time. Omit `id` to create. `timezone` is an IANA zone — a slot is a recurring LOCAL time, so 9am stays 9am across daylight saving. Turning `autoFill` on schedules an evergreen post here when nothing is planned; it never replaces a real post and still respects the approval gate.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({

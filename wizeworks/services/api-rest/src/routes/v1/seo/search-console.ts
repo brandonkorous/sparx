@@ -21,6 +21,9 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { badRequest } from '@wizeworks/api-core/errors';
 
+import { platformBrandIdentity } from '@wizeworks/brand-core';
+
+import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
 import { toSeoContext } from '../../../lib/seo-context.js';
 import {
   buildAuthUrl,
@@ -108,8 +111,12 @@ const searchConsoleRoutes: FastifyPluginAsync = (app) => {
     const tokens = await exchangeCode({ code, redirectUri: decoded.redirectUri });
     const refreshToken = tokens.refreshToken ?? '';
     if (!refreshToken) {
+      // The one place the product's own name is the INSTRUCTION: she has to find
+      // this app in a list on Google's site, and "remove us" does not tell her what
+      // to look for.
+      const platform = platformBrandIdentity(await tenantPlatformBrand(auth.tenantId)).name;
       throw badRequest(
-        'Google did not return a refresh token — remove sparx from your Google account permissions and reconnect.'
+        `Google did not return a refresh token — remove ${platform} from your Google account permissions and reconnect.`
       );
     }
     const sites = await listSites(tokens.accessToken);

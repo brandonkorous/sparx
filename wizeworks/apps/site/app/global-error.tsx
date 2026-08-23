@@ -22,6 +22,12 @@ import { useEffect } from 'react';
 
 const INK = '#14142b';
 const INK_QUIET = '#6b6b86';
+// The one control on the page, filled in the INK rather than any brand's accent.
+// It was a literal sparx Ember, which is one company's colour on the other
+// company's tenants' error page — and this file cannot look a brand up: it runs
+// in the browser after the root layout threw, with no theme and no stylesheet.
+// Ink on white is high-contrast, unmistakably a button, and belongs to nobody.
+const ACTION_FILL = INK;
 
 export default function GlobalError({
   error,
@@ -60,7 +66,7 @@ export default function GlobalError({
             type="button"
             onClick={reset}
             style={{
-              background: '#e04631',
+              background: ACTION_FILL,
               color: '#fff',
               border: 'none',
               borderRadius: '8px',

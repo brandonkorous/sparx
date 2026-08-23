@@ -128,6 +128,7 @@ export async function generateMetadata(): Promise<Metadata> {
           eyebrow: 'Site',
           brand: site.name,
           accent: site.theme?.colorPrimary,
+          platformBrand: site.platformBrand,
         }),
       ],
     },

@@ -103,7 +103,7 @@ export default async function ConsoleHome() {
                 title="Partners"
                 href="/sparx/partners"
                 cta="Open partners →"
-                body="The Sparx Partner Program — review applications, manage the partner roster and tiers, approve commissions, and run the monthly Stripe Connect payout batch."
+                body="The Partner Program — review applications, manage the partner roster and tiers, approve commissions, and run the monthly Stripe Connect payout batch."
               />
               <ConsoleEntry
                 title="Bootcamps"

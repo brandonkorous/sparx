@@ -35,7 +35,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Auto & Industrial',
     tagline: 'Parts, tools, and supplies for vehicles and the shop floor.',
     description:
-      'Shop auto parts, industrial supplies, and equipment from independent sellers across the sparx network — fitment-aware, in stock, and ready to ship.',
+      'Shop auto parts, industrial supplies, and equipment from independent sellers across the network — fitment-aware, in stock, and ready to ship.',
     icon: 'Wrench',
   },
   {

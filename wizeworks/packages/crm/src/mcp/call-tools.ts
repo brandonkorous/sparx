@@ -35,7 +35,7 @@ export const listCalls: McpToolDefinition = {
 export const listPhoneSystems: McpToolDefinition = {
   name: 'list_crm_phone_systems',
   description:
-    'List the phone systems this business has connected and which number each calls from. Returns nothing when none is connected, which means calls cannot be placed from sparx — a person can still make them by hand and log them afterwards. Never returns any credential.',
+    'List the phone systems this business has connected and which number each calls from. Returns nothing when none is connected, which means calls cannot be placed from here — a person can still make them by hand and log them afterwards. Never returns any credential.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({}),
@@ -75,7 +75,7 @@ export const placeCall: McpToolDefinition = {
 export const updateCall: McpToolDefinition = {
   name: 'update_crm_call',
   description:
-    'Write down what was said on a call, or correct how it ended. Worth doing straight after a conversation: the outcome sparx recorded is inferred from the phone system, and a short call it marked as "no answer" was often a voicemail. The notes are the part nobody else can reconstruct later.',
+    'Write down what was said on a call, or correct how it ended. Worth doing straight after a conversation: the outcome recorded here is inferred from the phone system, and a short call it marked as "no answer" was often a voicemail. The notes are the part nobody else can reconstruct later.',
   scope: 'write:crm',
   confirmation: false,
   input: z.object({ callId: z.string().uuid() }).and(UpdateCallInput),

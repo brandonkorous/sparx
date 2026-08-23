@@ -426,6 +426,13 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
 
       const preview = body.length > 140 ? `${body.slice(0, 139)}…` : body;
 
+      // Resolved BEFORE the transaction, because three things below sign this
+      // reply and all three have to sign it with the same name: the message row,
+      // the in-app notice, and the email. The notice title said "The sparx team"
+      // to a Piggles account holder, and the author fell back to "sparx Support"
+      // on the row itself, while the email a few lines down was already correct.
+      const brandIdentity = platformBrandIdentity(await tenantPlatformBrand(tenantId));
+
       // Post the staff message + close the loop (lastResponseAt + unread + optional
       // status) atomically under the tenant's GUC.
       const row = await withTenant({ tenantId }, async (tx) => {
@@ -435,7 +442,7 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
             submissionId: id,
             authorKind: 'staff',
             authorId,
-            authorName: authorName ?? 'sparx Support',
+            authorName: authorName ?? brandIdentity.supportName,
             body,
           },
         });
@@ -443,7 +450,7 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
         // bell, which reads per-user rows.
         //
         // Written directly rather than through the automation engine because
-        // this is correspondence between sparx and the account holder, not an
+        // this is correspondence between us and the account holder, not an
         // event in the tenant's business — see platform-notice.ts for the full
         // reasoning. Same transaction as the reply, so a reply cannot land
         // without the submitter being told.
@@ -451,7 +458,7 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
           tenantId,
           userId: before.userId,
           kind: 'feedback.replied',
-          title: 'The sparx team replied to your feedback',
+          title: `The ${brandIdentity.name} team replied to your feedback`,
           body: preview,
           entityType: 'feedback',
           entityId: id,
@@ -481,7 +488,6 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
         // the submitter's inbox alongside the in-app notice above.
         const feedbackTitle =
           row.subject && row.subject.trim().length > 0 ? row.subject : 'your feedback';
-        const brandIdentity = platformBrandIdentity(await tenantPlatformBrand(tenantId));
         await publish(request.log, 'email.send', tenantId, authorId, {
           to: before.submitterEmail,
           template: 'feedback-response',

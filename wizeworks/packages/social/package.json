@@ -35,6 +35,7 @@
   ],
   "dependencies": {
     "@wizeworks/api-core": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/integrations": "workspace:*",
     "zod": "^4.4.3"

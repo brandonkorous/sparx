@@ -125,7 +125,7 @@ const inventoryAccountingRoutes: FastifyPluginAsync = async (app) => {
     const { connection, credentials } = await loadCredentials(ctx.tenantId, body.connection_id);
     const adapter = accountingAdapter(connection.provider);
     if (!adapter) {
-      throw badRequest(`sparx cannot post journals to ${connection.provider} yet.`);
+      throw badRequest(`We cannot post journals to ${connection.provider} yet.`);
     }
 
     const { roles, closedThrough } = await loadRoleMapping(ctx.tenantId, body.connection_id);
@@ -199,7 +199,7 @@ const inventoryAccountingRoutes: FastifyPluginAsync = async (app) => {
     const { connection, credentials } = await loadCredentials(ctx.tenantId, q.connection_id);
     const adapter = accountingAdapter(connection.provider);
     if (!adapter) {
-      throw badRequest(`sparx cannot read the chart of accounts from ${connection.provider} yet.`);
+      throw badRequest(`We cannot read the chart of accounts from ${connection.provider} yet.`);
     }
     const accounts = await adapter.listAccounts(credentials);
     return ok({ accounts, roles: JOURNAL_ACCOUNT_ROLES });
@@ -237,7 +237,7 @@ const inventoryAccountingRoutes: FastifyPluginAsync = async (app) => {
     const { connection, credentials } = await loadCredentials(ctx.tenantId, body.connection_id);
     const adapter = accountingAdapter(connection.provider);
     if (!adapter) {
-      throw badRequest(`sparx cannot read balances from ${connection.provider} yet.`);
+      throw badRequest(`We cannot read balances from ${connection.provider} yet.`);
     }
 
     const { roles, names } = await loadRoleMapping(ctx.tenantId, body.connection_id);

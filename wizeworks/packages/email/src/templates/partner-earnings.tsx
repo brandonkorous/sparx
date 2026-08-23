@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
   type Tone,
 } from '../components';
 
@@ -67,13 +68,14 @@ function copyFor(p: PartnerEarningsEmailProps): Copy {
 // PLATFORM email (sparx → the partner) — one email for the three partner-earnings
 // moments (a referral signed up, a commission accrued, a payout was sent).
 export function PartnerEarningsEmail(props: PartnerEarningsEmailProps) {
+  const platform = usePlatformName();
   const c = copyFor(props);
   return (
     <PlatformEmailLayout
       preview={c.heading}
       mastheadRight="partners"
       footerLinks={[{ label: 'Partner dashboard', href: props.dashboardUrl }]}
-      footerReason="You're receiving this because you're a sparx partner."
+      footerReason={`You're receiving this because you're a ${platform} partner.`}
     >
       <EmailDisplayHeading>{c.heading}</EmailDisplayHeading>
       <EmailParagraph>
@@ -97,18 +99,21 @@ export function PartnerEarningsEmail(props: PartnerEarningsEmailProps) {
   );
 }
 
-export function partnerEarningsSubject(kind: PartnerEarningsKind, amountLabel?: string): string {
+/** A subject is a string, not a component, so it cannot read the brand context
+ *  the body reads — `send.tsx` resolves the name once and passes it in. Every one
+ *  of these said "sparx" to whoever the partner belonged to. */
+export function partnerEarningsSubject(
+  kind: PartnerEarningsKind,
+  platform: string,
+  amountLabel?: string
+): string {
   switch (kind) {
     case 'referral':
-      return 'You have a new referral on sparx';
+      return `You have a new referral on ${platform}`;
     case 'commission':
-      return amountLabel
-        ? `You earned ${amountLabel} on sparx`
-        : 'You earned a commission on sparx';
+      return amountLabel ? `You earned ${amountLabel} on ${platform}` : 'You earned a commission';
     case 'payout':
     default:
-      return amountLabel
-        ? `Your ${amountLabel} payout is on the way`
-        : 'Your sparx payout is on the way';
+      return amountLabel ? `Your ${amountLabel} payout is on the way` : 'Your payout is on the way';
   }
 }

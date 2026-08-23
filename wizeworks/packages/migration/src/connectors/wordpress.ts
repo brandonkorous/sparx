@@ -555,7 +555,7 @@ export const wordpressConnector: Connector = {
   vendors: ['wordpress', 'woocommerce'],
   instructions: [
     'Your posts, pages and media come across with just the web address of your site — nothing else to set up.',
-    'For drafts as well as published posts: in WordPress go to Users → Profile → Application Passwords, add one called "sparx", and copy what it gives you along with your username.',
+    'For drafts as well as published posts: in WordPress go to Users → Profile → Application Passwords, add one called "migration", and copy what it gives you along with your username.',
     'If you sell with WooCommerce: WooCommerce → Settings → Advanced → REST API → Add key, set Permissions to Read, and copy the consumer key and consumer secret.',
     'Both keys are read-only. Nothing here can change anything on your old site.',
   ],

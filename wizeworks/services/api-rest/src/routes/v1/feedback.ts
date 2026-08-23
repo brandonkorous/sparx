@@ -25,6 +25,9 @@ import { requireAuth } from '@wizeworks/api-core/auth';
 import { ApiError, notFound } from '@wizeworks/api-core/errors';
 import { publish } from '@wizeworks/api-core/pubsub';
 import type { FeedbackSubmittedPayload } from '@wizeworks/events';
+import { platformBrandIdentity } from '@wizeworks/brand-core';
+
+import { tenantPlatformBrand } from '../../lib/tenant-brand.js';
 
 const CATEGORIES = ['idea', 'problem', 'question', 'praise'] as const;
 const SOURCES = ['button', 'pulse', 'command'] as const;
@@ -87,7 +90,11 @@ const PULSE_COOLDOWN_DAYS = 90; // quarterly sentiment cadence
 const PULSE_BACKOFF_DAYS = 180; // after repeated dismissals, back off further
 const RECENT_SUBMIT_SUPPRESS_DAYS = 30; // a recent submitter just told us
 const BACKOFF_DISMISSAL_THRESHOLD = 2;
-const PULSE_QUESTION = 'How’s your experience with sparx so far?';
+/** The one prompt on this survey, and the one place the product’s own name earns
+ *  its keep: "How’s your experience with us so far?" is a question from nobody.
+ *  Resolved per tenant, because the two brands are two products. */
+const pulseQuestion = (brand: string): string =>
+  `How’s your experience with ${platformBrandIdentity(brand).name} so far?`;
 // Routes where a sentiment nudge would be an interruption, even after a
 // completion. The client also self-suppresses; this is the server backstop.
 const SUPPRESSED_ROUTE_PREFIXES = [
@@ -409,10 +416,14 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
         }
       }
 
-      return { promptId: 'pulse-sentiment', kind: 'sentiment' as const, question: PULSE_QUESTION };
+      return { promptId: 'pulse-sentiment', kind: 'sentiment' as const };
     });
 
-    return ok(descriptor);
+    if (!descriptor) return ok(null);
+    return ok({
+      ...descriptor,
+      question: pulseQuestion(await tenantPlatformBrand(auth.tenantId)),
+    });
   });
 
   // ── Pulse interaction tracking ──────────────────────────────────────────

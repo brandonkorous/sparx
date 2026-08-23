@@ -38,7 +38,7 @@ export const SPARX_PAY_ID = 'sparx_pay';
 
 class SparxPayUnconfiguredError extends Error {
   constructor() {
-    super('sparx Pay is unavailable — the platform Stripe key is not configured.');
+    super('Card payments are unavailable — the platform Stripe key is not configured.');
     this.name = 'SparxPayUnconfiguredError';
   }
 }
@@ -215,7 +215,7 @@ export class SparxPayGateway implements PaymentGateway {
     if (!stripeEvent) {
       // The route verifies before calling this, so reaching here means the secrets
       // changed mid-request — surface it rather than silently dropping a payment.
-      throw new Error('sparx Pay webhook signature did not match any configured secret');
+      throw new Error('Webhook signature did not match any configured secret');
     }
     return Promise.resolve(normalizeStripeEvent(stripeEvent));
   }

@@ -584,7 +584,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
     if (isZoneHost(host)) {
-      throw validationError('That host is managed by sparx and is added automatically.', [
+      throw validationError('That host is managed for you and is added automatically.', [
         { field: 'host', message: 'sparx.zone subdomains cannot be connected.' },
       ]);
     }

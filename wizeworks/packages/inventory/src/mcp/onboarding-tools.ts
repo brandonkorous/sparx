@@ -76,7 +76,7 @@ const previewStockImport: McpToolDefinition = {
 const listImportRecipes: McpToolDefinition = {
   name: 'list_import_recipes',
   description:
-    'The kinds of stock file sparx knows how to read — a hand-kept spreadsheet, an item list from accounts software, a marketplace listing report, a till export, or a stock-take sheet sparx itself produced. Each says how to recognise it. Use it to pick the right recipe before previewing an import.',
+    'The kinds of stock file this software knows how to read — a hand-kept spreadsheet, an item list from accounts software, a marketplace listing report, a till export, or a stock-take sheet this software produced. Each says how to recognise it. Use it to pick the right recipe before previewing an import.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({}),

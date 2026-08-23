@@ -51,14 +51,25 @@ Anything nullable (`url`, `billingEmail`, `appUrl`) is null when the brand has
 published none: **omit the line, never invent one.** A guessed URL is a link to a
 404 and a guessed address bounces a customer's reply.
 
-The **six sparx-PRODUCT templates are the exception**, and only because they are
-ABOUT sparx: `market-settlement-report`, `partner-welcome`,
-`partner-application-received`, `partner-earnings`, and the two
-`job-application-*` (WizeWorks' own careers page). A Piggles tenant never
-receives one — there is no Piggles marketplace or partner programme
-(piggles/CLAUDE.md, "A sparx PRODUCT is not a Piggles capability"). They are
-listed by name in `SPARX_OWN_PRODUCTS` in `every-template.test.ts`; adding to
-that list needs the same argument.
+The **three sparx-PRODUCT templates are the exception**, and only because they
+are ABOUT sparx: `market-settlement-report` and the two `job-application-*`
+(WizeWorks' own careers page). A Piggles tenant never receives one — there is no
+Piggles marketplace (piggles/CLAUDE.md, "A sparx PRODUCT is not a Piggles
+capability"). They are listed by name in `SPARX_OWN_PRODUCTS` in
+`every-template.test.ts`; adding to that list needs the same argument.
+
+**It was six, and the three that came off are the lesson.** `partner-welcome`,
+`partner-application-received` and `partner-earnings` were exempted on the same
+reasoning — no Piggles partner programme, so naming sparx is naming the truth.
+The reasoning did not survive being checked: the programme runs out of shared
+platform code (`services/api-rest/src/lib/partners/`), so "there is no Piggles
+partner programme" describes today's marketing rather than the software. In the
+meantime the exemption was doing real work — it held three subject lines, two
+footer reasons and a hardcoded `sparx.works/partners` link out of the sweep that
+fixed 110 other literals, and nothing was watching them. They now resolve through
+`usePlatformName()`, which renders byte-identically for a sparx partner. **An
+entry on this list is not a description, it is a hole in the test** — put one
+there only when the template would be nonsense under any other brand.
 
 `every-template.test.ts` renders EVERY template a second time with a second
 brand and asserts the string never appears. That test is the enforcement — 110

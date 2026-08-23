@@ -6,6 +6,8 @@ import {
   EmailLead,
   EmailParagraph,
   EmailSteps,
+  usePlatform,
+  usePlatformName,
 } from '../components';
 
 export interface PartnerWelcomeEmailProps {
@@ -29,18 +31,20 @@ export function PartnerWelcomeEmail({
   dashboardUrl,
   needsPassword,
 }: PartnerWelcomeEmailProps) {
+  const { url } = usePlatform();
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="You're approved — welcome to the sparx Partner Program"
-      footerLinks={[{ label: 'Partner guide', href: 'https://sparx.works/partners' }]}
-      footerReason="You're receiving this because your sparx partner application was approved."
+      preview={`You're approved — welcome to the ${platform} Partner Program`}
+      footerLinks={url ? [{ label: 'Partner guide', href: `${url}/partners` }] : []}
+      footerReason={`You're receiving this because your ${platform} partner application was approved.`}
     >
       <EmailDisplayHeading>
         Welcome to the Partner Program{name ? `, ${name}` : ''}.
       </EmailDisplayHeading>
       <EmailLead>
-        You&apos;re officially a sparx partner — your workspace is ready and there&apos;s money to
-        be made.
+        You&apos;re officially a {platform} partner — your workspace is ready and there&apos;s money
+        to be made.
       </EmailLead>
       <EmailParagraph>Here&apos;s how to get going:</EmailParagraph>
 
@@ -68,4 +72,7 @@ export function PartnerWelcomeEmail({
   );
 }
 
-export const partnerWelcomeSubject = "You're approved — welcome to the sparx Partner Program";
+/** A function rather than a constant, because a constant cannot ask which brand
+ *  approved them — `send.tsx` resolves the name once per send. */
+export const partnerWelcomeSubject = (platform: string): string =>
+  `You're approved — welcome to the ${platform} Partner Program`;

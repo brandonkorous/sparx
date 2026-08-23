@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       ? settings.description.trim()
       : typeof settings.tagline === 'string' && settings.tagline.trim()
         ? settings.tagline.trim()
-        : `${site.name} — an online store powered by sparx.`;
+        : `The official website of ${site.name}.`;
 
   const policySlug = site.consent?.policyPageSlug;
 

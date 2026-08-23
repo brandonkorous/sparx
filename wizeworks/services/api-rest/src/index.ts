@@ -305,7 +305,7 @@ async function main(): Promise<void> {
         ...r.integrations.pruned,
       ];
       if (pruned.length) {
-        app.log.info({ pruned }, 'marketplace: retracted listings sparx no longer ships');
+        app.log.info({ pruned }, 'marketplace: retracted listings the platform no longer ships');
       }
     })
     .catch((err: unknown) => {

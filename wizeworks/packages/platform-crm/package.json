@@ -21,6 +21,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@wizeworks/brand-core": "workspace:*",
     "@wizeworks/crm": "workspace:*",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/modules": "workspace:*"

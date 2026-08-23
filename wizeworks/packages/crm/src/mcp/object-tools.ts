@@ -36,7 +36,9 @@ export const listObjectTypes: McpToolDefinition = {
     kind: z
       .enum(['builtin', 'custom'])
       .optional()
-      .describe('Limit to the records sparx ships (builtin) or the ones this business invented.'),
+      .describe(
+        'Limit to the records this software ships (builtin) or the ones this business invented.'
+      ),
     includeArchived: z.boolean().optional(),
   }),
   run: (ctx, input) =>

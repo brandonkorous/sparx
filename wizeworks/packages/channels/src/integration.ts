@@ -12,6 +12,8 @@
 // and it lights up on the next boot with no code change). Collapsing both into one
 // "unavailable" is what left four provider bundles invisible for months.
 
+import { PLATFORM_TOKEN } from '@wizeworks/brand-core';
+
 import {
   defineIntegrationKind,
   type IntegrationAvailability,
@@ -24,11 +26,12 @@ import type { ChannelAdapter, ChannelSlug } from './types.js';
 export const channelIntegrations = defineIntegrationKind<ChannelAdapter>('sales_channels');
 
 /** Who runs the channel — shown as "by …" so a tenant can tell whose terms they are
- *  agreeing to. sparx.market is ours; the rest are other people's marketplaces. */
+ *  agreeing to. The first-party market is ours; the rest are other people's. Ours
+ *  carries the token rather than a name — see PLATFORM_TOKEN. */
 function vendorFor(slug: string): string {
   switch (slug) {
     case 'sparx_market':
-      return 'sparx';
+      return PLATFORM_TOKEN;
     case 'google_shopping':
       return 'Google';
     case 'meta':
@@ -85,7 +88,7 @@ function resolveAvailability(
   if (!adapter.isConfigured()) {
     return {
       availability: 'needs_platform_setup',
-      reason: `sparx is finishing its ${descriptor.name} partner approval. Nothing for you to do — this will switch on by itself.`,
+      reason: `{platform} is finishing its ${descriptor.name} partner approval. Nothing for you to do — this will switch on by itself.`,
     };
   }
   return { availability: 'available' };
@@ -93,7 +96,7 @@ function resolveAvailability(
 
 function capabilityPhrases(descriptor: ChannelDescriptor): string[] {
   return descriptor.managesOrders
-    ? ['Lists your products', 'Brings orders into sparx', 'Keeps stock in step']
+    ? ['Lists your products', 'Brings orders into {platform}', 'Keeps stock in step']
     : ['Lists your products', 'Shoppers check out on your own site'];
 }
 
@@ -108,7 +111,7 @@ export function channelToIntegrationDescriptor(
     name: descriptor.name,
     vendor: vendorFor(descriptor.slug),
     blurb: descriptor.tagline,
-    publisher: 'sparx',
+    publisher: PLATFORM_TOKEN,
     availability,
     unavailableReason: reason,
     // Every channel is OAuth — a tenant authorises sparx against their own seller
