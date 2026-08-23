@@ -137,7 +137,13 @@ variable "jotacular_key_vault_name" {
     order is wrong is a clean plan-time "Key Vault not found", not a mystery.
   EOT
   type        = string
-  default     = "kv-jotacular-prod-cus"
+  # THE VAULT IS STILL CALLED jotdojo. This is a LOOKUP of a vault that already
+  # exists, not a declaration of one — and the physical name did not move with
+  # the rename, because renaming a Key Vault destroys it and reserves the old
+  # name for the retention window. See the note at the head of
+  # terraform/envs/azure/jotacular.tf. A miss here is not a diff, it is a hard
+  # plan error: "no Key Vault found".
+  default = "kv-jotdojo-prod-cus"
 }
 
 locals {

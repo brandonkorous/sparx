@@ -1117,12 +1117,12 @@ jobs:
             # admin is `sparx_owner`. jotDOJO cannot mint its own owner, because its
             # migrations must ALREADY be connected as an owner to run. Left alone, its
             # DATABASE-ADMIN-URL would have to be the sparx server admin — a credential
-            # that opens `sparx` and `piggles` as readily as `jotacular` — living in a
-            # Secret in the `jotacular` namespace. Sparx mints one role, hands over the
+            # that opens `sparx` and `piggles` as readily as `jotdojo` — living in a
+            # Secret in the `jotdojo` namespace. Sparx mints one role, hands over the
             # database, and stops there.
             #
             # NOTHING SENSITIVE CROSSES A NAMESPACE. This Job runs in SPARX's namespace
-            # against the `jotacular` database. The admin credential never leaves here,
+            # against the `jotdojo` database. The admin credential never leaves here,
             # and the owner password it sets is one jotDOJO already has in its vault.
             # -----------------------------------------------------------------------
             - name: Ensure jotDOJO owns its own database
@@ -1150,7 +1150,7 @@ jobs:
                     --dry-run=client -o yaml | kubectl apply -f -
 
                   kubectl create configmap jotacular-bootstrap-sql -n "$NAMESPACE" \
-                    --from-file=jotacular-bootstrap.sql=wizeworks/packages/db/sql/jotacular-bootstrap.sql \
+                    --from-file=jotdojo-bootstrap.sql=wizeworks/packages/db/sql/jotdojo-bootstrap.sql \
                     --dry-run=client -o yaml | kubectl apply -f -
 
                   kubectl delete job jotacular-db-owner -n "$NAMESPACE" --ignore-not-found
@@ -1184,7 +1184,7 @@ jobs:
                             # A database name is the LAST path segment, so `$` is what
                             # distinguishes it from the same letters appearing anywhere
                             # else in the URL. Without the anchor a server named
-                            # `sparxdb` silently becomes `jotaculardb` — a connection to a
+                            # `sparxdb` silently becomes `jotdojodb` — a connection to a
                             # database that does not exist, reported as an auth failure.
                             # The optional group carries the query string through, so a
                             # URL with no `?sslmode=` still converts instead of aborting
@@ -1196,12 +1196,12 @@ jobs:
                             args:
                               - |
                                 set -eu
-                                URL=$(printf '%s' "$AUTH_DATABASE_URL" | sed -E 's#/sparx(\?.*)?$#/jotacular\1#')
+                                URL=$(printf '%s' "$AUTH_DATABASE_URL" | sed -E 's#/sparx(\?.*)?$#/jotdojo\1#')
                                 case "$URL" in
-                                  */jotacular|*/jotacular\?*) ;;
-                                  *) echo "FATAL: could not derive a jotacular URL from AUTH_DATABASE_URL; refusing to run against the sparx database." >&2; exit 1 ;;
+                                  */jotdojo|*/jotdojo\?*) ;;
+                                  *) echo "FATAL: could not derive a jotdojo URL from AUTH_DATABASE_URL; refusing to run against the sparx database." >&2; exit 1 ;;
                                 esac
-                                psql "$URL" -v ON_ERROR_STOP=1 -v owner_password="$OWNER_PASSWORD" -f /sql/jotacular-bootstrap.sql
+                                psql "$URL" -v ON_ERROR_STOP=1 -v owner_password="$OWNER_PASSWORD" -f /sql/jotdojo-bootstrap.sql
                             env:
                               - name: AUTH_DATABASE_URL
                                 valueFrom:

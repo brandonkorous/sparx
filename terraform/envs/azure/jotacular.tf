@@ -24,6 +24,26 @@
 # wizeworks/services/api-rest/src/routes/internal/domain-check.ts.
 # ---------------------------------------------------------------------------
 
+# ── THE CODE SAYS jotacular, AZURE STILL SAYS jotdojo ────────────────────────
+#
+# The product renamed; the resources did not. Every ADDRESS in this file is
+# `jotacular` and every physical NAME is still `jotdojo`, deliberately, and the
+# two are not the same kind of thing:
+#
+#   an address  is Terraform's own bookkeeping. Renaming one is free once a
+#               `moved` block carries the state across — see moved-jotacular.tf.
+#   a name      is the resource itself. Renaming a database, a storage account,
+#               a vault or a Cognitive account DESTROYS the old one and creates
+#               an empty new one. For these four that is a data migration, not
+#               a rename: the database holds jotDOJO's rows, the storage account
+#               holds everything anyone uploaded, and the vault and the OpenAI
+#               account both hold their names hostage for a retention window
+#               after a destroy.
+#
+# So the names stay until somebody decides to move the data, and this comment is
+# here so the mismatch reads as a decision rather than a miss. If they ever do
+# move: dump, create, restore, then change the names below in the same change.
+
 variable "jotacular_enabled" {
   description = <<-EOT
     Master switch for the whole file. Off leaves jotDOJO with no database, no
@@ -108,7 +128,7 @@ variable "jotacular_key_vault_name" {
     `Key Vault Secrets User` role below would otherwise grant exactly that.
   EOT
   type        = string
-  default     = "kv-jotacular-prod-cus"
+  default     = "kv-jotdojo-prod-cus"
 
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9]$", var.jotacular_key_vault_name))
@@ -149,7 +169,7 @@ data "azurerm_client_config" "current" {}
 #      possible without touching the other.
 #   2. ROLES AND RLS. Both products enforce tenancy with row-level security and
 #      a restricted application role. sparx's is `sparx_app` against
-#      `current_tenant_id()`; jotDOJO's is `jotacular_app` against
+#      `current_tenant_id()`; jotDOJO's is `jotdojo_app` against
 #      `app.actor_id`. Two RLS regimes sharing a database means one `GRANT` typo
 #      is a cross-PRODUCT data leak rather than a bug in one of them.
 #   3. EXTENSIONS ARE PER-DATABASE OBJECTS. `CREATE EXTENSION vector` installs
@@ -171,8 +191,9 @@ data "azurerm_client_config" "current" {}
 # also a bigger core. Do not scale it reflexively; cap the pools first.
 # ---------------------------------------------------------------------------
 resource "azurerm_postgresql_flexible_server_database" "jotacular" {
-  count     = local.jotacular_count
-  name      = "jotacular"
+  count = local.jotacular_count
+  # The DATABASE, not the product — see the note at the head of this file.
+  name      = "jotdojo"
   server_id = azurerm_postgresql_flexible_server.main.id
   collation = "en_US.utf8"
   charset   = "utf8"
@@ -195,7 +216,7 @@ resource "azurerm_postgresql_flexible_server_database" "jotacular" {
 # uses.
 #
 # WHAT GOES IN IT (jotDOJO's .env.example is the authority, not this list):
-#   DATABASE_URL              the RESTRICTED jotacular_app role. Never the owner —
+#   DATABASE_URL              the RESTRICTED jotdojo_app role. Never the owner —
 #                             PostgreSQL exempts superusers and BYPASSRLS roles
 #                             from every policy, so an admin connection string
 #                             turns the tenancy boundary off while every policy
@@ -230,7 +251,7 @@ resource "azurerm_key_vault" "jotacular" {
   # retention window, so rebuilding means picking a new name. sparx's vault holds
   # the credentials of a live platform and is worth that price. jotDOJO has not
   # launched; locking its vault name before the first deploy would mean a single
-  # early teardown costs the name `kv-jotacular-prod-cus` for a week.
+  # early teardown costs the name `kv-jotdojo-prod-cus` for a week.
   #
   # FLIP THIS TO TRUE AT LAUNCH. It is the same one-line change either way, and
   # after there are real users the argument reverses completely.
@@ -273,7 +294,7 @@ resource "azurerm_storage_account" "jotacular" {
 
   # Storage account names are globally unique, 3-24 chars, lowercase alphanumeric
   # ONLY — no hyphens, which is why this does not read like the other names here.
-  name                     = "stjotacularprodcus"
+  name                     = "stjotdojoprodcus"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
@@ -487,7 +508,7 @@ locals {
   # `-cus`; this one does not live there, and a name claiming otherwise is the
   # kind of small lie that costs somebody an hour during an incident.
   jotacular_ai_loc  = local.location_short[var.jotacular_ai_location]
-  jotacular_ai_name = "oai-jotacular-prod-${local.jotacular_ai_loc}"
+  jotacular_ai_name = "oai-jotdojo-prod-${local.jotacular_ai_loc}"
 
   # VERSIONS ARE PINNED. Azure retires model versions on a published schedule,
   # and an auto-upgrade is a silent change to what the product says about
@@ -555,7 +576,7 @@ resource "azurerm_cognitive_account" "jotacular" {
   lifecycle {
     # A Cognitive Services account SOFT-DELETES and holds its name - including
     # the custom subdomain, which is a global DNS label. A careless destroy
-    # therefore costs `oai-jotacular-prod-eus2` for the retention window, and
+    # therefore costs `oai-jotdojo-prod-eus2` for the retention window, and
     # every secret below has to be rewritten against a new name.
     prevent_destroy = true
   }
@@ -565,7 +586,7 @@ resource "azurerm_cognitive_deployment" "jotacular" {
   for_each = local.jotacular_ai_models
 
   # The seam's name, so a bill line, a metric and an env var all read the same.
-  name                 = "jotacular-${each.key}"
+  name                 = "jotdojo-${each.key}"
   cognitive_account_id = azurerm_cognitive_account.jotacular[0].id
 
   model {
@@ -746,7 +767,7 @@ output "jotacular_storage_account" {
 # `get secrets` there. jotDOJO's migrations are not the threat; the blast radius
 # around them is.
 #
-# The role is created by wizeworks/packages/db/sql/jotacular-bootstrap.sql, run as
+# The role is created by wizeworks/packages/db/sql/jotdojo-bootstrap.sql, run as
 # a Job by the release's data stage, because the server is private-IP and
 # nothing outside the cluster can reach it. SPARX runs it because sparx owns the
 # SERVER, and a server-level role is not something a tenant of that server can
@@ -809,18 +830,18 @@ locals {
       # BYPASSRLS roles from every policy, so an owner connection string turns
       # jotDOJO's whole space boundary off while every policy still reads as
       # though it were being enforced.
-      value = "postgresql://jotacular_app:${urlencode(random_password.jotacular_app[0].result)}@${local.jotacular_server}:5432/jotacular?sslmode=require"
+      value = "postgresql://jotdojo_app:${urlencode(random_password.jotacular_app[0].result)}@${local.jotacular_server}:5432/jotdojo?sslmode=require"
       type  = "connection-string; rotate by tainting random_password.jotacular_app"
     }
     "DATABASE-ADMIN-URL" = {
-      # Migrations only, and `jotacular_owner` rather than `sparx_owner` — see the
+      # Migrations only, and `jotdojo_owner` rather than `sparx_owner` — see the
       # note on random_password.jotacular_owner above.
-      value = "postgresql://jotacular_owner:${urlencode(random_password.jotacular_owner[0].result)}@${local.jotacular_server}:5432/jotacular?sslmode=require"
+      value = "postgresql://jotdojo_owner:${urlencode(random_password.jotacular_owner[0].result)}@${local.jotacular_server}:5432/jotdojo?sslmode=require"
       type  = "connection-string; migrations only, never the application"
     }
     "JOTDOJO-OWNER-PASSWORD" = {
       # Not on jotDOJO's required list and not read by its release — this one is
-      # for SPARX. The data stage passes it to jotacular-bootstrap.sql as
+      # for SPARX. The data stage passes it to jotdojo-bootstrap.sql as
       # `-v owner_password=`, which is how the role in DATABASE-ADMIN-URL comes
       # to exist at all.
       #
@@ -832,7 +853,7 @@ locals {
     }
     "JOTDOJO-APP-PASSWORD" = {
       # The same password as the one inside DATABASE-URL, carried separately
-      # because jotDOJO's migration Job runs `ALTER ROLE jotacular_app PASSWORD`
+      # because jotDOJO's migration Job runs `ALTER ROLE jotdojo_app PASSWORD`
       # with it. Two names, one value, on purpose.
       value = random_password.jotacular_app[0].result
       type  = "password; must match the role embedded in DATABASE-URL"
