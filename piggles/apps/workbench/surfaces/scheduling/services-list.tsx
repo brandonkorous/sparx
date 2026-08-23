@@ -2,54 +2,40 @@
 
 // SERVICES — what people can book you for, how long each takes, and what it costs.
 //
-// A table, like every other list. A service is an identity (its name and what
-// kind of booking it is) plus two facts you scan down a column — how long it
-// lasts, and its price. The columns disclose with @container: docked narrow you
-// see the name and its state; given room the kind, the length and the price come
-// back. The name cell is the one that GIVES, so the state badge is never shoved
-// off the right edge.
-//
-// Every narrowing — the search, the booking kind, "active only" — is a SERVER
-// filter, so a page of results is always the answer to the whole question and
-// never fifty rows sieved in the browser.
+// The rows live in services-table.tsx and what narrows them in
+// services-toolbar.tsx; this file holds the question being asked (RULE #0.5).
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  SearchInput,
-  Text,
-  ToggleGroup,
-  ToggleGroupItem,
-} from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faBriefcase, faEyeSlash, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Button, Card, EmptyState } from '@wizeworks/silicaui-react';
+import { faBriefcase, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { ServicesTable } from './services-table';
+import { ServicesToolbar, type ServicesFilters } from './services-toolbar';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
-import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  BOOKING_TYPES,
   bookingTypeLabel,
-  formatDuration,
-  formatMoney,
-  serviceState,
   useServices,
   type BookingType,
   type SchedulingService,
 } from './setup-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
 const MODULE = 'scheduling';
 
 const DETAIL_KEY = 'scheduling.services.detail';
+
+const NO_FILTERS: ServicesFilters = {
+  search: '',
+  type: '',
+  activeOnly: false,
+  showRemoved: false,
+};
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -59,19 +45,21 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 /** What to try when nothing matched — naming ONLY what is actually narrowing the
  *  list, so no one hunts for a filter they never set. */
-function emptyAdvice(search: string, typeLabel: string | null, activeOnly: boolean): string {
+function emptyAdvice(filters: ServicesFilters, typeLabel: string | null): string {
   const parts: string[] = [];
-  if (search) parts.push('Try part of a service’s name.');
+  if (filters.search.trim()) parts.push('Try part of a service’s name.');
   if (typeLabel) parts.push(`You are only seeing “${typeLabel}” bookings — switch to every kind.`);
-  if (activeOnly) parts.push('Switched-off services are hidden — include those to see them.');
+  if (filters.activeOnly) {
+    parts.push('Switched-off services are hidden — include those to see them.');
+  }
+  if (!filters.showRemoved) {
+    parts.push('Anything you have removed is hidden too — turn on Removed to see it.');
+  }
   return parts.join(' ');
 }
 
 export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [search, setSearch] = useState('');
-  const [type, setType] = useState('');
-  const [activeOnly, setActiveOnly] = useState(false);
-
+  const [filters, setFilters] = useState<ServicesFilters>(NO_FILTERS);
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState<number>(50);
@@ -79,19 +67,21 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const skip = (page - 1) * pageSize;
 
   const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useServices({
-    q: search.trim(),
-    ...(type ? { bookingType: type as BookingType } : {}),
-    activeOnly,
+    q: filters.search.trim(),
+    ...(filters.type ? { bookingType: filters.type as BookingType } : {}),
+    activeOnly: filters.activeOnly,
+    includeRemoved: filters.showRemoved,
     take,
     skip,
   });
 
   const rows = data?.items ?? [];
-  const total = data?.total;
-  const typeLabel = type ? bookingTypeLabel(type) : null;
-  const narrowed = search.trim() !== '' || type !== '';
+  const typeLabel = filters.type ? bookingTypeLabel(filters.type) : null;
+  const narrowed = filters.search.trim() !== '' || filters.type !== '';
 
-  const resetWindow = () => {
+  // Any change to what is being ASKED starts the answer again at page one.
+  const onFilters = (next: ServicesFilters) => {
+    setFilters(next);
     setPage(1);
     setTake(pageSize);
   };
@@ -126,9 +116,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
       );
     }
 
-    if (isPending) {
-      return <PaneWaiting label="Loading services…" />;
-    }
+    if (isPending) return <PaneWaiting label="Loading services…" />;
 
     if (rows.length === 0) {
       return (
@@ -138,7 +126,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           noResults={{
             icon: <Icon glyph={faBriefcase} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
-            description: emptyAdvice(search.trim(), typeLabel, activeOnly),
+            description: emptyAdvice(filters, typeLabel),
           }}
           firstRun={{
             title: 'No services yet',
@@ -161,154 +149,20 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
       );
     }
 
-    return (
-      <Table size="sm" hover>
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th className="hidden whitespace-nowrap @lg:table-cell">Kind</th>
-            <th className="hidden whitespace-nowrap @xl:table-cell">Length</th>
-            <th className="hidden whitespace-nowrap @xl:table-cell">Price</th>
-            <th>State</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((service) => {
-            const state = serviceState(service);
-            return (
-              <tr
-                key={service.id}
-                className="cursor-pointer"
-                tabIndex={0}
-                role="button"
-                onClick={(event) => {
-                  open(service, event);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  open(service, event);
-                }}
-              >
-                <td className="w-full max-w-0">
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{service.name}</span>
-                    <span className="truncate text-sm @lg:hidden">
-                      {bookingTypeLabel(service.bookingType)} ·{' '}
-                      {formatDuration(service.durationMinutes)}
-                      {service.priceCents > 0
-                        ? ` · ${formatMoney(service.priceCents, service.currency)}`
-                        : ''}
-                    </span>
-                  </span>
-                </td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">
-                  {bookingTypeLabel(service.bookingType)}
-                </td>
-                <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
-                  {formatDuration(service.durationMinutes)}
-                </td>
-                <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
-                  {service.priceCents > 0
-                    ? formatMoney(service.priceCents, service.currency)
-                    : 'Free'}
-                </td>
-                <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
-                  </Badge>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-    );
+    return <ServicesTable rows={rows} onOpen={open} />;
   };
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Services list controls"
-        search={
-          <div className="max-w-xs min-w-0 flex-1">
-            <SearchInput
-              size="sm"
-              aria-label="Search services"
-              placeholder="Service name…"
-              value={search}
-              onValueChange={(next) => {
-                setSearch(next);
-                resetWindow();
-              }}
-            />
-          </div>
-        }
-        primaryAction={{
-          label: 'New service',
-          icon: faPlus,
-          onClick: openNew,
-          title: 'New service — hold Shift to open alongside, Alt for a new window',
+      <ServicesToolbar
+        filters={filters}
+        onChange={onFilters}
+        onNew={openNew}
+        isFetching={isFetching}
+        updatedAt={data ? dataUpdatedAt : undefined}
+        onRefresh={() => {
+          void refetch();
         }}
-        controls={
-          <>
-            <NativeSelect
-              size="sm"
-              className="max-w-44 shrink"
-              aria-label="Show only one kind of booking"
-              value={type}
-              onChange={(event) => {
-                setType(event.target.value);
-                resetWindow();
-              }}
-            >
-              <option value="">Every kind</option>
-              {BOOKING_TYPES.map((kind) => (
-                <option key={kind.value} value={kind.value}>
-                  {kind.label}
-                </option>
-              ))}
-            </NativeSelect>
-            <ToggleGroup
-              size="sm"
-              color="module"
-              className="shrink-0"
-              value={activeOnly ? ['active'] : []}
-              onValueChange={(next: unknown[]) => {
-                setActiveOnly(next.includes('active'));
-                resetWindow();
-              }}
-            >
-              <ToggleGroupItem
-                value="active"
-                aria-label="Hide switched-off services"
-                title="Hide switched-off services"
-              >
-                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-                <span>Active only</span>
-              </ToggleGroupItem>
-            </ToggleGroup>
-          </>
-        }
-        views={{
-          target: '/scheduling/services',
-          params: { q: search.trim(), type, active: activeOnly ? '1' : '' },
-          onApply: (next) => {
-            setSearch(next.q ?? '');
-            setType(next.type ?? '');
-            setActiveOnly(next.active === '1');
-            resetWindow();
-          },
-        }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
       />
 
       <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
@@ -317,7 +171,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}
-          total={total}
+          total={data?.total}
           page={page}
           pageSize={pageSize}
           canLoadMore={take < MAX_TAKE}
@@ -335,11 +189,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ import {
 import { FormSection } from '../../components/form-section';
 import { MoneyTextInput } from '../../components/money-input';
 import { policySummary, reminderSummary, type BookingPolicy } from './setup-data';
-import { CURRENCIES, type Draft } from './service-detail';
+import { CURRENCIES, type Draft } from './service-draft';
 
 export interface PolicyList {
   data?: { items: BookingPolicy[] };

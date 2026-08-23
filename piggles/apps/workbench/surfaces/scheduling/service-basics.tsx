@@ -16,7 +16,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
 import { BOOKING_TYPES, type BookingType } from './setup-data';
-import type { Draft } from './service-detail';
+import type { Draft } from './service-draft';
 import { ServicePrice, type PolicyList } from './service-price';
 
 /** A non-negative integer from a number input, falling back when it is cleared. */

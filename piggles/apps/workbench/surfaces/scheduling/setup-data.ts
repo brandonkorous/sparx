@@ -40,7 +40,7 @@
 //     DELETE /v1/scheduling/policies/:id        delete (admin)
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
@@ -135,6 +135,9 @@ export interface SchedulingService {
   isActive: boolean;
   requiresAsset: boolean;
   settings: Record<string, unknown>;
+  /** Set only on a service that has been removed. Every read but the list hides
+   *  those, so this is null everywhere else (issue 145). */
+  removedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -143,6 +146,8 @@ export interface ServicesQuery {
   q?: string;
   bookingType?: BookingType;
   activeOnly: boolean;
+  /** Show services that have been removed, so one can be put back. */
+  includeRemoved?: boolean;
   take: number;
   skip: number;
 }
@@ -161,6 +166,7 @@ export function useServices(query: ServicesQuery) {
         ...(query.q ? { q: query.q } : {}),
         ...(query.bookingType ? { bookingType: query.bookingType } : {}),
         ...(query.activeOnly ? { activeOnly: true } : {}),
+        ...(query.includeRemoved ? { includeRemoved: true } : {}),
         take: query.take,
         skip: query.skip,
       }),
@@ -242,6 +248,19 @@ export function useDeleteService(id: string) {
   });
 }
 
+/** Undo a removal. The row was only ever stamped, never deleted, so this puts
+ *  back the SAME service the existing bookings point at (issue 145). */
+export function useRestoreService() {
+  const invalidate = useInvalidateServices();
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.post<SchedulingService>(`/v1/scheduling/services/${id}/restore`, {}),
+    onSuccess: (row) => {
+      invalidate(row.id);
+    },
+  });
+}
+
 /** The booking kinds, in the order they are offered — stored value plus the
  *  words a business owner uses for it. */
 export const BOOKING_TYPES: { value: BookingType; label: string; hint: string }[] = [
@@ -302,8 +321,11 @@ export const ASSIGNMENT_STRATEGIES: {
 
 /** What a service looks like at a glance: whether it takes bookings, and where. */
 export function serviceState(
-  service: Pick<SchedulingService, 'isActive' | 'bookableOnline'>
+  service: Pick<SchedulingService, 'isActive' | 'bookableOnline'> & { removedAt?: string | null }
 ): StateLabel {
+  // Removed outranks everything else it could say: a switched-off service is
+  // still yours to switch on, and a removed one is off your website entirely.
+  if (service.removedAt) return { label: 'Removed', tone: 'error' };
   if (!service.isActive) return { label: 'Off', tone: 'neutral' };
   if (!service.bookableOnline) return { label: 'Staff only', tone: 'warning' };
   return { label: 'Bookable', tone: 'success' };
@@ -628,13 +650,39 @@ export const availabilityKeys = {
     ['scheduling', 'availability', 'exceptions', resourceId ?? 'all'] as const,
 };
 
-export function useResourceWindows(resourceId: string | null) {
-  return useQuery({
-    queryKey: availabilityKeys.windows(resourceId ?? 'none'),
+/** One resource's working hours, as options — so a single read and a fan-out
+ *  over several resources share a cache entry rather than each minting a key. */
+function windowsQuery(resourceId: string) {
+  return {
+    queryKey: availabilityKeys.windows(resourceId),
     queryFn: () =>
-      api.get<AvailabilityWindow[]>(`/v1/scheduling/resources/${resourceId ?? ''}/availability`),
-    enabled: Boolean(resourceId),
-  });
+      api.get<AvailabilityWindow[]>(`/v1/scheduling/resources/${resourceId}/availability`),
+  };
+}
+
+export function useResourceWindows(resourceId: string | null) {
+  return useQuery({ ...windowsQuery(resourceId ?? 'none'), enabled: Boolean(resourceId) });
+}
+
+/**
+ * Every named resource's working hours at once.
+ *
+ * For the diary's DEFAULT view, which shows everybody: the per-resource endpoint
+ * is the only one there is, so this fans out over it. A shop has a handful of
+ * chairs, the reads are cached per resource, and they are the same entries the
+ * single-resource view already fills — so switching between "everyone" and one
+ * person costs nothing the second time.
+ *
+ * `rows` is undefined until EVERY resource has answered. A partial set would say
+ * "nobody works today" about a day somebody works, which is worse than waiting.
+ */
+export function useResourcesWindows(resourceIds: string[]): {
+  rows: AvailabilityWindow[] | undefined;
+} {
+  const results = useQueries({ queries: resourceIds.map((id) => windowsQuery(id)) });
+  const ready = results.every((result) => result.data !== undefined);
+  const rows = ready ? results.flatMap((result) => result.data ?? []) : undefined;
+  return { rows };
 }
 
 export function useSetResourceWindows(resourceId: string) {
