@@ -55,10 +55,8 @@ module "dns" {
   sparx_email_dkim_selector = var.sparx_email_dkim_selector
   sparx_email_dkim_value    = var.sparx_email_dkim_value
 
-  # jotacular.com's five records already existed in Cloudflare before this module
-  # described them, so they are ADOPTED rather than created — see
-  # imports-jotacular.tf, which holds the import blocks and the reasoning. Left
-  # as a plain create, the `www` CNAME fails with 81057 and the four A records
-  # quietly double up.
-  jotacular_dns_enabled = local.jotacular_dns_enabled
+  # jotacular_dns_enabled is left at its default (on). Its five records already
+  # existed in Cloudflare when this module first described them and were ADOPTED
+  # into state by import blocks in the v1.227.1 release rather than created; the
+  # import file was one-shot and has been removed now that it has applied.
 }
