@@ -55,25 +55,10 @@ module "dns" {
   sparx_email_dkim_selector = var.sparx_email_dkim_selector
   sparx_email_dkim_value    = var.sparx_email_dkim_value
 
-  # OFF because jotacular.com's five records ALREADY EXIST in Cloudflare and are
-  # not in this state. The module would `create` them, and Cloudflare does not
-  # adopt on create: the two CNAMEs fail outright with 81057, and the A records
-  # are worse than a failure — Cloudflare permits duplicates, so the apply would
-  # SUCCEED while leaving jotacular.com with two competing answers.
-  #
-  # Checked, not assumed, on 2026-08-23:
-  #   jotacular.com NS  → alexandra/craig.ns.cloudflare.com, resolving through
-  #                       the proxy (104.21.19.89, 172.67.185.179), and root,
-  #                       www, app, api and mcp all answer today
-  #   the state refresh → no `jotacular` address in it at all
-  #
-  # This is exactly the mid-migration case the variable's own docstring names.
-  # The finished state is to ADOPT those five rather than skip them, which is an
-  # `import` block per record keyed off `data "cloudflare_record"` (it exists in
-  # provider 4.40 and takes zone_id + hostname + type). That is deliberately not
-  # done here: an import can only be proven against production DNS on its first
-  # run, a mis-targeted one silently rewrites a live record, and the destroy
-  # guard in release.yml only inspects deletes — it would wave an update through.
-  # Flip this back to true in the same change that adds the imports.
-  jotacular_dns_enabled = false
+  # jotacular.com's five records already existed in Cloudflare before this module
+  # described them, so they are ADOPTED rather than created — see
+  # imports-jotacular.tf, which holds the import blocks and the reasoning. Left
+  # as a plain create, the `www` CNAME fails with 81057 and the four A records
+  # quietly double up.
+  jotacular_dns_enabled = local.jotacular_dns_enabled
 }
