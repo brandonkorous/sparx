@@ -285,6 +285,37 @@ resource "azurerm_storage_account" "jotdojo" {
   min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
   shared_access_key_enabled       = true
+
+  # Photos upload from the BROWSER straight to blob storage, so the account
+  # needs CORS or nothing can be added at all.
+  #
+  # `Photos.tsx` asks the app for a short-lived SAS URL and then PUTs the file
+  # to it directly. That keeps whole images out of the app's request path,
+  # which is the right shape — and it makes the upload a cross-origin request
+  # from https://app.jotdojo.com to *.blob.core.windows.net. Without a matching
+  # rule Azure answers the preflight with "403 CORS not enabled or no matching
+  # rule found for this request", the PUT never runs, and the app sees only a
+  # failed fetch with nothing useful to report.
+  #
+  # x-ms-blob-type is not optional: every block-blob PUT carries it, and a
+  # header missing from this list fails the preflight exactly as a missing
+  # origin would.
+  blob_properties {
+    cors_rule {
+      allowed_origins = ["https://app.jotdojo.com"]
+      allowed_methods = ["GET", "HEAD", "PUT", "OPTIONS"]
+      allowed_headers = [
+        "x-ms-blob-type",
+        "x-ms-blob-content-type",
+        "content-type",
+        "content-length",
+      ]
+      # ETag, so the client can confirm what landed. Azure exposes only the
+      # simple response headers otherwise.
+      exposed_headers    = ["etag"]
+      max_age_in_seconds = 3600
+    }
+  }
 }
 
 # ONE container, because that is what the code actually addresses.
