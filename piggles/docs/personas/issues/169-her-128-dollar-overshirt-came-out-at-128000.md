@@ -1,12 +1,12 @@
 # 169 — Her $128 overshirt came out at $128,000
 
-**Status:** open
+**Status:** fixed
 **Severity:** major
 **Found by:** P03 · Juniper Row · act 3
 **Surface:** mypiggles › Sell › Add a product
 **Filed:** 2026-08-23
-**Fixed:** 2026-08-23 (code); awaiting the re-run on screen
-**Confirmed by:** —
+**Fixed:** 2026-08-23
+**Confirmed by:** the Sunday Trouser added at $110.00, click-and-type, first try — below
 
 ## What happened
 
@@ -102,9 +102,29 @@ number nobody had entered.
 
 ## Confirmed by
 
-Pending — re-added as Devi, on the same screen, with the same $128.00, and this
-line records what the box read. Typecheck and lint are green, which is not a
-confirmation.
+**Added her second product as Devi, on the same screen.**
+
+The Price box now opens **empty**, with a pale left-aligned `0.00` that is a real
+placeholder — checked in the DOM as well as by eye, because "looks empty" was the
+whole problem the first time.
+
+Typed the name `Sunday Trouser, wide leg`, clicked once at the LEFT of the price
+box — the same click that produced 128000.00 — and typed `110.00`. The box read
+**110.00**. Saved, and the database agrees:
+
+```
+ title                    | sku            | price_cents
+ Sunday Trouser, wide leg | SUNDAY-TROUSER |       11000
+```
+
+**The required half, checked too.** Cleared the price and tabbed away with a name
+and a code both filled: **Add product** greyed out and stayed disabled
+(`button.disabled === true`), so a shop can no longer be filled with free things
+by pressing it. No red message appeared while the box was merely empty, which is
+the discipline the code field already had.
+
+The Ash Overshirt kept the $128.00 it was given before the fix, on all fifteen of
+its versions — nothing was disturbed by the change.
 
 ## Rating effect
 

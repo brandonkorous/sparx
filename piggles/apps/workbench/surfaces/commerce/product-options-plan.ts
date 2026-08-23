@@ -154,7 +154,7 @@ export function consequenceLines(consequence: Consequence): string[] {
   if (consequence.keep.length > 0) {
     const count = consequence.keep.length;
     lines.push(
-      `${countOf(count, 'version', 'versions')} keep${count === 1 ? 's' : ''} its price and code.`
+      `${countOf(count, 'version', 'versions')} ${count === 1 ? 'keeps its' : 'keep their'} price and code.`
     );
   }
   if (consequence.blank > 0) {
@@ -166,7 +166,7 @@ export function consequenceLines(consequence: Consequence): string[] {
   if (consequence.retire.length > 0) {
     const count = consequence.retire.length;
     lines.push(
-      `${countOf(count, 'version', 'versions')} lose${count === 1 ? 's' : ''} its place and stops being sold — ${skus(consequence.retire)}. Past orders keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back.`
+      `${countOf(count, 'version', 'versions')} ${count === 1 ? 'loses its place and stops' : 'lose their place and stop'} being sold — ${skus(consequence.retire)}. Past orders keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back.`
     );
   }
   if (consequence.combinations > 100) {
