@@ -74,6 +74,7 @@ published. Seven issues, six fixed:
 - [125](issues/125-her-emails-sign-off-with-the-products-name-instead-of-her-salons.md) — **major, fixed.** The footer signed off **"Piggles"** where her salon's name belonged, because a flag meaning "we had no name" ships as true and nothing ever set it false.
 - [127](issues/127-a-booking-never-says-whether-anyone-is-being-reminded.md) — **major, fixed.** A booking never said what had been sent or what still would. It does now, which is what makes [126]'s residue visible.
 - [128](issues/128-the-check-that-was-supposed-to-catch-the-brand-leak-does-not-look-for-it.md) — **open.** `check:boundaries` is documented as failing on a brand literal under `wizeworks/**`. It has no string rule at all, and ran green on [122] for as long as [122] existed.
+- [129](issues/129-the-email-editor-draws-her-button-black-and-the-preview-draws-it-brown.md) — **open.** The editor canvas draws her button near-black and the preview draws it in her brand brown. The preview is the one that ships. Not chased: it is a canvas-theming question, not part of the reminder.
 
 [119](issues/119-the-search-only-finds-you-what-you-already-know-the-name-of.md) was
 closed on the way: act 9 began by typing **reminder** into the search box, which
@@ -112,8 +113,17 @@ they predate the [108](issues/108-every-booking-made-from-her-website-lands-in-h
 fix and the repair migration has not been run, so a reminder timed off those rows is
 seven hours out and will stay that way until it lands.
 
-Then act 10 (the phone at 390px), and the four standing checks still outstanding:
-wrong moves, dates, the buyer's side, and one job without a mouse.
+**And three of her five upcoming appointments still have no reminder queued** —
+Colette on Thursday, Rob and Margot on Friday. Their services now carry a rule
+set, but a booking's reminders are laid at booking time, so attaching one does not
+catch up what was already taken
+([126](issues/126-seven-of-her-ten-services-remind-nobody-and-the-switch-is-labelled-as-something-else.md)
+"What the fix does not do"). The booking pane says so on each of them, which is
+the point of [127](issues/127-a-booking-never-says-whether-anyone-is-being-reminded.md);
+catching them up is a decision, not a repair.
+
+Four standing checks are still outstanding after act 10: wrong moves, dates, the
+buyer's side, and one job without a mouse.
 
 ### Ids, so they are not looked up twice
 
@@ -575,3 +585,4 @@ A row with no confirmation is not a fixed defect.
 | [126](issues/126-seven-of-her-ten-services-remind-nobody-and-the-switch-is-labelled-as-something-else.md) | blocker  | Seven of her ten services remind nobody, and the switch says deposits                | yes   | All ten live services carry a rule set; the empty option names the cost      |
 | [127](issues/127-a-booking-never-says-whether-anyone-is-being-reminded.md)                                | major    | A booking never says whether anyone is being reminded                                | yes   | Priyanka’s colour lists three reminders To go; Margot’s cut says none is     |
 | [128](issues/128-the-check-that-was-supposed-to-catch-the-brand-leak-does-not-look-for-it.md)             | major    | The check that was meant to catch the brand leak does not look for it                | no    | Open — check:boundaries has no string rule at all                            |
+| [129](issues/129-the-email-editor-draws-her-button-black-and-the-preview-draws-it-brown.md)               | minor    | The email editor draws her button black and the preview draws it brown               | no    | Open — a canvas-theming question, not chased in act 9                        |
