@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-music-studio',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Music Studio (Contemporary)',
   summary:
     'A cool, creative music-lessons studio site — a dark charcoal-violet palette, an electric-violet primary and a modern sharp sans. Installs a working online booking flow: a free trial lesson plus guitar, vocals, bass, production, songwriting and performance lessons; three working-musician instructors booked by name; and two studio rooms — one a production suite — as bookable resources. Ships as "Amp Room", a contemporary lessons studio.',

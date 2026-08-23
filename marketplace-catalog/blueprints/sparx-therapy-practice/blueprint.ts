@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-therapy-practice',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Therapy Practice',
   summary:
     'A warm, grounded template for a private therapy & counseling practice — a soft-cream palette, a calm sage primary and a humanist serif, carried by gentle photography. Installs online booking for free consultations and sessions (individual, couples, teen, anxiety, trauma, telehealth), with therapists and private offices as bookable resources for in-person & telehealth counseling. Ships as "Anchor Counseling".',

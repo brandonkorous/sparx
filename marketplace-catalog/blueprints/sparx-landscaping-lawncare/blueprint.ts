@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-landscaping-lawncare',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Landscaping (Lawn Care)',
   summary:
     'A bright, friendly lawn-care & maintenance site — a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as "GreenBlade Lawn Care" — a lawn you’re proud of, handled.',

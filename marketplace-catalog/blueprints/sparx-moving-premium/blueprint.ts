@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-moving-premium',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Moving (Premium White-Glove)',
   summary:
     'A refined, premium site for a white-glove long-distance moving company — a deep charcoal palette, a warm brass accent and an elegant serif display over calm relocation photography. Installs online booking for complimentary consultations and estimates, three move managers you book by name with their own hours, and a deposit policy to reserve a move date. Ships as "Whiteglove Movers".',

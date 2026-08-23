@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-massage-therapeutic",
   "name": "Massage (Therapeutic)",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "tagline": "A results-driven template for therapeutic massage — book online from day one.",
   "description": "A clinical therapeutic-massage site — a cool slate-and-teal palette, a muted-steel secondary and a confident sans display, leading with the outcome, not luxury. Installs a working booking flow: a menu by concern (deep tissue, sports recovery, prenatal, cupping, trigger-point, medical/rehab), three licensed therapists and two treatment rooms as bookable resources, and standard plus card-hold policies. Ships as \"Meridian Bodywork\".",
   "payload": "blueprint.ts",

@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-roofing-storm',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Roofing (Storm)',
   summary:
     'A bold storm-damage and exteriors template — a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as "Ironclad Roofing & Exteriors".',

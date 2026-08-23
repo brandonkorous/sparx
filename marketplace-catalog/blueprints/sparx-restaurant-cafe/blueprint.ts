@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-cafe',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Café',
   summary:
     'A complete, working site for an all-day café: a real all-day brunch menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, daytime hours, a relaxed no-deposit policy — walk-ins welcome) on the /reserve page. Sunny café theme — warm cream, fresh café-green, a cheerful coral accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Kettle & Crumb.',

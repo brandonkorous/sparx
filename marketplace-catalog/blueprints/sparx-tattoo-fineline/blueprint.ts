@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-tattoo-fineline',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Tattoo (Fine Line)',
   summary:
     'A bright, minimal fine-line tattoo-studio site — a bone off-white palette, a warm near-black ink and one quiet soft-gold accent, with a clean grotesque and gallery-style work carrying the page. Installs a working booking flow: a free consultation, fine-line pieces priced by size, plus lettering and delicate floral; three artists you book by name with their own hours; and a session-deposit policy. Ships as "Faint", a light, considered studio — the calm opposite of the dark tattoo shop.',

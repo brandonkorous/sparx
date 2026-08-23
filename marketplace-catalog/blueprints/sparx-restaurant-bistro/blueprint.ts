@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-bistro',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Bistro',
   summary:
     'A complete, working site for a neighbourhood restaurant: a real seasonal menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm bistro theme — candle-cream, deep olive-green, a warm amber accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Larkspur.',

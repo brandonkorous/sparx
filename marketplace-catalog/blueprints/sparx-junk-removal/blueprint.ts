@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-junk-removal',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Junk Removal',
   summary:
     'A bold, friendly junk & debris removal site — a confident green palette with a warm orange accent, off-white ground and a sturdy sans display. Installs a working online booking flow: homeowners book a free quote or a pickup and get a real time slot. Ships a full menu (free quote, single-item, furniture & appliance, garage & estate cleanouts, construction debris, same-day), three crews as dispatchable resources, and standard + same-day policies. Ships as "Haul Away Junk Removal".',

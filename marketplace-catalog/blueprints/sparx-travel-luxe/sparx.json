@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-travel-luxe",
   "name": "Travel Advisory (Luxury)",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "tagline": "A refined template for luxury travel advisories — book consultations online from day one.",
   "description": "A refined, editorial travel-advisory site — a deep navy-teal palette, a warm brass accent and an elegant serif display over ivory, with worldly destination photography carrying the page. Installs a working consultation-booking flow: a real menu of consult types (discovery call, custom itineraries, honeymoons, luxury and VIP trips), three travel advisors you book by name with their own hours, and a planning-fee deposit policy. Ships as \"Wander & Co. Travel\", a luxury bespoke travel studio.",
   "payload": "blueprint.ts",

@@ -69,7 +69,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
  *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.3.2';
+const BUNDLE_VERSION = '1.3.3';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

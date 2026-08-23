@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-florist-shop',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Florist (Shop)',
   summary:
     'A bright, joyful neighbourhood flower-shop site — a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as "Petal & Post".',

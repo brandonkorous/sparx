@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-petgroom-playful',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Pet Grooming (Playful)',
   summary:
     'A bright, friendly dog-grooming site — a sky-teal primary, a sunny-yellow accent and a warm off-white ground on rounded, cheerful faces. Installs a working booking flow: a real menu priced by dog size (bath & brush, full groom, puppy intro, de-shed, nail trim), three groomers you book by name plus three grooming stations as bookable resources, and a $15 full-groom deposit policy. Ships as "Scrub & Wag".',

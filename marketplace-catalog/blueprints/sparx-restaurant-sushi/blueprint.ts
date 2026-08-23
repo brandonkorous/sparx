@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-sushi',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Sushi & omakase',
   summary:
     'A complete, working site for a sushi & omakase counter: a real omakase and à-la-carte menu, and a live reservations flow (counter seats and tables as bookable resources, an "Omakase counter" plus "Table for two/four" reservation services, two nightly seatings, a card-hold deposit and a cancellation policy) on the /reserve page. Minimal near-white paper theme, cool ink, a quiet indigo accent, a refined serif over a clean sans. Pages: Home, Menu, Reserve, About, Visit. Shipped as Nori.',

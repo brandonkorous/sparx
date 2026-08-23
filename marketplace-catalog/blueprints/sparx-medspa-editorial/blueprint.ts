@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-medspa-editorial',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Med Spa (Editorial)',
   summary:
     'An editorial med-spa site — a champagne-and-gold palette, an antique-gold primary and a healing sage accent under a Fraunces serif, with soft-lit photography carrying calm, boutique-hotel pages. Installs a working booking flow: a real treatment menu (facial, peel, microneedling, IV drip, laser), a free consultation you request, providers you book by name, two treatment rooms and a deposit policy. Ships as "Aésthète", a calm aesthetics clinic.',

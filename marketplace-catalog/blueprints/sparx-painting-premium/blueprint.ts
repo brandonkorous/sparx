@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-painting-premium',
-  version: '1.3.2',
+  version: '1.3.3',
   name: 'Painting (Premium)',
   summary:
     'A refined site for a premium fine-finishes painting studio — a deep heritage-green palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary walk-through to cabinet refinishing, specialty finishes and historic-home work, three craftsmen you book by name with their own hours, and a project-deposit policy. Ships as "Heritage Painters".',
