@@ -70,10 +70,27 @@ function assertUuid(value: string, field: string): void {
  *
  * Pass `context.tx` to compose into an enclosing transaction (see TenantContext.tx).
  */
+export interface WithTenantOptions {
+  /**
+   * How long the transaction may run, in milliseconds.
+   *
+   * Prisma's default is **5 seconds**, which is the right guard for a request
+   * handler and the wrong one for a bulk write. Furnishing a new apparel tenant
+   * spends 4.25s inserting 559 rows inside one `withTenant`, so it failed twice
+   * and succeeded on the third attempt purely on timing — and a rolled-back
+   * transaction leaves no trace of how close it came (issue 164).
+   *
+   * Set it only where the work is genuinely bulk. Everywhere else, five seconds
+   * failing loudly is a feature.
+   */
+  timeoutMs?: number;
+}
+
 export function withTenant<T>(
   context: TenantContext,
   fn: (tx: TxClient) => Promise<T>,
-  client: PrismaClient = defaultPrisma
+  client: PrismaClient = defaultPrisma,
+  options: WithTenantOptions = {}
 ): Promise<T> {
   assertUuid(context.tenantId, 'tenantId');
   if (context.userId !== undefined) {
@@ -86,13 +103,19 @@ export function withTenant<T>(
     return fn(context.tx);
   }
 
-  return client.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${context.tenantId}'`);
-    if (context.userId !== undefined) {
-      await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${context.userId}'`);
-    }
-    return fn(tx);
-  });
+  return client.$transaction(
+    async (tx) => {
+      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${context.tenantId}'`);
+      if (context.userId !== undefined) {
+        await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${context.userId}'`);
+      }
+      return fn(tx);
+    },
+    // `maxWait` is time to GET a connection, `timeout` is time to use it — the
+    // distinction advisory-tick-lock.ts already records. Omitted entirely when
+    // nobody asked, so Prisma's defaults keep governing every ordinary call.
+    options.timeoutMs ? { maxWait: 10_000, timeout: options.timeoutMs } : undefined
+  );
 }
 
 /**

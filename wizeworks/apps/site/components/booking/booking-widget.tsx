@@ -28,6 +28,7 @@ import {
   dayOf,
   formatStamp,
   formatTime,
+  isBookableDay,
   readsTheSame,
   startOfDay,
   today,
@@ -92,6 +93,20 @@ export function BookingWidget({
   const [seededDate, setSeededDate] = useState(false);
 
   const fetchSlots = useCallback(async () => {
+    // A HALF-TYPED DATE IS NOT A DATE.
+    //
+    // `<input type="date">` fires change on every segment, so somebody typing the
+    // year with a keyboard produces `0002-…`, `0020-…`, `0202-…` before `2026-…`.
+    // Each one used to be asked about: two came back 422 and printed "Request
+    // validation failed." on the salon's booking page, and the message was still
+    // standing over the Book button after the real answer arrived. Nobody using a
+    // mouse ever saw it, because the picker only ever hands over whole dates
+    // (piggles/docs/personas/issues/158).
+    if (!isBookableDay(date, tz)) {
+      setSlots(null);
+      setLoadingSlots(false);
+      return;
+    }
     setLoadingSlots(true);
     setSelected(null);
     setError(null);

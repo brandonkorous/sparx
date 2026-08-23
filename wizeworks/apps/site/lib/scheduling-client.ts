@@ -83,14 +83,27 @@ export async function loadServiceResources(
   return unwrap<BookableResource[]>(res);
 }
 
+/**
+ * What a customer is told when the failure is OURS.
+ *
+ * Most refusals from the scheduling engine are worth repeating word for word —
+ * "we're closed that week", "nobody is working then", "that time has just gone"
+ * are the salon's own answer and saying it any vaguer helps nobody (issues 149,
+ * 150). A schema rejection is the opposite: it means the page sent a request it
+ * should not have, which is a sentence about our code, and the person reading it
+ * on a booking page has no move to make. `VALIDATION_ERROR` and a bare non-2xx
+ * both get a sentence she can act on instead (issue 158).
+ */
+const OUR_FAULT = 'Something went wrong at our end. Please try again in a moment.';
+
 async function unwrap<T>(res: Response): Promise<T> {
   const body = (await res.json().catch(() => null)) as
     | { success: true; data: T }
-    | { success: false; error: { message: string } }
+    | { success: false; error: { code?: string; message: string } }
     | null;
   if (!res.ok || !body || body.success === false) {
-    const message = body?.success === false ? body.error.message : `Request failed (${res.status})`;
-    throw new Error(message);
+    const failure = body?.success === false ? body.error : null;
+    throw new Error(failure && failure.code !== 'VALIDATION_ERROR' ? failure.message : OUR_FAULT);
   }
   return body.data;
 }

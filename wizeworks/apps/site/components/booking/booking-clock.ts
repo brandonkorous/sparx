@@ -134,3 +134,21 @@ export function dayAfter(day: string, days = 1): string {
 export function today(tz: string | null): string {
   return dayOf(new Date(), tz);
 }
+
+/**
+ * Is `day` a date worth asking the salon about?
+ *
+ * A native date input reports its value on EVERY segment edit, so a person
+ * typing the year hands over `0002-08-25`, `0020-08-25` and `0202-08-25` on the
+ * way to `2026-08-25`. Those parse — year 2 is a real year — so nothing downstream
+ * rejects them as malformed; they simply describe a Tuesday two millennia ago.
+ *
+ * The test is the same one the input's own `min` already states: four digits, and
+ * not before today where the business is. A caller that fails it should ask
+ * nothing and show nothing, because the person is still typing.
+ */
+export function isBookableDay(day: string, tz: string | null): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return false;
+  if (Number.isNaN(Date.parse(`${day}T00:00:00Z`))) return false;
+  return day >= today(tz);
+}
