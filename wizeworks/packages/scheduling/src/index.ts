@@ -7,6 +7,7 @@
 // first, then calls these.
 
 export * from './errors';
+export { blockedError, blockedResources, type BlockReason } from './slot-guards';
 export {
   type Interval,
   overlaps,
@@ -43,6 +44,7 @@ export {
 export {
   type BookingWithRelations,
   type ListBookingsOptions,
+  type BookedCustomer,
   type CalendarEvent,
   getBooking,
   listBookings,
@@ -94,6 +96,7 @@ export {
   listServices,
   listServicesPaged,
   deleteService,
+  restoreService,
 } from './services';
 export {
   createBookingPolicy,

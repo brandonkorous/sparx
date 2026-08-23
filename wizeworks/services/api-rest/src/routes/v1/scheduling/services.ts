@@ -6,6 +6,7 @@
 //   GET    /v1/scheduling/services/:id      → get one
 //   PATCH  /v1/scheduling/services/:id      → update
 //   DELETE /v1/scheduling/services/:id      → soft-delete
+//   POST   /v1/scheduling/services/:id/restore → undo that
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ import {
   getService,
   listServicesPaged,
   deleteService,
+  restoreService,
 } from '@wizeworks/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
@@ -29,6 +31,9 @@ const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
   bookingType: z.enum(['appointment', 'class', 'reservation', 'rental']).optional(),
   activeOnly: queryBool.optional(),
+  // Removed services are hidden by every other read. The list asks for them so
+  // a removal can be undone (issue 145).
+  includeRemoved: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -91,6 +96,14 @@ const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
     await deleteService(tenantId, id);
     return ok({ id, deleted: true });
   });
+
+  app.post('/v1/scheduling/services/:id/restore', async (request) => {
+    await requireSchedulingModule(request);
+    requireRole(request, 'admin');
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    return ok(serviceView(await restoreService(tenantId, id)));
+  });
 };
 
 function serviceView(s: SchedulingService) {
@@ -120,6 +133,9 @@ function serviceView(s: SchedulingService) {
     isActive: s.isActive,
     requiresAsset: s.requiresAsset,
     settings: s.settings,
+    // Null unless this service has been removed. The list is the only read that
+    // can return one, and it needs to say so on the row.
+    removedAt: s.deletedAt?.toISOString() ?? null,
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };

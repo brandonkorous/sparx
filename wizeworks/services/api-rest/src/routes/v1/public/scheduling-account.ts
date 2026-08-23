@@ -1,5 +1,6 @@
-// Customer self-service booking portal (docs/79 §15 Phase 3c) — the
-// authenticated counterpart to the guest booking surface (public/scheduling.ts).
+// Customer self-service booking portal (docs/79 §15 Phase 3c) — the SIGNED-IN
+// counterpart to the guest booking surface (public/scheduling.ts) and to the
+// signed-link manage page (public/scheduling-manage.ts).
 //
 //   GET  /v1/public/scheduling/account/bookings        ?tenant=&scope=&page=&pageSize=
 //   GET  /v1/public/scheduling/account/bookings/:id     ?tenant=
@@ -13,29 +14,26 @@
 // can never read or mutate another's booking — a mismatch 404s without leaking
 // existence. Gated on the `scheduling` module. Engine errors (slot unavailable,
 // invalid state) map via app.ts's schedulingErrorMapper.
+//
+// What a customer may SEE and DO lives in lib/scheduling-customer-view.ts,
+// shared with the manage-link routes so the two doors cannot drift apart.
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { isModuleEnabled } from '@wizeworks/auth';
-import {
-  cancelBooking,
-  customerFacingPlace,
-  findBookingPlace,
-  getBooking,
-  listBookings,
-  rescheduleBooking,
-  type BookingWithRelations,
-} from '@wizeworks/scheduling';
+import { getBooking, listBookings, type BookingWithRelations } from '@wizeworks/scheduling';
 import { type CustomerAuthContext } from '@wizeworks/customer-auth';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { moduleDisabled, notFound } from '@wizeworks/api-core/errors';
 
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { requireCustomerId } from '../../../lib/customer-session.js';
-import { publishBookingEvent } from '../../../lib/scheduling-events.js';
-import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
-import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
+import {
+  cancelForCustomer,
+  rescheduleForCustomer,
+  toCustomerBookingDto,
+} from '../../../lib/scheduling-customer-view.js';
 
 const ListQuery = z.object({
   scope: z.enum(['upcoming', 'past', 'all']).default('upcoming'),
@@ -67,55 +65,6 @@ function requireCustomer(
   return requireCustomerId(request, ctx, scope);
 }
 
-const MODIFIABLE = ['requested', 'confirmed'];
-
-/** A customer-facing projection of a booking — only their-eyes copy (no staff
- *  notes). `canCancel`/`canReschedule` drive the portal's action buttons; the
- *  engine still enforces the real state machine + slot availability on write. */
-async function toBookingDto(
-  b: BookingWithRelations,
-  now: number,
-  tenantId: string
-): Promise<Record<string, unknown>> {
-  const future = b.startAt.getTime() > now;
-  const modifiable = MODIFIABLE.includes(b.status) && future;
-  // The same place the confirmation, the email and the `.ics` name (issue 107) —
-  // a booking re-added to a calendar from the portal must not be missing the
-  // address the one added from the confirmation carried.
-  const place = await findBookingPlace(tenantId, {
-    locationId: b.locationId,
-    serviceId: b.serviceId,
-  });
-  return {
-    id: b.id,
-    serviceName: b.service.name,
-    bookingType: b.bookingType,
-    status: b.status,
-    startAt: b.startAt.toISOString(),
-    endAt: b.endAt.toISOString(),
-    timezone: b.timezone,
-    durationMinutes: b.service.durationMinutes,
-    partySize: b.partySize,
-    staff: b.resources.filter((r) => r.resource.kind === 'staff').map((r) => r.resource.name),
-    notes: b.notes,
-    cancellationReason: b.cancellationReason,
-    serviceId: b.service.id,
-    canCancel: modifiable,
-    canReschedule: modifiable,
-    // "Add to calendar" — only meaningful for a live (non-cancelled) booking.
-    calendar:
-      b.status === 'cancelled' || b.status === 'no_show'
-        ? null
-        : bookingCalendarLinks(tenantId, b.id, {
-            summary: b.service.name,
-            start: b.startAt,
-            end: b.endAt,
-            ...(place ? { location: place.line } : {}),
-          }),
-    where: customerFacingPlace(place),
-  };
-}
-
 /** Load a booking and assert it belongs to this customer (else 404 — never leak
  *  another customer's booking existence). */
 async function ownedBooking(
@@ -144,7 +93,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
       ...(scope === 'all' ? { order: 'desc' } : {}),
     });
     const now = Date.now();
-    return paged(await Promise.all(rows.map((b) => toBookingDto(b, now, ctx.tenantId))), {
+    return paged(await Promise.all(rows.map((b) => toCustomerBookingDto(b, now, ctx.tenantId))), {
       page,
       per_page: pageSize,
       total,
@@ -157,7 +106,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const ctx = await bookingContext(request);
     const customerId = await requireCustomer(request, ctx, 'bookings:read');
     const booking = await ownedBooking(ctx.tenantId, bookingId, customerId);
-    return ok(await toBookingDto(booking, Date.now(), ctx.tenantId));
+    return ok(await toCustomerBookingDto(booking, Date.now(), ctx.tenantId));
   });
 
   app.post('/v1/public/scheduling/account/bookings/:bookingId/cancel', async (request) => {
@@ -168,24 +117,15 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     // Ownership first — a 404 here means "not yours", indistinguishable from
     // "doesn't exist". The engine then enforces the cancellable-state machine.
     await ownedBooking(ctx.tenantId, bookingId, customerId);
-    const updated = await cancelBooking(ctx.tenantId, {
-      id: bookingId,
-      reason: body.reason ?? 'Cancelled by customer',
-      // Self-service cancel: the policy fee applies (a late cancel captures it from
-      // the hold; an on-time cancel releases/refunds it) — settleBookingPayment
-      // decides, so the customer can't waive it on their own behalf.
-      waiveFee: false,
-      notifyCustomer: true,
-    });
-    // Settle the deposit/hold per policy (timely → release/refund; late → fee).
-    await settleBookingPayment(request.log, ctx.tenantId, bookingId, 'cancel');
-    await publishBookingEvent('booking.cancelled', ctx.tenantId, null, {
-      bookingId,
-      customerId,
-      source: 'portal',
-    });
     return ok(
-      await toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId)
+      await cancelForCustomer(
+        request.log,
+        ctx.tenantId,
+        bookingId,
+        customerId,
+        'portal',
+        body.reason
+      )
     );
   });
 
@@ -195,22 +135,8 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const ctx = await bookingContext(request);
     const customerId = await requireCustomer(request, ctx, 'bookings:write');
     await ownedBooking(ctx.tenantId, bookingId, customerId);
-    // resourceIds empty → keep the same resources at the new time; the engine's
-    // EXCLUDE constraint re-checks availability and throws SlotUnavailable (→409).
-    const updated = await rescheduleBooking(ctx.tenantId, {
-      id: bookingId,
-      startAt: body.startAt,
-      resourceIds: [],
-      notifyCustomer: true,
-    });
-    await publishBookingEvent('booking.rescheduled', ctx.tenantId, null, {
-      bookingId,
-      customerId,
-      startAt: body.startAt,
-      source: 'portal',
-    });
     return ok(
-      await toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId)
+      await rescheduleForCustomer(ctx.tenantId, bookingId, customerId, body.startAt, 'portal')
     );
   });
 };

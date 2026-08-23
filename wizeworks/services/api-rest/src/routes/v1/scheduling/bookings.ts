@@ -1,7 +1,18 @@
 // Scheduling bookings — the central record across appointment / class /
 // reservation / rental, plus the staff lifecycle actions. The no-overlap
 // guarantee is enforced in the engine at the DB tier (a lost race surfaces as
-// SLOT_UNAVAILABLE → 409 via the scheduling error mapper).
+// SLOT_UNAVAILABLE → 409 via the scheduling error mapper). Two simultaneous
+// creates can DEADLOCK on that constraint rather than one cleanly losing; the
+// engine retries those with a backoff, so a deadlock does not reach this layer
+// as a 500 (issue 147).
+//
+// A refusal is NOT always "somebody took it". The engine distinguishes three
+// causes, because they have three different remedies and the wrong one sends an
+// operator to redo what she just did: SLOT_UNAVAILABLE (409) is a clash,
+// CLOSED_FOR_DATE (422) is a closure covering the date, and
+// OUTSIDE_WORKING_HOURS (422) is nobody working then. The last two carry the
+// specifics in `message` — which closure, which hours — so the surface prints
+// the engine's sentence rather than a canned one.
 //
 //   GET    /v1/scheduling/bookings                  → list (filters + paging)
 //   GET    /v1/scheduling/bookings/calendar         → calendar events in a range
@@ -57,6 +68,22 @@ const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
   status: z.string().max(20).optional(),
+  // Several statuses at once, comma-separated. `ListBookingsOptions.statusIn`
+  // existed in the engine from the start and only this schema never exposed it,
+  // so "how many of these are still to come" could not be asked over HTTP and a
+  // count of live bookings silently included the cancelled ones (issue 145).
+  statusIn: z
+    .string()
+    .max(120)
+    .optional()
+    .transform((value) =>
+      value
+        ? value
+            .split(',')
+            .map((one) => one.trim())
+            .filter(Boolean)
+        : undefined
+    ),
   bookingType: z.enum(['appointment', 'class', 'reservation', 'rental']).optional(),
   serviceId: z.string().uuid().optional(),
   resourceId: z.string().uuid().optional(),

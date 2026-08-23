@@ -125,6 +125,66 @@ export class NoEligibleResourceError extends SchedulingError {
   }
 }
 
+/**
+ * Postgres gave up on a CONCURRENCY conflict rather than a data one: a deadlock
+ * (40P01) or a serialization failure (40001).
+ *
+ * Two simultaneous bookings for the same chair both reach the booking_resources
+ * exclusion constraint, each waits on the other's speculative check, and Postgres
+ * kills one of them: "deadlock detected / CONTEXT: while checking exclusion
+ * constraint ... in relation booking_resources". That is not a violation and it
+ * is not a fault — it means the check could not COMPLETE, so the answer is
+ * unknown and the transaction has to be run again (issue 147).
+ *
+ * Do not translate this into "that time is taken". After a retry the slot may
+ * well be free, and telling somebody their booking failed when it would have
+ * succeeded is the same lie in the other direction.
+ */
+export function isTransientConflict(err: unknown): boolean {
+  if (typeof err !== 'object' || err === null) return false;
+  const e = err as { code?: unknown; meta?: { code?: unknown }; message?: unknown };
+  const codes = ['40001', '40P01'];
+  if (typeof e.code === 'string' && codes.includes(e.code)) return true;
+  if (e.meta && typeof e.meta === 'object' && codes.includes(String(e.meta.code))) return true;
+  return (
+    typeof e.message === 'string' && /deadlock detected|could not serialize access/i.test(e.message)
+  );
+}
+
+/**
+ * The date itself is shut — a closure or blackout covers it.
+ *
+ * NOT the same answer as "that time is taken", which is what this used to be
+ * reported as: the remedy for a taken slot is another time on the same day, and
+ * the remedy here is another WEEK (or lifting the closure). An owner told the
+ * wrong one hunts through eight days of a holiday finding the same refusal
+ * (issue 150), so the message names the closure and the dates it runs.
+ */
+export class ClosedForDateError extends SchedulingError {
+  constructor(message: string) {
+    super('CLOSED_FOR_DATE', message);
+    this.name = 'ClosedForDateError';
+  }
+}
+
+/**
+ * Nobody works then. The weekly hours (or the day's custom hours) do not cover
+ * the appointment.
+ *
+ * The availability engine has always applied this to what the PUBLIC booking
+ * page offers; the write path never did, so the console booked a client into a
+ * lunch break the same salon's website refuses, and the diary drew the block
+ * inside its own shaded closed band (issue 149). The message names the person
+ * and the hours they DO work that day, because "pick another time" is useless
+ * advice without them.
+ */
+export class OutsideWorkingHoursError extends SchedulingError {
+  constructor(message: string) {
+    super('OUTSIDE_WORKING_HOURS', message);
+    this.name = 'OutsideWorkingHoursError';
+  }
+}
+
 /** Postgres exclusion_violation (SQLSTATE 23P01) from the booking_resources
  *  no-overlap constraint (docs/79 §7.4) — the authoritative double-booking guard.
  *  Prisma surfaces the raw SQLSTATE in `.meta.code` for `$executeRaw`, or the

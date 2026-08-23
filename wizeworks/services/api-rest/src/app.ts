@@ -151,6 +151,7 @@ import publicEstimateRoutes from './routes/v1/public/estimates.js';
 import publicSchedulingRoutes from './routes/v1/public/scheduling.js';
 import publicDocumentRoutes from './routes/v1/public/documents.js';
 import schedulingAccountRoutes from './routes/v1/public/scheduling-account.js';
+import schedulingManageRoutes from './routes/v1/public/scheduling-manage.js';
 import crmRequestRoutes from './routes/v1/public/crm-requests.js';
 import schedulingCalendarRoutes from './routes/v1/public/scheduling-calendar.js';
 import schedulingCalendarPushRoutes from './routes/v1/public/scheduling-calendar-push.js';
@@ -673,6 +674,11 @@ function automationErrorMapper(
 // other modules. SLOT_UNAVAILABLE (a lost race against the DB no-overlap EXCLUDE)
 // gets a distinct 409 code so the booking surface can re-fetch availability and
 // ask the customer to pick again; invalid-state transitions are also a 409.
+//
+// CLOSED_FOR_DATE and OUTSIDE_WORKING_HOURS deliberately fall through to the
+// generic 422: a clash is a race (retry may win), while a closed week and a
+// lunch break are settled facts about a well-formed request the engine cannot
+// honour. Their `message` carries the specifics the surface prints.
 function schedulingErrorMapper(
   err: unknown,
   request: { id: string },
@@ -962,6 +968,9 @@ export async function createApp(): Promise<FastifyInstance> {
   // E-sign + meeting links (docs/144 §12) — unauthenticated, tenant by site slug.
   await app.register(publicDocumentRoutes);
   await app.register(schedulingAccountRoutes);
+  // The same booking, reached by the signed link in a confirmation email rather
+  // than by signing in — the guest who booked has no account (issue 153).
+  await app.register(schedulingManageRoutes);
   await app.register(crmRequestRoutes);
   await app.register(schedulingCalendarRoutes);
   await app.register(schedulingCalendarPushRoutes);

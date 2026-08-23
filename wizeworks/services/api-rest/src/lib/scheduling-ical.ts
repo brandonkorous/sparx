@@ -3,15 +3,14 @@
 //   · per-booking download  — the customer's own event (attached to / linked from a
 //     confirmation), an "Add to Apple/Outlook-desktop" file.
 //   · per-resource feed     — the staff member subscribes once to a signed URL and
-//     their sparx bookings appear in Google/Outlook/Apple automatically.
+//     their bookings appear in Google/Outlook/Apple automatically.
 //
-// The signed token IS the auth (no session), so the routes live under /v1/public/
-// exactly like the one-click unsubscribe link (lib/email-unsubscribe.ts), whose
-// HMAC scheme this mirrors. Subscribed-feed staleness (provider cache ~12–24h,
-// docs/79 §8.1) is a feed limitation surfaced in the UI copy — the DB-level
-// no-overlap constraint (§7.4) remains the authoritative double-booking guard.
-
-import crypto from 'node:crypto';
+// The signed token IS the auth (no session), so the routes live under /v1/public/.
+// Signing lives in lib/scheduling-token.ts, shared with the customer manage link
+// so the three scopes cannot be swapped for one another. Subscribed-feed
+// staleness (provider cache ~12–24h, docs/79 §8.1) is a feed limitation surfaced
+// in the UI copy — the DB-level no-overlap constraint (§7.4) remains the
+// authoritative double-booking guard.
 
 import { withTenant } from '@wizeworks/db';
 import {
@@ -27,14 +26,7 @@ import {
 } from '@wizeworks/scheduling';
 
 import { resolveActivePropertyName } from './property.js';
-
-// A dedicated secret; falls back to the shared internal secret, then a dev default
-// (a rotated secret simply invalidates outstanding feed URLs — the staff member
-// re-copies the link; acceptable for a read-only calendar feed).
-const SECRET =
-  process.env.SPARX_CALENDAR_FEED_SECRET ??
-  process.env.SPARX_INTERNAL_SHARED_SECRET ??
-  'dev-calendar-feed-secret';
+import { bookingManagePath, signSchedulingToken } from './scheduling-token.js';
 
 // Public api-rest origin — the feed URL must be reachable by external calendar apps
 // (Google/Outlook poll it), so this is the same public base the email links use.
@@ -49,45 +41,12 @@ const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 const FEED_PAST_MS = 31 * 24 * 60 * 60 * 1000; // show ~1 month of recent history
 const FEED_FUTURE_MS = 180 * 24 * 60 * 60 * 1000; // and ~6 months ahead
 
-/** `b` = a single booking download, `f` = a resource subscription feed. */
-export type CalendarTokenScope = 'b' | 'f';
-
-function hmac(data: string): string {
-  return crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
-}
-
-/** `base64url(scope:tenantId:id).hmac` — opaque, tamper-evident, self-describing
- *  (the endpoint needs no `?tenant=`; the token carries the tenant). */
-export function signCalendarToken(scope: CalendarTokenScope, tenantId: string, id: string): string {
-  const data = Buffer.from(`${scope}:${tenantId}:${id}`).toString('base64url');
-  return `${data}.${hmac(data)}`;
-}
-
-export function verifyCalendarToken(
-  token: string
-): { scope: CalendarTokenScope; tenantId: string; id: string } | null {
-  const dot = token.lastIndexOf('.');
-  if (dot <= 0) return null;
-  const data = token.slice(0, dot);
-  const sig = token.slice(dot + 1);
-  const expected = hmac(data);
-  const sigBuf = Buffer.from(sig);
-  const expBuf = Buffer.from(expected);
-  if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) return null;
-  const payload = Buffer.from(data, 'base64url').toString('utf8');
-  const parts = payload.split(':');
-  if (parts.length !== 3) return null;
-  const [scope, tenantId, id] = parts;
-  if ((scope !== 'b' && scope !== 'f') || !tenantId || !id) return null;
-  return { scope, tenantId, id };
-}
-
 export function bookingIcsUrl(tenantId: string, bookingId: string): string {
-  return `${API_BASE}/v1/public/scheduling/calendar/booking.ics?t=${signCalendarToken('b', tenantId, bookingId)}`;
+  return `${API_BASE}/v1/public/scheduling/calendar/booking.ics?t=${signSchedulingToken('b', tenantId, bookingId)}`;
 }
 
 export function resourceFeedUrl(tenantId: string, resourceId: string): string {
-  return `${API_BASE}/v1/public/scheduling/calendar/feed.ics?t=${signCalendarToken('f', tenantId, resourceId)}`;
+  return `${API_BASE}/v1/public/scheduling/calendar/feed.ics?t=${signSchedulingToken('f', tenantId, resourceId)}`;
 }
 
 function siteLink(slug: string, path: string): string {
@@ -182,7 +141,9 @@ export async function loadBookingIcs(
     summary: b.service?.name ?? 'Booking',
     description: descriptionLines.join('\n') || undefined,
     location: place?.line ?? undefined,
-    url: siteLink(tenant?.slug ?? '', '/account/bookings') || undefined,
+    // The event's own link is the customer's manage page, not an account portal
+    // she may never have made an account for (issue 153).
+    url: siteLink(tenant?.slug ?? '', bookingManagePath(tenantId, bookingId)) || undefined,
     status: toIcsStatus(b.status),
     organizerName: siteName || undefined,
     organizerEmail: tenant?.email ?? undefined,

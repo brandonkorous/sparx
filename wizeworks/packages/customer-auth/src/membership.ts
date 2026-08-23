@@ -33,8 +33,22 @@ export interface EnsureMembershipResult {
  *  - A guest / CRM-imported row with the same email on this site (no login yet)
  *    → adopt it: link the auth user, promote prospect → retail (created: false —
  *    adopting an existing local row is not "recognized").
+ *  - A guest row belonging to NO site with the same email → adopt it too, and
+ *    write this site onto it.
  *  - Otherwise → create a fresh membership with EMPTY consent (created: true).
  * `propertyId` is the active site (null only for tenants with no sites / tests).
+ *
+ * WHY THE SITE-LESS CASE EXISTS. A NULL `propertyId` means "belongs to the
+ * business, not to any one site" — and it reads exactly like a correct value
+ * until something joins on it. It did not match here, so a customer who booked
+ * as a guest and then made an account with the same address came out as TWO
+ * people: one holding her appointments, one holding her login, and an empty
+ * bookings page in front of her (issue 152). Signing in on a site is evidence of
+ * belonging to it, so the row is completed rather than duplicated.
+ *
+ * A row belonging to a DIFFERENT site is still never taken, which is what keeps
+ * docs/58 D6 true: a first sign-in on a sister site gets a fresh membership and
+ * fresh consent, never another site's.
  */
 export function ensureMembership(
   ctx: EnsureMembershipContext,
@@ -50,10 +64,18 @@ export function ensureMembership(
     });
     if (linked) return { customerId: linked.id, created: false };
 
-    const guest = await tx.customer.findFirst({
-      where: { propertyId, email, authUserId: null, deletedAt: null },
-      select: { id: true, firstName: true, lastName: true },
-    });
+    // This site first, then a row that names no site at all.
+    const guest =
+      (await tx.customer.findFirst({
+        where: { propertyId, email, authUserId: null, deletedAt: null },
+        select: { id: true, firstName: true, lastName: true, propertyId: true },
+      })) ??
+      (propertyId
+        ? await tx.customer.findFirst({
+            where: { propertyId: null, email, authUserId: null, deletedAt: null },
+            select: { id: true, firstName: true, lastName: true, propertyId: true },
+          })
+        : null);
     if (guest) {
       // Registering an account links the login; it is not a purchase, so the
       // lifecycle stage is left to the order path to advance (see checkout-service).
@@ -61,6 +83,7 @@ export function ensureMembership(
         where: { id: guest.id },
         data: {
           authUserId,
+          ...(guest.propertyId === null && propertyId ? { propertyId } : {}),
           ...(names.firstName && !guest.firstName ? { firstName: names.firstName } : {}),
           ...(names.lastName && !guest.lastName ? { lastName: names.lastName } : {}),
         },

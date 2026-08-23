@@ -108,6 +108,9 @@ export async function listServicesPaged(
     q?: string;
     bookingType?: string;
     activeOnly?: boolean;
+    /** Include services that have been removed. Off by default; the services list
+     *  turns it on so a removal can be undone (issue 145). */
+    includeRemoved?: boolean;
     /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
      *  service's null property means tenant-wide (shared), so a restricted member
      *  sees their businesses' services PLUS tenant-wide ones. */
@@ -118,7 +121,7 @@ export async function listServicesPaged(
 ): Promise<{ items: SchedulingService[]; total: number }> {
   return withTenant({ tenantId }, async (tx) => {
     const where: Prisma.SchedulingServiceWhereInput = {
-      deletedAt: null,
+      ...(opts.includeRemoved ? {} : { deletedAt: null }),
       ...(opts.propertyIds
         ? { OR: [{ propertyId: { in: opts.propertyIds } }, { propertyId: null }] }
         : {}),
@@ -149,6 +152,23 @@ export async function listServicesPaged(
       tx.schedulingService.count({ where }),
     ]);
     return { items, total };
+  });
+}
+
+/**
+ * Put a removed service back.
+ *
+ * `deleteService` only stamps `deletedAt`, so nothing was ever lost — but every
+ * read filtered the row out and no route could reach it, which made a soft
+ * delete behave like a hard one (issue 145). Restoring matters more than the
+ * usual undo here: rebuilding the service by hand mints a NEW id, and the
+ * bookings already taken keep pointing at the old one.
+ */
+export async function restoreService(tenantId: string, id: string): Promise<SchedulingService> {
+  return withTenant({ tenantId }, async (tx) => {
+    const existing = await tx.schedulingService.findFirst({ where: { id } });
+    if (!existing) throw new ServiceNotFoundError(id);
+    return tx.schedulingService.update({ where: { id }, data: { deletedAt: null } });
   });
 }
 

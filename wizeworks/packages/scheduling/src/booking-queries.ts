@@ -41,6 +41,41 @@ const bookingInclude = {
   },
 } as const;
 
+/**
+ * WHO THE BOOKINGS ARE FOR, named.
+ *
+ * A second read rather than an `include`, because `Booking.customerId` is a bare
+ * column with no Prisma relation on it — deliberately, since a booking is the
+ * record of an appointment a real person made and outlives the site and the
+ * account (see the schema's note beside it). So the name cannot be joined; it
+ * has to be fetched.
+ *
+ * It was not fetched at all, which is why every staff surface printed the words
+ * "A customer" beside a booking whose customer the database can name: a diary
+ * block, a list row, a day's roster. One query per page, keyed by id.
+ */
+async function customersFor(
+  tx: TxClient,
+  bookings: { customerId: string | null }[]
+): Promise<Map<string, BookedCustomer>> {
+  const ids = [...new Set(bookings.map((b) => b.customerId).filter((id): id is string => !!id))];
+  if (ids.length === 0) return new Map();
+  const rows = await tx.customer.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+  });
+  return new Map(rows.map((row) => [row.id, row]));
+}
+
+/** The part of a customer a booking surface needs to say who is coming. */
+export interface BookedCustomer {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  phone: string | null;
+}
+
 export type BookingWithRelations = Awaited<ReturnType<typeof getBooking>>;
 
 export async function getBooking(tenantId: string, id: string) {
@@ -50,7 +85,10 @@ export async function getBooking(tenantId: string, id: string) {
       include: bookingInclude,
     });
     if (!booking) throw new BookingNotFoundError(id);
-    return booking;
+    const customers = await customersFor(tx, [booking]);
+    // Null means "nobody is on this booking", which is a walk-in and a real
+    // answer. It is never the same thing as "not loaded".
+    return { ...booking, customer: customers.get(booking.customerId ?? '') ?? null };
   });
 }
 
@@ -131,7 +169,14 @@ export async function listBookings(
       }),
       tx.booking.count({ where }),
     ]);
-    return { rows, total };
+    const customers = await customersFor(tx, rows);
+    return {
+      rows: rows.map((row) => ({
+        ...row,
+        customer: customers.get(row.customerId ?? '') ?? null,
+      })),
+      total,
+    };
   });
 }
 
@@ -145,9 +190,37 @@ export interface CalendarEvent {
   endAt: string;
   color: string | null;
   customerId: string | null;
+  /**
+   * Who the booking is for, named — the guest name written on it, else the
+   * linked customer's own name, else null for a booking with nobody recorded.
+   *
+   * Resolved here rather than in each diary, because the fallback ladder is a
+   * fact about the data and not about any one grid, and because the id alone was
+   * useless: a block could show a service and a chair and never the person.
+   */
+  customerName: string | null;
   resourceIds: string[];
   resourceNames: string[];
   partySize: number | null;
+}
+
+/** The name to print on a diary block: what was written down, then who is
+ *  linked, then nothing. Null is a real answer — nobody was recorded — and is
+ *  never dressed up as a name. */
+function whoFor(
+  booking: { attendees: { guestName: string | null }[] },
+  customer: BookedCustomer | null
+): string | null {
+  const written = booking.attendees.find((a) => a.guestName?.trim())?.guestName?.trim();
+  if (written) return written;
+  if (!customer) return null;
+  const full = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+  if (full !== '') return full;
+  // An empty string is a real answer here and must fall through, so this is not
+  // a nullish check: a customer row with a blank name and a blank email names
+  // nobody, and the caller's ladder moves on to a count or an admission.
+  const email = customer.email?.trim();
+  return email !== undefined && email !== '' ? email : null;
 }
 
 /** Bookings overlapping a window, flattened for a calendar grid. Excludes
@@ -191,9 +264,11 @@ export async function getCalendar(
       include: {
         service: { select: { name: true, color: true } },
         resources: { select: { resource: { select: { id: true, name: true, color: true } } } },
+        attendees: { select: { guestName: true } },
       },
       orderBy: { startAt: 'asc' },
     });
+    const customers = await customersFor(tx, bookings);
     return bookings.map((b) => ({
       id: b.id,
       serviceId: b.serviceId,
@@ -204,6 +279,7 @@ export async function getCalendar(
       endAt: b.endAt.toISOString(),
       color: b.service.color ?? b.resources[0]?.resource.color ?? null,
       customerId: b.customerId,
+      customerName: whoFor(b, customers.get(b.customerId ?? '') ?? null),
       resourceIds: b.resources.map((r) => r.resource.id),
       resourceNames: b.resources.map((r) => r.resource.name),
       partySize: b.partySize,

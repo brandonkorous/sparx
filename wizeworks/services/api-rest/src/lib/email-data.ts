@@ -33,6 +33,7 @@ import type { ServiceContext } from '@wizeworks/email-platform';
 import { resolveActivePropertyName, resolvePrimaryPropertyId } from './property.js';
 import { loadSenderIdentity } from './tenant-email.js';
 import { bookingIcsUrl } from './scheduling-ical.js';
+import { bookingManagePath } from './scheduling-token.js';
 
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
  *  `entityRefs`, or just `{ customerId }` for a customer-addressed broadcast.
@@ -536,9 +537,12 @@ async function resolveBooking(
     partySize: b.partySize != null ? String(b.partySize) : '',
     status: b.status,
     cancellationReason: b.cancellationReason ?? '',
-    // Where the customer manages a booking (the self-service portal, docs/79 §15
-    // Phase 3c) + where they re-book after a cancellation.
-    manageUrl: siteLink(slug, '/account/bookings'),
+    // Where the customer manages a booking + where they re-book after a
+    // cancellation. The manage link is signed and names THIS booking, because
+    // the person reading it booked as a guest and has no account to sign in to
+    // (issue 153); it used to point at the account portal, which meant the
+    // "Change or cancel" button opened a login wall.
+    manageUrl: siteLink(slug, bookingManagePath(ctx.tenantId, ref.bookingId)),
     bookUrl: siteLink(slug, '/book'),
     // The per-booking `.ics` download (docs/79 §8.1) — an "Add to calendar" link in
     // the confirmation/reminder. Absolute api-rest URL (reachable by mail clients).

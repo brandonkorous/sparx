@@ -15,11 +15,8 @@ import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { isModuleEnabled } from '@wizeworks/auth';
 
-import {
-  loadBookingIcs,
-  loadResourceFeed,
-  verifyCalendarToken,
-} from '../../../lib/scheduling-ical.js';
+import { loadBookingIcs, loadResourceFeed } from '../../../lib/scheduling-ical.js';
+import { readSchedulingToken } from '../../../lib/scheduling-token.js';
 
 const Query = z.object({ t: z.string().min(1).max(2048) });
 
@@ -31,8 +28,8 @@ function notFound(reply: FastifyReply): FastifyReply {
 const schedulingCalendarRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/scheduling/calendar/booking.ics', async (request, reply) => {
     const { t } = Query.parse(request.query);
-    const decoded = verifyCalendarToken(t);
-    if (decoded?.scope !== 'b') return notFound(reply);
+    const decoded = readSchedulingToken(t, 'b');
+    if (!decoded) return notFound(reply);
     if (!(await isModuleEnabled(decoded.tenantId, 'scheduling'))) return notFound(reply);
 
     const ics = await loadBookingIcs(decoded.tenantId, decoded.id);
@@ -46,8 +43,8 @@ const schedulingCalendarRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/public/scheduling/calendar/feed.ics', async (request, reply) => {
     const { t } = Query.parse(request.query);
-    const decoded = verifyCalendarToken(t);
-    if (decoded?.scope !== 'f') return notFound(reply);
+    const decoded = readSchedulingToken(t, 'f');
+    if (!decoded) return notFound(reply);
     if (!(await isModuleEnabled(decoded.tenantId, 'scheduling'))) return notFound(reply);
 
     const feed = await loadResourceFeed(decoded.tenantId, decoded.id, Date.now());

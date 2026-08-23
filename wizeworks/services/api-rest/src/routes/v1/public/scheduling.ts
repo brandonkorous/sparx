@@ -30,9 +30,11 @@ import {
 } from '@wizeworks/scheduling';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { resolvePublicPropertyId } from '../../../lib/property.js';
+import { optionalCustomer } from '../../../lib/customer-session.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
 import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
+import { bookingManagePath } from '../../../lib/scheduling-token.js';
 import { sendSeatConfirmation } from '../../../lib/scheduling-classes.js';
 import { sendOwnerBookingNotification } from '../../../lib/scheduling-owner-notify.js';
 
@@ -106,22 +108,50 @@ function splitName(name: string): { firstName: string; lastName: string | null }
   return { firstName, lastName: parts.length ? parts.join(' ') : null };
 }
 
-/** Find a customer by email within the tenant, or create a lightweight record. */
+/**
+ * Find the person this booking is for, or write down a lightweight record of her.
+ *
+ * The ladder is deliberate, and `propertyId` — the site she is booking on — is
+ * the part that used to be missing (issue 152). A customer with no site on her
+ * reads exactly like a correct one until something joins on it, and then she is
+ * silently duplicated the first time she makes an account.
+ *
+ *   1. A row already on THIS site with this email.
+ *   2. A row belonging to no site at all → adopt it and write the site on.
+ *   3. Otherwise a fresh row, on this site.
+ *
+ * A row belonging to a DIFFERENT site is never taken. Two sites are two
+ * businesses; the donut shop's customer is not the machine shop's.
+ */
 async function findOrCreateCustomer(
   tenantId: string,
-  info: z.infer<typeof CustomerInfo>
+  info: z.infer<typeof CustomerInfo>,
+  propertyId: string | null
 ): Promise<string> {
   const email = info.email.trim().toLowerCase();
   return withTenant({ tenantId }, async (tx) => {
-    const existing = await tx.customer.findFirst({
-      where: { email: { equals: email, mode: 'insensitive' }, deletedAt: null },
+    const mine = await tx.customer.findFirst({
+      where: { propertyId, email: { equals: email, mode: 'insensitive' }, deletedAt: null },
       select: { id: true },
     });
-    if (existing) return existing.id;
+    if (mine) return mine.id;
+
+    if (propertyId) {
+      const global = await tx.customer.findFirst({
+        where: { propertyId: null, email: { equals: email, mode: 'insensitive' }, deletedAt: null },
+        select: { id: true },
+      });
+      if (global) {
+        await tx.customer.update({ where: { id: global.id }, data: { propertyId } });
+        return global.id;
+      }
+    }
+
     const { firstName, lastName } = splitName(info.name);
     const created = await tx.customer.create({
       data: {
         tenantId,
+        propertyId,
         email,
         firstName,
         lastName,
@@ -132,6 +162,49 @@ async function findOrCreateCustomer(
     });
     return created.id;
   });
+}
+
+/**
+ * Who this booking is FOR.
+ *
+ * A session says who is OPERATING the form; the form says who the appointment is
+ * for, and they are usually — not always — the same person. A mother books for
+ * her daughter from her own account, a friend books for a friend. So the session
+ * is used only when the address in the form is the SAME person's: otherwise the
+ * appointment would land on the account holder and the person it is actually for
+ * would have no record of it.
+ *
+ * When they do match, the session wins outright, because a session is a fact and
+ * a typed address is a string. Matching by string alone is what let a customer
+ * sit on her own account and watch an appointment she had just made attach to a
+ * different copy of her (issue 152).
+ */
+async function resolveBookingCustomer(
+  request: FastifyRequest,
+  tenantId: string,
+  info: z.infer<typeof CustomerInfo>,
+  propertyId: string | null
+): Promise<string> {
+  const signedIn = await optionalCustomer(request, { tenantId }).catch(() => null);
+  if (signedIn) {
+    const email = info.email.trim().toLowerCase();
+    const me = await withTenant({ tenantId }, (tx) =>
+      tx.customer.findUnique({ where: { id: signedIn.customerId }, select: { email: true } })
+    );
+    if (me?.email && me.email.toLowerCase() === email) return signedIn.customerId;
+  }
+  return findOrCreateCustomer(tenantId, info, propertyId);
+}
+
+/** The site a booking made through this service belongs to: the service's own,
+ *  or the site the visitor is on when the service is tenant-wide. */
+async function bookingPropertyId(
+  request: FastifyRequest,
+  tenantId: string,
+  servicePropertyId: string | null
+): Promise<string> {
+  if (servicePropertyId) return servicePropertyId;
+  return resolvePublicPropertyId(tenantId, (request.query as { property?: string }).property);
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
@@ -265,7 +338,8 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       throw conflict('That time is no longer available');
     }
 
-    const customerId = await findOrCreateCustomer(tenantId, body.customer);
+    const propertyId = await bookingPropertyId(request, tenantId, service.propertyId);
+    const customerId = await resolveBookingCustomer(request, tenantId, body.customer, propertyId);
 
     const created = await createBooking(tenantId, {
       serviceId: body.serviceId,
@@ -362,6 +436,11 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
             }
           : null,
         calendar,
+        // The way BACK. She is looking at what she just booked, which is when
+        // she is likeliest to notice she picked the wrong day — and until now
+        // this screen offered three ways to add it to a calendar and none to
+        // change it (issue 153). Site-relative: the widget is already on the site.
+        manageUrl: bookingManagePath(tenantId, created.booking.id),
       })
     );
   });
@@ -375,7 +454,12 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     if (!service || !service.bookableOnline || !service.isActive) {
       throw notFound('Service', body.serviceId);
     }
-    const customerId = await findOrCreateCustomer(tenantId, body.customer);
+    const customerId = await resolveBookingCustomer(
+      request,
+      tenantId,
+      body.customer,
+      await bookingPropertyId(request, tenantId, service.propertyId)
+    );
     const entry = await joinWaitlist(tenantId, {
       serviceId: body.serviceId,
       customerId,
@@ -415,7 +499,12 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const tenantId = await requireScheduling(request);
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
     const body = JoinSession.parse(request.body);
-    const customerId = await findOrCreateCustomer(tenantId, body.customer);
+    const customerId = await resolveBookingCustomer(
+      request,
+      tenantId,
+      body.customer,
+      await bookingPropertyId(request, tenantId, null)
+    );
     const seat = await bookClassSeat(tenantId, {
       bookingId: id,
       customerId,
