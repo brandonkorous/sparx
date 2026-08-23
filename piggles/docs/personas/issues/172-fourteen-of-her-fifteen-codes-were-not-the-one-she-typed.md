@@ -28,8 +28,20 @@ THE-ASH-OVER-S-CLAY
 
 Fourteen of the fifteen are built from the product's NAME — including the "The"
 she would never put on a label — and truncated to a stem she did not choose. The
-fifteenth is hers. One shirt, two naming schemes, and the odd one out is the only
-one she wrote.
+fifteenth is the one she typed. One shirt, two naming schemes, and the odd one
+out is the only one she wrote.
+
+To say the obvious thing out loud, because "not hers" is easy to misread: all
+fifteen belong to Juniper Row and to this product. Nothing crosses a tenant, a
+shop or a product boundary. What is wrong is the STEM the software chose, not
+whose records these are.
+
+```
+ sku                   | tenant_id                            | tenant
+ ASH-OVERSHIRT         | 2e78fb6c-a823-4698-bcb9-58a4f17710a0 | Juniper Row
+ THE-ASH-OVER-XS-SLATE | 2e78fb6c-a823-4698-bcb9-58a4f17710a0 | Juniper Row
+ … thirteen more, same tenant, same product
+```
 
 ## What should have happened
 
@@ -75,6 +87,14 @@ code on the Add a product form, which produced `THE-ASH-OVERSHIRT-1` there.
 
 Deliberately not chased into the source: what it does is clear from the output,
 and the decision below has to be made before the code matters.
+
+One structural fact that shapes the answer, read from the database rather than
+guessed: **a product has no code of its own.** `commerce_products` has a title
+and no sku column; the code the Add a product form calls "Product code" is
+written onto the FIRST variant, which is why `ASH-OVERSHIRT` is sitting on a row
+flagged `is_default`. So "extend the product's code" really means "extend the
+default variant's code", and the software has to go and read it rather than
+having it to hand — which is a fair part of why it reached for the title instead.
 
 ## The fix
 
