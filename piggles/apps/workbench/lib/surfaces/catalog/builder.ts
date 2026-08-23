@@ -114,7 +114,19 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     module: 'builder',
     icon: faEnvelope,
     order: 6,
-    keywords: ['newsletter', 'template', 'campaign design', 'email'],
+    // The wording of every automatic email lives here — so the words somebody
+    // types when they want to change what one SAYS have to land here too.
+    keywords: [
+      'newsletter',
+      'template',
+      'campaign design',
+      'email',
+      'reminder',
+      'confirmation',
+      'receipt',
+      'wording',
+      'what it says',
+    ],
     // ONE email, opened with `{ emailId }` — several can be open at once, because
     // each is its own document with its own undo and its own Publish. Opened with
     // no email it asks which one, rather than showing a blank canvas.
