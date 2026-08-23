@@ -23,7 +23,6 @@ import {
   Button,
   Card,
   SearchInput,
-  Text,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faFileText, faPlus } from '@fortawesome/pro-solid-svg-icons';
@@ -44,6 +43,7 @@ import {
   type ContentEntry,
   type EntryStatus,
 } from './data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -364,9 +364,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

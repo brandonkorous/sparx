@@ -35,7 +35,6 @@ import {
   EmptyState,
   Input,
   SearchInput,
-  Text,
   Timestamp,
   Tooltip,
 } from '@wizeworks/silicaui-react';
@@ -59,6 +58,7 @@ import {
   useMovements,
   type Movement,
 } from './movements-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -426,11 +426,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click a row to open the item it changed · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint what="a row to open the item it changed" /> : null}
       </div>
     </div>
   );

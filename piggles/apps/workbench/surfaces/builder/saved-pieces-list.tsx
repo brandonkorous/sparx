@@ -35,6 +35,7 @@ import {
   type PieceGroup,
   type PieceSummary,
 } from './saved-pieces-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -264,9 +265,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a piece to manage it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a piece to manage it" />
     </div>
   );
 }

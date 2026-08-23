@@ -30,6 +30,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useCertifications } from './data';
 import { certificationLabel, formatDate } from './format';
 import { productCopy } from '../../lib/product';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -244,9 +245,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Card>
             )}
 
-            <p className="px-1 pb-2 text-xs">
-              Click a row to open the person who holds it · Shift-click alongside
-            </p>
+            <RowOpenHint what="a row to open the person who holds it" className="pb-2" />
           </div>
         )}
       </div>

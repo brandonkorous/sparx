@@ -22,6 +22,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { isModuleDisabled, useObjectTypes, type CrmObjectType } from './object-types-data';
 import { productCopy } from '../../lib/product';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -206,9 +207,7 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <p className="text-xs">
-          Open one to add the extra details you track · Shift-click to open alongside
-        </p>
+        <RowOpenHint what="one to add the extra details you track" />
       </div>
     </div>
   );

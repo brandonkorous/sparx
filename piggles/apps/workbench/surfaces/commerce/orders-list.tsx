@@ -21,6 +21,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useOrders, type Order, type OrderSortKey, type SortDirection } from './data';
 import { FILTERS, emptyAdvice, targetFor, type FilterValue } from './orders-list-filters';
 import { OrdersTable } from './orders-table';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
@@ -210,9 +211,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* Only where there is a pointer to do them with — on the stack these
             three modifiers do not exist. */}
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

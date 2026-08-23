@@ -50,6 +50,7 @@ import {
 } from './data';
 import { employmentLabel, formatMinutes, formatTime, staffState } from './format';
 import { productCopy } from '../../lib/product';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -385,9 +386,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
               </Table>
             </Card>
 
-            <p className="px-1 pb-2 text-xs">
-              Click someone to open their record · Shift-click alongside · Alt-click new window
-            </p>
+            <RowOpenHint what="someone to open their record" />
           </div>
         )}
       </div>

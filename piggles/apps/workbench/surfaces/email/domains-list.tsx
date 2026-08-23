@@ -26,6 +26,7 @@ import {
   useSendingDomains,
   type SendingDomain,
 } from './domains-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -228,9 +229,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click an address to set it up · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="an address to set it up" />
     </div>
   );
 }

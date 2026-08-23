@@ -40,7 +40,6 @@ import {
   Card,
   EmptyState,
   SearchInput,
-  Text,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -72,6 +71,7 @@ import {
 } from './data';
 import { openProductFacet } from '../commerce/product-scope';
 import { humanDuration, stockAgeTone } from './integrity-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -518,11 +518,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
             three modifiers do not exist — and only when there is something to
             click, since advice about opening rows reads as an instruction when
             the answer to the search is that there are none. */}
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

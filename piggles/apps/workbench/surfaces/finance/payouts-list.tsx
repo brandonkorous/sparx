@@ -26,6 +26,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayouts, type Payout } from './payouts-data';
 import { formatMoney, formatDate, methodLabel, payoutState } from './format';
 import { productCopy } from '../../lib/product';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const STATUS_FILTERS = [
   { value: 'all', label: 'All' },
@@ -297,9 +298,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a deposit to see the sales it settles · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint what="a deposit to see the sales it settles" />
       </div>
     </div>
   );

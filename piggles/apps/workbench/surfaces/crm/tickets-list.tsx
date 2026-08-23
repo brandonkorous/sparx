@@ -36,6 +36,7 @@ import {
   type TicketPriority,
   type TicketView,
 } from './tickets-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -313,9 +314,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <p className="text-xs">
-          Click to open · Shift-click to open alongside · Alt-click for a new window
-        </p>
+        <RowOpenHint />
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered ? `${rows.length.toLocaleString()} shown` : `${total.toLocaleString()} open`}

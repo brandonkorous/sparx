@@ -35,6 +35,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { stageTone, type DocumentWorkflowDetail } from './types';
 import { useWorkflows, workflowErrorMessage, type WorkflowSortKey } from './workflow-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -352,9 +353,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* The open gestures, and only where there is a pointer to do them
             with — on the stack these three modifiers do not exist. */}
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

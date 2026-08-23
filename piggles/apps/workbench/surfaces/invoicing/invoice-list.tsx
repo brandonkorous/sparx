@@ -35,6 +35,7 @@ import {
   invoiceState,
   type BillingDocument,
 } from './types';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -398,9 +399,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* The open gestures, and only where there is a pointer to do them
             with — on the stack these three modifiers do not exist. */}
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

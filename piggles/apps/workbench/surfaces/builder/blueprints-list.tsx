@@ -32,6 +32,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { contentsSummary, installState, useBlueprints, type Blueprint } from './blueprints-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -282,9 +283,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a design to preview it · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint what="a design to preview it" />
       </div>
     </div>
   );

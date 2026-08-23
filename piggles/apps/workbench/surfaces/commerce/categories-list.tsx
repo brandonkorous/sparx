@@ -29,6 +29,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { flattenCategories, useCategoryTree, type CategoryChoice } from './categories-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -230,9 +231,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-sm">
-        Click to open · Shift-click alongside · Alt-click new window
-      </p>
+      <RowOpenHint />
     </div>
   );
 }

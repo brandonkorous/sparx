@@ -55,6 +55,7 @@ import {
   type ProductStatus,
   type SortDirection,
 } from './products-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -501,9 +502,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* Only where there is a pointer to do them with — on the stack these
             three modifiers do not exist. */}
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

@@ -38,6 +38,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { supplierState, useSuppliersPage, type SortDir, type SupplierSort } from './dropship-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -326,10 +327,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a supplier to manage it · the browse icon opens what it offers · Shift-click
-          alongside
-        </p>
+        <RowOpenHint what="a supplier to manage it" className="pb-1" />
       </div>
     </div>
   );

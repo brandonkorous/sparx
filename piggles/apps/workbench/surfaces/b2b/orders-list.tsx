@@ -12,7 +12,7 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faCartShopping, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -29,6 +29,7 @@ import {
   useWholesaleOrders,
   type Order,
 } from './orders-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
   { value: 'all', label: 'All', status: undefined, paymentStatus: undefined },
@@ -252,9 +253,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text as="p" className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

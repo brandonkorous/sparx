@@ -34,6 +34,7 @@ import {
   useTaxZones,
   type TaxZone,
 } from './tax-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -188,9 +189,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                 them.
               </Text>
 
-              <p className="px-1 text-xs">
-                Click to open · Shift-click to open alongside · Alt-click for a new window
-              </p>
+              <RowOpenHint />
             </>
           )}
         </div>

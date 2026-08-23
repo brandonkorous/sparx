@@ -44,6 +44,7 @@ import {
   type ShippingProfile,
   type ShippingZone,
 } from './shipping-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -281,9 +282,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 )}
               </FormSection>
 
-              <p className="px-1 text-xs">
-                Click to open · Shift-click to open alongside · Alt-click for a new window
-              </p>
+              <RowOpenHint />
             </>
           )}
         </div>

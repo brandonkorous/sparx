@@ -26,7 +26,6 @@ import {
   Button,
   Card,
   SearchInput,
-  Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
@@ -55,6 +54,7 @@ import {
   type MediaKind,
   type MediaListQuery,
 } from './media-admin';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -423,9 +423,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

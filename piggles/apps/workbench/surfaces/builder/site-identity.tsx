@@ -533,7 +533,7 @@ function BrandImageField({
       <div className="flex items-center gap-3">
         <div
           className={`rounded-box relative flex size-20 shrink-0 items-center justify-center overflow-hidden border ${
-            dark ? 'bg-neutral border-neutral' : 'bg-base-200 border-base-300'
+            dark ? 'bg-chrome border-chrome' : 'bg-base-200 border-base-300'
           }`}
         >
           {value && asset?.url ? (
@@ -552,7 +552,7 @@ function BrandImageField({
           ) : (
             <Icon
               glyph={faImage}
-              className={dark ? 'text-neutral-content size-5' : 'text-base-content size-5'}
+              className={dark ? 'text-chrome-content size-5' : 'text-base-content size-5'}
               aria-hidden
             />
           )}

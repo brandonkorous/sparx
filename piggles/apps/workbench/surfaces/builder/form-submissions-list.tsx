@@ -28,7 +28,6 @@ import {
   Filter,
   FilterItem,
   NativeSelect,
-  Text,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faInbox } from '@fortawesome/pro-solid-svg-icons';
@@ -47,6 +46,7 @@ import {
   type FormSubmission,
   type SubmissionStatus,
 } from './form-submissions-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** The chips ARE the questions people open this inbox to answer. */
 const STATUS_FILTERS = [
@@ -349,9 +349,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setCursors([]);
           }}
         />
-        <Text className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

@@ -31,6 +31,7 @@ import {
   type ReturnStatus,
   type ReturnSummary,
 } from './returns-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** The chips are stages of the work, each pinned to ONE server status. "All"
  *  drops the filter entirely. */
@@ -204,9 +205,7 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

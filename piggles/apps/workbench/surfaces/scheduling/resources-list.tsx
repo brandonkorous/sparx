@@ -17,7 +17,6 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Text,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
@@ -36,6 +35,7 @@ import {
   type ResourceKind,
   type SchedulingResource,
 } from './setup-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -266,11 +266,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
 
-      {rows.length > 0 ? (
-        <Text className="mx-auto hidden w-full max-w-4xl shrink-0 px-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
-      ) : null}
+      {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

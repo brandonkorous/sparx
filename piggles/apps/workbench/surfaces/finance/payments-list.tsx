@@ -26,6 +26,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayments, type Payment } from './payments-data';
 import { channelLabel, formatMoney, formatRelativeDay, methodLabel, paymentState } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const STATUS_FILTERS = [
   { value: 'all', label: 'All' },
@@ -305,9 +306,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a payment to open its order · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint what="a payment to open its order" />
       </div>
     </div>
   );

@@ -35,6 +35,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProductTypeList, type ProductType } from './product-types-data';
 import { productCopy } from '../../lib/product';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -227,9 +228,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <Text className="hidden shrink-0 px-1 text-sm @xl:block">
-        Click to open · Shift-click alongside · Alt-click new window
-      </Text>
+      <RowOpenHint />
     </div>
   );
 }

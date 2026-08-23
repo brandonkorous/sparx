@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faPlus, faReceipt, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -26,6 +26,7 @@ import {
   useInvoices,
   type InvoiceRow,
 } from './invoices-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -273,9 +274,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <Text as="p" className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </Text>
+        <RowOpenHint />
       </div>
     </div>
   );

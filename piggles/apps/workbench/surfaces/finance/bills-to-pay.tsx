@@ -39,6 +39,7 @@ import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { spendErrorMessage, useExpenses, useSetExpensePaid, type Expense } from './spend-data';
 import { daysPastDue, formatCents, formatDay, kindColor } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -376,9 +377,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
               </Card>
             )}
 
-            <p className="px-1 pb-2 text-xs">
-              Click a bill to open it · Shift-click alongside · Alt-click new window
-            </p>
+            <RowOpenHint what="a bill to open it" />
           </div>
         )}
       </div>

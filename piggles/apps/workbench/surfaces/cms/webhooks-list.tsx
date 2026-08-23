@@ -20,7 +20,6 @@ import {
   Button,
   Card,
   SearchInput,
-  Text,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faPlus, faWebhook } from '@fortawesome/pro-solid-svg-icons';
@@ -37,6 +36,7 @@ import {
   webhookState,
   type WebhookSubscription,
 } from './webhooks-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -239,9 +239,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <Text className="hidden shrink-0 px-1 text-sm @xl:block">
-        Click to open · Shift-click alongside · Alt-click new window
-      </Text>
+      <RowOpenHint />
     </div>
   );
 }

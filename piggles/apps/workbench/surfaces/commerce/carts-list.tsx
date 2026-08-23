@@ -27,6 +27,7 @@ import {
   type CartFilter,
   type CartRow,
 } from './carts-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
   { value: 'active', label: 'In progress' },
@@ -193,9 +194,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint />
       </div>
     </div>
   );

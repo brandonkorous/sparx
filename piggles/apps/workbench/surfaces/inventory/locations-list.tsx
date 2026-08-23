@@ -34,7 +34,6 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Text,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
@@ -54,6 +53,7 @@ import {
   useLocations,
   type Location,
 } from './locations-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -370,11 +370,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        {rows.length > 0 ? (
-          <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            Click to open · Shift-click alongside · Alt-click new window
-          </Text>
-        ) : null}
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

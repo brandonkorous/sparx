@@ -38,6 +38,7 @@ import {
 } from './automations-presentation';
 import { useAutomations, type Automation } from './automations-data';
 import { productCopy } from '../../lib/product';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -348,9 +349,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a rule to open it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a rule to open it" />
     </div>
   );
 }

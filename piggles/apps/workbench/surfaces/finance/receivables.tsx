@@ -33,6 +33,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { bucketTone, useReceivables, type Receivable } from './receivables-data';
 import { formatMoney, formatMoneyCompact, formatDay } from './format';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -349,9 +350,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
                   setTake(size);
                 }}
               />
-              <p className="px-1 text-xs">
-                Click an invoice to open it · Shift-click alongside · Alt-click new window
-              </p>
+              <RowOpenHint what="an invoice to open it" />
             </div>
           </div>
         )}

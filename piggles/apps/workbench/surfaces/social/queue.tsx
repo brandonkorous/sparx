@@ -40,6 +40,7 @@ import type { MediaAsset } from '../cms/media';
 import { postStatusMeta, socialErrorMessage, type CatalogEntry, type Post } from './data';
 import { DestinationAvatars, PostCover, excerpt, whenLine } from './post-visuals';
 import { GROUPS, useSocialBoard } from './board';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -349,9 +350,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a post to open it · Shift-click to open alongside · Alt-click for a new window
-      </p>
+      <RowOpenHint what="a post to open it" />
     </div>
   );
 }

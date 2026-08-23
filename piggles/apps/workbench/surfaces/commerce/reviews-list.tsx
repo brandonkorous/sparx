@@ -53,6 +53,7 @@ import {
   type ModerationSortDir,
   type ReviewSort,
 } from './moderation-data';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Plain-language filter over the stored statuses. `approved` reads as "Shown".
  *  Default is "Waiting" — the backlog is the queue's job. */
@@ -550,9 +551,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             clearSelection();
           }}
         />
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click a row to open it in the queue · Shift-click alongside · Alt-click new window
-        </p>
+        <RowOpenHint what="a row to open it in the queue" />
       </div>
     </div>
   );
