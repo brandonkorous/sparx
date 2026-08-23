@@ -20,7 +20,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { policySummary, usePolicies, type BookingPolicy } from './setup-data';
+import { policySummary, reminderSummary, usePolicies, type BookingPolicy } from './setup-data';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -129,6 +129,10 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <tr>
             <th>Rule set</th>
             <th className="hidden @md:table-cell">What it asks of a customer</th>
+            {/* Reminders are the half of a rule set nobody thinks to look for — they
+                are not a term a customer agrees to, they are what the product DOES —
+                so they get their own column rather than a clause in the summary. */}
+            <th className="hidden @md:table-cell">Before the booking</th>
           </tr>
         </thead>
         <tbody>
@@ -150,10 +154,13 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
               <td className="w-full max-w-0">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-medium">{policy.name}</span>
-                  <span className="truncate text-sm @md:hidden">{policySummary(policy)}</span>
+                  <span className="truncate text-sm @md:hidden">
+                    {policySummary(policy)} · {reminderSummary(policy)}
+                  </span>
                 </span>
               </td>
               <td className="hidden @md:table-cell">{policySummary(policy)}</td>
+              <td className="hidden whitespace-nowrap @md:table-cell">{reminderSummary(policy)}</td>
             </tr>
           ))}
         </tbody>

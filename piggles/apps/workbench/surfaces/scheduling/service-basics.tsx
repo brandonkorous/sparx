@@ -1,23 +1,23 @@
 'use client';
 
-// The three sections a service IS: what it is called, how long it runs, what it
-// costs. Lifted out of service-detail.tsx to keep that file inside the size rule
-// once the requirements section grew a skills field (issue 088).
+// What a service IS: what it is called and how long it runs. Lifted out of
+// service-detail.tsx to keep that file inside the size rule once the requirements
+// section grew a skills field (issue 088); price and rules moved on again to
+// service-price.tsx when the rule-set field grew a consequence line (issue 127).
 
 import {
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
-  FieldStatus,
   Input,
   NativeSelect,
   Textarea,
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
-import { MoneyTextInput } from '../../components/money-input';
-import { BOOKING_TYPES, type BookingPolicy, type BookingType } from './setup-data';
-import { CURRENCIES, type Draft } from './service-detail';
+import { BOOKING_TYPES, type BookingType } from './setup-data';
+import type { Draft } from './service-detail';
+import { ServicePrice, type PolicyList } from './service-price';
 
 /** A non-negative integer from a number input, falling back when it is cleared. */
 function intOr(value: number, fallback: number): number {
@@ -33,7 +33,7 @@ export function ServiceBasics({
 }: {
   isNew: boolean;
   draft: Draft;
-  policies: { data?: { items: BookingPolicy[] }; isPending: boolean };
+  policies: PolicyList;
   priceProblem: string | null;
   onSet: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
 }) {
@@ -214,83 +214,7 @@ export function ServiceBasics({
         </div>
       </FormSection>
 
-      <FormSection
-        title="What it costs"
-        description="The price a customer pays, and which deposit rules apply."
-      >
-        <div className="grid gap-4 @md:grid-cols-2">
-          <Field>
-            <FieldLabel>Price</FieldLabel>
-            <FieldControl
-              render={
-                <MoneyTextInput
-                  color="module"
-                  className="max-w-40"
-                  aria-label="Price"
-                  text={draft.price}
-                  onTextChange={(text) => {
-                    onSet('price', text);
-                  }}
-                />
-              }
-            />
-            {priceProblem ? (
-              <FieldStatus status="error">{priceProblem}</FieldStatus>
-            ) : (
-              <FieldDescription>Leave blank for a free booking.</FieldDescription>
-            )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Currency</FieldLabel>
-            <FieldControl
-              render={
-                <NativeSelect
-                  className="max-w-32"
-                  value={draft.currency}
-                  aria-label="Currency"
-                  onChange={(event) => {
-                    onSet('currency', event.target.value);
-                  }}
-                >
-                  {CURRENCIES.map((code: string) => (
-                    <option key={code} value={code}>
-                      {code.toUpperCase()}
-                    </option>
-                  ))}
-                </NativeSelect>
-              }
-            />
-          </Field>
-        </div>
-
-        <Field>
-          <FieldLabel>Booking rules</FieldLabel>
-          <FieldControl
-            render={
-              <NativeSelect
-                value={draft.policyId}
-                aria-label="Booking rules"
-                disabled={policies.isPending}
-                onChange={(event) => {
-                  onSet('policyId', event.target.value);
-                }}
-              >
-                <option value="">No deposit or cancellation rules</option>
-                {(policies.data?.items ?? []).map((policy) => (
-                  <option key={policy.id} value={policy.id}>
-                    {policy.name}
-                  </option>
-                ))}
-              </NativeSelect>
-            }
-          />
-          <FieldDescription>
-            The deposit and cancellation terms a customer agrees to when booking this service. Set
-            these up under Booking rules.
-          </FieldDescription>
-        </Field>
-      </FormSection>
+      <ServicePrice draft={draft} policies={policies} priceProblem={priceProblem} onSet={onSet} />
     </>
   );
 }

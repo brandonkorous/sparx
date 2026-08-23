@@ -187,6 +187,9 @@ export interface CustomerLite {
   firstName: string | null;
   lastName: string | null;
   email: string | null;
+  /** Ring them when they are late. The API has always returned it; nothing had
+   *  ever asked, so a booking could not show a phone number (issue 111). */
+  phone: string | null;
   company: string | null;
 }
 

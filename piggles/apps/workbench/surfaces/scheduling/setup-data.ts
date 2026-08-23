@@ -889,6 +889,28 @@ export const REMINDER_OFFSETS: { minutes: number; label: string }[] = [
   { minutes: 60, label: '1 hour before' },
 ];
 
+/**
+ * The reminder times as a person would say them — "1 day and 2 hours before".
+ *
+ * Reminders hang off the RULE SET, not the service, so this is also the honest
+ * answer to "does anyone get reminded about this booking" — and a rule set with
+ * none, or a service with no rule set at all, means nobody does.
+ */
+export function reminderSummary(policy: BookingPolicy): string {
+  const offsets = [...policy.reminderOffsetsMin].sort((a, b) => b - a);
+  if (offsets.length === 0) return 'No reminders';
+  const said = offsets.map(
+    (minutes) =>
+      REMINDER_OFFSETS.find((offset) => offset.minutes === minutes)?.label.replace(
+        / before$/,
+        ''
+      ) ?? `${String(minutes)} min`
+  );
+  const last = said[said.length - 1];
+  const phrase = said.length === 1 ? last : `${said.slice(0, -1).join(', ')} and ${String(last)}`;
+  return `Reminder ${String(phrase)} before`;
+}
+
 /** A plain-language summary of what a policy asks of a customer, for the list. */
 export function policySummary(policy: BookingPolicy): string {
   const parts: string[] = [];

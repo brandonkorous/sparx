@@ -192,7 +192,9 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     icon: faShieldCheck,
     section: 'Setup',
     order: 23,
-    keywords: ['policies', 'cancellation', 'deposit', 'notice', 'no show'],
+    // 'reminder' is here because it is the word somebody types when they want the
+    // day-before nudge, and this is the only screen that decides when one goes out.
+    keywords: ['policies', 'cancellation', 'deposit', 'notice', 'no show', 'reminder', 'reminders'],
     component: PoliciesListSurface,
     createSurface: 'scheduling.policies.detail',
     createLabel: 'New rule set',
