@@ -16,6 +16,10 @@
 // contract is identical for a surface and a record — the destination is stated
 // at the moment you ask for it, whichever kind of thing you asked for.
 //
+// Three neighbours carry the parts: what rows exist (launcher-entries.ts), what
+// counts as a match (launcher-match.ts), and what a row looks like
+// (launcher-rows.tsx). This file owns the dialog, the query and the keyboard.
+//
 // This is a purpose-built async palette (composed from the silica Dialog +
 // SearchInput + Kbd primitives) rather than silica's <CommandPalette>, which
 // owns its input internally and can only ever filter a static list — it has no
@@ -23,56 +27,9 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { Dialog, DialogContent, DialogTitle, Kbd, SearchInput } from '@wizeworks/silicaui-react';
-import type { LucideIcon } from 'lucide-react';
-import { useFavorites } from '../lib/api/shell-data';
-import { useDebouncedValue, useRecordSearch } from '../lib/api/search';
-import {
-  getSurface,
-  listedSurfaces,
-  resolveTitle,
-  type OpenTarget,
-} from '../lib/surfaces/registry';
-import { routeAcceptsId, routeForEntity } from '@wizeworks/links';
-import {
-  surfaceIsVisible,
-  useKnownModules,
-  useReachableModules,
-} from '../lib/surfaces/use-visible-nav';
-import { moduleLabel } from '../lib/surfaces/nav';
-import type { WorkbenchModule } from './module-scope';
-import { useWorkbench } from '../lib/workbench/context';
-import { useFeedback } from './feedback/provider';
-
-/**
- * The heading a surface sits under in the palette.
- *
- * This used to title-case the module KEY, which produced "Crm", "B2b" and "Seo"
- * — the raw slug with a capital letter, in the one place the app is supposed to
- * be findable by someone who does not know what anything is called. It now asks
- * the same function the rail and the navigation panel ask, so all three agree
- * and a brand that renames a module renames it everywhere at once
- * (lib/product.ts).
- */
-function groupLabel(module: string): string {
-  return moduleLabel(module as WorkbenchModule);
-}
-
-/** The modifier held at selection decides where the pane lands. */
-function targetFor(mods: { shiftKey?: boolean; altKey?: boolean }): OpenTarget {
-  return mods.altKey ? 'window' : mods.shiftKey ? 'beside' : 'tab';
-}
-
-/** One selectable row — a surface to open, a record to open, or an action. */
-interface Entry {
-  id: string;
-  group: string;
-  label: string;
-  subtitle?: string;
-  icon?: LucideIcon;
-  /** Terms the local filter matches surfaces on. Records are pre-filtered by the server. */
-  keywords?: string[];
-  run: (mods: { shiftKey?: boolean; altKey?: boolean }) => void;
-}
+import { useNavEntries, useRecordEntries } from './launcher-entries';
+import { rankEntries, type Entry } from './launcher-match';
+import { groupEntries, LauncherEmpty, LauncherGroup } from './launcher-rows';
 
 export function Launcher({
   open,
@@ -81,20 +38,12 @@ export function Launcher({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { controller } = useWorkbench();
-  const feedback = useFeedback();
-  const { data: favorites } = useFavorites();
-  const reachable = useReachableModules();
-  const known = useKnownModules();
-
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Records wait on a debounced query so a burst of typing fires one search, not
-  // one per keystroke; surface filtering below stays on the live value.
-  const debounced = useDebouncedValue(query, 180);
-  const records = useRecordSearch(open ? debounced : '');
+  const navEntries = useNavEntries();
+  const { entries: recordEntries, searching } = useRecordEntries(query, open);
 
   // Bind ⌘K / Ctrl+K here — silica's <CommandPalette> used to own this, and it
   // left with it. Only one Launcher is mounted at a time (the compact shell
@@ -119,84 +68,12 @@ export function Launcher({
     }
   }, [open]);
 
-  // ── Navigation entries: favorites + surfaces, gated by the SAME rule as the
-  //    rail and mobile drawer. The palette is a faster route to a surface, never
-  //    a wider one — a teammate restricted to Invoicing can't reach Commerce by
-  //    typing "orders", and a tenant that never turned Commerce on can't open a
-  //    surface that would 404. ──────────────────────────────────────────────
-  const navEntries = useMemo<Entry[]>(() => {
-    const favoriteKeys = new Set((favorites ?? []).map((f) => f.actionId));
-    const surfaces = listedSurfaces().filter((s) => surfaceIsVisible(s, reachable, known));
-
-    const toEntry = (s: ReturnType<typeof listedSurfaces>[number]): Entry => ({
-      id: s.key,
-      group: favoriteKeys.has(s.key) ? '★ Favorites' : groupLabel(s.module),
-      label: resolveTitle(s, {}),
-      icon: s.icon,
-      keywords: [...(s.keywords ?? []), s.module],
-      run: (mods) => controller.open(s.key, undefined, { target: targetFor(mods) }),
-    });
-
-    // Sending feedback is the one action that ISN'T a surface — a transient
-    // dialog, not a place — so it can't come from the registry and is added by
-    // hand. Reading feedback is a listed surface and rides along above.
-    const sendFeedback: Entry = {
-      id: 'platform.feedback.send',
-      group: moduleLabel('platform'),
-      label: 'Send feedback',
-      keywords: ['feedback', 'support', 'bug', 'problem', 'idea', 'suggestion', 'contact'],
-      run: () => feedback.openSend({ source: 'command' }),
-    };
-
-    // Favorites first so their group heads the palette; groups then render in
-    // first-appearance order.
-    return [
-      ...surfaces.filter((s) => favoriteKeys.has(s.key)).map(toEntry),
-      ...surfaces.filter((s) => !favoriteKeys.has(s.key)).map(toEntry),
-      sendFeedback,
-    ];
-  }, [controller, favorites, reachable, known, feedback]);
-
-  // ── Record entries: each Typesense hit routed to its surface. A hit whose
-  //    type has no route, or whose surface is in a module this viewer can't
-  //    reach, is dropped rather than shown as a dead end — the same visibility
-  //    gate the surfaces use, applied to the surface a record would open. ────
-  const recordEntries = useMemo<Entry[]>(() => {
-    const out: Entry[] = [];
-    for (const hit of records.hits) {
-      const route = routeForEntity(hit.entityType);
-      if (!route) continue;
-      const surface = getSurface(route.surface);
-      if (!surface || !surfaceIsVisible(surface, reachable, known)) continue;
-      // A handful of entity types have no detail surface — a review is worked in
-      // a queue, a page is authored in the builder — so their home is a LIST and
-      // it takes no id. That falls out of whether the address has a parameter,
-      // rather than being a flag someone has to keep in step with the route.
-      const carriesId = routeAcceptsId(route);
-      out.push({
-        id: `record:${hit.key}`,
-        group: route.entityLabel ?? surface.title.toString(),
-        label: hit.title || 'Untitled',
-        subtitle: hit.subtitle,
-        icon: surface.icon,
-        run: (mods) =>
-          controller.open(route.surface, carriesId ? { id: hit.recordId } : undefined, {
-            target: targetFor(mods),
-          }),
-      });
-    }
-    return out;
-  }, [records.hits, reachable, known, controller]);
-
   // Surfaces filter locally on the live query; records arrive already filtered.
   // Empty query is the launcher's resting state: navigation only, no records.
   const entries = useMemo<Entry[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return navEntries;
-    const nav = navEntries.filter((e) =>
-      [e.label, e.group, ...(e.keywords ?? [])].join(' ').toLowerCase().includes(q)
-    );
-    return [...nav, ...recordEntries];
+    return [...rankEntries(navEntries, q), ...recordEntries];
   }, [query, navEntries, recordEntries]);
 
   // Keep the highlight in range as the list shrinks/grows under it.
@@ -208,15 +85,7 @@ export function Launcher({
     listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex, entries]);
 
-  const groups = useMemo(() => {
-    const map = new Map<string, { entry: Entry; index: number }[]>();
-    entries.forEach((entry, index) => {
-      const bucket = map.get(entry.group);
-      if (bucket) bucket.push({ entry, index });
-      else map.set(entry.group, [{ entry, index }]);
-    });
-    return [...map.entries()];
-  }, [entries]);
+  const groups = useMemo(() => groupEntries(entries), [entries]);
 
   const move = (dir: 1 | -1) => {
     const n = entries.length;
@@ -244,9 +113,6 @@ export function Launcher({
     }
   };
 
-  const showEmpty = entries.length === 0;
-  const searching = records.isLoading;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[70dvh] w-full max-w-xl flex-col overflow-hidden p-0">
@@ -269,49 +135,17 @@ export function Launcher({
           </div>
 
           <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto p-2" role="listbox">
-            {showEmpty ? (
-              <p className="px-3 py-8 text-center text-sm" role="status">
-                {searching
-                  ? 'Searching…'
-                  : query.trim()
-                    ? 'Nothing matches that. Try a different word.'
-                    : 'Type to search across every module — or pick a screen to open.'}
-              </p>
+            {entries.length === 0 ? (
+              <LauncherEmpty searching={searching} typed={query.trim().length > 0} />
             ) : (
-              groups.map(([group, rows]) => (
-                <div key={group} className="mb-1">
-                  <div className="px-3 pt-2 pb-1 text-xs font-semibold tracking-wide">{group}</div>
-                  {rows.map(({ entry, index }) => {
-                    const isActive = index === activeIndex;
-                    const Icon = entry.icon;
-                    return (
-                      <button
-                        key={entry.id}
-                        type="button"
-                        role="option"
-                        aria-selected={isActive}
-                        data-active={isActive}
-                        className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left ${
-                          isActive ? 'bg-base-200' : 'hover:bg-base-200'
-                        }`}
-                        onMouseMove={() => setActiveIndex(index)}
-                        onClick={(event) =>
-                          select(index, { shiftKey: event.shiftKey, altKey: event.altKey })
-                        }
-                      >
-                        {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
-                        <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                          {entry.label}
-                        </span>
-                        {entry.subtitle ? (
-                          <span className="max-w-[45%] shrink truncate text-sm">
-                            {entry.subtitle}
-                          </span>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
+              groups.map((group) => (
+                <LauncherGroup
+                  key={group.group}
+                  group={group}
+                  activeIndex={activeIndex}
+                  onHover={setActiveIndex}
+                  onSelect={select}
+                />
               ))
             )}
           </div>
