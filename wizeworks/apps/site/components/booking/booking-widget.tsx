@@ -22,26 +22,24 @@ import {
 } from '../../lib/scheduling-client';
 import { BookingDepositStep } from './booking-deposit-step';
 import { AddToCalendar } from './add-to-calendar';
+import {
+  dayAfter,
+  dayOf,
+  formatStamp,
+  formatTime,
+  readsTheSame,
+  startOfDay,
+  today,
+  zoneName,
+} from './booking-clock';
 
-function todayISODate(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function formatTime(iso: string): string {
-  return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(
-    new Date(iso)
-  );
-}
-
-function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date(iso));
+/** "Cut and finish with Nia Okafor" — the service, and the person it is with when
+ *  one was chosen. Naming them is what makes a customer's choice of stylist look
+ *  like it took; without it the receipt is silent about the thing she picked. */
+function bookedThing(confirmation: BookingConfirmation): string {
+  return confirmation.staff
+    ? `${confirmation.serviceName} with ${confirmation.staff}`
+    : confirmation.serviceName;
 }
 
 export function BookingWidget({
@@ -64,8 +62,11 @@ export function BookingWidget({
   onBooked?: (bookingId: string) => void;
 }) {
   const isReservation = service.bookingType === 'reservation';
+  const tz = service.timezone ?? null;
   const isCustomerChoice = service.assignmentStrategy === 'customer_choice';
-  const [date, setDate] = useState(todayISODate());
+  // Today WHERE THE BUSINESS IS. A reader whose own date has already turned over
+  // would otherwise open on tomorrow, or on a day the salon has not reached.
+  const [date, setDate] = useState(() => today(tz));
   const [partySize, setPartySize] = useState(2);
   // The customer-chosen provider for a customer_choice service; null = "Any available".
   const [providers, setProviders] = useState<BookableResource[] | null>(null);
@@ -94,9 +95,8 @@ export function BookingWidget({
     setSelected(null);
     setError(null);
     try {
-      const from = new Date(`${date}T00:00`);
-      const to = new Date(from);
-      to.setDate(to.getDate() + 1);
+      const from = startOfDay(date, tz);
+      const to = startOfDay(dayAfter(date), tz);
       const result = await loadSlots(
         tenantSlug,
         service.id,
@@ -112,7 +112,7 @@ export function BookingWidget({
     } finally {
       setLoadingSlots(false);
     }
-  }, [tenantSlug, service.id, date, partySize, isReservation, chosenResourceId]);
+  }, [tenantSlug, service.id, date, partySize, isReservation, chosenResourceId, tz]);
 
   useEffect(() => {
     void fetchSlots();
@@ -129,13 +129,11 @@ export function BookingWidget({
     if (seededDate) return;
     let active = true;
     void (async () => {
-      const start = new Date(`${todayISODate()}T00:00`);
+      const start = today(tz);
       const maxDays = Math.min(service.maxAdvanceDays || 60, 120);
       for (let offset = 0; offset < maxDays; offset += 7) {
-        const from = new Date(start);
-        from.setDate(from.getDate() + offset);
-        const to = new Date(from);
-        to.setDate(to.getDate() + 7);
+        const from = startOfDay(dayAfter(start, offset), tz);
+        const to = startOfDay(dayAfter(start, offset + 7), tz);
         let found: PublicSlot[] = [];
         try {
           found = await loadSlots(
@@ -152,10 +150,7 @@ export function BookingWidget({
         if (!active) return;
         const first = found[0];
         if (first) {
-          const d = new Date(first.startAt);
-          const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-            d.getDate()
-          ).padStart(2, '0')}`;
+          const iso = dayOf(first.startAt, tz);
           setDate((current) => (iso !== current ? iso : current));
           break;
         }
@@ -173,6 +168,7 @@ export function BookingWidget({
     isReservation,
     partySize,
     chosenResourceId,
+    tz,
   ]);
 
   // Load the pickable providers once, for a customer_choice service.
@@ -294,9 +290,15 @@ export function BookingWidget({
         </h2>
         <p className="text-base-content">
           {confirmation.requiresApproval
-            ? `We've received your request for ${confirmation.serviceName} on ${formatDateTime(confirmation.startAt)}. You'll get a confirmation once it's approved.`
-            : `${confirmation.serviceName} is confirmed for ${formatDateTime(confirmation.startAt)}. A confirmation is on its way to ${email}.`}
+            ? `We've received your request for ${bookedThing(confirmation)} on ${formatStamp(confirmation.startAt, tz)}. You'll get a confirmation once it's approved.`
+            : `${bookedThing(confirmation)} is confirmed for ${formatStamp(confirmation.startAt, tz)}. A confirmation is on its way to ${email}.`}
         </p>
+        {/* WHERE. A confirmation is read twice — once now, and once in the car by
+            somebody who has never been here. `<address>` so a screen reader
+            announces it as one. */}
+        {confirmation.location ? (
+          <address className="text-base-content not-italic">{confirmation.location}</address>
+        ) : null}
         {confirmation.calendar ? <AddToCalendar links={confirmation.calendar} /> : null}
       </div>
     );
@@ -343,7 +345,7 @@ export function BookingWidget({
           <Input
             id="book-date"
             type="date"
-            min={todayISODate()}
+            min={today(tz)}
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -395,11 +397,18 @@ export function BookingWidget({
                 aria-pressed={selected === slot.startAt}
                 onClick={() => setSelected(slot.startAt)}
               >
-                {formatTime(slot.startAt)}
+                {formatTime(slot.startAt, tz)}
               </button>
             ))}
           </div>
         )}
+        {/* Only for a reader whose own clock disagrees — everybody else is local
+            and does not need telling what time it is where they are. */}
+        {tz && slots && slots.length > 0 && !readsTheSame(slots[0]!.startAt, tz) ? (
+          <p className="text-base-content text-sm">
+            All times shown are our local time ({zoneName(slots[0]!.startAt, tz)}).
+          </p>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-4 min-[540px]:grid-cols-2">
@@ -437,7 +446,7 @@ export function BookingWidget({
       {error ? <Alert color="danger">{error}</Alert> : null}
 
       <Button type="submit" color="primary" disabled={submitting || !selected}>
-        {submitting ? 'Booking…' : selected ? `Book ${formatTime(selected)}` : 'Choose a time'}
+        {submitting ? 'Booking…' : selected ? `Book ${formatTime(selected, tz)}` : 'Choose a time'}
       </Button>
     </form>
   );

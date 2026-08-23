@@ -27,6 +27,10 @@ export interface PublicService {
   assignmentStrategy: 'any_available' | 'round_robin' | 'collective' | 'customer_choice';
   /** The word for the bookable person ("stylist", "technician", "team member"). */
   providerLabel: string;
+  /** The zone the business is in — the clock every time on the widget is shown
+   *  in. Null when it cannot be told (several places, none named), in which case
+   *  the reader's own clock is used. */
+  timezone: string | null;
 }
 
 interface Envelope<T> {

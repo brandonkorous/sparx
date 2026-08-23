@@ -27,6 +27,12 @@ export interface BookingConfirmation {
   startAt: string;
   endAt: string;
   requiresApproval: boolean;
+  /** The place, on one line — null when the business has no address on file, so
+   *  the confirmation says nothing rather than naming a place that locates
+   *  nobody. */
+  location?: string | null;
+  /** Who the appointment is with. Null for a table, a room or a piece of kit. */
+  staff?: string | null;
   /** Present when the service's policy requires payment at booking (docs/79 §9):
    *  a clientSecret to confirm with the gateway's card element. Null otherwise. */
   deposit?: {

@@ -20,6 +20,8 @@ import { z } from 'zod';
 import { isModuleEnabled } from '@wizeworks/auth';
 import {
   cancelBooking,
+  customerFacingPlace,
+  findBookingPlace,
   getBooking,
   listBookings,
   rescheduleBooking,
@@ -70,13 +72,20 @@ const MODIFIABLE = ['requested', 'confirmed'];
 /** A customer-facing projection of a booking — only their-eyes copy (no staff
  *  notes). `canCancel`/`canReschedule` drive the portal's action buttons; the
  *  engine still enforces the real state machine + slot availability on write. */
-function toBookingDto(
+async function toBookingDto(
   b: BookingWithRelations,
   now: number,
   tenantId: string
-): Record<string, unknown> {
+): Promise<Record<string, unknown>> {
   const future = b.startAt.getTime() > now;
   const modifiable = MODIFIABLE.includes(b.status) && future;
+  // The same place the confirmation, the email and the `.ics` name (issue 107) —
+  // a booking re-added to a calendar from the portal must not be missing the
+  // address the one added from the confirmation carried.
+  const place = await findBookingPlace(tenantId, {
+    locationId: b.locationId,
+    serviceId: b.serviceId,
+  });
   return {
     id: b.id,
     serviceName: b.service.name,
@@ -101,7 +110,9 @@ function toBookingDto(
             summary: b.service.name,
             start: b.startAt,
             end: b.endAt,
+            ...(place ? { location: place.line } : {}),
           }),
+    where: customerFacingPlace(place),
   };
 }
 
@@ -133,10 +144,12 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
       ...(scope === 'all' ? { order: 'desc' } : {}),
     });
     const now = Date.now();
-    return paged(
-      rows.map((b) => toBookingDto(b, now, ctx.tenantId)),
-      { page, per_page: pageSize, total, total_pages: Math.ceil(total / pageSize) }
-    );
+    return paged(await Promise.all(rows.map((b) => toBookingDto(b, now, ctx.tenantId))), {
+      page,
+      per_page: pageSize,
+      total,
+      total_pages: Math.ceil(total / pageSize),
+    });
   });
 
   app.get('/v1/public/scheduling/account/bookings/:bookingId', async (request) => {
@@ -144,7 +157,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const ctx = await bookingContext(request);
     const customerId = await requireCustomer(request, ctx, 'bookings:read');
     const booking = await ownedBooking(ctx.tenantId, bookingId, customerId);
-    return ok(toBookingDto(booking, Date.now(), ctx.tenantId));
+    return ok(await toBookingDto(booking, Date.now(), ctx.tenantId));
   });
 
   app.post('/v1/public/scheduling/account/bookings/:bookingId/cancel', async (request) => {
@@ -171,7 +184,9 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
       customerId,
       source: 'portal',
     });
-    return ok(toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId));
+    return ok(
+      await toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId)
+    );
   });
 
   app.post('/v1/public/scheduling/account/bookings/:bookingId/reschedule', async (request) => {
@@ -194,7 +209,9 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
       startAt: body.startAt,
       source: 'portal',
     });
-    return ok(toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId));
+    return ok(
+      await toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId)
+    );
   });
 };
 

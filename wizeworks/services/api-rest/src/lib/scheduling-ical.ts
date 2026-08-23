@@ -17,7 +17,9 @@ import { withTenant } from '@wizeworks/db';
 import {
   buildIcsEvent,
   buildIcsFeed,
+  findBookingPlace,
   googleCalendarUrl,
+  joinNames,
   outlookCalendarUrl,
   listBookings,
   type IcsEvent,
@@ -142,19 +144,25 @@ export async function loadBookingIcs(
         notes: true,
         createdAt: true,
         updatedAt: true,
+        locationId: true,
+        serviceId: true,
         service: { select: { name: true } },
-        location: { select: { name: true } },
         resources: { select: { resource: { select: { name: true, kind: true } } } },
       },
     })
   );
   if (!b) return null;
 
-  const [siteName, tenant] = await Promise.all([
+  const [siteName, tenant, place] = await Promise.all([
     resolveActivePropertyName(tenantId, null),
     withTenant({ tenantId }, (tx) =>
       tx.tenant.findUnique({ where: { id: tenantId }, select: { slug: true, email: true } })
     ),
+    // The NAME of a place is not a place. LOCATION is the field a phone shows on
+    // the day and the field a maps app routes on, so it carries the address
+    // (issue 107) — and it resolves through the service and the business's only
+    // premises, because a one-chair business never sets a location on anything.
+    findBookingPlace(tenantId, { locationId: b.locationId, serviceId: b.serviceId }),
   ]);
 
   const staff = b.resources
@@ -162,7 +170,7 @@ export async function loadBookingIcs(
     .filter((r) => r.kind === 'staff')
     .map((r) => r.name);
   const descriptionLines = [
-    staff.length ? `With ${staff.join(', ')}` : '',
+    staff.length ? `With ${joinNames(staff)}` : '',
     b.partySize ? `Party of ${b.partySize}` : '',
     b.notes ?? '',
   ].filter(Boolean);
@@ -173,7 +181,7 @@ export async function loadBookingIcs(
     end: b.endAt,
     summary: b.service?.name ?? 'Booking',
     description: descriptionLines.join('\n') || undefined,
-    location: b.location?.name ?? undefined,
+    location: place?.line ?? undefined,
     url: siteLink(tenant?.slug ?? '', '/account/bookings') || undefined,
     status: toIcsStatus(b.status),
     organizerName: siteName || undefined,

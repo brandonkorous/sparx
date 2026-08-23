@@ -25,6 +25,7 @@ import {
   SlotUnavailableError,
 } from './errors';
 import { recordBookingEvent } from './booking-history';
+import { findBookingPlaceTx } from './booking-receipt';
 import { lockPooledResources } from './locks';
 import {
   cancelBookingNotifications,
@@ -213,6 +214,13 @@ export async function createBooking(
     const roleSpecs: ResourceRequirement[] =
       requirements.length > 0 ? requirements : [{ role: 'staff', kind: 'staff' }];
     const locationId = input.locationId ?? service.locationId ?? undefined;
+    // WHERE it happens decides WHAT ZONE its times are read in. This used to fall
+    // straight to 'UTC' when a caller said nothing, and the public website says
+    // nothing — so a 2pm appointment in Sacramento was stamped UTC and every
+    // surface that reads the zone (the owner's own diary, the confirmation email,
+    // the reminder) showed 9pm (issue 108). An appointment happens where the
+    // business is; 'UTC' is only left as the answer when there is no place at all.
+    const place = await findBookingPlaceTx(tx, { locationId, serviceId: service.id });
 
     const picks: AllocationPick[] = [];
     for (const req of roleSpecs) {
@@ -245,7 +253,7 @@ export async function createBooking(
           status,
           startAt,
           endAt,
-          timezone: input.timezone ?? 'UTC',
+          timezone: input.timezone ?? place?.timezone ?? 'UTC',
           capacity: service.capacity,
           partySize: input.partySize ?? null,
           customerId: input.customerId ?? null,

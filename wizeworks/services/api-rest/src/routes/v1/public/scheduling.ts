@@ -17,6 +17,10 @@ import { badRequest, conflict, moduleDisabled, notFound } from '@wizeworks/api-c
 import {
   bookClassSeat,
   createBooking,
+  customerFacingPlace,
+  findBookingHosts,
+  findBookingPlace,
+  findServicePlaces,
   getAvailability,
   getService,
   joinWaitlist,
@@ -142,28 +146,38 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       (request.query as { property?: string }).property
     );
     const services = await listServices(tenantId, { activeOnly: true, propertyId });
+    const bookable = services.filter((s) => s.bookableOnline);
+    // WHICH CLOCK the times are in. A visitor's browser is in the visitor's zone,
+    // which is the wrong one for somewhere you have to physically turn up to
+    // (issue 109) — so the widget is told the zone of the place, and shows it.
+    const places = await findServicePlaces(
+      tenantId,
+      bookable.map((s) => s.id)
+    );
     return ok(
-      services
-        .filter((s) => s.bookableOnline)
-        .map((s) => ({
-          id: s.id,
-          name: s.name,
-          description: s.description,
-          bookingType: s.bookingType,
-          durationMinutes: s.durationMinutes,
-          priceCents: s.priceCents,
-          currency: s.currency,
-          capacity: s.capacity,
-          color: s.color,
-          imageUrl: s.imageUrl,
-          requiresApproval: s.requiresApproval,
-          slotIntervalMin: s.slotIntervalMin,
-          minLeadMinutes: s.minLeadMinutes,
-          maxAdvanceDays: s.maxAdvanceDays,
-          // Whether the customer picks a specific person, + the word for them.
-          assignmentStrategy: s.assignmentStrategy,
-          providerLabel: providerLabel(s.resourceRequirements),
-        }))
+      bookable.map((s) => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        bookingType: s.bookingType,
+        durationMinutes: s.durationMinutes,
+        priceCents: s.priceCents,
+        currency: s.currency,
+        capacity: s.capacity,
+        color: s.color,
+        imageUrl: s.imageUrl,
+        requiresApproval: s.requiresApproval,
+        slotIntervalMin: s.slotIntervalMin,
+        minLeadMinutes: s.minLeadMinutes,
+        maxAdvanceDays: s.maxAdvanceDays,
+        // Whether the customer picks a specific person, + the word for them.
+        assignmentStrategy: s.assignmentStrategy,
+        providerLabel: providerLabel(s.resourceRequirements),
+        // Null when the business has several places and this service names
+        // none — the widget then falls back to the reader's own clock rather
+        // than picking one of the branches' for them.
+        timezone: places.get(s.id)?.timezone ?? null,
+      }))
     );
   });
 
@@ -303,12 +317,28 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     // inbox). Best-effort: never blocks the booking response.
     await sendOwnerBookingNotification(request.log, tenantId, created.booking.id);
 
+    // WHERE and WHO — a confirmation that gives neither is a time, not a receipt
+    // (issue 107). Somebody who has never been here needs the address, and
+    // somebody who has just chosen their stylist needs to see the choice took.
+    // The same two facts go into the calendar links below, the `.ics` those links
+    // download, and the confirmation email, so they cannot drift apart.
+    const [place, hosts] = await Promise.all([
+      findBookingPlace(tenantId, {
+        locationId: created.booking.locationId,
+        serviceId: service.id,
+      }),
+      findBookingHosts(tenantId, created.resourceIds),
+    ]);
+    const where = customerFacingPlace(place);
+
     // "Add to calendar" links (docs/79 §8.1) — the per-booking `.ics` download plus
     // Google/Outlook web deep links, shown on the confirmation step.
     const calendar = bookingCalendarLinks(tenantId, created.booking.id, {
       summary: service.name,
       start: created.booking.startAt,
       end: created.booking.endAt,
+      ...(place ? { location: place.line } : {}),
+      ...(hosts ? { description: `With ${hosts}` } : {}),
     });
 
     return reply.code(201).send(
@@ -319,6 +349,10 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
         startAt: created.booking.startAt.toISOString(),
         endAt: created.booking.endAt.toISOString(),
         requiresApproval: created.booking.status === 'requested',
+        // Null rather than the business's own name when no address is on file —
+        // "your appointment is at Halo & Hem" locates nobody.
+        location: where,
+        staff: hosts,
         deposit: deposit.required
           ? {
               clientSecret: deposit.clientSecret,

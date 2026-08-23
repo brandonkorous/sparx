@@ -12,16 +12,7 @@ import { cn } from '@/lib/cn';
 
 import type { PublicService } from '../../lib/scheduling';
 import { joinSession, listSessions, type PublicSession } from '../../lib/scheduling-client';
-
-function formatSession(iso: string): string {
-  return new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date(iso));
-}
+import { formatShortDateTime, readsTheSame, zoneName } from './booking-clock';
 
 export function ClassBookingWidget({
   tenantSlug,
@@ -30,6 +21,7 @@ export function ClassBookingWidget({
   tenantSlug: string;
   service: PublicService;
 }) {
+  const tz = service.timezone ?? null;
   const [sessions, setSessions] = useState<PublicSession[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -111,7 +103,7 @@ export function ClassBookingWidget({
                 aria-pressed={selected === s.bookingId}
                 onClick={() => setSelected(s.bookingId)}
               >
-                <span className="font-semibold">{formatSession(s.startAt)}</span>
+                <span className="font-semibold">{formatShortDateTime(s.startAt, tz)}</span>
                 <span className="text-base-content text-sm">
                   {s.remaining > 0
                     ? `${s.remaining} ${s.remaining === 1 ? 'seat' : 'seats'} left`
@@ -121,6 +113,13 @@ export function ClassBookingWidget({
             ))}
           </div>
         )}
+        {/* Same rule as the appointment widget: a class runs on the clock where it
+            is held, and only a reader whose own clock disagrees is told so. */}
+        {tz && sessions && sessions.length > 0 && !readsTheSame(sessions[0]!.startAt, tz) ? (
+          <p className="text-base-content text-sm">
+            All times shown are our local time ({zoneName(sessions[0]!.startAt, tz)}).
+          </p>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-4 min-[540px]:grid-cols-2">

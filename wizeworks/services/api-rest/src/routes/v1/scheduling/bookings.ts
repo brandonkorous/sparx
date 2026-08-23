@@ -8,6 +8,7 @@
 //   POST   /v1/scheduling/bookings                  → create
 //   GET    /v1/scheduling/bookings/:id              → get one (with relations)
 //   GET    /v1/scheduling/bookings/:id/timeline     → lifecycle history (audit trail)
+//   GET    /v1/scheduling/bookings/:id/notices      → what has reached the customer, and what will
 //   PATCH  /v1/scheduling/bookings/:id              → staff edits (notes/parts/asset)
 //   POST   /v1/scheduling/bookings/:id/confirm      → approve a requested booking
 //   POST   /v1/scheduling/bookings/:id/cancel       → cancel + release the slot
@@ -41,6 +42,7 @@ import {
   noShowBooking,
   getBooking,
   getBookingTimeline,
+  getBookingNotices,
   getCustomerBookingStats,
   listBookings,
   getCalendar,
@@ -153,6 +155,18 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     return ok(await getBookingTimeline(tenantId, id));
+  });
+
+  // The notification ledger for this booking — every confirmation, change,
+  // cancellation and reminder, sent or still to come. Read-only, and it is the ONLY
+  // route to the fact that a booking will remind nobody: with no rule set on the
+  // service, no reminder rows are ever laid, and the booking looks identical to one
+  // that has three coming.
+  app.get('/v1/scheduling/bookings/:id/notices', async (request) => {
+    await requireSchedulingModule(request);
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await getBookingNotices(tenantId, id));
   });
 
   app.patch('/v1/scheduling/bookings/:id', async (request) => {
