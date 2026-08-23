@@ -16,12 +16,13 @@
 // modal, blank. Money is a live preview of the server's answer.
 
 import { useState } from 'react';
-import { Badge, Button, Input, Text, Tooltip } from '@wizeworks/silicaui-react';
+import { Button, Input, Text, Tooltip } from '@wizeworks/silicaui-react';
 import { faPencil, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { MoneyInput } from '../../components/money-input';
 import { LineEditorModal, type LineTypeOption } from './line-editor-modal';
 import { type MarkupRuleSummary } from './line-markup';
+import { HEADER, LineMeta, ROW, StackedLabel } from './line-row-parts';
 import { computeLine, isMarkupPriced, type DraftLine } from './totals';
 import { formatMoney } from './types';
 
@@ -34,77 +35,6 @@ interface LineItemsProps {
   /** Disabled once the document is locked — a finalized invoice's lines are frozen. */
   readOnly?: boolean;
   onChange: (lines: DraftLine[]) => void;
-}
-
-// One shared column template (description flexes; the rest are sized to their
-// values). Kept as ONE literal string per class so Tailwind actually emits the
-// @lg container-query CSS — an interpolated `${bp}:` never gets generated.
-const COLUMNS =
-  '@lg:grid-cols-[minmax(0,1fr)_3.5rem_6.5rem_6.5rem_2rem_2rem] @lg:items-center @lg:gap-3';
-const ROW = `flex flex-col gap-2 @lg:grid ${COLUMNS}`;
-const HEADER = `hidden px-1 text-sm font-medium @lg:grid ${COLUMNS}`;
-
-/** Caption shown beside a field only while the row is stacked (narrow container). */
-function StackedLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <Text as="span" className="text-sm font-medium @lg:hidden">
-      {children}
-    </Text>
-  );
-}
-
-/** The badges under a row — everything the modal owns, surfaced read-only so the
- *  row tells the whole truth about the line without opening it. */
-function LineMeta({
-  line,
-  currency,
-  typeLabel,
-}: {
-  line: DraftLine;
-  currency: string;
-  typeLabel: string | null;
-}) {
-  const margin = line.appliedMarkup?.marginPct;
-  const bits: React.ReactNode[] = [];
-  if (typeLabel) {
-    bits.push(
-      <Badge key="type" color="neutral" variant="soft" size="sm">
-        {typeLabel}
-      </Badge>
-    );
-  }
-  if (line.productId) {
-    bits.push(
-      <Badge key="product" color="module" variant="soft" size="sm">
-        {line.productLabel ?? 'Linked product'}
-      </Badge>
-    );
-  }
-  if (line.discountAmount > 0) {
-    bits.push(
-      <Badge key="disc" color="warning" variant="soft" size="sm">
-        −{formatMoney(line.discountAmount, currency)}
-      </Badge>
-    );
-  }
-  if (margin != null) {
-    bits.push(
-      <Badge key="margin" color="module" variant="soft" size="sm">
-        {margin}% margin
-      </Badge>
-    );
-  }
-  if (!line.taxable) {
-    bits.push(
-      <Badge key="notax" color="neutral" variant="soft" size="sm">
-        No tax
-      </Badge>
-    );
-  }
-  if (bits.length === 0) return null;
-  return (
-    <div className="flex flex-wrap items-center gap-1.5 @lg:col-span-full @lg:pl-1">{bits}</div>
-  );
 }
 
 export function LineItems({
@@ -150,7 +80,7 @@ export function LineItems({
           <div className={HEADER} aria-hidden>
             <span>Description</span>
             <span className="text-right">Qty</span>
-            <span className="text-right">Unit price</span>
+            <span className="text-right">Price each</span>
             <span className="text-right">Amount</span>
             <span />
             <span />
@@ -201,7 +131,7 @@ export function LineItems({
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <StackedLabel>Unit price</StackedLabel>
+                    <StackedLabel>Price each</StackedLabel>
                     {markupPriced ? (
                       <Text
                         as="span"

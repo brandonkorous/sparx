@@ -91,6 +91,9 @@ export function InvoiceSummary({
         Summary
       </Heading>
 
+      {/* Asked as a PERCENTAGE, which is the only form anybody knows their tax
+          rate in. It is stored as a fraction, so the conversion happens here
+          rather than in the head of someone who came to send an invoice. */}
       <Field>
         <FieldLabel>Tax rate</FieldLabel>
         <FieldControl
@@ -98,19 +101,22 @@ export function InvoiceSummary({
             <Input
               color="module"
               type="number"
-              step={0.0001}
+              step={0.01}
               min={0}
-              max={1}
-              value={taxRate}
+              max={100}
+              value={Number((taxRate * 100).toFixed(4))}
               disabled={readOnly}
               className="text-right tabular-nums"
               onChange={(event) => {
-                onTaxRateChange(Number(event.target.value) || 0);
+                onTaxRateChange((Number(event.target.value) || 0) / 100);
               }}
             />
           }
         />
-        <FieldDescription>As a decimal — 0.0875 is 8.75%</FieldDescription>
+        <FieldDescription>
+          Out of a hundred — type 8.75 for eight and three-quarter percent. Leave it at 0 if you do
+          not charge tax.
+        </FieldDescription>
       </Field>
 
       <div className="border-base-300 flex flex-col gap-1 border-t pt-3">

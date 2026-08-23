@@ -37,13 +37,11 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import { MoneyInput, MoneyTextInput } from '../../components/money-input';
 import { ProductPicker } from './product-picker';
-import { ADHOC, METHOD_META, PASSTHROUGH, type MarkupRuleSummary } from './line-markup';
+import { type MarkupRuleSummary } from './line-markup';
+import { LineEditorNumbers } from './line-editor-numbers';
 import { useLineForm, type LineTypeOption } from './use-line-form';
 import { type DraftLine } from './totals';
-import { formatMoney } from './types';
-import type { BandMethod } from '@wizeworks/commerce-schemas';
 
 // Re-exported so existing importers (invoice-editor, line-items) keep their
 // `from './line-editor-modal'` path — the type just no longer lives here.
@@ -184,167 +182,7 @@ export function LineEditorModal({
               ) : null}
             </Field>
 
-            {/* The numbers. Cost lives here in EVERY mode — it is a property of
-                the line, not of the markup. Only Unit price is conditional: it
-                is typed here when priced manually, and computed by the markup
-                row below when not. */}
-            <div className="flex flex-wrap items-start gap-3">
-              <Field className="w-20">
-                <FieldLabel required>Qty</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min="0"
-                      step="0.001"
-                      className="text-right tabular-nums"
-                      value={form.quantity}
-                      onChange={(e) => {
-                        form.setQuantity(e.target.value);
-                      }}
-                    />
-                  }
-                />
-                {form.show(form.errors.quantity) ? (
-                  <FieldStatus status="error">{form.errors.quantity}</FieldStatus>
-                ) : null}
-              </Field>
-
-              {form.markupMode ? null : (
-                <Field className="w-28">
-                  <FieldLabel>Unit price</FieldLabel>
-                  <MoneyInput
-                    size="md"
-                    color="module"
-                    value={form.unitPrice}
-                    aria-label="Unit price"
-                    onValueChange={form.setUnitPrice}
-                  />
-                  {form.show(form.errors.unitPrice) ? (
-                    <FieldStatus status="error">{form.errors.unitPrice}</FieldStatus>
-                  ) : null}
-                </Field>
-              )}
-
-              <Field className="w-28">
-                <FieldLabel required={form.markupMode}>Cost</FieldLabel>
-                <FieldControl
-                  render={
-                    <MoneyTextInput
-                      color="module"
-                      className="text-right"
-                      aria-label="Cost"
-                      text={form.cost}
-                      onTextChange={form.setCost}
-                    />
-                  }
-                />
-                {form.show(form.errors.cost) ? (
-                  <FieldStatus status="error">{form.errors.cost}</FieldStatus>
-                ) : null}
-              </Field>
-
-              <Field className="w-28">
-                <FieldLabel>Discount</FieldLabel>
-                <MoneyInput
-                  size="md"
-                  color="module"
-                  value={form.discountAmount}
-                  aria-label="Line discount"
-                  onValueChange={form.setDiscountAmount}
-                />
-              </Field>
-            </div>
-
-            {/* HOW the price is worked out — the markup directive and its terms,
-                on one line, with the price it produces directly beneath. */}
-            {form.markupMode ? (
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap items-start gap-3">
-                  <Field className="min-w-[11rem] flex-1">
-                    <FieldLabel>Markup</FieldLabel>
-                    <NativeSelect
-                      color="module"
-                      aria-label="Markup source"
-                      value={form.markup.source}
-                      onChange={(e) => {
-                        form.setMarkup((s) => ({ ...s, source: e.target.value }));
-                      }}
-                    >
-                      {form.pricingMode === 'pass_through' ? (
-                        <option value={PASSTHROUGH}>Pass through at cost</option>
-                      ) : null}
-                      {markupRules.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                      <option value={ADHOC}>Ad-hoc markup…</option>
-                    </NativeSelect>
-                  </Field>
-
-                  {form.markup.source === ADHOC ? (
-                    <>
-                      <Field className="w-40">
-                        <FieldLabel>Method</FieldLabel>
-                        <NativeSelect
-                          color="module"
-                          aria-label="Markup method"
-                          value={form.markup.method}
-                          onChange={(e) => {
-                            form.setMarkup((s) => ({ ...s, method: e.target.value as BandMethod }));
-                          }}
-                        >
-                          <option value="percentage">Markup %</option>
-                          <option value="margin_target">Target margin %</option>
-                          <option value="multiplier">Multiplier ×</option>
-                          <option value="flat">Add fixed $</option>
-                        </NativeSelect>
-                      </Field>
-                      <Field className="w-24">
-                        <FieldLabel>{METHOD_META[form.markup.method].label}</FieldLabel>
-                        <FieldControl
-                          render={
-                            <Input
-                              color="module"
-                              type="number"
-                              step="0.01"
-                              className="text-right tabular-nums"
-                              value={form.markup.value}
-                              onChange={(e) => {
-                                form.setMarkup((s) => ({ ...s, value: e.target.value }));
-                              }}
-                            />
-                          }
-                        />
-                        {form.show(form.errors.markup) ? (
-                          <FieldStatus status="error">{form.errors.markup}</FieldStatus>
-                        ) : null}
-                      </Field>
-                    </>
-                  ) : null}
-                </div>
-
-                {/* The price the markup produces. Named "Unit price" so it reads
-                    as the same thing the line-item row shows — calculated here
-                    rather than typed. Never faded; this is the money charged. */}
-                {form.resolved.preview ? (
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <Text as="span" className="text-sm">
-                      Unit price
-                    </Text>
-                    <Text as="span" className="text-lg font-semibold tabular-nums">
-                      {formatMoney(form.resolved.preview.priceCents / 100, currency)}
-                    </Text>
-                    <Text as="span" className="text-sm tabular-nums">
-                      {form.resolved.preview.marginPct}% margin · {form.resolved.preview.markupPct}%
-                      markup
-                    </Text>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            <LineEditorNumbers form={form} markupRules={markupRules} currency={currency} />
 
             <label className="flex items-center gap-2">
               <Checkbox
