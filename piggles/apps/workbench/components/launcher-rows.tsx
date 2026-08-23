@@ -25,6 +25,42 @@ export function groupEntries(entries: Entry[]): EntryGroup[] {
   return [...map.entries()].map(([group, rows]) => ({ group, rows }));
 }
 
+/**
+ * What the RECORD half of the search has to say, whether or not it found
+ * anything.
+ *
+ * The palette searches two things at once: the screens in this console, and the
+ * records in the business. Only one of them ever spoke. Typing "Rob" — a
+ * customer with an account, a phone number and an appointment next Friday —
+ * returned "Send feedback", "What you told us" and "Things worth fixing",
+ * because the letters r-o-b sit inside the word "problem", and said nothing at
+ * all about Rob. The list was not empty, so the empty state never showed; the
+ * only honest reading was that Piggles has never heard of him.
+ *
+ * So the record half states its own result, always, the moment anything is
+ * typed. "Nothing in your records matches" is an answer. Silence is not.
+ */
+export function RecordSearchNote({
+  searching,
+  found,
+  query,
+}: {
+  searching: boolean;
+  found: number;
+  query: string;
+}) {
+  if (!query.trim()) return null;
+  return (
+    <p className="border-base-300 border-t px-3 py-2 text-sm" role="status">
+      {searching
+        ? 'Looking through your records…'
+        : found > 0
+          ? `${String(found)} ${found === 1 ? 'record' : 'records'} matched — the rest are screens.`
+          : `Nothing in your orders, customers or products matches “${query.trim()}”.`}
+    </p>
+  );
+}
+
 export function LauncherEmpty({ searching, typed }: { searching: boolean; typed: boolean }) {
   return (
     <p className="px-3 py-8 text-center text-sm" role="status">
