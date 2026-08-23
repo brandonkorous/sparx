@@ -85,7 +85,7 @@ by a string when the answer is already known.
 **An absent site stops reading as a different one.** `ensureMembership` now also
 adopts a guest row that belongs to no site, and stamps the site onto it as it
 does. Signing in on a site is evidence of belonging to it, so the row is
-completed rather than duplicated. A row already claimed by a *different* site is
+completed rather than duplicated. A row already claimed by a _different_ site is
 still left alone, which is what keeps docs/58 D6 true: a first sign-in on a
 sister site still gets a fresh membership and fresh consent.
 

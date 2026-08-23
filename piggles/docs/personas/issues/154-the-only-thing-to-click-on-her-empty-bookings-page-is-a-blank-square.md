@@ -12,7 +12,7 @@
 
 Imani signed in and went to her bookings.
 
-> **My bookings**    ▪
+> **My bookings** ▪
 > Upcoming · Past
 > You have no upcoming bookings.
 
@@ -41,7 +41,9 @@ ever opened as a customer.
 ## The fix
 
 ```tsx
-<Button color="primary" render={<Link href="/book" />}>Book an appointment</Button>
+<Button color="primary" render={<Link href="/book" />}>
+  Book an appointment
+</Button>
 ```
 
 The same page's hand-rolled `style={{ display: 'flex', … }}` layout went with it,
