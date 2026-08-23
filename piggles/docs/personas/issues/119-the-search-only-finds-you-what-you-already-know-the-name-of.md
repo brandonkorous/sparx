@@ -1,13 +1,12 @@
 # 119 — The search only finds you what you already know the name of
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P02 · Halo & Hem · act 8
 **Surface:** mypiggles › the search box in the top bar
 **Filed:** 2026-08-22
-**Fixed:** —
-**Confirmed by:** —
-**Blocked on:** — (small, but it needs its file split first; see below)
+**Fixed:** 2026-08-23 (act 9, when it failed on the word "reminder")
+**Confirmed by:** see below
 
 ## What happened
 
@@ -53,16 +52,53 @@ prefix, then word-start, then anywhere, then keywords, then the app it lives in,
 with a comment explaining why a group match must never outrank a real name. The
 only fault is that it scores the WHOLE query as one string.
 
-## The fix (recommended, not yet made)
+## What act 9 added to it
 
-Keep the ladder exactly as it is for the whole query. When it returns zero, fall
-back to splitting the query on whitespace and requiring EVERY word to score above
-zero, ranking by the weakest word — so "take a payment" finds "How you take
-payment" and single-word queries behave identically to today.
+The same box, asked the most obvious word in the module she was working in:
 
-Word-boundary preference would also demote the wholesale results under `sale`
-without hiding them, since `startsAWord` already exists in that file.
+> reminder
 
-Not made in this pass only because `launcher.tsx` is 425 lines and piggles
-RULE #0.5 requires splitting it before it is edited — worth doing, but not ahead
-of the money defects act 8 was actually about.
+> **Customers** — Things to do
+
+One result: a to-do list. Not **Booking rules**, which owns when a reminder goes
+out; not **Email designs**, which owns what it says. Neither carries the word. A
+grep of the whole surface catalog found `reminder` in exactly one place — the CRM
+task list's keywords — so the scoring was never even reached. A ladder cannot rank
+a screen that does not admit to being about the thing.
+
+## The fix
+
+Made as recommended above, plus the keywords.
+
+`launcher.tsx` (425 lines) came apart into four: `launcher-match.ts` (what counts
+as a match), `launcher-entries.ts` (what rows exist), `launcher-rows.tsx` (what a
+row looks like), and the dialog itself. Per piggles RULE #0.5, which is why this
+was deferred in act 8.
+
+**Phrases.** `scoreQuery` runs the whole query through the existing ladder first,
+unchanged. Only when that returns zero does it split on whitespace, require every
+meaningful word to score, and rank by the weakest. Words of one or two letters are
+dropped rather than required — "take a payment" is asking about taking and about
+payment — so a single-word query behaves exactly as it always has.
+
+**Coincidences below choices.** A tagged keyword now outranks a bare mid-name
+substring: "sale" sits inside "wholesale" by accident while Orders carries it on
+purpose, and a word somebody chose is evidence where a word that happens to be
+inside another one is not.
+
+**The word itself.** `reminder` / `reminders` added to Booking rules, and
+`reminder` / `confirmation` / `receipt` / `wording` / `what it says` to Email
+designs — the two screens that own the two halves of a reminder.
+
+## Confirmed by
+
+> Re-ran all three as Nia.
+>
+> `reminder` → **Things to do**, **Email designs**, **Booking rules**. Three
+> results, all genuinely about reminders.
+>
+> `take a payment` → **How you take payment**, then **Take a sale**. It found
+> nothing at all before.
+>
+> `sale` → **Take a sale**, **Orders**, Discounts, Tax, How selling is going, and
+> only then the five Wholesale screens. They were the first five.
