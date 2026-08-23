@@ -29,24 +29,72 @@ DO $$
 DECLARE
     t         RECORD;
     only_site UUID;
+    filled    INTEGER;
+    total     INTEGER := 0;
+    skipped   INTEGER := 0;
+    n         INTEGER;
 BEGIN
     FOR t IN SELECT id FROM tenants LOOP
         PERFORM set_config('app.tenant_id', t.id::text, true);
 
-        SELECT MIN(p.id) INTO only_site
+        -- `array_agg(...)[1]` rather than `MIN(...)`: Postgres has no `min()`
+        -- aggregate for uuid. The HAVING carries the meaning anyway — there is
+        -- exactly one row, so which element is taken cannot matter.
+        SELECT (array_agg(p.id))[1] INTO only_site
         FROM properties p
         WHERE p.tenant_id = t.id
         HAVING COUNT(*) = 1;
 
         IF only_site IS NOT NULL THEN
+            -- NOT EVERY SITE-LESS ROW CAN BE FILLED IN, and the ones that cannot
+            -- are precisely the duplicates this issue is about.
+            --
+            -- `customers_tenant_property_email_unique` is (tenant_id,
+            -- property_id, email). NULL property_id never collides, which is why
+            -- these rows could pile up in the first place — stamp the site on and
+            -- they collide with the row the same person's ACCOUNT created. A
+            -- straight UPDATE therefore aborts the whole migration on the first
+            -- tenant that has such a pair, which is most of them.
+            --
+            -- So the pairs are LEFT ALONE. Merging them is a real decision with
+            -- bookings and orders hanging off both halves, and a migration is the
+            -- wrong place to make it silently; `merge_customers` is the right one.
+            -- Two site-less rows sharing an email are skipped for the same reason
+            -- — they would collide with each other, and which one is hers is not
+            -- knowable from here.
+            --
+            -- Emails compare with `=`, matching the index's own semantics: it is
+            -- case-sensitive, and a NULL email never collides with anything.
             UPDATE customers c
             SET property_id = only_site
             WHERE c.tenant_id = t.id
-              AND c.property_id IS NULL;
+              AND c.property_id IS NULL
+              AND (
+                  c.email IS NULL
+                  OR NOT EXISTS (
+                      SELECT 1
+                      FROM customers d
+                      WHERE d.tenant_id = t.id
+                        AND d.id <> c.id
+                        AND (d.property_id = only_site OR d.property_id IS NULL)
+                        AND d.email = c.email
+                  )
+              );
+            GET DIAGNOSTICS filled = ROW_COUNT;
+            total := total + filled;
+
+            SELECT COUNT(*) INTO n
+            FROM customers c
+            WHERE c.tenant_id = t.id AND c.property_id IS NULL;
+            skipped := skipped + n;
         END IF;
 
         only_site := NULL;
     END LOOP;
 
     PERFORM set_config('app.tenant_id', '', true);
+
+    -- Say what landed. A backfill that reports nothing is indistinguishable from
+    -- one that did nothing.
+    RAISE NOTICE 'customers given the site they came from: % filled, % left for a merge', total, skipped;
 END $$;
