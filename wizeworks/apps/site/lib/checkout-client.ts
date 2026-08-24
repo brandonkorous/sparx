@@ -77,6 +77,19 @@ export interface CheckoutSession {
   // Customer-facing label for the surcharge line, when one applies.
   surchargeLabel?: string;
   totals: CheckoutTotals;
+  /** Made to order (issue 026) — what the card is charged now and what falls
+   *  due on collection. Optional, and read defensively: an api-rest that
+   *  predates it sends nothing, and the safe reading of nothing is an ordinary
+   *  basket paid in full, which is what every checkout did before. */
+  madeToOrder?: CheckoutMadeToOrder;
+}
+
+export interface CheckoutMadeToOrder {
+  readyOn: string | null;
+  noticeDays: number | null;
+  dueNowCents: number;
+  balanceCents: number;
+  depositCents: number;
 }
 
 export interface PaymentIntentResult {

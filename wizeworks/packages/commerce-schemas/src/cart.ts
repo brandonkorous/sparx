@@ -62,6 +62,18 @@ export type MergeCartsInput = z.infer<typeof MergeCartsInput>;
 
 // Snapshot returned by cartService.get() and used by the storefront UI.
 // Includes the priced state — line items, totals, applied discounts.
+// What one made-to-order line asks for (issue 026). Present only on a line whose
+// product carries a rule, so an ordinary basket says nothing about any of this.
+export const CartItemMadeToOrder = z.object({
+  /** Days of notice this line needs. Null when it needs none. */
+  orderAheadDays: z.number().int().nullable(),
+  /** Of this line's subtotal, what is taken at checkout. */
+  depositCents: MoneyCents,
+  /** And what is left owing on collection. Zero when there is no deposit. */
+  balanceCents: MoneyCents,
+});
+export type CartItemMadeToOrder = z.infer<typeof CartItemMadeToOrder>;
+
 export const CartItemSnapshot = z.object({
   cartItemId: Uuid,
   variantId: Uuid,
@@ -75,8 +87,22 @@ export const CartItemSnapshot = z.object({
   configuration: ResolvedConfiguration.optional(),
   attributes: CartItemAttributes.optional(),
   unitPriceTrace: z.array(PriceTraceStep),
+  madeToOrder: CartItemMadeToOrder.nullish(),
 });
 export type CartItemSnapshot = z.infer<typeof CartItemSnapshot>;
+
+// The whole basket's made-to-order answer (issue 026) — what is paid now, what
+// is owed later, and the earliest day it can all be handed over.
+export const CartMadeToOrder = z.object({
+  /** `YYYY-MM-DD` in the BUSINESS's zone, or null when nothing asked for
+   *  notice. Null is not "ready today" and must not be rendered as one. */
+  readyOn: z.string().nullable(),
+  noticeDays: z.number().int().nullable(),
+  dueNowCents: MoneyCents,
+  balanceCents: MoneyCents,
+  depositCents: MoneyCents,
+});
+export type CartMadeToOrder = z.infer<typeof CartMadeToOrder>;
 
 export const CartTotals = z.object({
   subtotalCents: MoneyCents,

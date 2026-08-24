@@ -66,6 +66,13 @@ model Order {
   billingAddress  Json? @map("billing_address")
 
   placedAt        DateTime  @map("placed_at") @db.Timestamptz
+  // The earliest DAY every line on this order can actually be handed over
+  // (issue 026) — the placed date plus the longest notice any product on it
+  // asks for. Frozen at placement, because changing a product's notice period
+  // later must never silently move a date somebody was already promised. NULL
+  // means no line asked for notice, which is not the same as "ready today" and
+  // must not render as one.
+  readyOn         DateTime? @map("ready_on") @db.Date
   paidAt          DateTime? @map("paid_at") @db.Timestamptz
   fulfilledAt     DateTime? @map("fulfilled_at") @db.Timestamptz
   deliveredAt     DateTime? @map("delivered_at") @db.Timestamptz

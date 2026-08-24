@@ -18,7 +18,7 @@
 import type { FastifyBaseLogger } from 'fastify';
 
 import { prisma, withTenant } from '@wizeworks/db';
-import { billingPaymentService } from '@wizeworks/crm';
+import { billingPaymentService, orderPaymentsService } from '@wizeworks/crm';
 import { publish } from '@wizeworks/api-core/pubsub';
 import type { NormalizedPaymentData, ParsedWebhookEvent } from '@wizeworks/payments';
 
@@ -334,10 +334,19 @@ async function handleSucceeded(
       where: { id: payment.id },
       data: { status: 'captured', capturedAt: now },
     });
-    await tx.order.update({
-      where: { id: payment.orderId },
-      data: { paymentStatus: 'paid', paidAt: now, amountPaid: amountCents / 100 },
-    });
+
+    // DERIVE the order's payment state from its captured payments rather than
+    // declaring it paid. This used to hard-set `paid` with the charge amount,
+    // which is right for the one-payment case and wrong for every other: a
+    // deposit order (issue 026) would read as settled in full the moment the
+    // deposit cleared, and the rest of the cake would never be asked for. The
+    // rollup is the same chokepoint every hand-recorded payment already goes
+    // through, so all the paths now agree on what "paid" means.
+    const becamePaid = await orderPaymentsService.recomputeOrderPaymentRollup(
+      tx,
+      tenantId,
+      payment.orderId
+    );
 
     return {
       kind: 'captured' as const,
@@ -346,6 +355,7 @@ async function handleSucceeded(
       email: order?.customer?.email ?? null,
       customerId: order?.customerId ?? null,
       propertyId: order?.propertyId ?? null,
+      becamePaid,
     };
   });
 
@@ -393,7 +403,10 @@ async function handleSucceeded(
     return 'none';
   }
 
-  log.info({ orderId: result.orderId, amountCents }, 'payment webhook: order paid');
+  log.info(
+    { orderId: result.orderId, amountCents, becamePaid: result.becamePaid },
+    result.becamePaid ? 'payment webhook: order paid' : 'payment webhook: order part paid'
+  );
 
   await publish(log, 'payment.captured', tenantId, null, {
     orderId: result.orderId,
@@ -406,13 +419,20 @@ async function handleSucceeded(
 
   // Drives the paid-order automations + any paid-order consumer. Best-effort: a missed
   // trigger is recoverable and must not block the confirmation email.
-  try {
-    await publish(log, 'order.paid', tenantId, null, {
-      orderId: result.orderId,
-      orderNumber: result.orderNumber,
-    });
-  } catch (err) {
-    log.error({ err, orderId: result.orderId }, 'payment webhook: order.paid publish failed');
+  //
+  // Only on the edge where the balance actually cleared. A deposit order has
+  // taken real money and still owes some, so announcing `order.paid` would set
+  // every downstream consumer — accounting, automations, fulfillment — working
+  // from a settled order that is not settled (issue 026).
+  if (result.becamePaid) {
+    try {
+      await publish(log, 'order.paid', tenantId, null, {
+        orderId: result.orderId,
+        orderNumber: result.orderNumber,
+      });
+    } catch (err) {
+      log.error({ err, orderId: result.orderId }, 'payment webhook: order.paid publish failed');
+    }
   }
 
   // Order-confirmation email — the tenant's Builder-authored tree, rendered by key.

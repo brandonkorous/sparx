@@ -19,6 +19,7 @@ import { z } from 'zod';
 
 import {
   cartService,
+  type CartSnapshot,
   discountService,
   commerceSiteService,
   type ServiceContext,
@@ -76,6 +77,10 @@ async function serializePublicCart(
   items: PublicCartLine[];
   appliedDiscountCodes: string[];
   totals: ReturnType<typeof totalsView>;
+  /** Made to order (issue 026) — the day the basket can be collected and how
+   *  the money splits between now and then. Passed straight through from the
+   *  cart service so the cart, the checkout and the gateway agree. */
+  madeToOrder: CartSnapshot['madeToOrder'];
 } | null> {
   const snapshot = await cartService.get(ctx, cartId);
   if (!snapshot) return null;
@@ -128,6 +133,7 @@ async function serializePublicCart(
     items,
     appliedDiscountCodes: snapshot.appliedDiscountCodes,
     totals: totalsView(snapshot.totals),
+    madeToOrder: snapshot.madeToOrder,
   };
 }
 

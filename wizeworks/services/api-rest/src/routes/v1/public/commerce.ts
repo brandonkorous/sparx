@@ -30,7 +30,15 @@ import { prisma, withTenant } from '@wizeworks/db';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { computeAvailability } from '@wizeworks/inventory';
 import { preorderState } from '@wizeworks/commerce-schemas';
-import { pricingService, productTypeService, projectProductAttributes } from '@wizeworks/commerce';
+import {
+  depositFromColumns,
+  madeToOrderService,
+  pricingService,
+  productTypeService,
+  projectProductAttributes,
+  readyOnDate,
+  remainingToday,
+} from '@wizeworks/commerce';
 import type { ProductTypeSchema as ProductTypeSchemaT } from '@wizeworks/commerce-schemas';
 import { searchProducts } from '@wizeworks/search';
 import {
@@ -884,7 +892,27 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       tenantId,
       result.productTypeKey ? [result.productTypeKey] : []
     );
-    return ok(mapFullProduct(result, inventoryActive, yourPrices, schemasByKey));
+
+    // Made to order (issue 026) — the two answers that are facts about TODAY
+    // rather than settings on the row, so they are resolved here at read time.
+    // A product with neither rule costs no query at all.
+    const madeToOrder =
+      result.orderAheadDays !== null || result.dailyLimit !== null
+        ? await withTenant({ tenantId }, async (tx) => {
+            const zone = await madeToOrderService.businessZone(tx);
+            const sold =
+              result.dailyLimit !== null
+                ? await madeToOrderService.soldToday(tx, [result.id], new Date(), zone)
+                : null;
+            return {
+              readyOn: readyOnDate(new Date(), result.orderAheadDays, zone),
+              remainingToday:
+                sold === null ? null : remainingToday(result.dailyLimit, sold.get(result.id) ?? 0),
+            };
+          })
+        : undefined;
+
+    return ok(mapFullProduct(result, inventoryActive, yourPrices, schemasByKey, madeToOrder));
   });
 
   // ─── Categories ────────────────────────────────────────────────────
@@ -1209,6 +1237,13 @@ function fullProductSelect(propertyId: string) {
     lengthMm: true,
     widthMm: true,
     heightMm: true,
+    // Made to order (issue 026) — what the buy box has to say before somebody
+    // commits: how much notice, how much is due now, and how many are left today.
+    orderAheadDays: true,
+    depositType: true,
+    depositAmountCents: true,
+    depositPercent: true,
+    dailyLimit: true,
     options: {
       orderBy: { position: 'asc' },
       select: {
@@ -1318,7 +1353,11 @@ function mapFullProduct(
   result: FullProductRow,
   inventoryActive: boolean,
   yourPrices?: Map<string, number>,
-  schemasByKey?: Map<string, ProductTypeSchemaT>
+  schemasByKey?: Map<string, ProductTypeSchemaT>,
+  /** Made to order (issue 026). `remainingToday` is COUNTED, never assumed —
+   *  undefined means nobody counted, which the buy box says nothing about
+   *  rather than printing a number it does not have. */
+  madeToOrder?: { readyOn: string | null; remainingToday: number | null }
 ) {
   // Typed attributes (docs/143): resolve the product's type schema (batched by the
   // caller) and project its stored bag into BOTH shapes the PDP binds — the keyed
@@ -1342,6 +1381,17 @@ function mapFullProduct(
       result.lengthMm || result.widthMm || result.heightMm
         ? { lengthMm: result.lengthMm, widthMm: result.widthMm, heightMm: result.heightMm }
         : null,
+    // Made to order (issue 026). Null throughout on an ordinary product, and
+    // the buy box then draws nothing — which is every product that existed
+    // before this. `deposit` is the RULE; what it comes to in money is resolved
+    // per line by the cart, because it can be a percentage.
+    madeToOrder: {
+      orderAheadDays: result.orderAheadDays,
+      deposit: depositFromColumns(result),
+      dailyLimit: result.dailyLimit,
+      readyOn: madeToOrder?.readyOn ?? null,
+      remainingToday: madeToOrder?.remainingToday ?? null,
+    },
     options: result.options,
     variants: result.variants.map((v) => {
       // Sum available across every warehouse via the shared availability rule; the

@@ -37,13 +37,21 @@ export function OrderHeadline({ order, facts }: { order: Order; facts: OrderFact
 
   if (due <= 0) return null;
 
+  // A deposit order is not a debt (issue 026) — money came in exactly as
+  // arranged and the rest falls due on the day it is collected. Saying "still
+  // owed" in warning yellow about an order behaving correctly sends somebody
+  // chasing a customer who owes them nothing yet.
+  const onCollection = order.readyOn !== null && order.amountPaid > 0;
+
   return (
-    <Alert color="warning">
+    <Alert color={onCollection ? 'info' : 'warning'}>
       <AlertContent>
-        <AlertTitle>{formatMoney(due, currency)} still owed</AlertTitle>
+        <AlertTitle>
+          {formatMoney(due, currency)} {onCollection ? 'due on collection' : 'still owed'}
+        </AlertTitle>
         <AlertDescription>
           {order.amountPaid > 0
-            ? `${formatMoney(order.amountPaid, currency)} of ${formatMoney(order.total, currency)} has come in so far.`
+            ? `${formatMoney(order.amountPaid, currency)} of ${formatMoney(order.total, currency)} has come in${onCollection ? '. The rest is paid when it is handed over.' : ' so far.'}`
             : 'No money has come in for this order yet.'}
         </AlertDescription>
       </AlertContent>

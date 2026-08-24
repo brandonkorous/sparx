@@ -14,6 +14,7 @@ import { orderService, b2bArService } from '@wizeworks/crm';
 import {
   type AppliedSurcharge,
   applySurcharges,
+  type CartMadeToOrder,
   type CheckoutSessionSnapshot,
   commissionCents,
   CompleteCheckoutInput,
@@ -47,6 +48,7 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 
 import * as discountService from './discount-service';
+import * as madeToOrderService from './made-to-order-service';
 import * as marketService from './market';
 import * as pricingService from './pricing-service';
 import * as shippingService from './shipping-service';
@@ -222,6 +224,10 @@ export async function get(
         surchargeLabel: surchargeLabelFor(surcharge.applied),
       },
       paymentMode,
+      // Against the LIVE total, surcharge included — the split has to be taken
+      // from the number the storefront is about to show, or the card form says
+      // one thing and the gateway charges another.
+      await madeToOrderService.forCart(tx, row.cartId, totalCents),
       account?.paymentTerms
     );
   });
@@ -568,6 +574,14 @@ export async function createPaymentIntent(
     );
   }
 
+  // Made to order (issue 026) — a deposit line is charged for its deposit and
+  // no more. Everything else on the basket, tax and delivery included, is taken
+  // now, so `dueNowCents` is the whole total whenever nothing asked for one.
+  const madeToOrder = await withTenant(ctx, (tx) =>
+    madeToOrderService.forCart(tx, session.cartId, session.totalCents)
+  );
+  const chargeCents = madeToOrder.dueNowCents;
+
   // Resolve the gateway and open the intent. The gateway sets metadata.tenantId on
   // the intent so the payment webhook can resolve the tenant; the intent id IS the
   // paymentRef the webhook later reconciles against.
@@ -589,9 +603,9 @@ export async function createPaymentIntent(
     );
     intent = await createMarketPaymentIntent({
       tenantId: ctx.tenantId,
-      amountCents: session.totalCents,
+      amountCents: chargeCents,
       currency: session.currency.toLowerCase(),
-      commissionCents: commissionCents(session.totalCents, commissionBps),
+      commissionCents: commissionCents(chargeCents, commissionBps),
       metadata,
     });
     providerSlug = SPARX_MARKET_GATEWAY_ID;
@@ -608,7 +622,7 @@ export async function createPaymentIntent(
     try {
       intent = await paymentService.createPaymentIntent({
         tenantId: ctx.tenantId,
-        amount: session.totalCents,
+        amount: chargeCents,
         currency: session.currency.toLowerCase(),
         metadata,
         ...(input.returnUrl ? { returnUrl: input.returnUrl } : {}),
@@ -648,7 +662,7 @@ export async function createPaymentIntent(
     ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
     ...(intent.publishableKey ? { publishableKey: intent.publishableKey } : {}),
     ...(intent.redirectUrl ? { redirectUrl: intent.redirectUrl } : {}),
-    amountCents: session.totalCents,
+    amountCents: chargeCents,
     currency: session.currency,
     status: intent.status,
   };
@@ -831,6 +845,14 @@ export async function complete(
       unitPrice: it.unitPriceCents / 100,
     }));
 
+    // Today's allowance, re-checked at the binding moment (issue 026). The cart
+    // checked it too, but a basket can sit open past midnight or past the last
+    // one somebody else took, and this is the call that actually commits.
+    await madeToOrderService.assertWithinDailyLimits(
+      tx,
+      cart.items.map((it) => ({ variantId: it.variantId, quantity: it.quantity }))
+    );
+
     const subtotalDollars = session.subtotalCents / 100;
     const discountDollars = session.discountTotalCents / 100;
     const shippingDollars = session.shippingTotalCents / 100;
@@ -849,6 +871,15 @@ export async function complete(
           paymentMethod: surchargeMethodForSession(session),
         });
     const surchargeDollars = surcharge.totalCents / 100;
+
+    // The final split (issue 026), against the total the order is actually being
+    // written with — surcharge included, which is why it is resolved here rather
+    // than reused from the payment-intent step.
+    const madeToOrder = await madeToOrderService.forCart(
+      tx,
+      cart.id,
+      session.totalCents + surcharge.totalCents
+    );
 
     // Compose into THIS transaction (tx injection) — orderService.create opens
     // its own withTenant() when given a bare ctx, which would run in a separate,
@@ -908,6 +939,17 @@ export async function complete(
       }
     );
 
+    // The day it can be handed over (issue 026), frozen onto the order. Written
+    // here rather than passed through orderService.create because it is a
+    // COMMERCE promise about a catalog rule, and the order spine is shared with
+    // every other way an order can arrive — none of which have a cart to read.
+    if (madeToOrder.readyOn) {
+      await tx.order.update({
+        where: { id: order.id },
+        data: { readyOn: new Date(`${madeToOrder.readyOn}T00:00:00.000Z`) },
+      });
+    }
+
     // Card payments: open a PENDING OrderPayment keyed to the gateway intent so the
     // payment webhook (payment.succeeded) can mark it captured + flip the order paid
     // (docs/94 ADR §10). Net-terms / manual orders carry no paymentRef — they settle
@@ -920,7 +962,11 @@ export async function complete(
           orderId: order.id,
           processor: session.paymentProviderSlug,
           processorRef: session.paymentRef,
-          amount: session.totalCents / 100,
+          // What the gateway was actually asked for, which on a deposit order
+          // is less than the total. Writing the total here would show the order
+          // as fully paid the moment the webhook landed, and the rest of the
+          // cake would never be asked for (issue 026).
+          amount: madeToOrder.dueNowCents / 100,
           currency: session.currency,
           status: 'pending',
         },
@@ -1406,10 +1452,12 @@ function serializeSession(
   row: CheckoutSession,
   surcharge: { surchargeTotalCents: number; totalCents: number; surchargeLabel: string | null },
   paymentMode: CheckoutSessionSnapshot['paymentMode'],
+  madeToOrder: CartMadeToOrder,
   b2bAccountPaymentTerms?: string | null
 ): CheckoutSessionSnapshot {
   return {
     paymentMode,
+    madeToOrder,
     sessionId: row.id,
     cartId: row.cartId,
     step: row.step as CheckoutSessionSnapshot['step'],

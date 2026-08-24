@@ -41,6 +41,42 @@ export const ProductTypeKey = z
 export const AttributesBag = z.record(z.string(), z.unknown());
 export type AttributesBag = z.infer<typeof AttributesBag>;
 
+// ─── Made to order (issue 026) ───────────────────────────────────────
+
+// A deposit is one shape with three forms, not four loose columns. Written as a
+// discriminated union so "percent, but nobody said what percent" cannot be
+// expressed at the wire at all — which is the same thing the DB CHECK enforces
+// at the other end, said once in each place rather than validated by hand in
+// between.
+export const ProductDeposit = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('none') }),
+  z.object({
+    type: z.literal('amount'),
+    /** Per UNIT. A deposit larger than the line is charged as the line. */
+    amountCents: z.number().int().positive().max(100_000_000),
+  }),
+  z.object({
+    type: z.literal('percent'),
+    percent: z.number().int().min(1).max(100),
+  }),
+]);
+export type ProductDeposit = z.infer<typeof ProductDeposit>;
+
+// The three made-to-order rules, all genuinely optional. NO `.default()` on any
+// of them, deliberately: UpdateProductInput is built with `.partial()`, which in
+// this Zod version does NOT neutralize a default, so a defaulted field here
+// would be silently re-sent by every partial save and wipe the merchant's answer
+// (the footgun documented at length on UpdateProductInput below).
+export const MadeToOrderInput = z.object({
+  /** Whole days of notice the CUSTOMER must give. Never the supplier's restock
+   *  time, which is InventoryLevel.leadTimeDays and a different question. */
+  orderAheadDays: z.number().int().min(1).max(365).nullish(),
+  deposit: ProductDeposit.optional(),
+  /** A repeating allowance: this many again tomorrow. Not stock. */
+  dailyLimit: z.number().int().min(1).max(100_000).nullish(),
+});
+export type MadeToOrderInput = z.infer<typeof MadeToOrderInput>;
+
 // ─── Options + Option Values ─────────────────────────────────────────
 
 export const OptionDisplayType = z.enum([
@@ -269,6 +305,7 @@ export const CreateProductInput = z.object({
   propertyIds: z.array(Uuid).max(50).default([]),
   defaultWarehouseId: Uuid.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
+  ...MadeToOrderInput.shape,
   ...SeoFields.shape,
   options: z.array(ProductOptionInput).max(8).default([]),
   variants: z.array(CreateVariantInput).max(1000).default([]),

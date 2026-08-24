@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 import { AddressSnapshot, Uuid } from '@wizeworks/crm-schemas';
 
+import { CartMadeToOrder } from './cart';
 import { Channel, Currency, MoneyCents } from './common';
 
 export const CheckoutStep = z.enum([
@@ -156,6 +157,16 @@ export const CheckoutSessionSnapshot = z.object({
     accountCreditAppliedCents: MoneyCents,
     totalCents: MoneyCents,
   }),
+  /**
+   * Made to order (issue 026) — the earliest day this order can be handed over,
+   * and how the money splits between the counter now and collection later.
+   *
+   * The storefront reads `dueNowCents` for what the card is about to be charged
+   * and `balanceCents` for what to say is still owing. An ordinary basket
+   * reports no notice and the whole total due now, which is what every screen
+   * assumed silently before this existed.
+   */
+  madeToOrder: CartMadeToOrder,
   expiresAt: z.string().datetime(),
 });
 export type CheckoutSessionSnapshot = z.infer<typeof CheckoutSessionSnapshot>;

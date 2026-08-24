@@ -28,6 +28,19 @@ const NET_TERMS_OPTIONS = [
   { value: 'net90', label: 'Net 90' },
 ] as const;
 
+/**
+ * What the CARD is charged, which is not always the order total.
+ *
+ * A deposit line defers the rest of itself to collection (issue 026), so the
+ * gateway is handed `dueNowCents` and the button has to say the same number.
+ * A button reading the total while the card is charged less is the version
+ * somebody disputes. Falls back to the total for an api-rest that predates the
+ * field, which is what every checkout did before it existed.
+ */
+function payNowCents(session: CheckoutSession): number {
+  return session.madeToOrder?.dueNowCents ?? session.totals.totalCents;
+}
+
 export interface PaymentStepProps {
   tenantSlug: string;
   session: CheckoutSession;
@@ -366,7 +379,7 @@ function RedirectPay({
         >
           {busy
             ? 'Redirecting…'
-            : `Continue to pay ${formatMoney(session.totals.totalCents, session.currency)}`}
+            : `Continue to pay ${formatMoney(payNowCents(session), session.currency)}`}
         </Button>
       </div>
     </div>
@@ -437,7 +450,7 @@ function PaymentInner({
           className="flex-1"
           disabled={!stripe || busy}
         >
-          {busy ? 'Processing…' : `Pay ${formatMoney(session.totals.totalCents, session.currency)}`}
+          {busy ? 'Processing…' : `Pay ${formatMoney(payNowCents(session), session.currency)}`}
         </Button>
       </div>
     </form>

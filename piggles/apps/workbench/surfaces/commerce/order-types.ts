@@ -84,6 +84,10 @@ export interface Order {
   billingAddress: OrderAddress | null;
 
   placedAt: string;
+  /** The earliest DAY every line on this order can be handed over, as
+   *  `YYYY-MM-DD` (issue 026). Null when nothing on it needed notice, which is
+   *  not "ready today" and must not be shown as one. */
+  readyOn: string | null;
   paidAt: string | null;
   fulfilledAt: string | null;
   deliveredAt: string | null;
@@ -176,8 +180,17 @@ export function normalizeOrder(raw: Order): Order {
     total: num(raw.total),
     amountPaid: num(raw.amountPaid),
     refundTotal: num(raw.refundTotal),
+    readyOn: calendarDay(raw.readyOn),
     ...(raw.items ? { items: raw.items.map(normalizeItem) } : {}),
   };
+}
+
+/** A DATE column arrives as a full instant at UTC midnight. Take the calendar
+ *  part off the string rather than through a Date: parsing it and formatting it
+ *  locally turns the baker's Saturday into a Friday for anyone west of
+ *  Greenwich, which is the whole point of storing a day and not a moment. */
+function calendarDay(value: string | null | undefined): string | null {
+  return typeof value === 'string' && value.length >= 10 ? value.slice(0, 10) : null;
 }
 
 /** The rate ref checkout writes when a shopper chooses to come and get it.

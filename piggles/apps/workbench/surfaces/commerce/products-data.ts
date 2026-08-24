@@ -73,6 +73,7 @@ import type {
   StockLocation,
 } from '../inventory/data';
 import { slugify, slugifyUpper } from '../../lib/slugify';
+import type { ProductDeposit } from './made-to-order-data';
 import { usePaymentConfig } from './providers-data';
 
 /* ── Shapes: the product itself ─────────────────────────────────────────── */
@@ -156,6 +157,12 @@ export interface Product {
   /** sparx.market opt-in — read by the Channels facet. */
   marketListed: boolean;
   marketCategory: string | null;
+  /** Days of notice a customer has to give. Null means none. */
+  orderAheadDays: number | null;
+  /** How much of the price is taken up front, in one of three shapes. */
+  deposit: ProductDeposit;
+  /** How many can be ordered in one day. Null means no ceiling. */
+  dailyLimit: number | null;
   /** Sites this product is shown on. EMPTY means every site — the default. */
   propertyIds: string[];
   createdAt: string;
@@ -876,6 +883,9 @@ export interface ProductPatch {
   propertyIds?: string[];
   categoryIds?: string[];
   collectionIds?: string[];
+  orderAheadDays?: number | null;
+  deposit?: ProductDeposit;
+  dailyLimit?: number | null;
 }
 
 export function useUpdateProduct(id: string) {

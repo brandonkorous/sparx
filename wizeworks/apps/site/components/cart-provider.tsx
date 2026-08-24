@@ -49,10 +49,33 @@ export interface CartTotals {
   totalCents: number;
 }
 
+/** Made to order (issue 026). An ordinary basket reads as no notice and the
+ *  whole total due now, which is what every screen assumed before this. */
+export interface CartMadeToOrder {
+  /** `YYYY-MM-DD` in the SHOP's zone, or null when nothing needs notice. Null
+   *  is not "ready today" and must not be rendered as one. */
+  readyOn: string | null;
+  noticeDays: number | null;
+  dueNowCents: number;
+  balanceCents: number;
+  depositCents: number;
+}
+
+export const NOTHING_MADE_TO_ORDER: CartMadeToOrder = {
+  readyOn: null,
+  noticeDays: null,
+  dueNowCents: 0,
+  balanceCents: 0,
+  depositCents: 0,
+};
+
 export interface CartState {
   cartId: string | null;
   lines: CartLine[];
   totals: CartTotals;
+  /** Made to order (issue 026) — the day the basket can be collected and how
+   *  the money splits between checkout and collection. */
+  madeToOrder: CartMadeToOrder;
   appliedDiscountCodes: string[];
   count: number;
   currency: string;
@@ -115,6 +138,7 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
     cartId: null,
     lines: [],
     totals: EMPTY_TOTALS,
+    madeToOrder: NOTHING_MADE_TO_ORDER,
     appliedDiscountCodes: [],
     count: 0,
     currency,
@@ -318,6 +342,7 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
       cartId: null,
       lines: [],
       totals: EMPTY_TOTALS,
+      madeToOrder: NOTHING_MADE_TO_ORDER,
       appliedDiscountCodes: [],
       count: 0,
       drawerOpen: false,
@@ -378,6 +403,7 @@ interface CartApiShape {
     taxTotalCents?: number;
     totalCents?: number;
   };
+  madeToOrder?: Partial<CartMadeToOrder>;
 }
 
 function fromApi(
@@ -406,6 +432,17 @@ function fromApi(
       shippingTotalCents: data.totals.shippingTotalCents ?? 0,
       taxTotalCents: data.totals.taxTotalCents ?? 0,
       totalCents: data.totals.totalCents ?? data.totals.subtotalCents,
+    },
+    // Defaults mean "no deposit, everything due now" — the shape every cart had
+    // before this existed, so an older response reads as an ordinary basket
+    // rather than as one with nothing to pay.
+    madeToOrder: {
+      readyOn: data.madeToOrder?.readyOn ?? null,
+      noticeDays: data.madeToOrder?.noticeDays ?? null,
+      dueNowCents:
+        data.madeToOrder?.dueNowCents ?? data.totals.totalCents ?? data.totals.subtotalCents,
+      balanceCents: data.madeToOrder?.balanceCents ?? 0,
+      depositCents: data.madeToOrder?.depositCents ?? 0,
     },
     count: lines.reduce((n, l) => n + l.quantity, 0),
     currency: data.currency,

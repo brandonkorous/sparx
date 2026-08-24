@@ -16,6 +16,7 @@
 import {
   AddCartItemInput,
   type CartItemSnapshot,
+  type CartMadeToOrder,
   type CartTotals,
   type CartItemAttributes,
   type ResolvedConfiguration,
@@ -32,9 +33,18 @@ import { CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
+import {
+  depositForLine,
+  deferredForLine,
+  isMadeToOrder,
+  noticeDays,
+  readyOnDate,
+  splitDue,
+} from '../made-to-order';
 
 import * as configuratorService from './configurator-service';
 import * as pricingService from './pricing-service';
+import { businessZone, assertWithinDailyLimits } from './made-to-order-service';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 
 const DEFAULT_CART_TTL_MIN = 60 * 24 * 14; // 14 days
@@ -50,6 +60,11 @@ export interface CartSnapshot {
   appliedGiftCardCodes: string[];
   accountCreditAppliedCents: number;
   totals: CartTotals;
+  /** Made to order (issue 026) — the earliest day this basket can be handed
+   *  over, and how the money splits between now and collection. Always present;
+   *  an ordinary basket reads as "no notice, all of it due now", which is what
+   *  every screen already assumed silently. */
+  madeToOrder: CartMadeToOrder;
   expiresAt: string;
   abandonedAt: string | null;
 }
@@ -148,7 +163,7 @@ export async function claim(
 export async function get(ctx: ServiceContext, cartId: string): Promise<CartSnapshot | null> {
   return withTenant(ctx, async (tx) => {
     const row = await loadCart(tx, cartId);
-    return row ? serializeCart(row) : null;
+    return row ? serializeCart(row, await businessZone(tx)) : null;
   });
 }
 
@@ -164,7 +179,7 @@ export async function getByGuestToken(
     });
     if (!cart) return null;
     const full = await loadCart(tx, cart.id);
-    return full ? serializeCart(full) : null;
+    return full ? serializeCart(full, await businessZone(tx)) : null;
   });
 }
 
@@ -280,6 +295,12 @@ export async function addItem(
     const quantity = (mergeInto?.quantity ?? 0) + input.quantity;
     const subtotalCents = unitPriceCents * quantity;
 
+    // Today's allowance (issue 026) — checked HERE so somebody hears "only four
+    // left today" while they can still change their mind, rather than at the
+    // end of a checkout. Checkout re-checks, because that is the binding moment
+    // and a cart can sit open past midnight.
+    await assertWithinDailyLimits(tx, [{ variantId, quantity }]);
+
     const item = mergeInto
       ? await tx.cartItem.update({
           where: { id: mergeInto.id },
@@ -392,6 +413,14 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
       }
       await tx.cartItem.delete({ where: { id: input.cartItemId } });
     } else {
+      // Today's allowance again (issue 026) — raising the quantity on a line
+      // already in the basket is the same request as adding it, and skipping
+      // the check here would leave the one way round the limit.
+      if (input.quantity > item.quantity) {
+        await assertWithinDailyLimits(tx, [
+          { variantId: item.variantId, quantity: input.quantity },
+        ]);
+      }
       // Re-hold on a quantity change: release the prior hold and reserve the new
       // quantity (a `deny` shortfall throws and rolls back the increase). When
       // the quantity is unchanged the existing hold stands. Skipped for
@@ -1000,8 +1029,24 @@ function isEmptyAttributes(value: unknown): boolean {
   return typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0;
 }
 
-function serializeCart(row: CartWithRelations): CartSnapshot {
-  const items: CartItemSnapshot[] = row.items.map((it) => ({
+function serializeCart(row: CartWithRelations, zone: string): CartSnapshot {
+  // Made to order (issue 026) — read off the product rows already joined here,
+  // so a basket of ordinary things costs no extra query and says nothing.
+  const ruled = row.items.map((it) => ({
+    quantity: it.quantity,
+    subtotalCents: it.subtotalCents,
+    rule: {
+      orderAheadDays: it.variant.product.orderAheadDays,
+      depositType: it.variant.product.depositType,
+      depositAmountCents: it.variant.product.depositAmountCents,
+      depositPercent: it.variant.product.depositPercent,
+      dailyLimit: it.variant.product.dailyLimit,
+    },
+  }));
+  const notice = noticeDays(ruled);
+  const split = splitDue(ruled, row.totalCents);
+
+  const items: CartItemSnapshot[] = row.items.map((it, i) => ({
     cartItemId: it.id,
     variantId: it.variantId,
     productId: it.variant.productId,
@@ -1010,6 +1055,13 @@ function serializeCart(row: CartWithRelations): CartSnapshot {
     quantity: it.quantity,
     unitPriceCents: it.unitPriceCents,
     subtotalCents: it.subtotalCents,
+    madeToOrder: isMadeToOrder(ruled[i]!.rule)
+      ? {
+          orderAheadDays: ruled[i]!.rule.orderAheadDays,
+          depositCents: depositForLine(ruled[i]!),
+          balanceCents: deferredForLine(ruled[i]!),
+        }
+      : null,
     configuration:
       it.configurationPayload && typeof it.configurationPayload === 'object'
         ? (it.configurationPayload as unknown as ResolvedConfiguration)
@@ -1041,6 +1093,11 @@ function serializeCart(row: CartWithRelations): CartSnapshot {
       giftCardAppliedCents: row.giftCardAppliedCents,
       accountCreditAppliedCents: row.accountCreditAppliedCents,
       totalCents: row.totalCents,
+    },
+    madeToOrder: {
+      readyOn: readyOnDate(new Date(), notice, zone),
+      noticeDays: notice,
+      ...split,
     },
     expiresAt: row.expiresAt?.toISOString() ?? '',
     abandonedAt: row.abandonedAt?.toISOString() ?? null,

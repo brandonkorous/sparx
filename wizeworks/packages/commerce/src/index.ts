@@ -12,6 +12,7 @@ export { mediaPublicUrl } from './media-url';
 export * from './search-projection';
 export * from './universal-projection';
 export * from './collection-rules';
+export * from './made-to-order';
 export * as commerceSchedulers from './schedulers';
 export * as commerceMcp from './mcp';
 export { commerceMcpTools } from './mcp';

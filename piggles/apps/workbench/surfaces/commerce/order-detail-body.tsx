@@ -5,6 +5,7 @@
 // then the two moves that cannot be taken back.
 
 import { COLUMN, OrderIdentity } from './order-detail-blocks';
+import { DueDaySection } from './order-detail-due-day';
 import { OrderLines } from './order-detail-lines';
 import { BuyerSection, DestinationSection, OrderHeadline } from './order-detail-parties';
 import { SoldBySection } from './sold-by-section';
@@ -34,6 +35,9 @@ export function OrderBody(props: OrderBodyProps) {
     <div className="min-h-0 flex-1 overflow-y-auto p-4">
       <div className={COLUMN}>
         <OrderIdentity order={order} siteName={props.siteName} />
+        {/* Above the money, because the day it is due is the thing a shop that
+            makes things needs off this pane first (issue 026). */}
+        <DueDaySection order={order} />
         <OrderHeadline order={order} facts={facts} />
         <OrderLines order={order} />
         <BuyerSection order={order} />

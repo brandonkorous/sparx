@@ -47,6 +47,7 @@
     "@wizeworks/media": "workspace:*",
     "@wizeworks/payments": "workspace:*",
     "@wizeworks/search": "workspace:*",
+    "@wizeworks/time": "workspace:*",
     "@wizeworks/ui": "workspace:*",
     "lucide-react": "^0.577.0",
     "zod": "^4.4.3"

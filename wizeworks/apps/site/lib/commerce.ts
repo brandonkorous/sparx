@@ -261,6 +261,30 @@ export interface PublicProduct extends PublicProductListItem {
   /** In stock but at/below reorder point — the honest low-stock signal that
    *  replaced fabricated scarcity. */
   lowStock: boolean;
+  /** Made to order (issue 026) — everything a buyer has to be told BEFORE they
+   *  commit, when the thing has to be made before it can be handed over. */
+  madeToOrder: PublicMadeToOrder;
+}
+
+/** How much of the price is taken at checkout. Three shapes; `none` is what
+ *  every ordinary product carries. */
+export type PublicDeposit =
+  | { type: 'none' }
+  | { type: 'amount'; amountCents: number }
+  | { type: 'percent'; percent: number };
+
+export interface PublicMadeToOrder {
+  /** Days of notice the shop needs. Null = none, and the buy box says nothing. */
+  orderAheadDays: number | null;
+  deposit: PublicDeposit;
+  dailyLimit: number | null;
+  /** The earliest DAY an order placed now could be collected, `YYYY-MM-DD` in
+   *  the SHOP's zone. Null when no notice is needed. */
+  readyOn: string | null;
+  /** How many today's allowance still has room for. Null means either no
+   *  allowance or nobody counted — either way, render NOTHING rather than a
+   *  number that was not measured. */
+  remainingToday: number | null;
 }
 
 export interface PublicCategoryNode {

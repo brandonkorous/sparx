@@ -14,6 +14,7 @@ import { formatMoney, formatPriceRange } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
 import type { PublicPreorderOffer, PublicProduct, PublicProductVariant } from '@/lib/commerce';
 import { useCart } from './cart-provider';
+import { MadeToOrderNote } from './made-to-order-note';
 import { WishlistButton } from './wishlist-button';
 
 export interface ProductDetailProps {
@@ -271,6 +272,16 @@ export function ProductDetail({
           available={available}
           preorder={preorder}
           expectedBackAt={expectedBackAt}
+          locale={locale}
+        />
+
+        {/* Under the price and the stock line, above the choices — the wait and
+            the deposit change what somebody is agreeing to, so they have to be
+            read before the button and not after it (issue 026). */}
+        <MadeToOrderNote
+          madeToOrder={product.madeToOrder}
+          priceCents={resolvedVariant ? (yourPriceCents ?? priceCents) : null}
+          currency={currency}
           locale={locale}
         />
 

@@ -49,6 +49,28 @@ model Product {
   hsCode           String? @map("hs_code") @db.VarChar(15)
   metadata         Json    @default("{}")
 
+  // Made to order (issue 026) — the three things a shop that MAKES the thing
+  // has to be able to say before it can sell it honestly. All null/none = an
+  // ordinary product taken off a shelf, which is every existing row.
+  //
+  // `orderAheadDays` is how long the CUSTOMER waits. It is deliberately not
+  // InventoryLevel.leadTimeDays, which is how long a SUPPLIER takes to restock
+  // her — reading one as the other promises a cake on a date nobody agreed to.
+  //
+  // `depositType` = none | amount | percent. `amount` reads
+  // depositAmountCents (per unit); `percent` reads depositPercent (1-100, of
+  // the line). A deposit defers the REST of that line to collection; tax,
+  // delivery, and every line without a deposit rule are still taken at checkout.
+  //
+  // `dailyLimit` is a repeating allowance, not stock: 24 again tomorrow.
+  // Counted per ORDER DAY, so it works for a business that tracks no stock at
+  // all — which is the kind of business that has one.
+  orderAheadDays     Int?    @map("order_ahead_days")
+  depositType        String  @default("none") @map("deposit_type") @db.VarChar(10)
+  depositAmountCents Int?    @map("deposit_amount_cents")
+  depositPercent     Int?    @map("deposit_percent")
+  dailyLimit         Int?    @map("daily_limit")
+
   // SEO.
   seoTitle       String? @map("seo_title") @db.VarChar(255)
   seoDescription String? @map("seo_description") @db.VarChar(512)

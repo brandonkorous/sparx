@@ -255,6 +255,8 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         orderNumber={orderNumber}
         {...(session?.paymentMode ? { paymentMode: session.paymentMode } : {})}
         collecting={collectedOrder.current}
+        {...(session?.madeToOrder ? { madeToOrder: session.madeToOrder } : {})}
+        currency={session?.currency ?? cart.currency}
       />
     );
   }
@@ -334,11 +336,15 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
       </div>
 
       <aside className="sticky top-[92px] max-[860px]:static max-[860px]:order-[-1]">
+        {/* The session's made-to-order split wins once checkout has started: it
+            is taken against the total the gateway will actually be handed,
+            delivery and surcharge included (issue 026). */}
         <OrderSummary
           lines={cart.lines}
           totals={session?.totals ?? cart.totals}
           currency={session?.currency ?? cart.currency}
           {...(session?.surchargeLabel ? { surchargeLabel: session.surchargeLabel } : {})}
+          madeToOrder={session?.madeToOrder ?? cart.madeToOrder}
         />
       </aside>
     </div>

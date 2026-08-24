@@ -5,19 +5,24 @@
 import Image from 'next/image';
 
 import { formatMoney } from '@/lib/format';
-import type { CartLine, CartTotals } from '../cart-provider';
+import type { CartLine, CartMadeToOrder, CartTotals } from '../cart-provider';
+import { MadeToOrderSummary } from '../made-to-order-summary';
 
 export function OrderSummary({
   lines,
   totals,
   currency,
   surchargeLabel,
+  madeToOrder,
 }: {
   lines: CartLine[];
   totals: CartTotals;
   currency: string;
   /** Label for the disclosed surcharge line (docs/48 §6), e.g. "Card processing fee". */
   surchargeLabel?: string;
+  /** Made to order (issue 026). Absent on a checkout that predates it, which
+   *  reads as an ordinary basket rather than as one with nothing to pay. */
+  madeToOrder?: CartMadeToOrder;
 }) {
   const surchargeCents = totals.surchargeTotalCents ?? 0;
   return (
@@ -97,6 +102,13 @@ export function OrderSummary({
         <span>Total</span>
         <span>{formatMoney(totals.totalCents, currency)}</span>
       </div>
+
+      {/* What the card is ACTUALLY charged, which on a deposit order is less
+          than the total above. This is the last screen before paying, so the
+          two numbers have to be on it together (issue 026). */}
+      {madeToOrder ? (
+        <MadeToOrderSummary madeToOrder={madeToOrder} currency={currency} settled />
+      ) : null}
       {surchargeCents > 0 ? (
         <p className="text-base-content" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
           {surchargeLabel ?? 'A surcharge'} of {formatMoney(surchargeCents, currency)} is added to

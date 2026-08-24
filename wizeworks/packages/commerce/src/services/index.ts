@@ -46,7 +46,9 @@ export type { BundleAvailability, BundleComponentAvailability } from './bundle-a
 
 // Phase 5 — cart, checkout, subscriptions, shipping, tax, providers
 export * as cartService from './cart-service';
+export type { CartSnapshot } from './cart-service';
 export * as checkoutService from './checkout-service';
+export * as madeToOrderService from './made-to-order-service';
 
 // Channels (docs/106) — inbound marketplace order ingest (order + inventory).
 export {

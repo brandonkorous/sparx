@@ -12,6 +12,7 @@ import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
 import { DiscountField } from './discount-field';
+import { MadeToOrderSummary } from './made-to-order-summary';
 
 export function CartView() {
   const {
@@ -23,6 +24,7 @@ export function CartView() {
     removeItem,
     appliedDiscountCodes,
     removeDiscount,
+    madeToOrder,
   } = useCart();
 
   if (lines.length === 0) {
@@ -174,6 +176,10 @@ export function CartView() {
         <p className="text-base-content" style={{ fontSize: '0.8rem', margin: 0 }}>
           Shipping &amp; taxes calculated at checkout.
         </p>
+
+        {/* The split, before the button rather than after it — a deposit
+            changes what somebody is agreeing to (issue 026). */}
+        <MadeToOrderSummary madeToOrder={madeToOrder} currency={currency} />
         <Button render={<Link href="/checkout" />} color="primary" size="lg" className="w-full">
           Proceed to checkout
         </Button>

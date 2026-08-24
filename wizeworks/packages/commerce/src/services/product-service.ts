@@ -17,6 +17,7 @@ import {
   BulkDeleteProductsInput,
   BulkUpdateProductStatusInput,
   CreateProductInput,
+  type ProductDeposit,
   type ProductStatus,
   UpdateProductInput,
 } from '@wizeworks/commerce-schemas';
@@ -24,6 +25,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma, Product } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { depositFromColumns, depositToColumns } from '../made-to-order';
 import { productSiteVisibility } from './site-visibility';
 import { resolveAndValidateAttributes } from './product-types-service';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
@@ -237,6 +239,12 @@ export interface ProductDetail {
   // section reads these to seed its List/Category controls.
   marketListed: boolean;
   marketCategory: string | null;
+  // Made to order (issue 026) — how much notice this needs, how much of the
+  // money is taken up front, and how many can be turned out in a day. Absent on
+  // an ordinary product taken off a shelf, which is most of them.
+  orderAheadDays: number | null;
+  deposit: ProductDeposit;
+  dailyLimit: number | null;
   // Model B (docs/49 §3): web PROPERTIES this product is scoped to. EMPTY =
   // visible on ALL sites (the default).
   propertyIds: string[];
@@ -458,6 +466,9 @@ export async function create(
         hsCode: input.hsCode ?? null,
         defaultWarehouseId: input.defaultWarehouseId ?? null,
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        orderAheadDays: input.orderAheadDays ?? null,
+        dailyLimit: input.dailyLimit ?? null,
+        ...depositToColumns(input.deposit ?? { type: 'none' }),
         seoTitle: input.seoTitle ?? null,
         seoDescription: input.seoDescription ?? null,
         ogImageId: input.ogImageId ?? null,
@@ -611,6 +622,9 @@ export async function update(
         ...(input.metadata !== undefined
           ? { metadata: input.metadata as Prisma.InputJsonValue }
           : {}),
+        ...(input.orderAheadDays !== undefined ? { orderAheadDays: input.orderAheadDays } : {}),
+        ...(input.dailyLimit !== undefined ? { dailyLimit: input.dailyLimit } : {}),
+        ...(input.deposit !== undefined ? depositToColumns(input.deposit) : {}),
         ...(input.seoTitle !== undefined ? { seoTitle: input.seoTitle } : {}),
         ...(input.seoDescription !== undefined ? { seoDescription: input.seoDescription } : {}),
         ...(input.ogImageId !== undefined ? { ogImageId: input.ogImageId } : {}),
@@ -1056,6 +1070,9 @@ function toProductDetail(p: ProductWithIncludes): ProductDetail {
     })),
     marketListed: p.marketListed,
     marketCategory: p.marketCategory,
+    orderAheadDays: p.orderAheadDays,
+    dailyLimit: p.dailyLimit,
+    deposit: depositFromColumns(p),
     propertyIds: p.propertyLinks.map((l) => l.propertyId),
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
@@ -1182,6 +1199,14 @@ function serializeProduct(p: Product): Record<string, unknown> {
     taxClass: p.taxClass,
     originCountry: p.originCountry,
     hsCode: p.hsCode,
+    // Made to order (issue 026). In the audit diff on purpose: these three
+    // decide what a customer is charged and when they are told they can
+    // collect, so "who changed the deposit" has to be answerable.
+    orderAheadDays: p.orderAheadDays,
+    depositType: p.depositType,
+    depositAmountCents: p.depositAmountCents,
+    depositPercent: p.depositPercent,
+    dailyLimit: p.dailyLimit,
     publishedAt: p.publishedAt?.toISOString() ?? null,
     deletedAt: p.deletedAt?.toISOString() ?? null,
   };

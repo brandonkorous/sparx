@@ -201,6 +201,15 @@ export const SAMPLE_PRODUCT: PublicProduct = {
     { key: 'origin', label: 'Made in', kind: 'text', value: 'Portugal', items: [] },
   ],
   lowStock: false,
+  // Nothing made to order on the sample, so the buy box's note is absent —
+  // which is what a layout being designed against real products should show.
+  madeToOrder: {
+    orderAheadDays: null,
+    deposit: { type: 'none' },
+    dailyLimit: null,
+    readyOn: null,
+    remainingToday: null,
+  },
 };
 
 export const SAMPLE_PRODUCT_EXTRAS: {
