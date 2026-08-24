@@ -35,6 +35,17 @@ const SKIP_DIRS = new Set([
 ]);
 const EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.json']);
 const BASELINE = path.join(ROOT, 'piggles/docs/migration/sparx-usage-baseline.json');
+/** How many sparx sentences Piggles' own console still shows a customer. A
+ *  ratchet, not a ban — see `checkOtherBrandProse`. */
+const BRAND_LEAK_BASELINE = path.join(ROOT, 'piggles/docs/migration/sparx-prose-baseline.txt');
+
+function readBrandLeakBaseline() {
+  try {
+    return Number.parseInt(fs.readFileSync(BRAND_LEAK_BASELINE, 'utf8').trim(), 10);
+  } catch {
+    return 0;
+  }
+}
 
 /** A reference from one app's tree into the other's. Carried over unchanged. */
 const PIGGLES_TO_SPARX = [
@@ -264,6 +275,78 @@ function checkBrandProse() {
   return problems.length;
 }
 
+/** Only sparx. Piggles naming itself inside its own tree is the product
+ *  speaking; naming the OTHER brand is the leak. */
+const OTHER_BRAND = /(?<![\w@/_.`-])(sparx)(?![\w/_`-])(?!\.\w)/i;
+
+/**
+ * The same rule as `checkBrandProse`, pointed at the other tree — and a ratchet
+ * rather than a ban, for the reason below.
+ *
+ * `checkBrandProse` walks `wizeworks/` only, so a sentence naming sparx inside
+ * PIGGLES' OWN CONSOLE has never been looked at by anything. That is how a
+ * Piggles owner came to read "Not payroll — sparx hands the hours to whoever
+ * runs yours" on her own team screen (issue 180), and it is issue 128 repeated
+ * one tree over: prose said a guard was watching, and the guard was walking a
+ * different directory.
+ *
+ * A ratchet, because a large share of these are not string edits. sparx Pay,
+ * sparx.market and the sparx marketplace are sparx PRODUCTS, and piggles/
+ * CLAUDE.md is explicit that they are EXCLUDED from Piggles rather than renamed
+ * — "Piggles Pay" is a product nobody can sign up for, which is worse than the
+ * leak because now nothing looks wrong. Removing a surface is a change with a
+ * scope of its own; a hard failure would price that work into every unrelated
+ * push until somebody switched the check off.
+ *
+ * So the number can only fall. Nothing new leaks in while the removals are
+ * sequenced.
+ */
+function countOtherBrandProse() {
+  const problems = [];
+  for (const file of walk(path.join(ROOT, 'piggles'))) {
+    const name = rel(file);
+    if (!BRAND_PROSE_EXTENSIONS.has(path.extname(file))) continue;
+    if (isTestFile(name) || name.startsWith('piggles/docs/')) continue;
+    const source = code(fs.readFileSync(file, 'utf8'));
+    source.split('\n').forEach((line, index) => {
+      for (const match of line.matchAll(STRING_LITERAL)) {
+        // Backticked text is an identifier being NAMED, same carve-out as above.
+        if (match[1] === '`') continue;
+        const text = match[2];
+        if (!isSentence(text) || !OTHER_BRAND.test(text)) continue;
+        problems.push(`${name}:${index + 1}: ${text.trim().slice(0, 110)}`);
+      }
+    });
+  }
+  return problems;
+}
+
+function checkOtherBrandProse(leaks, update) {
+  const baseline = readBrandLeakBaseline();
+  if (update) {
+    fs.writeFileSync(BRAND_LEAK_BASELINE, `${String(leaks.length)}\n`);
+    console.log(`updated the sparx-in-piggles baseline to ${String(leaks.length)}`);
+    return 0;
+  }
+  if (leaks.length <= baseline) {
+    const fell = leaks.length < baseline ? ` (was ${String(baseline)} — down)` : '';
+    console.log(`✓ sparx sentences under piggles/: ${String(leaks.length)}${fell}`);
+    return 0;
+  }
+  console.error(
+    `\n✖ another brand's name in Piggles' own words — ${String(leaks.length)}, baseline ${String(baseline)}:\n`
+  );
+  for (const leak of leaks) console.error('   ' + leak);
+  console.error(
+    `\n   A Piggles customer is reading another company's product name.\n` +
+      `   A sparx PRODUCT (sparx Pay, sparx.market) is EXCLUDED from Piggles, never\n` +
+      `   renamed — hiddenSurfaces / hiddenFeatures in lib/product.ts. Everything\n` +
+      `   else takes Piggles' own words.\n` +
+      `   This number may only fall.\n`
+  );
+  return leaks.length - baseline;
+}
+
 function scan(root, patterns, label, exceptions) {
   const problems = [];
   for (const file of walk(path.join(ROOT, root))) {
@@ -409,6 +492,7 @@ failures += scan(
 // that five of them survived the fork by being invisible.
 failures += checkBanned(banned);
 failures += checkBrandProse();
+failures += checkOtherBrandProse(countOtherBrandProse(), update);
 failures += checkRatchet(counts, update, banned);
 
 // Rule 1 (WIZEWORKS_TO_BRAND) and rule 3 (checkBrandProse) are both LIVE. The
