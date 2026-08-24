@@ -6,7 +6,7 @@
 **Surface:** mypiggles › Bookings — and the confirmation email, and the reminder
 **Filed:** 2026-08-22
 **Fixed:** 2026-08-22
-**Confirmed by:** —
+**Confirmed by:** the backfill, below; the diary screen is still owed by a P02 re-run
 
 ## What happened
 
@@ -118,6 +118,36 @@ It **loops tenants and sets `app.tenant_id` per tenant**: `bookings` and
 production, so an un-scoped pass updates zero rows there while passing locally as
 superuser — a backfill that silently does nothing, which is the failure mode this
 run keeps finding ([[feedback_structural_checks_go_blind]]).
+
+## The backfill, checked
+
+Applied 2026-08-24. The thing worth checking was not "did it run" but "did it
+touch anything" — under FORCE RLS an un-scoped pass updates zero rows and reports
+success, which is the whole reason it loops tenants.
+
+It moved rows, and only the right ones:
+
+| Tenant                 | Active place's zone   | Its bookings now      |
+| ---------------------- | --------------------- | --------------------- |
+| Halo & Hem             | `America/Los_Angeles` | `America/Los_Angeles` |
+| every other tenant (8) | `UTC`                 | `UTC`                 |
+
+All 34 of Nia's bookings moved. The other eight tenants kept `UTC` because their
+place genuinely says `UTC` — the guard held rather than the pass being skipped,
+which is the distinction a green result alone would not have made. No booking
+anywhere is left without a zone.
+
+The screen half of this belongs to a P02 re-run: Juniper Row has no bookings, so
+Devi cannot open the diary this issue is about, and saying it was confirmed from
+her account would be saying it was confirmed from a screen that does not exist.
+
+## A question this raises, filed separately
+
+Every tenant's place except Nia's is on `UTC`, and none of them chose it — it is
+the column default. This fix makes a booking follow its place, which is right,
+and it means a place carrying an unset default now propagates that default into
+every appointment. Filed as
+[178](178-her-shops-clock-is-set-to-a-timezone-nobody-chose.md).
 
 ## What it does not cover
 

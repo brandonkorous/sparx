@@ -48,17 +48,35 @@ export function formatAddressLine(address: unknown): string {
     .join(', ');
 }
 
-function toPlace(row: { name: string; address: unknown; timezone: string }): BookingPlace {
+function toPlace(
+  row: { name: string; address: unknown; timezone: string | null },
+  businessZone: string | null
+): BookingPlace {
   const address = formatAddressLine(row.address);
   return {
     name: row.name,
     address,
     line: [row.name, address].filter(Boolean).join(', '),
-    timezone: row.timezone,
+    // Resolved HERE rather than passed on as null, so every downstream surface
+    // keeps taking a plain string and none of them has to invent a fallback of
+    // its own — which is how 'UTC' got hand-written into four places already.
+    timezone: row.timezone ?? businessZone ?? 'UTC',
   };
 }
 
 const PLACE_SELECT = { name: true, address: true, timezone: true } as const;
+
+/**
+ * The zone the business itself runs on, or null when nobody has said.
+ *
+ * A place with no zone of its own follows this one — which is what a
+ * single-premises shop means by leaving it alone. Both being absent is a real
+ * state on a brand new tenant, and the honest end of that chain is `UTC`.
+ */
+async function businessZoneTx(tx: TxClient): Promise<string | null> {
+  const business = await tx.tenantBusiness.findFirst({ select: { timezone: true } });
+  return business?.timezone ?? null;
+}
 
 /**
  * Where a booking happens: its own location, else the one its service is filed
@@ -75,26 +93,27 @@ export async function findBookingPlaceTx(
   tx: TxClient,
   where: { locationId?: string | null; serviceId?: string | null }
 ): Promise<BookingPlace | null> {
+  const zone = await businessZoneTx(tx);
   if (where.locationId) {
     const own = await tx.businessLocation.findUnique({
       where: { id: where.locationId },
       select: PLACE_SELECT,
     });
-    if (own) return toPlace(own);
+    if (own) return toPlace(own, zone);
   }
   if (where.serviceId) {
     const service = await tx.schedulingService.findUnique({
       where: { id: where.serviceId },
       select: { location: { select: PLACE_SELECT } },
     });
-    if (service?.location) return toPlace(service.location);
+    if (service?.location) return toPlace(service.location, zone);
   }
   const active = await tx.businessLocation.findMany({
     where: { isActive: true },
     select: PLACE_SELECT,
     take: 2,
   });
-  return active.length === 1 ? toPlace(active[0]!) : null;
+  return active.length === 1 ? toPlace(active[0]!, zone) : null;
 }
 
 /**
@@ -110,7 +129,7 @@ export async function findServicePlaces(
   const out = new Map<string, BookingPlace>();
   if (serviceIds.length === 0) return out;
   await withTenant({ tenantId }, async (tx) => {
-    const [services, active] = await Promise.all([
+    const [services, active, zone] = await Promise.all([
       tx.schedulingService.findMany({
         where: { id: { in: serviceIds } },
         select: { id: true, locationId: true },
@@ -119,9 +138,10 @@ export async function findServicePlaces(
         where: { isActive: true },
         select: { id: true, ...PLACE_SELECT },
       }),
+      businessZoneTx(tx),
     ]);
-    const byId = new Map(active.map((l) => [l.id, toPlace(l)]));
-    const onlyOne = active.length === 1 ? toPlace(active[0]!) : null;
+    const byId = new Map(active.map((l) => [l.id, toPlace(l, zone)]));
+    const onlyOne = active.length === 1 ? toPlace(active[0]!, zone) : null;
     for (const service of services) {
       const place = (service.locationId ? byId.get(service.locationId) : null) ?? onlyOne;
       if (place) out.set(service.id, place);

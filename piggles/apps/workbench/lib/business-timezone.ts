@@ -24,18 +24,37 @@ export function thisComputersTimezone(): string {
 }
 
 /**
- * The business's own zone when it has one, otherwise this computer's.
+ * What the business ACTUALLY has on file, absence included.
+ *
+ * Three answers, and they are three different things:
+ * `undefined` still loading · `null` nobody has set one · a string, they did.
+ *
+ * Anything that has to TELL somebody where a time came from needs the middle
+ * one, and `useBusinessTimezone` below cannot give it — folding "not set" into
+ * the device's zone is exactly what makes an unset value read as a chosen one
+ * (issue 178).
  *
  * Shares the `['tenant', 'business']` key with Business details, so opening one
  * warms the other and a zone changed there is picked up here without a refetch.
- * `undefined` while it loads — a form should hold its field until the answer
- * arrives rather than stamping a guess the person then has to notice and undo.
  */
-export function useBusinessTimezone(): string | undefined {
+export function useBusinessZone(): string | null | undefined {
   const { data, isPending } = useQuery({
     queryKey: ['tenant', 'business'],
     queryFn: () => api.get<{ timezone: string | null }>('/v1/tenant/business'),
   });
   if (isPending) return undefined;
-  return data?.timezone ?? thisComputersTimezone();
+  return data?.timezone ?? null;
+}
+
+/**
+ * The business's own zone when it has one, otherwise this computer's.
+ *
+ * For a form that must STAMP a value and has nowhere to explain itself.
+ * `undefined` while it loads — a form should hold its field until the answer
+ * arrives rather than stamping a guess the person then has to notice and undo.
+ */
+export function useBusinessTimezone(): string | undefined {
+  const zone = useBusinessZone();
+  if (zone === undefined) return undefined;
+  return zone ?? thisComputersTimezone();
 }

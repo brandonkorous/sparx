@@ -12,28 +12,16 @@
 // until now nothing in the product let them do.
 
 import { useState } from 'react';
-import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  ToggleGroup,
-  ToggleGroupItem,
-} from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faEyeSlash, faLocationDot, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Card, ToggleGroup, ToggleGroupItem } from '@wizeworks/silicaui-react';
+import { faEyeSlash, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { formatAddress, useLocations, type BusinessLocation } from './setup-data';
+import { useLocations, type BusinessLocation } from './setup-data';
+import { useBusinessZone } from '../../lib/business-timezone';
 import { RowOpenHint } from '../../components/row-open-hint';
-
-/** Registry module for this surface, so the brand's empty-state artwork is this
- *  app's own picture rather than the generic one. */
-const MODULE = 'scheduling';
+import { LocationsBody } from './locations-body';
 
 const DETAIL_KEY = 'scheduling.locations.detail';
 
@@ -43,196 +31,125 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-/** What is filed here, in the owner's words. Bookings lead because they are the
- *  reason a place cannot simply be deleted. */
-function filedNote(location: BusinessLocation): string {
-  const parts: string[] = [];
-  const { resources, services, bookings } = location.counts;
-  if (resources > 0)
-    parts.push(`${String(resources)} ${resources === 1 ? 'person or thing' : 'people & things'}`);
-  if (services > 0) parts.push(`${String(services)} ${services === 1 ? 'service' : 'services'}`);
-  if (bookings > 0) parts.push(`${String(bookings)} ${bookings === 1 ? 'booking' : 'bookings'}`);
-  return parts.length > 0 ? parts.join(' · ') : 'Nothing filed here yet';
+function InUseOnlyToggle({
+  activeOnly,
+  setActiveOnly,
+}: {
+  activeOnly: boolean;
+  setActiveOnly: (next: boolean) => void;
+}) {
+  return (
+    <ToggleGroup
+      size="sm"
+      color="module"
+      className="shrink-0"
+      value={activeOnly ? ['active'] : []}
+      onValueChange={(next: unknown[]) => {
+        setActiveOnly(next.includes('active'));
+      }}
+    >
+      <ToggleGroupItem
+        value="active"
+        aria-label="Hide switched-off ones"
+        title="Hide switched-off ones"
+      >
+        <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+        <span>In use only</span>
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+}
+
+function LocationsToolbar({
+  activeOnly,
+  setActiveOnly,
+  openNew,
+  refresh,
+}: {
+  activeOnly: boolean;
+  setActiveOnly: (next: boolean) => void;
+  openNew: (event: { shiftKey: boolean; altKey: boolean }) => void;
+  refresh: React.ReactNode;
+}) {
+  return (
+    <PaneToolbar
+      label="Places list controls"
+      primaryAction={{
+        label: 'Add a place',
+        icon: faPlus,
+        onClick: openNew,
+        title: 'Add a place — hold Shift to open alongside, Alt for a new window',
+      }}
+      controls={<InUseOnlyToggle activeOnly={activeOnly} setActiveOnly={setActiveOnly} />}
+      views={{
+        // The surface's REGISTRY KEY as a path, not its URL — `/scheduling/places`
+        // is the route and would be wrong here.
+        target: '/scheduling/locations',
+        params: { active: activeOnly ? '1' : '' },
+        onApply: (next) => {
+          setActiveOnly(next.active === '1');
+        },
+      }}
+      refresh={refresh}
+    />
+  );
+}
+
+/** Opening a place, or the form for a new one. Shift opens alongside, Alt in its
+ *  own window — the same three modifiers every list here honours. */
+function useOpenPlace(ctx: SurfaceContext) {
+  return {
+    openNew: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
+    },
+    open: (location: BusinessLocation, event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open(DETAIL_KEY, { id: location.id }, { target: targetFor(event) });
+    },
+  };
 }
 
 export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [activeOnly, setActiveOnly] = useState(false);
   const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useLocations(activeOnly);
+  // A cached read shared with Business details. `undefined` while it loads is
+  // treated as "not set" for one frame, which shows "Not set" rather than a
+  // wrong city — the safe way round for a value this column exists to be honest
+  // about.
+  const businessZone = useBusinessZone();
+  const { openNew, open } = useOpenPlace(ctx);
 
   const rows = data?.items ?? [];
-
-  const openNew = (event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
-  };
-
-  const open = (location: BusinessLocation, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open(DETAIL_KEY, { id: location.id }, { target: targetFor(event) });
-  };
-
-  const body = () => {
-    if (isError) {
-      return (
-        <EmptyState
-          icon={<Icon glyph={faLocationDot} className="size-6" aria-hidden />}
-          title="Could not load your places"
-          description="This is a problem reaching the server. Nothing is affected — the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
-        />
-      );
-    }
-
-    if (isPending) {
-      return <PaneWaiting />;
-    }
-
-    if (rows.length === 0) {
-      return (
-        <ListEmptyState
-          module={MODULE}
-          filtered={activeOnly}
-          noResults={{
-            icon: <Icon glyph={faLocationDot} className="size-6" aria-hidden />,
-            title: 'Nothing matches that',
-            description: 'You are only seeing places that are switched on.',
-          }}
-          firstRun={{
-            title: 'No places yet',
-            description:
-              'Add the premises you serve customers from — your shop, your clinic, your studio. Your people, your services and your bookings are each filed against one.',
-            actions: (
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  openNew({ shiftKey: false, altKey: false });
-                }}
-              >
-                <Icon glyph={faPlus} className="size-4" aria-hidden />
-                Add a place
-              </Button>
-            ),
-          }}
-        />
-      );
-    }
-
-    return (
-      <Table size="sm" hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th className="hidden whitespace-nowrap @xl:table-cell">Filed here</th>
-            <th className="hidden whitespace-nowrap @lg:table-cell">Time zone</th>
-            <th>State</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((location) => {
-            const address = formatAddress(location.address);
-            const filed = filedNote(location);
-            return (
-              <tr
-                key={location.id}
-                className="cursor-pointer"
-                tabIndex={0}
-                role="button"
-                onClick={(event) => {
-                  open(location, event);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  open(location, event);
-                }}
-              >
-                <td className="w-full max-w-0">
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{location.name}</span>
-                    {/* The address is only ever shown here, so it always shows. The
-                        "filed here" line is a NARROW-SCREEN STAND-IN for its own
-                        column — without the hide it printed the same sentence twice
-                        on one row once the column appeared. */}
-                    {address === '' ? (
-                      <span className="truncate text-sm @xl:hidden">{filed}</span>
-                    ) : (
-                      <span className="truncate text-sm">{address}</span>
-                    )}
-                  </span>
-                </td>
-                <td className="hidden whitespace-nowrap @xl:table-cell">{filed}</td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">{location.timezone}</td>
-                <td>
-                  <Badge color={location.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
-                    {location.isActive ? 'In use' : 'Off'}
-                  </Badge>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-    );
+  const reload = () => {
+    void refetch();
   };
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Places list controls"
-        primaryAction={{
-          label: 'Add a place',
-          icon: faPlus,
-          onClick: openNew,
-          title: 'Add a place — hold Shift to open alongside, Alt for a new window',
-        }}
-        controls={
-          <ToggleGroup
-            size="sm"
-            color="module"
-            className="shrink-0"
-            value={activeOnly ? ['active'] : []}
-            onValueChange={(next: unknown[]) => {
-              setActiveOnly(next.includes('active'));
-            }}
-          >
-            <ToggleGroupItem
-              value="active"
-              aria-label="Hide switched-off ones"
-              title="Hide switched-off ones"
-            >
-              <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-              <span>In use only</span>
-            </ToggleGroupItem>
-          </ToggleGroup>
-        }
-        views={{
-          target: '/scheduling/locations',
-          params: { active: activeOnly ? '1' : '' },
-          onApply: (next) => {
-            setActiveOnly(next.active === '1');
-          },
-        }}
+      <LocationsToolbar
+        activeOnly={activeOnly}
+        setActiveOnly={setActiveOnly}
+        openNew={openNew}
         refresh={
           <RefreshButton
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
+            onRefresh={reload}
           />
         }
       />
 
-      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
+      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">
+        <LocationsBody
+          isError={isError}
+          isPending={isPending}
+          rows={rows}
+          activeOnly={activeOnly}
+          businessZone={businessZone ?? null}
+          refetch={reload}
+          openNew={openNew}
+          open={open}
+        />
+      </Card>
 
       {rows.length > 0 ? <RowOpenHint /> : null}
     </div>

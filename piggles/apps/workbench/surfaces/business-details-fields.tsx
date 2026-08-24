@@ -15,10 +15,21 @@ import {
 } from '@wizeworks/silicaui-react';
 
 import { thisComputersTimezone } from '../lib/business-timezone';
-import type { TimezoneOption } from '../lib/timezones';
+import { zoneLabel, type TimezoneOption } from '../lib/timezones';
 
 /** A labelled text field. The whole surface is this shape, so it's one helper
  *  rather than fifteen near-identical Field blocks. */
+interface TextFieldProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  description?: string;
+  placeholder?: string;
+  type?: string;
+  error?: string | null;
+  onBlur?: () => void;
+}
+
 export function TextField({
   label,
   value,
@@ -28,16 +39,7 @@ export function TextField({
   type = 'text',
   error,
   onBlur,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  description?: string;
-  placeholder?: string;
-  type?: string;
-  error?: string | null;
-  onBlur?: () => void;
-}) {
+}: TextFieldProps) {
   return (
     <Field>
       <FieldLabel>{label}</FieldLabel>
@@ -64,13 +66,6 @@ export function TextField({
       ) : null}
     </Field>
   );
-}
-
-/** How a zone reads to a person: the picker's own label where it has one, the
- *  IANA name otherwise. "Los Angeles — Pacific Time" beats "America/Los_Angeles"
- *  for somebody deciding whether it is right. */
-function zoneLabel(zone: string, zones: TimezoneOption[]): string {
-  return zones.find((option) => option.value === zone)?.label ?? zone;
 }
 
 /**

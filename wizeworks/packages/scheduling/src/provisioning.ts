@@ -31,9 +31,16 @@ export async function bootstrapSchedulingDefaults(tenantId: string): Promise<voi
 
     // A default location so multi-location features (and resource/service scoping)
     // have something to reference. Same empty-only guard.
+    //
+    // No timezone. NULL means "follow the business", which is the honest answer
+    // for a row nobody has opened yet — and the only one available here, since
+    // activation happens before anybody has said where they work. Writing 'UTC'
+    // made the place assert a zone on a screen that reads "The zone this place
+    // is in", and once bookings began following their place (issue 108) that
+    // assertion set the hour of every appointment. Issue 178.
     if ((await tx.businessLocation.count()) === 0) {
       await tx.businessLocation.create({
-        data: { tenantId, name: 'Main location', timezone: 'UTC' },
+        data: { tenantId, name: 'Main location' },
       });
     }
   });

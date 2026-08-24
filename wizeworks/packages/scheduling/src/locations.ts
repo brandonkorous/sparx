@@ -29,10 +29,14 @@ export interface LocationRow {
   id: string;
   name: string;
   address: LocationAddress;
-  timezone: string;
   lat: number | null;
   lng: number | null;
   isActive: boolean;
+  /** NULL = follow the business's zone, which is what a single-premises shop
+   *  means by never touching it. Resolved for display by the caller, never here:
+   *  a reader that substituted a value would put the absence back out of reach
+   *  (issue 178). */
+  timezone: string | null;
   /** The sites that serve from here. EMPTY = every site. */
   propertyIds: string[];
   /** What is attached, so the UI can warn before switching one off and can
@@ -138,7 +142,7 @@ export async function createLocation(tenantId: string, rawInput: unknown): Promi
         tenantId,
         name: input.name,
         address: input.address,
-        timezone: input.timezone,
+        timezone: input.timezone ?? null,
         lat: input.lat ?? null,
         lng: input.lng ?? null,
         isActive: input.isActive,

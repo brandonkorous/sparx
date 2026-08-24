@@ -520,7 +520,12 @@ model BusinessLocation {
   tenantId String  @map("tenant_id") @db.Uuid
   name     String  @db.VarChar(255)
   address  Json    @default("{}")
-  timezone String  @default("UTC") @db.VarChar(64)
+  // NULL = follow the business's zone (TenantBusiness.timezone), which is what a
+  // single-premises shop means. It is nullable for the same reason that one is:
+  // `@default("UTC")` cannot say "nobody chose", so every unset place asserted it
+  // was in UTC — and once a booking started following its place (issue 108), that
+  // assertion decided what time an appointment happened. Issue 178.
+  timezone String? @db.VarChar(64)
   lat      Float?
   lng      Float?
   isActive Boolean @default(true) @map("is_active")

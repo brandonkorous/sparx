@@ -86,3 +86,19 @@ export function timezoneOptions(current?: string | null): TimezoneOption[] {
   }
   return options;
 }
+
+/** How a zone reads to a person: the picker's own label where it has one, the
+ *  IANA name otherwise. "Los Angeles — Pacific Time" beats "America/Los_Angeles"
+ *  for somebody deciding whether it is right. */
+export function zoneLabel(zone: string, zones: TimezoneOption[]): string {
+  return zones.find((option) => option.value === zone)?.label ?? zone;
+}
+
+/** Just the city — "America/Argentina/Buenos_Aires" → "Buenos Aires".
+ *
+ *  For a table cell, which has room for one word and none for an offset. The
+ *  full label belongs where somebody is CHOOSING; a list is only telling them
+ *  which place is which, and the identifier is jargon either way. */
+export function zoneCity(zone: string): string {
+  return cityOf(zone);
+}

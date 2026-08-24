@@ -33,7 +33,11 @@ export const CreateLocationInput = z.object({
   address: LocationAddress.default({}),
   // The zone the PLACE is in. Availability is resolved per resource in its own
   // zone (docs/79 §7.7); this is the fallback and what a customer is shown.
-  timezone: Timezone.default('UTC'),
+  //
+  // NULL = follow the business's zone. Defaulting this to 'UTC' meant a place
+  // nobody had opened still asserted where it was, and issue 108 made that
+  // assertion set the hour of every appointment (issue 178).
+  timezone: Timezone.nullable().optional(),
   // Optional map pin. Both or neither — a lone latitude locates nothing, so the
   // refinement below rejects half a coordinate rather than storing a useless one.
   lat: z.number().min(-90).max(90).nullable().optional(),
@@ -63,7 +67,7 @@ export const UpdateLocationInput = CreateLocationInput.partial()
   .extend({
     id: Uuid,
     address: LocationAddress.optional(),
-    timezone: Timezone.optional(),
+    timezone: Timezone.nullable().optional(),
     isActive: z.boolean().optional(),
     propertyIds: z.array(Uuid).max(50).optional(),
   })

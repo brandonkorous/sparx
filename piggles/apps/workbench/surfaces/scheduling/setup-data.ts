@@ -467,7 +467,11 @@ export interface BusinessLocation {
   id: string;
   name: string;
   address: LocationAddress;
-  timezone: string;
+  /** NULL = follow the business's zone, which is what a single-premises shop
+   *  means by never touching it. Resolve it for display, never substitute it
+   *  into the value — that is how an unset zone came to read as a chosen one
+   *  (issue 178). */
+  timezone: string | null;
   lat: number | null;
   lng: number | null;
   isActive: boolean;
@@ -483,7 +487,8 @@ export interface BusinessLocation {
 export interface LocationInput {
   name?: string;
   address?: LocationAddress;
-  timezone?: string;
+  /** `null` clears it back to following the business. */
+  timezone?: string | null;
   lat?: number | null;
   lng?: number | null;
   isActive?: boolean;
