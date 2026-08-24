@@ -195,6 +195,25 @@ function dateLabel(d: Date | null | undefined): string {
     : '';
 }
 
+/**
+ * A DATE column's day, read in UTC — `Aug 29, 2026`.
+ *
+ * Not `dateLabel`: a date-only column comes back as UTC midnight, and
+ * formatting that in the process's own zone shifts it to the day before
+ * anywhere west of Greenwich. The stored value is a calendar day somebody was
+ * promised, so it is read as one (issue 026).
+ */
+function calendarDayLabel(d: Date | null | undefined): string {
+  return d
+    ? d.toLocaleDateString('en-US', {
+        timeZone: 'UTC',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : '';
+}
+
 /** A clock time — `2:30 PM`. */
 function timeLabel(d: Date | null | undefined): string {
   return d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
@@ -371,6 +390,8 @@ async function resolveOrder(
         taxTotal: true,
         discountTotal: true,
         refundTotal: true,
+        amountPaid: true,
+        readyOn: true,
         placedAt: true,
         deliveredAt: true,
         cancelledReason: true,
@@ -410,6 +431,12 @@ async function resolveOrder(
     // delivered / cancelled emails read. Empty-string when absent so an optional
     // card row self-drops (a cancelled order with no reason shows no "Reason" line).
     refundTotal: money(order.refundTotal),
+    // Made to order (issue 026). Both empty-string when they do not apply, so
+    // an ordinary receipt drops both rows rather than printing "Ready: —" or a
+    // balance of nothing. The balance is what is genuinely left to pay, so a
+    // fully-paid order shows no row even when it had a deposit.
+    readyOn: calendarDayLabel(order.readyOn),
+    balanceDue: moneyPositive(Number(order.total) - Number(order.amountPaid)),
     deliveredAt: order.deliveredAt ? dateLabel(order.deliveredAt) : '',
     cancelReason: order.cancelledReason ?? '',
     placedAt: dateLabel(order.placedAt),

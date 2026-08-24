@@ -693,6 +693,10 @@ export const EMAIL_SOURCES: DataSource[] = [
       // delivered / cancelled emails read; each is empty when it doesn't apply, so
       // an optional row self-drops (a cancelled order with no reason shows no line).
       text('refundTotal', 'Refund total'),
+      // Made to order (issue 026). Both self-drop: an order with nothing made
+      // to order shows neither row, so an ordinary receipt is unchanged.
+      text('readyOn', 'Ready date'),
+      text('balanceDue', 'Due on collection'),
       text('deliveredAt', 'Delivered date'),
       text('cancelReason', 'Cancellation reason'),
       text('shippingAddress', 'Shipping address'),

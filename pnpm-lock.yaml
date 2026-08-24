@@ -1722,6 +1722,9 @@ importers:
       '@wizeworks/search':
         specifier: workspace:*
         version: link:../search
+      '@wizeworks/time':
+        specifier: workspace:*
+        version: link:../time
       '@wizeworks/ui':
         specifier: workspace:*
         version: link:../ui

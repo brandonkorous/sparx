@@ -382,7 +382,13 @@ const orderConfirmation = (): SectionNode[] => [
     { label: 'Shipping', value: '{{order.shippingTotal}}', ref: 'order.shippingTotal' },
     { label: 'Tax', value: '{{order.taxTotal}}', ref: 'order.taxTotal' },
     { label: 'Total', value: '{{order.total}}', strong: true },
+    // Made to order (issue 026) — what is genuinely still owing. Self-drops on
+    // an order paid in full, which is nearly all of them.
+    { label: 'Due on collection', value: '{{order.balanceDue}}', ref: 'order.balanceDue' },
   ]),
+  // When it can be collected. The whole panel drops for an order with nothing
+  // made to order, so an ordinary receipt is exactly as it was (issue 026).
+  detailPanel([{ label: 'Ready from', value: '{{order.readyOn}}' }], { ref: 'order.readyOn' }),
   // Ship-to as its own scannable panel. The resolver supplies `order.shippingAddress`
   // as an already-formatted one-line string; the WHOLE card drops for a digital order
   // with no shipping address (the `ref` on the panel), so no empty box is left behind.

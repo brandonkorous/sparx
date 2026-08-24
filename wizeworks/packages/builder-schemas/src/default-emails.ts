@@ -291,6 +291,10 @@ const orderConfirmation = (): BuilderNode =>
     ),
     lineItems('order.items'),
     para('Total: {{order.total}}'),
+    // Made to order (issue 026) — both drop for an ordinary order, so this
+    // reads exactly as it did for everything bought off a shelf.
+    conditional('order.readyOn', [para('Ready from {{order.readyOn}}.')]),
+    conditional('order.balanceDue', [para('{{order.balanceDue}} is due when you collect it.')]),
     conditional('order.shippingAddress.oneLine', [
       para('Shipping to: {{order.shippingAddress.oneLine}}'),
     ]),
