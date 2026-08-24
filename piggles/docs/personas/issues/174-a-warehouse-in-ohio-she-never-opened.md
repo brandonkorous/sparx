@@ -1,6 +1,6 @@
 # 174 — A warehouse in Ohio she never opened
 
-**Status:** open
+**Status:** open — rescoped: the rows are intentional, telling them apart is not solved
 **Severity:** major
 **Found by:** P03 · Juniper Row · act 3
 **Surface:** mypiggles › Stock › Locations
@@ -118,6 +118,36 @@ Whatever is decided, the `installed: 0` count needs to become true independently
 ## Confirmed by
 
 —
+
+## Decision — 2026-08-24, Brandon
+
+**The seeded location is deliberate, so it stays.**
+
+A trade pack seeds operating data on purpose, so somebody opening a platform this
+large has something real to navigate instead of an empty console and no idea what
+the screen is for. The Fulfillment Center is an example to look at, not a mistake
+to clean up, and "an apparel pack should not create a second location at all"
+above is answered: it should.
+
+**Three of the findings survive that, because none of them is about whether to
+seed.** They are about a seeded row being indistinguishable from one she made:
+
+1. **It is not labelled a sample.** This is the one that makes the other two
+   smaller — a row that says `Sample` is obviously illustrative, and a sample
+   address in Columbus stops being a claim about her business the moment the row
+   admits what it is. The marker (`isSampleRow`) and the badge are built; they
+   need confirming on this screen.
+2. **It wrote no audit entry.** `Main Warehouse` writes one and this does not, so
+   the audit log disagrees with itself about seeded rows. "I did not make this
+   and I cannot find out who did" is the complaint, and labelling fixes the first
+   half of it, not the second.
+3. **The audit line reports `"installed": 0, "skipped": 0`** having installed
+   something. A counter that says zero after doing work is the same failure this
+   run keeps finding — a green report over an unmeasured thing — and it is wrong
+   independently of anything above.
+
+Rescoped to those three. The rows are not the defect; being unable to tell them
+apart from her own is.
 
 ## Rating effect
 
