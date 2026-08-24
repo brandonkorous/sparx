@@ -1,13 +1,13 @@
 # 159 — Every page of her site makes a keyboard user walk the whole menu
 
-**Status:** open
+**Status:** declined
 **Severity:** minor
 **Found by:** P02 · Halo & Hem · standing check "without a mouse"
 **Surface:** haloandhem.com — every page (site chrome)
 **Filed:** 2026-08-23
-**Fixed:** —
+**Fixed:** — (declined 2026-08-23)
 **Confirmed by:** —
-**Blocked on:** decision — it changes the chrome every blueprint seeds
+**Blocked on:** nothing; the decision was made and the answer was no
 
 ## What happened
 
@@ -59,3 +59,14 @@ defect fix. The chip grouping is a smaller, self-contained change and could go f
 
 Raising rather than doing, per the rule about tenant-site chrome being Brandon's
 call.
+
+## Decision — declined, 2026-08-23
+
+Brandon's call: **no.** A skip link is not going into the chrome every blueprint
+seeds.
+
+Recording it as declined rather than deleting it, because the finding itself was
+real and the next person to walk a tenant site with the keyboard will find the
+same thing and be tempted to file it again. It is a known, accepted cost, not an
+oversight — and if it is revisited, the reason to revisit is a tenant complaining
+rather than a persona noticing.

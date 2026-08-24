@@ -1,13 +1,13 @@
 # 167 — Every kind of product has a stray word in front of its name
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P03 · Juniper Row · act 2
 **Surface:** mypiggles › Sell › Kinds of product — and the kind picker on every product
 **Filed:** 2026-08-23
-**Fixed:** — (source fixed; the rows need the pipeline)
-**Confirmed by:** —
-**Blocked on:** pipeline — the seven rows are platform data, so a migration has to apply
+**Fixed:** 2026-08-24
+**Confirmed by:** re-opened both screens as Devi after the migration ran — see below
+**Blocked on:** —
 
 ## What happened
 
@@ -85,13 +85,33 @@ one of these and kept its own copy is left alone.
 
 ## Confirmed by
 
-Not yet, and it cannot be from this screen: the rows only change when the
-pipeline applies the migration. What IS established is that the source and the
-migration agree — both carry the same seven symbols, checked side by side — and
-that `commerce-schemas` typechecks clean with them.
-
-The screen re-check belongs to whoever runs the next release, or to the persona
-run that opens Kinds of product after it.
+> The migration was applied 2026-08-24, and both screens were re-opened as Devi.
+>
+> **Sell → Kinds of product.** All seven built-in rows now carry a symbol, and
+> each renders as a color emoji rather than a monochrome fallback glyph — the two
+> that carry a variation selector (🍽️ and 🏷️) were the ones worth checking, and
+> both came out in color:
+>
+> | Row                    | On screen |
+> | ---------------------- | --------- |
+> | Apparel                | 👕        |
+> | Auto Part              | 🔧        |
+> | Beauty & Personal Care | 💄        |
+> | Electronics            | 💻        |
+> | Food & Beverage        | 🍽️        |
+> | General                | 🏷️        |
+> | Home & Objects         | 💡        |
+>
+> **The other half.** This issue also named the kind drop-down on a product's
+> Details tab, which is where a person actually meets the value, so that was
+> checked too rather than taken on trust: opened "Sunday Trouser, wide leg" →
+> **Details** → **Kind of product**, and all seven options in the open list wear
+> the same symbols. Nothing was selected — the field was left on "No kind — just
+> the basics" and the pane closed unsaved.
+>
+> No business had taken its own copy of a built-in kind, so the migration's
+> `AND icon = '<old value>'` guard had nothing to skip here; the guard is still
+> the reason it is safe to run against a tenant that had.
 
 ## Rating effect
 

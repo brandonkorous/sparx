@@ -171,6 +171,28 @@ issue stays open — a fix confirmed against the value it wrote is not confirmed
 ([089](089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)
 is the lesson).
 
+## Reproduced again — P03, 2026-08-23
+
+Devi Raman's Juniper Row, signed up in dev after the fix landed, was born with
+the same six:
+
+```
+        title         |        handle        |         created_at
+----------------------+----------------------+----------------------------
+ sparx Field Notebook | sparx-field-notebook | 2026-08-23 10:43:42.035+00
+ sparx Everyday Tee   | sparx-everyday-tee   | 2026-08-23 10:43:42.183+00
+ sparx Enamel Mug     | sparx-enamel-mug     | 2026-08-23 10:43:42.273+00
+```
+
+This is exactly what reason 2 above predicts — the dev stack falls back to
+`sparx` because it never reads the setting — so it is confirmation that the
+issue is still live in dev, NOT evidence that the fix is wrong. Two of three
+personas run since have been born selling another company's merchandise, which
+is the argument for setting `PIGGLES_GOLDEN_BLUEPRINT` in the dev stack rather
+than waiting for prod: every remaining persona will hit it otherwise.
+
+Devi deleted all six, as Nia did.
+
 ## What Nia did instead
 
 Deleted the six, because she does not sell mugs, and built the homepage her salon

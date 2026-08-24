@@ -530,6 +530,36 @@ the shared `MEDIA_PUBLIC_URL`, so product images still resolve through
 through the media path — a real change, not a routing line — so it is flagged
 rather than half-done.
 
+### mcp.mypiggles.com (2026-08-23)
+
+The same reasoning as `api.mypiggles.com`, on an address that is **read aloud**.
+The AI connections pane does not merely link to the MCP endpoint — it tells the
+owner to COPY it and paste it into Claude or ChatGPT by hand, and their assistant
+then shows it back to them on every reconnection. It was serving
+`https://mcp.sparx.works/mcp`, inside the Piggles console, to a Piggles customer.
+
+**And it was not only a label.** RFC 9728 discovery — the document that tells a
+client which authorization server to go to — is fetched BEFORE any token exists,
+so there is no tenant to read `platform_brand` from and there never can be. The
+request's host is the only thing carrying a brand at that moment. One shared
+hostname therefore meant one answer for both brands, and the answer was
+`app.sparx.works`: every Piggles customer connecting an assistant was sent to
+sparx to sign in and approve access to their own business, on a sparx consent
+screen. Meanwhile `getpiggles.com` — the only place Piggles mounts Better Auth —
+served a `/oauth/consent` route nothing ever reached, whose validator compared the
+requested `resource` against sparx's address and would have refused a genuine
+Piggles request as "for a different service". The whole Piggles MCP path was
+forked and then unreachable.
+
+The fix is one Caddy host block, one Cloudflare record, no extra pod, and a
+brand-scoped seam: `mcpResourceUrl(brand)` / `mcpAuthServerOrigin(brand)` in
+`@wizeworks/links/server`, beside `appOrigin` and `accountOrigin` and derived the
+same way, so a third brand is configuration. api-mcp builds a host→brand map at
+boot from `PLATFORM_BRANDS` and **exits 78** rather than serve a brand it has no
+address for — a host that falls through to the default returns a 200 and a valid
+document and the wrong company's sign-in page, which is indistinguishable from
+working software.
+
 ### What this costs the node, stated rather than assumed
 
 Three more pods on a single 2-vCPU / 8 GiB box is a capacity decision:

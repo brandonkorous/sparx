@@ -89,17 +89,35 @@ completed rather than duplicated. A row already claimed by a _different_ site is
 still left alone, which is what keeps docs/58 D6 true: a first sign-in on a
 sister site still gets a fresh membership and fresh consent.
 
-The ten rows already written global are repaired by
-`20270406000000_customers_belong_to_the_site_they_came_from`, which fills
+The rows already written global are repaired by
+`20270405000000_customers_belong_to_the_site_they_came_from`, which fills
 `property_id` **only for tenants that have exactly one site** — where there is no
 guess to make. A multi-site tenant's global customers are left global, because
 there the absence might be the truth.
+
+It also skips a row whose site it cannot fill without colliding. The unique key
+is `(tenant_id, property_id, email)` and NULL never collides, so two global rows
+sharing an address are legal today and would not both be legal once filled. The
+migration fills what it can and leaves the rest global rather than aborting on
+the first pair — an abort would have rolled back every tenant's repair on
+account of one duplicate.
 
 ## Still open
 
 Nia's two Imanis are not merged by this. Merging live customer records is her
 decision, not a migration's, and the console has a merge tool for it. What the
 fix guarantees is that it stops happening.
+
+The migration ran 2026-08-24 and left the pair exactly as described: twelve of
+Halo & Hem's thirteen customers now carry the site, and the thirteenth is the
+second Imani row, held back because filling it would collide with the first.
+
+Nothing was hidden by that. The customer list matches
+`propertyId IS NULL OR propertyId = <site>`
+([customer-service.ts:77](../../../../wizeworks/packages/crm/src/services/customer-service.ts#L77)),
+so a site-less row still appears on every site rather than disappearing from all
+of them. Both Imanis remain visible and mergeable, which is the state this
+section says they should be in.
 
 ## Confirmed by
 

@@ -1,13 +1,13 @@
 # 162 — One button drags the home page sideways on a phone
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P03 · Juniper Row · before act 1, reading meetpiggles at 360px
 **Surface:** meetpiggles — home, the trade wall
 **Filed:** 2026-08-23
-**Fixed:** —
-**Confirmed by:** —
-**Blocked on:** scope — the one-class fix drags a 714-line file's split with it
+**Fixed:** 2026-08-23
+**Confirmed by:** not on screen — no browser attached this session (see below)
+**Blocked on:** decision, for the platform-wide version only — whether `.btn` may wrap below `sm`
 
 ## What happened
 
@@ -64,26 +64,67 @@ button two lines tall.
 
 ## The fix
 
-One class on that anchor — `max-sm:whitespace-normal` — and the column drops back
-to 265px. Sixty seconds of work.
+**Both pieces made.** This was filed `Blocked on: scope`, which was the wrong
+call: the second piece is work, not a decision, and writing a paragraph about
+why a file is too big to touch costs more than splitting it.
 
-RULE #0.5.4 is what stops it here: touching `home.tsx` obliges applying the rule
-set to it, and the file is **714 lines** against a 250 limit, opening with ~105
-lines of comment that are the page's whole design argument (the section contract,
-the word budget per beat, why the pain clause is not pink, what was deleted and
-why it is not coming back). Splitting it means deciding where that documentation
-lives — a doc, or six section files each carrying its own share — and that is a
-decision about Brandon's page rather than a defect fix.
+1. **`max-sm:whitespace-normal`** on the CTA in `Whatever()`. The comment beside
+   it now records the whole chain, so the next person to shorten that class list
+   knows what it is holding up.
 
-So it is two pieces of work, and only the first is small:
+2. **`home.tsx` 714 → eight files** under `components/marketing/home/`:
 
-1. `max-sm:whitespace-normal` on the CTA in `Whatever()`.
-2. Split `home.tsx` into `components/marketing/home/*` — `Thursday`, `Whatever`
-   (with `TRADES`, `TradeCard`, `TradeLane`, `scene`), `TheTurn`, `TwoQuestions`,
-   `Pricing`, `Questions` — and rehome the header comment.
+   | File                | Lines | What it is                                    |
+   | ------------------- | ----- | --------------------------------------------- |
+   | `index.tsx`         | 109   | the page contract, and `HomePage`             |
+   | `thursday.tsx`      | 108   | 1b · recognition                              |
+   | `trade-wall.tsx`    | 195   | `TRADES`, `scene()`, `TradeCard`, `TradeLane` |
+   | `whatever.tsx`      | 69    | 2 · whatever kind of business                 |
+   | `the-turn.tsx`      | 121   | 3 · the turn, and `ONCE`                      |
+   | `two-questions.tsx` | 20    | 5 · you answer two questions                  |
+   | `pricing.tsx`       | 100   | 6 · the one price                             |
+   | `questions.tsx`     | 46    | 8 · the six questions                         |
 
-**The wider version, checked and left alone:** a button that refuses to wrap will
-do this again wherever a long label meets a narrow column, so the durable answer
-is `white-space: normal` for `.btn` below `sm`, once, in Piggles' own
-`globals.css`. That file is 355+ lines and carries the same obligation, so it is
-named here rather than changed on the way past.
+   `app/page.tsx` imports `@/components/marketing/home` and did not change —
+   the directory's `index.tsx` answers to the same path.
+
+**Where the documentation went, which was the actual question.** The split of
+the ~105-line header was decided by what each part is ABOUT rather than by
+length. The page contract — the nine-section shape, the three-to-five-second
+rule with its word counts, the three legal homes for depth, why every component
+is a server component, and what was deleted and is not coming back — is about
+the PAGE, so it stays with the page in `index.tsx`. Each section's own argument
+travels with its section: why the pain clause is not pink is in `thursday.tsx`,
+why the wall has no panel and how eleven scenes are sized is in `trade-wall.tsx`,
+why the turn is a theme island is in `the-turn.tsx`. Nothing was moved to a doc
+and nothing was dropped — every line of the old file was diffed against the new
+directory, and the only differences are two JSX comments converted to JSDoc
+(same words), three prose lines prettier re-wrapped, and the one class above.
+
+RULE #0.5's second clause was applied too: four sections were over 50 lines and
+are now `Words`, `TheArgument`, `OnceList` and `PriceCard` beside their sections.
+
+## What is still open
+
+**The platform-wide version, and it is a real decision.** A button that refuses
+to wrap will do this again wherever a long label meets a narrow column, so the
+durable answer is `white-space: normal` for `.btn` below `sm` — but `.btn` is
+silicaui's, shared with sparx, and "every button in the platform may now be two
+lines tall on a phone" is a design change rather than a bug fix. Named here
+rather than made.
+
+## Confirmed by
+
+**Nothing yet, and that is the honest state.** No browser was attached when this
+was fixed, so the measurement that produced the finding —
+`document.documentElement.scrollWidth` 352 against `clientWidth` 345 at 360px —
+has not been re-taken. The arithmetic says the column drops from 288 to 265 and
+the overflow goes with it, and the page typechecks, lints and formats clean.
+
+**Re-take the measurement before scoring this.** It is one line in the console
+on `localhost:3020/` at 360px, and it either reads 345 of 345 or this is not
+fixed.
+
+## Rating effect
+
+`meetpiggles › home` — not re-scored until the measurement above is re-taken.
