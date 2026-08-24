@@ -29,17 +29,47 @@ function duration(minutes: number): string {
   return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
 }
 
-export async function BookingServices() {
+/** An author-set text prop, or undefined. A BLANK string is a real answer here —
+ *  "this section has no heading" — so it is kept distinct from an absent prop, which
+ *  means the author never touched it and gets the default. */
+export function toHeadingText(value: unknown, fallback: string): string {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+export async function BookingServices({
+  heading,
+  subheading,
+  asPageTitle,
+}: {
+  heading: string;
+  subheading: string;
+  /** `/book` only — see `bookingHeadingIsPageTitle`. */
+  asPageTitle: boolean;
+}) {
   const services = await listBookableServices();
+  const Heading = asPageTitle ? 'h1' : 'h2';
 
   return (
     <>
-      <header className="mb-7 grid gap-1.5">
-        <h1 className="text-base-content text-4xl font-semibold tracking-tight">Book with us</h1>
-        <p className="text-base-content">
-          Choose a service to see open times and reserve your spot.
-        </p>
-      </header>
+      {/* The WORDS are the author's; the LEVEL is worked out. This block is offered
+          on every page and used to emit an `<h1>` wherever it landed, so a homepage
+          that already had one announced two page titles to a screen reader and told
+          search engines it was about two different things (issue 095).
+
+          On `/book` the list IS the page, so its heading is the page title. Anywhere
+          else it is a section inside a page that has its own. Blank means no heading
+          at all, which is what a section that already carries a title above the block
+          wants. */}
+      {heading || subheading ? (
+        <header className="mb-7 grid gap-1.5">
+          {heading ? (
+            <Heading className="text-base-content text-4xl font-semibold tracking-tight">
+              {heading}
+            </Heading>
+          ) : null}
+          {subheading ? <p className="text-base-content">{subheading}</p> : null}
+        </header>
+      ) : null}
 
       {services.length === 0 ? (
         <EmptyState

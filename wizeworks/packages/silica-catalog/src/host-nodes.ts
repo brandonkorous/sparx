@@ -332,6 +332,25 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     icon: 'calendar',
     hint: 'The live list of services open for booking, each linking to its time-picker. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-4xl px-6 py-10',
+    // The words above the list are the AUTHOR's. They used to be hardcoded — an
+    // `<h1>` reading "Book with us" plus a sentence — so dropping this block onto a
+    // page that already had a title gave that page two `<h1>`s and two competing
+    // sentences in the platform's voice (issue 095). Blank means no heading, which
+    // is what a section that already has its own `<h2>` above it wants.
+    props: [
+      {
+        name: 'heading',
+        label: 'Heading',
+        type: 'text',
+        default: 'Book with us',
+      },
+      {
+        name: 'subheading',
+        label: 'Line under the heading',
+        type: 'text',
+        default: 'Choose a service to see open times and reserve your spot.',
+      },
+    ],
   },
   {
     key: HOST_KEYS.commerceCategoryDetail,

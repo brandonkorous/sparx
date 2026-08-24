@@ -26,7 +26,7 @@
 //
 // Per-node and opt-in is the shape that cannot cause either.
 
-import type { ElementNode, Node } from '@wizeworks/silicaui-html';
+import { el, repeat, type ElementNode, type Node } from '@wizeworks/silicaui-html';
 
 /**
  * Render `element` only when `ref` resolves to something.
@@ -46,4 +46,36 @@ export function visibleWhen<T extends ElementNode>(element: T, ref: string, nega
 export function visibilityRef(node: Node): string | undefined {
   if (node.kind === 'outlet') return undefined;
   return node.data?.kind === 'visible' ? node.data.ref : undefined;
+}
+
+/**
+ * A repeat that renders NOTHING when its collection is empty, plus the sentence to
+ * show in its place.
+ *
+ * `repeat` renders its template ONCE against an empty collection — silica's
+ * "one-placeholder-item convention" — so a shop with no products published a card
+ * reading "Product name · $0.00 · Sold out": an invented price and an invented stock
+ * claim, on a real business's homepage (issue 092). A template's placeholder text is
+ * authoring scaffolding, and it must never reach a customer as a fact.
+ *
+ * TWO DIFFERENT MECHANISMS, deliberately, because the host answers collections and
+ * scalars through DIFFERENT methods:
+ *
+ *   · the grid uses `omitWhenEmpty`, which the engine evaluates from
+ *     `resolveCollection` — the same call the repeat itself makes, so the grid and
+ *     its own contents can never disagree about whether there is anything to show.
+ *   · the message uses `visible`, which reads `resolveBinding`. A host that publishes
+ *     its collections on the resolver root (as the storefront does) answers both.
+ *
+ * Getting that wrong is what the first attempt did: `visible` alone hid the grid even
+ * when products existed, because the collection ref means nothing to `resolveBinding`
+ * on a host that only implements `resolveCollection`.
+ */
+export function repeatOrEmpty(container: ElementNode, ref: string, emptyText: string): Node[] {
+  const grid = repeat(container, ref);
+  grid.data = { kind: 'collection', ref, omitWhenEmpty: true };
+  return [
+    grid,
+    visibleWhen(el('p', 'py-8 text-center text-base-content', { text: emptyText }), ref, true),
+  ];
 }

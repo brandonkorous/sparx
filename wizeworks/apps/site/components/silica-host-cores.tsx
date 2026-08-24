@@ -22,7 +22,7 @@ import { CollectionIndex } from '@/components/collections/collection-index';
 import { CollectionDetail } from '@/components/collections/collection-detail';
 import { CategoryIndex } from '@/components/category/category-index';
 import { CategoryDetail } from '@/components/category/category-detail';
-import { BookingServices } from '@/components/booking/booking-services';
+import { BookingServices, toHeadingText } from '@/components/booking/booking-services';
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
@@ -76,6 +76,11 @@ export interface HostCoreContext {
    *  on. A host core cannot read the URL, and building links against the wrong path
    *  is how a pager on `/journal` sends readers to `/?page=2`. */
   basePath?: string;
+  /** True only on `/book`, where the booking list IS what the page is about, so its
+   *  heading is the page's `<h1>`. Everywhere else it is a section heading — the
+   *  block is offered on every page, and it used to emit an `<h1>` wherever it
+   *  landed (issue 095). */
+  bookingHeadingIsPageTitle?: boolean;
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -97,8 +102,18 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
       case HOST_KEYS.commerceCategories:
         return <CategoryIndex site={ctx.site} />;
       case HOST_KEYS.schedulingServices:
-        // Self-contained: resolves the tenant from the request host, no props/context.
-        return <BookingServices />;
+        // Self-contained for its DATA (resolves the tenant from the request host); its
+        // words are the author's (issue 095).
+        return (
+          <BookingServices
+            asPageTitle={ctx.bookingHeadingIsPageTitle ?? false}
+            heading={toHeadingText(node.props?.heading, 'Book with us')}
+            subheading={toHeadingText(
+              node.props?.subheading,
+              'Choose a service to see open times and reserve your spot.'
+            )}
+          />
+        );
       case HOST_KEYS.commerceCategoryDetail:
         // Per-record: the route passes the category handle (+ facets/sort/page in searchParams).
         return (

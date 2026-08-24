@@ -41,7 +41,7 @@ import {
 } from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
-import { visibleWhen } from './conditional';
+import { repeatOrEmpty, visibleWhen } from './conditional';
 import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
 import { PLACEHOLDER_IMAGE } from './placeholder';
 
@@ -242,6 +242,12 @@ function carouselControl(role: 'prev' | 'next', label: string, icon: 'arrow-left
  *  `COMMERCE_SOURCES`) and `layout` through the normal layout controls; `productGrid`
  *  and `featuredProducts` below are just this block with preset literal options, kept
  *  so existing pages and the starter/blueprints resolve unchanged. */
+/** What a shopper sees where the products would be. In the SITE's voice, not the
+ *  console's: this is a customer reading a business's page, not an owner reading
+ *  their catalog. Says only what is true — there is nothing here yet — and invents
+ *  no price and no stock state (issue 092). */
+const NOTHING_TO_SHOW = 'Nothing in the shop just yet. Check back soon.';
+
 export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
 
@@ -268,7 +274,7 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
               }),
             ],
           }),
-          repeat(carouselTrack(), source),
+          ...repeatOrEmpty(carouselTrack(), source, NOTHING_TO_SHOW),
         ],
       }),
       { type: 'carousel' }
@@ -277,7 +283,11 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
 
   const children: Node[] = [
     el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
-    repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
+    ...repeatOrEmpty(
+      layout === 'rail' ? railContainer() : gridContainer(),
+      source,
+      NOTHING_TO_SHOW
+    ),
   ];
   // A GRID over the whole catalog gets page links under it, because that grid is the
   // one that runs out of room: it shows 24 records and the catalog has more. A RAIL is
@@ -312,7 +322,7 @@ export function productCarousel(source: ProductsSource = 'commerce.product'): No
             carouselControl('next', 'Next products', 'arrow-right'),
           ],
         }),
-        repeat(carouselTrack(), source),
+        ...repeatOrEmpty(carouselTrack(), source, NOTHING_TO_SHOW),
       ],
     }),
     { type: 'carousel' }

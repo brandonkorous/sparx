@@ -23,6 +23,7 @@
 import { atom, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
+import { repeatOrEmpty } from './conditional';
 import { HOST_KEYS, hostCore } from './host-nodes';
 import { PLACEHOLDER_IMAGE } from './placeholder';
 
@@ -233,11 +234,15 @@ export function blogPostGrid(): Node {
     children: [
       el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
         children: [
-          repeat(
+          // Same hazard as the product grid: with no posts, `repeat` rendered its
+          // template once and published a card with placeholder headline and date
+          // on it (issue 092).
+          ...repeatOrEmpty(
             el('div', 'grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2', {
               children: [postCard()],
             }),
-            'cms.blog_post'
+            'cms.blog_post',
+            'No posts yet. Check back soon.'
           ),
         ],
       }),

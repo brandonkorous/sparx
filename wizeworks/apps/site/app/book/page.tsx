@@ -65,6 +65,13 @@ export default async function BookIndexPage() {
   const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
+    // THIS page is what the booking list is about, so its heading is the page's
+    // title. Everywhere else the block is a section inside a page that already has
+    // one, and emitting a second `<h1>` there gave a homepage two page titles
+    // (issue 095). The words are the author's; only the LEVEL is worked out, and
+    // it is worked out from the route rather than stored — so a page authored
+    // before this still gets the right one.
+    bookingHeadingIsPageTitle: true,
   });
 
   return (

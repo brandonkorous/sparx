@@ -1,12 +1,12 @@
 # 095 — The booking list put a second page title on her homepage, in words she cannot change
 
-**Status:** open — accepted, to build
+**Status:** fixed
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 5
 **Surface:** mypiggles › My Site › Page › Add › Booking services — and the published homepage
 **Filed:** 2026-08-22
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-08-24
+**Confirmed by:** headings read off Nia's homepage and her /book page — see below
 **Blocked on:** —
 
 ## What happened
@@ -120,3 +120,53 @@ somebody's homepage that they cannot edit.
 ## Rating effect
 
 `My Site › Page` and the published homepage are scored in [rating.md](../rating.md).
+
+## The fix — 2026-08-24
+
+Brandon's answer was "authors", so the words are hers. The LEVEL is worked out
+rather than chosen, which is the "Both" option above — and it had to be, for a
+reason the first attempt made obvious.
+
+**The words.** `scheduling.services` gains `heading` and `subheading` props
+([host-nodes.ts](../../../../wizeworks/packages/silica-catalog/src/host-nodes.ts)),
+drawn by the same Host panel every other core uses, defaulting to today's
+sentences so no published page changes wording on its own. **Blank means no
+heading at all** — which is exactly what Nia wanted: her own `<h2>` above the
+block, and nothing from the platform under it.
+
+**The level comes from the ROUTE, not from a stored prop.** `/book` passes
+`bookingHeadingIsPageTitle`, and only there does the core emit `<h1>`.
+
+That last part is not a detail. Dropping the core to `<h2>` unconditionally
+fixed the homepage and left `/book` with **no `<h1>` at all** — the seeded
+`/book` page carries no heading of its own precisely because the core used to
+supply one, so every already-published booking page would have lost its title
+silently. A stored prop could not fix those pages either; a route-derived level
+fixes them without touching a single tenant's content.
+
+## Confirmed by
+
+> Headings read off the live pages, 2026-08-24.
+>
+> **Nia's homepage** — the page this was found on. One `<h1>`, hers:
+>
+> ```
+> H1  Two chairs. No rush. Book the one you want.
+> H2  What we do, and what it costs        ← hers
+> H2  Book with us                         ← the block, no longer an <h1>
+> H2  A two-chair salon, on purpose
+> ```
+>
+> The two-page-titles problem is gone, and the stutter she worked around by
+> deleting her subtitle is now hers to remove properly: blank the block's
+> `heading` and the section is her own `<h2>` followed by her ten real services.
+>
+> **The `/book` page** — still exactly one `<h1>`, still the page's own subject:
+>
+> ```
+> <h1 class="…">Book with us</h1>
+> ```
+>
+> Both checked against Juniper Row and Halo & Hem, whose `/book` pages were
+> published BEFORE this change — the level is derived at render, so neither
+> needed rewriting.

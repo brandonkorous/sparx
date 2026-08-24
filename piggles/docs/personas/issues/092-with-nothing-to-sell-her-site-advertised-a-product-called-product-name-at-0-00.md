@@ -1,12 +1,12 @@
 # 092 — With nothing to sell, her site advertised "Product name", $0.00, Sold out
 
-**Status:** open — accepted, to build
+**Status:** fixed
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 5
 **Surface:** the published site — the product grid on any page that carries one
 **Filed:** 2026-08-21
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-08-24
+**Confirmed by:** read off two live tenant homepages — see below
 **Blocked on:** —
 
 ## What happened
@@ -127,3 +127,60 @@ placeholder was wrong because it was FAKE, not because it was present.
 The published homepage is scored in [rating.md](../rating.md) with this and
 [091](091-her-salons-homepage-is-selling-sparx-branded-mugs-and-t-shirts.md) as
 its gap.
+
+## The fix — 2026-08-24
+
+**`omitWhenEmpty`, which silica already had.** `repeat` renders its template ONCE
+against an empty collection — the engine's documented "one-placeholder-item
+convention" — and the storefront was publishing that scaffolding as copy. The
+collection binding takes `omitWhenEmpty: true`, which drops the node instead.
+
+New `repeatOrEmpty(container, ref, emptyText)` in
+[conditional.ts](../../../../wizeworks/packages/silica-catalog/src/conditional.ts)
+pairs that with the message, and is applied to every block whose collection can
+legitimately be empty: the product grid, the product rail, both carousels, and
+the blog index. `productAttributes` and `buyBox` were checked and left alone —
+the first is already wrapped in `visibleWhen`, the second repeats over a
+route-provided record.
+
+### The wrong version of this fix, and why the test asserts both directions
+
+The first attempt hung the whole thing on `visible`, which reads
+`resolveBinding`. The repeat reads `resolveCollection`. They are different host
+methods, so a collection ref means nothing to the first — and the grid vanished
+even when products existed. Every shop on the platform, emptied.
+
+The suite caught it, and
+[empty-collection.test.ts](../../../../wizeworks/packages/silica-catalog/src/empty-collection.test.ts)
+now asserts BOTH directions on purpose: a test that only checked the empty case
+would have passed on that fix.
+
+The grid therefore uses `omitWhenEmpty` (same call the repeat makes, so the two
+can never disagree) and only the MESSAGE uses `visible`.
+
+## Confirmed by
+
+> Read off two live tenant homepages, 2026-08-24.
+>
+> **Juniper Row** (Devi's shop — seven products, every one "Not on sale", so both
+> product sections resolve empty):
+>
+> ```
+> Shop our products
+>   Nothing in the shop just yet. Check back soon.
+> Featured
+>   Nothing in the shop just yet. Check back soon.
+> ```
+>
+> Grepped for all three invented values in the served HTML: **zero** occurrences
+> of `Product name`, `$0.00`, and `Sold out`. Before this, each appeared twice.
+>
+> **The other direction**, in the render tests: a host with two products renders
+> both cards and NO empty message.
+
+## Still open from this issue
+
+The second finding — the delete's "it disappears from your website immediately"
+being true of the origin but not of the tab the owner is looking at — is NOT
+addressed here. That is a client-cache question, not a render one. It stays on
+this issue.
