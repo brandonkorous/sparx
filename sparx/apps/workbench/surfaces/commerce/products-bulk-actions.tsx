@@ -1,0 +1,162 @@
+'use client';
+
+// What you can do to several products at once.
+//
+// ── The confirm has to say the same things the single one does ──────────────
+//
+// Deleting one product warns that its price, codes and versions go with it, that
+// it leaves the website immediately, that past orders keep their record, and
+// that retiring is the reversible alternative. All four are still true of
+// fifteen, and a bulk dialog that drops them because it is talking about a
+// number rather than a name is how a bulk action becomes the dangerous one.
+//
+// So: same warnings, plus the count, plus the alternative offered as an actual
+// button rather than as advice.
+
+import type { ReactNode } from 'react';
+import { Button, useToast } from '@wizeworks/silicaui-react';
+import { Archive, Trash2 } from 'lucide-react';
+import { BulkBar } from '../../components/bulk-bar';
+import { useConfirm } from '../../lib/confirm';
+import { apiErrorMessage } from '../../lib/api-error';
+import type { ListSelection } from '../../lib/workbench/selection';
+import type { ProductRow } from './products-data';
+import { useBulkDeleteProducts, useBulkProductStatus } from './products-bulk';
+
+/** "3 products" / "1 product" — the count is the thing a person checks before
+ *  pressing something irreversible, so it leads every sentence here. */
+function count(n: number): string {
+  return n === 1 ? '1 product' : `${n} products`;
+}
+
+type Chosen = ListSelection<ProductRow>;
+
+function useDeleteChosen(selection: Chosen) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const remove = useBulkDeleteProducts();
+
+  const run = async (ids: string[]) => {
+    const ok = await confirm({
+      title: `Delete ${count(ids.length)}?`,
+      description:
+        'Their prices, codes, descriptions and every version of them go too, and they disappear from your website immediately. Orders that already contain them keep their record of what was bought. This cannot be undone — retire them instead if you might sell them again.',
+      confirmLabel: `Delete ${count(ids.length)}`,
+      cancelLabel: 'Keep them',
+      color: 'danger',
+    });
+    if (!ok) return;
+    remove.mutate(ids, {
+      onSuccess: (result) => {
+        selection.clear();
+        toast.add({
+          title: `${count(result.deleted)} deleted`,
+          // A skip means somebody else got there first. Said plainly rather than
+          // folded into the total, because "15 deleted" when 14 went is the kind
+          // of thing found weeks later.
+          description:
+            result.skipped > 0
+              ? `${count(result.skipped)} had already gone, so nothing there was changed.`
+              : undefined,
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not delete those',
+          description: apiErrorMessage(error, 'Nothing was removed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  return { run, isPending: remove.isPending };
+}
+
+function useRetireChosen(selection: Chosen) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const setStatus = useBulkProductStatus();
+
+  const run = async (ids: string[]) => {
+    const ok = await confirm({
+      title: `Retire ${count(ids.length)}?`,
+      description:
+        'They come off your website and stop being sellable, and everything about them is kept. You can put them back on sale whenever you want.',
+      confirmLabel: `Retire ${count(ids.length)}`,
+      cancelLabel: 'Leave them',
+      color: 'module',
+    });
+    if (!ok) return;
+    setStatus.mutate(
+      { productIds: ids, status: 'archived' },
+      {
+        onSuccess: (result) => {
+          selection.clear();
+          toast.add({ title: `${count(result.updated)} retired`, type: 'success' });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not retire those',
+            description: apiErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  return { run, isPending: setStatus.isPending };
+}
+
+export function ProductsBulkActions({
+  selection,
+  toolbar,
+}: {
+  selection: Chosen;
+  toolbar: ReactNode;
+}) {
+  const remove = useDeleteChosen(selection);
+  const retire = useRetireChosen(selection);
+
+  const ids = [...selection.chosen.keys()];
+  const busy = remove.isPending || retire.isPending;
+
+  return (
+    <BulkBar
+      count={selection.count}
+      summary={`${count(selection.count)} chosen`}
+      onClear={selection.clear}
+      toolbar={toolbar}
+    >
+      {/* Reversible first, irreversible last, and only the second one is red.
+          Two danger buttons side by side make neither of them mean anything. */}
+      <Button
+        size="sm"
+        variant="outline"
+        color="module"
+        disabled={busy}
+        loading={retire.isPending}
+        onClick={() => {
+          void retire.run(ids);
+        }}
+      >
+        <Archive className="size-4" aria-hidden />
+        Retire
+      </Button>
+      <Button
+        size="sm"
+        color="danger"
+        disabled={busy}
+        loading={remove.isPending}
+        onClick={() => {
+          void remove.run(ids);
+        }}
+      >
+        <Trash2 className="size-4" aria-hidden />
+        Delete
+      </Button>
+    </BulkBar>
+  );
+}

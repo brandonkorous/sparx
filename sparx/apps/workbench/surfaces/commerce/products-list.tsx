@@ -37,6 +37,9 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, Package, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
+import { ChooseCell, SelectAllCell } from '../../components/selection-cells';
+import { useListSelection } from '../../lib/workbench/selection';
+import { ProductsBulkActions } from './products-bulk-actions';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -129,14 +132,23 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
+  // Every row is actable — a product can always be retired and always deleted —
+  // so no `canChoose`. The count in the bar is the count that will act.
+  const selection = useListSelection(rows, { keyOf: (product) => product.id });
   /** A refetch failed but the previous window is still on screen. */
   const staleAfterFailure = Boolean(error) && rows.length > 0;
 
   /** Anything that changes which rows match returns to the first window —
-   *  staying on page 5 of a result set that now has two pages shows nothing. */
+   *  staying on page 5 of a result set that now has two pages shows nothing.
+   *
+   *  It DISCARDS the selection too. Paging keeps what you chose, because the
+   *  rows travel with it; searching does not, because the set you were acting on
+   *  is no longer the set you can see, and a Delete against rows nobody is
+   *  looking at is the one gesture that must never be a surprise. */
   const resetWindow = () => {
     setPage(1);
     setTake(pageSize);
+    selection.clear();
   };
 
   const toggleSort = (key: ProductSortKey) => {
@@ -190,65 +202,70 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           shed its label to the icon and the separator has gone. At a normal pane
           width this is one line; at 320px, beside a product, it takes two rather
           than clipping the filters off the right edge. */}
-      <PaneToolbar label="Product list controls" wrap>
-        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
+      <ProductsBulkActions
+        selection={selection}
+        toolbar={
+          <PaneToolbar label="Product list controls" wrap>
+            {/* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
             reaches the element that actually lays out. */}
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search products"
-            placeholder="Product name or brand…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        </div>
+            <div className="max-w-xs min-w-0 flex-1">
+              <SearchInput
+                size="sm"
+                aria-label="Search products"
+                placeholder="Product name or brand…"
+                value={search}
+                onValueChange={(next) => {
+                  setSearch(next);
+                  resetWindow();
+                }}
+              />
+            </div>
 
-        <ToolbarSeparator className="hidden @2xl:block" />
+            <ToolbarSeparator className="hidden @2xl:block" />
 
-        {/* `showReset={false}` because "All" already IS the reset; a × beside it
+            {/* `showReset={false}` because "All" already IS the reset; a × beside it
             would be two controls for one idea. */}
-        <Filter
-          color="module"
-          value={filter}
-          onValueChange={(next) => {
-            setFilter((next as FilterValue | null) ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter products"
-        >
-          {FILTERS.map((entry) => (
-            <FilterItem key={entry.value} value={entry.value}>
-              {entry.label}
-            </FilterItem>
-          ))}
-        </Filter>
+            <Filter
+              color="module"
+              value={filter}
+              onValueChange={(next) => {
+                setFilter((next as FilterValue | null) ?? 'all');
+                resetWindow();
+              }}
+              showReset={false}
+              aria-label="Filter products"
+            >
+              {FILTERS.map((entry) => (
+                <FilterItem key={entry.value} value={entry.value}>
+                  {entry.label}
+                </FilterItem>
+              ))}
+            </Filter>
 
-        <Button
-          data-tour="commerce-add-product"
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0 whitespace-nowrap"
-          title="Add a product — hold Shift to open alongside, Alt for a new window"
-          onClick={create}
-        >
-          <Plus className="size-4" aria-hidden />
-          <span className="hidden @2xl:inline">Add a product</span>
-        </Button>
+            <Button
+              data-tour="commerce-add-product"
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              title="Add a product — hold Shift to open alongside, Alt for a new window"
+              onClick={create}
+            >
+              <Plus className="size-4" aria-hidden />
+              <span className="hidden @2xl:inline">Add a product</span>
+            </Button>
 
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+            {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
+            <RefreshButton
+              isFetching={isFetching}
+              updatedAt={data ? dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void refetch();
+              }}
+            />
+          </PaneToolbar>
+        }
+      />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {/* A refetch that failed while a good window is already on screen is NOT
@@ -327,6 +344,13 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Table size="sm" hover>
             <thead>
               <tr>
+                <SelectAllCell
+                  allChosen={selection.allOnPageChosen}
+                  someChosen={selection.someOnPageChosen}
+                  disabled={rows.length === 0}
+                  label="Choose every product here"
+                  onToggle={selection.toggleAllOnPage}
+                />
                 {header('title', 'Product')}
                 <th className="hidden @xl:table-cell">Brand</th>
                 <th className="hidden text-right @2xl:table-cell">Versions</th>
@@ -353,6 +377,13 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(product, event);
                     }}
                   >
+                    <ChooseCell
+                      checked={selection.has(product.id)}
+                      label={`Choose ${product.title}`}
+                      onToggle={(on, modifiers) => {
+                        selection.toggle(product, on, modifiers);
+                      }}
+                    />
                     <td>
                       {/* The name IS the row. The web address underneath is a
                           note about it, so it is smaller — but at full ink, not
