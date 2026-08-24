@@ -73,3 +73,22 @@ export function slugifyKey(value: string, max = 63): string {
     .slice(0, max)
     .replace(/_+$/, '');
 }
+
+/**
+ * The same rule, applied to a field somebody is still typing into.
+ *
+ * `slugify` strips a trailing hyphen, which is right for a finished string and
+ * wrong for one arriving a character at a time: **a hyphen is always trailing at
+ * the moment it is typed**. So pressing `-` deleted it before the next letter
+ * landed, and `repotting-workshops` came out `repottingworkshops` — on a web
+ * address that can never be changed afterwards. Issue #181.
+ *
+ * Keeps ONE trailing hyphen while a separator is the last thing typed. The value
+ * still goes through `slugify` on save, so a field left ending in a hyphen is
+ * tidied then rather than mid-word.
+ */
+export function slugifyTyping(value: string, max = 127): string {
+  const core = slugify(value, max);
+  if (!core || core.length >= max) return core;
+  return /[^a-zA-Z0-9]$/.test(value) ? `${core}-` : core;
+}

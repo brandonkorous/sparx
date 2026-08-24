@@ -1,11 +1,11 @@
 # 010 — Her bakery's web address is "quiet-haven-3783", and she cannot change it
 
-**Status:** open — scoped to offering it at onboarding and on a new site
+**Status:** fixed — the new-site half confirmed; the onboarding half awaits a fresh signup
 **Severity:** major
 **Found by:** P01 · Thistle & Rye · act 3
 **Surface:** getpiggles › Your account › Your business address · mypiggles › Domains
 **Filed:** 2026-08-19
-**Fixed:** 2026-08-19
+**Fixed:** 2026-08-19 (the derivation) · 2026-08-24 (offering it)
 **Confirmed by:** signed up a fresh business called "The Marrow Review" through the real screens — its address came out `marrow-review.piggles.site`, shown as such on the account page
 **Blocked on:** —
 
@@ -158,8 +158,92 @@ Today it is generated and never offered, which is the whole reason somebody ends
 up living with `quiet-haven-3783`. Asking once, at the only two moments the
 answer is free, removes the need to ever change it.
 
+## Built — 2026-08-24
+
+Brandon's decision above, in both places.
+
+### At onboarding
+
+Onboarding was two questions; it is three. Under "What is your business called?"
+there is now **Your web address**, filled in from the name as she types it, with
+`.piggles.site` shown beside the field rather than described, and the whole thing
+checked against the tenant table while she is still looking at it:
+
+> Your web address · **thistle-and-rye** .piggles.site
+> ✓ thistle-and-rye.piggles.site is yours.
+
+Four things that make it honest rather than decorative:
+
+1. **The suggestion is visible, so it can be argued with.** The derivation from
+   August 19 was correct and invisible; a value nobody sees is a value nobody
+   chose, which is the whole of this issue.
+2. **A taken address is now an ERROR, not a silent fallback.** It used to keep the
+   placeholder when the name was gone — right while the field did not exist, and
+   [exactly the wrong thing](../rating.md) now that she is looking at one. Handing
+   her a different address without saying so would be this bug one screen later.
+   The error names the field and she edits it.
+3. **It is checked as she types**, not at submit. Finding out the address is gone
+   after answering three other questions is the version of this people abandon.
+   Session-gated: an open endpoint answering "does this business exist" is a
+   customer list with a keyboard.
+4. **Reserved labels are refused** — `customers` above all, since that is the CNAME
+   target every custom domain on the platform is pointed at.
+
+The string rules moved to `lib/address-rules.ts` so the browser and the server
+share one copy; `lib/business-slug.ts` keeps the half that touches the database,
+and the onboarding transaction moved out to `lib/onboarding-save.ts`.
+
+### When a new site is added
+
+The handle field already existed here and explained itself:
+
+> Used in the site's first web address. Cannot be changed afterwards.
+
+A sentence somebody agrees with without ever picturing the result. It now shows
+the result, live:
+
+> Your site will be at **workshops.juniper-row.piggles.site**. It cannot be
+> changed afterwards, so it is worth a moment now.
+
+The business half of that is read off the address the main site is already served
+at, which is exactly how api-rest mints it — and it is `null` rather than a guess
+when there is no such row, because a wrong preview of a permanent address is
+worse than none.
+
+Before a handle is typed it says what the address will sit under, so the empty
+field is not silent either.
+
+## Confirmed — the new-site half
+
+As Devi, at 1296px and again at 360px, in dark:
+
+- Bookings aside, Settings › Sites › New site. Typed **Juniper Row Workshops** and
+  the address read `juniper-row-workshops.juniper-row.piggles.site` — stuttery,
+  and visibly so, which is the point: shortened the field to `workshops` and
+  watched it become `workshops.juniper-row.piggles.site`. Before this she would
+  have accepted the first one without ever seeing it.
+- No site was created. The address is what was under test, so the field is where
+  it was proved.
+
+Finding the preview also found [181](181-she-typed-plant-care-and-the-address-came-out-plantcare.md):
+a hyphen could not be typed into that field at all.
+
+## Still owed
+
+**The onboarding half has not been driven yet.** It needs a genuinely new signup,
+and `localhost` cookies ignore the port — signing up on :3021 replaces Devi's
+console session on :3022. It is queued with
+[091](091-the-products-in-her-brand-new-shop-belong-to-another-company.md)'s
+fresh-signup check for the end of the P03 run, where one signup confirms both.
+Until then this is **not checked** rather than fine.
+
 ## Rating effect
 
 getpiggles › Your account — Ease 7 → 8 · mypiggles › Domains › address detail —
 Ease 4 ("nothing I can do here, and it will not say why the address is what it
 is"), recorded in [rating.md](../rating.md).
+
+The Domains detail's copy is now TRUE rather than merely unhelpful: the address
+really is permanent, and it is permanent because she chose it. That pane should
+still say WHERE it was chosen, so somebody who does not remember doing it is not
+left thinking the product picked for them. Not yet written.

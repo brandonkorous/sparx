@@ -9,21 +9,31 @@ import {
   NativeSelect,
 } from '@wizeworks/silicaui-react';
 import type { TradeOption } from '@/lib/trade-options';
+import { AddressField } from './address-field';
 
-// The business itself — what it is called and what it does for a living.
+// The business itself — what it is called, where it lives, and what it does for
+// a living.
 //
-// Two fields, one question: both describe the same thing, and splitting them
-// into separate beats would make a two-question screen claim to be three.
+// Three fields, one question: they all describe the same thing, and splitting
+// them into separate beats would make a two-question screen claim to be four.
+// The address sits directly under the name because the name is what fills it in.
 
 export function BusinessFields({
   name,
   onName,
+  address,
+  onAddress,
+  addressError,
   trade,
   onTrade,
   trades,
 }: {
   name: string;
   onName: (value: string) => void;
+  address: string;
+  onAddress: (value: string) => void;
+  /** The server's verdict on the last attempt, when it was about this field. */
+  addressError: string | null;
   trade: string;
   onTrade: (value: string) => void;
   /** Read from the packs on the server, so a trade the platform can furnish is
@@ -43,6 +53,8 @@ export function BusinessFields({
           maxLength={120}
         />
       </Field>
+
+      <AddressField value={address} onChange={onAddress} submitError={addressError} />
 
       <Field>
         <FieldLabel>What kind of business is it?</FieldLabel>

@@ -70,7 +70,9 @@ export function Onboarding({
       panel={<RailPreview picked={a.picked} />}
     >
       <form action={action} className="flex flex-col gap-8">
-        {state.error ? (
+        {/* An error that belongs to one field is shown ON that field, never
+            also up here — two copies of the same sentence read as two problems. */}
+        {state.error && !state.field ? (
           <Alert color="danger" variant="soft">
             <AlertDescription>{state.error}</AlertDescription>
           </Alert>
@@ -83,6 +85,9 @@ export function Onboarding({
           key={`fields-${a.attempt}`}
           name={a.name}
           onName={a.setName}
+          address={a.address}
+          onAddress={a.setAddress}
+          addressError={state.field === 'webAddress' ? state.error : null}
           trade={a.trade}
           onTrade={a.setTrade}
           trades={trades}

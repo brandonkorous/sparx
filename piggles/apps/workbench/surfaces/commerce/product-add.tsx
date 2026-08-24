@@ -39,6 +39,10 @@ import {
 } from './products-data';
 import { NewProductFields } from './product-add-fields';
 import { codeTaken, halfCreatedToast } from './product-add-code';
+import { slugifyTyping } from '../../lib/slugify';
+
+/** A product's web address, tidied as it is typed. Issue #181. */
+const slugifyHandleTyping = (value: string) => slugifyTyping(value, 127);
 
 /** The one column everything sits in, matching the manage view beside it. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -118,10 +122,13 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
   const submit = () => {
     const cents = moneyCents(price);
     if (blocked || cents === null) return;
+    // Tidied on the way out: the field keeps a trailing hyphen while it is being
+    // typed (issue #181), and a web address must not end in one.
+    const address = slugifyHandle(effectiveHandle);
     create.mutate(
       {
         title: trimmed,
-        ...(effectiveHandle ? { handle: effectiveHandle } : {}),
+        ...(address ? { handle: address } : {}),
         status: onSale ? 'active' : 'draft',
         sku: effectiveSku.trim(),
         priceCents: cents,
@@ -191,7 +198,8 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
             handle={effectiveHandle}
             onHandle={(value) => {
               setTouchedHandle(true);
-              setHandle(slugifyHandle(value));
+              // Keeps a hyphen she just pressed; tidied on save (issue #181).
+              setHandle(slugifyHandleTyping(value));
             }}
             price={price}
             onPrice={setPrice}

@@ -1,15 +1,14 @@
 'use server';
 
 import { requireSession } from '@wizeworks/auth';
-import { withTenant } from '@wizeworks/db';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
-import { railAppIds } from '@piggles/config';
 import { furnishTenant } from '@/lib/furnish';
 import { isKnownTrade } from '@/lib/trades';
-import { claimBusinessSlug } from '@/lib/business-slug';
+import { AddressTakenError, slugifyAddress, slugifyBusinessName } from '@/lib/business-slug';
+import { saveOnboarding } from '@/lib/onboarding-save';
 import { text, textAll } from '@/lib/form';
 
-// Onboarding, which is two questions long.
+// Onboarding, which is three questions long.
 //
 // ── WHY SO SHORT ────────────────────────────────────────────────────────────
 //
@@ -18,52 +17,46 @@ import { text, textAll } from '@/lib/form';
 // modules you want, because modules are what it bills for. Piggles includes
 // every app on every plan, so there is nothing to choose and nothing to sell.
 //
-// What is left is genuinely two things — what the business IS (its name and its
-// line of work), and what it DOES. Both are data the product needs, and each is
-// put to a use that is easy to mix up, which is the whole subtlety of this file.
-//
 // ── WHAT EACH ANSWER DOES ───────────────────────────────────────────────────
 //
-// The LINE OF WORK is handed to the platform, where it does two jobs at once:
-// it picks the sample dataset (a bakery gets a bakery's products, customers,
+// The LINE OF WORK is handed to the platform, where it does two jobs at once: it
+// picks the sample dataset (a bakery gets a bakery's products, customers,
 // bookings and articles) and it selects the config presets stamped into each
-// app. One slug, both jobs — the platform calls it `settings.industry`, and the
-// installer is what writes it, so the workbench's own "what kind of business"
-// screen agrees with what was chosen here instead of asking again.
+// app. One slug, both jobs.
 //
 // WHAT YOU DO decides which apps are ON THE RAIL. That is the whole of its job.
 //
+// The WEB ADDRESS is the third, and it is here because it can never be here
+// again: an address is an identifier, identifiers do not change, and this is the
+// last moment before the site is published on it. Left unasked, a bakery lived
+// at quiet-haven-3783.piggles.site forever (issue #010).
+//
 // ── WHAT NEITHER ANSWER DOES: GATE ──────────────────────────────────────────
 //
-// This is the rule most likely to be broken later by someone reading an answer
-// as an entitlement. **Every module is switched on for every business, no matter
-// what was ticked** (RULE #2: every app ships enabled; the answer HIDES, it
-// never gates). Ticking "I sell things" does not buy Commerce and leaving it
-// unticked does not withhold it — it decides what is on the rail on day one, and
-// the launcher still lists all fifteen.
+// **Every module is switched on for every business, no matter what was ticked**
+// (RULE #2: every app ships enabled; the answer HIDES, it never gates). Ticking
+// "I sell things" does not buy Commerce and leaving it unticked does not
+// withhold it.
 //
 // It used to activate only the modules behind the ticked groups, and that was
 // wrong in a way the copy on the screen made worse: the screen promises
 // "everything is included either way", while a module that is off returns 404,
 // runs no workers and stores no rows. So the unticked apps WERE locked doors,
-// and Piggles had reinvented module pricing without charging for it — all of the
-// friction, none of the revenue. Switching everything on is what makes the
-// promise on the screen true, and it is also what lets the sample data furnish
-// all fifteen apps instead of the three somebody happened to tick.
+// and Piggles had reinvented module pricing without charging for it.
 //
 // ── WHAT THIS FILE DOES NOT DO ──────────────────────────────────────────────
 //
-// It names the business and records the rail preference, and then hands off.
-// Switching the apps on, stamping the trade's setup and filling the account are
+// It reads the form and hands off. The transaction is lib/onboarding-save.ts;
+// switching the apps on, stamping the trade's setup and filling the account are
 // ONE platform operation with a load-bearing internal order, and it runs in
 // api-rest because that is the only process where it can be correct — see
 // lib/furnish.ts for the bus that made doing it here silently wrong.
-//
-// The practical test: ticking nothing here must still leave a completely usable
-// product, three taps from selling. It does.
 
 export interface OnboardingState {
   error: string | null;
+  /** Named when the error belongs to one field, so the screen can point at it
+   *  instead of dropping a sentence above the form. */
+  field?: 'webAddress';
   /**
    * Where to send the browser once setup has finished — `/handoff`, the one door
    * across to the console.
@@ -77,12 +70,8 @@ export interface OnboardingState {
    * to a real navigation — hitting `/handoff` TWICE.
    *
    * `/handoff` mints a SINGLE-USE token. Two hits means the second one arrives
-   * after the first has been spent, which is the `GET /handoff 303` followed by
-   * `GET /handoff 307` in the server log, and a brand-new customer bounced back
+   * after the first has been spent, which is a brand-new customer bounced back
    * to the sign-in page at the end of setting up their business.
-   *
-   * So the action reports where to go and the client goes there with a document
-   * load. Same destination, one request, no cache carried across the boundary.
    */
   done?: string;
 }
@@ -114,128 +103,44 @@ export async function completeOnboarding(
   // recognise — a bad value costs the site's look, never the signup.
   const blueprintKey = text(formData, 'blueprintKey') || undefined;
 
-  // `withTenant`, NOT `prisma.$transaction`.
-  //
-  // `properties` is under FORCE row-level security, so an UPDATE issued without
-  // `app.tenant_id` set matches NOTHING — and `updateMany` reports that by
-  // returning `{ count: 0 }`, which is not an error. The first version of this
-  // used the raw client: the tenant rename worked (the `tenants` dispatch row is
-  // deliberately non-RLS), the site rename silently did not, and the business
-  // went on sending receipts under "Marta's workspace". Nothing failed, nothing
-  // logged, and only opening the row showed it.
+  // Whatever the address field says, falling back to the suggestion the field
+  // was showing. Null keeps the generated placeholder, which is what happens for
+  // a name in a script this cannot make a DNS label out of.
+  const typed = text(formData, 'webAddress');
+  const address = typed ? slugifyAddress(typed) : slugifyBusinessName(businessName);
+
+  if (typed && !address) {
+    return {
+      error: 'That web address will not work. Use letters, numbers and hyphens.',
+      field: 'webAddress',
+    };
+  }
+
   try {
-    await withTenant({ tenantId: session.user.tenantId }, async (tx) => {
-      // Read-modify-write on `settings`, MERGED — never assigned. It is a shared
-      // per-tenant JSON blob that other parts of the platform already write to,
-      // so replacing it would silently drop whatever else is in there. The
-      // Piggles keys are namespaced for the same reason.
-      const current = await tx.tenant.findUniqueOrThrow({
-        where: { id: session.user.tenantId },
-        select: { settings: true, slug: true },
-      });
-      const settings =
-        current.settings && typeof current.settings === 'object' && !Array.isArray(current.settings)
-          ? (current.settings as Record<string, unknown>)
-          : {};
-
-      await tx.tenant.update({
-        where: { id: session.user.tenantId },
-        data: {
-          name: businessName,
-          settings: {
-            ...settings,
-            // NEITHER `modules` NOR `industry` is written here, and both
-            // omissions are deliberate.
-            //
-            // `settings.modules` is not ours to write. A flag write is only half
-            // an activation — the other half is announcing it on the in-process
-            // bus that seeds each module's baseline, which only api-rest can do
-            // (lib/furnish.ts). Writing the flag from here would make every gate
-            // report the app as ON while none of its setup had run, and the
-            // furnish step that follows would then see nothing to change and
-            // announce nothing. The flag being absent until the platform sets it
-            // is what keeps those two halves together.
-            //
-            // `settings.industry` is written by the industry-starter installer,
-            // as the last step of stamping the trade's config. Setting it here
-            // would mark the trade as chosen before its setup existed — and the
-            // workbench reads exactly that key to decide the question is
-            // answered, so the setup would then never be offered.
-            // What the rail shows on day one, RESOLVED to app ids here because
-            // this is the only side that holds the app registry — api-rest
-            // stores the list and hands it back, and holding a copy of another
-            // product's ids is how it would drift.
-            //
-            // A WORKSPACE PREFERENCE and nothing more: every app stays included,
-            // working, and one tap away under All apps. Modules are not touched
-            // — this used to switch on only the ticked ones, which made the
-            // unticked apps locked doors on a screen promising the opposite.
-            rail: {
-              ...((settings.rail as Record<string, unknown> | undefined) ?? {}),
-              apps: railAppIds(does),
-            },
-            piggles: {
-              ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
-              // The RAW answer, kept because the WizeWorks board segments on it.
-              railGroups: does,
-              onboardedAt: new Date().toISOString(),
-            },
-          },
-        },
-      });
-
-      // The PRIMARY site's name is customer-facing — it is what appears on the
-      // storefront, in emails, and on invoices. It was seeded with the generated
-      // placeholder ("Brandon's workspace") at provisioning, so leaving it alone
-      // here would mean a real business sending real receipts under a name
-      // nobody chose. Renaming both is the point of asking.
-      const renamed = await tx.property.updateMany({
-        where: { tenantId: session.user.tenantId, isPrimary: true },
-        data: { name: businessName },
-      });
-
-      // Assert the write LANDED. `updateMany` matching nothing is not an error,
-      // and every plausible cause here is a bug rather than a user mistake:
-      // missing tenant context, a tenant with no primary site, RLS refusing the
-      // row. Throwing rolls the whole transaction back, so the person is told to
-      // try again instead of being shown a success screen over a half-applied
-      // change — which is what happened the first time this ran.
-      if (renamed.count === 0) {
-        throw new Error(`onboarding: no primary site renamed for tenant ${session.user.tenantId}`);
-      }
-
-      // The WEB ADDRESS, which is the third thing the business name decides and
-      // the one that was being left behind. A tenant is born with a generated
-      // placeholder (`quiet-haven-3783`) for the onboarding "Workspace" step to
-      // personalise — a step Piggles does not have — so without this a bakery
-      // called Thistle & Rye lived at `quiet-haven-3783.piggles.site` forever.
-      // Issue #010.
-      //
-      // Inside the same transaction as the two renames on purpose: a business
-      // named "Thistle & Rye" whose address still says quiet-haven is precisely
-      // the split being fixed. Best-effort by design — a taken or unusable slug
-      // keeps the placeholder rather than failing a signup (lib/business-slug.ts).
-      await claimBusinessSlug(tx, session.user.tenantId, businessName, current.slug);
-    });
-  } catch {
+    await saveOnboarding({ tenantId: session.user.tenantId, businessName, does, address });
+  } catch (err) {
+    // A taken address is the one failure here somebody can actually fix, so it
+    // is told apart from the rest and pointed at the field that owns it.
+    if (err instanceof AddressTakenError) {
+      return {
+        error: `${err.slug} is already taken. Try another web address.`,
+        field: 'webAddress',
+      };
+    }
     return { error: 'We could not save that just now. Please try again.' };
   }
 
   // AFTER the commit, never inside it: furnishing reads the tenant from another
   // process, so it has to find the rename already there.
   //
-  // NOT best-effort, unlike the naming above — and that is the one judgement
-  // call in this file worth defending. Everything furnishing does is what makes
-  // the business USABLE: the apps switched on and seeded, the trade's setup
+  // NOT best-effort, unlike the naming above. Everything furnishing does is what
+  // makes the business USABLE: the apps switched on and seeded, the trade's setup
   // stamped, something in every list. Swallowing a failure here would redirect
   // somebody into precisely the empty workspace this whole path exists to
-  // prevent, and they would have no idea anything had gone wrong — the failure
-  // would look exactly like the product.
+  // prevent, and the failure would look exactly like the product.
   //
-  // So it is shown, and retrying is safe: every step is idempotent (modules
-  // already on are not re-announced, presets are skip-if-present, a sample load
-  // clears its own prior rows), and the rename above is an update. Pressing the
-  // button again finishes the job rather than doubling it.
+  // Retrying is safe: every step is idempotent, and the rename above is an
+  // update. Pressing the button again finishes the job rather than doubling it.
   try {
     await furnishTenant({ tenantId: session.user.tenantId, industry, blueprintKey });
   } catch (err) {
@@ -254,10 +159,6 @@ export async function completeOnboarding(
   }
 
   // Straight into the workbench — not to an account home. Somebody who has just
-  // finished setting up wants to see their business, and the account app's job
-  // is done until they need to change something about their subscription.
-  //
-  // Handed back rather than `redirect`ed — see the note on `done` above. The
-  // destination is unchanged; only who performs the navigation has moved.
+  // finished setting up wants to see their business.
   return { error: null, done: '/handoff' };
 }
