@@ -1,12 +1,12 @@
 # 064 — A customer collecting a bun had to type a postal address
 
-**Status:** open — accepted, to build
+**Status:** fixed — awaiting confirmation on screen
 **Severity:** major (friction on the only checkout a collection-only business has)
 **Found by:** P01 · Thistle & Rye · act 8's outstanding 390px pass — placing **O-000002**
 **Surface:** the tenant's live site — Checkout, step 2
 **Filed:** 2026-08-21
-**Fixed:** —
-**Blocked on:** —
+**Fixed:** 2026-08-24
+**Blocked on:** the migration + `prisma generate` (checkout_sessions.customer_name)
 
 ## What happened
 
@@ -105,3 +105,89 @@ enter one and SAVE it, so the next order does not ask again.
 One nuance that does not change the answer: tax can need an address even on a
 collection order, but that is the SHOP's address, not the customer's, so nothing
 here has to be collected from the buyer to make tax work.
+
+## The fix — 2026-08-24
+
+### The name moved, and that is what made the rest possible
+
+Checkout asked for "Full name" as the FIRST LINE OF THE SHIPPING FORM. So the
+only way a shop could learn who was buying was to make the buyer type a street,
+a city and a postal code first — `ensureCheckoutCustomer` read the customer's
+name out of `shippingAddress.recipientName`, and `complete()` refused outright
+without a shipping address. Deleting the form would have deleted the name.
+
+So the name moved to the contact step, beside the email, where it belongs: it is
+what EVERY order needs however it leaves. `checkout_sessions.customer_name` is
+new, nullable and undefaulted — a session that has not reached the contact step
+has not been told a name, and no default can say that.
+
+Migration: `20270408000000_a_collected_order_needs_a_name_not_an_address`.
+
+### Asking the question before asking the shopper anything
+
+The obvious version — quote with a placeholder destination and call an empty
+result "collection only" — is wrong, and would have been a worse bug than the
+one being fixed. A live carrier GEOCODES the destination to rate, so a shop with
+Shippo connected and no manual zones returns zero rates against a placeholder,
+and checkout would have concluded "collection only" and hidden USPS from every
+one of that shop's customers.
+
+`shippingService.deliveryIsConfigured` answers it from CONFIGURATION instead:
+a delivery zone exists for this site, or a shipping carrier is connected and
+enabled. Both are knowable with nobody's address in hand. The shipping-quote
+route now returns `{ deliveryOffered, rates }`, and checkout opens the session
+and asks this before it draws its first form.
+
+### What a shopper now sees
+
+| The shop                          | Step 2                                                                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Hands everything over its counter | **"How you'll get your order"** — the method, and a line saying whose name it will be under. No address form, and the step is labelled _Collection_, not _Shipping_.                             |
+| Delivers                          | **"Where should we send it?"** — their saved addresses as choices with their usual one already picked, or a new one with _"Keep this address on my account, so I don't type it again"_ under it. |
+
+The address book was always there — the account area has listed and edited
+addresses for as long as it has existed, and its own file says the default one
+"is used to prefill checkout". It never was. That is fixed in the same pass.
+
+### The server refuses a delivery with nowhere to deliver to
+
+`shippingAddress` is optional on `SubmitShippingInput`, and `submitShipping`
+throws unless the chosen rate is a collection rate. Absent is stored as
+`Prisma.DbNull` — not a placeholder, and not the JSON value `null` — so every
+screen downstream can tell "collected" from "we lost the address".
+
+### What reads it downstream
+
+- **Order pane** — the collected branch was rendering an `AddressBlock` over
+  `billingAddress`, which on a new collected order is "Not given". It now shows
+  **who is collecting**, and only shows an address when an older order actually
+  carries one, labelled as what it is rather than as a destination.
+- **The shopper's own order page** — showed nothing at all for an order with no
+  address. The public order now carries `shippingDescription` and `collecting`
+  (derived, not the raw metadata blob, which holds payment refs), so it says
+  _"How you'll get it — Collect in person"_.
+- **Order confirmation email** — already conditional on the address, with tests
+  for the omitted case. Unchanged.
+- **`site-mcp`** — `set_checkout_shipping` takes the address optionally and its
+  description says when to omit it; `set_checkout_contact` takes the name.
+
+### Files
+
+`wizeworks/packages/db/prisma/schema/40-commerce-checkout.prisma` ·
+`…/migrations/20270408000000_…` ·
+`packages/commerce-schemas/src/checkout.ts` ·
+`packages/commerce/src/services/{checkout-service,shipping-service,collection-option}.ts` ·
+`packages/commerce/src/services/checkout-address.test.ts` (new) ·
+`packages/site-mcp/src/catalog/checkout.ts` ·
+`services/api-rest/src/routes/v1/public/{checkout,account}.ts` ·
+`apps/site/lib/{checkout-client,customer-client}.ts` ·
+`apps/site/components/checkout/{checkout-flow,contact-step,collection-step,delivery-step,rate-choices,saved-addresses,use-address-book,checkout-chrome}.tsx` ·
+`apps/site/app/account/(authed)/orders/[orderId]/page.tsx` ·
+`piggles/apps/workbench/surfaces/commerce/order-detail*.tsx`
+
+### Not confirmed yet
+
+Nothing has been driven through a live checkout — the migration has to be
+applied and the Prisma client regenerated first, and both need the dev server
+stopped. Two `customerName` typecheck errors in `checkout-service.ts` are the
+expected consequence of that and clear when it runs.

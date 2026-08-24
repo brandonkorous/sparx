@@ -25,6 +25,25 @@ export interface ShippingRate {
   estimatedDays: number | null;
 }
 
+/** The slug the server tags the hand-it-over-the-counter option with. Not a
+ *  carrier — see the commerce package's collection-option. */
+export const COLLECTION_PROVIDER_SLUG = 'collection';
+
+export function isCollectionRate(rate: Pick<ShippingRate, 'providerSlug'>): boolean {
+  return rate.providerSlug === COLLECTION_PROVIDER_SLUG;
+}
+
+export interface ShippingQuote {
+  /**
+   * Whether this shop delivers at all — from what it has SET UP, not from
+   * whether these particular rates came back empty. False means every option
+   * here is a hand-over in person, so there is no address to ask anybody for
+   * (issue 064).
+   */
+  deliveryOffered: boolean;
+  rates: ShippingRate[];
+}
+
 export interface CheckoutTotals {
   subtotalCents: number;
   discountTotalCents: number;
@@ -129,7 +148,7 @@ export function getCheckout(tenantSlug: string, sessionId: string): Promise<Chec
 export function submitContact(
   tenantSlug: string,
   sessionId: string,
-  input: { email: string; phone?: string; acceptsMarketing?: boolean }
+  input: { email: string; name?: string; phone?: string; acceptsMarketing?: boolean }
 ): Promise<CheckoutSession> {
   return call(`/v1/public/commerce/checkout/${sessionId}/contact`, tenantSlug, {
     method: 'POST',
@@ -145,7 +164,7 @@ export function quoteShipping(
     destinationCountry?: string;
     destinationPostal?: string;
   }
-): Promise<ShippingRate[]> {
+): Promise<ShippingQuote> {
   return call(`/v1/public/commerce/checkout/${sessionId}/shipping-quote`, tenantSlug, {
     method: 'POST',
     json: input,
@@ -156,7 +175,9 @@ export function submitShipping(
   tenantSlug: string,
   sessionId: string,
   input: {
-    shippingAddress: Address;
+    /** Omitted for a collection rate: nothing is being posted, so there is no
+     *  address, and the server stores absence rather than a placeholder. */
+    shippingAddress?: Address;
     billingAddress?: Address;
     shippingRateRef: string;
     shippingProviderSlug: string;

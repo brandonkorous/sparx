@@ -175,15 +175,18 @@ export default function OrderDetailPage() {
 
       <OrderTotals order={order} />
 
-      {ship ? (
-        <div style={{ marginTop: '1.5rem' }}>
-          <h2
-            className="text-base-content text-2xl font-semibold"
-            style={{ marginBottom: '0.5rem' }}
-          >
-            Shipping to
+      {/* How it reaches them. An order with no address is not an order with a
+          missing address: since issue 064 a collected order records none,
+          because nobody was ever asked for one. */}
+      {ship || order.shippingDescription ? (
+        <div className="mt-6">
+          <h2 className="text-base-content mb-2 text-2xl font-semibold">
+            {order.collecting ? 'How you’ll get it' : 'Shipping to'}
           </h2>
-          <p className="text-base-content">{ship}</p>
+          {order.shippingDescription ? (
+            <p className="text-base-content">{order.shippingDescription}</p>
+          ) : null}
+          {ship ? <p className="text-base-content">{ship}</p> : null}
         </div>
       ) : null}
     </div>

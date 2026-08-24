@@ -404,6 +404,45 @@ export async function deleteRate(ctx: ServiceContext, id: string): Promise<void>
   });
 }
 
+/**
+ * Has this business said how it delivers?
+ *
+ * Answered from CONFIGURATION, never from an empty rate list, and that
+ * distinction is the whole point. Checkout wants to know BEFORE it asks a
+ * shopper for anything whether an address is going to be used, and the obvious
+ * way to find out — quote with a placeholder destination and see if anything
+ * comes back — gives the wrong answer for a shop with a connected carrier and
+ * no manual zones: a carrier geocodes the destination to rate, so a placeholder
+ * street returns nothing, and checkout would conclude "collection only" and
+ * hide USPS from every one of that shop's customers.
+ *
+ * The two things that actually mean "we deliver" are a delivery zone and a
+ * connected carrier. Both are knowable with nobody's address in hand.
+ *
+ * The zone scoping matches `rateShipment` exactly (docs/131 §4): a zone with no
+ * property belongs to every site, so a per-site answer must include those too.
+ */
+export async function deliveryIsConfigured(
+  ctx: ServiceContext,
+  input: { cartId: string }
+): Promise<boolean> {
+  const [zones, carriers] = await Promise.all([
+    withTenant(ctx, async (tx) => {
+      const cart = await tx.cart.findFirst({
+        where: { id: input.cartId },
+        select: { propertyId: true },
+      });
+      return tx.shippingZone.count({
+        where: cart?.propertyId
+          ? { OR: [{ propertyId: cart.propertyId }, { propertyId: null }] }
+          : {},
+      });
+    }),
+    listInstallations(ctx, { kind: 'shipping', enabled: true }).catch(() => []),
+  ]);
+  return zones > 0 || carriers.length > 0;
+}
+
 // ─── Real-time rate shopping ─────────────────────────────────────────
 //
 // Manual zone/rate-band rates are always computed as the guaranteed
@@ -484,6 +523,10 @@ export async function rateShipment(
   return out.sort((a, b) => a.amountCents - b.amountCents);
 }
 
+/** Enough to match a zone and nothing more. A real carrier returns no rates
+ *  against it, which is correct: it cannot rate a shipment to nowhere. */
+const UNKNOWN_DESTINATION = { line1: '—', city: '—', country: 'US' } as const;
+
 /**
  * Rate a CART for a destination — the single server-authoritative quote shared by
  * the public shipping-quote endpoint and checkout's `submitShipping`.
@@ -496,8 +539,15 @@ export async function rateShipment(
  */
 export async function quoteForCart(
   ctx: ServiceContext,
-  input: { cartId: string; toAddress: ShipmentRequest['toAddress'] }
+  input: { cartId: string; toAddress?: ShipmentRequest['toAddress'] }
 ): Promise<RateOption[]> {
+  // No destination is a legitimate question — "what can this shop do with this
+  // cart, before anybody has typed anything?" — and it is the question checkout
+  // opens the shipping step with. Zone matching reads only `country`, and the
+  // collection option ignores the destination entirely, so a stand-in answers
+  // both. It exists ONLY to be rated against and is never stored: an order that
+  // is collected records no address at all (issue 064).
+  const toAddress = input.toAddress ?? UNKNOWN_DESTINATION;
   const cart = await withTenant(ctx, (tx) =>
     tx.cart.findFirst({
       where: { id: input.cartId },
@@ -558,7 +608,7 @@ export async function quoteForCart(
   return rateShipment(ctx, {
     ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
     fromAddress,
-    toAddress: input.toAddress,
+    toAddress,
     currency: cart.currency,
     signatureRequired: false,
     saturdayDelivery: false,

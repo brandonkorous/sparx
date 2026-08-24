@@ -186,6 +186,13 @@ export interface OrderDetail extends Omit<OrderSummary, never> {
   shippingTotalCents: number;
   discountTotalCents: number;
   shippingAddress: Record<string, unknown> | null;
+  /** How this order leaves, in the words chosen at checkout ("Collect in
+   *  person", "USPS Priority"). Null when the method was never recorded, which
+   *  must render as nothing rather than as a method somebody picked. */
+  shippingDescription: string | null;
+  /** The buyer is coming to fetch it, so there is no address to show and none
+   *  was ever asked for (issue 064). */
+  collecting: boolean;
   // Lifecycle timestamps — nullable until the order reaches each stage. Drive
   // the order-status timeline.
   paidAt: string | null;

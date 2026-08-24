@@ -18,6 +18,13 @@ model CheckoutSession {
   companyId        String? @map("company_id") @db.Uuid
   customerEmail    String? @map("customer_email") @db.VarChar(255)
   customerPhone    String? @map("customer_phone") @db.VarChar(50)
+  // Who is buying. Asked for on the CONTACT step, because it is the one thing
+  // every order needs however it leaves. It used to arrive only inside
+  // `shippingAddress`, which is why a customer collecting a bun over a counter
+  // had to type a postal address to tell a bakery their name (issue 064).
+  // Nullable: "nobody typed one" is a real state, and an empty string here
+  // would read as a person who declined to say.
+  customerName     String? @map("customer_name") @db.VarChar(255)
   acceptsMarketing Boolean @default(false) @map("accepts_marketing")
 
   // Address snapshots persisted on the session so the storefront can

@@ -3,9 +3,9 @@
 //
 //   POST /v1/public/commerce/checkout                  ?tenant= { cartId, email? } → { sessionId }
 //   GET  /v1/public/commerce/checkout/:sessionId       ?tenant=
-//   POST /v1/public/commerce/checkout/:sessionId/contact   { email, phone?, acceptsMarketing? }
-//   POST /v1/public/commerce/checkout/:sessionId/shipping-quote → rate options
-//   POST /v1/public/commerce/checkout/:sessionId/shipping  { shippingAddress, shippingRateRef, shippingProviderSlug, billingAddress? }
+//   POST /v1/public/commerce/checkout/:sessionId/contact   { email, name?, phone?, acceptsMarketing? }
+//   POST /v1/public/commerce/checkout/:sessionId/shipping-quote → { deliveryOffered, rates }
+//   POST /v1/public/commerce/checkout/:sessionId/shipping  { shippingRateRef, shippingProviderSlug, shippingAddress?, billingAddress? }
 //   POST /v1/public/commerce/checkout/:sessionId/payment-intent → { clientSecret, paymentRef, providerSlug }
 //   POST /v1/public/commerce/checkout/:sessionId/payment   { paymentProviderSlug, paymentRef, poNumber? }
 //   POST /v1/public/commerce/checkout/:sessionId/complete  { idempotencyKey? } → { orderId, orderNumber }
@@ -42,6 +42,9 @@ const StartBody = z.object({
 
 const ContactBody = z.object({
   email: z.string().email(),
+  // The buyer's name, asked for beside the email rather than buried in a
+  // delivery address — see the shipping-quote route below (issue 064).
+  name: z.string().max(255).optional(),
   phone: z.string().max(50).optional(),
   acceptsMarketing: z.boolean().optional(),
 });
@@ -72,7 +75,9 @@ const ShippingQuoteBody = z.object({
 });
 
 const ShippingBody = z.object({
-  shippingAddress: Address,
+  // Optional, and only genuinely optional for a collection rate — the service
+  // refuses a delivery with nothing to deliver to (issue 064).
+  shippingAddress: Address.optional(),
   billingAddress: Address.optional(),
   shippingRateRef: z.string().min(1).max(255),
   shippingProviderSlug: z.string().min(1).max(63),
@@ -155,6 +160,7 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     await checkoutService.submitContact(ctx, {
       sessionId,
       email: body.email,
+      ...(body.name ? { name: body.name } : {}),
       ...(body.phone ? { phone: body.phone } : {}),
       acceptsMarketing: body.acceptsMarketing ?? false,
     });
@@ -175,28 +181,41 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     // rates. Live carrier rating needs the full street+city too — a carrier geocodes
     // the destination, and a placeholder always returns zero live rates even though
     // shipment creation "succeeds" — so when the checkout form has already collected
-    // the shopper's full address (it has, by the time "Get shipping rates" is
-    // clickable), forward it as a real toAddress instead of the country/postal-only
-    // placeholder.
-    const toAddress = body.destinationAddress ?? {
-      line1: '—',
-      city: '—',
-      country: body.destinationCountry ?? 'US',
-      ...(body.destinationPostal ? { postalCode: body.destinationPostal } : {}),
-    };
-    const rates = await shippingService.quoteForCart(ctx, { cartId, toAddress });
+    // the shopper's full address, forward it as a real toAddress. With NO address at
+    // all (checkout's opening question, before it has asked the shopper for
+    // anything) `quoteForCart` rates against its own stand-in.
+    const toAddress =
+      body.destinationAddress ??
+      (body.destinationCountry || body.destinationPostal
+        ? {
+            line1: '—',
+            city: '—',
+            country: body.destinationCountry ?? 'US',
+            ...(body.destinationPostal ? { postalCode: body.destinationPostal } : {}),
+          }
+        : undefined);
+    const [rates, deliveryOffered] = await Promise.all([
+      shippingService.quoteForCart(ctx, { cartId, ...(toAddress ? { toAddress } : {}) }),
+      // Whether this shop delivers AT ALL, answered from what it has set up
+      // rather than from whether this particular quote came back empty. That
+      // difference is what lets checkout skip the address form for a
+      // collection-only shop without hiding a connected carrier's rates from a
+      // shop that has one and no manual zones (issue 064).
+      shippingService.deliveryIsConfigured(ctx, { cartId }),
+    ]);
 
     // Map the service RateOption shape → the storefront's ShippingRate shape.
-    return ok(
-      rates.map((r) => ({
+    return ok({
+      deliveryOffered,
+      rates: rates.map((r) => ({
         providerSlug: r.providerSlug,
         rateRef: r.rateRef,
         service: r.service,
         carrier: r.carrier,
         amountCents: r.amountCents,
         estimatedDays: r.estimatedDeliveryDays ?? null,
-      }))
-    );
+      })),
+    });
   });
 
   app.post('/v1/public/commerce/checkout/:sessionId/shipping', async (request) => {
@@ -206,7 +225,7 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     await assertSessionOwner(request, ctx, tenantId, sessionId);
     await checkoutService.submitShipping(ctx, {
       sessionId,
-      shippingAddress: toAddressSnapshot(body.shippingAddress),
+      ...(body.shippingAddress ? { shippingAddress: toAddressSnapshot(body.shippingAddress) } : {}),
       ...(body.billingAddress ? { billingAddress: toAddressSnapshot(body.billingAddress) } : {}),
       shippingRateRef: body.shippingRateRef,
       shippingProviderSlug: body.shippingProviderSlug,

@@ -20,7 +20,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { isModuleEnabled } from '@wizeworks/auth';
-import { cartService } from '@wizeworks/commerce';
+import { cartService, COLLECTION_RATE_REF } from '@wizeworks/commerce';
 import { orderService, orderFulfillmentsService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
 import {
@@ -105,6 +105,27 @@ const AUTH_RATE_LIMIT = { config: { rateLimit: { max: 10, timeWindow: '1 minute'
  *  cents. Convert at the boundary. */
 function toCents(value: unknown): number {
   return Math.round(Number(value) * 100);
+}
+
+/** The order's frozen checkout metadata, read defensively — it is a Json column,
+ *  and an order placed by any other path may carry none of these keys. */
+function orderMeta(metadata: unknown): Record<string, unknown> {
+  return typeof metadata === 'object' && metadata !== null
+    ? (metadata as Record<string, unknown>)
+    : {};
+}
+
+/** The words the shopper chose ("Collect in person", "USPS Priority"). Null on
+ *  an order whose method was never recorded — which must render as nothing at
+ *  all rather than as a method somebody picked. */
+function readShippingDescription(metadata: unknown): string | null {
+  const value = orderMeta(metadata).shippingDescription;
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
+}
+
+/** Coming to fetch it, so there is no delivery and no address to show. */
+function isCollectedOrder(metadata: unknown): boolean {
+  return orderMeta(metadata).shippingRateRef === COLLECTION_RATE_REF;
 }
 
 interface CustomerProfile {
@@ -345,6 +366,14 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       discountTotalCents: toCents(order.discountTotal),
       totalCents: toCents(order.total),
       shippingAddress: order.shippingAddress ?? null,
+      // How this order leaves, in the words the shopper chose at checkout —
+      // and whether it is coming to them at all. Derived here rather than by
+      // exposing `order.metadata`, which also holds payment refs and checkout
+      // session ids that have no business on a public endpoint. Without these,
+      // an order with no address (a collection, since issue 064) told its own
+      // buyer nothing about how they were going to get it.
+      shippingDescription: readShippingDescription(order.metadata),
+      collecting: isCollectedOrder(order.metadata),
       items: order.items.map((it) => ({
         id: it.id,
         name: it.name,

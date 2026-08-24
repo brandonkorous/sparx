@@ -56,7 +56,10 @@ export function collectionOption(currency: string): RateOption {
   };
 }
 
-export function isCollection(option: Pick<RateOption, 'providerSlug'>): boolean {
+/** Takes a nullable slug because a stored session/order carries one: a checkout
+ *  that has not reached the shipping step has no method yet, and "no method" is
+ *  not collection. */
+export function isCollection(option: { providerSlug: string | null }): boolean {
   return option.providerSlug === COLLECTION_PROVIDER_SLUG;
 }
 

@@ -33,7 +33,7 @@ import {
   paymentService,
   SPARX_MARKET_GATEWAY_ID,
 } from '@wizeworks/payments';
-import { withTenant } from '@wizeworks/db';
+import { Prisma, withTenant } from '@wizeworks/db';
 import type { CheckoutSession, TxClient } from '@wizeworks/db';
 import { inventoryService, type CommittedSale } from '@wizeworks/inventory';
 // purchaseApprovalRule not in generated types until migration 20260716000000 runs.
@@ -50,7 +50,7 @@ import * as discountService from './discount-service';
 import * as marketService from './market';
 import * as pricingService from './pricing-service';
 import * as shippingService from './shipping-service';
-import { describeRate } from './collection-option';
+import { describeRate, isCollection } from './collection-option';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -238,6 +238,10 @@ export async function submitContact(ctx: ServiceContext, rawInput: unknown): Pro
       data: {
         step: furthestStep(session.step, 'contact'),
         customerEmail: input.email,
+        // Trimmed to null rather than stored blank: an empty string here would
+        // read as somebody who was asked and declined, which is not the same as
+        // a form that never had the field (issue 064).
+        customerName: blankToNull(input.name),
         customerPhone: input.phone ?? null,
         acceptsMarketing: input.acceptsMarketing,
       },
@@ -275,7 +279,10 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
 
   const rates = await shippingService.quoteForCart(ctx, {
     cartId: owner.cartId,
-    toAddress: input.shippingAddress,
+    // Absent when the order is being collected, and `quoteForCart` rates that
+    // as the question it is rather than making us invent a street to ask it
+    // with (issue 064).
+    ...(input.shippingAddress ? { toAddress: input.shippingAddress } : {}),
   });
   // Match the chosen option in this FRESH quote. Prefer the exact ref (manual
   // rates carry a deterministic ref that survives a re-quote), then fall back to
@@ -302,6 +309,16 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
     );
   }
 
+  // An address is optional, but only in the one case where there is genuinely
+  // nowhere to send anything. A DELIVERY with no destination must never be
+  // accepted: it would produce an order the shop cannot fulfil and cannot even
+  // ask about, and the client is not the thing that gets to decide this.
+  if (!input.shippingAddress && !isCollection(chosen)) {
+    throw new CommerceValidationError(
+      'This order is being delivered, so it needs an address to be delivered to.'
+    );
+  }
+
   await withTenant(ctx, async (tx) => {
     const session = await assertSessionWritable(tx, input.sessionId);
     // Re-point the total at the newly chosen rate: swap out whatever shipping the
@@ -312,8 +329,14 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
       where: { id: session.id },
       data: {
         step: furthestStep(session.step, 'shipping'),
-        shippingAddress: input.shippingAddress,
-        billingAddress: input.billingAddress ?? input.shippingAddress,
+        // Null, not a placeholder. Nothing is being posted, so there is no
+        // address, and every screen that reads this one must be able to tell
+        // "collected" from "we lost the address" (issue 064).
+        // `Prisma.DbNull`, not `null`: on a nullable Json column that is the
+        // difference between an empty column and the JSON value `null`, and
+        // only the first of those is "there is no address".
+        shippingAddress: input.shippingAddress ?? Prisma.DbNull,
+        billingAddress: input.billingAddress ?? input.shippingAddress ?? Prisma.DbNull,
         // Record what we actually priced from this quote, not the (possibly
         // stale, single-use) ref the client sent.
         shippingProviderSlug: chosen.providerSlug,
@@ -701,7 +724,10 @@ export async function complete(
         `Cannot complete checkout from step "${session.step}"; expected "review"`
       );
     }
-    if (!session.shippingAddress) {
+    // Something has to be going somewhere before an order can be placed — unless
+    // nothing is being sent at all. Collecting in person has no destination by
+    // definition, so demanding one was demanding a fiction (issue 064).
+    if (!session.shippingAddress && !isCollection({ providerSlug: session.shippingProviderSlug })) {
       throw new CommerceValidationError('Cannot complete checkout without a shipping address');
     }
     // Re-verify B2B membership is still ACTIVE right now — the session's
@@ -785,8 +811,11 @@ export async function complete(
         ctx.tenantId,
         originPropertyId,
         session.customerEmail,
-        // The shipping address is where checkout put the typed name.
-        readRecipientName(session.shippingAddress)
+        // The contact step's name first: it is the buyer, it is asked for on
+        // every order, and it is there even when nothing is being posted. The
+        // address is the fallback for sessions that predate that field, and for
+        // any caller that still sends the name only inside one (issue 064).
+        session.customerName ?? readRecipientName(session.shippingAddress)
       );
     }
 
@@ -846,16 +875,17 @@ export async function complete(
         discountTotal: discountDollars,
         surchargeTotal: surchargeDollars,
         appliedSurcharges: surcharge.applied,
-        shippingAddress: session.shippingAddress as Parameters<
+        // `?? undefined` and not `?? null`: the order's address fields are
+        // OPTIONAL, and an explicit null fails their schema. A collected order
+        // carries neither, which is the true record of it (issue 064).
+        shippingAddress: (session.shippingAddress ?? undefined) as Parameters<
           typeof orderService.create
         >[1] extends infer A
           ? A
           : never,
-        billingAddress: (session.billingAddress ?? session.shippingAddress) as Parameters<
-          typeof orderService.create
-        >[1] extends infer A
-          ? A
-          : never,
+        billingAddress: (session.billingAddress ??
+          session.shippingAddress ??
+          undefined) as Parameters<typeof orderService.create>[1] extends infer A ? A : never,
         items,
         metadata: {
           commerceCheckoutSessionId: session.id,
@@ -1264,6 +1294,14 @@ async function ensureCheckoutCustomer(
   return created.id;
 }
 
+/** A typed value, or null when nothing was typed. Deliberately not `?? null`:
+ *  the case being collapsed is the EMPTY STRING, which a stored column would
+ *  render as somebody who was asked and declined to answer. */
+function blankToNull(value: string | undefined): string | null {
+  const trimmed = value?.trim() ?? '';
+  return trimmed === '' ? null : trimmed;
+}
+
 /** The `recipientName` out of a stored address blob, if it holds one. */
 export function readRecipientName(address: unknown): string | null {
   if (typeof address !== 'object' || address === null) return null;
@@ -1378,6 +1416,8 @@ function serializeSession(
     channel: row.channel as CheckoutSessionSnapshot['channel'],
     currency: row.currency,
     customerEmail: row.customerEmail ?? undefined,
+    customerName: row.customerName ?? undefined,
+    customerPhone: row.customerPhone ?? undefined,
     customerId: row.customerId ?? undefined,
     companyId: row.companyId ?? undefined,
     b2bAccountPaymentTerms: b2bAccountPaymentTerms ?? undefined,

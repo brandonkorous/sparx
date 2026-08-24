@@ -2,215 +2,44 @@
 
 // One order — what was bought, what was paid, where it went.
 //
-// This is a TRANSACTION detail: a record of something that already happened, so
-// it keeps a real identity heading (the order number and who placed it) rather
-// than opening with an editable name field. Nothing here is a draft, so there is
-// nothing to save and no dirty state to guard.
+// A TRANSACTION detail: a record of something that already happened, so it
+// keeps a real identity heading rather than an editable name field. Nothing
+// here is a draft, so there is nothing to save and no dirty state to guard.
 //
-// Deliberately NOT built on EditorLayout. That chassis is a form with a
-// completion order and a running summary rail beside it; this pane is a
-// narrative — items, then money, then who, then where, then what happened to it.
-// A rail would repeat the totals that are already the loudest thing on screen.
-// So: one centred column, capped, because a pane torn onto a second monitor is
-// otherwise 2000px of grey with the line items pinned to the left edge.
+// Deliberately NOT built on EditorLayout. That chassis is a form with a running
+// summary rail; this pane is a narrative, so it is one centred column, capped —
+// a pane torn onto a second monitor is otherwise 2000px of grey.
 //
 // The audience owns a business, not a warehouse system. "Fulfilled" means "on
-// the way" here, "captured" means "taken", and a payment processor's vocabulary
-// never reaches the screen untranslated.
+// the way" here and a payment processor's vocabulary never reaches the screen
+// untranslated.
+//
+// This file loads and composes; the pieces are the order-detail-* siblings.
 
 import { useEffect } from 'react';
+
+import { Card } from '@wizeworks/silicaui-react';
+
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
-import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Button,
-  Card,
-  Heading,
-  Text,
-  useToast,
-} from '@wizeworks/silicaui-react';
-import { useConfirm } from '../../lib/confirm';
-import {
-  faArrowUpRightFromSquare,
-  faBan,
-  faRotateLeft,
-  faRoute,
-} from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
-import { useGeneratePickList, pickErrorMessage } from '../inventory/picking-data';
-import { FormSection } from '../../components/form-section';
-import { ModuleScope } from '../../components/module-scope';
-import { deferTick } from '../../lib/defer';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites, useModuleStates, useViewer } from '../../lib/api/shell-data';
-import { SoldBySection } from './sold-by-section';
-import { RecordPayment } from './record-payment';
-import { refundWords } from './refund-words';
-import { RecordHandover } from './record-handover';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { RefreshButton } from '../../components/refresh-button';
-import {
-  addressLines,
-  amountDue,
-  channelLabel,
-  customerName,
-  deliveryPlan,
-  formatDate,
-  formatDateTime,
-  formatMoney,
-  fulfillmentTone,
-  orderErrorMessage,
-  paymentRecordTone,
-  paymentState,
-  refundTone,
-  shipmentHeadline,
-  shipmentStatusLabel,
-  shippingState,
-  useCancelOrder,
-  useOrder,
-  useOrderFulfillments,
-  useOrderPayments,
-  useOrderRefunds,
-  useRefundOrder,
-  PAYMENT_PROCESSOR_LABELS,
-  PAYMENT_STATUS_LABELS,
-  paidByHand,
-  REFUND_STATUS_LABELS,
-  type Order,
-  type OrderAddress,
-} from './data';
-
-/** The one column everything sits in. */
-const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-/** A money line in the totals block. `emphasis` is the order's own total and the
- *  amount still owed — the two numbers anyone opens this pane for. */
-function MoneyRow({
-  label,
-  amount,
-  currency,
-  emphasis = false,
-}: {
-  label: string;
-  amount: number;
-  currency: string;
-  emphasis?: boolean;
-}) {
-  return (
-    <div
-      className={[
-        'flex items-baseline justify-between gap-4',
-        emphasis ? 'text-lg font-semibold' : 'text-base',
-      ].join(' ')}
-    >
-      <span>{label}</span>
-      <span className="tabular-nums">{formatMoney(amount, currency)}</span>
-    </div>
-  );
-}
-
-function AddressBlock({ title, address }: { title: string; address: OrderAddress | null }) {
-  const lines = addressLines(address);
-  return (
-    <div className="flex flex-col gap-1">
-      <Heading level={3} className="text-base font-semibold">
-        {title}
-      </Heading>
-      {lines.length === 0 ? (
-        <Text className="text-sm">Not given</Text>
-      ) : (
-        <address className="text-base not-italic">
-          {lines.map((line) => (
-            <span key={line} className="block">
-              {line}
-            </span>
-          ))}
-        </address>
-      )}
-    </div>
-  );
-}
-
-/** A section whose data comes from its own request, so it reports its own
- *  loading and its own failure. One bad subresource must not blank out the rest
- *  of the order. */
-function SubSection({
-  title,
-  description,
-  isPending,
-  isError,
-  errorText,
-  emptyText,
-  count,
-  children,
-  footer,
-}: {
-  title: string;
-  description?: string;
-  isPending: boolean;
-  isError: boolean;
-  errorText: string;
-  emptyText: string;
-  count: number;
-  children: React.ReactNode;
-  /** Rendered under the list AND under the empty text, because the thing that
-   *  ADDS the first row must be reachable when there are no rows — which is
-   *  exactly the state it exists for. `children` alone could not do this: it
-   *  is hidden at count 0. */
-  footer?: React.ReactNode;
-}) {
-  return (
-    <FormSection title={title} description={description}>
-      {isPending ? (
-        <Text className="text-sm" role="status">
-          Loading…
-        </Text>
-      ) : isError ? (
-        <Text className="text-sm">{errorText}</Text>
-      ) : count === 0 ? (
-        <Text>{emptyText}</Text>
-      ) : (
-        children
-      )}
-      {!isPending && !isError ? footer : null}
-    </FormSection>
-  );
-}
-
-function OrderIdentity({ order, siteName }: { order: Order; siteName: string | null }) {
-  const facts = [
-    `Placed ${formatDate(order.placedAt)}`,
-    channelLabel(order),
-    ...(siteName ? [siteName] : []),
-  ];
-  return (
-    <div className="flex flex-col gap-1">
-      {/* The order number IS this pane's identity, and the pane TAB carries it —
-          so it is not repeated here. The buyer leads instead: the number tells
-          you which sale you opened, this tells you whose it is. */}
-      <Text className="text-lg">{customerName(order.customer)}</Text>
-      <Text className="text-sm">{facts.join(' · ')}</Text>
-    </div>
-  );
-}
+import { useOrderRisk } from './order-detail-actions';
+import { OrderToolbar } from './order-detail-toolbar';
+import { OrderBody } from './order-detail-body';
+import { orderFacts } from './order-detail-facts';
+import { useOrder, useOrderFulfillments, useOrderPayments, useOrderRefunds } from './data';
 
 export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const toast = useToast();
-  const confirm = useConfirm();
 
   const { data: order, isPending, isError, isFetching, dataUpdatedAt, refetch } = useOrder(id);
   const { data: sites } = useSites();
   const payments = useOrderPayments(id);
   const fulfillments = useOrderFulfillments(id);
   const refunds = useOrderRefunds(id);
-  const cancel = useCancelOrder(id);
-  const refund = useRefundOrder(id);
-  const generateWalk = useGeneratePickList();
+  const risk = useOrderRisk(id);
 
   // "Who sold it" needs BOTH: the staff module on (otherwise there is no roster
   // to credit) and pay access (every /v1/staff/sales/* route is admin-only —
@@ -222,9 +51,9 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     (viewer.data?.role === 'admin' || viewer.data?.role === 'owner');
 
   // Keyed on the NUMBER, not the order object. Depending on the object retitles
-  // the tab on every refetch — including the one that follows a cancellation,
-  // which pushes a dockview title update out of a commit for no gain, since the
-  // title it sets is the one already there.
+  // the tab on every refetch — including the one after a cancellation, which
+  // pushes a dockview title update out of a commit to set the title it already
+  // has.
   const orderNumber = order?.orderNumber ?? null;
   useEffect(() => {
     if (orderNumber) ctx.setTitle(`Order ${orderNumber}`);
@@ -248,622 +77,40 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  if (isPending || !order) {
-    return <PaneWaiting />;
-  }
+  if (isPending || !order) return <PaneWaiting />;
 
-  const paid = paymentState(order);
-  const shipped = shippingState(order);
-  const due = amountDue(order);
-  // Whether a refund has anywhere to go. Money the business took by hand never
-  // passed through a gateway, so "back to the card it was paid with" is a
-  // promise about a card that does not exist — she hands the notes back.
-  const refundGoesBackToACard = !(payments.data ?? []).some((payment) =>
-    paidByHand(payment.processor)
-  );
-  const items = order.items ?? [];
-  const currency = order.currency;
+  const facts = orderFacts(order, payments);
   const site = sites?.find((candidate) => candidate.id === order.propertyId);
-
-  // Cancelling is refused by the server on an order that has already arrived or
-  // been refunded, so the control simply isn't offered there — a button that
-  // exists to hand back an error is worse than no button.
-  const cancellable =
-    order.status !== 'cancelled' && order.status !== 'delivered' && order.status !== 'refunded';
-
-  // Whether the warehouse has anything left to fetch. Same test the pick-list
-  // generator applies server-side, so the button and the endpoint agree about
-  // when there is work — a button that exists only to hand back "nothing to
-  // pick" is worse than no button.
-  const stillToFulfil =
-    cancellable && items.some((item) => item.quantity - item.quantityFulfilled > 0);
-
-  // How this order leaves, as the shopper chose it. Everything about the bottom
-  // half of this pane turns on it: a customer coming to collect has no carrier,
-  // no tracking number, and no warehouse walk that means anything.
-  const plan = deliveryPlan(order);
-
-  // What is still refundable: money actually taken, less anything already given
-  // back. Rounded to cents so floating-point noise can't offer a $0.0000001 refund.
-  const refundableAmount = Math.max(
-    0,
-    Math.round((Number(order.amountPaid) - Number(order.refundTotal ?? 0)) * 100) / 100
-  );
-
-  // One source for all three sentences about this refund. They used to be three
-  // separate strings and only the first one branched.
-  const refundSays = refundWords({
-    amount: formatMoney(refundableAmount, currency),
-    orderNumber: order.orderNumber,
-    toACard: refundGoesBackToACard,
-  });
-
-  const onRefund = async () => {
-    const ok = await confirm({
-      title: `Refund ${formatMoney(refundableAmount, currency)} to ${customerName(order.customer)}?`,
-      description: refundSays.confirm,
-      confirmLabel: `Refund ${formatMoney(refundableAmount, currency)}`,
-      cancelLabel: 'Leave it as it is',
-      color: 'danger',
-    });
-    if (!ok) return;
-    // Same reason as onCancel: let the confirm's flushSync close commit finish
-    // before this pane re-renders underneath it.
-    await deferTick();
-    refund.mutate(
-      { amount: refundableAmount },
-      {
-        onSuccess: () => {
-          toast.add({
-            title: `Refunded ${formatMoney(refundableAmount, currency)}`,
-            description: refundSays.done,
-            type: 'success',
-          });
-        },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not refund this order',
-            description: orderErrorMessage(
-              error,
-              'No money was moved and nothing was changed on the order.'
-            ),
-            type: 'error',
-          });
-        },
-      }
-    );
-  };
-
-  const onCancel = async () => {
-    const ok = await confirm({
-      title: `Cancel order ${order.orderNumber}?`,
-      description:
-        `This marks the order as cancelled for ${customerName(order.customer)} — ` +
-        `${String(items.length)} ${items.length === 1 ? 'item' : 'items'} worth ` +
-        `${formatMoney(order.total, currency)} will no longer be sent. ` +
-        (order.amountPaid > 0
-          ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this — you refund that separately.`
-          : 'No money has come in, so there is nothing to refund.') +
-        ' A cancelled order cannot be reopened.',
-      confirmLabel: 'Cancel the order',
-      cancelLabel: 'Leave it as it is',
-      color: 'danger',
-    });
-    if (!ok) return;
-    // Yield before mutating, so the confirm's own close commit (Base UI closes
-    // by measuring with flushSync) is finished before this pane starts
-    // re-rendering underneath it. Same reason lifecycle.tsx yields around its
-    // stage dialog — see lib/defer.ts.
-    await deferTick();
-    cancel.mutate(undefined, {
-      onSuccess: () => {
-        toast.add({ title: `Order ${order.orderNumber} cancelled`, type: 'success' });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not cancel this order',
-          description: orderErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
 
   return (
     <div className={PANE_SHELL}>
-      {/* Lifecycle in the pane header: the two states this order is actually in,
-          side by side, always visible while the body scrolls. */}
-      <PaneToolbar
-        label="Order actions"
-        status={
-          <>
-            <Badge color={paid.tone} variant="soft" size="sm">
-              {paid.label}
-            </Badge>
-            {/* A refunded order carries the same word on both axes, and two
-            identical badges side by side read as a rendering fault rather than
-            as two facts. */}
-            {shipped.label === paid.label ? null : (
-              <Badge color={shipped.tone} variant="soft" size="sm">
-                {shipped.label}
-              </Badge>
-            )}
-            <div className="flex-1" />
-            <Text className="text-sm tabular-nums">{formatMoney(order.total, currency)}</Text>
-          </>
+      <OrderToolbar
+        ctx={ctx}
+        order={order}
+        paid={facts.paid}
+        shipped={facts.shipped}
+        canSendToWarehouse={facts.stillToFulfil && !facts.plan.collected}
+        isFetching={
+          isFetching || payments.isFetching || fulfillments.isFetching || refunds.isFetching
         }
-        // A commit action is always `primary`: `controls` relocates into the
-        // overflow popover under 672px. Enforced by scripts/check-toolbar-primary.mjs.
-        primary={
-          /* Send it to the warehouse (docs/146 Phase 4). Only while there is
-                      something left to send: an order already fulfilled has nothing to
-                      fetch, and offering the button anyway produces a walk that generates
-                      zero lines and an error nobody expected.
-                      And only for something being SENT. A picking walk for an order the
-                      customer is coming to collect routes a bakery's own counter staff
-                      through a warehouse they do not have; the handover control at the
-                      foot of the pane is what finishes that order.
-                      Wears the INVENTORY hue on a commerce pane, deliberately — it is a
-                      warehouse action surfacing here, and color follows functionality
-                      rather than the page it happens to be on. */
-          stillToFulfil && !plan.collected ? (
-            <Button
-              size="sm"
-              color="module-inventory"
-              variant="outline"
-              disabled={generateWalk.isPending}
-              onClick={() => {
-                void (async () => {
-                  try {
-                    const walk = await generateWalk.mutateAsync({ orderIds: [order.id] });
-                    toast.add({
-                      title: `Walk ${walk.number} ready`,
-                      description: `${String(walk.lineCount)} to fetch at ${walk.warehouseName}.`,
-                      type: 'success',
-                    });
-                    ctx.open('inventory.picking.detail', { id: walk.id }, { target: 'beside' });
-                  } catch (error) {
-                    toast.add({
-                      title: 'Could not create a walk',
-                      description: pickErrorMessage(
-                        error,
-                        'Nothing was changed. Check the order still has something to send.'
-                      ),
-                      type: 'error',
-                    });
-                  }
-                })();
-              }}
-            >
-              <Icon glyph={faRoute} className="size-4" aria-hidden />
-              Send to the warehouse
-            </Button>
-          ) : null
-        }
-        refresh={
-          /* Four queries feed this pane — the order and its money, shipments and
-                      refunds — so one refresh reloads all of them. */
-          <RefreshButton
-            isFetching={
-              isFetching || payments.isFetching || fulfillments.isFetching || refunds.isFetching
-            }
-            updatedAt={order ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-              void payments.refetch();
-              void fulfillments.refetch();
-              void refunds.refetch();
-            }}
-          />
-        }
+        updatedAt={dataUpdatedAt}
+        onRefresh={() => {
+          void refetch();
+          void payments.refetch();
+          void fulfillments.refetch();
+          void refunds.refetch();
+        }}
       />
-
-      <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <div className={COLUMN}>
-          <OrderIdentity order={order} siteName={site?.name ?? null} />
-
-          {/* ONE message, the most specific true one. A cancelled order says why
-              it was cancelled; otherwise money owed is the thing worth saying,
-              and an order that is paid and delivered says nothing at all — the
-              badges above already carry it. */}
-          {order.status === 'cancelled' || order.status === 'refunded' ? (
-            <Alert color={shipped.tone} variant="soft">
-              <AlertContent>
-                <AlertTitle>{shipped.label}</AlertTitle>
-                <AlertDescription>
-                  {shipped.detail}
-                  {order.cancelledAt ? ` (${formatDateTime(order.cancelledAt)})` : ''}
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : due > 0 ? (
-            <Alert color="warning">
-              <AlertContent>
-                <AlertTitle>{formatMoney(due, currency)} still owed</AlertTitle>
-                <AlertDescription>
-                  {order.amountPaid > 0
-                    ? `${formatMoney(order.amountPaid, currency)} of ${formatMoney(order.total, currency)} has come in so far.`
-                    : 'No money has come in for this order yet.'}
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
-
-          {/* What they bought, then what it came to. One card, because the
-              totals are the sum of the rows directly above them — splitting them
-              apart makes the reader carry a number across a gap. */}
-          <FormSection title="What they bought">
-            {items.length === 0 ? (
-              <Text>This order has no items on it, which usually means it was imported.</Text>
-            ) : (
-              <ul className="flex flex-col">
-                {items.map((item) => {
-                  const partlySent =
-                    item.quantityFulfilled > 0 && item.quantityFulfilled < item.quantity;
-                  return (
-                    <li
-                      key={item.id}
-                      className="border-base-300 flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
-                    >
-                      <div className="flex min-w-0 flex-col gap-0.5">
-                        <span className="text-base font-medium">{item.name}</span>
-                        <span className="font-mono text-sm break-all">{item.sku}</span>
-                        <span className="text-sm">
-                          {item.quantity} × {formatMoney(item.unitPrice, currency)}
-                          {item.discountAmount > 0
-                            ? ` · ${formatMoney(item.discountAmount, currency)} off`
-                            : ''}
-                        </span>
-                        {partlySent ? (
-                          <span className="text-sm">
-                            {item.quantityFulfilled} of {item.quantity} sent so far
-                          </span>
-                        ) : null}
-                        {item.quantityRefunded > 0 ? (
-                          <span className="text-sm">{item.quantityRefunded} refunded</span>
-                        ) : null}
-                      </div>
-                      {/* Quantity × price, NOT the stored `lineTotal` — that one
-                          folds the line's own tax in, while the totals block
-                          below charges tax and discount as their own lines. Show
-                          lineTotal and the column visibly fails to add up to
-                          "Items", which reads as broken arithmetic. This one
-                          sums to it exactly. */}
-                      <span className="text-base font-medium tabular-nums">
-                        {formatMoney(item.lineSubtotal, currency)}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-
-            <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
-              <MoneyRow label="Items" amount={order.subtotal} currency={currency} />
-              {order.discountTotal > 0 ? (
-                <MoneyRow label="Discount" amount={-order.discountTotal} currency={currency} />
-              ) : null}
-              {order.shippingTotal > 0 ? (
-                <MoneyRow label="Delivery" amount={order.shippingTotal} currency={currency} />
-              ) : null}
-              {order.surchargeTotal > 0 ? (
-                <MoneyRow
-                  label="Card fee passed on"
-                  amount={order.surchargeTotal}
-                  currency={currency}
-                />
-              ) : null}
-              {order.taxTotal > 0 ? (
-                <MoneyRow label="Tax" amount={order.taxTotal} currency={currency} />
-              ) : null}
-              <MoneyRow label="Order total" amount={order.total} currency={currency} emphasis />
-              {order.amountPaid > 0 ? (
-                <MoneyRow label="Paid so far" amount={order.amountPaid} currency={currency} />
-              ) : null}
-              {order.refundTotal > 0 ? (
-                <MoneyRow label="Given back" amount={order.refundTotal} currency={currency} />
-              ) : null}
-              {due > 0 ? (
-                <MoneyRow label="Still owed" amount={due} currency={currency} emphasis />
-              ) : null}
-            </div>
-          </FormSection>
-
-          {/* The buyer is CRM's functionality showing up on a commerce screen,
-              so this block wears CRM's hue — color follows functionality, not
-              the pane. */}
-          <ModuleScope module="crm">
-            <FormSection title="Who bought it">
-              <div className="flex flex-col gap-1">
-                <Text className="text-base font-medium">{customerName(order.customer)}</Text>
-                {order.customer?.email ? (
-                  <a href={`mailto:${order.customer.email}`} className="link text-base break-all">
-                    {order.customer.email}
-                  </a>
-                ) : null}
-                {order.customer?.company ? (
-                  <Text className="text-base">
-                    Trade account: {order.customer.company.companyName}
-                    {order.customer.company.paymentTerms
-                      ? ` · pays on ${order.customer.company.paymentTerms} terms`
-                      : ''}
-                  </Text>
-                ) : null}
-              </div>
-            </FormSection>
-          </ModuleScope>
-
-          {/* Staff's functionality on a commerce screen, so it wears staff's
-              hue for the same reason the buyer block wears CRM's. Gated on the
-              module AND on pay access — every /v1/staff/sales/* route is
-              admin-only, so a viewer gets no section rather than a 403. */}
-          <SoldBySection type="order" sourceId={order.id} canSeePay={canSeeCommission} />
-
-          {/* An order nobody is delivering does not have a "where it goes", and
-              putting a Delivery address heading over the address a collecting
-              customer typed for their receipt is how a shop ends up posting
-              something to somebody who was going to walk in for it. */}
-          <FormSection
-            title={plan.collected ? 'How it leaves' : 'Where it goes'}
-            description={
-              plan.collected
-                ? 'Nothing is being posted. The address is what they gave when they ordered.'
-                : 'Copied down when the order was placed, so changing the customer’s address later never rewrites where this one went.'
-            }
-          >
-            {/* The words the shopper chose. Absent on orders placed before
-                checkout kept them, and absent is what it renders as — an order
-                whose method was never recorded must not be shown a method. */}
-            {plan.description ? (
-              <Text className="text-base font-medium">{plan.description}</Text>
-            ) : null}
-            {plan.collected ? (
-              <AddressBlock title="Their address" address={order.billingAddress} />
-            ) : (
-              <div className="grid gap-4 @md:grid-cols-2">
-                <AddressBlock title="Delivery address" address={order.shippingAddress} />
-                <AddressBlock title="Billing address" address={order.billingAddress} />
-              </div>
-            )}
-          </FormSection>
-
-          <SubSection
-            title="Money in"
-            description="Every attempt to take payment for this order, including the ones that did not work."
-            isPending={payments.isPending}
-            isError={payments.isError}
-            errorText="We could not load the payments just now. The order and its money are unaffected — try reopening this order in a moment."
-            emptyText="No payment has been recorded against this order yet."
-            count={payments.data?.length ?? 0}
-            footer={
-              /* Only while money is actually outstanding. A settled,
-                               cancelled or refunded order has nothing left to write
-                               down, and offering the box anyway invites a second
-                               payment onto an order that is already square. */
-              due > 0 ? <RecordPayment order={order} due={due} /> : null
-            }
-          >
-            <ul className="flex flex-col">
-              {(payments.data ?? []).map((payment) => (
-                <li
-                  key={payment.id}
-                  className="border-base-300 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
-                >
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="text-base font-medium">
-                      {formatMoney(payment.amount, payment.currency)} ·{' '}
-                      {PAYMENT_PROCESSOR_LABELS[payment.processor] ?? payment.processor}
-                    </span>
-                    <span className="text-sm">
-                      {formatDateTime(payment.capturedAt ?? payment.createdAt)}
-                    </span>
-                    {payment.failureReason ? (
-                      <span className="text-sm">{payment.failureReason}</span>
-                    ) : null}
-                  </div>
-                  <Badge color={paymentRecordTone(payment.status)} variant="soft" size="sm">
-                    {PAYMENT_STATUS_LABELS[payment.status] ?? payment.status}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </SubSection>
-
-          {/* One card, two vocabularies. The words follow the shopper's own
-              choice rather than the module's: "Deliveries" on an order nobody is
-              delivering is the kind of wrongness that makes a person distrust
-              every other word on the screen. */}
-          <SubSection
-            title={plan.collected ? 'Collection' : 'Deliveries'}
-            description={
-              /* Past tense once there is nothing left to hand over. "Mark it off
-                 when they do" on an order they already collected is an
-                 instruction to do something that is done, which reads as the
-                 screen not having noticed. */
-              plan.collected
-                ? stillToFulfil
-                  ? 'The customer is coming to fetch this one. Mark it off when they do.'
-                  : 'They picked this up.'
-                : 'Each shipment sent for this order, and how to follow it.'
-            }
-            isPending={fulfillments.isPending}
-            isError={fulfillments.isError}
-            errorText="We could not load the deliveries just now. Anything already shipped is unaffected — try reopening this order in a moment."
-            emptyText={
-              plan.collected
-                ? 'This order has not been collected yet.'
-                : 'Nothing has been sent for this order yet.'
-            }
-            count={fulfillments.data?.length ?? 0}
-            footer={
-              /* Only while something is still owed. An order already handed
-                               over has nothing left to hand over, and a cancelled or
-                               refunded one is refused by the server anyway — a control
-                               whose only job is to return an error is worse than none. */
-              stillToFulfil ? <RecordHandover order={order} plan={plan} /> : null
-            }
-          >
-            <ul className="flex flex-col">
-              {(fulfillments.data ?? []).map((shipment) => (
-                <li
-                  key={shipment.id}
-                  className="border-base-300 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
-                >
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="text-base font-medium">{shipmentHeadline(shipment)}</span>
-                    {shipment.trackingNumber ? (
-                      shipment.trackingUrl ? (
-                        <a
-                          href={shipment.trackingUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="link inline-flex items-center gap-1 font-mono text-sm break-all"
-                        >
-                          {shipment.trackingNumber}
-                          <Icon
-                            glyph={faArrowUpRightFromSquare}
-                            className="size-3 shrink-0"
-                            aria-hidden
-                          />
-                        </a>
-                      ) : (
-                        <span className="font-mono text-sm break-all">
-                          {shipment.trackingNumber}
-                        </span>
-                      )
-                    ) : null}
-                    {/* What she typed in the note box. Asking for a note and
-                        then never showing it anywhere is asking somebody to
-                        write into a drawer that does not open. */}
-                    {shipment.notes ? <span className="text-sm">{shipment.notes}</span> : null}
-                    <span className="text-sm">
-                      {/* A collection was not "sent" anywhere, and a shipment
-                          with no despatch time has not been sent yet — so the
-                          row falls back to when the record was made and SAYS
-                          that, rather than presenting it as a despatch. */}
-                      {shipment.carrier === 'pickup' && shipment.deliveredAt
-                        ? `Collected ${formatDateTime(shipment.deliveredAt)}`
-                        : shipment.shippedAt
-                          ? `Sent ${formatDateTime(shipment.shippedAt)}`
-                          : `Created ${formatDateTime(shipment.createdAt)}`}
-                    </span>
-                  </div>
-                  <Badge color={fulfillmentTone(shipment.status)} variant="soft" size="sm">
-                    {shipmentStatusLabel(shipment)}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </SubSection>
-
-          {/* Refunds render only when there are any: an empty "Refunds — none"
-              card on every healthy order is a card that trains people to skip
-              the bottom of this pane. */}
-          {(refunds.data?.length ?? 0) > 0 ? (
-            <FormSection title="Money given back">
-              <ul className="flex flex-col">
-                {(refunds.data ?? []).map((refund) => (
-                  <li
-                    key={refund.id}
-                    className="border-base-300 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
-                  >
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      <span className="text-base font-medium">
-                        {formatMoney(refund.amount, refund.currency)}
-                      </span>
-                      <span className="text-sm">
-                        {formatDateTime(refund.refundedAt ?? refund.createdAt)}
-                      </span>
-                      {refund.reason ? <span className="text-sm">{refund.reason}</span> : null}
-                    </div>
-                    <Badge color={refundTone(refund.status)} variant="soft" size="sm">
-                      {REFUND_STATUS_LABELS[refund.status] ?? refund.status}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
-            </FormSection>
-          ) : null}
-
-          {order.customerNote || order.internalNote ? (
-            <FormSection title="Notes">
-              {order.customerNote ? (
-                <div className="flex flex-col gap-1">
-                  <Heading level={3} className="text-base font-semibold">
-                    From the customer
-                  </Heading>
-                  <Text className="text-base whitespace-pre-wrap">{order.customerNote}</Text>
-                </div>
-              ) : null}
-              {order.internalNote ? (
-                <div className="flex flex-col gap-1">
-                  <Heading level={3} className="text-base font-semibold">
-                    Your team’s note
-                  </Heading>
-                  <Text className="text-base whitespace-pre-wrap">{order.internalNote}</Text>
-                </div>
-              ) : null}
-            </FormSection>
-          ) : null}
-
-          {/* Same treatment as cancelling: irreversible, so a plain row under a
-              divider rather than a card competing with what people came to read.
-              Offered only when there is money left to give back. */}
-          {refundableAmount > 0 ? (
-            <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-4">
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <Text className="text-base font-medium">Refund this order</Text>
-                <Text className="text-base">
-                  {refundSays.panel} To give back only part of it, or to take stock back in, use a
-                  return instead.
-                </Text>
-              </div>
-              <Button
-                size="sm"
-                color="danger"
-                variant="outline"
-                loading={refund.isPending}
-                onClick={() => {
-                  void onRefund();
-                }}
-              >
-                <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
-                Refund {formatMoney(refundableAmount, currency)}
-              </Button>
-            </div>
-          ) : null}
-
-          {/* Rare and irreversible, so it does NOT get a card of its own beside
-              the things people came here to read — a plain row after the work,
-              under a divider. */}
-          {cancellable ? (
-            <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-4">
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <Text className="text-base font-medium">Cancel this order</Text>
-                <Text className="text-sm">
-                  Marks it as cancelled so nothing more is sent. Any money already taken stays until
-                  you refund it, and the order cannot be reopened afterwards.
-                </Text>
-              </div>
-              <Button
-                size="sm"
-                color="danger"
-                variant="outline"
-                loading={cancel.isPending}
-                onClick={() => {
-                  // The confirm has to open after this click finishes committing;
-                  // the pane never changes here, so no afterPaneChange is needed
-                  // for the toast that follows it.
-                  void onCancel();
-                }}
-              >
-                <Icon glyph={faBan} className="size-4" aria-hidden />
-                Cancel order
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <OrderBody
+        order={order}
+        facts={facts}
+        siteName={site?.name ?? null}
+        canSeeCommission={canSeeCommission}
+        payments={payments}
+        fulfillments={fulfillments}
+        refunds={refunds}
+        risk={risk}
+      />
     </div>
   );
 }

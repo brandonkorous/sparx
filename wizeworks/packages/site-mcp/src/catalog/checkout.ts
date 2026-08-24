@@ -59,13 +59,14 @@ const getCheckout: SiteTool = {
 
 const setCheckoutContact: SiteTool = {
   name: 'set_checkout_contact',
-  description: 'Set the contact email/phone on a checkout session.',
+  description: 'Set the contact name/email/phone on a checkout session.',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({
     sessionId,
     cartToken,
     email: z.string().email(),
+    name: z.string().max(255).optional(),
     phone: z.string().max(32).optional(),
     acceptsMarketing: z.boolean().optional(),
   }),
@@ -89,7 +90,10 @@ const setCheckoutContact: SiteTool = {
 
 const getShippingQuotes: SiteTool = {
   name: 'get_shipping_quotes',
-  description: 'Get shipping rate options for a checkout session and destination.',
+  description:
+    'Get shipping rate options for a checkout session. Returns { deliveryOffered, rates } — ' +
+    'deliveryOffered is false for a shop that only hands orders over in person, and such a ' +
+    'shop needs no destination at all. Call it with no destination first to find out.',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({
@@ -118,13 +122,17 @@ const getShippingQuotes: SiteTool = {
 
 const setCheckoutShipping: SiteTool = {
   name: 'set_checkout_shipping',
-  description: 'Set the shipping (and optional billing) address + chosen shipping rate.',
+  description:
+    'Set the chosen shipping rate, with the delivery (and optional billing) address. ' +
+    'Omit the address when the chosen rate is collection in person — there is nowhere ' +
+    'to deliver to, and a placeholder would be written onto the order as though it meant ' +
+    'something.',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({
     sessionId,
     cartToken,
-    shippingAddress: address,
+    shippingAddress: address.optional(),
     billingAddress: address.optional(),
     shippingRateRef: z.string().min(1),
     shippingProviderSlug: z.string().min(1),

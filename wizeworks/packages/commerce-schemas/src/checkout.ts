@@ -34,6 +34,11 @@ export type StartCheckoutInput = z.infer<typeof StartCheckoutInput>;
 export const SubmitContactInput = z.object({
   sessionId: Uuid,
   email: z.string().email(),
+  // Who is buying. It belongs here, not inside a delivery address: an order
+  // that is being collected has a buyer and no address at all, and asking for
+  // the address to learn the name is how a collection-only bakery came to
+  // demand a postal code over its own counter (issue 064).
+  name: z.string().max(255).optional(),
   phone: z.string().max(50).optional(),
   acceptsMarketing: z.boolean().default(false),
 });
@@ -41,7 +46,12 @@ export type SubmitContactInput = z.infer<typeof SubmitContactInput>;
 
 export const SubmitShippingInput = z.object({
   sessionId: Uuid,
-  shippingAddress: AddressSnapshot,
+  // OPTIONAL, because collecting something in person involves no address.
+  // Omitted is only accepted for a collection rate — the service refuses a
+  // delivery with nowhere to deliver to — and it is stored as absent rather
+  // than as a placeholder, so nothing downstream reads a street nobody gave
+  // (issue 064).
+  shippingAddress: AddressSnapshot.optional(),
   billingAddress: AddressSnapshot.optional(), // defaults to shipping
   // The chosen rate option ID returned by ShippingProvider.rateShipment.
   shippingRateRef: z.string().min(1).max(255),
@@ -90,6 +100,10 @@ export const CheckoutSessionSnapshot = z.object({
   channel: Channel,
   currency: Currency,
   customerEmail: z.string().email().optional(),
+  // Who is buying, from the contact step — so a storefront that reloads
+  // mid-checkout can put the name back in the form it came from (issue 064).
+  customerName: z.string().optional(),
+  customerPhone: z.string().optional(),
   customerId: Uuid.optional(),
   companyId: Uuid.optional(),
   // The linked B2B account's payment-terms designation (e.g. 'prepay',
