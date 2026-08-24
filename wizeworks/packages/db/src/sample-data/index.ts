@@ -7,6 +7,7 @@
 // order — gated on the ENABLED module set the caller passes (invariant #2; a pack
 // never writes settings.modules — invariant #1).
 
+import type { Prisma } from '@prisma/client';
 import { withTenant, type TenantContext } from '../tenant-context';
 
 import { applyCatalog } from './engine/catalog';
@@ -198,11 +199,50 @@ export async function loadSampleData(
       );
       await clearSampleDataOnTx(tx, ctx.tenantId);
       await applyPack(applyCtx, pack);
+      await recordSampleData(tx, ctx, 'loaded', applyCtx.counts, pack.industry);
       return applyCtx.counts;
     },
     undefined,
     { timeoutMs: PACK_TIMEOUT_MS }
   );
+}
+
+/**
+ * Put the load or the clear in the ledger.
+ *
+ * There was no audit row for either, which is how a Fulfillment Center in Ohio
+ * came to sit in a boutique's location list with nothing anywhere saying who
+ * made it. The industry STARTER writes `tenant.industry.installed`, so the only
+ * trail near the right timestamp said `installed: 0` — truthfully, about a
+ * different system — and reading it the obvious way gave the wrong answer.
+ *
+ * Carries the per-slice counts rather than a total: "what did this put in my
+ * account" is answered by the breakdown, and a total answers nothing.
+ */
+async function recordSampleData(
+  tx: Prisma.TransactionClient,
+  ctx: TenantContext,
+  action: 'loaded' | 'cleared',
+  counts: SampleDataCounts,
+  industry: string | null
+): Promise<void> {
+  await tx.auditLog.create({
+    data: {
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: `tenant.sample_data.${action}`,
+      entityType: 'Tenant',
+      entityId: ctx.tenantId,
+      diff: {
+        after: {
+          ...(industry ? { industry } : {}),
+          total: countsTotal(counts),
+          counts: counts as unknown as Record<string, number>,
+        },
+      },
+    },
+  });
 }
 
 /** Remove every sample row for a tenant. Returns the counts removed (snapshot
@@ -214,6 +254,7 @@ export async function clearSampleData(ctx: TenantContext): Promise<SampleDataCou
     async (tx) => {
       const counts = await summarizeSampleDataOnTx(tx, ctx.tenantId);
       await clearSampleDataOnTx(tx, ctx.tenantId);
+      await recordSampleData(tx, ctx, 'cleared', counts, null);
       return counts;
     },
     undefined,

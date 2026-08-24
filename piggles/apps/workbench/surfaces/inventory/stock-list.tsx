@@ -2,66 +2,33 @@
 
 // STOCK — how much of each thing you have right now, everywhere you keep it.
 //
-// ── Why this one IS a table ──────────────────────────────────────────────
-//
-// The house rule is that a short list of one-line things is cards, not a table.
-// This is the other case: hundreds of rows that each carry four numbers, and the
-// whole job of the screen is comparing those numbers down a column. Cards would
-// turn a scan into a read. The columns disclose with @container so a pane docked
-// at 320px still shows the two that matter — what it is and how many can be sold
-// — rather than six columns of two characters each.
+// This file owns the pane: its filters, its window over the data, and its
+// toolbar. The table is stock-list-table.tsx and the several kinds of nothing
+// are stock-list-empty.tsx.
 //
 // ── Every narrowing is a SERVER filter ───────────────────────────────────
 //
 // Search, location, "running low", the sort and the paging all go to the API.
 // Sorting the loaded window in the browser sorts ONE page and presents it as the
 // answer, so "what is closest to running out" would return the scarcest of the
-// fifty rows that happen to be in hand. "Running low" in particular is an
-// expression over three columns, which is why the endpoint grew a real filter
-// for it rather than the client sieving a page.
+// fifty rows that happen to be in hand.
 //
 // ── Four empty states, because they are four different problems ──────────
-//
-// Nothing matches the search · nothing matches the low-stock filter (which is
-// GOOD news and should say so) · nothing is counted anywhere yet · and the one
-// that used to hide inside the first: the search matched a real PRODUCT that has
-// simply never been counted. This list can only see what has a level row, and a
-// level row appears only when somebody counts something — so a bakery typing
-// "rye", the exact name of a product on her own shop page, was told to try part
-// of a product name. Same outcome, different cause, and the advice for the other
-// cause sends her to redo the thing she just did correctly. When the search is
-// the ONLY thing narrowing the list, we ask the catalog and offer what we find.
+// This list can only see what has a level row, and a level row appears only when
+// somebody counts something — so a bakery typing "rye", the exact name of a
+// product on her own shop page, was told to try part of a product name. When the
+// search is the ONLY thing narrowing the list we ask the catalog too, which is
+// what `searchOnly` decides. The states themselves are in stock-list-empty.
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  ToggleGroup,
-  ToggleGroupItem,
-  Tooltip,
-} from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import {
-  faArrowDown,
-  faArrowTrendDown,
-  faArrowUp,
-  faBoxes,
-  faShieldCheck,
-} from '@fortawesome/pro-solid-svg-icons';
+import { Card, EmptyState } from '@wizeworks/silicaui-react';
+import { faBoxes } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import type { ToolbarFilter } from '../../components/pane-toolbar-filters';
-import { RefreshButton } from '../../components/refresh-button';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  levelState,
-  locationLabel,
-  sellable,
   useCatalogMatches,
   useStockLevels,
   useStockLocations,
@@ -69,31 +36,16 @@ import {
   type StockLevel,
   type StockSortKey,
 } from './data';
-import { openProductFacet } from '../commerce/product-scope';
-import { humanDuration, stockAgeTone } from './integrity-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { StockListEmpty } from './stock-list-empty';
+import { StockListTable } from './stock-list-table';
+import { StockListToolbar, parseSort } from './stock-list-toolbar';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-/**
- * What to try when nothing matched — naming ONLY what is actually narrowing the
- * list. Telling someone to clear a filter they never set sends them hunting for
- * a control that is already off.
- */
-function emptyAdvice(search: string, locationName: string | null): string {
-  const parts: string[] = [];
-  if (search) parts.push('Try part of a product code or a product name.');
-  if (locationName) {
-    parts.push(
-      `You are only seeing stock kept at ${locationName} — switch to every location for the rest.`
-    );
-  }
-  return parts.join(' ');
 }
 
 export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -137,16 +89,14 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   });
 
   const rowCount = data?.items.length ?? 0;
-  // Is this search a dead end because the thing was never COUNTED, rather than
-  // because it does not exist? Only askable when the search is the only thing
-  // narrowing the list: with a location filter on, an empty result means "not
-  // here", and a product could be sitting counted at the place next door.
+  // Only askable when the search is the only thing narrowing the list: with a
+  // location filter on, an empty result means "not here", and the product could
+  // be sitting counted at the place next door.
   const searchOnly = search.trim() !== '' && locationId === '' && !lowOnly;
   const catalog = useCatalogMatches(
     search.trim(),
     searchOnly && !isLoading && !isError && rowCount === 0
   );
-  const catalogMatches = catalog.data?.items ?? [];
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -159,24 +109,6 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     setTake(pageSize);
   };
 
-  // A picker rather than chips: a business can have twenty locations, and twenty
-  // chips is a toolbar taller than the table.
-  const locationFilter: ToolbarFilter = {
-    label: 'Show stock kept at',
-    key: 'warehouse',
-    present: 'select',
-    value: locationId,
-    neutralValue: '',
-    options: [
-      { value: '', label: 'Every location' },
-      ...activeLocations.map((location) => ({ value: location.id, label: location.name })),
-    ],
-    onValueChange: (next) => {
-      setLocationId(next);
-      resetWindow();
-    },
-  };
-
   const toggleSort = (key: StockSortKey) => {
     setSort((current) =>
       current.key === key
@@ -187,30 +119,6 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     );
     resetWindow();
   };
-
-  const header = (key: StockSortKey, label: string, extra = '') => (
-    <th
-      className={extra}
-      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-    >
-      <button
-        type="button"
-        className="link link-hover inline-flex items-center gap-1"
-        onClick={() => {
-          toggleSort(key);
-        }}
-      >
-        {label}
-        {sort.key === key ? (
-          sort.dir === 'asc' ? (
-            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
-          ) : (
-            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
-          )
-        ) : null}
-      </button>
-    </th>
-  );
 
   const open = (level: StockLevel, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('inventory.stock.item', { variantId: level.variantId }, { target: targetFor(event) });
@@ -244,245 +152,62 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     if (rows.length === 0) {
-      // "Nothing is running low" is good news, and an empty state that reads
-      // like a failure over good news is its own kind of wrong.
-      if (lowOnly && search.trim() === '') {
-        return (
-          <EmptyState
-            icon={<Icon glyph={faArrowTrendDown} className="size-6" aria-hidden />}
-            title={
-              locationName ? `Nothing is running low at ${locationName}` : 'Nothing is running low'
-            }
-            description="Everything with a reorder rule is above the level you asked to be warned at. Turn the filter off to see all your stock."
-          />
-        );
-      }
-      // Still asking the catalog whether this is a typo or an uncounted product.
-      // Answering "Nothing matches that" first and correcting it a beat later is
-      // worse than a short wait: the first answer is the wrong one.
-      if (catalog.isFetching) {
-        return <PaneWaiting label="Checking your catalog…" />;
-      }
-
-      // The search matched real products that simply have no count behind them.
-      // Naming them, and offering the one action that helps, is the difference
-      // between a dead end and a next step.
-      if (catalogMatches.length > 0) {
-        return (
-          <EmptyState
-            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-            title={`Nothing counted for “${search.trim()}” yet`}
-            description={
-              catalogMatches.length === 1
-                ? 'This is in your catalog and has never been counted, so your website sells it without limit. Open it to say how many you have.'
-                : 'These are in your catalog and have never been counted, so your website sells them without limit. Open one to say how many you have.'
-            }
-            actions={
-              <div className="flex flex-wrap gap-2">
-                {catalogMatches.map((match) => (
-                  <Button
-                    key={match.id}
-                    size="sm"
-                    color="module"
-                    onClick={(event) => {
-                      openProductFacet(ctx, 'commerce.product.stock', match.id, event);
-                    }}
-                  >
-                    {match.title}
-                  </Button>
-                ))}
-              </div>
-            }
-          />
-        );
-      }
-
       return (
-        <EmptyState
-          icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-          title={narrowed ? 'Nothing matches that' : 'Nothing is being counted yet'}
-          description={
-            narrowed
-              ? emptyAdvice(search.trim(), locationName)
-              : 'Stock appears here once you record how many of something you have. Open a product and use its Stock panel to count it for the first time — and until you do, your website sells it without limit.'
-          }
+        <StockListEmpty
+          ctx={ctx}
+          search={search}
+          locationName={locationName}
+          lowOnly={lowOnly}
+          narrowed={narrowed}
+          catalogMatches={catalog.data?.items ?? []}
+          checkingCatalog={catalog.isFetching}
         />
       );
     }
 
     return (
-      <Table size="sm" hover>
-        <thead>
-          <tr>
-            {header('product', 'Item')}
-            <th className="hidden @lg:table-cell">Location</th>
-            {header('available', 'To sell', 'text-right whitespace-nowrap')}
-            <th className="hidden text-right @xl:table-cell">On the shelf</th>
-            <th className="hidden text-right @3xl:table-cell">Spoken for</th>
-            <th>State</th>
-            {/* An icon-only column: the header is for screen readers, and a word
-                here would claim width the numbers need more. */}
-            <th className="w-8">
-              <span className="sr-only">Where the number came from</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((level) => {
-            const state = levelState(level);
-            return (
-              <tr
-                key={`${level.variantId}:${level.warehouseId}`}
-                className="cursor-pointer"
-                tabIndex={0}
-                role="button"
-                onClick={(event) => {
-                  open(level, event);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  open(level, event);
-                }}
-              >
-                {/* `max-w-0 w-full` is load-bearing, not decoration. A table
-                    cell sizes to its content, so at 380px the product name kept
-                    pushing the row wider and shoved the state badge off the
-                    right edge — the one column that must never be the one to
-                    go. Zeroing the max width makes this the cell that GIVES,
-                    which is what lets the truncation below actually bite. */}
-                <td className="w-full max-w-0">
-                  {/* Identity is two facts and they are not equals: the product
-                      name is what a person recognises, the code is how the shelf
-                      is labelled. Both readable, one leading. */}
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate">{level.productTitle ?? 'Untitled product'}</span>
-                    <span className="truncate font-mono text-sm">{level.sku ?? 'No code'}</span>
-                    {/* Below @lg the Location column is gone, so it comes back
-                        here — a stock row without a place is not an answer. */}
-                    <span className="truncate text-sm @lg:hidden">{locationLabel(level)}</span>
-                  </span>
-                </td>
-                <td className="hidden max-w-48 truncate @lg:table-cell">{locationLabel(level)}</td>
-                <td className="text-right font-medium whitespace-nowrap tabular-nums">
-                  {sellable(level)}
-                </td>
-                <td className="hidden text-right tabular-nums @xl:table-cell">{level.onHand}</td>
-                <td className="hidden text-right tabular-nums @3xl:table-cell">
-                  {level.allocated}
-                </td>
-                <td>
-                  <span className="flex flex-wrap items-center gap-1">
-                    <Badge color={state.tone} variant="soft" size="sm">
-                      {state.label}
-                    </Badge>
-                    {/* Only when the number has actually gone stale. A row of
-                        "2 hours" beside every healthy line is noise that trains
-                        people to stop reading the column before it ever means
-                        anything — an age badge is a deliberate signal, and a
-                        deliberate signal shown always is a decoration. */}
-                    {stockAgeTone(level.ageSeconds) !== 'success' ? (
-                      <Badge color={stockAgeTone(level.ageSeconds)} variant="soft" size="sm">
-                        {humanDuration(level.ageSeconds)} old
-                      </Badge>
-                    ) : null}
-                  </span>
-                </td>
-                <td>
-                  {/* `stopPropagation` because the row itself is a button: without
-                      it this opens the item pane AND the explanation, and the one
-                      that lands second wins — which is the opposite of what was
-                      clicked. */}
-                  <Tooltip content="Where this number came from">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      color="neutral"
-                      aria-label={`Where the number for ${level.sku ?? 'this item'} came from`}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        explain(level);
-                      }}
-                    >
-                      <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
-                    </Button>
-                  </Tooltip>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+      <StockListTable
+        rows={rows}
+        sort={sort}
+        onSort={toggleSort}
+        onOpen={open}
+        onExplain={explain}
+      />
     );
   };
 
   return (
     <div className={PANE_SHELL}>
-      {/* No primary action — stock is not something you create here, it arrives
-          by counting, receiving or selling. */}
-      <PaneToolbar
-        label="Stock list controls"
-        search={
-          <SearchInput
-            size="sm"
-            aria-label="Search stock"
-            placeholder="Product name or code…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        }
-        filters={[locationFilter]}
-        // One pressed button, not a chip pair: this is a single yes/no question,
-        // and "All / Running low" as two chips reads as two categories of stock.
-        controls={
-          <ToggleGroup
-            size="sm"
-            color="module"
-            className="shrink-0"
-            value={lowOnly ? ['low'] : []}
-            onValueChange={(next: unknown[]) => {
-              setLowOnly(next.includes('low'));
-              resetWindow();
-            }}
-          >
-            <ToggleGroupItem
-              value="low"
-              aria-label="Only show what is running low"
-              title="Only show what is running low"
-            >
-              <Icon glyph={faArrowTrendDown} className="size-4" aria-hidden />
-              <span className="hidden @2xl:inline">Running low</span>
-            </ToggleGroupItem>
-          </ToggleGroup>
-        }
-        activeControls={lowOnly ? 1 : 0}
-        // A person who has got this list exactly right — one location, running
-        // low, sorted by what to sell — should not rebuild it tomorrow.
-        views={{
-          target: '/inventory/stock',
-          params: viewParams,
-          onApply: (next) => {
-            setSearch(next.q ?? '');
-            setLowOnly(next.low === '1');
-            const [key, dir] = (next.sort ?? '').split(':');
-            if (key && (dir === 'asc' || dir === 'desc')) {
-              setSort({ key: key as StockSortKey, dir });
-            }
-            resetWindow();
-          },
+      <StockListToolbar
+        search={search}
+        onSearch={(next) => {
+          setSearch(next);
+          resetWindow();
         }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+        locationId={locationId}
+        onLocation={(next) => {
+          setLocationId(next);
+          resetWindow();
+        }}
+        locations={activeLocations}
+        lowOnly={lowOnly}
+        onLowOnly={(next) => {
+          setLowOnly(next);
+          resetWindow();
+        }}
+        viewParams={viewParams}
+        onApplyView={(next) => {
+          setSearch(next.q ?? '');
+          setLowOnly(next.low === '1');
+          const parsed = parseSort(next.sort);
+          if (parsed) setSort(parsed);
+          resetWindow();
+        }}
+        isFetching={isFetching}
+        updatedAt={data ? dataUpdatedAt : undefined}
+        onRefresh={() => {
+          void refetch();
+        }}
       />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}

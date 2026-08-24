@@ -61,6 +61,23 @@ export function sampleHandle(handle: string): string {
   return handle.startsWith(SAMPLE_HANDLE_PREFIX) ? handle : `${SAMPLE_HANDLE_PREFIX}${handle}`;
 }
 
+/**
+ * Does this row's `metadata` carry the sample marker?
+ *
+ * The read side of `withSampleMeta`. It lives here rather than beside any one
+ * serializer because the marker vocabulary is this file's job, and a second
+ * hand-rolled `metadata.sample === true` check is how the write side and the
+ * read side drift apart.
+ */
+export function isSampleRow(metadata: unknown): boolean {
+  return (
+    !!metadata &&
+    typeof metadata === 'object' &&
+    !Array.isArray(metadata) &&
+    (metadata as Record<string, unknown>).sample === true
+  );
+}
+
 /** A `metadata.sample = true`-bearing JSON object, merging any extra keys. Typed
  *  as a Prisma JSON object so it drops straight into a `metadata` column. */
 export function withSampleMeta(extra?: Record<string, unknown>): Prisma.InputJsonObject {

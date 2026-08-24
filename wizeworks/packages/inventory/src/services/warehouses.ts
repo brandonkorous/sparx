@@ -2,7 +2,7 @@
 // dropship-virtual, or in-transit. Archival is blocked while stock remains.
 
 import { CreateWarehouseInput, UpdateWarehouseInput } from '@wizeworks/commerce-schemas';
-import { withTenant } from '@wizeworks/db';
+import { isSampleRow, withTenant } from '@wizeworks/db';
 import type { Prisma, Warehouse } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -30,6 +30,15 @@ export interface WarehouseRow {
   longitude: number | null;
   defaultForChannel: string[];
   isActive: boolean;
+  /**
+   * This location came from a sample pack rather than from the owner.
+   *
+   * Clearing sample data deliberately LEAVES locations behind, because a tenant
+   * may have renamed one and made it theirs. That is defensible only if the
+   * screen can still say where it came from — otherwise a warehouse nobody
+   * opened sits in the list looking exactly like one they did.
+   */
+  isSample: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -362,6 +371,7 @@ export function serializeWarehouse(w: Warehouse): WarehouseRow {
     longitude: w.longitude,
     defaultForChannel: Array.isArray(w.defaultForChannel) ? (w.defaultForChannel as string[]) : [],
     isActive: w.isActive,
+    isSample: isSampleRow(w.metadata),
     createdAt: w.createdAt.toISOString(),
     updatedAt: w.updatedAt.toISOString(),
   };

@@ -59,6 +59,16 @@ export interface InventoryCountRow {
   approvalThresholdCents: number;
   requiresApproval: boolean;
   varianceValueCents: number;
+  /**
+   * Σ |counted − expected| in UNITS.
+   *
+   * The money value alone cannot be read: a count that moved 372 garments none
+   * of which has a cost recorded reports `varianceValueCents: 0`, which is
+   * indistinguishable from a count where everything matched — and those two
+   * want opposite reactions. Units say whether anything moved at all, so a
+   * reader can tell "no differences" from "no costs".
+   */
+  varianceUnits: number;
   lineCount: number;
   countedLineCount: number;
   startedAt: string;
@@ -77,7 +87,9 @@ const WAREHOUSE = { select: { name: true, code: true } };
 
 export const LIST_INCLUDE = {
   warehouse: WAREHOUSE,
-  lines: { select: { countedQuantity: true } },
+  // `expectedQuantity` rides along so a row can report how many UNITS moved, not
+  // only what they were worth — see `varianceUnits`.
+  lines: { select: { countedQuantity: true, expectedQuantity: true } },
 } satisfies Prisma.InventoryCountInclude;
 
 export const DETAIL_INCLUDE = {
@@ -165,6 +177,13 @@ export function serializeRow(
     approvalThresholdCents: r.approvalThresholdCents,
     requiresApproval: r.requiresApproval,
     varianceValueCents: r.varianceValueCents,
+    varianceUnits: r.lines.reduce(
+      (total, l) =>
+        l.countedQuantity === null
+          ? total
+          : total + Math.abs(l.countedQuantity - l.expectedQuantity),
+      0
+    ),
     lineCount: r.lines.length,
     countedLineCount: r.lines.filter((l) => l.countedQuantity !== null).length,
     startedAt: r.startedAt.toISOString(),
@@ -184,7 +203,10 @@ export function serializeDetail(
   const base = serializeRow(
     {
       ...r,
-      lines: r.lines.map((l) => ({ countedQuantity: l.countedQuantity })),
+      lines: r.lines.map((l) => ({
+        countedQuantity: l.countedQuantity,
+        expectedQuantity: l.expectedQuantity,
+      })),
     },
     binCode
   );

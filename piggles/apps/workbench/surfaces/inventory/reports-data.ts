@@ -38,6 +38,10 @@ export interface ValuationSummary {
   totalAvailable: number;
   totalCostCents: number;
   totalRetailCents: number;
+  /** On-hand units nothing has ever put a cost against. Counted on the server,
+   *  which is the only place that can: from here a total of zero cannot be told
+   *  apart from no stock, and a partly costed shop looks complete. */
+  uncostedUnits: number;
   currency: string;
 }
 

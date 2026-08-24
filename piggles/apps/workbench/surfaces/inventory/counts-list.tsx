@@ -3,17 +3,9 @@
 // STOCK COUNTS — the sessions where you count what is actually on the shelf and
 // correct the numbers when they disagree.
 //
-// ── A table, like every other list ────────────────────────────────────────
-//
-// A count is a session: a location, a state, how far the counting has got, and
-// the money value of the differences it found. Laid down a table those become
-// columns you scan — how many items, how big the difference, when it started —
-// and the list reads the same as every other list in the app. The columns
-// disclose with @container: docked narrow you see the location, its number and
-// its state, with the progress and difference folded under the name; given room
-// they come back as their own right-aligned numeric columns. The name cell is
-// the one that GIVES (`max-w-0 w-full`), so the State badge is never shoved off
-// the right edge.
+// This file owns the pane — filters, window, toolbar. The table is
+// counts-list-table.tsx and what a count may honestly say about itself is
+// counts-list-summary.ts.
 //
 // ── Creating a count is a PANE, in its "new" state ────────────────────────
 //
@@ -31,31 +23,19 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  SearchInput,
-  Timestamp,
-} from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faClipboardCheck, faClipboardList, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Card, EmptyState, NativeSelect, SearchInput } from '@wizeworks/silicaui-react';
+import { faClipboardList, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, plural, useStockLocations } from './data';
-import {
-  countState,
-  countTypeLabel,
-  useCounts,
-  type CountRow,
-  type CountStatus,
-} from './counts-data';
+import { useStockLocations } from './data';
+import { useCounts, type CountRow, type CountStatus } from './counts-data';
+import { CountsListEmpty } from './counts-list-empty';
+import { CountsListTable } from './counts-list-table';
+import { CountsUnpricedNotice } from './counts-list-unpriced';
+import { anyUnpriced } from './counts-list-summary';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -66,30 +46,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-/** The one summary line a card carries, tuned to what matters at each stage:
- *  progress while counting, the value of the differences once counted, what was
- *  corrected once applied. */
-function summaryLine(count: CountRow): string {
-  const items = plural(count.lineCount, 'item', 'items');
-  switch (count.status) {
-    case 'counting':
-      return `${String(count.countedLineCount)} of ${items} counted`;
-    case 'review':
-    case 'approved':
-      return count.varianceValueCents > 0
-        ? `${items} counted · differences worth ${formatCents(count.varianceValueCents)}`
-        : `${items} counted · everything matched`;
-    case 'posted':
-      return count.varianceValueCents > 0
-        ? `${items} · ${formatCents(count.varianceValueCents)} of corrections applied`
-        : `${items} · everything matched, nothing to correct`;
-    case 'cancelled':
-      return `${items} · discarded without changing any stock`;
-    default:
-      return items;
-  }
 }
 
 const STATUS_OPTIONS: { value: CountStatus; label: string }[] = [
@@ -152,110 +108,16 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     if (rows.length === 0) {
       return (
-        <ListEmptyState
+        <CountsListEmpty
+          ctx={ctx}
           module={MODULE}
           filtered={narrowed}
-          noResults={{
-            icon: <Icon glyph={faClipboardCheck} className="size-6" aria-hidden />,
-            title: 'Nothing matches that',
-            description: locationName
-              ? `No counts match those filters at ${locationName}. Clear the status, or switch back to every location.`
-              : 'No counts match those filters. Try clearing the status filter or a different location.',
-          }}
-          firstRun={{
-            title: 'No stock counts yet',
-            description:
-              'A stock count is where you count what is really on the shelf and put the numbers right. Start one, count each item, and apply it to correct your stock in one go.',
-            actions: (
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  ctx.open('inventory.counts.detail', { id: 'new' }, { target: 'tab' });
-                }}
-              >
-                <Icon glyph={faPlus} className="size-4" aria-hidden />
-                Start a count
-              </Button>
-            ),
-          }}
+          locationName={locationName}
         />
       );
     }
 
-    return (
-      <Table size="sm" hover>
-        <thead>
-          <tr>
-            <th>Count</th>
-            <th className="hidden text-right whitespace-nowrap @lg:table-cell">Counted</th>
-            <th className="hidden text-right whitespace-nowrap @xl:table-cell">Difference</th>
-            <th className="hidden @3xl:table-cell">Started</th>
-            <th>State</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((count) => {
-            const state = countState(count.status);
-            // The difference value is only frozen once counting is done, so a
-            // session still being counted shows a dash rather than a misleading
-            // "£0.00" that reads as "everything matched".
-            const difference =
-              count.status === 'counting' ? '—' : formatCents(count.varianceValueCents);
-            return (
-              <tr
-                key={count.id}
-                className="cursor-pointer"
-                tabIndex={0}
-                role="button"
-                onClick={(event) => {
-                  openCount(count, event);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  openCount(count, event);
-                }}
-              >
-                {/* `max-w-0 w-full` makes this the cell that GIVES, so a long
-                    location name never pushes the State badge off the right. */}
-                <td className="w-full max-w-0">
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">
-                      {count.warehouseName ?? 'Stock count'}
-                    </span>
-                    <span className="truncate font-mono text-sm">{count.number}</span>
-                    {/* Below @lg the Counted and Difference columns are gone, so
-                        the plain-language summary folds back here; below @3xl the
-                        Started column folds back too. */}
-                    <span className="truncate text-sm @lg:hidden">
-                      {countTypeLabel(count.type)} · {summaryLine(count)}
-                    </span>
-                    <span className="truncate text-sm @3xl:hidden">
-                      Started <Timestamp value={count.createdAt} format="relative" />
-                    </span>
-                  </span>
-                </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
-                  {count.countedLineCount}/{count.lineCount}
-                </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
-                  {difference}
-                </td>
-                <td className="hidden whitespace-nowrap @3xl:table-cell">
-                  <Timestamp value={count.createdAt} format="relative" />
-                </td>
-                <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
-                  </Badge>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-    );
+    return <CountsListTable rows={rows} onOpen={openCount} />;
   };
 
   return (
@@ -350,6 +212,16 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       {/* Full width — the base-100 card lifted off the recessed pane. Matches the
           house list convention: the table fills the pane. */}
+      {/* Only when a row on screen actually says "No cost yet". A standing
+          notice about costs on a screen where every figure is real is noise. */}
+      {anyUnpriced(rows) ? (
+        <CountsUnpricedNotice
+          onOpen={() => {
+            ctx.open('inventory.costing.uncosted', {}, { target: 'tab' });
+          }}
+        />
+      ) : null}
+
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
       <div className="shrink-0">

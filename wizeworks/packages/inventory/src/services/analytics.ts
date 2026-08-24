@@ -36,6 +36,18 @@ export interface InventoryValuationReport {
   /** What that stock would be worth if it were yours — the size of somebody
    *  else's money sitting on your shelves. */
   nonOwnedValueCents: number;
+  /**
+   * Owned units that nothing has ever put a cost against.
+   *
+   * `totalCostCents` coalesces a missing cost to zero, which is arithmetically
+   * fine and editorially a lie: a shop holding 372 uncosted garments reports the
+   * same figure as a shop holding nothing. Cost is optional and the product form
+   * never asks for it, so this is the common case for a new business rather than
+   * an edge one. With this beside it a reader can tell "worth nothing" from
+   * "nobody has said what it cost", and a PARTLY costed shop — nine items in ten
+   * priced, which reads as a complete valuation — stops being invisible.
+   */
+  uncostedUnits: number;
 }
 
 interface ValuationRow {
@@ -46,6 +58,7 @@ interface ValuationRow {
   totalRetailCents: bigint;
   nonOwnedUnits: bigint;
   nonOwnedValueCents: bigint;
+  uncostedUnits: bigint;
 }
 
 /**
@@ -70,7 +83,11 @@ export async function inventoryValuation(ctx: ServiceContext): Promise<Inventory
         COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint                                        AS "totalRetailCents",
         COALESCE(SUM(l.on_hand) FILTER (WHERE l.ownership <> 'owned'), 0)::bigint                  AS "nonOwnedUnits",
         COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0))
-                 FILTER (WHERE l.ownership <> 'owned'), 0)::bigint                                 AS "nonOwnedValueCents"
+                 FILTER (WHERE l.ownership <> 'owned'), 0)::bigint                                 AS "nonOwnedValueCents",
+        COALESCE(SUM(l.on_hand) FILTER (WHERE l.ownership = 'owned'
+                 AND l.avg_cost_cents IS NULL
+                 AND l.unit_cost_cents IS NULL
+                 AND v.cost_cents IS NULL), 0)::bigint                                             AS "uncostedUnits"
       FROM inventory_levels l
       JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
       JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
@@ -85,6 +102,7 @@ export async function inventoryValuation(ctx: ServiceContext): Promise<Inventory
       currency: DEFAULT_CURRENCY,
       nonOwnedUnits: Number(row?.nonOwnedUnits ?? 0),
       nonOwnedValueCents: Number(row?.nonOwnedValueCents ?? 0),
+      uncostedUnits: Number(row?.uncostedUnits ?? 0),
     };
   });
 }

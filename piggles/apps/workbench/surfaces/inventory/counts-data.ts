@@ -104,6 +104,14 @@ export interface CountRow {
   requiresApproval: boolean;
   /** Σ |counted − expected| × unit cost, frozen at review. */
   varianceValueCents: number;
+  /**
+   * Σ |counted − expected| in UNITS.
+   *
+   * Read this before the money. A count that moved 372 garments none of which
+   * has a cost recorded reports a value of zero, which on its own is
+   * indistinguishable from a count where everything matched (issue 175).
+   */
+  varianceUnits: number;
   lineCount: number;
   countedLineCount: number;
   startedAt: string;

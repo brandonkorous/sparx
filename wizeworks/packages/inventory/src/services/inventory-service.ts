@@ -620,6 +620,16 @@ export type {
   CogsRow,
 } from './cost-reports';
 
+// The opening balance: stock that was already on the shelf when the business
+// started recording deliveries, and so has no cost behind it.
+export { uncostedStock, setVariantCosts } from './uncosted-stock';
+export type {
+  UncostedStockReport,
+  UncostedVariantRow,
+  CostEntry,
+  SetCostsResult,
+} from './uncosted-stock';
+
 // ─── Units of measure + assembly (docs/146 Phase 6) ───────────────────
 //
 // Buy a case, stock each, sell a pair; and make things out of other things.

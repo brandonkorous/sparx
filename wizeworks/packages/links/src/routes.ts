@@ -413,6 +413,10 @@ export const ROUTES: readonly AppRoute[] = [
   // accountant and an integrator both recognise — while the surface is titled
   // for the question a business owner types.
   { path: '/inventory/reports/cost-variance', surface: 'inventory.costing.variance' },
+  // The opening balance — stock that was on the shelf before deliveries were
+  // being recorded, and so has no cost against it. Listed before
+  // `/inventory/costing` so the longer path is offered first.
+  { path: '/inventory/costing/uncosted', surface: 'inventory.costing.uncosted' },
   { path: '/inventory/costing', surface: 'inventory.costing.settings' },
   // Units, recipes and runs (docs/146 Phase 6). The URLs keep the industry
   // words — `boms`, `assemblies` — while the surfaces are titled the way the

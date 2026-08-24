@@ -9,7 +9,12 @@
 // oldest→newest so `balanceAfter` is the running on-hand and Σ(delta) == on-hand —
 // the ledger invariant the Inventory surfaces depend on.
 
-import { SAMPLE_MOVEMENT_SOURCE, SAMPLE_PO_PREFIX, SAMPLE_SUPPLIER_PREFIX } from '../markers';
+import {
+  SAMPLE_MOVEMENT_SOURCE,
+  SAMPLE_PO_PREFIX,
+  SAMPLE_SUPPLIER_PREFIX,
+  withSampleMeta,
+} from '../markers';
 import type { SampleDataPack } from '../types';
 import { type ApplyCtx, daysAgo } from './context';
 
@@ -36,6 +41,13 @@ export async function applyInventory(ctx: ApplyCtx, pack: SampleDataPack): Promi
         city: w.city,
         region: w.region,
         country: 'US',
+        // Marked on CREATE only. Clear deliberately LEAVES warehouses behind —
+        // they are durable config a tenant may have renamed — so without this a
+        // pack's location is indistinguishable from one the owner made, which is
+        // how a Fulfillment Center in Ohio outlived the sample data that put it
+        // there and cost a database query to explain. Not set on `update`: a
+        // tenant whose own location happens to share a code keeps its own.
+        metadata: withSampleMeta(),
       },
       select: { id: true },
     });

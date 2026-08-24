@@ -24,6 +24,9 @@
 //   GET    /v1/inventory/reports/price-variance    ?from&to&warehouse_id&supplier_id
 //   GET    /v1/inventory/reports/cogs              ?from&to&warehouse_id
 //
+//   GET    /v1/inventory/costing/uncosted          ?take&skip
+//   POST   /v1/inventory/costing/uncosted          → record what a batch cost
+//
 // EVERY endpoint here is about money, so every one is `editor` or above and none
 // of them is on the scan-capable allow-list. A warehouse role deliberately
 // cannot see costs at all (`redactCosts`), and a costing surface it could reach
@@ -37,6 +40,27 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+
+const PageQuery = z.object({
+  take: z.coerce.number().int().min(1).max(500).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+// A cost of zero is REFUSED rather than accepted. A genuinely free item exists,
+// but it is rare enough that letting one through here would make every screen
+// downstream unable to tell "this cost nothing" from "nobody answered" — which
+// is the exact confusion this endpoint exists to end.
+const SetCostsBody = z.object({
+  entries: z
+    .array(
+      z.object({
+        variantId: z.string().uuid(),
+        costCents: z.number().int().positive(),
+      })
+    )
+    .min(1)
+    .max(500),
+});
 
 const LayersQuery = z.object({
   variant_id: z.string().uuid(),
@@ -264,6 +288,34 @@ const inventoryCostingRoutes: FastifyPluginAsync = async (app) => {
           ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
         })
       )
+    );
+  });
+
+  // The opening balance. Cost is optional and the product form never asks for
+  // it, so every value-of-stock figure reads $0.00 until somebody fills this in
+  // — and $0.00 is indistinguishable from a shop that owns nothing. This is the
+  // one screen that closes that gap, so it is reachable from wherever the
+  // absence is admitted rather than buried in settings.
+  app.get('/v1/inventory/costing/uncosted', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const q = PageQuery.parse(request.query);
+    return reply.send(
+      ok(
+        await inventoryService.uncostedStock(toInventoryContext(request), {
+          ...(q.take !== undefined ? { take: q.take } : {}),
+          ...(q.skip !== undefined ? { skip: q.skip } : {}),
+        })
+      )
+    );
+  });
+
+  app.post('/v1/inventory/costing/uncosted', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const body = SetCostsBody.parse(request.body);
+    return reply.send(
+      ok(await inventoryService.setVariantCosts(toInventoryContext(request), body.entries))
     );
   });
 };

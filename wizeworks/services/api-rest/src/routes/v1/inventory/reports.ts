@@ -59,6 +59,7 @@ interface SummaryAggRow {
   totalAvailable: bigint;
   totalCostCents: bigint;
   totalRetailCents: bigint;
+  uncostedUnits: bigint;
   skuCount: number;
   outCount: number;
   lowCount: number;
@@ -105,6 +106,15 @@ function summaryAgg(tx: TxClient): Promise<SummaryAggRow[]> {
       COALESCE(SUM(l.on_hand - l.allocated), 0)::bigint                            AS "totalAvailable",
       COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0)), 0)::bigint AS "totalCostCents",
       COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint                          AS "totalRetailCents",
+      -- The COALESCE above turns a missing cost into a zero, which is arithmetic
+      -- over an absence: a shop holding 372 uncosted garments reports the same
+      -- total as a shop holding nothing. Counting the units that produced those
+      -- zeroes is what lets a reader tell the two apart. Cost is optional and the
+      -- product form never asks for it, so this is the common case for a new
+      -- business rather than an edge one.
+      COALESCE(SUM(l.on_hand) FILTER (
+        WHERE l.avg_cost_cents IS NULL AND l.unit_cost_cents IS NULL AND v.cost_cents IS NULL
+      ), 0)::bigint                                                                AS "uncostedUnits",
       COUNT(*)::int                                                                AS "skuCount",
       COUNT(*) FILTER (WHERE ${SELLABLE_SQL} <= 0)::int                            AS "outCount",
       COUNT(*) FILTER (
@@ -220,6 +230,7 @@ const reportRoutes: FastifyPluginAsync = (app) => {
           totalAvailable: Number(agg?.totalAvailable ?? 0),
           totalCostCents: Number(agg?.totalCostCents ?? 0),
           totalRetailCents: Number(agg?.totalRetailCents ?? 0),
+          uncostedUnits: Number(agg?.uncostedUnits ?? 0),
           currency: DEFAULT_CURRENCY,
         },
         stockStatus: {
