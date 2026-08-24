@@ -166,6 +166,97 @@ export async function getBySku(ctx: ServiceContext, sku: string): Promise<Varian
   return toVariantRow(variant);
 }
 
+/** Who, if anyone, is already using a product code.
+ *
+ * Deliberately matches `create`'s collision check EXACTLY, which means it does
+ * NOT filter `deletedAt`: the unique index is `(tenantId, sku)` with no deleted
+ * column in it, so a retired variant still holds its code and still blocks a new
+ * one. A check that skipped deleted rows would answer "free", and the save would
+ * then fail on the very constraint this exists to predict.
+ */
+export interface SkuOwner {
+  variantId: string;
+  productId: string;
+  productTitle: string;
+  /** The holder is retired. The code is still taken, but the sentence a person
+   *  needs is a different one — they cannot see the product that has it. */
+  retired: boolean;
+}
+
+export interface SkuCheck {
+  /** Null when the code is free. */
+  owner: SkuOwner | null;
+  /** A code that IS free — the one asked about when nobody holds it, otherwise
+   *  the same stem with the next unused number. Always returned, so a caller
+   *  never has to ask twice or invent one itself. */
+  free: string;
+}
+
+/** `WIDGET-3` → stem `WIDGET`, number 3. A code with no trailing number is all
+ *  stem, and gets numbered from 1. */
+function splitSkuStem(sku: string): { stem: string; n: number } {
+  const match = /^(.*?)-(\d+)$/.exec(sku);
+  if (!match) return { stem: sku, n: 0 };
+  return { stem: match[1]!, n: Number(match[2]) };
+}
+
+const SKU_MAX = 127;
+
+/** The first number after every one already in use on this stem. Counts UP from
+ *  the highest rather than filling gaps: a code is a label somebody may already
+ *  have printed, and reusing a retired product's number is how two boxes in a
+ *  stockroom end up saying the same thing. */
+function nextFreeSku(stem: string, taken: string[], from: number): string {
+  const used = new Set(taken.map((sku) => splitSkuStem(sku)).map((parts) => parts.n));
+  let n = Math.max(from, 1);
+  while (used.has(n)) n += 1;
+  // Keep room for the number, so a long name cannot push the result past the
+  // column. Trimming the stem is safe: uniqueness comes from the number.
+  const room = SKU_MAX - `-${n}`.length;
+  return `${stem.slice(0, room).replace(/-+$/, '')}-${n}`;
+}
+
+export async function checkSku(ctx: ServiceContext, sku: string): Promise<SkuCheck> {
+  const { stem, n } = splitSkuStem(sku);
+  const [holder, siblings] = await withTenant(ctx, (tx) =>
+    Promise.all([
+      tx.productVariant.findFirst({
+        where: { tenantId: ctx.tenantId, sku },
+        select: {
+          id: true,
+          deletedAt: true,
+          product: { select: { id: true, title: true, deletedAt: true } },
+        },
+      }),
+      tx.productVariant.findMany({
+        where: { tenantId: ctx.tenantId, sku: { startsWith: `${stem}-` } },
+        select: { sku: true },
+        take: 1000,
+      }),
+    ])
+  );
+
+  const owner: SkuOwner | null = holder
+    ? {
+        variantId: holder.id,
+        productId: holder.product.id,
+        productTitle: holder.product.title,
+        retired: holder.deletedAt !== null || holder.product.deletedAt !== null,
+      }
+    : null;
+
+  return {
+    owner,
+    free: owner
+      ? nextFreeSku(
+          stem,
+          siblings.map((v) => v.sku),
+          n + 1
+        )
+      : sku,
+  };
+}
+
 export async function listImagesForProduct(
   ctx: ServiceContext,
   productId: string

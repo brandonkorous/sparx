@@ -1527,12 +1527,92 @@ export function slugifyHandle(value: string): string {
   return slugify(value, 127);
 }
 
-/** A first product code, derived from the title, so nobody has to invent one to
- *  get started. Stays fully editable — a business with its own coding scheme
- *  types theirs over the top. */
+/**
+ * A first product code, derived from the title, so nobody has to invent one to
+ * get started. Stays fully editable — a business with its own coding scheme
+ * types theirs over the top.
+ *
+ * ── WHY IT USES THE WHOLE NAME (issue 176) ─────────────────────────────────
+ *
+ * This cut the name at 20 characters. The code column is `varchar(127)` and the
+ * `Sku` schema allows 127, so the suggestion was being trimmed to a sixth of the
+ * room it had — and a shop's distinguishing word is almost always past character
+ * 20, because it comes last:
+ *
+ *   Throwaway test scarf A  ─┐
+ *                            ├─→  THROWAWAY-TEST-SCARF-1   (identical)
+ *   Throwaway test scarf B  ─┘
+ *
+ * Two products, one code, on a field whose own description says it has to be
+ * different from every other code. Names are the one thing a shop already keeps
+ * distinct, so deriving from the WHOLE name inherits that. `SKU_STEM_MAX` leaves
+ * room for the `-1`.
+ *
+ * This makes a collision rare rather than impossible — two products can still
+ * share a name. `useSkuOwner` below is what catches the rest, before the save.
+ */
+const SKU_STEM_MAX = 125;
+
 export function suggestSku(title: string): string {
-  const base = slugifyUpper(title, 20);
+  const base = slugifyUpper(title, SKU_STEM_MAX);
   return base === '' ? '' : `${base}-1`;
+}
+
+/** Who already holds a product code. */
+export interface SkuOwner {
+  variantId: string;
+  productId: string;
+  productTitle: string;
+  /** Held by a retired product or version. Still taken, but the person cannot
+   *  see the thing holding it, so the sentence they need is a different one. */
+  retired: boolean;
+}
+
+export interface SkuCheck {
+  /** Null when the code is free. */
+  owner: SkuOwner | null;
+  /** A code that IS free — the one asked about when nobody holds it, otherwise
+   *  the same stem with the next unused number. */
+  free: string;
+}
+
+/**
+ * Is this product code already in use, and what is the nearest one that is not?
+ *
+ * Asked as the name is typed, so the Add form can settle on a code that will
+ * actually save. Without it a refused code creates the product WITHOUT its
+ * price, and the message that follows blames the price (issue 176).
+ *
+ * Never throws into the form: if the check itself cannot run, the data stays
+ * undefined and the form does not claim to know either way. Silence is the
+ * honest answer to a question nobody answered.
+ */
+export function useSkuCheck(sku: string) {
+  const trimmed = sku.trim();
+  return useQuery({
+    queryKey: [...productKeys.all, 'sku-check', trimmed],
+    queryFn: () =>
+      api.get<SkuCheck>(`/v1/commerce/variants/sku-owner?sku=${encodeURIComponent(trimmed)}`),
+    enabled: trimmed !== '',
+    // A code's owner does not change while somebody fills in a form, and the
+    // same stem is re-asked on every keystroke that does not alter it.
+    staleTime: 30_000,
+    retry: false,
+  });
+}
+
+/** Did this write fail because the product code was taken? Read off the wire
+ *  fields (`CONFLICT` + `field: 'sku'`) rather than by sniffing the message,
+ *  which is the server's English and not a contract. */
+export function isSkuConflict(error: unknown): boolean {
+  const real = error instanceof VariantAfterCreateError ? error.reason : error;
+  if (!(real instanceof ApiError) || real.code !== 'CONFLICT') return false;
+  const details = real.details;
+  return (
+    typeof details === 'object' &&
+    details !== null &&
+    (details as { field?: unknown }).field === 'sku'
+  );
 }
 
 export function formatDate(value: string | null | undefined): string {

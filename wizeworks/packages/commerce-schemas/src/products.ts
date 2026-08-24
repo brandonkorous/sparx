@@ -327,6 +327,14 @@ export const BulkUpdateProductStatusInput = z.object({
 });
 export type BulkUpdateProductStatusInput = z.infer<typeof BulkUpdateProductStatusInput>;
 
+/** Deleting several at once. Capped lower than the status/tag bulks because
+ *  every one of these is irreversible and cascades to its variants — a thousand
+ *  is a number nobody meant to type. */
+export const BulkDeleteProductsInput = z.object({
+  productIds: z.array(Uuid).min(1).max(200),
+});
+export type BulkDeleteProductsInput = z.infer<typeof BulkDeleteProductsInput>;
+
 export const BulkTagProductsInput = z.object({
   productIds: z.array(Uuid).min(1).max(1000),
   addTags: z.array(z.string().min(1).max(63)).max(50).default([]),

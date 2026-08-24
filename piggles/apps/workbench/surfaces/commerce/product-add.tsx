@@ -34,9 +34,11 @@ import {
   slugifyHandle,
   suggestSku,
   useCreateProduct,
+  useSkuCheck,
   VariantAfterCreateError,
 } from './products-data';
 import { NewProductFields } from './product-add-fields';
+import { codeTaken, halfCreatedToast } from './product-add-code';
 
 /** The one column everything sits in, matching the manage view beside it. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -57,14 +59,30 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
   // themselves, at which point it is theirs and typing more of the name must not
   // overwrite it.
   const effectiveHandle = touchedHandle ? handle : slugifyHandle(title);
-  const effectiveSku = touchedSku ? sku : suggestSku(title);
+
+  // ── The code has to be one that will actually save (issue 176) ────────────
+  //
+  // Two products whose names agreed for long enough used to be handed the SAME
+  // code, and the save then half-succeeded: product written, price refused,
+  // person told they forgot a price they had typed.
+  //
+  // The check always asks about the SUGGESTED code — derived from the name and
+  // nothing else — so the query key is stable and the answer cannot chase its
+  // own tail. What the field shows is a separate question: an untouched code is
+  // the app's own choice, so a taken one is quietly replaced with the next free
+  // number rather than shown as her mistake. A code she TYPED is hers, so it
+  // stands, and the collision is named on the field instead.
+  const suggested = suggestSku(title);
+  const check = useSkuCheck(touchedSku ? sku : suggested).data;
+  const effectiveSku = touchedSku ? sku : check?.owner ? check.free : suggested;
+  const taken = touchedSku ? codeTaken(check) : null;
 
   const trimmed = title.trim();
   const dirty = trimmed !== '' || touchedHandle || touchedSku || price.trim() !== '';
   useDirtySource(dirty && !create.isSuccess, 'This product has not been added yet. Close anyway?');
 
   const titleError = trimmed === '' ? 'Give the product a name.' : null;
-  const skuError = effectiveSku.trim() === '' ? 'Give the product a code.' : null;
+  const skuError = effectiveSku.trim() === '' ? 'Give the product a code.' : taken;
   const priceError = price.trim() === '' ? 'Give the product a price.' : moneyProblem(price);
   const blocked = Boolean(titleError) || Boolean(skuError) || Boolean(priceError);
 
@@ -120,11 +138,7 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
         },
         onError: (error) => {
           if (!(error instanceof VariantAfterCreateError)) return;
-          landOn(error.productId, {
-            title: `${trimmed} was added without a price`,
-            description: 'Set its price here — nobody can buy it until you do.',
-            type: 'warning',
-          });
+          landOn(error.productId, halfCreatedToast(error, trimmed));
         },
       }
     );
@@ -163,7 +177,7 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>
                   {halfCreated
-                    ? 'The product was added, but its price was not'
+                    ? halfCreatedToast(create.error, trimmed).title
                     : 'Could not add that product'}
                 </AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>

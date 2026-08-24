@@ -14,6 +14,7 @@
 
 import {
   BulkTagProductsInput,
+  BulkDeleteProductsInput,
   BulkUpdateProductStatusInput,
   CreateProductInput,
   type ProductStatus,
@@ -827,6 +828,69 @@ export async function softDelete(ctx: ServiceContext, productId: string): Promis
 }
 
 // ─── Bulk operations ──────────────────────────────────────────────────
+
+/**
+ * Delete several products at once.
+ *
+ * The SAME tombstone as `softDelete`, applied per product inside one
+ * transaction: the product and its live variants go together, because a live
+ * variant under a deleted product is an orphan whose SKU stays reserved and
+ * blocks a later reinstall.
+ *
+ * Products already gone are skipped rather than erroring the batch. Somebody
+ * who ticked fifteen and had one deleted in another tab wants the fourteen
+ * removed and a truthful count, not a failed operation and no way to tell which
+ * one was the problem.
+ */
+export async function bulkSoftDelete(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<{ deleted: number; skipped: number }> {
+  const input = BulkDeleteProductsInput.parse(rawInput);
+
+  const removed = await withTenant(ctx, async (tx) => {
+    const alive = await tx.product.findMany({
+      where: { id: { in: input.productIds }, deletedAt: null },
+    });
+    const now = new Date();
+
+    for (const before of alive) {
+      const updated = await tx.product.update({
+        where: { id: before.id },
+        data: { deletedAt: now, status: 'archived' },
+      });
+      await tx.productVariant.updateMany({
+        where: { productId: before.id, tenantId: ctx.tenantId, deletedAt: null },
+        data: { deletedAt: now, isDefault: false },
+      });
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        actorType: ctx.userId ? 'user' : 'system',
+        action: 'commerce.product.deleted',
+        entityType: 'Product',
+        entityId: updated.id,
+        diff: { before: serializeProduct(before), after: serializeProduct(updated) },
+      });
+    }
+
+    return alive.map((p) => ({ id: p.id, handle: p.handle }));
+  });
+
+  await Promise.all(
+    removed.map((p) =>
+      publishCommerceEvent({
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        topic: 'product.deleted',
+        data: { productId: p.id, handle: p.handle },
+      })
+    )
+  );
+
+  return { deleted: removed.length, skipped: input.productIds.length - removed.length };
+}
 
 export async function bulkUpdateStatus(
   ctx: ServiceContext,

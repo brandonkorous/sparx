@@ -12,6 +12,7 @@
 //   POST   /v1/commerce/products/:id/unpublish                → unpublish
 //   DELETE /v1/commerce/products/:id                          → soft delete
 //   POST   /v1/commerce/products/bulk-status                  → bulk status change
+//   POST   /v1/commerce/products/bulk-delete                  → bulk delete
 //   POST   /v1/commerce/products/bulk-tag                     → bulk tag add/remove
 //   POST   /v1/commerce/products/bulk-price/preview           → price adjust dry run
 //   POST   /v1/commerce/products/bulk-price/apply             → apply + record undo
@@ -25,6 +26,7 @@
 //   POST   /v1/commerce/products/:productId/variants          → create variant
 //   GET    /v1/commerce/variants/:id                          → fetch variant
 //   PATCH  /v1/commerce/variants/:id                          → update variant
+//   GET    /v1/commerce/variants/sku-owner                    → who holds a code + a free one
 //   POST   /v1/commerce/variants/:id/rename-sku               → rename SKU
 //   POST   /v1/commerce/variants/:id/default                  → set default
 //   POST   /v1/commerce/variants/:id/archive                  → archive
@@ -43,6 +45,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { queryBool } from '@wizeworks/api-core/query';
 import { bulkPriceService, productService, variantService } from '@wizeworks/commerce';
+import { Sku } from '@wizeworks/commerce-schemas';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
@@ -59,6 +62,9 @@ const ProductIdParam = z.object({ productId: z.string().uuid() });
 const BulkPriceRevertBody = z.object({ operationId: z.string().uuid() });
 const VariantImageParam = z.object({ imageId: z.string().uuid() });
 const ListVariantsQuery = z.object({ include_archived: queryBool.optional() });
+// The same shape the create endpoint validates, so a code this says is free is a
+// code the create will actually accept.
+const SkuQuery = z.object({ sku: Sku });
 
 const ListProductsQuery = z.object({
   status: z.string().optional(),
@@ -233,6 +239,16 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     return ok(result);
   });
 
+  // Deleting several at once. `editor`, same as one at a time: this removes no
+  // capability a person did not already have — it removes the fifteen rounds of
+  // open-scroll-confirm-wait that emptying a starter catalogue used to take.
+  app.post('/v1/commerce/products/bulk-delete', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const result = await productService.bulkSoftDelete(toCommerceContext(request), request.body);
+    return ok(result);
+  });
+
   app.post('/v1/commerce/products/bulk-tag', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
@@ -347,6 +363,20 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await variantService.update(toCommerceContext(request), id, request.body);
     return ok({ id, updated: true });
+  });
+
+  // Who already holds a product code. Exists so the Add form can say "Marlow Knit
+  // is using that code" BEFORE the save, instead of the save half-failing and the
+  // person being told they forgot a price they typed (issue 176).
+  //
+  // `viewer`, not `editor`: it answers a question about the catalog, and the Add
+  // form is the one place a person who cannot yet edit might legitimately look.
+  app.get('/v1/commerce/variants/sku-owner', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { sku } = SkuQuery.parse(request.query);
+    const check = await variantService.checkSku(toCommerceContext(request), sku);
+    return ok({ sku, ...check });
   });
 
   app.post('/v1/commerce/variants/:id/rename-sku', async (request) => {
