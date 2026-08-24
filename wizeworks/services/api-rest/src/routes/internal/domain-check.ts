@@ -118,6 +118,10 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'mypiggles.com',
   'www.mypiggles.com',
   'api.mypiggles.com',
+  // mcp.mypiggles.com — the brand's own MCP host, the address a customer pastes
+  // into their assistant by hand. The host block, DNS record and PIGGLES_MCP_URL
+  // all shipped without this line, so the whole MCP surface 525'd.
+  'mcp.mypiggles.com',
   // The tenant zone's apex + www, which Caddy redirects to meetpiggles.com but
   // must still terminate TLS for. Tenant sites UNDER it (`<slug>.piggles.site`)
   // are deliberately absent: those are real tenant hosts with `domains` rows and
