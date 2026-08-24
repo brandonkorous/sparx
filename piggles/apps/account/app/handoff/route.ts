@@ -49,8 +49,34 @@ import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 // A missing answer is not a failure and is not treated as one: it is a question
 // nobody has put yet, so the door sends them to put it, carrying where they were
 // headed so the trip costs them nothing but the answer.
-const SESSION_COOKIE = getCookies(auth.options).sessionToken.name;
-const COOKIE_NAMES = [`__Secure-${SESSION_COOKIE}`, SESSION_COOKIE];
+//
+// ── AND WHY IT IS ASKED ON FIRST REQUEST, NOT AT IMPORT ─────────────────────
+//
+// `auth` is a Proxy that constructs Better Auth on FIRST PROPERTY ACCESS, on
+// purpose: `betterAuth()` reads deployment configuration and throws when it is
+// absent, so building it at module-evaluation time crashes anything that merely
+// imports this package. Reading `auth.options` into a module-level `const`
+// defeats that — it moves construction back to import time, and `next build`
+// imports every route module while collecting page data.
+//
+// It is not hypothetical. This line failed the 2026-08-24 release: the MCP
+// resource identifier became per-brand and throws rather than guess an address a
+// customer is told to paste into their assistant, and the build machine has no
+// deployment to read one from. `next build` evaluated this module, the Proxy
+// built Better Auth on a build agent, and piggles-account was the one image of
+// seventeen that did not ship.
+//
+// So the name is resolved on first REQUEST and cached for the process. Same one
+// lookup, on a machine that actually has the configuration.
+let cookieNames: readonly string[] | undefined;
+
+function sessionCookieNames(): readonly string[] {
+  if (!cookieNames) {
+    const name = getCookies(auth.options).sessionToken.name;
+    cookieNames = [`__Secure-${name}`, name];
+  }
+  return cookieNames;
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -115,7 +141,9 @@ export async function GET(request: NextRequest) {
     return sameOriginRedirectWithNext('/cookie-choices', `/handoff${request.nextUrl.search}`);
   }
 
-  const raw = COOKIE_NAMES.map((n) => request.cookies.get(n)?.value).find(Boolean);
+  const raw = sessionCookieNames()
+    .map((n) => request.cookies.get(n)?.value)
+    .find(Boolean);
   if (!raw) {
     // A valid session with no readable cookie means the cookie name has moved
     // under us — a Better Auth upgrade, or a config change. Fail loudly rather

@@ -1,0 +1,34 @@
+# Line endings are LF, everywhere, decided once.
+#
+# The repo already said this twice — .editorconfig (end_of_line = lf) and
+# .prettierrc ("endOfLine": "lf") — but neither reaches git. With no attributes
+# and core.autocrlf=false, git did NO translation in either direction, so
+# whatever bytes a tool happened to write were the bytes that got committed.
+#
+# On Windows that is not hypothetical: PowerShell's Set-Content and a Node
+# script using os.EOL both default to CRLF, and neither honors .editorconfig.
+# On 2026-08-24 that turned 78-scheduling.prisma into a 1,149-line diff for a
+# 7-line change, and db/src/index.ts into 617 lines for one added export —
+# every other line "changed" only because its ending did.
+#
+# `text=auto` lets git decide what is text; `eol=lf` normalizes text on commit
+# AND checks it out as LF. What it CANNOT do is rewrite a working file a tool
+# just wrote with CRLF, so prettier can still flag one — this stops CRLF
+# entering history and stops the phantom diffs, it does not police the tools.
+*  text=auto  eol=lf
+
+# Binary: never translated, never diffed as text.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.webp   binary
+*.avif   binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.pdf    binary
+*.mp4    binary
+*.webm   binary
