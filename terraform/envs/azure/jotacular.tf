@@ -186,7 +186,22 @@ data "azurerm_client_config" "current" {}
 #   4. MIGRATIONS. Two independent migration runners against one database will
 #      eventually both take a lock, and neither knows the other exists.
 #
-# THE REAL CONSTRAINT IS CONNECTIONS, NOT STORAGE OR CPU. B1ms is capped at 50
+# THE REAL CONSTRAINT IS CONNECTIONS, AND SHARING THE SERVER LOST THAT ARGUMENT
+# ON 2026-08-24. B1ms caps max_connections at 50, of which Azure reserves 15
+# nobody can release — superuser_reserved_connections 10 and
+# reserved_connections 5, both isReadOnly. An ordinary role gets 35, SHARED.
+# sparx and jotacular together sat at 41 of 50 for a morning and jotacular
+# could not open a single connection: every signed-in page returned a server
+# error while Azure's own metric read 41/50 and looked healthy. The numbers
+# are in jotDOJO's ADR-099.
+#
+# So jotacular has ITS OWN B1ms now, declared below, and the paragraph that
+# follows is kept because its reasoning was sound and its conclusion was
+# still wrong. Two B1ms at ~$18 each beat one B2s at ~$60, and they buy
+# isolation the bigger shared server does not: neither product can starve
+# the other, whatever either one does next.
+#
+# As it read before, for the record. B1ms is capped at 50
 # max_connections — a hard, tier-specific ceiling, not a tunable — and sparx
 # already draws on it. jotDOJO's `packages/db/src/client.ts` opens
 # `postgres(url, { max: 10 })`, so four services at their default is FORTY
@@ -209,6 +224,102 @@ resource "azurerm_postgresql_flexible_server_database" "jotacular" {
     # Same posture as the `sparx` database beside it. Losing this is losing
     # another product's data, and a database is a one-line resource — exactly the
     # kind of thing a careless refactor drops.
+    prevent_destroy = true
+  }
+}
+
+# ---------------------------------------------------------------------------
+# jotacular's OWN server. ADR-099, and the answer to the note above.
+#
+# The subnet is its own because a DELEGATED subnet holds exactly one flexible
+# server. The private DNS ZONE is sparx's, reused deliberately: a zone carries
+# one record per server, and a second zone linked to the same VNet would buy
+# nothing but another thing to forget to link.
+#
+# THE SERVER ADMIN IS jotacular's OWNER. That is the simplification not sharing
+# buys. On sparx's server the owner had to be minted by sparx's data stage from
+# JOTDOJO-OWNER-PASSWORD, because a server-level role is not something a tenant
+# of that server can create for itself. Here it exists the moment the server
+# does, and DATABASE-ADMIN-URL works without a bootstrap step.
+# ---------------------------------------------------------------------------
+resource "azurerm_subnet" "jotacular_postgres" {
+  count                = local.jotacular_count
+  name                 = "snet-psql-jotacular"
+  resource_group_name  = azurerm_resource_group.main.name
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefixes     = ["10.20.16.16/28"]
+
+  # Azure adds this itself so the server can reach backup storage. Declared here
+  # for the reason main.tf gives beside the same line: undeclared, the next plan
+  # proposes to REMOVE it and quietly degrades backups.
+  service_endpoints = ["Microsoft.Storage"]
+
+  delegation {
+    name = "fs"
+    service_delegation {
+      name = "Microsoft.DBforPostgreSQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+      ]
+    }
+  }
+}
+
+resource "azurerm_postgresql_flexible_server" "jotacular" {
+  count               = local.jotacular_count
+  name                = "psql-jotacular-${var.environment}-${local.loc}"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+
+  version    = var.postgres_version
+  sku_name   = var.postgres_sku
+  storage_mb = var.postgres_storage_mb
+
+  administrator_login    = "jotacular_owner"
+  administrator_password = random_password.jotacular_owner[0].result
+
+  delegated_subnet_id           = azurerm_subnet.jotacular_postgres[0].id
+  private_dns_zone_id           = azurerm_private_dns_zone.postgres.id
+  public_network_access_enabled = false
+
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+  zone                         = "1"
+
+  tags = local.tags
+
+  depends_on = [azurerm_private_dns_zone_virtual_network_link.postgres]
+
+  lifecycle {
+    # Same posture as sparx's. Losing this is losing the product's data.
+    prevent_destroy = true
+  }
+}
+
+# Per-SERVER, not per-database: Flexible Server has no per-database allow-list.
+# jotacular's 0000_init.sql opens with CREATE EXTENSION vector / pg_trgm /
+# citext, and without these names it fails after the roles exist and the pods
+# have already rolled. main.tf explains the failure shape at length.
+resource "azurerm_postgresql_flexible_server_configuration" "jotacular_extensions" {
+  count     = local.jotacular_count
+  name      = "azure.extensions"
+  server_id = azurerm_postgresql_flexible_server.jotacular[0].id
+  value     = "PGCRYPTO,BTREE_GIST,VECTOR,PG_TRGM,CITEXT"
+}
+
+# The database, on jotacular's own server and finally called jotacular.
+#
+# The `jotdojo` database above is NOT removed in the same change. It is the
+# rollback until this one is restored and verified, and a database nobody
+# connects to costs nothing. Delete it in a later, deliberate commit.
+resource "azurerm_postgresql_flexible_server_database" "jotacular_own" {
+  count     = local.jotacular_count
+  name      = "jotacular"
+  server_id = azurerm_postgresql_flexible_server.jotacular[0].id
+  collation = "en_US.utf8"
+  charset   = "utf8"
+
+  lifecycle {
     prevent_destroy = true
   }
 }
@@ -819,7 +930,7 @@ resource "random_password" "jotacular_auth_secret" {
 }
 
 locals {
-  jotacular_server = var.jotacular_enabled ? azurerm_postgresql_flexible_server.main.fqdn : ""
+  jotacular_server = var.jotacular_enabled ? azurerm_postgresql_flexible_server.jotacular[0].fqdn : ""
 
   # NAMES ARE UPPERCASE-KEBAB, matching jotDOJO's release, which maps a vault
   # name to an env name with `${name//_/-}` — a case-PRESERVING substitution.
@@ -837,13 +948,13 @@ locals {
       # BYPASSRLS roles from every policy, so an owner connection string turns
       # jotDOJO's whole space boundary off while every policy still reads as
       # though it were being enforced.
-      value = "postgresql://jotdojo_app:${urlencode(random_password.jotacular_app[0].result)}@${local.jotacular_server}:5432/jotdojo?sslmode=require"
+      value = "postgresql://jotacular_app:${urlencode(random_password.jotacular_app[0].result)}@${local.jotacular_server}:5432/jotacular?sslmode=require"
       type  = "connection-string; rotate by tainting random_password.jotacular_app"
     }
     "DATABASE-ADMIN-URL" = {
       # Migrations only, and `jotdojo_owner` rather than `sparx_owner` — see the
       # note on random_password.jotacular_owner above.
-      value = "postgresql://jotdojo_owner:${urlencode(random_password.jotacular_owner[0].result)}@${local.jotacular_server}:5432/jotdojo?sslmode=require"
+      value = "postgresql://jotacular_owner:${urlencode(random_password.jotacular_owner[0].result)}@${local.jotacular_server}:5432/jotacular?sslmode=require"
       type  = "connection-string; migrations only, never the application"
     }
     "JOTDOJO-OWNER-PASSWORD" = {
