@@ -77,6 +77,9 @@ export {
   findBookingHosts,
   joinNames,
 } from './booking-receipt';
+// One roster: a bookable person and a person on the team are the same record
+// (issue 120). The two directions of that pairing.
+export { bookableResourceIds, makeBookable, setBookable, stopBookable } from './roster';
 export {
   type BookableResource,
   createResource,

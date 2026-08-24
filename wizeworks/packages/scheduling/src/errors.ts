@@ -35,6 +35,16 @@ export class ResourceNotFoundError extends SchedulingError {
   }
 }
 
+/** The person a bookable record was meant to belong to is not on the roster.
+ *  One roster means the two are the same record, so this is a real conflict
+ *  rather than a missing optional link (issue 120). */
+export class StaffMemberMissingError extends SchedulingError {
+  constructor(id: string) {
+    super('STAFF_MEMBER_NOT_FOUND', `Nobody on the team with id ${id}`);
+    this.name = 'StaffMemberMissingError';
+  }
+}
+
 export class ServiceNotFoundError extends SchedulingError {
   constructor(id: string) {
     super('SERVICE_NOT_FOUND', `Service ${id} not found`);

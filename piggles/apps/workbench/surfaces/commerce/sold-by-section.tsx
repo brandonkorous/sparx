@@ -175,9 +175,13 @@ export function SoldBySection({
             ) : null}
           </div>
 
+          {/* Only when the roster is genuinely empty. This used to be the one
+              thing this panel said to a salon with two stylists on it, because
+              they were bookable resources and nobody had ever written them onto
+              the team (issue 120) — they are one roster now. */}
           {roster.length === 0 && !people.isPending ? (
             <Text className="text-base">
-              Nobody is on your team yet. Add people under Your team, and they will appear here.
+              Nobody is on your team yet. Add someone under Your team and they will appear here.
             </Text>
           ) : null}
 

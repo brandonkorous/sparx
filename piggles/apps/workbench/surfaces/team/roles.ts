@@ -68,7 +68,7 @@ export function roleDescription(role: string): string {
     (ROLE_DESCRIPTIONS as Record<string, string>)[role] ??
     productCopy(
       'team.roles.unknown',
-      'A role this version of Piggles does not recognise. It still works — ask us what it covers.'
+      'A role this version of Piggles does not recognize. It still works — ask us what it covers.'
     )
   );
 }

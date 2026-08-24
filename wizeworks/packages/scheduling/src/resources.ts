@@ -6,13 +6,14 @@ import { withTenant, type SchedulingResource } from '@wizeworks/db';
 import type { CreateResourceInput, UpdateResourceInput } from '@wizeworks/scheduling-schemas';
 
 import { ResourceNotFoundError } from './errors';
+import { addToRoster, renameOnRoster } from './roster';
 
 export async function createResource(
   tenantId: string,
   input: CreateResourceInput
 ): Promise<SchedulingResource> {
-  return withTenant({ tenantId }, (tx) =>
-    tx.schedulingResource.create({
+  return withTenant({ tenantId }, async (tx) => {
+    const created = await tx.schedulingResource.create({
       data: {
         tenantId,
         kind: input.kind,
@@ -38,8 +39,11 @@ export async function createResource(
           ? { siteLinks: { create: input.propertyIds.map((propertyId) => ({ propertyId })) } }
           : {}),
       },
-    })
-  );
+    });
+    // A staff resource is a PERSON, and a business has one roster (issue 120).
+    await addToRoster(tx, tenantId, created);
+    return created;
+  });
 }
 
 export async function updateResource(
@@ -63,13 +67,18 @@ export async function updateResource(
         });
       }
     }
-    return tx.schedulingResource.update({
+    const updated = await tx.schedulingResource.update({
       where: { id },
       data: {
         ...rest,
         ...(settings !== undefined ? { settings: settings as Prisma.InputJsonValue } : {}),
       },
     });
+    // Renaming the bookable thing renames the person, while the two still agree.
+    if (updated.kind === 'staff') {
+      await renameOnRoster(tx, id, existing.name, updated.name);
+    }
+    return updated;
   });
 }
 

@@ -105,7 +105,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
   /* ── Compliance ─────────────────────────────────────────────────────────── */
   {
     key: 'staff.certifications',
-    title: 'Tickets and licences',
+    title: 'Tickets and licenses',
     module: 'staff',
     icon: faShieldCheck,
     component: CertificationsSurface,
@@ -114,7 +114,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     order: 30,
     keywords: [
       'certifications',
-      'licences',
+      'licenses',
       'licenses',
       'tickets',
       'expiring',

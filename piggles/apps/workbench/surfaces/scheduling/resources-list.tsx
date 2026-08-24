@@ -3,43 +3,26 @@
 // PEOPLE & EQUIPMENT — whatever a booking uses up: a member of staff, a room, a
 // bay, a machine. Two bookings can never claim the same one at the same time.
 //
-// A table, like every other list. A resource is an identity (its name and what
-// kind of thing it is) plus its state. The list endpoint has no free-text search
-// — resources are few, and you filter by KIND, not by typing — so the toolbar
+// The PEOPLE here are the same people as My Team — one roster, one record,
+// two faces (issue 120). Adding somebody in either place adds them in both.
+//
+// A table, like every other list. The list endpoint has no free-text search —
+// resources are few, and you filter by KIND, not by typing — so the toolbar
 // carries a kind picker and an "in use only" toggle, both SERVER filters, and no
 // search box it cannot honour.
 
 import { useState } from 'react';
-import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  ToggleGroup,
-  ToggleGroupItem,
-} from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faEyeSlash, faPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { ListEmptyState } from '../../components/list-empty-state';
-import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import {
-  RESOURCE_KINDS,
-  resourceKindLabel,
-  resourceState,
-  useResources,
-  type ResourceKind,
-  type SchedulingResource,
-} from './setup-data';
-import { RowOpenHint } from '../../components/row-open-hint';
 
-/** Registry module for this surface, so the brand's empty-state artwork is this
- *  app's own picture rather than the generic one. */
-const MODULE = 'scheduling';
+import { Card, NativeSelect, ToggleGroup, ToggleGroupItem } from '@wizeworks/silicaui-react';
+import { faEyeSlash, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+
+import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
+import { RowOpenHint } from '../../components/row-open-hint';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { RESOURCE_KINDS, useResources, type ResourceKind } from './setup-data';
+import { ResourcesBody, RosterNote } from './resources-body';
 
 const DETAIL_KEY = 'scheduling.resources.detail';
 
@@ -49,19 +32,54 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-/** The capacity note that makes sense for this KIND — a pooled resource holds
- *  several bookings at once, a table seats a party, staff hold one at a time. */
-function capacityNote(resource: SchedulingResource): string | null {
-  if (resource.kind === 'table') {
-    if (resource.capacityMin && resource.capacityMax) {
-      return `Seats ${String(resource.capacityMin)}–${String(resource.capacityMax)}`;
-    }
-    if (resource.capacityMax) return `Seats up to ${String(resource.capacityMax)}`;
-  }
-  if (!resource.exclusive && resource.capacity > 1) {
-    return `${String(resource.capacity)} at once`;
-  }
-  return null;
+function KindFilter({ kind, setKind }: { kind: string; setKind: (next: string) => void }) {
+  return (
+    <NativeSelect
+      size="sm"
+      className="max-w-52 shrink"
+      aria-label="Show only one kind"
+      value={kind}
+      onChange={(event) => {
+        setKind(event.target.value);
+      }}
+    >
+      <option value="">Every kind</option>
+      {RESOURCE_KINDS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </NativeSelect>
+  );
+}
+
+function InUseOnlyToggle({
+  activeOnly,
+  setActiveOnly,
+}: {
+  activeOnly: boolean;
+  setActiveOnly: (next: boolean) => void;
+}) {
+  return (
+    <ToggleGroup
+      size="sm"
+      color="module"
+      className="shrink-0"
+      value={activeOnly ? ['active'] : []}
+      onValueChange={(next: unknown[]) => {
+        setActiveOnly(next.includes('active'));
+      }}
+    >
+      <ToggleGroupItem
+        value="active"
+        aria-label="Hide switched-off ones"
+        title="Hide switched-off ones"
+      >
+        <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+        <span>In use only</span>
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
 }
 
 export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -74,127 +92,12 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   });
 
   const rows = data?.items ?? [];
-  const kindLabel = kind ? resourceKindLabel(kind) : null;
-  const narrowed = kind !== '';
+  const reload = () => {
+    void refetch();
+  };
 
   const openNew = (event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
-  };
-
-  const open = (resource: SchedulingResource, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open(DETAIL_KEY, { id: resource.id }, { target: targetFor(event) });
-  };
-
-  const body = () => {
-    if (isError) {
-      return (
-        <EmptyState
-          icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
-          title="Could not load your people & equipment"
-          description="This is a problem reaching the server. Nothing is affected — the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
-        />
-      );
-    }
-
-    if (isPending) {
-      return <PaneWaiting />;
-    }
-
-    if (rows.length === 0) {
-      return (
-        <ListEmptyState
-          module={MODULE}
-          filtered={narrowed}
-          noResults={{
-            icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,
-            title: 'Nothing matches that',
-            description: `You are only seeing “${kindLabel ?? ''}” — switch to every kind to see the rest.`,
-          }}
-          firstRun={{
-            title: 'Nothing set up yet',
-            description:
-              'Add the people and things a booking uses up — your staff, your rooms, your equipment. Once they exist, you can set the hours each one is free.',
-            actions: (
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  openNew({ shiftKey: false, altKey: false });
-                }}
-              >
-                <Icon glyph={faPlus} className="size-4" aria-hidden />
-                Add one
-              </Button>
-            ),
-          }}
-        />
-      );
-    }
-
-    return (
-      <Table size="sm" hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th className="hidden whitespace-nowrap @lg:table-cell">Kind</th>
-            <th className="hidden whitespace-nowrap @xl:table-cell">Holds</th>
-            <th>State</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((resource) => {
-            const state = resourceState(resource);
-            const holds = capacityNote(resource);
-            return (
-              <tr
-                key={resource.id}
-                className="cursor-pointer"
-                tabIndex={0}
-                role="button"
-                onClick={(event) => {
-                  open(resource, event);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  open(resource, event);
-                }}
-              >
-                <td className="w-full max-w-0">
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{resource.name}</span>
-                    <span className="truncate text-sm @lg:hidden">
-                      {resourceKindLabel(resource.kind)}
-                      {holds ? ` · ${holds}` : ''}
-                    </span>
-                  </span>
-                </td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">
-                  {resourceKindLabel(resource.kind)}
-                </td>
-                <td className="hidden whitespace-nowrap @xl:table-cell">{holds ?? '—'}</td>
-                <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
-                  </Badge>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-    );
   };
 
   return (
@@ -209,43 +112,12 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         }}
         controls={
           <>
-            <NativeSelect
-              size="sm"
-              className="max-w-52 shrink"
-              aria-label="Show only one kind"
-              value={kind}
-              onChange={(event) => {
-                setKind(event.target.value);
-              }}
-            >
-              <option value="">Every kind</option>
-              {RESOURCE_KINDS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </NativeSelect>
-            <ToggleGroup
-              size="sm"
-              color="module"
-              className="shrink-0"
-              value={activeOnly ? ['active'] : []}
-              onValueChange={(next: unknown[]) => {
-                setActiveOnly(next.includes('active'));
-              }}
-            >
-              <ToggleGroupItem
-                value="active"
-                aria-label="Hide switched-off ones"
-                title="Hide switched-off ones"
-              >
-                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-                <span>In use only</span>
-              </ToggleGroupItem>
-            </ToggleGroup>
+            <KindFilter kind={kind} setKind={setKind} />
+            <InUseOnlyToggle activeOnly={activeOnly} setActiveOnly={setActiveOnly} />
           </>
         }
         views={{
+          // The surface's REGISTRY KEY as a path, not its URL.
           target: '/scheduling/resources',
           params: { kind, active: activeOnly ? '1' : '' },
           onApply: (next) => {
@@ -257,14 +129,35 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <RefreshButton
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
+            onRefresh={reload}
           />
         }
       />
 
-      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
+      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">
+        {/* Only where people are actually in view — an equipment-only filter has
+            no roster to be the same as. */}
+        {rows.some((row) => row.kind === 'staff') ? (
+          <RosterNote
+            onOpenTeam={() => {
+              ctx.open('staff.people', {}, { target: 'tab' });
+            }}
+          />
+        ) : null}
+        <ResourcesBody
+          isError={isError}
+          isPending={isPending}
+          rows={rows}
+          kind={kind}
+          onRetry={reload}
+          onAdd={() => {
+            openNew({ shiftKey: false, altKey: false });
+          }}
+          onOpen={(resource, event) => {
+            ctx.open(DETAIL_KEY, { id: resource.id }, { target: targetFor(event) });
+          }}
+        />
+      </Card>
 
       {rows.length > 0 ? <RowOpenHint /> : null}
     </div>

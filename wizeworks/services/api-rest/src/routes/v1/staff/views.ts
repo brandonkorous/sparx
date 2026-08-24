@@ -143,7 +143,16 @@ function certificationSummary(rows: StaffCertificationRow[], today: Date) {
   return { total: rows.length, expired, expiring, soonestExpiry: soonest };
 }
 
-export function memberView(row: StaffMemberRow, today: Date, includePay: boolean) {
+export function memberView(
+  row: StaffMemberRow,
+  today: Date,
+  includePay: boolean,
+  /** The resource ids that are actually on offer for appointments right now.
+   *  Undefined when the caller did not ask scheduling — which is different from
+   *  "not bookable", and is sent as `null` rather than `false` so no screen
+   *  draws an off switch out of an unasked question (issue 120). */
+  bookableIds?: ReadonlySet<string>
+) {
   const primary = row.siteLinks.find((link) => link.isPrimary) ?? null;
   return {
     id: row.id,
@@ -162,6 +171,9 @@ export function memberView(row: StaffMemberRow, today: Date, includePay: boolean
     // that owns them rather than this route pretending to know.
     userId: row.userId,
     resourceId: row.resourceId,
+    // Whether they are offered for appointments. The LINK is not the answer — a
+    // person whose bookable record was switched off still carries its id.
+    bookable: bookableIds ? (row.resourceId ? bookableIds.has(row.resourceId) : false) : null,
     externalPayrollId: row.externalPayrollId,
     color: row.color,
     photoUrl: row.photoUrl,

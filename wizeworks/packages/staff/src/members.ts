@@ -222,15 +222,36 @@ async function replaceSiteLinks(
   }
 
   await client.staffMemberSite.deleteMany({ where: { staffMemberId } });
-  if (siteIds.length === 0) return;
+
+  // NOBODY IS NOWHERE. An empty list means every business, never none.
+  //
+  // The roster is read site-scoped (`siteLinks: { some: ... }`), so a person
+  // with no links matches nothing and disappears from the very screen they were
+  // just added to. That is not a corner case: an owner with ONE business is
+  // never shown the site picker at all — there is no choice to make — so their
+  // form sends an empty list every time, and every person they added vanished
+  // on save while still existing everywhere else in the product.
+  const ids = siteIds.length > 0 ? siteIds : await everySite(client);
+  if (ids.length === 0) return;
+
   const primary =
-    input.primarySiteId && siteIds.includes(input.primarySiteId) ? input.primarySiteId : siteIds[0];
+    input.primarySiteId && ids.includes(input.primarySiteId) ? input.primarySiteId : ids[0];
   await client.staffMemberSite.createMany({
-    data: siteIds.map((propertyId) => ({
+    data: ids.map((propertyId) => ({
       tenantId,
       staffMemberId,
       propertyId,
       isPrimary: propertyId === primary,
     })),
   });
+}
+
+/** Every business this tenant runs, the main one first — so the person's cost
+ *  lands there when a shift names none. */
+async function everySite(client: TxClient): Promise<string[]> {
+  const rows = await client.property.findMany({
+    select: { id: true },
+    orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
+  });
+  return rows.map((row) => row.id);
 }

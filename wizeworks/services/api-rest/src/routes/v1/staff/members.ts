@@ -6,6 +6,7 @@
 //   PATCH  /v1/staff/members/:id          → correct them
 //   POST   /v1/staff/members/:id/archive  → they left
 //   POST   /v1/staff/members/:id/restore  → they came back
+//   PUT    /v1/staff/members/:id/bookable → offer them for appointments, or stop
 //   DELETE /v1/staff/members/:id          → the record was a mistake
 //   GET    /v1/staff/members/:id/documents
 //   POST   /v1/staff/documents
@@ -21,6 +22,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { queryBool } from '@wizeworks/api-core/query';
 import { ok } from '@wizeworks/api-core/envelope';
+import { moduleDisabled } from '@wizeworks/api-core/errors';
 import { requireRole } from '@wizeworks/api-core/auth';
 import {
   addDocument,
@@ -41,12 +43,16 @@ import {
   staffMemberUpdateSchema,
   staffStatusSchema,
 } from '@wizeworks/staff/schemas';
+import { bookableResourceIds, setBookable } from '@wizeworks/scheduling';
+import { isModuleEnabled } from '@wizeworks/auth';
 import { canSeePay, requirePayAccess, requireStaffModule } from '../../../lib/staff-context.js';
 import { publishStaffEvent } from '../../../lib/staff-events.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
 import { memberView, type StaffMemberRow } from './views.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+
+const BookableBody = z.object({ bookable: z.boolean() });
 
 const ListQuery = z.object({
   status: staffStatusSchema.optional(),
@@ -82,6 +88,23 @@ function documentView(row: {
   };
 }
 
+/**
+ * Which of these people are offered for appointments.
+ *
+ * Undefined when Bookings is off, and that is the point: this tenant has not
+ * bought the thing the answer would be about, so the roster says nothing rather
+ * than saying "not bookable" about a concept that does not exist for them.
+ * `memberView` turns undefined into `null`, and the screen draws no toggle.
+ */
+async function bookableFor(
+  tenantId: string,
+  rows: { resourceId: string | null }[]
+): Promise<ReadonlySet<string> | undefined> {
+  if (!(await isModuleEnabled(tenantId, 'scheduling'))) return undefined;
+  const ids = rows.map((row) => row.resourceId).filter((id): id is string => id !== null);
+  return bookableResourceIds(tenantId, ids);
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
 const staffMemberRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/staff/members', async (request) => {
@@ -103,7 +126,10 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     });
     const today = new Date();
     const pay = canSeePay(auth);
-    return ok({ items: rows.map((row) => memberView(row as StaffMemberRow, today, pay)) });
+    const bookable = await bookableFor(auth.tenantId, rows);
+    return ok({
+      items: rows.map((row) => memberView(row as StaffMemberRow, today, pay, bookable)),
+    });
   });
 
   app.post('/v1/staff/members', async (request, reply) => {
@@ -124,7 +150,8 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireRole(request, 'viewer');
     const { id } = PathId.parse(request.params);
     const row = await getMember(auth.tenantId, id);
-    return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth)));
+    const bookable = await bookableFor(auth.tenantId, [row]);
+    return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth), bookable));
   });
 
   app.patch('/v1/staff/members/:id', async (request) => {
@@ -155,6 +182,30 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     await getMember(auth.tenantId, id);
     const row = await restoreMember(auth.tenantId, id);
     return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth)));
+  });
+
+  /**
+   * Offer them for appointments, or stop.
+   *
+   * ONE ROSTER (issue 120). A bookable person and a person on the team are the
+   * same record, so this does not create a second one — it mints the bookable
+   * side and links it, or switches that side off while the person stays exactly
+   * where they are. Switching off is never a delete: somebody who steps off the
+   * rota for a season is not somebody who was never here, and their past
+   * bookings still point at it.
+   */
+  app.put('/v1/staff/members/:id/bookable', async (request) => {
+    await requireStaffModule(request);
+    const auth = requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const body = BookableBody.parse(request.body);
+    // 404 rather than a raw Prisma error, and before scheduling is asked.
+    await getMember(auth.tenantId, id);
+    if (!(await isModuleEnabled(auth.tenantId, 'scheduling'))) throw moduleDisabled('scheduling');
+    await setBookable(auth.tenantId, id, body.bookable);
+    const row = await getMember(auth.tenantId, id);
+    const bookable = await bookableFor(auth.tenantId, [row]);
+    return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth), bookable));
   });
 
   // The genuine delete, for a record created in error. `admin`, not `editor`:

@@ -84,6 +84,10 @@ export interface StaffMember {
   endedOn: string | null;
   userId: string | null;
   resourceId: string | null;
+  /** Whether they are offered for appointments. `null` when Bookings is off —
+   *  which is not "no", so the pane draws no switch rather than an off one
+   *  (issue 120). */
+  bookable: boolean | null;
   externalPayrollId: string | null;
   color: string | null;
   photoUrl: string | null;
@@ -423,6 +427,20 @@ export function useArchiveMember() {
         `/v1/staff/members/${encodeURIComponent(input.id)}/${input.archived ? 'archive' : 'restore'}`,
         {}
       ),
+    onSuccess: invalidate,
+  });
+}
+
+/** Offer somebody for appointments, or stop. ONE ROSTER: this does not create a
+ *  second record of them under Bookings — it turns the bookable side of the one
+ *  they already are on or off (issue 120). */
+export function useSetBookable() {
+  const invalidate = useInvalidateStaff();
+  return useMutation({
+    mutationFn: (input: { id: string; bookable: boolean }) =>
+      api.put<StaffMember>(`/v1/staff/members/${encodeURIComponent(input.id)}/bookable`, {
+        bookable: input.bookable,
+      }),
     onSuccess: invalidate,
   });
 }

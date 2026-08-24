@@ -1,12 +1,12 @@
 # 120 — Her two stylists are staff in Bookings and nobody in My Team
 
-**Status:** open — accepted, to build
+**Status:** fixed — confirmed on Juniper Row; Halo & Hem's own screen owed by a P02 re-run
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 8
 **Surface:** mypiggles › Sell › Order › Who sold it
 **Filed:** 2026-08-22
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-08-24
+**Confirmed by:** P03 · Devi Raman (both directions, on a fresh roster)
 **Blocked on:** —
 
 ## What happened
@@ -76,3 +76,80 @@ Whichever is chosen, the sentence should not survive as written.
 **One roster, and it lives under My Team.** Bookings does not keep a separate
 list of people; the staff a business books work against are the same people its
 team is made of.
+
+## The fix — 2026-08-24
+
+### The model already said they were one person
+
+`StaffMember.resourceId` has pointed at the bookable resource since the staff module
+was designed, and that module's own header says its whole point is to **be the person
+the other modules already point at**. Nothing was missing from the data model. The
+WRITE PATH was missing: no code ever created both.
+
+So the pairing lives in `wizeworks/packages/scheduling/src/roster.ts`, and it runs
+inside `createResource`'s own transaction — not in a route, because three separate
+callers reach `createResource` (the API, the blueprint installer, the MCP tool) and a
+route-level fix would have covered one of them.
+
+| Direction                                  | What happens                                                                                   |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| Somebody added under **Bookings**          | `addToRoster` creates the person, carries their color across, and mirrors the resource's sites |
+| Somebody added under **My Team**           | The Appointments switch calls `setBookable`, which mints the bookable record and links it      |
+| A bookable person **renamed** in Bookings  | `renameOnRoster` renames the person — but only while the two names still agree                 |
+| A person **switched off** for appointments | The bookable record goes inactive. They stay on the team, and the link stays with them         |
+
+### The rename guard is the subtle one
+
+If somebody has edited the person under My Team — given them a surname, corrected a
+spelling, recorded the name they actually go by — the two records have been pulled
+apart deliberately, and a rename in Bookings must not quietly undo it. So the rename
+only lands while the person's full name still equals the resource's previous name.
+Same discipline as a backfill: change what nobody has touched, and nothing else.
+
+### Site links were part of it, not an extra
+
+The two tables read an empty list in OPPOSITE directions. A resource with no site
+links works every site; a person with no site links matches no site-scoped roster at
+all. Copying "nothing" across would have created people the roster still could not
+see — which is [179](179-she-added-someone-to-her-team-and-the-team-was-still-empty.md),
+found while confirming this one.
+
+### The backfill
+
+`20270409000000_a_bookable_person_is_a_person_on_the_team`, per-tenant with
+`app.tenant_id` set on each pass (`sparx_owner` is not a superuser in production, so an
+unscoped write under FORCE RLS touches zero rows there while passing locally).
+
+**26 bookable people joined the roster, every one with a home site and exactly one
+main.** Dara Bell and Nia Okafor are on Halo & Hem's team, which is what this issue
+asked for.
+
+### The sentence
+
+The "Who sold it" panel's message stays, because a genuinely empty roster still needs
+one — it just no longer fires at a business with two stylists in it.
+
+### Where it lives
+
+`packages/scheduling/src/{roster,roster.test,resources,errors,index}.ts` ·
+`packages/db/prisma/migrations/20270409000000_…` ·
+`services/api-rest/src/routes/v1/staff/{members,views}.ts` (a `bookable` field and a
+`PUT …/bookable`; `bookable` is `null`, not `false`, when Bookings is off — a business
+that has not bought appointments is not a business whose people are "not bookable") ·
+`piggles/apps/workbench/surfaces/staff/*` · `surfaces/scheduling/resources-*.tsx` ·
+`surfaces/commerce/sold-by-section.tsx`
+
+### Confirmed on screen
+
+Added **Priya Nandakumar** under My Team and pressed _Let customers book them_ — she
+appears under Bookings › People and equipment as "A person · In use". Added **Tomas
+Okonkwo** under Bookings — he appears on My Team. One roster, both doors.
+
+Bookings › People and equipment now says so out loud: _"The people here are your team.
+Add somebody in either place and they appear in both."_
+
+### Not confirmed yet
+
+Halo & Hem's own "Who sold it" panel — the screen this was reported from — is owed by a
+P02 re-run. The backfill's effect on her two stylists is verified in the database; the
+panel itself has not been looked at since.
