@@ -39,7 +39,7 @@ import type {
 } from '../../../lib/onboarding/types';
 import { StoryExtras, storyPlanItems } from '../story/story-summary';
 import { StepModules } from './step-modules';
-import { StepBlueprint, SCRATCH, GOLDEN_BLUEPRINT_KEY } from './step-blueprint';
+import { StepBlueprint, SCRATCH } from './step-blueprint';
 import { StepWorkspace, type SlugCheck } from './step-workspace';
 import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
@@ -104,6 +104,9 @@ const ALT_SWITCH_STEPS: OnboardingStepKey[] = ['modules', 'template', 'workspace
 interface Initial {
   step: OnboardingStepKey;
   blueprintKey: string | null;
+  /** This BRAND's starting point, from the server. Never a literal here — see
+   *  the note on the default choice below. */
+  goldenKey: string | null;
   installId: string | null;
   templateDone: boolean;
   paymentsDone: boolean;
@@ -154,6 +157,7 @@ export function ClassicWizard({
   const initial: Initial = {
     step: state.currentStep ?? 'modules',
     blueprintKey: state.blueprintKey ?? null,
+    goldenKey: state.goldenKey ?? null,
     installId: state.installId ?? null,
     templateDone: Boolean(state.completed?.template),
     paymentsDone: Boolean(state.completed?.payments),
@@ -213,10 +217,16 @@ function WizardInner({
 
   // choice = the SELECTED starting point (a key, the SCRATCH sentinel, or null);
   // installedKey + installId are what is actually provisioned. A fresh tenant defaults
-  // to the golden template — a new site IS the golden template unless the user picks
-  // another blueprint or starts blank. Anyone resuming keeps their prior choice.
+  // to this BRAND's starting point — a new site IS that unless the user picks another
+  // blueprint or starts blank. Anyone resuming keeps their prior choice.
+  //
+  // `goldenKey` comes from the server, which resolves it from the tenant's own
+  // platformBrand. It used to be a literal `'sparx'` in this file, so a Piggles
+  // business was born selling sparx mugs on its own homepage (issue 091). Null
+  // when the server did not say, and then nothing is preselected — offering no
+  // starting point is better than offering another company's.
   const [choice, setChoice] = useState<string | null>(
-    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : GOLDEN_BLUEPRINT_KEY)
+    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : initial.goldenKey)
   );
   const [installedKey, setInstalledKey] = useState<string | null>(initial.blueprintKey);
   const [installId, setInstallId] = useState<string | null>(initial.installId);

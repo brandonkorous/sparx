@@ -122,6 +122,12 @@ export interface OnboardingState {
   /** The natural-language story narrative, when onboarding came through the story
    *  flow. Persisted as the api-rest `StoryNarrative` shape; kept loose here. */
   story?: PersistedStory | null;
+  /** THIS brand's starting point, resolved server-side from the tenant's own
+   *  `platformBrand`. Read rather than hardcoded: a console that names a
+   *  blueprint key names some brand's, and Piggles' copy of this flow inherited
+   *  sparx's — so a Piggles business was born selling sparx mugs (issue 091).
+   *  Server-owned, never patched from here. */
+  goldenKey?: string | null;
 }
 
 /** The narrative as persisted under `settings.onboarding.story`. The composer's

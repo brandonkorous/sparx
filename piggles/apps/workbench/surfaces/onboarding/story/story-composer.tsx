@@ -10,12 +10,11 @@ import {
   toPersistPayload,
 } from '../../../lib/onboarding/story-state';
 import { isSellingSelected } from '../../../lib/onboarding/modules';
-import { useOnboardingActions } from '../../../lib/onboarding/api';
+import { useOnboarding, useOnboardingActions } from '../../../lib/onboarding/api';
 import { useConfirm } from '../../../lib/confirm';
 import { useStoryModel } from '../../../lib/onboarding/use-story-model';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
 import { SummaryCard } from '../../../lib/onboarding/summary-card';
-import { GOLDEN_BLUEPRINT_KEY } from '../wizard/step-blueprint';
 import { OnboardingLayout, type StepMark } from '../onboarding-layout';
 import { StoryComposeStage } from './story-compose-stage';
 import { StoryHelp } from './story-help';
@@ -56,6 +55,10 @@ export function StoryComposer({
   onFinished: () => void;
 }): ReactNode {
   const actions = useOnboardingActions();
+  // This BRAND's starting point, resolved server-side from the tenant's own
+  // platformBrand. Was a literal `'sparx'` here, which put another company's
+  // merchandise on a Piggles homepage (issue 091).
+  const goldenKey = useOnboarding().data?.goldenKey ?? null;
   const confirm = useConfirm();
   const model = useStoryModel();
 
@@ -177,9 +180,11 @@ export function StoryComposer({
       .commitStory({
         modules: on,
         industry: story.industry,
-        // Default to the golden template when the story matches no more-specific
-        // blueprint — a new site IS the golden template unless something else fits.
-        blueprintKey: blueprint?.key ?? GOLDEN_BLUEPRINT_KEY,
+        // Fall back to this brand's own starting point when the story matches no
+        // more-specific blueprint. Null when the server did not say, which the
+        // pipeline reads as "start from scratch" — an empty site is a better
+        // answer than another company's demo business.
+        blueprintKey: blueprint?.key ?? goldenKey,
         selling,
         story: toPersistPayload(story),
       })

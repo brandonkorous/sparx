@@ -8,7 +8,7 @@
 //   POST   /v1/tenant/modules/reconcile            → all-on, brands that include them (owner/admin)
 //   GET    /v1/tenant/rail                         → { apps } — the rail preference
 //   PUT    /v1/tenant/rail                         → set it (owner/admin)
-//   GET    /v1/tenant/onboarding                   → raw onboarding state
+//   GET    /v1/tenant/onboarding                   → raw state + the brand's golden key
 //   PATCH  /v1/tenant/onboarding                   → patch onboarding state
 //   GET    /v1/tenant/onboarding/progress          → derived progress + steps
 //
@@ -52,6 +52,7 @@ import {
   moduleBlockedMessage,
 } from '../../lib/module-toggle.js';
 import { brandIncludesEveryModule, tenantPlatformBrand } from '../../lib/tenant-brand.js';
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { resolvePropertyId } from '../../lib/property.js';
 import {
@@ -877,9 +878,18 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireAuth(request);
     const row = await prisma.tenant.findUnique({
       where: { id: auth.tenantId },
-      select: { settings: true },
+      select: { settings: true, platformBrand: true },
     });
-    return ok(readOnboarding(row?.settings ?? null));
+    // `goldenKey` is THIS tenant's brand's starting point, resolved from
+    // `<BRAND>_GOLDEN_BLUEPRINT`. It is returned because both consoles used to
+    // hardcode `'sparx'` as the default choice, so a Piggles business was born
+    // selling sparx merchandise even after the provisioner was taught the
+    // difference (issue 091). A console that has to name a blueprint key names
+    // some brand's, and it will be the wrong one for every brand but that one.
+    return ok({
+      ...readOnboarding(row?.settings ?? null),
+      goldenKey: platformBrandIdentity(row?.platformBrand).goldenBlueprintKey,
+    });
   });
 
   app.patch('/v1/tenant/onboarding', async (request) => {

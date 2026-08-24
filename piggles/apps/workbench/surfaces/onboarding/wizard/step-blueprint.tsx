@@ -15,9 +15,13 @@ import type { BlueprintVertical, WizardBlueprint } from '../../../lib/onboarding
 /** The sentinel the orchestrator reads as "blank canvas, no blueprint". */
 export const SCRATCH = 'scratch';
 
-/** The platform's default starting point — the golden sparx template. A fresh site
- *  IS this unless the user picks another blueprint or starts blank. */
-export const GOLDEN_BLUEPRINT_KEY = 'sparx';
+// There is deliberately NO golden-blueprint constant here. This file used to
+// export `GOLDEN_BLUEPRINT_KEY = 'sparx'`, and both entry points defaulted to it,
+// so a Piggles business was born selling sparx mugs on its own homepage even
+// after the provisioner had been taught the difference (issue 091). Which
+// blueprint a brand starts from is a BRAND fact resolved from
+// `<BRAND>_GOLDEN_BLUEPRINT`; the console reads it as `goldenKey` off
+// `/v1/tenant/onboarding` rather than naming anybody's.
 
 const VERTICAL_LABEL: Record<BlueprintVertical, string> = {
   retail: 'Shop',

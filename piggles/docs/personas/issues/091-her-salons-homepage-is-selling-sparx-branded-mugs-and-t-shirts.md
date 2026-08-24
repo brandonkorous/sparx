@@ -152,24 +152,72 @@ practice. `PIGGLES_GOLDEN_BLUEPRINT=piggles-starter` is added to both
 configmaps, with the same warning the neighbouring `PIGGLES_BILLING_PLAN` carries:
 a brand missing it looks completely normal until a customer reads the page.
 
+## The second cause — found 2026-08-24, and it was the live one
+
+The write-up above fixed the PROVISIONER and then explained the remaining
+failures as "the dev stack does not read the setting". That explanation was
+wrong, and the way it was wrong is the interesting part.
+
+`PIGGLES_GOLDEN_BLUEPRINT=piggles-starter` **is** set in the local
+`services/api-rest/.env`. It was set when Devi signed up. She was still born
+selling sparx mugs.
+
+Because the console never asked. Piggles' own onboarding carried:
+
+```ts
+// piggles/apps/workbench/surfaces/onboarding/wizard/step-blueprint.tsx
+/** The platform's default starting point — the golden sparx template. */
+export const GOLDEN_BLUEPRINT_KEY = 'sparx';
+```
+
+and both entry points defaulted to it — the classic wizard's initial `choice`,
+and the story composer's `blueprint?.key ?? GOLDEN_BLUEPRINT_KEY`. So the console
+POSTed `/v1/blueprints/sparx/install` by name. `goldenBlueprintKeyFor` was never
+consulted, because nothing was left for it to resolve: a caller that names a
+blueprint has already answered the question the resolver exists to answer.
+
+This is the shape this run keeps finding — **one outcome, two causes** — and it
+is the reason the first fix could be correct and change nothing. Setting the env
+var, the remedy this issue prescribed for eight days, would not have fixed it.
+
+It is also a plain piggles RULE #0 violation that survived the tree split: the
+file is Piggles' own copy of sparx's, and this constant is one of the things it
+"inherited" verbatim, sparx's name and all.
+
+### The fix
+
+**The console stops naming anybody's blueprint.** `GOLDEN_BLUEPRINT_KEY` is
+deleted, and the file carries a comment saying why so it is not reintroduced.
+
+**The server answers instead.** `GET /v1/tenant/onboarding` now returns
+`goldenKey`, resolved per tenant from its own `platformBrand`:
+
+```ts
+return ok({
+  ...readOnboarding(row?.settings ?? null),
+  goldenKey: platformBrandIdentity(row?.platformBrand).goldenBlueprintKey,
+});
+```
+
+Both entry points read it. One source of truth — the env var — and the console
+holds no brand's name, so a third brand needs no change here either.
+
+**Null means scratch, not sparx.** If the server does not say, nothing is
+preselected and the story path commits no blueprint. An empty site is a better
+answer than another company's demo business, and that is the whole lesson of this
+issue.
+
 ## Why this is not confirmed yet
 
-Two reasons, and both are honest rather than convenient:
+It only affects tenants created from now on, so proving it needs a brand-new
+sign-up. That has not been run because `localhost` cookies ignore the port, so
+signing up on `:3021` replaces the active persona session on `:3022` — it is
+queued for the end of the P03 run rather than dropped.
 
-1. **It only affects tenants created from now on.** Nia's account was provisioned
-   before the fix, so nothing about her changes. Proving it needs a brand-new
-   sign-up, the way [010](010-her-bakerys-web-address-is-quiet-haven-3783.md) was
-   proved with "The Marrow Review".
-2. **A fresh sign-up in dev would still get sparx**, because the fallback is
-   `sparx` and the dev stack does not read the configmap the setting was added to.
-   Making it read one needs the dev server restarted, which is not mine to do
-   (personas CLAUDE.md).
-
-So the confirmation to run once this deploys is: sign up a new Piggles business,
-and check its products are **Rowan**, not sparx. Until somebody does that, this
-issue stays open — a fix confirmed against the value it wrote is not confirmed
-([089](089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)
-is the lesson).
+The confirmation to run: sign up a new Piggles business and check its products
+are **Rowan**, not sparx. A fix confirmed against the value it wrote is not
+confirmed ([089](089-her-salons-web-address-is-swift-horizon-4860-and-it-goes-nowhere.md)
+is the lesson), and this issue has now been wrong once about its own cause.
 
 ## Reproduced again — P03, 2026-08-23
 
@@ -184,12 +232,11 @@ the same six:
  sparx Enamel Mug     | sparx-enamel-mug     | 2026-08-23 10:43:42.273+00
 ```
 
-This is exactly what reason 2 above predicts — the dev stack falls back to
-`sparx` because it never reads the setting — so it is confirmation that the
-issue is still live in dev, NOT evidence that the fix is wrong. Two of three
-personas run since have been born selling another company's merchandise, which
-is the argument for setting `PIGGLES_GOLDEN_BLUEPRINT` in the dev stack rather
-than waiting for prod: every remaining persona will hit it otherwise.
+At the time this was read as "the dev stack never reads the setting". It does.
+The real cause was the console naming `sparx` itself, found on 2026-08-24 and
+written up above. Two of three personas were born selling another company's
+merchandise, and setting the env var — the fix this section argued for — would
+not have stopped the third.
 
 Devi deleted all six, as Nia did.
 
