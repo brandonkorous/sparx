@@ -1,13 +1,13 @@
 # 098 — A place in her Bookings was called "Maison Élan"
 
-**Status:** open
+**Status:** declined as filed — superseded by the install-time toggle
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 5
 **Surface:** mypiggles › Bookings › Places
 **Filed:** 2026-08-22
 **Fixed:** — (Nia's own copy removed; the cause stands)
 **Confirmed by:** —
-**Blocked on:** decision — what a blueprint may write into a tenant's operating data
+**Blocked on:** —
 
 ## What happened
 
@@ -116,6 +116,18 @@ Two smaller things noticed on the same screen and not filed separately:
   helper text says "this is what a customer is shown".
 - **The latitude and longitude examples are `51.5072` / `-0.1276`** — central
   London, on a product priced in dollars.
+
+## Decision — 2026-08-24, Brandon
+
+**Seeding is on purpose, so the named place stays** — same answer as
+[174](174-a-warehouse-in-ohio-she-never-opened.md), for the same reason: a
+blueprint that installs nothing leaves a new business staring at an empty
+console.
+
+**But the owner should get a say.** Installing a blueprint should offer a choice
+about whether its sample data comes with it, so somebody who already knows what
+they are doing can take the structure without the furniture. That is a feature
+rather than a repair, and it is filed as its own item.
 
 ## Rating effect
 

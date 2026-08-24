@@ -32,10 +32,10 @@ Two ways to close that, both open:
 
 Two pieces, sharing one animated lockup.
 
-| Piece      | Length | What it is                                                             |
-| ---------- | ------ | ---------------------------------------------------------------------- |
-| The closer | 5.5s   | The lockup alone. Ends a video, or stands as a post.                   |
-| The hook   | 22s    | A story-led scroll-stopper with sound. Ends by playing the closer.     |
+| Piece      | Length | What it is                                                         |
+| ---------- | ------ | ------------------------------------------------------------------ |
+| The closer | 5.5s   | The lockup alone. Ends a video, or stands as a post.               |
+| The hook   | 22s    | A story-led scroll-stopper with sound. Ends by playing the closer. |
 
 Sixteen rendered files, four aspect ratios each:
 
@@ -102,17 +102,17 @@ motion.
 
 The rebuild is a story whose beats do not move:
 
-| # | Beat            | On screen                                        |
-| - | --------------- | ------------------------------------------------ |
-| 0 | The curtain     | a full field of brand pink                       |
-| 1 | Recognition     | "Do you use any of these?" in dark ink on it     |
-| 2 | The proof       | the ten, so the viewer counts their own          |
-| 3 | The false fix   | "Tired of connecting the dots between them?"     |
-| 4 | The grind       | Copy. Paste. Copy. Paste.                        |
-|   |                 | "Ten logins. Ten bills. Ten renewal dates."      |
-|   |                 | "And not one of them talks to the others."       |
-| 5 | The turn        | "Cancel all ten." and the strikes rip through    |
-| 6 | Resolution      | one price, one bill, then the brand closer       |
+| #   | Beat          | On screen                                     |
+| --- | ------------- | --------------------------------------------- |
+| 0   | The curtain   | a full field of brand pink                    |
+| 1   | Recognition   | "Do you use any of these?" in dark ink on it  |
+| 2   | The proof     | the ten, so the viewer counts their own       |
+| 3   | The false fix | "Tired of connecting the dots between them?"  |
+| 4   | The grind     | Copy. Paste. Copy. Paste.                     |
+|     |               | "Ten logins. Ten bills. Ten renewal dates."   |
+|     |               | "And not one of them talks to the others."    |
+| 5   | The turn      | "Cancel all ten." and the strikes rip through |
+| 6   | Resolution    | one price, one bill, then the brand closer    |
 
 The argument is
 [instead-of.tsx](../apps/web/components/marketing/instead-of.tsx)'s, put in
@@ -174,10 +174,10 @@ synthesized silent file.
 
 **1. Named or plain.** Both variants are built and rendered.
 
-| Variant      | The ten rows                                    | Trade                                                                                                            |
-| ------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Variant      | The ten rows                                         | Trade                                                                                                                                   |
+| ------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `hook-named` | the competitor names, as `instead-of.tsx` lists them | Instant recognition, and by a distance the more effective cut. But it stretches a naming exception granted for a web page onto a video. |
-| `hook-plain` | the same ten as capabilities (`BILL_ROWS` labels) | Keeps the standing no-competitor-names rule intact. Lands slower, because "Selling online" is not a line on a bank statement. |
+| `hook-plain` | the same ten as capabilities (`BILL_ROWS` labels)    | Keeps the standing no-competitor-names rule intact. Lands slower, because "Selling online" is not a line on a bank statement.           |
 
 This is Brandon's call. Nothing is blocked either way.
 

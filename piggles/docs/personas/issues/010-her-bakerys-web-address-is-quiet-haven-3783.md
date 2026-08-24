@@ -1,13 +1,13 @@
 # 010 — Her bakery's web address is "quiet-haven-3783", and she cannot change it
 
-**Status:** fixed (new businesses) · open (existing ones — see "What is still open")
+**Status:** open — scoped to offering it at onboarding and on a new site
 **Severity:** major
 **Found by:** P01 · Thistle & Rye · act 3
 **Surface:** getpiggles › Your account › Your business address · mypiggles › Domains
 **Filed:** 2026-08-19
 **Fixed:** 2026-08-19
 **Confirmed by:** signed up a fresh business called "The Marrow Review" through the real screens — its address came out `marrow-review.piggles.site`, shown as such on the account page
-**Blocked on:** decision (for changing the address after the fact — options below)
+**Blocked on:** —
 
 ## What happened
 
@@ -142,6 +142,21 @@ organisation slug. Three ways to answer it, for Brandon:
 
 Until one is chosen, an existing business with a placeholder address has no
 recovery, and that should not be discovered a second time by P02.
+
+## Decision — 2026-08-24, Brandon
+
+**A web address is an identifier, and identifiers do not change.** So the answer
+to "let her change it afterwards" is no, and the redirect/alias machinery this
+issue was weighing is not needed.
+
+What IS owed is the chance to set it in the first place:
+
+- **at onboarding**, when the business is created, and
+- **when a new site is added** to an existing business.
+
+Today it is generated and never offered, which is the whole reason somebody ends
+up living with `quiet-haven-3783`. Asking once, at the only two moments the
+answer is free, removes the need to ever change it.
 
 ## Rating effect
 

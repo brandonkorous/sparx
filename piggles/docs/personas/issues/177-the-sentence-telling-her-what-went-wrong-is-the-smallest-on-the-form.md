@@ -1,14 +1,13 @@
 # 177 — The sentence telling her what went wrong is the smallest text on the form
 
-**Status:** open
+**Status:** declined — accepted as silicaui's to change
 **Severity:** design
 **Found by:** P03 · Juniper Row · act 4
 **Surface:** mypiggles › every form with a field that can be wrong
 **Filed:** 2026-08-23
 **Fixed:** —
 **Confirmed by:** —
-**Blocked on:** decision — the value is hardcoded inside silicaui, so the fix is
-either an upstream release or a local override, and the second needs approval
+**Blocked on:** —
 
 ## What happened
 
@@ -111,6 +110,16 @@ long the release takes.
 ## Confirmed by
 
 —
+
+## Decision — 2026-08-24, Brandon
+
+**Accept the 12px, and stop tracking it.** The value is silicaui's, and when
+silicaui changes it this inherits the change. There is no local override and no
+follow-up: the ladder in root RULE #1 runs out here, and the honest response to
+that is to wait rather than to reach past it.
+
+Recorded so the next person who measures this field finds the answer instead of
+re-opening the question.
 
 ## Rating effect
 

@@ -1,13 +1,13 @@
 # 068 — Four hundred controls in her console are grey
 
-**Status:** open
+**Status:** declined — no bulk sweep; handled case by case
 **Severity:** design
 **Found by:** P01 · Thistle & Rye · standing checks
 **Surface:** mypiggles › everywhere
 **Filed:** 2026-08-21
 **Fixed:** partially — 8 closed, 432 remain
 **Confirmed by:** —
-**Blocked on:** decision — root RULE #4 makes `neutral` Brandon's to approve, every instance, and 432 of them is a design call at scale rather than a sweep to run unasked.
+**Blocked on:** —
 
 ## What happened
 
@@ -112,3 +112,13 @@ can read at a glance, and RULE #4 puts the choice with Brandon.
 ## Confirmed by
 
 —
+
+## Decision — 2026-08-24, Brandon
+
+**No sweep.** 432 controls are not going to be re-coloured in one pass on my
+reading of them; Brandon will change the ones that are actually wrong as he meets
+them.
+
+Root RULE #4 still stands for anything NEW — `neutral` is his to approve, every
+instance — but the existing population is not a backlog item and this issue is
+not the tracker for it.

@@ -1,13 +1,13 @@
 # 092 — With nothing to sell, her site advertised "Product name", $0.00, Sold out
 
-**Status:** open
+**Status:** open — accepted, to build
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 5
 **Surface:** the published site — the product grid on any page that carries one
 **Filed:** 2026-08-21
 **Fixed:** —
 **Confirmed by:** —
-**Blocked on:** decision — hide an empty section, or give it a real empty state
+**Blocked on:** —
 
 ## What happened
 
@@ -113,6 +113,14 @@ Not made — `Blocked on: decision`, and the decision is one line:
 
 The two are not exclusive: hide by default, and let a block that opts in show a
 message. What must go either way is the card with invented values in it.
+
+## Decision — 2026-08-24, Brandon
+
+**Give it a real empty state**, not a hidden section.
+
+A section that vanishes teaches nothing, and the owner cannot tell the difference
+between "I have not added products yet" and "this part of my site is broken". The
+placeholder was wrong because it was FAKE, not because it was present.
 
 ## Rating effect
 

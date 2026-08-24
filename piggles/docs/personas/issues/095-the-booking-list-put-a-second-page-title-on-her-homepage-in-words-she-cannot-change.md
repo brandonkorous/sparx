@@ -1,13 +1,13 @@
 # 095 — The booking list put a second page title on her homepage, in words she cannot change
 
-**Status:** open
+**Status:** open — accepted, to build
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 5
 **Surface:** mypiggles › My Site › Page › Add › Booking services — and the published homepage
 **Filed:** 2026-08-22
 **Fixed:** —
 **Confirmed by:** —
-**Blocked on:** decision — whether a pinned core's heading is the author's or the platform's
+**Blocked on:** —
 
 ## What happened
 
@@ -111,6 +111,11 @@ the platform's voice, on a page whose whole point is that it is hers.
 Kept her own heading and deleted her subtitle, so the section reads as a title
 followed by the widget's own label rather than two competing sentences. Recorded
 in act 5.
+
+## Decision — 2026-08-24, Brandon
+
+**The heading belongs to the author.** A pinned core does not get to put words on
+somebody's homepage that they cannot edit.
 
 ## Rating effect
 

@@ -1,13 +1,13 @@
 # 026 — A cake that needs five days' notice and a $30 deposit is not a thing a product can be
 
-**Status:** open — established in the code, not yet walked on the screen
+**Status:** open — accepted, to build
 **Severity:** major
 **Found by:** P01 · Thistle & Rye · act 6 (owed) — closed out 2026-08-20
 **Surface:** mypiggles › Sell › Products — the product editor and every one of its tabs
 **Filed:** 2026-08-20
 **Fixed:** —
 **Confirmed by:** —
-**Blocked on:** decision — see **The fix**, which is a product-shape question rather than a bug
+**Blocked on:** —
 
 ## What happened
 
@@ -92,6 +92,11 @@ out, and one claim made from the code ("Bookings is off") was already wrong when
 the screen came back. Before this moves off `open`, walk it: open the Cherry & Almond cake in
 Sell, read every tab, then turn Bookings on and see whether the notice and the
 deposit are actually reachable and actually work.
+
+## Decision — 2026-08-24, Brandon
+
+**In scope, and it needs fixing.** A thing that takes five days' notice and a
+deposit is a real shape of a real business, not an edge case to route around.
 
 ## Rating effect
 

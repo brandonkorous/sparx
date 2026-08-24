@@ -1,13 +1,13 @@
 # 120 — Her two stylists are staff in Bookings and nobody in My Team
 
-**Status:** open
+**Status:** open — accepted, to build
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 8
 **Surface:** mypiggles › Sell › Order › Who sold it
 **Filed:** 2026-08-22
 **Fixed:** —
 **Confirmed by:** —
-**Blocked on:** decision — the two rosters are a product question, not a repair.
+**Blocked on:** —
 
 ## What happened
 
@@ -70,3 +70,9 @@ Three ways to go, and it is not mine to pick:
    unreachable.
 
 Whichever is chosen, the sentence should not survive as written.
+
+## Decision — 2026-08-24, Brandon
+
+**One roster, and it lives under My Team.** Bookings does not keep a separate
+list of people; the staff a business books work against are the same people its
+team is made of.

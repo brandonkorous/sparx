@@ -1,12 +1,12 @@
 # 064 — A customer collecting a bun had to type a postal address
 
-**Status:** open
+**Status:** open — accepted, to build
 **Severity:** major (friction on the only checkout a collection-only business has)
 **Found by:** P01 · Thistle & Rye · act 8's outstanding 390px pass — placing **O-000002**
 **Surface:** the tenant's live site — Checkout, step 2
 **Filed:** 2026-08-21
 **Fixed:** —
-**Blocked on:** **decision** — what a collection order stores where a delivery address goes
+**Blocked on:** —
 
 ## What happened
 
@@ -92,3 +92,16 @@ alone rather than half-wired.
 3. Fill in the whole address. Only then does **Collect in person** appear.
 
 Every time.
+
+## Decision — 2026-08-24, Brandon
+
+**The address is optional.** A collection order stores none, because there is no
+address involved in collecting something.
+
+The requirement moves to where it belongs: **checkout asks for an address only
+when the order is a delivery**, and when it is, it gives the customer a way to
+enter one and SAVE it, so the next order does not ask again.
+
+One nuance that does not change the answer: tax can need an address even on a
+collection order, but that is the SHOP's address, not the customer's, so nothing
+here has to be collected from the buyer to make tax work.
