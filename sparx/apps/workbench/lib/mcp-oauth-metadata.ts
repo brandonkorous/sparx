@@ -2,6 +2,8 @@
 // (docs/07 §5). Served at the workbench origin's /.well-known so MCP clients
 // (Claude, ChatGPT) can discover the endpoints after the resource server
 // (mcp.sparx.works) advertises this origin as its authorization server.
+// SPARX's, specifically: api-mcp resolves the brand from the request host, so
+// mcp.mypiggles.com advertises getpiggles.com instead (docs/07 §5).
 //
 // The workbench is the authorization server: it holds the staff Better Auth
 // instance (the mcp() plugin lives in the shared @wizeworks/auth), and app.sparx.works

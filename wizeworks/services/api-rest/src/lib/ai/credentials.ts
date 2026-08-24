@@ -17,6 +17,7 @@
 
 import { prisma } from '@wizeworks/db';
 import { encryptProviderSecret, decryptProviderSecret } from '@wizeworks/integration-framework';
+import { mcpResourceUrl } from '@wizeworks/links/server';
 
 import { AI_PROVIDERS, type AiProvider } from '../chat/types.js';
 import { verifyAiProviderKey } from './llm-router.js';
@@ -169,11 +170,22 @@ export async function resolveAiProviderCredential(
   return { provider: record.provider, apiKey: decryptProviderSecret(record.apiKeyEncrypted) };
 }
 
-/** The MCP resource endpoint an AI client connects to (docs/07 §5). Read from
- *  the same env the OAuth resource identifier uses, so the surface shows the
- *  real address rather than a hardcoded guess. */
-export function mcpEndpoint(): string {
-  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/v1';
+/**
+ * The MCP resource endpoint an AI client connects to (docs/07 §5), for the
+ * brand this tenant belongs to.
+ *
+ * Resolved through the same seam that answers the question everywhere else, so
+ * the address the console tells somebody to PASTE is the same one api-mcp
+ * advertises and the same one their brand's consent screen will accept.
+ *
+ * It takes a brand because this is the most visible address the platform owns:
+ * a customer copies it by hand into Claude or ChatGPT, and their AI client shows
+ * it back to them forever after. It used to be one shared value, so the Piggles
+ * console told a Piggles customer to hand `mcp.sparx.works` — another company's
+ * hostname — to their assistant.
+ */
+export function mcpEndpoint(brand: string): string {
+  return mcpResourceUrl(brand);
 }
 
 /** Thrown when a pasted key fails verification — carries the provider's own

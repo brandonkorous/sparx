@@ -162,9 +162,11 @@ import mode.caddy
 }
 
 # The staff app. Served by the workbench (apps/workbench), which replaced the
-# decommissioned dashboard here. app.sparx.works is also the MCP OAuth
-# authorization-server origin (MCP_AUTH_SERVER_URL) and the Better Auth origin —
-# the workbench serves the /.well-known discovery docs + /oauth/consent.
+# decommissioned dashboard here. app.sparx.works is also sparx's MCP OAuth
+# authorization-server origin (`SPARX_APP_URL`, which `<BRAND>_ACCOUNT_URL` falls
+# back to because this console mounts Better Auth itself) and the Better Auth
+# origin — the workbench serves the /.well-known discovery docs + /oauth/consent.
+# Piggles' equivalent is getpiggles.com, not this host.
 {$SX_SCHEME:https}://app.sparx.works {
 	import tls_policy
 	import security_headers
@@ -261,6 +263,33 @@ import mode.caddy
 	import tls_policy
 	import security_headers
 	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+# mcp.mypiggles.com — the SAME api-mcp, on the brand's own hostname, and the
+# most VISIBLE address Piggles owns.
+#
+# It is not a link a customer may or may not click. The console tells them to
+# COPY this and paste it into Claude or ChatGPT by hand, and their assistant then
+# shows it back to them on every reconnection. On the shared host they were being
+# told, inside the Piggles console, to hand another company's hostname to their AI.
+#
+# And it is load-bearing, not cosmetic. RFC 9728 discovery happens BEFORE any
+# token exists — there is no tenant to read `platform_brand` from — so the HOST is
+# the only thing carrying the brand, and api-mcp resolves it from exactly this
+# name (oauth-metadata.ts). Sharing mcp.sparx.works meant one answer for both
+# brands: every Piggles customer connecting an assistant was sent to
+# app.sparx.works to sign in and approve access to their own business, on a sparx
+# consent screen, while getpiggles.com — the only place Piggles mounts Better
+# Auth — served a consent route nothing ever reached.
+#
+# One host block, no extra pod. `PIGGLES_MCP_URL` on the api-mcp Deployment is
+# what makes this name resolve to the Piggles brand; without it the host would
+# fall through to the default and answer as sparx, which looks identical to
+# working software. api-mcp fails its own boot on that gap rather than serve it.
+{$SX_SCHEME:https}://mcp.mypiggles.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy api-mcp.sparx-prod.svc.cluster.local:3000
 }
 
 # ----- kanNINJA (co-tenant in the `kanninja` namespace) -----

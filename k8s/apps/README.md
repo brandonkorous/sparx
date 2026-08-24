@@ -5,20 +5,20 @@ the list that ships; a manifest not named there is not deployed, and — because
 the release prunes on its ownership label — removing a name from that list is
 how an app is actually deleted rather than silently left running.
 
-| Manifest               | Serves                                     | Notes                                                     |
-| ---------------------- | ------------------------------------------ | --------------------------------------------------------- |
-| `api-rest.yaml`        | api.sparx.works                            | Fastify REST API. 2 replicas; `strategy: Recreate` on AKS |
-| `api-graphql.yaml`     | graphql.sparx.works                        | Pothos + Mercurius                                        |
-| `api-mcp.yaml`         | mcp.sparx.works                            | The staff/agent MCP plane                                 |
-| `mcp-site.yaml`        | mcp.sparx.zone                             | The shopper-facing MCP plane                              |
-| `workbench.yaml`       | app.sparx.works                            | The operator app. Replaced the removed `dashboard`        |
-| `web.yaml`             | sparx.works + the module marketing domains | One Next.js app reading the Host header                   |
-| `site.yaml`            | every tenant storefront                    | Multi-tenant; hostname resolved per request               |
-| `market.yaml`          | sparx.market                               | The marketplace                                           |
-| `admin.yaml`           | admin.wize.works                           | The WizeWorks staff console — not a tenant surface        |
-| `piggles-web.yaml`     | meetpiggles.com                            | **Piggles.** Marketing. No database, no auth, no api-rest |
-| `piggles-account.yaml` | getpiggles.com                             | **Piggles.** The auth authority + platform billing        |
-| `piggles-console.yaml` | mypiggles.com                              | **Piggles.** The operating console. No sign-in UI at all  |
+| Manifest               | Serves                                     | Notes                                                                                                                                  |
+| ---------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `api-rest.yaml`        | api.sparx.works                            | Fastify REST API. 2 replicas; `strategy: Recreate` on AKS                                                                              |
+| `api-graphql.yaml`     | graphql.sparx.works                        | Pothos + Mercurius                                                                                                                     |
+| `api-mcp.yaml`         | mcp.sparx.works + mcp.mypiggles.com        | The staff/agent MCP plane. One pod, one host PER BRAND — discovery runs before any token exists, so the host is what carries the brand |
+| `mcp-site.yaml`        | mcp.sparx.zone                             | The shopper-facing MCP plane                                                                                                           |
+| `workbench.yaml`       | app.sparx.works                            | The operator app. Replaced the removed `dashboard`                                                                                     |
+| `web.yaml`             | sparx.works + the module marketing domains | One Next.js app reading the Host header                                                                                                |
+| `site.yaml`            | every tenant storefront                    | Multi-tenant; hostname resolved per request                                                                                            |
+| `market.yaml`          | sparx.market                               | The marketplace                                                                                                                        |
+| `admin.yaml`           | admin.wize.works                           | The WizeWorks staff console — not a tenant surface                                                                                     |
+| `piggles-web.yaml`     | meetpiggles.com                            | **Piggles.** Marketing. No database, no auth, no api-rest                                                                              |
+| `piggles-account.yaml` | getpiggles.com                             | **Piggles.** The auth authority + platform billing                                                                                     |
+| `piggles-console.yaml` | mypiggles.com                              | **Piggles.** The operating console. No sign-in UI at all                                                                               |
 
 Replica counts live in the overlay (`k8s/azure/apps/kustomization.yaml`), not
 here — the same base runs on a laptop and on a one-node cluster.

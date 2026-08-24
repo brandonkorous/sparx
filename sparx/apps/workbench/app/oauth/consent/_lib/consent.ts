@@ -8,6 +8,7 @@
 
 import 'server-only';
 import { getRegisteredMcpClient, type RegisteredMcpClient } from '@wizeworks/auth';
+import { mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
 
 export interface AuthorizeParams {
   responseType: string;
@@ -40,9 +41,18 @@ export function parseAuthorizeParams(sp: SP): AuthorizeParams {
   };
 }
 
-/** Canonical resource identifier of the MCP server this authorization targets. */
+/**
+ * Canonical resource identifier of the MCP server this authorization targets —
+ * sparx's, because this app is sparx's authorization server and no other brand's
+ * consent can be approved here.
+ *
+ * The brand is named rather than read from the request for exactly that reason:
+ * it is this deployment's own identity, not a per-request variable. Resolved
+ * through the shared seam so it matches what api-mcp advertises at
+ * mcp.sparx.works and what the console tells a customer to paste.
+ */
 export function mcpResourceUrl(): string {
-  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/mcp';
+  return brandMcpResourceUrl('sparx');
 }
 
 /** The authorize params as a plain record (empties dropped) — used to seed the

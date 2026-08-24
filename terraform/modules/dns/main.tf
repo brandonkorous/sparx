@@ -587,6 +587,32 @@ resource "cloudflare_record" "piggles_api" {
   comment         = "api-rest, on the brand's own hostname"
 }
 
+# mcp.mypiggles.com — the SAME api-mcp every sparx assistant connects to, on the
+# brand's own hostname, and the most VISIBLE address Piggles owns.
+#
+# The console tells a customer to COPY this and paste it into Claude or ChatGPT
+# by hand, and their assistant shows it back to them on every reconnection — so
+# on the shared host they were being told, inside the Piggles console, to hand
+# another company's hostname to their AI.
+#
+# It also decides where they authenticate. RFC 9728 discovery runs BEFORE any
+# token exists, so there is no tenant to read a brand from and the HOST is the
+# only thing carrying one; api-mcp maps this name to the Piggles brand and
+# answers with getpiggles.com as the authorization server. One shared host meant
+# one answer, and it sent Piggles customers to app.sparx.works to approve access
+# to their own business.
+resource "cloudflare_record" "piggles_mcp" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.piggles["mypiggles.com"].id
+  name            = "mcp"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "api-mcp, on the brand's own hostname"
+}
+
 # =========================================================================
 # piggles.site — Piggles TENANT sites (the sparx.zone of this brand)
 # =========================================================================

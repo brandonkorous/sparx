@@ -1,7 +1,14 @@
 # wizeworks/services/api-mcp — production manifest. Mirrors api-rest.yaml; the
 # differences are:
 #   - Image tag `api-mcp`
-#   - Hosts mcp.sparx.works via the Caddy reverse-proxy (configmap.yaml)
+#   - Hosts mcp.sparx.works AND mcp.mypiggles.com via the Caddy reverse-proxy
+#     (k8s/ingress/Caddyfile). One pod, one hostname per brand: RFC 9728
+#     discovery runs before any token exists, so there is no tenant to read
+#     `platform_brand` from and the request HOST is the only thing carrying the
+#     brand. `PLATFORM_BRANDS` + `<BRAND>_MCP_URL` in sparx-app-env build the
+#     host→brand map, and this pod EXITS 78 at boot if a listed brand has no
+#     address — the alternative is that brand answering as the default one,
+#     which returns a 200 and the wrong company's sign-in page (docs/07 §5).
 #   - Phase-1 cap at 2 replicas matches api-rest (api-mcp throughput is
 #     proportional to MCP tool calls — early-stage volume is low)
 #

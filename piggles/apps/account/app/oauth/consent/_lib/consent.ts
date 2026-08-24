@@ -11,6 +11,7 @@
 
 import 'server-only';
 import { getRegisteredMcpClient, type RegisteredMcpClient } from '@wizeworks/auth';
+import { mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
 
 export interface AuthorizeParams {
   responseType: string;
@@ -43,9 +44,24 @@ export function parseAuthorizeParams(sp: SP): AuthorizeParams {
   };
 }
 
-/** Canonical resource identifier of the MCP server this authorization targets. */
+/**
+ * Canonical resource identifier of the MCP server this authorization targets —
+ * Piggles', because this app is Piggles' authorization server and no other
+ * brand's consent can be approved here.
+ *
+ * This used to read the platform-wide `MCP_RESOURCE_URL`, which named
+ * mcp.sparx.works: every Piggles authorization was therefore checked against
+ * another company's address, and this screen would have refused a genuine
+ * Piggles request as "for a different service" — had anything ever reached it.
+ * Nothing did, because the discovery document api-mcp served named
+ * app.sparx.works as the authorization server, so a Piggles customer connecting
+ * an assistant was sent to sparx to sign in instead.
+ *
+ * The brand is named rather than read from the request because it is this
+ * deployment's own identity, not a per-request variable.
+ */
 export function mcpResourceUrl(): string {
-  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/mcp';
+  return brandMcpResourceUrl('piggles');
 }
 
 /** The authorize params as a plain record (empties dropped) — used to seed the

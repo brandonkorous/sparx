@@ -148,6 +148,94 @@ export function accountOrigin(brand: string = DEFAULT_BRAND): string {
 }
 
 /**
+ * Legacy, brand-UNSCOPED name for the MCP resource identifier.
+ *
+ * Read only after the scoped one misses, for the same reason as
+ * `LEGACY_ORIGIN_VARS`: it predates the second brand and names a single
+ * address, so it is correct in a platform serving one brand and wrong for
+ * exactly one brand in a platform serving two.
+ */
+const LEGACY_MCP_VAR = 'MCP_RESOURCE_URL';
+
+/**
+ * The dev address of the MCP server, shared by every brand.
+ *
+ * DEV ONLY, and acceptable as a literal for the same reason as `DEV_PORTS`: one
+ * api-mcp process listens on a laptop, no customer can reach a loopback address,
+ * and a loopback address carries no brand to leak. Production has no such
+ * constant — see `mcpResourceUrl`.
+ */
+const DEV_MCP_URL = 'http://localhost:3000/mcp';
+
+/** `PIGGLES_MCP_URL` from `piggles`. Derived, so this file names no brand. */
+function mcpVarName(brand: string): string {
+  return `${brand
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')}_MCP_URL`;
+}
+
+/**
+ * A brand's MCP server, as its canonical OAuth resource identifier — origin AND
+ * path, because that is what the protocol compares.
+ *
+ * ── WHY THIS IS PER BRAND AND NOT ONE PLATFORM ADDRESS ──────────────────────
+ *
+ * This is the single most VISIBLE address the platform owns. A customer does not
+ * merely receive it in a link they may or may not look at — the console tells
+ * them to copy it and paste it into Claude or ChatGPT by hand, and then their AI
+ * client shows it back to them on every reconnection. One shared value meant a
+ * Piggles customer was told, in the Piggles console, to hand another company's
+ * hostname to their assistant. Same failure `api.mypiggles.com` was created to
+ * close, on the one address that gets read aloud.
+ *
+ * It is not only a label. The document served at this origin names the
+ * AUTHORIZATION SERVER a client must go to (RFC 9728), and discovery happens
+ * BEFORE any token exists — so there is no tenant to ask and the hostname is the
+ * only thing carrying the brand. With one address there was one answer, and it
+ * sent a Piggles customer to app.sparx.works to sign in and approve access to
+ * their own business, on a sparx consent screen, while getpiggles.com — the only
+ * place Piggles mounts Better Auth — served a consent route nothing ever reached.
+ *
+ * There is no brand conditional here and no hostname literal: the variable name
+ * is derived from the brand key, so a third brand is configuration. Unconfigured
+ * in production THROWS, matching `appOrigin` — an address a customer is told to
+ * paste into an AI client must be right or absent, never guessed.
+ */
+export function mcpResourceUrl(brand: string = DEFAULT_BRAND): string {
+  const key = brand.trim().toLowerCase() || DEFAULT_BRAND;
+  if (typeof process === 'undefined') {
+    throw new Error(`mcpResourceUrl(${key}) called with no process environment — server only.`);
+  }
+
+  const scoped = readEnv(mcpVarName(key));
+  if (scoped) return scoped;
+
+  const legacy = readEnv(LEGACY_MCP_VAR);
+  if (legacy) return legacy;
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      `No MCP address configured for brand "${key}". Set ${mcpVarName(key)} on this deployment.`
+    );
+  }
+  return DEV_MCP_URL;
+}
+
+/**
+ * The authorization server an MCP client is sent to for a brand — the origin
+ * advertised in that brand's protected-resource metadata.
+ *
+ * It is `accountOrigin` and deliberately nothing of its own: "approve an OAuth
+ * consent" is already in that function's job description, and the place a brand
+ * mounts Better Auth is the only place its consent screen can exist. A separate
+ * lookup here would be a second answer to a settled question, free to drift.
+ */
+export function mcpAuthServerOrigin(brand: string = DEFAULT_BRAND): string {
+  return accountOrigin(brand);
+}
+
+/**
  * An absolute link to a surface, resolved against the brand's origin.
  *
  * This is what a service calls. It never takes a surface key from a caller's

@@ -93,7 +93,17 @@ media.sparx.works  media-direct.sparx.works  graphql.sparx.works  mcp.sparx.work
 sparx.market  www.sparx.market  mcp.sparx.zone  sparx.zone  www.sparx.zone
 sparxcms.com  sparxcrm.com  sparxemail.com  sparxb2b.com  sparx.email   (+ www)
 sparx.host  sparx.software  sparx.exchange                              (+ www)
+meetpiggles.com  getpiggles.com  mypiggles.com                          (+ www)
+api.mypiggles.com  mcp.mypiggles.com  piggles.site                      (+ www)
 ```
+
+The two `*.mypiggles.com` API hosts reach the SAME api-rest and api-mcp pods the
+sparx hosts do. They exist because a Piggles customer READS them — the console
+hands `api.mypiggles.com` to their browser, and the console tells them to copy
+`mcp.mypiggles.com/mcp` into Claude or ChatGPT by hand. The MCP one also decides
+where they sign in: discovery happens before any token exists, so api-mcp resolves
+the brand from the host and answers with getpiggles.com as the authorization
+server (docs/07 §5).
 
 Set each zone's SSL/TLS mode to **Full (strict)**. The tunnel is the encrypted
 hop; Caddy holds no certificate. Do not use Flexible.

@@ -4,11 +4,11 @@
 // thing a non-technical owner must never conflate: the two AI plumbing concepts
 // point in OPPOSITE directions.
 //
-//   • Your AI account (BYOK) — sparx uses YOUR Anthropic/OpenAI account to write
-//     and answer FOR you. sparx never holds an AI key of its own. Its behaviour
-//     is shaped by Instructions (ai.prompts).
+//   • Your AI account (BYOK) — Piggles uses YOUR Anthropic/OpenAI account to
+//     write and answer FOR you. Piggles never holds an AI key of its own. Its
+//     behaviour is shaped by Instructions (ai.prompts).
 //   • Apps you connect (MCP) — you point your OWN outside AI app (Claude,
-//     ChatGPT, Copilot) AT sparx so it can reach in and act. Two credential
+//     ChatGPT, Copilot) AT Piggles so it can reach in and act. Two credential
 //     kinds: connected assistants (sign-in) and API keys (for apps that can't
 //     sign in). What a connected app may DO is governed by Permissions (ai.tools).
 //

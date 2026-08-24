@@ -4,7 +4,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { emailOTP, magicLink, mcp, oneTap, organization, twoFactor } from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
-import { accountOrigin } from '@wizeworks/links/server';
+import { accountOrigin, mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
 import { currentPlatformBrand, platformBrandIdentity } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
@@ -596,10 +596,19 @@ function createAuth() {
   });
 }
 
-/** Canonical resource identifier for the MCP server (the audience the OAuth
- *  tokens are for). Prod: https://mcp.sparx.works/v1. */
+/**
+ * Canonical resource identifier for the MCP server this process authorizes for
+ * (the audience its OAuth tokens are for).
+ *
+ * Per BRAND, and `currentPlatformBrand()` is the right way to ask for the same
+ * reason the 2FA issuer above uses it: each brand's authorization server is its
+ * own deployment mounting its own Better Auth handler, so the brand is a
+ * property of the process, not of the request. Read as one platform-wide value
+ * this named mcp.sparx.works for both brands — the address a Piggles token
+ * would have claimed to be for.
+ */
 function mcpResourceUrl(): string {
-  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/v1';
+  return brandMcpResourceUrl(currentPlatformBrand());
 }
 
 // Construct the Better Auth server lazily, on first property access — NOT at

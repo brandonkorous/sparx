@@ -1,8 +1,8 @@
 # sparx Platform — Domain Network & SEO Strategy
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-08-23
 
 ---
 
@@ -17,7 +17,7 @@ sparx operates a purposeful network of domains. Each domain has one job and link
 | sparx.works        | Primary brand, marketing site, tenant signup           | —               |
 | app.sparx.works    | Tenant dashboard                                       | GKE LB          |
 | api.sparx.works    | REST + GraphQL API                                     | GKE LB          |
-| mcp.sparx.works    | MCP server                                             | GKE LB          |
+| mcp.sparx.works    | MCP server (sparx's; Piggles' is mcp.mypiggles.com)    | GKE LB          |
 | status.sparx.works | Status page                                            | GKE LB          |
 | sparx.email        | Postal sending infrastructure + Email module marketing | GKE LB / Postal |
 

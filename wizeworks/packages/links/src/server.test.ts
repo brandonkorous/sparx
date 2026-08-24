@@ -7,7 +7,14 @@
 // configured resolving to whichever hostname happened to be hardcoded.
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { accountOrigin, appLink, appOrigin, DEFAULT_BRAND } from './server';
+import {
+  accountOrigin,
+  appLink,
+  appOrigin,
+  DEFAULT_BRAND,
+  mcpAuthServerOrigin,
+  mcpResourceUrl,
+} from './server';
 
 const TOUCHED = [
   'SPARX_APP_URL',
@@ -18,6 +25,9 @@ const TOUCHED = [
   'PIGGLES_APP_URL',
   'SPARX_ACCOUNT_URL',
   'PIGGLES_ACCOUNT_URL',
+  'SPARX_MCP_URL',
+  'PIGGLES_MCP_URL',
+  'MCP_RESOURCE_URL',
   'NODE_ENV',
 ] as const;
 
@@ -161,5 +171,86 @@ describe('the invitation link this all exists for', () => {
     process.env.SPARX_APP_URL = 'https://app.sparx.works';
     const acceptUrl = `${accountOrigin('sparx')}/accept-invite?invitation=inv_123`;
     expect(acceptUrl).toBe('https://app.sparx.works/accept-invite?invitation=inv_123');
+  });
+});
+
+describe('mcpResourceUrl', () => {
+  it('answers each brand from its own scoped variable', () => {
+    process.env.SPARX_MCP_URL = 'https://mcp.sparx.works/mcp';
+    process.env.PIGGLES_MCP_URL = 'https://mcp.mypiggles.com/mcp';
+
+    expect(mcpResourceUrl('sparx')).toBe('https://mcp.sparx.works/mcp');
+    expect(mcpResourceUrl('piggles')).toBe('https://mcp.mypiggles.com/mcp');
+  });
+
+  it('never lets the legacy unscoped variable shadow the scoped one', () => {
+    // The exact shape of the bug: ONE `MCP_RESOURCE_URL`, set to sparx's
+    // address, answering for both brands. It is what the Piggles console told a
+    // Piggles customer to paste into Claude.
+    process.env.MCP_RESOURCE_URL = 'https://mcp.sparx.works/mcp';
+    process.env.PIGGLES_MCP_URL = 'https://mcp.mypiggles.com/mcp';
+
+    expect(mcpResourceUrl('piggles')).toBe('https://mcp.mypiggles.com/mcp');
+  });
+
+  it('still reads the legacy name when no scoped variable is set', () => {
+    // The migration window: an environment that has not grown the scoped names
+    // yet must keep serving rather than throw.
+    process.env.MCP_RESOURCE_URL = 'https://mcp.sparx.works/mcp';
+    expect(mcpResourceUrl('sparx')).toBe('https://mcp.sparx.works/mcp');
+  });
+
+  it('throws in production rather than guess an address', () => {
+    // A guess here is not a broken link somebody re-requests. It is a hostname
+    // a person pastes into their AI client and keeps, and — because discovery
+    // names the authorization server — the company they sign in to.
+    process.env.NODE_ENV = 'production';
+    expect(() => mcpResourceUrl('piggles')).toThrow(/PIGGLES_MCP_URL/);
+  });
+
+  it('falls back to the shared local address off production', () => {
+    process.env.NODE_ENV = 'development';
+    expect(mcpResourceUrl('piggles')).toBe('http://localhost:3000/mcp');
+  });
+});
+
+describe('mcpAuthServerOrigin', () => {
+  it('sends each brand to the app that actually mounts Better Auth', () => {
+    process.env.SPARX_APP_URL = 'https://app.sparx.works';
+    process.env.PIGGLES_APP_URL = 'https://mypiggles.com';
+    process.env.PIGGLES_ACCOUNT_URL = 'https://getpiggles.com';
+
+    // sparx's workbench carries its own /sign-in; the Piggles console carries
+    // none and never will, so its consent screen can only live on the account app.
+    expect(mcpAuthServerOrigin('sparx')).toBe('https://app.sparx.works');
+    expect(mcpAuthServerOrigin('piggles')).toBe('https://getpiggles.com');
+  });
+});
+
+describe('the AI connection this all exists for', () => {
+  it('tells a Piggles owner to point their assistant at Piggles', () => {
+    process.env.SPARX_MCP_URL = 'https://mcp.sparx.works/mcp';
+    process.env.PIGGLES_MCP_URL = 'https://mcp.mypiggles.com/mcp';
+    process.env.PIGGLES_ACCOUNT_URL = 'https://getpiggles.com';
+
+    // What the AI connections pane prints for them to copy, and what api-mcp
+    // then answers with when their client comes back to discover the AS.
+    const endpoint = mcpResourceUrl('piggles');
+    const authServer = mcpAuthServerOrigin('piggles');
+
+    expect(endpoint).toBe('https://mcp.mypiggles.com/mcp');
+    expect(authServer).toBe('https://getpiggles.com');
+    // Neither the address they paste nor the door they sign in at may name
+    // another company.
+    expect(endpoint).not.toContain('sparx');
+    expect(authServer).not.toContain('sparx');
+  });
+
+  it('leaves the sparx connection exactly where it was', () => {
+    process.env.SPARX_MCP_URL = 'https://mcp.sparx.works/mcp';
+    process.env.SPARX_APP_URL = 'https://app.sparx.works';
+
+    expect(mcpResourceUrl('sparx')).toBe('https://mcp.sparx.works/mcp');
+    expect(mcpAuthServerOrigin('sparx')).toBe('https://app.sparx.works');
   });
 });

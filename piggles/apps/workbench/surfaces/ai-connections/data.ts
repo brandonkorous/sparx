@@ -4,13 +4,16 @@
 // directions, kept in one file because the surface presents them together.
 //
 //   1. Your AI account (BYOK) — the tenant's OWN Anthropic/OpenAI account, the
-//      one credential every AI feature runs on. sparx never uses AI on a
+//      one credential every AI feature runs on. Piggles never uses AI on a
 //      business's behalf without it (a CORE platform convention). The raw key
 //      never travels — the server stores an encrypted copy and returns only a
 //      last-4 hint. Backed by /v1/ai/credentials.
-//   2. Apps you connect (MCP) — outside AI apps the owner points AT their sparx
-//      business, in two credential flavours: connected assistants (OAuth, backed
-//      by /v1/ai/mcp-connections) and scoped API keys (backed by /v1/ai/api-keys).
+//   2. Apps you connect (MCP) — outside AI apps the owner points AT their
+//      Piggles business, in two credential flavours: connected assistants
+//      (OAuth, backed by /v1/ai/mcp-connections) and scoped API keys (backed by
+//      /v1/ai/api-keys). The address they are pointed at is `mcpEndpoint`, which
+//      the server resolves from the tenant's brand — it is mcp.mypiggles.com
+//      here, and a customer copies it by hand into their assistant.
 //
 // Reads that expose the BYOK account are viewer; everything that exposes or
 // changes key/connection material is admin — mirrored on the surface with

@@ -1,8 +1,8 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.7  
+**Version:** 1.8  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-08-23
 
 ---
 
@@ -162,16 +162,48 @@ In all three the tenant must have the `ai` module active; per-tool scopes then d
 
 ### OAuth 2.1 flow (Claude / ChatGPT connectors)
 
-Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Authorization-Code + PKCE with Dynamic Client Registration (RFC 7591). The **dashboard (`app.sparx.works`, Better Auth `mcp()` plugin) is the authorization server**; **api-mcp (`mcp.sparx.works`) is the resource server**. Discovery + hand-off:
+Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Authorization-Code + PKCE with Dynamic Client Registration (RFC 7591). Each **brand's account surface** is the authorization server (Better Auth `mcp()` plugin); **api-mcp is the resource server**, on that brand's own MCP hostname. Discovery + hand-off, written here for sparx:
 
 1. Client `POST`s `mcp.sparx.works/mcp` → **401** with `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource"`. (The endpoint is `/mcp` — matching the shopper site MCP and MCP convention; `/v1` is kept as a deprecated alias, and any other path returns a JSON 404 naming `/mcp`.)
 2. Client fetches that **Protected Resource Metadata** (RFC 9728, served by api-mcp) → `authorization_servers: ["https://app.sparx.works"]` + the MCP scope vocabulary.
-3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the dashboard) → authorize / token / register endpoints, `code_challenge_methods_supported: ["S256"]`.
+3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the workbench) → authorize / token / register endpoints, `code_challenge_methods_supported: ["S256"]`.
 4. Client **self-registers** at `/api/auth/mcp/register` (rate-limited), then opens `/api/auth/mcp/authorize`.
 5. A `before` hook (`wizeworks/packages/auth/src/server.ts` `mcpAuthorizeGuard`) refuses to mint a code unless the request carries a **signed, session-bound, short-lived consent grant** — so every authorize is funnelled through the first-party **consent + scope-picker** page at `/oauth/consent`. The user signs in (if needed), sees who is connecting + where tokens go, and **picks exactly which scopes to grant** (capped by their role). Approval mints the grant and hands back to the plugin, which issues the code.
 6. Client exchanges the code at `/api/auth/mcp/token` (PKCE verified) for an opaque access token (1h) + refresh token (30d, on `offline_access`).
 
 **Hardening notes (deliberate, since DCR is public):** PKCE is mandatory and **S256-only** (both off by default in the plugin build); redirect URIs are **exact-matched** against the DCR registration; the requested `resource` must be our MCP server (RFC 8707); the plugin's `getMcpSession` does **not** check expiry, so `verifyMcpOAuthToken` enforces `access_token_expires_at` + client-not-disabled in one atomic query as `sparx_owner`. The `oauth_*` tables are `ENABLE`-but-**NO-FORCE** RLS with **no policy** (owner-only; `sparx_app` sees zero rows). Tenants view + revoke connections in **Settings → AI Integrations** ("Connected assistants").
+
+#### The MCP hostname is per brand, and it has to be
+
+| Brand   | Resource (`<BRAND>_MCP_URL`)    | Authorization server (`<BRAND>_ACCOUNT_URL`, falling back to `<BRAND>_APP_URL`) |
+| ------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| sparx   | `https://mcp.sparx.works/mcp`   | `https://app.sparx.works` — the workbench mounts Better Auth itself             |
+| piggles | `https://mcp.mypiggles.com/mcp` | `https://getpiggles.com` — the console has no sign-in page and never will       |
+
+One api-mcp process serves every brand, so something has to say which brand a
+request belongs to — and **step 2 above happens before any token exists**. There is
+no tenant to read `platform_brand` from, and there never can be, because the whole
+job of that document is to tell a client where to go and get a token. The request's
+**host** is the only thing carrying the brand at that moment, which is why a brand
+needs an MCP hostname of its own rather than a share of one.
+
+Until 2026-08-23 both brands were served one fixed pair, and it named sparx. The
+consequences ran the length of the flow: the Piggles console told a Piggles customer
+to paste `mcp.sparx.works/mcp` into their assistant (the single most **visible**
+address the platform owns — it is copied by hand and shown back on every
+reconnection); step 2 then sent them to `app.sparx.works` to sign in and approve
+access to their own business on a sparx consent screen; and `getpiggles.com`, the
+only place Piggles mounts Better Auth, served a consent route nothing ever reached.
+Its validator meanwhile compared the requested `resource` against sparx's address,
+so it would have refused a genuine Piggles request as "for a different service".
+
+The resolution is `mcpResourceUrl(brand)` / `mcpAuthServerOrigin(brand)` in
+`@wizeworks/links/server`, alongside `appOrigin` and `accountOrigin` and derived the
+same way — the variable **name** comes from the brand key, so a third brand is
+configuration rather than an edit. api-mcp builds a host→brand map at boot from
+`PLATFORM_BRANDS` and **exits 78** when a listed brand has no usable address: a brand
+whose host silently falls through to the default answers 200 with a valid document
+and the wrong company's sign-in page, which is indistinguishable from working.
 
 **Schema dependency:** the plugin reuses the `verifications` table as its authorization-code store, serializing the full code payload (client, redirect, scope array, PKCE challenge, state, nonce, user) as JSON into `verifications.value`. That column **must be `TEXT`** — the original `VARCHAR(255)` truncated real requests (~300–450 chars), the authorize insert threw, and the plugin swallowed it as `error=server_error` (no code minted). Widened in migration `20260928000000_widen_verification_value`.
 

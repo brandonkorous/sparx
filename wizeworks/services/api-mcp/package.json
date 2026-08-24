@@ -31,6 +31,7 @@
     "@wizeworks/events": "workspace:*",
     "@wizeworks/godaddy": "workspace:*",
     "@wizeworks/inventory": "workspace:*",
+    "@wizeworks/links": "workspace:*",
     "@wizeworks/media": "workspace:*",
     "@wizeworks/email-platform": "workspace:*",
     "@wizeworks/registrar": "workspace:*",

@@ -19,6 +19,8 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { badRequest } from '@wizeworks/api-core/errors';
 
+import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
+
 import { AI_PROVIDERS } from '../../../lib/chat/types.js';
 import {
   AiCredentialError,
@@ -40,8 +42,11 @@ const ConnectBody = z.object({
 const aiCredentialRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/ai/credentials', async (request) => {
     const auth = requireRole(request, 'viewer');
-    const credential = await getAiCredentialPublic(auth.tenantId);
-    return ok({ credential, mcpEndpoint: mcpEndpoint() });
+    const [credential, brand] = await Promise.all([
+      getAiCredentialPublic(auth.tenantId),
+      tenantPlatformBrand(auth.tenantId),
+    ]);
+    return ok({ credential, mcpEndpoint: mcpEndpoint(brand) });
   });
 
   app.put('/v1/ai/credentials', async (request) => {
@@ -49,7 +54,7 @@ const aiCredentialRoutes: FastifyPluginAsync = async (app) => {
     const body = ConnectBody.parse(request.body);
     try {
       const credential = await setAiCredential(auth.tenantId, body.provider, body.apiKey.trim());
-      return ok({ credential, mcpEndpoint: mcpEndpoint() });
+      return ok({ credential, mcpEndpoint: mcpEndpoint(await tenantPlatformBrand(auth.tenantId)) });
     } catch (err) {
       // A rejected key is a user error, not a server fault — surface the
       // provider's own sentence ("that key was rejected …") as a 400.

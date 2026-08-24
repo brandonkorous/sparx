@@ -18,6 +18,17 @@
 // mounts Better Auth. The consent screen lives here for the same reason: it has
 // to be able to send an unauthenticated visitor to a sign-in page that exists.
 //
+// ── AND AS OF 2026-08-23 SOMETHING ACTUALLY ARRIVES HERE ────────────────────
+//
+// This document was correct and unreached. api-mcp served ONE protected-resource
+// document naming `app.sparx.works` as the authorization server, because the
+// resource identifier and the AS were single platform-wide values, so a Piggles
+// customer connecting an assistant was sent to sparx to sign in and approve
+// access to their own business. Discovery happens before any token exists —
+// there is no tenant to read a brand from — so the fix was a HOSTNAME:
+// `mcp.mypiggles.com` maps to the Piggles brand and api-mcp answers with this
+// origin. See docs/07 §5 and piggles/STATUS.md.
+//
 // We build the document ourselves rather than proxying Better Auth's helper
 // because the plugin hardcodes `scopes_supported` to the four OIDC scopes and
 // never surfaces the MCP business-scope vocabulary. The endpoints below are the

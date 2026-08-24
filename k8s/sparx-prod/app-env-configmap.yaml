@@ -16,16 +16,35 @@ data:
   # canonical public origin so the OAuth/session cookies scope correctly. NOT a
   # secret.
   BETTER_AUTH_URL: https://app.sparx.works
-  # MCP OAuth (docs/07 §5). MCP_RESOURCE_URL is the canonical resource
-  # identifier of the MCP server (the audience OAuth tokens target); the
-  # workbench validates it at consent + advertises it, and api-mcp echoes it in
-  # its protected-resource metadata. MCP_AUTH_SERVER_URL is the authorization
-  # server (the workbench / Better Auth origin at app.sparx.works) that api-mcp
-  # points clients at. NOT secrets. (AUTH_DATABASE_URL, used by api-mcp to
-  # introspect OAuth tokens as sparx_owner, lives in sparx-app-secrets alongside
-  # the other DB URLs.)
-  MCP_RESOURCE_URL: https://mcp.sparx.works/mcp
-  MCP_AUTH_SERVER_URL: https://app.sparx.works
+  # MCP OAuth (docs/07 §5). The canonical resource identifier of the MCP server
+  # — the audience OAuth tokens target, the address api-mcp echoes in its
+  # protected-resource metadata, the string a brand's consent screen validates
+  # against, and the one the console tells a customer to PASTE into Claude or
+  # ChatGPT. NOT secrets. (AUTH_DATABASE_URL, used by api-mcp to introspect OAuth
+  # tokens as sparx_owner, lives in sparx-app-secrets alongside the other DB URLs.)
+  #
+  # PER BRAND, with the variable name derived from the brand key. One api-mcp
+  # serves every brand, and RFC 9728 discovery runs BEFORE any token exists —
+  # there is no tenant to read `platform_brand` from and there never can be, since
+  # the document's whole job is to say where to go and get a token. The request
+  # HOST is therefore the only thing carrying the brand, which is why each brand
+  # needs an MCP hostname of its own rather than a shared one. As a single value
+  # this said mcp.sparx.works for both brands: a Piggles customer connecting an
+  # assistant was told to paste another company's hostname, and then sent to
+  # app.sparx.works to sign in and approve access to their own business.
+  #
+  # PLATFORM_BRANDS is the list this deployment serves and the ONLY place a brand
+  # key is enumerated — it is what turns the derived names into a host→brand map.
+  # api-mcp fails its own boot when a brand listed here has no address, because
+  # the alternative is that brand's host quietly answering as the default one,
+  # which returns a 200 and a valid document and the wrong company's sign-in page.
+  #
+  # There is no MCP_AUTH_SERVER_URL any more: the authorization server is
+  # `<BRAND>_ACCOUNT_URL` (getpiggles.com below), falling back to the console for
+  # a brand whose console mounts Better Auth itself, which is sparx.
+  PLATFORM_BRANDS: sparx,piggles
+  SPARX_MCP_URL: https://mcp.sparx.works/mcp
+  PIGGLES_MCP_URL: https://mcp.mypiggles.com/mcp
   # Site MCP (docs/113) — the shopper-facing MCP plane (mcp-site).
   # Its canonical public origin, used only to build discovery URLs. The service
   # otherwise reads SPARX_API_REST_URL (below) to reach the public REST API.
