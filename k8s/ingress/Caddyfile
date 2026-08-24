@@ -362,32 +362,38 @@ import mode.caddy
 # time and does NOT follow a redirect, so serving the app at the apex even once
 # means every user who installed it must delete and reinstall to move. The split
 # has to be right before the first deploy rather than corrected after it.
-# THESE TARGETS STAY ON `jotdojo` UNTIL THE OTHER NAMESPACE HOLDS PODS. This is
-# a revert, and the outage it undoes is the argument for the rule.
+# THE CUTOVER IS DONE. These five reach the `jotacular` namespace, which holds
+# the pods, and `jotdojo` MUST NOT be routed to again — migration 0034 renamed
+# the Postgres role `jotdojo_app` to `jotacular_app`, so the pods still sitting
+# in the old namespace authenticate as a role that no longer exists. Pointing
+# back there now is not a rollback, it is a second outage with a slower symptom:
+# the pods answer, and every request that touches the database fails.
 #
-# WHAT HAPPENED, 2026-08-23. The flip to `jotacular` was made and shipped on the
-# agreed understanding that jotDOJO's own release would put pods in that
-# namespace inside the same window. It did not — their deploy never ran. Stage 1
-# applied at ~22:51Z, every one of these five names began answering 502, and it
-# stayed that way for an hour until somebody looked. The `jotdojo` pods were
-# healthy and idle throughout, 1/1 Running with no restarts, serving nothing,
-# because nothing routed to them any more.
+# VERIFIED 2026-08-24 00:02Z, after the fact rather than on a promise:
+#   kubectl get pods -n jotacular  → api, mcp, web, worker all 1/1 Running,
+#                                    db-migrate Completed
+#   the five names                 → 200 / 200 / 307 / 200 (api health) /
+#                                    401 (mcp, auth required)
 #
-# THE LESSON IS ABOUT EVIDENCE, NOT ORDER. The ordering reasoning was right and
-# the flip still caused an outage, because it shipped on a PROMISE that the other
-# side would be ready rather than on a CHECK that it was. `kubectl get pods -n
-# jotacular` answered "No resources found" before the flip, during it, and an
-# hour after. One command, available the whole time, would have stopped it.
+# WHAT THIS COST, because the ordering is the whole lesson. The flip shipped
+# BEFORE jotDOJO's deploy, on the agreed understanding it would land in the same
+# window. It did not: stage 1 applied ~22:51Z, all five names went 502, and they
+# stayed down about an hour until their deploy finally ran at ~23:57Z and healed
+# it. A revert was pushed during that hour and had to be cancelled mid-flight
+# when their pods appeared — thirty seconds later and it would have taken the
+# site down a second time, from the other direction.
 #
-# So the precondition is a fact, not a plan: DO NOT flip these five until
-# `kubectl get pods -n jotacular` shows Running pods for web, api and mcp. Not
-# when their release is queued, not when someone says GO — when the pods answer.
+# The reasoning was right and it still went wrong, because it went out on a PLAN
+# that the other side would be ready instead of a CHECK that it was. `kubectl get
+# pods -n jotacular` answered "No resources found" three minutes before the flip
+# landed. The command was run. The answer was read. It shipped anyway.
 #
-# And note what a revert costs, because it decides who should hold the lever:
-# this file ships in the release's stage 1, so undoing it is a push plus a
-# pre-push guard plus a pipeline, 20-25 minutes. A `kubectl rollout undo` on the
-# caddy Deployment is seconds and belongs to whoever is watching, not to the
-# pipeline. An hour of 502 is what the gap between those two numbers buys.
+# So for the next cutover of this shape, the precondition is a fact and not a
+# schedule: the pods answer first, then the targets move. And note who should
+# hold the undo — this file ships in the release's stage 1, so reverting it is a
+# push plus a guard plus a pipeline, 20-25 minutes, while `kubectl rollout undo
+# deployment/caddy -n sparx-prod` is seconds. The hour of 502 is the gap between
+# those two numbers.
 #
 # Renaming a namespace is cheap in a way the Azure names are not: nothing durable
 # lives in one. The rows are in Postgres and the uploads are in blob storage, and
@@ -395,13 +401,13 @@ import mode.caddy
 {$SX_SCHEME:https}://jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 {$SX_SCHEME:https}://app.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 # `www` is MATCHED BY THE APP, not redirected here — same Service again, so the
@@ -410,7 +416,7 @@ import mode.caddy
 {$SX_SCHEME:https}://www.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.jotdojo.svc.cluster.local:80
+	reverse_proxy web.jotacular.svc.cluster.local:80
 }
 
 # The REST v1 surface Apple Shortcuts and third parties call. A separate
@@ -420,7 +426,7 @@ import mode.caddy
 {$SX_SCHEME:https}://api.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy api.jotdojo.svc.cluster.local:80
+	reverse_proxy api.jotacular.svc.cluster.local:80
 }
 
 # The MCP server: streamable HTTP transport, OAuth 2.1 resource server.
@@ -437,7 +443,7 @@ import mode.caddy
 {$SX_SCHEME:https}://mcp.jotacular.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy mcp.jotdojo.svc.cluster.local:80
+	reverse_proxy mcp.jotacular.svc.cluster.local:80
 }
 
 # ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
