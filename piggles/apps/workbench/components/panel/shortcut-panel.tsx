@@ -89,7 +89,7 @@ export function ShortcutPanel({
             aria-hidden
           />
           <span className="min-w-0 truncate text-base font-semibold">
-            {favourites ? 'Favourites' : 'Recent'}
+            {favourites ? 'Favorites' : 'Recent'}
           </span>
         </SidebarHeaderBrand>
 
@@ -127,7 +127,7 @@ export function ShortcutPanel({
                   open(definition);
                 }}
                 removeLabel={
-                  favourites ? `Remove ${resolveTitle(definition, {})} from favourites` : undefined
+                  favourites ? `Remove ${resolveTitle(definition, {})} from favorites` : undefined
                 }
                 onRemove={
                   favourites

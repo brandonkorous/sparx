@@ -130,7 +130,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
   return (
     <FormSection
       title="Devices signed in"
-      description="Every device currently signed in to your account. If you see one you do not recognise, sign it out and change your password."
+      description="Every device currently signed in to your account. If you see one you do not recognize, sign it out and change your password."
       action={
         otherCount > 0 ? (
           <Button

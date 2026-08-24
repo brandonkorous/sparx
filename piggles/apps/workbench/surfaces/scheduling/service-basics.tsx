@@ -45,7 +45,7 @@ export function ServiceBasics({
         title={isNew ? 'New service' : 'What it is'}
         description={
           isNew
-            ? 'Give the service a name a customer will recognise, and say what kind of booking it is.'
+            ? 'Give the service a name a customer will recognize, and say what kind of booking it is.'
             : undefined
         }
       >

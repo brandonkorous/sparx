@@ -37,7 +37,7 @@ interface ShortcutRowProps {
 export function Favourites({ browsing, expanded, onBrowseList }: ShortcutRowProps) {
   return (
     <ListRow
-      label="Favourites"
+      label="Favorites"
       glyph={faStar}
       outline
       active={browsing}

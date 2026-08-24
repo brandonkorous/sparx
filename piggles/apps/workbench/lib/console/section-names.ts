@@ -39,7 +39,7 @@ export const PIGGLES_SECTIONS: Readonly<Record<string, string>> = {
   Selling: 'Where you sell',
   'Product panels': 'On a product',
   'In progress': 'Half-finished',
-  Structure: 'How it is organised',
+  Structure: 'How it is organized',
   Localization: 'Other languages',
   Library: 'Your library',
   Design: 'Your pages',
