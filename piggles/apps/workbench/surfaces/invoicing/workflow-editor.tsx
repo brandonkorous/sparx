@@ -2,13 +2,7 @@
 
 // One workflow — its name, and the stages a document travels through.
 //
-// The body is a TWO-PANE working surface, the sibling of the automations editor:
-// on the LEFT a stage canvas draws the workflow as a vertical pipeline of nodes (a
-// Settings node, then each stage in order); on the RIGHT an inspector edits
-// whichever node is selected. Only one node's editor is open at a time — the
-// canvas is the readable map of the customer's journey, the inspector is where you
-// change one thing. On a narrow pane the two stack and a Flow/Properties switch
-// flips between them. This is a workflow, so it should FEEL like one.
+// The body is a two-pane working surface — ./workflow-editor-panes.tsx.
 //
 // Create and edit are the same surface (`{id:'new'}` → `{id}`), per the app's pane
 // rule: a workflow is a durable thing you come back to, and building one is minutes
@@ -27,32 +21,24 @@
 import { useEffect, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useMutation } from '@wizeworks/query';
-import { arrayMove } from '@dnd-kit/sortable';
 import {
   Alert,
   AlertContent,
   AlertDescription,
   AlertTitle,
-  Badge,
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { faBoxArchive, faEllipsis, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { StageCanvas, SETTINGS_NODE } from './stage-canvas';
-import { StageInspector } from './stage-inspector';
+import { WorkflowPanes } from './workflow-editor-panes';
+import { WorkflowToolbar } from './workflow-editor-toolbar';
+import { useStageOps } from './workflow-editor-stages';
+import { slugifyTyping } from '../../lib/slugify';
 import type { DocumentWorkflowDetail } from './types';
 import {
-  blankStage,
   emptyWorkflowDraft,
   slugify,
   toWorkflowDraft,
@@ -60,7 +46,6 @@ import {
   useInvalidateWorkflows,
   useWorkflow,
   workflowErrorMessage,
-  type StageDraft,
   type WorkflowDraft,
 } from './workflow-data';
 import { saveWorkflow, WorkflowValidationError } from './workflow-save';
@@ -102,10 +87,6 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
    */
   const [original, setOriginal] = useState<DocumentWorkflowDetail | null>(null);
 
-  // Which node the inspector is editing: the Settings node, or a stage by its key.
-  const [selectedId, setSelectedId] = useState<string>(SETTINGS_NODE);
-  const [mobilePane, setMobilePane] = useState<'flow' | 'edit'>('flow');
-
   useDirtySource(dirty, 'This workflow has unsaved changes. Close it anyway?');
 
   /** Adopt a server state as both the draft and the baseline. */
@@ -134,43 +115,10 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     setDirty(true);
   };
 
-  // ── Selection ──
-  const selectNode = (nodeId: string) => {
-    setSelectedId(nodeId);
-    setMobilePane('edit');
-  };
-
-  // ── Stage list operations (the canvas drives these callbacks) ──
-  const setStages = (next: StageDraft[]) => {
+  // The stage list and which node the inspector is on — one job, its own file.
+  const stageOps = useStageOps(draft.stages, (next) => {
     update({ stages: next });
-  };
-
-  function insertStage(atIndex: number) {
-    const stage = blankStage();
-    const clamped = Math.min(Math.max(atIndex, 0), draft.stages.length);
-    const next = [...draft.stages];
-    next.splice(clamped, 0, stage);
-    setStages(next);
-    selectNode(stage.key);
-  }
-
-  function moveStage(from: number, to: number) {
-    setStages(arrayMove(draft.stages, from, to));
-  }
-
-  function patchStage(key: string, changes: Partial<StageDraft>) {
-    setStages(draft.stages.map((stage) => (stage.key === key ? { ...stage, ...changes } : stage)));
-  }
-
-  function removeStage(key: string) {
-    const index = draft.stages.findIndex((stage) => stage.key === key);
-    if (index < 0) return;
-    setStages(draft.stages.filter((stage) => stage.key !== key));
-    if (selectedId === key) {
-      const neighbour = draft.stages[index + 1] ?? draft.stages[index - 1];
-      setSelectedId(neighbour ? neighbour.key : SETTINGS_NODE);
-    }
-  }
+  });
 
   // ── Settings callbacks ──
   const onName = (value: string) => {
@@ -178,7 +126,9 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   };
   const onSlug = (value: string) => {
     setSlugTouched(true);
-    update({ slug: slugify(value) });
+    // Keeps a hyphen she just pressed; `slugify` on save takes a trailing one
+    // off. Issue #181.
+    update({ slug: slugifyTyping(value, 63) });
   };
 
   const save = useMutation({
@@ -249,16 +199,19 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  // The stage map is the gray canvas the cards sit ON (base-200); the inspector to
-  // its right is the raised working surface (base-100). Matches the automations
-  // two-tone map + inspector split.
-  const flowPane = 'bg-base-200 min-h-0 overflow-y-auto';
-  const paneCard = 'card bg-base-100 min-h-0 overflow-y-auto';
-
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Workflow editor actions"
+      <WorkflowToolbar
+        original={original}
+        isDefault={draft.isDefault}
+        dirty={dirty}
+        saving={save.isPending}
+        onSave={() => {
+          save.mutate();
+        }}
+        onArchive={() => {
+          void onArchive();
+        }}
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -267,62 +220,6 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
               void refetch();
             }}
           />
-        }
-        status={
-          <>
-            {original?.archivedAt ? (
-              <Badge color="neutral" variant="soft" size="sm">
-                Archived
-              </Badge>
-            ) : null}
-            {draft.isDefault ? (
-              <Badge color="module" variant="soft" size="sm">
-                Default
-              </Badge>
-            ) : null}
-          </>
-        }
-        primary={
-          <Button
-            color="module"
-            size="sm"
-            className={original ? 'shrink-0' : 'ml-auto shrink-0'}
-            disabled={!dirty || save.isPending}
-            loading={save.isPending}
-            onClick={() => {
-              save.mutate();
-            }}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            Save
-          </Button>
-        }
-        controls={
-          original ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  className="ml-auto shrink-0"
-                  aria-label="More actions"
-                >
-                  <Icon glyph={faEllipsis} className="size-4" aria-hidden />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  onClick={() => {
-                    void onArchive();
-                  }}
-                >
-                  <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-                  Archive workflow
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : null
         }
       />
 
@@ -335,51 +232,15 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
         </Alert>
       ) : null}
 
-      {/* Narrow-pane switch — hidden once the two panes fit side by side. */}
-      <div className="flex shrink-0 gap-1 @3xl:hidden">
-        {(['flow', 'edit'] as const).map((pane) => (
-          <Button
-            key={pane}
-            size="sm"
-            variant={mobilePane === pane ? 'soft' : 'ghost'}
-            color={mobilePane === pane ? 'module' : 'neutral'}
-            onClick={() => {
-              setMobilePane(pane);
-            }}
-          >
-            {pane === 'flow' ? 'Flow' : 'Properties'}
-          </Button>
-        ))}
-      </div>
-
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 @3xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <div className={`${mobilePane === 'flow' ? 'block' : 'hidden'} @3xl:block ${flowPane}`}>
-          <StageCanvas
-            name={draft.name}
-            slug={draft.slug}
-            isDefault={draft.isDefault}
-            stages={draft.stages}
-            selectedId={selectedId}
-            onSelect={selectNode}
-            onInsertStage={insertStage}
-            onMoveStage={moveStage}
-          />
-        </div>
-
-        <aside className={`${mobilePane === 'edit' ? 'block' : 'hidden'} @3xl:block ${paneCard}`}>
-          <StageInspector
-            selectedId={selectedId}
-            draft={draft}
-            onName={onName}
-            onSlug={onSlug}
-            onDefault={(value) => {
-              update({ isDefault: value });
-            }}
-            onStagePatch={patchStage}
-            onStageRemove={removeStage}
-          />
-        </aside>
-      </div>
+      <WorkflowPanes
+        draft={draft}
+        stageOps={stageOps}
+        onName={onName}
+        onSlug={onSlug}
+        onDefault={(value) => {
+          update({ isDefault: value });
+        }}
+      />
     </div>
   );
 }

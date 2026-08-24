@@ -24,6 +24,7 @@
 //      can express "these five, in this order", and it needs all five to exist.
 
 import { api } from '../../lib/api/client';
+import { slugify } from '../../lib/slugify';
 import type { StageDraft, WorkflowDraft } from './workflow-data';
 import type { DocumentStage, DocumentWorkflowDetail } from './types';
 
@@ -115,7 +116,10 @@ function validate(draft: WorkflowDraft): void {
 }
 
 export async function saveWorkflow(input: SaveWorkflowInput): Promise<DocumentWorkflowDetail> {
-  const { draft, original } = input;
+  const { original } = input;
+  // Tidied on the way out: the reference-name field keeps a trailing hyphen
+  // while it is being typed, so a hyphen can survive being pressed (issue #181).
+  const draft = { ...input.draft, slug: slugify(input.draft.slug, 63) };
   validate(draft);
 
   if (original === null) {
