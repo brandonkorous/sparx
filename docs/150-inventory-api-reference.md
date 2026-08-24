@@ -8,7 +8,7 @@
 
 ## What this is
 
-The complete inventory HTTP surface — **337 endpoints across 38 route files**. It lives here rather than in [docs/06](06-api-specification.md) because inventory is an order of magnitude larger than any other domain in that document, and burying the whole platform API under one module would make the spec unusable. docs/06 §7 carries the contract-stable core and a description of every group below; this is the exhaustive list.
+The complete inventory HTTP surface — **339 endpoints across 38 route files**. It lives here rather than in [docs/06](06-api-specification.md) because inventory is an order of magnitude larger than any other domain in that document, and burying the whole platform API under one module would make the spec unusable. docs/06 §7 carries the contract-stable core and a description of every group below; this is the exhaustive list.
 
 **This file is generated.** Run `node scripts/gen-inventory-api-reference.mjs` after adding a route; `node scripts/check-inventory-api-docs.mjs` fails the build when it drifts. Do not hand-edit the endpoint tables — edit `GROUPS` in the generator for the prose.
 
@@ -279,6 +279,8 @@ GET     /v1/inventory/costing/layers
 GET     /v1/inventory/costing/movement/:id
 GET     /v1/inventory/costing/policy
 PATCH   /v1/inventory/costing/policy
+GET     /v1/inventory/costing/uncosted
+POST    /v1/inventory/costing/uncosted
 POST    /v1/inventory/costing/variant-method
 PATCH   /v1/inventory/purchase-order-charges/:id
 DELETE  /v1/inventory/purchase-order-charges/:id
