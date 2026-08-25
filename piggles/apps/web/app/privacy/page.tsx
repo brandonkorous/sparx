@@ -42,7 +42,9 @@ import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 //   • Shipping, tax, dropship, AI — wizeworks/packages/integration-framework's provider
 //     kinds and the descriptors registered against packages/integrations.
 //   • Mailgun, Twilio, Stripe, PayPal, PostHog, Cloudflare — named across
-//     packages/* and services/*; PostHog is workbench-only (lib/analytics.ts).
+//     packages/* and services/*. PostHog was workbench-only (lib/analytics.ts)
+//     and is no longer: it also runs on THIS site, behind the consent bar
+//     (components/posthog-provider.tsx). Its row below says so.
 //   • Google sign-in — apps/account/components/social-sign-in.tsx, live today.
 //   • Isolation, encryption, exports, BYOK-only AI — sparx/apps/web/app/trust, which
 //     is already-approved copy; this page must not contradict it.
@@ -148,7 +150,7 @@ const ALWAYS = [
   },
   {
     who: 'PostHog',
-    why: 'Records how the workspace gets used so we can fix what is confusing. Inside the workspace only — never on this site, and never the contents of anything you have stored.',
+    why: 'Counts pages being opened, so we can tell what brought somebody here and fix what is confusing once they arrive. On this site it runs only if you agree to it in the bar at the bottom; inside the workspace only if you agreed when you signed up. Never the contents of anything you have stored.',
   },
   {
     who: 'Cloudflare',

@@ -68,13 +68,22 @@ export function ConsentBar() {
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Can we remember where you came from?</h2>
+          {/* ASKS FOR BOTH THINGS, because both now happen. This used to read
+              "Can we remember where you came from?" and covered the attribution
+              cookie alone. PostHog counts the visit as well, on the same grant,
+              and a question that names one of the two would be consent for half
+              of what it switches on. */}
+          <h2 className="text-lg font-semibold">
+            Can we count this visit and remember where you came from?
+          </h2>
           {/* 16px, full ink. It is a question somebody has to actually read to
               answer, so it is written to be read rather than skimmed past. */}
           <p className="text-base">
-            If you found us through a search, an ad or somebody else&rsquo;s website, we would like
-            to remember which — so we know what is worth doing more of. It is one small file on your
-            own device, it is never sold, and saying no changes nothing about how the site works.{' '}
+            Two things, both small. That somebody opened this page, and whether you found us through
+            a search, an ad or somebody else&rsquo;s website. Together they tell us whether
+            something we did actually brought anybody here, which is the only way to know whether it
+            was worth doing. Nothing is sold, and saying no changes nothing about how the site
+            works.{' '}
             <Link href="/cookies" className="font-semibold underline">
               Everything we would store
             </Link>{' '}

@@ -357,8 +357,33 @@ jobs:
                   # Every Node service resolves this to the base built from THIS commit.
                   # The five Next.js apps ignore it: they build standalone bundles, are
                   # already small (76-121 MB), and share nothing with the service tree.
+                  #
+                  # The PostHog key is a build-arg and not a secret ON PURPOSE: it is the
+                  # PROJECT key (`phc_…`), which ships inside the browser bundle and can
+                  # only send events in — hiding it in the layer history would protect
+                  # nothing while making it impossible to bake in. It is named
+                  # POSTHOG_PROJECT_KEY rather than POSTHOG_KEY so that nobody reaches for
+                  # a PERSONAL key (`phx_…`) instead: that one READS data back out, is a
+                  # real credential, and belongs in the Key Vault bundle with the others.
+                  #
+                  # It also cannot come from the vault even if it wanted to. This job runs
+                  # BEFORE `infrastructure`, which is where the vault is read — and a
+                  # NEXT_PUBLIC_* value is inlined into the client bundle at compile time,
+                  # so a value arriving at deploy would land after the bundle that needed
+                  # it was already built. Every Next.js Dockerfile already declared the ARG; nothing
+                  # ever PASSED it, so `NEXT_PUBLIC_POSTHOG_KEY` was empty in every image
+                  # and every provider bailed on its own `if (!key) return`. Analytics did
+                  # not fail loudly in production — it silently never started, which is the
+                  # shape of bug that survives for months.
+                  #
+                  # `NEXT_PUBLIC_POSTHOG_HOST` is deliberately NOT passed. It defaults to
+                  # https://us.i.posthog.com in each Dockerfile, and passing an unset
+                  # `vars.` here would set it to the EMPTY STRING — which overrides that
+                  # default and is not null, so the `?? 'https://us.i.posthog.com'` in the
+                  # providers would not catch it either. Add it only with a real value.
                   build-args: |
                       BASE=${{ needs.base.outputs.image }}
+                      NEXT_PUBLIC_POSTHOG_KEY=${{ vars.POSTHOG_PROJECT_KEY }}
                   # A BuildKit secret, never a build-arg: an arg stays readable in the
                   # image's layer history. Only the three Piggles Dockerfiles mount it —
                   # for the other nineteen it is declared and never materialised.

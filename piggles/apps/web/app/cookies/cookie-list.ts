@@ -10,13 +10,16 @@
 //
 // Verified at the time of writing:
 //
-//   • apps/web (meetpiggles.com)      — no posthog-js and no third-party tag of
-//                                    any kind. It records ONE thing, and only
-//                                    with permission: where a visit came from
-//                                    (lib/attribution.ts), behind the bar in
-//                                    components/consent-bar.tsx. The answer
-//                                    itself is a cookie too — a remembered "no"
-//                                    is the only way to honour a no.
+//   • apps/web (meetpiggles.com)      — posthog-js (components/posthog-provider.tsx)
+//                                    AND the attribution capture
+//                                    (lib/attribution.ts). BOTH are registered
+//                                    through the same `analytics` grant and stay
+//                                    dormant until the bar in
+//                                    components/consent-bar.tsx is accepted.
+//                                    There is still no advertising tag and no ad
+//                                    network. The answer itself is a cookie too
+//                                    — a remembered "no" is the only way to
+//                                    honour a no.
 //   • apps/account (getpiggles.com)  — Better Auth session cookie only. The
 //                                    attribution arrives in the signup LINK
 //                                    (lib/attribution.ts), never in a cookie,
@@ -69,13 +72,23 @@
 // cannot share a cookie but all three can read a user row. The console reads it
 // and gates PostHog on it; it no longer asks anything.
 //
-//   • meetpiggles.com — sets nothing. Nothing to ask.
-//   • getpiggles.com  — the session cookie, and where the question is put.
-//   • mypiggles.com   — reads the answer. Never asks.
+//   • meetpiggles.com — asks in its own bar, and keeps the answer in a cookie.
+//   • getpiggles.com  — the session cookie, and where the console's question is put.
+//   • mypiggles.com   — reads the console's answer. Never asks.
 //
-// If a tag ever lands on THIS site, an ask for it arrives in the same commit —
-// and it will need a different mechanism, because this domain has no session to
-// record an answer against.
+// ── AND THEN A TAG DID LAND ON THIS SITE ────────────────────────────────────
+//
+// The paragraph above used to end "meetpiggles.com — sets nothing. Nothing to
+// ask", and promised that if a tag ever landed here, an ask for it would arrive
+// in the same commit. PostHog landed, and the ask did arrive with it — though
+// not as a new one. The bar was already asking the right question for it: the
+// `analytics` grant covers being counted, and counting a landing is the same
+// category as remembering where the landing came from. So there is still ONE
+// question on this site, and PostHog is registered through the same
+// `gateTracker` seam as the attribution capture.
+//
+// The mechanism the old note worried about turned out not to be needed, for the
+// reason it named: this domain has no session, so the answer stays a cookie.
 
 import { PRODUCT } from '@piggles/config';
 
@@ -110,8 +123,8 @@ export const ESSENTIAL: CookieRow[] = [
 export const PRODUCT_ANALYTICS: CookieRow[] = [
   {
     name: 'PostHog (several, all beginning ph_)',
-    where: PRODUCT.hosts.console,
-    what: 'Product analytics inside the workspace: which screens get used and where something broke. It tells us that a screen is confusing. It is not advertising, it is not sold on, and it is not running on the site you are reading now.',
+    where: `${PRODUCT.hosts.marketing} and ${PRODUCT.hosts.console}`,
+    what: 'Counts pages being opened. On this site it tells us how many people a thing we did actually brought here, which is the only way to know whether it was worth doing. Inside the workspace it tells us which screens get used and where something broke. It is not advertising, none of it is sold on, and on this site it does not start at all unless you say yes.',
     life: 'Up to one year',
   },
   {
@@ -140,8 +153,8 @@ export const FACTS = [
     body: 'There is no ad network on any Piggles site, nothing is sold or passed to a data broker, and nothing here follows you to somebody else’s website.',
   },
   {
-    title: 'This site asks before it remembers anything',
-    body: `${PRODUCT.hosts.marketing} has no advertising tags and no third-party scripts. It does keep one thing, and only if you agree to it: where you came from, so we can tell which of the things we do actually brings anybody here. Say no and it keeps nothing but your no. When you click "start free", what it knows travels in the link — the three Piggles addresses are separate domains and could not share a cookie anyway.`,
+    title: 'This site asks before it counts anything',
+    body: `${PRODUCT.hosts.marketing} has no advertising tags and no ad network. It does two things, and only if you agree to them: it counts pages being opened, and it remembers where you came from. Between them they tell us whether a thing we did brought anybody here, which is the only way to know whether to do it again. Say no and it keeps nothing but your no. When you click "start free", what it knows travels in the link, because the three Piggles addresses are separate domains and could not share a cookie anyway.`,
   },
   {
     title: 'Signing in with Google is your choice',
@@ -157,7 +170,7 @@ export const FACTS = [
   },
   {
     title: 'You are asked before anything is counted',
-    body: `Twice, because there are two different things to ask about. On this site: may we remember where you came from — answered in the bar at the bottom, changeable whenever you like. Inside ${PRODUCT.hosts.console}: may we see which screens you use — answered on the signup form, or on a screen of its own if you signed up with Google, and kept with your account so it follows you. Say no to either and that one never starts.`,
+    body: `Twice, because there are two different places to ask about. On this site: may we count your visit and remember where you came from. That is answered in the bar at the bottom and changeable whenever you like. Inside ${PRODUCT.hosts.console}: may we see which screens you use. That one is answered on the signup form, or on a screen of its own if you signed up with Google, and kept with your account so it follows you. Say no to either and that one never starts.`,
   },
   {
     title: 'Turning them off',

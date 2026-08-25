@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/marketing/site-footer';
 import { THEME_SCRIPT } from '@/lib/theme';
 import { ConsentBar } from '@/components/consent-bar';
 import { AttributionCapture } from '@/components/attribution-capture';
+import { PostHogProvider } from '@/components/posthog-provider';
 import './globals.css';
 
 // Self-hosted at build time by next/font — no request leaves the page, so there
@@ -75,18 +76,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
-        {/* ABOVE the header, not inside it. A notice is temporary and the header
-            is not; nesting it would make the site's own chrome jump every time
-            somebody in the admin console switches one on. */}
-        <HeaderNotice notice={notice} />
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
-        {/* The one question this site asks. Renders nothing once answered. */}
-        <ConsentBar />
-        {/* Records where a visit came from — only with permission — and hands it
-            to getpiggles.com on the signup click. Renders nothing, ever. */}
-        <AttributionCapture />
+        {/* Wraps the page rather than sitting beside it, because PostHog's React
+            context has to be above anything that might capture from a component.
+            It initialises NOTHING until the consent bar below is accepted — see
+            the file header. */}
+        <PostHogProvider>
+          {/* ABOVE the header, not inside it. A notice is temporary and the header
+              is not; nesting it would make the site's own chrome jump every time
+              somebody in the admin console switches one on. */}
+          <HeaderNotice notice={notice} />
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+          {/* The one question this site asks. Renders nothing once answered. */}
+          <ConsentBar />
+          {/* Records where a visit came from — only with permission — and hands it
+              to getpiggles.com on the signup click. Renders nothing, ever. */}
+          <AttributionCapture />
+        </PostHogProvider>
       </body>
     </html>
   );

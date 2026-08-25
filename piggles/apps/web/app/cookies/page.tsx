@@ -15,7 +15,7 @@ import { ESSENTIAL, FACTS, PRODUCT_ANALYTICS, type CookieRow } from './cookie-li
 export const metadata: Metadata = {
   title: 'Cookies',
   description:
-    'Every cookie Piggles sets, on which of the three sites, what it is for and how long it lasts. No advertising cookies, nothing sold on, and no third-party tags on the marketing site.',
+    'Every cookie Piggles sets, on which of the three sites, what it is for and how long it lasts. No advertising cookies, nothing sold on, and nothing at all on the marketing site until you say yes.',
 };
 
 function Rows({ rows }: { rows: CookieRow[] }) {
