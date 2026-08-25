@@ -94,6 +94,9 @@ export interface OperatorTenantListParams {
   status?: string;
   /** Exact-match filter on `tenants.plan`. */
   plan?: string;
+  /** Exact-match filter on `tenants.acquisition_campaign` — every account a
+   *  given campaign produced. */
+  campaign?: string;
   limit?: number;
   offset?: number;
 }
@@ -307,6 +310,58 @@ export interface OperatorMetricsResult {
 
 export interface OperatorMetricsParams {
   /** Signup-series window in days (default 90, clamped 1–365). */
+  windowDays?: number;
+}
+
+// ─── Acquisition ── where our own tenants came from (docs/80 §10, L-PLAT) ─────
+// Aggregated from the `tenants.acquisition_*` columns, written once at signup
+// from the first-party attribution cookies on the marketing site. The same
+// aggregation backs the shared-token CSV endpoint, so the console and the
+// spreadsheet cannot report different totals for the same week.
+
+/** One row of a breakdown — a channel, a source, or a campaign. */
+export interface OperatorAcquisitionBucket {
+  /** The channel / source / campaign value this row groups. */
+  key: string;
+  /** Dominant channel among this row's tenants (the row itself, for byChannel). */
+  channel: string;
+  /** Dominant source among this row's tenants. */
+  source: string;
+  tenants: number;
+  /** Has a Stripe customer id — the proxy for "reached billing". */
+  withBilling: number;
+  /** `status === 'active'`. */
+  active: number;
+  firstAcquiredAt: string | null;
+  lastAcquiredAt: string | null;
+}
+
+export interface OperatorAcquisitionTotals {
+  tenants: number;
+  /** Signups carrying a classified channel. */
+  attributed: number;
+  /**
+   * Signups with NO channel recorded — pre-attribution accounts, and everybody
+   * who declined the consent bar. This is the denominator honesty of the whole
+   * report: it is not "direct traffic", it is traffic nobody measured.
+   */
+  unattributed: number;
+  withBilling: number;
+}
+
+export interface OperatorAcquisitionSummary {
+  generatedAt: string;
+  /** The signup-date window the rows were read over; nulls mean all time. */
+  window: { since: string | null; until: string | null };
+  totals: OperatorAcquisitionTotals;
+  /** Every row sorted by tenant count descending. */
+  byChannel: OperatorAcquisitionBucket[];
+  bySource: OperatorAcquisitionBucket[];
+  byCampaign: OperatorAcquisitionBucket[];
+}
+
+export interface OperatorAcquisitionParams {
+  /** Window in days on SIGNUP date (default 90, clamped 1–365). */
   windowDays?: number;
 }
 

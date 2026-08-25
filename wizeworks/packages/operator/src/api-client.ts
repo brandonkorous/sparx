@@ -21,6 +21,8 @@ import type {
   OperatorTenantDetail,
   OperatorMetricsParams,
   OperatorMetricsResult,
+  OperatorAcquisitionParams,
+  OperatorAcquisitionSummary,
   OperatorStripeEvent,
   OperatorCoupon,
   OperatorCouponInput,
@@ -144,6 +146,13 @@ export interface OperatorApiClient {
     operatorId: string,
     signal?: AbortSignal
   ): Promise<OperatorMetricsResult>;
+  /** Where our own tenants came from — channel / source / campaign breakdown
+   *  over a signup-date window (docs/80 §10). */
+  getAcquisition(
+    params: OperatorAcquisitionParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorAcquisitionSummary>;
   // ── Billing ops (Slice 4) ──
   /** Tenants whose platform subscription payment is failing (past_due / unpaid). */
   listFailedPayments(operatorId: string, signal?: AbortSignal): Promise<OperatorTenantListItem[]>;
@@ -480,6 +489,7 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
       if (params.q) qs.set('q', params.q);
       if (params.status) qs.set('status', params.status);
       if (params.plan) qs.set('plan', params.plan);
+      if (params.campaign) qs.set('campaign', params.campaign);
       if (params.limit !== undefined) qs.set('limit', String(params.limit));
       if (params.offset !== undefined) qs.set('offset', String(params.offset));
       const query = qs.toString();
@@ -499,6 +509,15 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
       const query = qs.toString();
       return request<OperatorMetricsResult>(
         `/internal/operator/metrics${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    getAcquisition: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.windowDays !== undefined) qs.set('windowDays', String(params.windowDays));
+      const query = qs.toString();
+      return request<OperatorAcquisitionSummary>(
+        `/internal/operator/acquisition${query ? `?${query}` : ''}`,
         { operatorId, signal }
       );
     },

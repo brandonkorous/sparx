@@ -1,7 +1,6 @@
-// Internal L-PLAT acquisition report (docs/80 §10). Aggregates the
-// `tenants.acquisition_*` columns — written once at signup from the first-party
-// attribution cookies — into a channel / source / campaign breakdown so a
-// WizeWorks operator can answer "which channels send us paying tenants?".
+// Internal L-PLAT acquisition report (docs/80 §10). Serves the channel / source
+// / campaign breakdown of `tenants.acquisition_*` — written once at signup from
+// the first-party attribution cookies — as JSON or as a spreadsheet-ready CSV.
 //
 // Auth: shared secret in `X-sparx-Internal-Acquisition-Token`, constant-time
 // compared against env.SPARX_INTERNAL_ACQUISITION_TOKEN. This is a SEPARATE
@@ -10,13 +9,21 @@
 // scheduler, so it rotates independently and can be handed out without also
 // granting cron-trigger access.
 //
-// Why an internal token endpoint and not a dashboard page: sparx has no
-// staff/operator auth tier (docs/16 §2.4) — every session is pinned to exactly
-// one tenant, and the dashboard's data path is RLS-scoped to that tenant. A
-// cross-tenant view therefore can't live behind a normal dashboard login today.
-// This mirrors the existing /internal/* cron surface: ClusterIP-only, no JWT,
-// shared-secret header. A real operator console lands when the platform-admin
-// tier in docs/16 §2.4 is built.
+// ── WHY THIS STILL EXISTS NOW THAT THE OPERATOR CONSOLE DOES ────────────────
+//
+// This file used to explain itself with "sparx has no staff/operator auth tier
+// … a real operator console lands when the platform-admin tier in docs/16 §2.4
+// is built." That console IS built — wizeworks/apps/admin — and it reads the same
+// breakdown through `/internal/operator/acquisition`, behind a real capability
+// check rather than a shared secret. So the console is now the answer to "show
+// me the numbers", and the reason to keep this endpoint is narrower and honest:
+// a token a person can hand to a script, and a CSV that pastes into a sheet and
+// pivots. Neither of those wants a browser session.
+//
+// Both doors call the SAME aggregation (acquisition-summary.ts). That is the
+// whole point of the split — two implementations is how the console and the
+// spreadsheet start disagreeing about the same week with nothing to say which
+// one is right.
 //
 //   • GET /internal/acquisition/summary                 → JSON breakdown
 //   • GET /internal/acquisition/summary?format=csv      → tidy long-format CSV
@@ -24,21 +31,21 @@
 //
 // The `tenants` table is intentionally non-RLS (the dispatch row), so this reads
 // across every tenant with the plain system Prisma client — no tenant context to
-// establish. Tenant count is tiny in Phase 1, so one findMany + in-memory
-// grouping is correct; revisit with a SQL GROUP BY if the table grows large.
+// establish.
 
 import { timingSafeEqual } from 'node:crypto';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { prisma, type Prisma } from '@wizeworks/db';
+import type { OperatorAcquisitionBucket } from '@wizeworks/operator';
 
 import { env } from '../../env.js';
+import {
+  ACQUISITION_SELECT,
+  summarizeAcquisition,
+  type AcquisitionRow,
+} from './acquisition-summary.js';
 
 const ACQ_TOKEN_HEADER = 'x-sparx-internal-acquisition-token';
-
-// NULL acquisitionChannel = signed up before attribution shipped, or no touch
-// cookie present. Kept distinct from a classified 'direct' touch so the report
-// never conflates "we don't know" with "came in typing the URL".
-const UNATTRIBUTED = '(unknown)';
 
 function authorize(request: FastifyRequest): void {
   const expected = env.SPARX_INTERNAL_ACQUISITION_TOKEN;
@@ -56,111 +63,6 @@ function authorize(request: FastifyRequest): void {
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
     throw unauthorized('Invalid acquisition token.');
   }
-}
-
-interface TenantRow {
-  acquisitionChannel: string | null;
-  acquisitionSource: string | null;
-  acquisitionCampaign: string | null;
-  acquiredAt: Date | null;
-  status: string;
-  stripeCustomerId: string | null;
-  createdAt: Date;
-}
-
-interface GroupBucket {
-  /** Primary key of the group (the channel / source / campaign value). */
-  key: string;
-  /** Dominant channel for source/campaign rows (most-common among members). */
-  channel: string;
-  /** Dominant source for campaign rows. */
-  source: string;
-  tenants: number;
-  /** stripeCustomerId set — proxy for "reached billing / converted". */
-  withBilling: number;
-  /** status === 'active'. */
-  active: number;
-  firstAcquiredAt: string | null;
-  lastAcquiredAt: string | null;
-}
-
-/** Accumulates rows into one bucket per `keyOf` value, tracking dominant
- *  channel/source via a per-bucket tally so source/campaign rows can name the
- *  channel they overwhelmingly came through. */
-function groupBy(
-  rows: TenantRow[],
-  keyOf: (r: TenantRow) => string,
-  channelOf: (r: TenantRow) => string,
-  sourceOf: (r: TenantRow) => string
-): GroupBucket[] {
-  interface Acc {
-    key: string;
-    tenants: number;
-    withBilling: number;
-    active: number;
-    firstAcquiredAt: Date | null;
-    lastAcquiredAt: Date | null;
-    channelTally: Map<string, number>;
-    sourceTally: Map<string, number>;
-  }
-  const acc = new Map<string, Acc>();
-  for (const r of rows) {
-    const key = keyOf(r);
-    let bucket = acc.get(key);
-    if (!bucket) {
-      bucket = {
-        key,
-        tenants: 0,
-        withBilling: 0,
-        active: 0,
-        firstAcquiredAt: null,
-        lastAcquiredAt: null,
-        channelTally: new Map(),
-        sourceTally: new Map(),
-      };
-      acc.set(key, bucket);
-    }
-    bucket.tenants += 1;
-    if (r.stripeCustomerId) bucket.withBilling += 1;
-    if (r.status === 'active') bucket.active += 1;
-    if (r.acquiredAt) {
-      if (!bucket.firstAcquiredAt || r.acquiredAt < bucket.firstAcquiredAt) {
-        bucket.firstAcquiredAt = r.acquiredAt;
-      }
-      if (!bucket.lastAcquiredAt || r.acquiredAt > bucket.lastAcquiredAt) {
-        bucket.lastAcquiredAt = r.acquiredAt;
-      }
-    }
-    const ch = channelOf(r);
-    bucket.channelTally.set(ch, (bucket.channelTally.get(ch) ?? 0) + 1);
-    const src = sourceOf(r);
-    bucket.sourceTally.set(src, (bucket.sourceTally.get(src) ?? 0) + 1);
-  }
-
-  function dominant(tally: Map<string, number>): string {
-    let best = '';
-    let bestN = -1;
-    for (const [k, n] of tally) {
-      if (n > bestN) {
-        best = k;
-        bestN = n;
-      }
-    }
-    return best;
-  }
-
-  return [...acc.values()]
-    .map((b) => ({
-      key: b.key,
-      channel: dominant(b.channelTally),
-      source: dominant(b.sourceTally),
-      tenants: b.tenants,
-      withBilling: b.withBilling,
-      active: b.active,
-      firstAcquiredAt: b.firstAcquiredAt ? b.firstAcquiredAt.toISOString() : null,
-      lastAcquiredAt: b.lastAcquiredAt ? b.lastAcquiredAt.toISOString() : null,
-    }))
-    .sort((x, y) => y.tenants - x.tenants);
 }
 
 /** ISO-8601 date/datetime string → Date, or null on empty, or a 400 throw on
@@ -183,9 +85,9 @@ function csvCell(value: string | number | null): string {
 /** Tidy long-format CSV: one row per group across all three dimensions, so it
  *  pastes straight into a sheet and pivots cleanly. */
 function toCsv(
-  byChannel: GroupBucket[],
-  bySource: GroupBucket[],
-  byCampaign: GroupBucket[]
+  byChannel: OperatorAcquisitionBucket[],
+  bySource: OperatorAcquisitionBucket[],
+  byCampaign: OperatorAcquisitionBucket[]
 ): string {
   const header = [
     'dimension',
@@ -243,64 +145,19 @@ const acquisitionReportRoutes: FastifyPluginAsync = (app) => {
 
       const rows = (await prisma.tenant.findMany({
         where,
-        select: {
-          acquisitionChannel: true,
-          acquisitionSource: true,
-          acquisitionCampaign: true,
-          acquiredAt: true,
-          status: true,
-          stripeCustomerId: true,
-          createdAt: true,
-        },
-      })) as TenantRow[];
+        select: ACQUISITION_SELECT,
+      })) as AcquisitionRow[];
 
-      const totals = {
-        tenants: rows.length,
-        attributed: rows.filter((r) => r.acquisitionChannel !== null).length,
-        unattributed: rows.filter((r) => r.acquisitionChannel === null).length,
-        withBilling: rows.filter((r) => r.stripeCustomerId !== null).length,
-      };
-
-      const byChannel = groupBy(
-        rows,
-        (r) => r.acquisitionChannel ?? UNATTRIBUTED,
-        (r) => r.acquisitionChannel ?? UNATTRIBUTED,
-        (r) => r.acquisitionSource ?? UNATTRIBUTED
-      );
-      const bySource = groupBy(
-        rows.filter((r) => r.acquisitionSource !== null),
-        (r) => r.acquisitionSource ?? UNATTRIBUTED,
-        (r) => r.acquisitionChannel ?? UNATTRIBUTED,
-        (r) => r.acquisitionSource ?? UNATTRIBUTED
-      );
-      const byCampaign = groupBy(
-        rows.filter((r) => r.acquisitionCampaign !== null),
-        (r) => r.acquisitionCampaign ?? UNATTRIBUTED,
-        (r) => r.acquisitionChannel ?? UNATTRIBUTED,
-        (r) => r.acquisitionSource ?? UNATTRIBUTED
-      );
+      const summary = summarizeAcquisition(rows, { since, until }, new Date());
 
       if ((request.query.format ?? '').toLowerCase() === 'csv') {
         return reply
           .header('content-type', 'text/csv; charset=utf-8')
           .header('content-disposition', 'attachment; filename="acquisition-summary.csv"')
-          .send(toCsv(byChannel, bySource, byCampaign));
+          .send(toCsv(summary.byChannel, summary.bySource, summary.byCampaign));
       }
 
-      return {
-        success: true,
-        data: {
-          generatedAt: new Date().toISOString(),
-          window: {
-            since: since ? since.toISOString() : null,
-            until: until ? until.toISOString() : null,
-          },
-          totals,
-          byChannel,
-          bySource,
-          byCampaign,
-        },
-      };
+      return { success: true, data: summary };
     }
   );
   return Promise.resolve();

@@ -15,6 +15,8 @@
 //   • GET /internal/operator/whoami        — Slice-1 round-trip probe
 //   • GET /internal/operator/tenants       — cross-tenant tenant list (Slice 2)
 //   • GET /internal/operator/tenants/:id   — one tenant's full detail (Slice 2)
+//   • GET /internal/operator/metrics       — cross-tenant platform metrics (Slice 3)
+//   • GET /internal/operator/acquisition   — where our tenants came from (docs/80 §10)
 //
 // Representation parity (D7): the tenant reads compute the SAME values the tenant's
 // own dashboard shows — the subscription snapshot via `@wizeworks/billing.getBillingState`,
@@ -37,9 +39,15 @@ import type {
   OperatorTenantListResult,
   OperatorTenantDetail,
   OperatorBillingInterval,
+  OperatorAcquisitionSummary,
 } from '@wizeworks/operator';
 
 import { computeMetrics } from './operator-metrics.js';
+import {
+  ACQUISITION_SELECT,
+  summarizeAcquisition,
+  type AcquisitionRow,
+} from './acquisition-summary.js';
 import { authorizeOperator, badRequest, notFound, operatorIdOf } from './operator-internal.js';
 import { readStorageLimitBytes } from '../../lib/tenant-limits.js';
 
@@ -142,7 +150,14 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get<{
-    Querystring: { q?: string; status?: string; plan?: string; limit?: string; offset?: string };
+    Querystring: {
+      q?: string;
+      status?: string;
+      plan?: string;
+      campaign?: string;
+      limit?: string;
+      offset?: string;
+    };
   }>(
     '/internal/operator/tenants',
     { logLevel: 'warn', schema: { hide: true } },
@@ -165,6 +180,11 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
       if (status) where.status = status;
       const plan = request.query.plan?.trim();
       if (plan) where.plan = plan;
+      // Exact match, not `contains`: campaign values are a controlled vocabulary
+      // (`{initiative}-{yyyy-mm}`), so a substring match would silently merge
+      // `launch-2026-06` into `relaunch-2026-06` and overstate both.
+      const campaign = request.query.campaign?.trim();
+      if (campaign) where.acquisitionCampaign = campaign;
 
       const [rows, total] = await Promise.all([
         prisma.tenant.findMany({
@@ -391,6 +411,34 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
         },
       });
       return computeMetrics(rows, windowDays, new Date());
+    }
+  );
+
+  app.get<{ Querystring: { windowDays?: string } }>(
+    '/internal/operator/acquisition',
+    { logLevel: 'warn', schema: { hide: true } },
+    async (request) => {
+      authorizeOperator(request);
+      const windowDays = clampWindow(request.query.windowDays);
+      const now = new Date();
+      const since = new Date(now.getTime() - windowDays * 86_400_000);
+
+      // Windowed on SIGNUP date, not `acquiredAt`: `acquiredAt` is null for every
+      // tenant that predates attribution, so windowing on it would silently drop
+      // them from the totals and make the unattributed count look better than it
+      // is. The question being asked is "who signed up in this window, and where
+      // from" — createdAt is the half of that we always know.
+      const rows = (await prisma.tenant.findMany({
+        where: { createdAt: { gte: since } },
+        select: ACQUISITION_SELECT,
+      })) as AcquisitionRow[];
+
+      const result: OperatorAcquisitionSummary = summarizeAcquisition(
+        rows,
+        { since, until: null },
+        now
+      );
+      return result;
     }
   );
 };
