@@ -78,7 +78,7 @@ function fill(child: Child, alts: ReadonlyMap<string, string>): Child {
         out = {
           ...child,
           [slot]: { ...(bag ?? {}), alt },
-        } as unknown as Child;
+        };
       }
     }
   }

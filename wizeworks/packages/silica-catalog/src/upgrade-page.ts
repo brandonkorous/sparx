@@ -156,7 +156,7 @@ function repairProductStrip(node: Element): Element {
     return { ...next, children: kids.map((k) => (typeof k === 'string' ? k : slides(k))) };
   };
 
-  const repaired = track(slides({ ...node, behavior: { type: 'scroll-strip' } }) as Element);
+  const repaired = track(slides({ ...node, behavior: { type: 'scroll-strip' } }));
   return repaired as Element;
 }
 

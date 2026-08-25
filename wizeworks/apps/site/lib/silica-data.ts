@@ -294,7 +294,11 @@ function productVersions(
       .map((option) => option.values.find((value) => held.has(value.id))?.value)
       .filter((name): name is string => Boolean(name))
       .join(' · ');
-    const parts = [named || variant.title || variant.sku];
+    // `named` and `title` can each be an EMPTY string rather than absent — an
+    // unnamed variant carries `title: ''` — so this picks the first one that
+    // actually says something. `??` would keep the empty label and print nothing.
+    const shown = [named, variant.title ?? ''].find((word) => word !== '') ?? variant.sku;
+    const parts = [shown];
     if (showPrice)
       parts.push(formatMoney(variant.yourPriceCents ?? variant.priceCents, currency, locale));
     if (!variant.inStock) parts.push('sold out');
