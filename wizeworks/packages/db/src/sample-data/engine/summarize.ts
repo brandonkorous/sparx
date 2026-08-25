@@ -60,6 +60,9 @@ export async function summarizeSampleDataOnTx(
       where: { tenantId, originalFilename: { startsWith: SAMPLE_MEDIA_FILENAME_PREFIX } },
     }),
   ]);
+  // Sample LOCATIONS (issue 174). Counted but never cleared — see the note on
+  // SampleDataCounts.warehouses and countsTotal below.
+  const warehouses = await tx.warehouse.count({ where: { tenantId, metadata: sampleMeta } });
   // billingDocuments covers quotes too now (quotes are billing documents on the
   // system b2b-quotes workflow) — no separate quotes count.
   const [aiPrompts, toolCalls, billingDocuments, tickets] = await Promise.all([
@@ -74,6 +77,7 @@ export async function summarizeSampleDataOnTx(
   const orders = orderIds.length;
 
   return {
+    warehouses,
     products,
     collections,
     categories,
@@ -95,7 +99,13 @@ export async function summarizeSampleDataOnTx(
   };
 }
 
-/** Total sample rows across every entity — `loaded` is `> 0`. */
+/**
+ * Total sample rows CLEAR WOULD REMOVE — `loaded` is `> 0`.
+ *
+ * `warehouses` is deliberately absent. Sample locations are durable config and
+ * Clear leaves them standing, so folding them in would make the confirmation copy
+ * promise to remove a location it will not touch (issue 174).
+ */
 export function countsTotal(c: SampleDataCounts): number {
   return (
     c.products +

@@ -17,6 +17,9 @@ import { api } from '../../lib/api/client';
 
 /** Per-entity counts — mirrors `SampleDataCounts` from @wizeworks/db. */
 export interface SampleDataCounts {
+  /** Sample locations. Durable — Remove leaves these, so they are never counted
+   *  in anything that says "removes" (issue 174). */
+  warehouses: number;
   products: number;
   collections: number;
   categories: number;
@@ -111,7 +114,8 @@ export function moduleHue(slug: string): WorkbenchModule {
 }
 
 /** Count keys in the order they read on screen, with plain-language labels.
- *  Ordered so the headline entities (products, orders, customers) come first. */
+ *  Ordered so the headline entities (products, orders, customers) come first.
+ *  REMOVABLE only — see DURABLE_COUNT_LABELS. */
 export const COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string }[] = [
   { key: 'products', label: 'Products' },
   { key: 'orders', label: 'Orders' },
@@ -131,6 +135,14 @@ export const COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string
   { key: 'images', label: 'Images' },
   { key: 'aiPrompts', label: 'AI prompts' },
   { key: 'toolCalls', label: 'AI activity' },
+];
+
+/** What practice data leaves behind after Remove: locations. They are kept on
+ *  purpose — a business may have renamed one and counted stock into it — so they
+ *  are shown apart from the removable list rather than folded into it, and never
+ *  counted in anything that says "removes" (issue 174). */
+export const DURABLE_COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string }[] = [
+  { key: 'warehouses', label: 'Locations' },
 ];
 
 export function countsTotal(counts: SampleDataCounts): number {

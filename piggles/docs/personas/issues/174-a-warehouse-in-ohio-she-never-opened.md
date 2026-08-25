@@ -1,12 +1,12 @@
 # 174 — A warehouse in Ohio she never opened
 
-**Status:** open — rescoped: the rows are intentional, telling them apart is not solved
+**Status:** fixed and confirmed — all three findings
 **Severity:** major
 **Found by:** P03 · Juniper Row · act 3
 **Surface:** mypiggles › Stock › Locations
 **Filed:** 2026-08-23
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-08-24 — the audit trail on both sides now names what it did
+**Confirmed by:** P03 · Juniper Row · 2026-08-24
 
 ## What happened
 
@@ -152,3 +152,197 @@ apart from her own is.
 ## Rating effect
 
 `Stock › Locations` — recorded in [rating.md](../rating.md).
+
+## What was built — 2026-08-24
+
+Findings 2 and 3 are code, and both are done. Finding 1 is on screen and still
+needs a look.
+
+### Finding 3 — the counter that said zero
+
+`installIndustryStarter` sorts every preset into **three** buckets — installed,
+already-present, skipped — and the audit row recorded the first and the last. So
+apparel, whose fifteen presets were all already there, wrote:
+
+```
+"installed": 0, "skipped": 0
+```
+
+which is byte-identical to a starter that found every module switched off, and to
+one that declares no presets at all. Read months later next to an unexplained
+location, that line says "this install did nothing" — and it sent the reader
+looking in the wrong system, which is exactly what happened here.
+
+The row now carries all three counts **and names the presets in each**, because
+"what did this put in my account" is answered by a list and a number answers
+nothing. The payload is a pure exported function (`industryAuditPayload`) so the
+shape is assertable without a database — the defect was in the shape, not in the
+write — and three tests pin it, including one that the three outcomes must not
+serialize alike. All three were confirmed to go **red** against the old two-bucket
+shape before being trusted green.
+
+### Finding 2 — the audit entry that was not written
+
+Half of this was already closed: `recordSampleData` writes
+`tenant.sample_data.loaded` with the per-slice counts, and its own comment cites
+this Fulfillment Center.
+
+**The other half was still open, and it was the half about locations.**
+`SampleDataCounts` had no `warehouses` field, so the row itemised 559 records
+across seventeen kinds and said nothing at all about the one thing the owner was
+asking about. An audit entry that answers everybody except the person reading it
+is not an answer.
+
+- `SampleDataCounts.warehouses` counts sample locations, incremented only on a
+  genuine **create** — the engine asks before the upsert, because the upsert
+  cannot say which branch it took and a tenant reinstalling a pack has not gained
+  a place.
+- **`countsTotal` deliberately excludes it.** That total means "rows Remove takes
+  away", and locations are durable config Remove leaves standing. Folding them in
+  would have made the confirmation promise to remove a place it will not touch.
+- The Practice data screen shows locations in their own group under the removable
+  ones, with a line saying they stay and where to delete one. `COUNT_LABELS` is
+  the removable list; `DURABLE_COUNT_LABELS` is the kept one, and nothing that
+  says "removes" reads the second.
+
+### Where it lives
+
+| File                                     | What changed                                  |
+| ---------------------------------------- | --------------------------------------------- |
+| `api-rest/lib/industry-starters.ts`      | `industryAuditPayload` — three buckets, named |
+| `api-rest/lib/industry-starters.test.ts` | three guards, each proven red first           |
+| `db/sample-data/types.ts`                | `SampleDataCounts.warehouses`                 |
+| `db/sample-data/engine/inventory.ts`     | counts a location only when it creates one    |
+| `db/sample-data/engine/summarize.ts`     | counts them; `countsTotal` excludes them      |
+| `console › sample-data/data.ts`          | `DURABLE_COUNT_LABELS`                        |
+| `console › sample-data/counts-grid.tsx`  | the two groups + what Remove does with each   |
+
+## What was owed at that point
+
+**Finding 1 — the `Sample` badge on Stock › Locations.** Owed then, done since:
+the backfill and the on-screen confirmation are both below.
+
+**Neither of the two fixes above is visible on Juniper Row's existing rows.** The
+audit entries were written at install time and are not rewritten; what is fixed is
+what the next install and the next practice-data load record. Confirming them
+means a fresh tenant, not this one.
+
+## Finding 1, walked as Devi — 2026-08-24
+
+**Stock › Locations still looks exactly as she filed it.**
+
+```
+Fulfillment Center   FC-1   Your own place   Columbus, OH, US   In use
+Main Warehouse       MAIN   Your own place   US                 In use
+```
+
+No `Sample` badge. And the reason is worse than "not done yet".
+
+### The label is built correctly and cannot reach the rows it was built for
+
+The machinery is complete and right, end to end:
+
+- `warehouses.ts` returns `isSample: isSampleRow(w.metadata)`;
+- `locations-list-table.tsx` renders `<Badge color="info" variant="soft">Sample</Badge>`
+  beside the name, with `info` chosen deliberately — an origin, not a fault.
+
+What is missing is the marker on the row, and the marker is set **on create only**:
+
+```ts
+// Marked on CREATE only. Clear deliberately LEAVES warehouses behind …
+// Not set on `update`: a tenant whose own location happens to share a code
+// keeps its own.
+metadata: withSampleMeta(),
+```
+
+That decision is correct in itself. Its consequence is not:
+
+```
+marked sample locations in the whole database : 0
+Fulfillment Centers in the whole database     : 2
+inventory_warehouses total                    : 79
+```
+
+Devi's Fulfillment Center carries `metadata = {}`, because it was seeded before
+the marker existed. **And it can never acquire one.** The pack declares that
+location under code `FC-1`, so a future practice-data load upserts onto the row
+that is already there, takes the `update` branch, and by design does not stamp
+it. The row is permanently unlabelled.
+
+So finding 1 as it stands fixes the problem for locations nobody has yet, and
+does nothing at all for the two rows that caused the issue to be filed. It cannot
+even be confirmed on Juniper Row — loading practice data there would reuse the
+unmarked row rather than mint a marked one.
+
+### What that means for the fix
+
+A **backfill** is the missing half, and it is small and well-bounded: two rows
+today, identified precisely rather than by guesswork — a warehouse whose
+`(tenant, code)` matches a code declared by that tenant's own industry pack, that
+carries no `metadata.sample`, and that the tenant has not renamed away from the
+pack's name. Anything failing one of those tests is left alone, which is the same
+never-narrow caution the write side already shows.
+
+Without it, "a row that says `Sample` is obviously illustrative" — the sentence
+the whole rescope rests on — is true only of a database nobody has yet.
+
+### What that meant at the time
+
+Both of these were owed when the walk-through was written, and both were done the
+same day — see the next section.
+
+## Finding 1 — backfilled and confirmed, 2026-08-24
+
+`20270417000000_a_seeded_location_admits_what_it_is`. Devi's Locations list now
+reads:
+
+```
+Fulfillment Center  [Sample]   FC-1   Your own place   Columbus, OH, US   In use
+Main Warehouse                 MAIN   Your own place   US                 In use
+```
+
+The badge is on the pack's row and NOT on hers, which is the whole distinction
+the rescope asked for. The Columbus address stops being a claim about her
+business the moment the row admits where it came from.
+
+### It was thirteen rows, not two
+
+The walk-through found the two Fulfillment Centers. The database had more:
+
+| code     | name                        | rows |
+| -------- | --------------------------- | ---- |
+| FC-1     | Fulfillment Center          | 2    |
+| ROAST    | Roastery & Pantry           | 2    |
+| STUDIO   | Studio Stockroom            | 2    |
+| EAST-3PL | East Coast Fulfillment      | 2    |
+| COOLER   | Shop Cooler                 | 1    |
+| DRYSTORE | Dry Store                   | 1    |
+| DC1      | Central Distribution Center | 1    |
+| DC2-3PL  | Southeast 3PL               | 1    |
+| WEST-3PL | West Coast 3PL              | 1    |
+
+Thirteen unexplained locations across eight businesses, every one of them
+permanently unlabellable before this.
+
+### How a row is identified, and the one it deliberately will not touch
+
+Four fields must match a pack's declaration exactly — **code, name, city and
+region**. A business could plausibly have a "Dry Store" and plausibly code it
+`DRYSTORE`; what it will not also do is put it in Asheville, NC. All 13
+candidates matched their pack's tuple exactly and there were no near-misses to
+adjudicate.
+
+**`MAIN` is excluded and stays excluded.** `bootstrapDefaultWarehouse` seeds
+`MAIN` / `Main Warehouse` from the owner's own business address and audits it —
+that row is hers, and the issue says so. Three packs also declare code `MAIN`, so
+on those tenants the two are indistinguishable after the fact. Labelling an
+ambiguous row "Sample" would put a false sentence on her screen about the one
+location the platform set up FOR her, which is worse than the problem being
+fixed. Verified after applying: **13 marked, 0 of the 51 `MAIN` rows touched.**
+
+### One thing found and not fixed
+
+The **electronics** pack declares its warehouse as code `MAIN` under the name
+`Fulfillment Center`. On an electronics tenant the pack therefore upserts onto the
+bootstrap's `MAIN` row and **renames her Main Warehouse to "Fulfillment Center"**.
+That is a write-side bug, not a labelling one, and it is untouched here.

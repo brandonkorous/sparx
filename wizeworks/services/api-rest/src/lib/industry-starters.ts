@@ -303,9 +303,54 @@ export async function installIndustryStarter(
       installed.push(ref);
     }
 
-    await recordIndustry(tx, ctx, slug, installed.length, skipped.length);
+    await recordIndustry(tx, ctx, slug, { installed, alreadyInstalled, skipped });
     return { slug, installed, alreadyInstalled, skipped };
   });
+}
+
+/** A preset ref as one readable token, so the audit row can name what it did
+ *  rather than only say how much of it. */
+function refLabel(ref: IndustryStarterPresetRef): string {
+  return `${ref.module}/${ref.slug}`;
+}
+
+/** How an install sorted the starter's presets. */
+export interface IndustryOutcome {
+  installed: IndustryStarterPresetRef[];
+  alreadyInstalled: IndustryStarterPresetRef[];
+  skipped: IndustryStarterPresetRef[];
+}
+
+/**
+ * What the audit row says an install did.
+ *
+ * REPORTS ALL THREE BUCKETS, having reported two (issue 174). An install sorts
+ * every preset into installed / already-present / skipped, and the row carried the
+ * first and the last. So a starter whose fifteen presets were ALL already there
+ * wrote `installed: 0, skipped: 0` — indistinguishable from one that found every
+ * module switched off, and from one that declares no presets at all. Investigating
+ * an unexplained row months later, that line reads as "this install did nothing",
+ * and it sent the reader looking in the wrong system entirely.
+ *
+ * It also NAMES the presets rather than only counting them: "what did this put in
+ * my account" is answered by the list, and a number answers nothing.
+ *
+ * Pure and exported so the shape is assertable without a database — the defect was
+ * in the shape, not in the write.
+ */
+export function industryAuditPayload(
+  slug: string,
+  outcome: IndustryOutcome
+): Prisma.InputJsonObject {
+  return {
+    industry: slug,
+    installed: outcome.installed.length,
+    alreadyPresent: outcome.alreadyInstalled.length,
+    skipped: outcome.skipped.length,
+    installedPresets: outcome.installed.map(refLabel),
+    alreadyPresentPresets: outcome.alreadyInstalled.map(refLabel),
+    skippedPresets: outcome.skipped.map(refLabel),
+  };
 }
 
 /** Merge `settings.industry = slug` (preserving `settings.modules` + every other
@@ -314,8 +359,7 @@ async function recordIndustry(
   tx: Prisma.TransactionClient,
   ctx: TenantContext,
   slug: string,
-  installedCount: number,
-  skippedCount: number
+  outcome: IndustryOutcome
 ): Promise<void> {
   const tenant = await tx.tenant.findUnique({
     where: { id: ctx.tenantId },
@@ -337,7 +381,7 @@ async function recordIndustry(
       action: 'tenant.industry.installed',
       entityType: 'Tenant',
       entityId: ctx.tenantId,
-      diff: { after: { industry: slug, installed: installedCount, skipped: skippedCount } },
+      diff: { after: industryAuditPayload(slug, outcome) },
     },
   });
 }

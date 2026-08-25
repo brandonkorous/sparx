@@ -24,6 +24,13 @@ export async function applyInventory(ctx: ApplyCtx, pack: SampleDataPack): Promi
 
   // Warehouses — durable config, find-or-create by (tenant, code).
   for (const w of pack.warehouses ?? []) {
+    // Asked BEFORE the upsert because the upsert cannot say which branch it took,
+    // and the count has to mean "this load made this location" rather than "this
+    // location exists". A tenant reinstalling a pack has not gained a place.
+    const existed = await tx.warehouse.findUnique({
+      where: { tenantId_code: { tenantId, code: w.code } },
+      select: { id: true },
+    });
     const row = await tx.warehouse.upsert({
       where: { tenantId_code: { tenantId, code: w.code } },
       update: {
@@ -52,6 +59,7 @@ export async function applyInventory(ctx: ApplyCtx, pack: SampleDataPack): Promi
       select: { id: true },
     });
     ctx.warehouseIdByKey.set(w.key, row.id);
+    if (!existed) ctx.counts.warehouses += 1;
   }
   const primaryWarehouseId = pack.warehouses?.[0]
     ? ctx.warehouseIdByKey.get(pack.warehouses[0].key)

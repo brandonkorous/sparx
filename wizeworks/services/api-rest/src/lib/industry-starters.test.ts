@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { toIndustryStarterView, type ModuleSlug } from '@wizeworks/auth';
 
-import { starterRegistry } from './industry-starters';
+import { industryAuditPayload, starterRegistry } from './industry-starters';
 import { presetRegistry } from './preset-registry';
 
 // Industry starters compose module presets by (module, slug) REFERENCE. The
@@ -63,5 +63,79 @@ describe('industry starters', () => {
     expect(view.applicablePresetCount).toBe(0);
     expect(view.enabledModules).toEqual([]);
     expect(view.active).toBe(false);
+  });
+});
+
+/**
+ * The audit row an install leaves behind (issue 174).
+ *
+ * A starter sorts every preset into three buckets and the row recorded two of
+ * them, so an install that found all fifteen presets already present wrote
+ * `installed: 0, skipped: 0`. Read months later, next to an unexplained location
+ * in somebody's stock list, that line says "this install did nothing" — and it
+ * sent the reader looking in the wrong system.
+ *
+ * These assert the property that was missing: three different outcomes must not
+ * produce the same sentence.
+ */
+describe('the audit row an industry install leaves behind', () => {
+  const ref = (module: string, slug: string) =>
+    ({ module, slug }) as (typeof ALL)[number]['presets'][number];
+
+  const apparel = ALL.find((s) => s.slug === 'apparel');
+
+  it('distinguishes "nothing to do" from "nothing applied"', () => {
+    const presets = apparel?.presets ?? [ref('commerce', 'a'), ref('crm', 'b')];
+
+    const allPresent = industryAuditPayload('apparel', {
+      installed: [],
+      alreadyInstalled: [...presets],
+      skipped: [],
+    });
+    const allSkipped = industryAuditPayload('apparel', {
+      installed: [],
+      alreadyInstalled: [],
+      skipped: [...presets],
+    });
+    const genuinelyEmpty = industryAuditPayload('apparel', {
+      installed: [],
+      alreadyInstalled: [],
+      skipped: [],
+    });
+
+    // All three used to serialise identically. None of them may now.
+    expect(allPresent).not.toEqual(allSkipped);
+    expect(allPresent).not.toEqual(genuinelyEmpty);
+    expect(allSkipped).not.toEqual(genuinelyEmpty);
+
+    expect(allPresent.alreadyPresent).toBe(presets.length);
+    expect(allSkipped.skipped).toBe(presets.length);
+    expect(genuinelyEmpty.alreadyPresent).toBe(0);
+  });
+
+  it('names what it did, not only how much', () => {
+    const payload = industryAuditPayload('apparel', {
+      installed: [ref('commerce', 'tax-us-sales')],
+      alreadyInstalled: [ref('crm', 'vip-customers')],
+      skipped: [ref('email', 'newsletter-campaign')],
+    });
+    expect(payload.installedPresets).toEqual(['commerce/tax-us-sales']);
+    expect(payload.alreadyPresentPresets).toEqual(['crm/vip-customers']);
+    expect(payload.skippedPresets).toEqual(['email/newsletter-campaign']);
+  });
+
+  it('accounts for every preset the starter declares', () => {
+    // The three buckets partition the starter — a preset that falls out of all
+    // three is work nothing records, which is the whole failure mode.
+    for (const s of ALL) {
+      const payload = industryAuditPayload(s.slug, {
+        installed: s.presets.slice(0, 1),
+        alreadyInstalled: s.presets.slice(1, 2),
+        skipped: s.presets.slice(2),
+      });
+      const total =
+        Number(payload.installed) + Number(payload.alreadyPresent) + Number(payload.skipped);
+      expect(total).toBe(s.presets.length);
+    }
   });
 });

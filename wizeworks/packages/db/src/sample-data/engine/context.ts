@@ -65,6 +65,7 @@ export interface ApplyCtx {
 /** A fresh zeroed counts record. */
 export function emptyCounts(): SampleDataCounts {
   return {
+    warehouses: 0,
     products: 0,
     collections: 0,
     categories: 0,

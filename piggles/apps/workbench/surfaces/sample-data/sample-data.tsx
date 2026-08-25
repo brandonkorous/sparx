@@ -27,7 +27,6 @@ import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  COUNT_LABELS,
   countsTotal,
   moduleHue,
   moduleLabel,
@@ -35,8 +34,8 @@ import {
   useClearSampleData,
   useLoadSampleData,
   useSampleDataStatus,
-  type SampleDataCounts,
 } from './data';
+import { CountsGrid } from './counts-grid';
 import { productCopy, productCopyWith, productSurfaceTitle } from '../../lib/product';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
@@ -48,22 +47,6 @@ function ModuleChip({ slug }: { slug: string }) {
         {moduleLabel(slug)}
       </Badge>
     </ModuleScope>
-  );
-}
-
-/** The non-zero counts as a grid of small figures — the proof that real records
- *  exist. Zeroes are dropped so the grid shows what is there, not a wall of 0s. */
-function CountsGrid({ counts }: { counts: SampleDataCounts }) {
-  const present = COUNT_LABELS.filter(({ key }) => (counts[key] || 0) > 0);
-  return (
-    <div className="grid grid-cols-2 gap-2 @sm:grid-cols-3">
-      {present.map(({ key, label }) => (
-        <div key={key} className="border-base-300 flex flex-col gap-0.5 rounded-lg border p-3">
-          <span className="text-2xl font-semibold tabular-nums">{String(counts[key])}</span>
-          <span className="text-sm">{label}</span>
-        </div>
-      ))}
-    </div>
   );
 }
 

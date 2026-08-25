@@ -389,6 +389,18 @@ export interface SampleSupportRequest {
 /** Per-entity counts returned by load/clear/status — drives the dashboard summary
  *  and the Clear confirmation copy ("removes 24 products, 10 orders, …"). */
 export interface SampleDataCounts {
+  /**
+   * Sample LOCATIONS present (issue 174). Durable config, so unlike every other
+   * field here these are not removed by Clear — a tenant may have renamed one and
+   * built stock against it.
+   *
+   * It is counted because the audit row is what answers "who put this location in
+   * my account", and a breakdown that itemises 559 rows across seventeen kinds
+   * while staying silent about locations answers everybody except the one person
+   * asking. `countsTotal` deliberately excludes it: that total means "rows Clear
+   * removes", and this is the one kind that stays.
+   */
+  warehouses: number;
   products: number;
   collections: number;
   categories: number;
