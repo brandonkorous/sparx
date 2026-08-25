@@ -519,33 +519,119 @@ export async function searchProducts(
     page: filters.page,
     perPage: filters.perPage,
   };
+  const askIndex = async (): Promise<ProductSearchResult | null> => {
+    try {
+      const { data, meta } = await publicGet<PublicProductListItem[]>(
+        '/v1/public/commerce/search',
+        query,
+        [`commerce:${tenantSlug}:search`]
+      );
+      return {
+        items: data,
+        total: meta?.total ?? data.length,
+        page: meta?.page ?? filters.page ?? 1,
+        perPage: meta?.per_page ?? filters.perPage ?? 24,
+        facets: meta?.facets ?? {},
+      };
+    } catch {
+      // Typesense unreachable. Not an answer, and specifically not an answer of zero.
+      return null;
+    }
+  };
+
+  if (browsing(filters)) {
+    // The catalog decides the SET (issue 209). Concurrent, so a browse page costs
+    // the same wall-clock as it did when the index decided alone.
+    const [indexed, listed] = await Promise.all([askIndex(), catalogFallback(tenantSlug, filters)]);
+    if (listed) {
+      return {
+        ...listed,
+        // The counts come from the index, so they are only true when the index holds
+        // the same catalog. A sidebar reading "Size S: 2" over a shop of seven is a
+        // wrong measurement, and empty is the honest version of it.
+        facets: indexed?.total === listed.total ? indexed.facets : {},
+      };
+    }
+    return indexed ?? EMPTY_LISTING(filters);
+  }
+
+  const indexed = await askIndex();
+  // A zero-hit listing is the other half of issue 203: the index answered, it just
+  // holds nothing for this tenant yet. Ask the database before telling a shopper the
+  // shop is empty — when it really is, the fallback returns nothing either.
+  if (!indexed || indexed.items.length === 0) {
+    return (await catalogFallback(tenantSlug, filters)) ?? EMPTY_LISTING(filters);
+  }
+  return indexed;
+}
+
+/**
+ * A listing with nothing TYPED into it is a browse — /shop, a collection page, a
+ * category page. All three ask "show me everything", which Postgres answers exactly
+ * and the index only copies; a copy that is behind renders as a smaller shop rather
+ * than as a fault (issue 209). Words in the box are the index's actual job, so those
+ * still go to it, and so do the filters the catalog cannot express.
+ */
+function browsing(filters: ProductSearchFilters): boolean {
+  if (filters.q?.trim()) return false;
+  if (filters.options && filters.options.length > 0) return false;
+  if (filters.fitmentModels) return false;
+  if (filters.fitmentEngines) return false;
+  return true;
+}
+
+function EMPTY_LISTING(filters: ProductSearchFilters): ProductSearchResult {
+  return {
+    items: [],
+    total: 0,
+    page: filters.page ?? 1,
+    perPage: filters.perPage ?? 24,
+    facets: {},
+  };
+}
+
+/**
+ * The catalog itself. What a business sells, from Postgres.
+ *
+ * NOTHING FOUND IS NOT THE SAME AS NOTHING TO FIND. An empty index — Typesense down, or
+ * a catalog that has not finished indexing — rendered as "No products found", which tells
+ * a shopper this business sells nothing (issue 203). A PARTLY filled one rendered as a
+ * smaller shop, which is worse, because it looks finished (issue 209).
+ *
+ * `/v1/public/commerce/products` carries the same sort vocabulary, the same price window
+ * and the same card shape as the index, so a page renders whole from either. It is the
+ * authority on a browse listing and the fallback everywhere else. What it cannot do is
+ * facets, typo tolerance, and the multi-value selections below — asked for one of those
+ * it returns null rather than a WRONG answer.
+ */
+async function catalogFallback(
+  tenantSlug: string,
+  filters: ProductSearchFilters
+): Promise<ProductSearchResult | null> {
+  // NULL means "could not answer", never "nothing to sell". The difference is the
+  // whole of issue 203 — a caller that cannot tell them apart prints one as the other.
+  if (filters.options?.length || filters.fitmentModels || filters.fitmentEngines) return null;
+
   try {
-    const { data, meta } = await publicGet<PublicProductListItem[]>(
-      '/v1/public/commerce/search',
-      query,
-      [`commerce:${tenantSlug}:search`]
-    );
-    const facets: SearchFacets = meta?.facets ?? {};
-    return {
-      items: data,
-      total: meta?.total ?? data.length,
-      page: meta?.page ?? filters.page ?? 1,
-      perPage: meta?.per_page ?? filters.perPage ?? 24,
-      facets,
-    };
+    const listed = await listProducts(tenantSlug, {
+      q: filters.q,
+      vendor: filters.vendor,
+      productType: filters.productType,
+      tag: filters.tag,
+      inStock: filters.inStock,
+      minPriceCents: filters.minPriceCents,
+      maxPriceCents: filters.maxPriceCents,
+      fitmentNodeName: filters.fitmentMakes,
+      fitmentRangeValue: filters.fitmentYear,
+      collection: filters.collection,
+      category: filters.category,
+      sort: filters.sort,
+      page: filters.page,
+      perPage: filters.perPage,
+    });
+    return { ...listed, facets: {} };
   } catch {
-    // A search-backend hiccup — Typesense unavailable, or a tenant whose catalog is
-    // not indexed yet — must NOT 500 the whole page. Degrade to an empty result so the
-    // search shell renders with a "no results" state, exactly like `searchEverything`
-    // and `listRelatedProducts` already do. Search is a feature of the page, never the
-    // page itself.
-    return {
-      items: [],
-      total: 0,
-      page: filters.page ?? 1,
-      perPage: filters.perPage ?? 24,
-      facets: {},
-    };
+    return null;
   }
 }
 

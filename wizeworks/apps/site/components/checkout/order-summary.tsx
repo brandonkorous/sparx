@@ -16,6 +16,7 @@ export function OrderSummary({
   surchargeLabel,
   madeToOrder,
   paymentMode = 'card',
+  shippingSettled = true,
 }: {
   lines: CartLine[];
   totals: CartTotals;
@@ -27,6 +28,14 @@ export function OrderSummary({
   madeToOrder?: CartMadeToOrder;
   /** Whether this website takes money at all (issue 185). */
   paymentMode?: StorefrontPaymentMode;
+  /**
+   * Whether delivery has been WORKED OUT yet (issue 203’s cousin, issue 206).
+   *
+   * Zero shipping is two different answers: "this delivery is free" and "nobody
+   * has chosen a delivery yet". Printing the second as Free told a shopper her
+   * $128 order cost $128 on two screens, and $137 on the third.
+   */
+  shippingSettled?: boolean;
 }) {
   const surchargeCents = totals.surchargeTotalCents ?? 0;
   return (
@@ -85,9 +94,11 @@ export function OrderSummary({
       <div className="text-base-content flex justify-between text-sm">
         <span>Shipping</span>
         <span>
-          {totals.shippingTotalCents > 0
-            ? formatMoney(totals.shippingTotalCents, currency)
-            : 'Free'}
+          {!shippingSettled
+            ? 'Once we know where'
+            : totals.shippingTotalCents > 0
+              ? formatMoney(totals.shippingTotalCents, currency)
+              : 'Free'}
         </span>
       </div>
       {totals.taxTotalCents > 0 ? (
@@ -103,7 +114,7 @@ export function OrderSummary({
         </div>
       ) : null}
       <div className="border-base-300 text-base-content flex justify-between border-t pt-3 text-lg font-semibold">
-        <span>Total</span>
+        <span>{shippingSettled ? 'Total' : 'Total so far'}</span>
         <span>{formatMoney(totals.totalCents, currency)}</span>
       </div>
 

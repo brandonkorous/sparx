@@ -69,6 +69,12 @@ export function CheckoutFlow({
   );
   const collectionOnly = offer !== null && !offer.deliveryOffered;
 
+  // The SESSION only becomes the authority on money once the delivery step has
+  // been submitted. It opens on mount and does not follow a basket edit, so before
+  // then its totals go stale — a line reading $192 over a subtotal of $96 — and
+  // its zero shipping is "not worked out", not free (issue 206).
+  const settled = collectionOnly || step === 'payment' || step === 'done';
+
   const [address, setAddress] = useState<Address>(EMPTY_ADDRESS);
   const [rates, setRates] = useState<ShippingRate[]>([]);
   // Whether THIS address has been quoted. Not `rates.length` — a shop that
@@ -347,16 +353,21 @@ export function CheckoutFlow({
       </div>
 
       <aside className="sticky top-[92px] max-[860px]:static max-[860px]:order-[-1]">
-        {/* The session's made-to-order split wins once checkout has started: it
+        {/* Delivery is only KNOWN once the delivery step has been SUBMITTED. The
+            session opens on mount carrying zero, so its existence proves nothing;
+            before payment, zero means "not worked out", never "free" (issue 206).
+
+            The session's made-to-order split wins once checkout has started: it
             is taken against the total the gateway will actually be handed,
             delivery and surcharge included (issue 026). */}
         <OrderSummary
           lines={cart.lines}
-          totals={session?.totals ?? cart.totals}
+          totals={settled ? (session?.totals ?? cart.totals) : cart.totals}
           currency={session?.currency ?? cart.currency}
           {...(session?.surchargeLabel ? { surchargeLabel: session.surchargeLabel } : {})}
           madeToOrder={session?.madeToOrder ?? cart.madeToOrder}
           paymentMode={session?.paymentMode ?? shopPaymentMode}
+          shippingSettled={settled}
         />
       </aside>
     </div>
