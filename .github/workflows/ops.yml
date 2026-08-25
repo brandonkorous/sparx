@@ -167,7 +167,7 @@ jobs:
       RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # ---------------------------------------------------------------------
       # A typed confirmation, for the tasks that destroy data.
