@@ -11,30 +11,30 @@
 // empty — filling them is almost always what was wanted, overwriting something
 // already typed almost never is.
 
-import { useMemo } from 'react';
-import { useQuery } from '@wizeworks/query';
-import { Combobox } from '@wizeworks/silicaui-react';
-import { api } from '../../lib/api/client';
+import { useState } from 'react';
+import { useQueryClient } from '@wizeworks/query';
+import { useDebouncedValue } from '../../lib/api/search';
+import { SearchPicker, type PickerRow } from '../../components/search-picker';
+import {
+  customerLabel,
+  customerPickerKeys,
+  useCustomerOnRecord,
+  useCustomerSearch,
+  type CustomerSummary,
+} from './customer-picker-data';
 
-export interface CustomerSummary {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  company: string | null;
-  email: string | null;
-}
+export { customerLabel };
+export type { CustomerSummary };
 
-interface Option {
-  value: string;
-  label: string;
-  customer: CustomerSummary;
-}
-
-/** How a person is named on an invoice: the company if there is one, otherwise
- *  the person, otherwise whatever we can identify them by. */
-export function customerLabel(customer: CustomerSummary): string {
-  const person = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-  return customer.company ?? (person || customer.email) ?? 'Unnamed customer';
+/** Two lines: who they are, then the email that tells apart the two Dave Kellys
+ *  every real customer list has. */
+function toRow(customer: CustomerSummary): PickerRow {
+  const primary = customerLabel(customer);
+  return {
+    id: customer.id,
+    primary,
+    secondary: customer.email && customer.email !== primary ? customer.email : null,
+  };
 }
 
 interface CustomerPickerProps {
@@ -45,56 +45,38 @@ interface CustomerPickerProps {
 }
 
 export function CustomerPicker({ value, disabled, onSelect, onClear }: CustomerPickerProps) {
-  const { data, isLoading } = useQuery({
-    queryKey: ['crm', 'customers', 'picker'],
-    queryFn: () => api.get<CustomerSummary[]>('/v1/crm/customers', { take: 100 }),
-    staleTime: 60_000,
-  });
-
-  // MEMOISED, and it is not an optimisation. <Combobox> keys an effect off the
-  // identity of `items`, so rebuilding the array every render schedules a state
-  // update that causes the next render — "Maximum update depth exceeded", with
-  // the pane's error boundary catching it.
-  //
-  // It survived on desktop only by luck: a docked pane re-renders rarely enough
-  // that the loop never got going. The mobile stack re-renders on every host
-  // emit and the crash was immediate. The bug was always here; one presentation
-  // just happened not to poke it.
-  const options: Option[] = useMemo(
-    () =>
-      (data ?? []).map((customer) => {
-        const label = customerLabel(customer);
-        return {
-          value: customer.id,
-          // Email disambiguates the two Dave Kellys a real customer list always has.
-          label:
-            customer.email && customer.email !== label ? `${label} · ${customer.email}` : label,
-          customer,
-        };
-      }),
-    [data]
-  );
-
-  const selected = useMemo(
-    () => options.find((option) => option.value === value) ?? null,
-    [options, value]
-  );
+  const [query, setQuery] = useState('');
+  const queryClient = useQueryClient();
+  const onRecord = useCustomerOnRecord(value);
+  const search = useCustomerSearch(useDebouncedValue(query, 250));
+  const results = search.data?.items ?? [];
 
   return (
-    <Combobox
-      color="module"
-      items={options}
-      value={selected}
-      disabled={disabled ?? isLoading}
-      placeholder={isLoading ? 'Loading customers…' : 'Search customers…'}
-      emptyMessage="No customer matches that. Add them in Customers first."
-      aria-label="Customer"
-      onValueChange={(next) => {
-        if (!next) {
-          onClear();
-          return;
-        }
-        onSelect((next as Option).customer);
+    <SearchPicker
+      chosen={value && onRecord.data ? toRow(onRecord.data) : null}
+      loadingChosen={Boolean(value) && onRecord.isPending}
+      chosenError={value && onRecord.isError ? 'That customer could not be loaded.' : null}
+      results={results.map(toRow)}
+      searching={search.isFetching}
+      query={query}
+      onQuery={setQuery}
+      disabled={disabled}
+      label="Search customers"
+      placeholder="Search by name, email or company…"
+      tooShort="Type at least two letters to find someone."
+      nothingFound="No customer matches that. Add them in Customers first."
+      clearLabel="Choose a different customer"
+      onSelect={(id) => {
+        const picked = results.find((customer) => customer.id === id);
+        if (!picked) return;
+        // Seed the by-id read with the row just chosen, so the field names them
+        // straight away instead of blanking to "Loading" on every pick.
+        queryClient.setQueryData(customerPickerKeys.one(id), picked);
+        onSelect(picked);
+      }}
+      onClear={() => {
+        setQuery('');
+        onClear();
       }}
     />
   );

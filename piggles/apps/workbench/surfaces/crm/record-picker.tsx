@@ -9,26 +9,24 @@
 // custom objects) is how a feature that is supposed to work across every record
 // type ends up working across three.
 //
-// Each kind reads from its own list endpoint, because each has its own search:
-// a person is found by name or email, a company by company name, a deal by
-// title. One "search everything" endpoint would return the wrong shape for all
-// three and rank them against each other for no reason.
+// Each kind reads from its own list endpoint and each one searches on the
+// SERVER (issue 183): a person is found by name or email, a company by company
+// name, a deal by title, and the answer covers every record rather than the
+// first page of them.
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@wizeworks/query';
-import { Combobox } from '@wizeworks/silicaui-react';
 import { api } from '../../lib/api/client';
+import { useDebouncedValue } from '../../lib/api/search';
+import { MIN_QUERY, SearchPicker, type PickerRow } from '../../components/search-picker';
 import { objectLabel } from './associations-data';
 
-interface Option {
-  value: string;
-  label: string;
-}
+type Row = Record<string, unknown>;
 
 /** Where each kind of record is listed, and how to name one. */
 interface Source {
   path: string;
-  label: (row: Record<string, unknown>) => string;
+  row: (row: Row) => PickerRow;
 }
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '');
@@ -36,24 +34,56 @@ const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 const SOURCES: Record<string, Source> = {
   contact: {
     path: '/v1/crm/customers',
-    label: (row) => {
+    row: (row) => {
       const person = [str(row.firstName), str(row.lastName)].filter(Boolean).join(' ').trim();
       const name = person || str(row.company) || str(row.email);
       const email = str(row.email);
       // The email is what tells apart the two Dave Kellys every real customer
       // list has.
-      return email && email !== name ? `${name} · ${email}` : name || 'Unnamed';
+      return {
+        id: str(row.id),
+        primary: name || 'Unnamed',
+        secondary: email && email !== name ? email : null,
+      };
     },
   },
   company: {
     path: '/v1/crm/b2b-accounts',
-    label: (row) => str(row.companyName) || 'Unnamed company',
+    row: (row) => ({
+      id: str(row.id),
+      primary: str(row.companyName) || 'Unnamed company',
+      secondary: str(row.accountNumber) || null,
+    }),
   },
   deal: {
     path: '/v1/crm/deals',
-    label: (row) => str(row.title) || 'Untitled deal',
+    row: (row) => ({
+      id: str(row.id),
+      primary: str(row.title) || 'Untitled deal',
+      secondary: null,
+    }),
   },
 };
+
+/** Anything a business invented lives in the generic records table. */
+function sourceFor(objectKey: string): Source {
+  return (
+    SOURCES[objectKey] ?? {
+      path: `/v1/crm/objects/${objectKey}/records`,
+      row: (row) => ({ id: str(row.id), primary: str(row.title) || 'Untitled', secondary: null }),
+    }
+  );
+}
+
+function useRecordSearch(objectKey: string, source: Source, term: string) {
+  const q = term.trim();
+  return useQuery({
+    queryKey: ['crm', 'record-picker', objectKey, q] as const,
+    queryFn: () => api.list<Row>(source.path, { q, take: 20 }),
+    enabled: q.length >= MIN_QUERY,
+    staleTime: 30_000,
+  });
+}
 
 export interface RecordPickerProps {
   objectKey: string;
@@ -73,54 +103,42 @@ export function RecordPicker({
   onClear,
   disabled,
 }: RecordPickerProps) {
-  const source = SOURCES[objectKey];
-  // Anything a business invented lives in the generic records table.
-  const path = source?.path ?? `/v1/crm/objects/${objectKey}/records`;
+  const [query, setQuery] = useState('');
+  // The only value this picker ever receives is one it just produced, so the
+  // chosen row is remembered rather than re-read.
+  const [picked, setPicked] = useState<PickerRow | null>(null);
+  const source = sourceFor(objectKey);
+  const search = useRecordSearch(objectKey, source, useDebouncedValue(query, 250));
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['crm', 'record-picker', objectKey],
-    queryFn: () => api.list<Record<string, unknown>>(path, { take: 100 }),
-    staleTime: 60_000,
-  });
-
-  // MEMOISED, and not as an optimisation: <Combobox> keys an effect off the
-  // identity of `items`, so rebuilding the array every render schedules a state
-  // update that triggers the next render — "Maximum update depth exceeded",
-  // caught by the pane's error boundary. Same trap the customer picker
-  // documents.
-  const options: Option[] = useMemo(
+  const results = useMemo(
     () =>
-      (data?.items ?? [])
-        .filter((row) => str(row.id) !== excludeId)
-        .map((row) => ({
-          value: str(row.id),
-          label: source ? source.label(row) : str(row.title) || 'Untitled',
-        })),
-    [data, excludeId, source]
-  );
-
-  const selected = useMemo(
-    () => options.find((option) => option.value === value) ?? null,
-    [options, value]
+      (search.data?.items ?? []).map(source.row).filter((row) => row.id && row.id !== excludeId),
+    [search.data, source, excludeId]
   );
 
   const kind = objectLabel(objectKey).toLowerCase();
 
   return (
-    <Combobox
-      color="module"
-      items={options}
-      value={selected}
-      disabled={disabled ?? isLoading}
-      placeholder={isLoading ? `Loading ${kind}…` : `Search ${kind}…`}
-      emptyMessage={`Nothing in ${kind} matches that.`}
-      aria-label={objectLabel(objectKey)}
-      onValueChange={(next) => {
-        if (!next) {
-          onClear();
-          return;
-        }
-        onSelect((next as Option).value);
+    <SearchPicker
+      chosen={picked?.id === value ? picked : null}
+      results={results}
+      searching={search.isFetching}
+      query={query}
+      onQuery={setQuery}
+      disabled={disabled}
+      label={`Search ${kind}`}
+      placeholder={`Search ${kind}…`}
+      tooShort={`Type at least two letters to search ${kind}.`}
+      nothingFound={`Nothing in ${kind} matches that.`}
+      clearLabel="Choose a different record"
+      onSelect={(id) => {
+        setPicked(results.find((row) => row.id === id) ?? null);
+        onSelect(id);
+      }}
+      onClear={() => {
+        setPicked(null);
+        setQuery('');
+        onClear();
       }}
     />
   );

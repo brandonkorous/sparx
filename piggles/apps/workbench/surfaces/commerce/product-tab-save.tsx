@@ -100,41 +100,27 @@ export function useTabSave(registration: TabSaveRegistration): void {
   const tabValue = useContext(TabValueContext);
   const entryId = useId();
 
-  // The latest registration without re-registering on every keystroke: the shell
-  // reads through this ref, so a changing `dirty` does not churn the registry.
-  const latest = useRef(registration);
-  latest.current = registration;
+  // `save` is a fresh closure every render, so it is read through a ref and what
+  // the registry actually STORES is two booleans. That is what lets the registry
+  // compare a registration and keep the old one when nothing changed.
+  const latestSave = useRef(registration.save);
+  latestSave.current = registration.save;
 
-  useEffect(() => {
-    if (!registry || !tabValue) return;
-    const proxy: TabSaveRegistration = {
-      get dirty() {
-        return latest.current.dirty;
-      },
-      get saving() {
-        return latest.current.saving;
-      },
-      save: () => latest.current.save(),
-    };
-    registry.register(tabValue, entryId, proxy);
-    return () => registry.unregister(tabValue, entryId);
-  }, [registry, tabValue, entryId]);
-
-  // Re-render subscribers when the values behind the getters change, since a ref
-  // mutation alone is invisible to React.
   const { dirty, saving } = registration;
+
   useEffect(() => {
     if (!registry || !tabValue) return;
-    registry.register(tabValue, entryId, {
-      get dirty() {
-        return latest.current.dirty;
-      },
-      get saving() {
-        return latest.current.saving;
-      },
-      save: () => latest.current.save(),
-    });
+    registry.register(tabValue, entryId, { dirty, saving, save: () => latestSave.current() });
   }, [registry, tabValue, entryId, dirty, saving]);
+
+  // Withdrawing is a separate effect on purpose: it must run on UNMOUNT, not
+  // every time `dirty` flips.
+  useEffect(() => {
+    if (!registry || !tabValue) return;
+    return () => {
+      registry.unregister(tabValue, entryId);
+    };
+  }, [registry, tabValue, entryId]);
 }
 
 /* ── Shell side ─────────────────────────────────────────────────────────── */
@@ -162,8 +148,15 @@ export function useTabSaveRegistry(activeTab: string): {
     () => ({
       register: (tabValue, entryId, value) => {
         setEntries((prev) => {
+          const key = `${tabValue}::${entryId}`;
+          const current = prev.get(key);
+          // Same answer as last time: hand back the SAME map so React bails out
+          // of the render instead of re-rendering the whole pane (issue 196).
+          if (current?.dirty === value.dirty && current.saving === value.saving) {
+            return prev;
+          }
           const next = new Map(prev);
-          next.set(`${tabValue}::${entryId}`, value);
+          next.set(key, value);
           return next;
         });
       },
