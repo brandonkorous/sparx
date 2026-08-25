@@ -261,10 +261,13 @@ export type CreateVariantImageInput = z.infer<typeof CreateVariantImageInput>;
 
 // ─── Product ─────────────────────────────────────────────────────────
 
+// NULLABLE, not merely optional. Omitted means "leave it alone"; null means
+// "clear it" — and every editor that offers a Remove button has to be able to say
+// the second. Sending null was a 422 until issue 202.
 export const SeoFields = z.object({
-  seoTitle: z.string().max(255).optional(),
-  seoDescription: z.string().max(512).optional(),
-  ogImageId: Uuid.optional(),
+  seoTitle: z.string().max(255).nullable().optional(),
+  seoDescription: z.string().max(512).nullable().optional(),
+  ogImageId: Uuid.nullable().optional(),
 });
 export type SeoFields = z.infer<typeof SeoFields>;
 

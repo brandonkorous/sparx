@@ -93,6 +93,13 @@ function collectionOrderBy(
 
 // ─── Reads ────────────────────────────────────────────────────────────
 
+/**
+ * A DELETED product is not in the group, so it must not be counted as one.
+ * Counting the membership row had the console advertise "6 products" over a
+ * collection page that shows none, and name each of them "Product".
+ */
+const LIVE_MEMBERS = { where: { product: { deletedAt: null } } } as const;
+
 export async function list(
   ctx: ServiceContext,
   filter: ListCollectionsFilter = {}
@@ -120,7 +127,7 @@ export async function list(
         orderBy: collectionOrderBy(filter.sortBy, filter.order ?? 'asc'),
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
-        include: { _count: { select: { products: true } } },
+        include: { _count: { select: { products: LIVE_MEMBERS } } },
       }),
       tx.productCollection.count({ where }),
     ]);
@@ -145,9 +152,9 @@ export async function get(ctx: ServiceContext, collectionId: string): Promise<Co
     tx.productCollection.findFirst({
       where: { id: collectionId, deletedAt: null },
       include: {
-        products: { select: { productId: true } },
+        products: { ...LIVE_MEMBERS, select: { productId: true } },
         propertyLinks: { select: { propertyId: true } },
-        _count: { select: { products: true } },
+        _count: { select: { products: LIVE_MEMBERS } },
       },
     })
   );
@@ -160,9 +167,9 @@ export async function getByHandle(ctx: ServiceContext, handle: string): Promise<
     tx.productCollection.findFirst({
       where: { handle, deletedAt: null },
       include: {
-        products: { select: { productId: true } },
+        products: { ...LIVE_MEMBERS, select: { productId: true } },
         propertyLinks: { select: { propertyId: true } },
-        _count: { select: { products: true } },
+        _count: { select: { products: LIVE_MEMBERS } },
       },
     })
   );

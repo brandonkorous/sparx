@@ -57,3 +57,37 @@ describe('UpdateCategoryInput / UpdateCollectionInput — partial update never r
     expect(UpdateCollectionInput.parse({ propertyIds: [id] }).propertyIds).toEqual([id]);
   });
 });
+
+// A form with an empty optional field sends `null`, not `undefined`: the editor
+// holds `heroMediaId: string | null` and `seoTitle: ''`, and turns the blank into
+// null on the way out. Rejecting that made the Groups pane unsaveable until any
+// banner, social picture and BOTH search fields were filled in (issue 202).
+describe('clearing an optional field', () => {
+  const CLEARABLE = {
+    description: null,
+    heroMediaId: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImageId: null,
+  };
+
+  it('collection: null clears, on create and on update', () => {
+    expect(CreateCollectionInput.safeParse({ name: 'New in', ...CLEARABLE }).success).toBe(true);
+    const parsed = UpdateCollectionInput.parse({ name: 'New in', ...CLEARABLE });
+    // Null must SURVIVE — the service writes what it is given, and dropping it
+    // here would silently turn "remove the banner" into "leave it alone".
+    expect(parsed.heroMediaId).toBeNull();
+    expect(parsed.seoTitle).toBeNull();
+  });
+
+  it('category: the same, plus its own icon', () => {
+    const input = { name: 'Knitwear', iconMediaId: null, ...CLEARABLE };
+    expect(CreateCategoryInput.safeParse(input).success).toBe(true);
+    expect(UpdateCategoryInput.parse(input).iconMediaId).toBeNull();
+  });
+
+  it('still refuses a value of the wrong TYPE — nullable is not anything-goes', () => {
+    expect(UpdateCollectionInput.safeParse({ heroMediaId: 'not-a-uuid' }).success).toBe(false);
+    expect(UpdateCollectionInput.safeParse({ seoTitle: 42 }).success).toBe(false);
+  });
+});

@@ -18,12 +18,12 @@ import { SeoFields } from './products';
 export const CreateCategoryInput = z.object({
   name: z.string().min(1).max(127),
   handle: Handle.optional(),
-  description: z.string().max(10_000).optional(),
+  description: z.string().max(10_000).nullable().optional(),
   parentId: Uuid.nullable().optional(),
   position: z.number().int().nonnegative().default(0),
   featured: z.boolean().default(false),
-  iconMediaId: Uuid.optional(),
-  heroMediaId: Uuid.optional(),
+  iconMediaId: Uuid.nullable().optional(),
+  heroMediaId: Uuid.nullable().optional(),
   // Model B per-site scoping (docs/49 §3): the web PROPERTIES this category is
   // visible on. EMPTY = visible on ALL sites (the default). Update sends the full
   // replacement set; UpdateCategoryInput inherits it as optional via .partial().
@@ -118,10 +118,10 @@ export type CollectionType = z.infer<typeof CollectionType>;
 export const CreateCollectionInput = z.object({
   name: z.string().min(1).max(127),
   handle: Handle.optional(),
-  description: z.string().max(10_000).optional(),
+  description: z.string().max(10_000).nullable().optional(),
   type: CollectionType.default('manual'),
   ruleSet: CollectionRuleSet.optional(), // required when type=rules
-  heroMediaId: Uuid.optional(),
+  heroMediaId: Uuid.nullable().optional(),
   featured: z.boolean().default(false),
   // Model B per-site scoping (docs/49 §3): the web PROPERTIES this collection is
   // visible on. EMPTY = visible on ALL sites (the default). Update sends the full

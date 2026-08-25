@@ -100,7 +100,12 @@ async function resolveMerchantIdentity(
     select: { logoLightMediaId: true },
   });
   const override = readBrandOverride(property?.brandOverride);
-  const name = override.businessName ?? property?.name ?? tenant?.slug ?? 'Merchant';
+  // The SITE'S OWN name first. `brandOverride.businessName` is deprecated for naming
+  // (db/scripts/backfill-property-name.ts strips it), and every blueprint install used
+  // to write the sample business's name into it — so preferring it listed real shops to
+  // the public as the demo they installed: Thistle & Rye as "Kettle & Crumb" (issue 210).
+  // Kept as a fallback only, for a site whose name never got backfilled.
+  const name = property?.name ?? override.businessName ?? tenant?.slug ?? 'Merchant';
   // The site's own logo wins; the tenant base is only the fallback for a site that
   // has never been branded. `logoMediaId` is the legacy single-logo key — an
   // override written before the light/dark split still carries the light logo there.
