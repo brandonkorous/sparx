@@ -59,4 +59,13 @@ module "dns" {
   # existed in Cloudflare when this module first described them and were ADOPTED
   # into state by import blocks in the v1.227.1 release rather than created; the
   # import file was one-shot and has been removed now that it has applied.
+
+  # kanninja_dns_enabled is left at its default, which is OFF — unlike every
+  # other brand, and deliberately. kanNINJA is LIVE on GKE and its four records
+  # point at a Google address. The module writes them with `allow_overwrite`, so
+  # turning this on does not begin managing them, it REPOINTS them here. That is
+  # the DNS cutover itself, and it belongs in a scheduled window with the
+  # workloads already running in the `kanninja` namespace — not in whichever
+  # apply happens to come next. See docs/azure-migration-plan.md Phase 5 in the
+  # kanNINJA repository, and the variable's own description.
 }

@@ -296,32 +296,51 @@ import mode.caddy
 # kanNINJA's workloads live in their own namespace; Caddy reaches them
 # cross-namespace via ClusterIP Services (port 80 → the app's http port).
 #
-# IMPORTANT: these blocks deliberately OMIT the on-demand policy and take a
-# normal Caddy-managed certificate instead. On-demand would call the global ask
-# endpoint (api-rest /internal/domain-check), which only knows sparx tenants and
-# custom domains and would REJECT kanninja.com — no certificate. They import
-# `tls_managed`, which is a no-op in workstation mode for the same reason
-# tls_policy is.
+# ON-DEMAND, NOT AN EXPLICIT MANAGED BLOCK — and this was CORRECTED, not chosen.
+#
+# These four blocks used to import `tls_managed`, reasoning that the on-demand
+# ask endpoint (api-rest /internal/domain-check) only knows sparx tenants and
+# would REJECT kanninja.com. The first half is true; the conclusion was wrong on
+# both counts. The ask endpoint carries a static PLATFORM_HOSTNAMES allow-list
+# for exactly this case — and more importantly, an explicit managed block cannot
+# work on this ingress at all:
+#
+#   This Caddy is `replicas: 1` on a `Recreate` rollout (deployment.yaml), so
+#   every boot has a ~15-60s window with no registered load balancer backend. An
+#   explicit managed block fires ALL of its startup issuance attempts inside that
+#   window, so no ACME challenge can reach the origin and a FIRST certificate is
+#   never obtained. Cloudflare then answers 525 for that hostname alone, which
+#   reads like a routing bug and is a TLS bootstrap failure.
+#
+# silicaui was blocked by precisely this and moved to on-demand; its block below
+# carries the same note. On-demand defers issuance to the first HTTPS request,
+# which lands on a warm, LB-registered pod, so the challenge succeeds — and
+# renewals happen at request/maintenance time, never at boot.
+#
+# THE ALLOW-LIST IS THE OTHER HALF OF THIS CHANGE. All four names are listed in
+# PLATFORM_HOSTNAMES in
+# wizeworks/services/api-rest/src/routes/internal/domain-check.ts. Deleting one
+# there silently removes its certificate here.
 {$SX_SCHEME:https}://kanninja.com {
-	import tls_managed
+	import tls_policy
 	import security_headers
 	reverse_proxy frontend.kanninja.svc.cluster.local:80
 }
 
 {$SX_SCHEME:https}://www.kanninja.com {
-	import tls_managed
+	import tls_policy
 	import security_headers
 	redir https://kanninja.com{uri} permanent
 }
 
 {$SX_SCHEME:https}://api.kanninja.com {
-	import tls_managed
+	import tls_policy
 	import security_headers
 	reverse_proxy backend.kanninja.svc.cluster.local:80
 }
 
 {$SX_SCHEME:https}://mcp.kanninja.com {
-	import tls_managed
+	import tls_policy
 	import security_headers
 	reverse_proxy mcp.kanninja.svc.cluster.local:80
 }

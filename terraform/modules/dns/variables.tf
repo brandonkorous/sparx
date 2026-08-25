@@ -74,3 +74,29 @@ variable "jotacular_dns_enabled" {
   type        = bool
   default     = true
 }
+
+variable "kanninja_dns_enabled" {
+  description = <<-EOT
+    Whether to manage the kanninja.com zone's records.
+
+    DEFAULTS **OFF**, and that is the opposite of every other brand in this
+    module for one reason: kanNINJA IS ALREADY LIVE, served from GKE, with these
+    records pointing at a Google address managed by hand.
+
+    Turning this on does not "start managing" those records — `allow_overwrite`
+    means it REPOINTS them at var.ingress_ip, which is this cluster. That is the
+    DNS cutover itself. Doing it before kanNINJA's workloads are running in the
+    `kanninja` namespace and answering health checks takes the product down.
+
+    So flipping this to true is a deliberate, scheduled act performed in the
+    cutover window (docs/azure-migration-plan.md, Phase 5), not a default that
+    someone inherits by running `terraform apply` for an unrelated reason.
+
+    Like jotacular_dns_enabled, this is also separate from `cloudflare_enabled`
+    because `data "cloudflare_zone" "kanninja"` is a LOOKUP: the zone must exist
+    in the account or the plan fails and blocks every other record this module
+    manages.
+  EOT
+  type        = bool
+  default     = false
+}

@@ -89,16 +89,35 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   // silicaui.com — first-party marketing + docs site, a co-tenant in the
   // `silicaui` namespace (static Next.js export served by nginx). It is NOT a
   // sparx tenant property, so resolveSiteByHost can't authorize it; it has to be
-  // a static platform host here or on-demand TLS 403s it. On-demand (rather than
-  // kanNINJA-style explicit managed blocks) is deliberate: the shared Caddy is a
-  // single replica on a Recreate rollout, so every boot has a ~15-60s window with
-  // no registered LB backend, and certmagic fires all its startup issuance
-  // attempts inside it — a first cert can never be obtained at boot. On-demand
-  // defers issuance to the first HTTPS request, which lands on the warm,
-  // LB-registered pod, so the challenge succeeds and renewals (also request/
-  // maintenance time, never boot) stay healthy.
+  // a static platform host here or on-demand TLS 403s it. On-demand is
+  // deliberate: the shared Caddy is a single replica on a Recreate rollout, so
+  // every boot has a ~15-60s window with no registered LB backend, and certmagic
+  // fires all its startup issuance attempts inside it — a first cert can never be
+  // obtained at boot. On-demand defers issuance to the first HTTPS request, which
+  // lands on the warm, LB-registered pod, so the challenge succeeds and renewals
+  // (also request/maintenance time, never boot) stay healthy.
   'silicaui.com',
   'www.silicaui.com',
+  // ── kanNINJA ─────────────────────────────────────────────────────────────
+  // A co-tenant in the `kanninja` namespace, from its own repository. Like
+  // silicaui above, these are PLATFORM hosts with no row in the `domains` table,
+  // so `isHostAuthorized` cannot vouch for them.
+  //
+  // This comment block used to cite "kanNINJA-style explicit managed blocks" as
+  // the alternative silicaui deliberately avoided. That was accurate about what
+  // kanNINJA's Caddy blocks DID and wrong about whether it worked: those blocks
+  // were subject to the identical boot-window problem described above and would
+  // simply never have obtained a first certificate. They now `import tls_policy`
+  // like every other host here, which is what makes these four entries load-
+  // bearing rather than decorative.
+  //
+  // `api.` and `mcp.` are separate services (Fastify, and the hosted remote MCP
+  // server); `www.` only ever 301s to the apex, but it terminates TLS to do it,
+  // so it needs a certificate exactly as much as the others.
+  'kanninja.com',
+  'www.kanninja.com',
+  'api.kanninja.com',
+  'mcp.kanninja.com',
   // ── Piggles ──────────────────────────────────────────────────────────────
   // The sister brand's three surfaces + its api-rest hostname. They are PLATFORM
   // hosts, not tenant sites, so `isHostAuthorized` below cannot vouch for them —

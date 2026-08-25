@@ -870,3 +870,90 @@ resource "cloudflare_access_policy" "admin_operators" {
     email = var.operator_access_emails
   }
 }
+
+# =========================================================================
+# kanninja.com — kanNINJA, a FOURTH product on the same cluster
+# =========================================================================
+# Same ingress IP and same Caddy as everything above. kanNINJA lives in its own
+# repository and its own `kanninja` namespace; Caddy reaches it cross-namespace
+# by ClusterIP (k8s/ingress/Caddyfile), so nothing about these records is
+# special — they are here because this module is where the platform's DNS lives.
+#
+#   kanninja.com      Next.js app + marketing  → frontend  (kanninja namespace)
+#   www.kanninja.com  301 to the apex, in Caddy → frontend
+#   api.kanninja.com  Fastify REST + Better Auth + WebSocket → backend
+#   mcp.kanninja.com  hosted remote MCP server → mcp
+#
+# UNLIKE EVERY OTHER BRAND HERE, THESE RECORDS ALREADY EXIST AND ALREADY SERVE
+# TRAFFIC — from GKE, created by hand, never described by Terraform. That is why
+# `kanninja_dns_enabled` defaults to FALSE and why there are no `import` blocks:
+# the records are not being adopted with their current values preserved, they
+# are being REPOINTED, and `allow_overwrite` does that in one step. Enabling
+# this variable IS the DNS cutover. See the variable's own description.
+#
+# Proxied, like every other first-party brand: Cloudflare's SSL mode must be
+# Full or Full (strict), never Flexible, which would speak plain HTTP to an
+# origin that only serves HTTPS.
+#
+# CERTIFICATES: all four names must ALSO be allow-listed in api-rest's
+# PLATFORM_HOSTNAMES (wizeworks/services/api-rest/src/routes/internal/domain-check.ts),
+# because their Caddy blocks use the ON-DEMAND policy. They did not always: the
+# blocks originally used an explicit managed block, which cannot obtain a first
+# certificate on this ingress at all — Caddy here is a single replica on a
+# Recreate rollout, so every boot has a ~15-60s window with no registered load
+# balancer backend and certmagic spends all its startup issuance attempts inside
+# it. silicaui hit exactly this and moved to on-demand; kanNINJA's blocks were
+# corrected to match. A name missing from that allow-list gets 403
+# `unknown_host` from the ask endpoint, never receives a certificate, and
+# Cloudflare answers 525 for that hostname alone — which reads like a routing
+# bug and is an allow-list omission.
+locals {
+  kanninja_enabled = var.cloudflare_enabled && var.kanninja_dns_enabled
+
+  # Subdomains taking an A record straight at the ingress. The apex and `www`
+  # are handled separately below because their record types differ.
+  kanninja_hosts = local.kanninja_enabled ? toset(["api", "mcp"]) : toset([])
+}
+
+data "cloudflare_zone" "kanninja" {
+  count = local.kanninja_enabled ? 1 : 0
+  name  = "kanninja.com"
+}
+
+resource "cloudflare_record" "kanninja_root" {
+  count           = local.kanninja_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.kanninja[0].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "kanNINJA app — shared Caddy, kanninja namespace"
+}
+
+# CNAME rather than a second A record, so the apex is the single place the
+# address is stated. Caddy 301s this name to the apex, so it never needs to
+# resolve to anything different.
+resource "cloudflare_record" "kanninja_www" {
+  count           = local.kanninja_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.kanninja[0].id
+  name            = "www"
+  type            = "CNAME"
+  content         = "kanninja.com"
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+}
+
+resource "cloudflare_record" "kanninja_hosts" {
+  for_each        = local.kanninja_hosts
+  zone_id         = data.cloudflare_zone.kanninja[0].id
+  name            = each.value
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "kanNINJA ${each.value} — shared Caddy, kanninja namespace"
+}
