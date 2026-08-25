@@ -13,7 +13,9 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { ORDERS_KEY, type Order } from './data';
-import { useVariantCatalog } from './bundles-data';
+import { useVariantCatalog, type VariantChoice } from './bundles-data';
+import type { ProductDeposit } from './made-to-order-data';
+import { noticeOn } from './sale-made-to-order';
 
 /** Anything the business can put on a sale: a thing off the shelf, or an hour of
  *  its own time. Both are lines on the same receipt, so both live in one list. */
@@ -28,6 +30,10 @@ export interface Sellable {
   sku: string;
   productId?: string;
   variantId?: string;
+  /** Days of notice this needs before it can be handed over. Null for anything
+   *  off a shelf, and for every service (a booking carries its own). */
+  orderAheadDays?: number | null;
+  deposit?: ProductDeposit;
 }
 
 /** One line as it is being built. `sellable` is null for a hand-typed line. */
@@ -40,6 +46,12 @@ export interface SaleLine {
   sku: string;
   productId: string | null;
   variantId: string | null;
+  /** Days of notice, carried from the catalog so the sale knows its own due
+   *  day. Null on a hand-typed line — nobody said, so nothing is claimed. */
+  orderAheadDays: number | null;
+  /** How much of this line the shop asks for up front. Absent on a hand-typed
+   *  line, which is taken in full like everything else. */
+  deposit?: ProductDeposit;
 }
 
 interface ServiceRow {
@@ -61,6 +73,23 @@ function useSellableServices() {
     enabled: on,
     staleTime: 5 * 60_000,
   });
+}
+
+/**
+ * What tells this version apart from the others, at a counter (issue 182).
+ *
+ * A ladder, because any one rung can be empty and a picker must never draw two
+ * rows a person cannot tell apart: the option values as she would say them out
+ * loud ("L · Oat"), else whatever the version is named, else the SKU off the
+ * label. The default version of a single-version product returns null — there is
+ * nothing to distinguish it from.
+ */
+function variantDetail(v: VariantChoice): string | null {
+  const options = v.options.map((o) => o.value.trim()).filter(Boolean);
+  if (options.length > 0) return options.join(' · ');
+  const title = v.title?.trim();
+  if (title) return title;
+  return v.isDefault ? null : v.sku;
 }
 
 function serviceSku(name: string): string {
@@ -88,12 +117,14 @@ export function useSellables() {
         key: `variant:${v.id}`,
         kind: 'product',
         name: v.productTitle,
-        detail: v.isDefault ? null : v.title,
+        detail: variantDetail(v),
         priceCents: v.priceCents,
         currency: v.currency,
         sku: v.sku,
         productId: v.productId,
         variantId: v.id,
+        orderAheadDays: v.orderAheadDays,
+        deposit: v.deposit,
       }));
 
     const fromServices = (services.data?.items ?? []).map<Sellable>((s) => ({
@@ -156,19 +187,25 @@ async function handOver(order: Order): Promise<void> {
  * first: if a later call fails the order still exists and can be settled from
  * its own pane, whereas a payment with no order has nothing to belong to.
  *
- * The handover is not optional. A sale at a counter is over when it is made —
- * without it every one would sit in "To send" forever, waiting on a despatch
- * that already happened by hand.
+ * The handover runs for anything she can hand over now. A sale at a counter is
+ * over when it is made — without it every one would sit in "To send" forever,
+ * waiting on a despatch that already happened by hand. A sale carrying
+ * something still to be MADE is the exception, and stays open until it is.
  */
 export function useTakeSale() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: TakeSaleInput): Promise<Order> => {
+      const notice = noticeOn(input.lines);
       const order = await api.post<Order>('/v1/orders', {
         customerId: input.customerId,
         currency: input.currency,
         channel: 'admin',
         source: 'till',
+        // The order spine turns days into the due DAY, in the shop's own zone
+        // (issue 026). A cake ordered over the counter gets the same date a
+        // cake ordered from the website does.
+        ...(notice !== null ? { orderAheadDays: notice } : {}),
         ...(input.propertyId ? { propertyId: input.propertyId } : {}),
         metadata: {
           shippingRateRef: COLLECTION_RATE_REF,
@@ -193,7 +230,11 @@ export function useTakeSale() {
           ...(input.paidNote.trim() ? { processorRef: input.paidNote.trim() } : {}),
         });
       }
-      await handOver(order);
+      // A sale at a counter is over when it is made — UNLESS something on it
+      // still has to be made. Handing over a cake due on Saturday would file it
+      // as collected on the day it was ordered, and it would never appear on
+      // the list of things still to do (issue 026).
+      if (notice === null) await handOver(order);
       return order;
     },
     onSuccess: () => {

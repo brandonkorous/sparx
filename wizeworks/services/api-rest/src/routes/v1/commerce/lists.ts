@@ -12,6 +12,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { Prisma } from '@wizeworks/db';
+import { depositFromColumns } from '@wizeworks/commerce';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
@@ -157,7 +158,37 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
           priceCents: true,
           currency: true,
           deletedAt: true,
-          product: { select: { id: true, title: true, handle: true, status: true } },
+          // What actually tells two versions of one garment apart (issue 182).
+          // `title` is documented as "computed from options when omitted" and is
+          // empty on every seeded variant, so a till reading only `title` shows
+          // ten identical rows for one product's sizes. The lattice point is the
+          // real answer and it is one join away.
+          optionAssignments: {
+            select: {
+              optionValue: {
+                select: {
+                  value: true,
+                  position: true,
+                  option: { select: { name: true, position: true } },
+                },
+              },
+            },
+          },
+          product: {
+            select: {
+              id: true,
+              title: true,
+              handle: true,
+              status: true,
+              // Made to order (issue 026) — the till builds a sale from this
+              // list, so it has to know which lines need notice before it can
+              // tell somebody at the counter which day theirs is due.
+              orderAheadDays: true,
+              depositType: true,
+              depositAmountCents: true,
+              depositPercent: true,
+            },
+          },
         },
       })
     );
@@ -166,6 +197,12 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         id: r.id,
         sku: r.sku,
         title: r.title,
+        // Ordered the way the shop authored its options, so every variant of a
+        // product reads its axes in the same order ("L · Oat", never "Oat · L").
+        options: r.optionAssignments
+          .map((a) => a.optionValue)
+          .sort((a, b) => a.option.position - b.option.position || a.position - b.position)
+          .map((v) => ({ name: v.option.name, value: v.value })),
         isDefault: r.isDefault,
         priceCents: r.priceCents,
         currency: r.currency,
@@ -174,6 +211,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         productTitle: r.product.title,
         productHandle: r.product.handle,
         productStatus: r.product.status,
+        orderAheadDays: r.product.orderAheadDays,
+        deposit: depositFromColumns(r.product),
       }))
     );
   });

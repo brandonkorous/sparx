@@ -5,7 +5,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@wizeworks/silicaui-react';
 
@@ -16,6 +16,11 @@ import { QuantityStepper } from './quantity-stepper';
 export function MiniCart() {
   const { drawerOpen, closeDrawer, lines, totals, count, currency, updateItem, removeItem } =
     useCart();
+
+  // Why a quantity change was refused, against the line it was refused on — a
+  // shop can run out for the day (issue 026), and a stepper that silently snaps
+  // back leaves somebody pressing the same button at a number that will not move.
+  const [refused, setRefused] = useState<{ lineId: string; message: string } | null>(null);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -108,11 +113,19 @@ export function MiniCart() {
                     <div>
                       <QuantityStepper
                         value={line.quantity}
-                        onChange={(q) => updateItem(line.id, q)}
+                        onChange={(q) => {
+                          setRefused(null);
+                          void updateItem(line.id, q).catch((err: unknown) => {
+                            setRefused({ lineId: line.id, message: (err as Error).message });
+                          });
+                        }}
                         onRemove={() => removeItem(line.id)}
                         small
                       />
                     </div>
+                    {refused?.lineId === line.id ? (
+                      <span className="text-warning text-sm font-semibold">{refused.message}</span>
+                    ) : null}
                   </div>
                   <div className="text-right font-semibold">
                     {formatMoney(line.lineTotalCents, currency)}

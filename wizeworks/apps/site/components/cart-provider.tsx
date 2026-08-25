@@ -108,6 +108,19 @@ export class CartError extends Error {
   }
 }
 
+/** The server's own words out of a 422 envelope, when it wrote any. Null on
+ *  anything unreadable, so the caller falls back to its generic line rather
+ *  than showing a shopper an empty message or a parse error. */
+async function validationMessage(res: Response): Promise<string | null> {
+  try {
+    const body = (await res.json()) as { error?: { message?: unknown } };
+    const said = body.error?.message;
+    return typeof said === 'string' && said.trim() !== '' ? said : null;
+  } catch {
+    return null;
+  }
+}
+
 const EMPTY_TOTALS: CartTotals = {
   subtotalCents: 0,
   discountTotalCents: 0,
@@ -255,10 +268,16 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
         // + unconditional drawer-open) is exactly what made a sold-out add read as
         // a false "Submitted." with an empty cart — BUG-001. The server's 409
         // message is developer-facing, so map to shopper-friendly copy.
+        // A 422 carries a message written FOR the shopper — "only 4 left for
+        // today, there will be more tomorrow" (issue 026). Replacing it with
+        // "please try again" sends somebody to retry a thing that cannot work
+        // until tomorrow, which is worse than saying nothing.
+        const said = res.status === 422 ? await validationMessage(res) : null;
         throw new CartError(
-          res.status === 409
-            ? 'Sorry, this item just sold out.'
-            : 'Sorry, we couldn’t add that to your cart. Please try again.',
+          said ??
+            (res.status === 409
+              ? 'Sorry, this item just sold out.'
+              : 'Sorry, we couldn’t add that to your cart. Please try again.'),
           res.status
         );
       }
@@ -280,7 +299,18 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
           body: JSON.stringify({ quantity }),
         }
       );
-      if (res.ok) applyApi(((await res.json()) as { data: CartApiShape }).data);
+      if (res.ok) {
+        applyApi(((await res.json()) as { data: CartApiShape }).data);
+        return;
+      }
+      // Raising a quantity can be refused for the same reason adding one can
+      // (issue 026). The stepper's caller shows this; without it the number
+      // silently snapped back with no explanation.
+      throw new CartError(
+        (res.status === 422 ? await validationMessage(res) : null) ??
+          'Sorry, we couldn’t change that. Please try again.',
+        res.status
+      );
     },
     [applyApi, authHeaders, tenantSlug]
   );

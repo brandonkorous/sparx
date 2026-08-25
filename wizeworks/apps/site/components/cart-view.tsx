@@ -5,6 +5,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { Button } from '@wizeworks/silicaui-react';
 
@@ -26,6 +27,18 @@ export function CartView() {
     removeDiscount,
     madeToOrder,
   } = useCart();
+
+  // Why a quantity change was refused, against the line it was refused on. A
+  // shop can run out for the day (issue 026), and a stepper that silently snaps
+  // back leaves somebody pressing "+" at a number that will not move.
+  const [refused, setRefused] = useState<{ lineId: string; message: string } | null>(null);
+
+  const changeQuantity = (lineId: string, quantity: number) => {
+    setRefused(null);
+    void updateItem(lineId, quantity).catch((err: unknown) => {
+      setRefused({ lineId, message: (err as Error).message });
+    });
+  };
 
   if (lines.length === 0) {
     return (
@@ -93,10 +106,15 @@ export function CartView() {
               <div style={{ marginTop: '0.25rem' }}>
                 <QuantityStepper
                   value={line.quantity}
-                  onChange={(q) => updateItem(line.id, q)}
+                  onChange={(q) => {
+                    changeQuantity(line.id, q);
+                  }}
                   onRemove={() => removeItem(line.id)}
                 />
               </div>
+              {refused?.lineId === line.id ? (
+                <span className="text-warning text-sm font-semibold">{refused.message}</span>
+              ) : null}
               <button
                 type="button"
                 onClick={() => removeItem(line.id)}

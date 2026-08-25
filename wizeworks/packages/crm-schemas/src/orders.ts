@@ -55,6 +55,18 @@ export const CreateOrderInput = z.object({
 
   placedAt: z.string().datetime().optional(), // defaults to now
 
+  /**
+   * Days of notice the LONGEST-lead thing on this order needs (issue 026).
+   *
+   * The caller supplies the number of days and the service turns it into the
+   * calendar day, in the business's own zone, and freezes that onto the order.
+   * An input rather than something derived here: the rules live on a commerce
+   * product, and the order spine is shared with every other way an order can
+   * arrive — a till, an import, a marketplace — none of which have a cart to
+   * read. Absent means nothing needed notice.
+   */
+  orderAheadDays: z.number().int().min(1).max(365).nullish(),
+
   customerNote: z.string().max(10_000).optional(),
   internalNote: z.string().max(10_000).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),

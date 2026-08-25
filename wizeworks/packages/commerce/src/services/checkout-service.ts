@@ -906,6 +906,10 @@ export async function complete(
         discountTotal: discountDollars,
         surchargeTotal: surchargeDollars,
         appliedSurcharges: surcharge.applied,
+        // The order spine turns this into the DAY, in the business's own zone
+        // (issue 026). Passed as days rather than a date so a till, an import
+        // and a checkout all land on the same answer.
+        ...(madeToOrder.noticeDays !== null ? { orderAheadDays: madeToOrder.noticeDays } : {}),
         // `?? undefined` and not `?? null`: the order's address fields are
         // OPTIONAL, and an explicit null fails their schema. A collected order
         // carries neither, which is the true record of it (issue 064).
@@ -938,17 +942,6 @@ export async function complete(
         },
       }
     );
-
-    // The day it can be handed over (issue 026), frozen onto the order. Written
-    // here rather than passed through orderService.create because it is a
-    // COMMERCE promise about a catalog rule, and the order spine is shared with
-    // every other way an order can arrive — none of which have a cart to read.
-    if (madeToOrder.readyOn) {
-      await tx.order.update({
-        where: { id: order.id },
-        data: { readyOn: new Date(`${madeToOrder.readyOn}T00:00:00.000Z`) },
-      });
-    }
 
     // Card payments: open a PENDING OrderPayment keyed to the gateway intent so the
     // payment webhook (payment.succeeded) can mark it captured + flip the order paid

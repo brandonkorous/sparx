@@ -29,6 +29,7 @@ import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { computeLine, computeTotals } from './order-totals';
+import { resolveReadyOn } from './order-ready-on';
 import { nextOrderNumber } from './record-numbers';
 
 /** The customer summary joined onto both the list rows and a single order —
@@ -183,6 +184,14 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
 
     const orderNumber = input.orderNumber ?? (await nextOrderNumber(tx, ctx.tenantId));
 
+    // The day this can be handed over (issue 026) — the placed day plus the
+    // longest notice anything on it needs, counted in the BUSINESS's own zone.
+    // An order placed at 11:30pm in Denver is already tomorrow in UTC, and five
+    // days from the wrong one is a Sunday nobody agreed to. Frozen here: a shop
+    // that lengthens a cake's notice next month must not move a date somebody
+    // was already promised.
+    const readyOn = await resolveReadyOn(tx, placedAt, input.orderAheadDays ?? null);
+
     const created = await tx.order.create({
       data: {
         tenantId: ctx.tenantId,
@@ -202,6 +211,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
         shippingAddress: (input.shippingAddress ?? null) as Prisma.InputJsonValue,
         billingAddress: (input.billingAddress ?? null) as Prisma.InputJsonValue,
         placedAt,
+        readyOn,
         customerNote: input.customerNote ?? null,
         internalNote: input.internalNote ?? null,
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,

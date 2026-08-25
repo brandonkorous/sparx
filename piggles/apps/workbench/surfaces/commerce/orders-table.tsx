@@ -26,6 +26,22 @@ export interface OrdersSort {
   dir: SortDirection;
 }
 
+/** "Due Sat, Aug 29" for an order that has something to be made first, and
+ *  nothing at all for the rest — which is most of them. Silent once it has been
+ *  handed over or called off: a due date on a finished job is noise. */
+function dueLine(order: Order): string | null {
+  if (!order.readyOn) return null;
+  if (order.status !== 'placed' && order.status !== 'pending_approval') return null;
+  const [year, month, day] = order.readyOn.split('-').map(Number);
+  if (!year || !month || !day) return null;
+  const when = new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+  return `Due ${when}`;
+}
+
 function SortHeader({
   sortKey,
   label,
@@ -88,7 +104,15 @@ function OrderRow({
         onOpen(order, event);
       }}
     >
-      <td className="font-mono text-sm">{order.orderNumber}</td>
+      <td className="text-sm">
+        <span className="font-mono">{order.orderNumber}</span>
+        {/* Under the number rather than in a column of its own, so it survives
+            every width — the day a made-to-order job is due is the thing a
+            shop that makes things scans this list for (issue 026). */}
+        {dueLine(order) ? (
+          <span className="text-module block text-xs font-semibold">{dueLine(order)}</span>
+        ) : null}
+      </td>
       <td className="hidden max-w-48 truncate @lg:table-cell">{customerName(order.customer)}</td>
       <td className="hidden text-sm @2xl:table-cell">{formatDate(order.placedAt)}</td>
       <td>

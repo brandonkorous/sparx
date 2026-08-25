@@ -29,6 +29,7 @@ import { SaleLines, salesTotal } from './sale-lines';
 import { SalePayment } from './sale-payment';
 import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useSellables, useTakeSale, type SaleLine, type Sellable } from './sale-data';
+import { depositDue, dueDayLabel } from './sale-made-to-order';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -43,6 +44,7 @@ function lineFrom(sellable: Sellable | null): SaleLine {
       sku: 'ITEM',
       productId: null,
       variantId: null,
+      orderAheadDays: null,
     };
   }
   return {
@@ -53,6 +55,8 @@ function lineFrom(sellable: Sellable | null): SaleLine {
     sku: sellable.sku,
     productId: sellable.productId ?? null,
     variantId: sellable.variantId ?? null,
+    orderAheadDays: sellable.orderAheadDays ?? null,
+    ...(sellable.deposit ? { deposit: sellable.deposit } : {}),
   };
 }
 
@@ -73,14 +77,19 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const currency = 'USD';
   const total = useMemo(() => salesTotal(lines), [lines]);
+  const dueDay = useMemo(() => dueDayLabel(lines), [lines]);
+  // What the till offers to take. A deposit product asks for its deposit, not
+  // the whole price — typing over a pre-filled total is how the wrong number
+  // gets taken at a counter (issue 026).
+  const asking = useMemo(() => depositDue(lines) ?? total, [lines, total]);
 
   useEffect(() => {
     ctx.setTitle('Take a sale');
   }, [ctx]);
 
   useEffect(() => {
-    if (!amountTouched) setPaid(total > 0 ? total.toFixed(2) : '');
-  }, [total, amountTouched]);
+    if (!amountTouched) setPaid(asking > 0 ? asking.toFixed(2) : '');
+  }, [asking, amountTouched]);
 
   const started = customer !== null || lines.length > 0;
   useDirtySource(
@@ -177,6 +186,21 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               setLines((current) => current.filter((line) => line.id !== id));
             }}
           />
+
+          {/* Between the lines and the money, because it changes both: this
+              sale is not handed over today, and a deposit is a part payment
+              rather than a shortfall (issue 026). */}
+          {dueDay ? (
+            <Alert color="module" variant="soft">
+              <AlertContent>
+                <AlertTitle>Due {dueDay}</AlertTitle>
+                <AlertDescription>
+                  Something on this sale has to be made first, so it stays on your list until you
+                  hand it over. Take a deposit now and the rest when they collect.
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          ) : null}
 
           <SalePayment
             total={total}

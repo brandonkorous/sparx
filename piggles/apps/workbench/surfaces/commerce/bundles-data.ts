@@ -21,6 +21,7 @@ import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 // The read shapes are the product layer's — one definition, shared, so the
 // bundle a product-scoped pane reads and the one this list reads cannot drift.
+import type { ProductDeposit } from './made-to-order-data';
 import type { Bundle, BundleComponent, BundleDetail } from './products-data';
 
 export type { Bundle, BundleComponent, BundleDetail };
@@ -88,10 +89,20 @@ export function useBundle(id: string) {
 
 /** A specific, sellable version of a product — what a bundle component and a
  *  configurator add-on both point at. */
+/** One axis of a version: "Size" = "L". */
+export interface VariantOption {
+  name: string;
+  value: string;
+}
+
 export interface VariantChoice {
   id: string;
   sku: string;
   title: string | null;
+  /** The option values that make this version the one it is, in the shop's own
+   *  option order. What actually tells two rows apart when `title` is blank,
+   *  which on a seeded catalog is always (issue 182). */
+  options: VariantOption[];
   isDefault: boolean;
   priceCents: number;
   currency: string;
@@ -100,6 +111,10 @@ export interface VariantChoice {
   productTitle: string;
   productHandle: string;
   productStatus: string;
+  /** Made to order (issue 026) — days of notice this product needs, and how much
+   *  of its price is taken up front. The till reads both. */
+  orderAheadDays: number | null;
+  deposit: ProductDeposit;
 }
 
 /**
