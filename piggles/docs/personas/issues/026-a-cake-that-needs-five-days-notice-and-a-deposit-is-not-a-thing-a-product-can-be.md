@@ -1,13 +1,13 @@
 # 026 — A cake that needs five days' notice and a $30 deposit is not a thing a product can be
 
-**Status:** confirmed at the counter; the website half still owed
+**Status:** confirmed at the counter and on the website; one card charge still unproven
 **Severity:** major
 **Found by:** P01 · Thistle & Rye · act 6 (owed) — closed out 2026-08-20
 **Surface:** mypiggles › Sell › Products — the product editor and every one of its tabs
 **Filed:** 2026-08-20
-**Fixed:** built 2026-08-24 — not yet confirmed on screen
-**Confirmed by:** P03 · Juniper Row · 2026-08-24 — the counter path, end to end
-**Blocked on:** — nothing. The counter is confirmed; the website half needs a published product and a delivery zone.
+**Fixed:** built 2026-08-24 — confirmed on screen the same day
+**Confirmed by:** P03 · Juniper Row · 2026-08-24 — the counter path and the website path, each end to end
+**Blocked on:** a tenant with live gateway credentials, for the card-charge half alone
 
 ## What happened
 
@@ -86,12 +86,16 @@ Whichever way it goes, this is Brandon's call: it is new surface, not a fix.
 
 ## Confirmed by
 
-Nothing yet. The reproduction above is **read from the schema and the surface
-registry**, not walked on the screen — the dev stack was down when it was closed
-out, and one claim made from the code ("Bookings is off") was already wrong when
-the screen came back. Before this moves off `open`, walk it: open the Cherry & Almond cake in
-Sell, read every tab, then turn Bookings on and see whether the notice and the
-deposit are actually reachable and actually work.
+**Written 2026-08-20, when the answer was nothing.** The reproduction above was
+**read from the schema and the surface registry**, not walked on the screen — the
+dev stack was down when it was closed out, and one claim made from the code
+("Bookings is off") was already wrong when the screen came back.
+
+It has since been walked twice, and both walks are recorded below rather than
+here: **Confirmed on screen — 2026-08-24** for the counter, and **The website —
+walked 2026-08-24** for the shopper's side. This heading is kept because the
+reason it once said "nothing yet" is worth keeping: a claim read out of the code
+was already false by the time anyone looked.
 
 ## Decision — 2026-08-24, Brandon
 
@@ -343,18 +347,63 @@ Juniper Row's own zone. A naive "UTC date plus five" would have promised the
 `payment_status` is `partially_paid`, derived by the rollup rather than declared,
 and `status` is `placed`.
 
+## The website — walked 2026-08-24, as a shopper
+
+Marlow Knit put on sale (with a description Devi wrote), and bought from Juniper
+Row's own website end to end. The delivery zone the note below asked for already
+existed: **US domestic**, with Economy / Standard / Express rates, seeded
+2026-08-23.
+
+**The ready date reaches the customer.** The basket, both checkout steps and the
+confirmation all carry **Ready from Saturday, August 29 — one item needs 5 days
+to make**, and the order row agrees: `O-000003`, `ready_on 2026-08-29`. That is
+the same day the counter sale produced, from the same derivation, which is what
+moving it into the order spine was for.
+
+**The arithmetic is right where it can be checked.** Before the payment provider
+was settled, the summary read Total `$101.95` ($96.00 + $5.95 delivery), **To pay
+now `$35.95`**, To pay when you collect `$66.00` — the deposit plus delivery
+taken now, the rest of the line deferred. Exactly what `made-to-order.ts`
+describes.
+
+**Three defects came out of the walk**, all filed and all fixed:
+
+- **[184]** — the product page said nothing at all about the notice or the
+  deposit. `MadeToOrderNote` was built against the legacy section path; the live
+  page is the silica record template, which had no such node. Fetched and never
+  rendered.
+- **[185]** — on a shop that takes payment in person, the confirmation said "You
+  paid $35.95 today" about an order where nothing was charged, and the payment
+  step carried three disagreeing numbers.
+- **[186]** — at 360px the basket's thumbnail sat on top of the first letter of
+  every product name.
+
 ## Still owed
 
-**The website half.** Her checkout charging the deposit and the confirmation
-saying the ready date needs a published product and a delivery zone; all seven
-Juniper Row products are still "Not on sale".
+**A card actually being charged the deposit.** Not walked, and not walkable here:
+no tenant on this machine has live gateway credentials. Juniper Row's Stripe is
+chosen but has no keys, every other tenant's gateway is inactive, and the only
+provider that can complete a checkout is Manual payments — which by definition
+charges nothing. Entering an API key is not something I will do, so this needs
+Brandon to put a test key on a tenant. Everything downstream of the charge is
+built and unit-tested (`made-to-order.test.ts`, 20 cases) and the button/gateway/
+`OrderPayment` all read `dueNowCents`; what is unproven is the round trip.
+
+**Juniper Row is now on Manual payments.** It was on `stripe_direct` with no keys
+— which renders as "This shop cannot take card payments online just yet" and
+dead-ends checkout — so the walk switched it. Two clicks to switch back once
+there are keys.
 
 **`products-data.ts` (3,014 lines) still owes its RULE #0.5 split.** Two type
 additions went in without it.
 
-**Two defects were found on the way and filed separately**, both on Take a sale:
-[182](182-ten-identical-rows-and-she-has-to-guess-which-size.md) (ten
+**Two more defects were found on the way and filed separately**, both on Take a
+sale: [182](182-ten-identical-rows-and-she-has-to-guess-which-size.md) (ten
 indistinguishable rows for one garment's sizes) and
 [183](183-the-customer-picker-only-knows-the-first-hundred.md) (the picker
 searches only the first hundred customers, and tells her to add one who already
 exists).
+
+[184]: 184-the-page-that-sells-the-knit-never-said-it-has-to-be-made.md
+[185]: 185-it-told-her-customer-they-had-paid-at-a-shop-that-takes-no-money.md
+[186]: 186-on-a-phone-the-picture-sat-on-top-of-the-product-name.md
