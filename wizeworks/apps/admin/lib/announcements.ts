@@ -47,10 +47,10 @@ export const SURFACE_LABELS: Record<OperatorAnnouncementSurface, string> = {
   console: 'Console',
 };
 
-export const BRAND_LABELS: Record<string, string> = {
-  piggles: 'Piggles',
-  sparx: 'sparx',
-};
+// Re-exported so this surface's imports stay put; the map lives in lib/brands.ts
+// with the tone that goes beside it, because a label and its color are one
+// decision and were drifting as two.
+export { BRAND_LABELS } from './brands';
 
 /**
  * The one word that says where a notice stands, and the tone that carries it.

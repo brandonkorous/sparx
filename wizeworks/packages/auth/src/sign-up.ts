@@ -1,4 +1,5 @@
 import { acceptanceRows } from '@wizeworks/legal';
+import { currentPlatformBrand } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 import { auth } from './server';
 import {
@@ -46,6 +47,23 @@ export interface SignUpMerchantResult {
   tenantId: string;
 }
 
+/**
+ * Did this P2002 come from the email uniqueness rule?
+ *
+ * Prisma reports the violated index in `meta.target`, and the shape varies: a
+ * field list for an unnamed constraint, the mapped NAME for one that carries a
+ * `map`, and occasionally a bare string rather than an array. Since the rule
+ * became `@@unique([platformBrand, email], map: "users_brand_email_unique")`,
+ * the old `target.includes('email')` was one Prisma release away from silently
+ * answering "no" — and the cost of that is not an outage, it is a person being
+ * shown "something went wrong at our end" for an address that is simply already
+ * taken. So every shape it can arrive in is accepted.
+ */
+export function isEmailUniqueViolation(target: unknown): boolean {
+  const parts = Array.isArray(target) ? target : typeof target === 'string' ? [target] : [];
+  return parts.some((p) => typeof p === 'string' && (p === 'email' || p.includes('email')));
+}
+
 export class SignUpError extends Error {
   constructor(
     public code: 'EMAIL_TAKEN' | 'SLUG_TAKEN' | 'INVALID_INPUT',
@@ -64,12 +82,22 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
     throw new SignUpError('INVALID_INPUT', 'Your name is required.');
   }
 
-  // Email must be globally unique — Better Auth's sign-in queries by email
-  // alone, so duplicates produce ambiguous lookups (and historically caused
-  // "Invalid password hash" failures matching an older row). The DB also
-  // enforces this; pre-checking gives the caller a clean typed error.
+  // The brand this account is being created under. Declared by the caller —
+  // never inferred here — for the same reason provisionTenant takes it as a
+  // parameter: both brands run in the same processes, so anything read from the
+  // environment would be right for one of them and wrong for the other.
+  const platformBrand = input.platformBrand ?? currentPlatformBrand();
+
+  // Email must be unique WITHIN THE BRAND, not across the platform. Scoping this
+  // check is what lets one person hold an account on each product under the same
+  // address — without it, signing up on the second brand is refused as
+  // EMAIL_TAKEN by an account they cannot sign in to from here, which is a dead
+  // end with no way out but a different email address.
+  //
+  // The DB enforces the same rule (`users_brand_email_unique`); pre-checking
+  // gives the caller a clean typed error instead of a P2002.
   const existingUser = await authPrisma.user.findFirst({
-    where: { email },
+    where: { email, platformBrand },
     select: { id: true },
   });
   if (existingUser) {
@@ -94,15 +122,19 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         name: tenantName,
         email,
         acquisition: input.acquisition ?? null,
-        platformBrand: input.platformBrand,
+        platformBrand,
         zoneDomain: input.zoneDomain,
       });
 
+      // Written through the plain client, so the brand is set explicitly here —
+      // the proxy in brand-scoped-prisma.ts only covers what Better Auth's own
+      // adapter does, and this transaction deliberately is not that.
       const user = await tx.user.create({
         data: {
           email,
           name,
           emailVerified: false,
+          platformBrand,
           tenantId: provisioned.tenantId,
           role: 'owner',
         },
@@ -241,11 +273,11 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
       'code' in err &&
       (err as { code: string }).code === 'P2002'
     ) {
-      const target = (err as { meta?: { target?: string[] } }).meta?.target ?? [];
-      if (target.includes('email')) {
+      const target = (err as { meta?: { target?: unknown } }).meta?.target;
+      if (isEmailUniqueViolation(target)) {
         throw new SignUpError('EMAIL_TAKEN', 'An account with that email already exists.');
       }
-      if (target.includes('slug')) {
+      if (Array.isArray(target) && target.includes('slug')) {
         // Astronomically rare (the slug was just confirmed free) — a concurrent
         // signup grabbed the same generated slug between check and insert.
         throw new SignUpError('SLUG_TAKEN', 'Please try again.');

@@ -112,12 +112,32 @@ export async function listMyMemberships(userId: string): Promise<OrgMembership[]
     });
 }
 
-/** Live (pending, unexpired) invitations addressed to `email` — surfaced on the
- *  client-accounts landing so a freshly-signed-up invitee is never stranded. */
-export async function listPendingInvitations(email: string): Promise<PendingInvitation[]> {
+/**
+ * Live (pending, unexpired) invitations addressed to `email` — surfaced on the
+ * client-accounts landing so a freshly-signed-up invitee is never stranded.
+ *
+ * Scoped to ONE product. An invitation is addressed to a bare email, and the
+ * same address may hold a login on each brand, so an unscoped read here would
+ * offer somebody an invitation into a business on a product they do not have an
+ * account for — a door that opens onto nothing, on a screen whose whole job is
+ * to stop people being stranded.
+ *
+ * The brand rides on the ORGANIZATION rather than being matched against the
+ * caller's own: an invitation belongs to the tenant that sent it, and that
+ * tenant's brand is the one that decides whether this person can act on it.
+ */
+export async function listPendingInvitations(
+  email: string,
+  platformBrand: string
+): Promise<PendingInvitation[]> {
   const now = new Date();
   const rows = await authPrisma.invitation.findMany({
-    where: { email, status: 'pending', expiresAt: { gt: now } },
+    where: {
+      email,
+      status: 'pending',
+      expiresAt: { gt: now },
+      organization: { platformBrand },
+    },
     select: {
       id: true,
       organizationId: true,
@@ -137,6 +157,43 @@ export async function listPendingInvitations(email: string): Promise<PendingInvi
     inviterName: nameOrEmail(r.inviter.name, r.inviter.email),
     expiresAt: r.expiresAt,
   }));
+}
+
+/**
+ * May this account join the business this invitation belongs to?
+ *
+ * A login belongs to exactly one product (`users.platform_brand`) and so does a
+ * business (`tenants.platform_brand`), so a membership joining one product's
+ * account to the other product's business is incoherent — there is no screen
+ * that could render it and no session that could act in it.
+ *
+ * The partition itself stops the ordinary route: a credential from the other
+ * product no longer signs in here at all, so the invitee is made to create an
+ * account on this one. What it does NOT stop is somebody opening an invitation
+ * link for the other product while signed in to this one — the addresses match,
+ * the accept succeeds, and the membership is written. This is that guard.
+ *
+ * `true` when the two agree, including when either row has gone missing: an
+ * absent row is a different failure with a different message, and Better Auth's
+ * own accept call reports it. This answers one question only.
+ */
+export async function invitationMatchesUserBrand(
+  invitationId: string,
+  userId: string
+): Promise<boolean> {
+  const [invitation, user] = await Promise.all([
+    authPrisma.invitation.findUnique({
+      where: { id: invitationId },
+      select: { organization: { select: { platformBrand: true } } },
+    }),
+    authPrisma.user.findUnique({
+      where: { id: userId },
+      select: { platformBrand: true },
+    }),
+  ]);
+
+  if (!invitation || !user) return true;
+  return invitation.organization.platformBrand === user.platformBrand;
 }
 
 /** One invitation's detail for the /accept-invite screen (null if unknown). Does

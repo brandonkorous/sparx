@@ -2,7 +2,13 @@
 
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { auth, authPrisma, publishAuthEmail } from '@wizeworks/auth';
+import {
+  auth,
+  authPrisma,
+  getSession,
+  invitationMatchesUserBrand,
+  publishAuthEmail,
+} from '@wizeworks/auth';
 import { appOrigin } from '@wizeworks/links/server';
 
 // Accepting a team invitation (docs/114 §A.4).
@@ -32,6 +38,23 @@ function errorMessage(err: unknown, fallback: string): string {
 /** Accept an invitation — the accepting session must be the invited address —
  *  then make that business the active one. */
 export async function acceptInvitation(invitationId: string): Promise<InviteActionResult> {
+  // An account belongs to one product and so does a business, so joining one to
+  // the other is a membership nothing can render. Better Auth's accept only
+  // compares the two email addresses, and those legitimately match — the same
+  // person may hold an account on each product under one address. So the check
+  // has to happen here, before the membership is written.
+  //
+  // Reachable by opening the other product's invitation link while signed in
+  // here. Rare, and cheap to refuse.
+  const session = await getSession();
+  if (session && !(await invitationMatchesUserBrand(invitationId, session.user.id))) {
+    return {
+      ok: false,
+      error:
+        'That invitation was sent from somewhere else and cannot be accepted with this account. Ask whoever invited you to send it again.',
+    };
+  }
+
   let organizationId: string | null = null;
   try {
     const result = (await auth.api.acceptInvitation({

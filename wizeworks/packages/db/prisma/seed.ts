@@ -3197,17 +3197,27 @@ async function main(): Promise<void> {
   // RLS keys on user_id, so we set app.user_id once we know the owner row id.
   //
   // Wrapped in try/catch so a prod re-seed (where the e2e staff user may
-  // already exist under a stale tenant — email is globally unique) doesn't
-  // block the marketing seed that follows.
+  // already exist under a stale tenant — an address is unique within a product)
+  // doesn't block the marketing seed that follows.
   try {
     await prisma.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
 
+      // Keyed on (product, address), which is what uniqueness means now that the
+      // same address may name an account on each product. `platformBrand` is
+      // read off the tenant this seed just made rather than named here, so the
+      // login lands on the same product as the business it owns.
       const owner = await tx.user.upsert({
-        where: { email: STAFF_EMAIL },
+        where: {
+          platformBrand_email: {
+            platformBrand: tenant.platformBrand,
+            email: STAFF_EMAIL,
+          },
+        },
         update: {},
         create: {
           tenantId: tenant.id,
+          platformBrand: tenant.platformBrand,
           email: STAFF_EMAIL,
           name: 'E2E Staff',
           role: 'owner',

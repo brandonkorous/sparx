@@ -6,16 +6,33 @@
 
 model User {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  // Globally unique — Better Auth's sign-in flow keys on email alone, and
-  // signUpMerchant creates a fresh tenant per registration, so the older
-  // @@unique([tenantId, email]) compound never fired in practice. The
-  // CITEXT-equivalent normalisation lives at the app layer (signUpMerchant
-  // lowercases before insert); the migration adds a case-insensitive
-  // expression index as a backstop.
-  email         String  @unique @db.VarChar(255)
+  // Unique WITHIN A BRAND, not globally — see `platformBrand` below and the
+  // @@unique at the foot of this model. The CITEXT-equivalent normalisation
+  // lives at the app layer (signUpMerchant lowercases before insert).
+  //
+  // This was `@unique` on its own until the brands were split apart. That was
+  // correct while one product existed and became the mechanism by which a
+  // person who signed up on one brand could sign in to the other with the same
+  // password: Better Auth keys sign-in on email alone, so one row authenticated
+  // on every deployment that mounted the instance.
+  email         String  @db.VarChar(255)
   emailVerified Boolean @default(false) @map("email_verified")
   name          String? @db.VarChar(255)
   image         String? @db.Text
+
+  // Which product this LOGIN belongs to. An account is born under one brand and
+  // never changes, exactly like `Tenant.platformBrand` — and it is a copy of
+  // that value rather than a join through `tenantId`, because the whole point is
+  // to answer "whose account is this?" during sign-in, BEFORE any tenant is
+  // known. VarChar over an enum for the same reason the tenant column is: adding
+  // a brand must not be a migration.
+  //
+  // The default is what every account provisioned before the split carries, and
+  // it is the safe direction: it is the answer this table gave for its whole
+  // life. Reads go through the brand-scoped client in @wizeworks/auth, never by
+  // hand — an unfiltered `findFirst` on email is how the wrong brand's row gets
+  // returned.
+  platformBrand String  @default("sparx") @map("platform_brand") @db.VarChar(20)
 
   // Sparx-specific extensions
   tenantId    String    @map("tenant_id") @db.Uuid
@@ -100,6 +117,21 @@ model User {
   // Platform legal — Sparx ToS/Privacy/AUP/DPA acceptance (docs/42 §6)
   legalAcceptances PlatformLegalAcceptance[]
 
+  // One account per address PER BRAND. The same person may hold a login on each
+  // product under the one email, and the two share nothing — not a password, not
+  // a session, not a row.
+  //
+  // This is also the backstop for the application-level partition: the brand
+  // filter lives in @wizeworks/auth's brand-scoped client, and if a call site
+  // ever escapes it, the database still cannot let two brands collide on one
+  // address.
+  //
+  // `map` names the CONSTRAINT; the Prisma client still addresses this as
+  // `platformBrand_email`, the field names joined — same as `members`, whose
+  // constraint is `members_org_user_unique` and whose client key is
+  // `organizationId_userId`. The brand-scoped client rewrites an
+  // update-by-email into the client key, so it follows the fields, not the map.
+  @@unique([platformBrand, email], map: "users_brand_email_unique")
   @@index([tenantId])
   @@map("users")
 }

@@ -1059,6 +1059,9 @@ export interface OperatorUserListItem {
   email: string;
   name: string | null;
   emailVerified: boolean;
+  /** Which product this login belongs to. An address may hold one account per
+   *  product, so two rows can differ only here — it is what tells them apart. */
+  platformBrand: string;
   /** The user's HOME tenant (users.tenant_id) — where they were provisioned. */
   homeTenantId: string;
   homeTenantName: string | null;
@@ -1108,6 +1111,9 @@ export interface OperatorUserDetail {
   emailVerified: boolean;
   image: string | null;
   role: string;
+  /** Which product this login belongs to — and therefore which brand's auth
+   *  service can act on it (a password reset has to reach that one). */
+  platformBrand: string;
   homeTenantId: string;
   homeTenantName: string | null;
   homeTenantSlug: string | null;

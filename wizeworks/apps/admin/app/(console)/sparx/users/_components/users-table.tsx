@@ -12,6 +12,7 @@ import {
 } from '@wizeworks/ui';
 import type { OperatorUserListItem } from '@wizeworks/operator';
 import { formatRelative } from '@/lib/format';
+import { brandLabel, brandTone } from '@/lib/brands';
 import { roleLabel, roleTone } from '@/lib/users';
 
 // The cross-tenant staff-user roster, rendered read-only. Row click-through opens
@@ -23,6 +24,12 @@ export function UsersTable({ users }: { users: OperatorUserListItem[] }) {
       <TableHeader>
         <TableRow>
           <TableHead>User</TableHead>
+          {/* Which product the LOGIN belongs to. Second column on purpose: an
+              address can hold an account on each product, so two rows may be
+              identical until you reach this one, and an operator reading a
+              support ticket needs to know which account they are looking at
+              before anything else about it. */}
+          <TableHead>Product</TableHead>
           <TableHead>Home tenant</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Tenants</TableHead>
@@ -45,6 +52,11 @@ export function UsersTable({ users }: { users: OperatorUserListItem[] }) {
                   {user.email}
                 </Text>
               </Stack>
+            </TableCell>
+            <TableCell>
+              <Badge color={brandTone(user.platformBrand)} variant="soft" size="sm">
+                {brandLabel(user.platformBrand)}
+              </Badge>
             </TableCell>
             <TableCell>
               {user.homeTenantName ? (

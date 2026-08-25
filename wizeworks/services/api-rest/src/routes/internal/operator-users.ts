@@ -286,7 +286,9 @@ const operatorUserRoutes: FastifyPluginAsync = async (app) => {
       const detail = await userDetail(id);
       if (!detail) throw notFound('User not found.');
 
-      const sent = await requestUserPasswordReset(detail.email);
+      // Routed by the user's OWN brand — only that product's auth instance can
+      // see this login, so sending it anywhere else silently does nothing.
+      const sent = await requestUserPasswordReset(detail.email, detail.platformBrand);
 
       // Audit against the user's home tenant (their provisioning org).
       await stampMemberAudit(detail.homeTenantId, id, operatorId, 'member.password_reset', {

@@ -53,6 +53,21 @@ spec:
               value: production
             - name: SERVICE_NAME
               value: workbench
+            # Which product this deployment signs people in as.
+            #
+            # It resolved correctly before this line existed, by the variable
+            # being ABSENT and the default being this brand. That is fine for a
+            # display name and not fine for the thing that decides which logins
+            # an auth instance can see — a boundary that holds because nobody
+            # set a variable is one a later default change silently moves.
+            #
+            # Declared HERE rather than in sparx-app-env, because that ConfigMap
+            # is also read by api-rest and api-mcp, which serve BOTH products
+            # from one process. For them "which brand is this?" has no single
+            # answer and they resolve it per request instead; handing them a
+            # singular one would make the wrong answer look deliberate.
+            - name: PLATFORM_BRAND
+              value: sparx
             - name: PORT
               value: '3000'
             - name: HOSTNAME

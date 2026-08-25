@@ -175,6 +175,25 @@ export class Resolver {
    * Never creates one. An imported deal owned by someone who does not have an account
    * here yet lands unassigned, which is visible and fixable; inviting people into a
    * tenant as a side effect of a file upload is not something an import gets to do.
+   *
+   * ── IT MUST BE SOMEBODY ON THIS TEAM ────────────────────────────────────
+   *
+   * Matched through `members`, not by email alone. Every other resolver on this
+   * class pins `tenantId`; this one did not, so a spreadsheet naming any address
+   * that happened to exist anywhere on the platform could hand a deal to a
+   * stranger — someone with no relationship to this business, who then appears
+   * as its rep. The uploader sees a row that resolved and no reason to look
+   * twice.
+   *
+   * The membership join is also what keeps this correct now that an address can
+   * hold an account on more than one product: a member of THIS business is
+   * necessarily on the same product as it, so there is no second row to pick
+   * between.
+   *
+   * A user's home tenant is not the test — a consultant's `users.tenant_id`
+   * points at their own workspace while they legitimately work in this one — so
+   * the query asks the members table, which is the record of who is actually on
+   * the team.
    */
   async userByEmail(email: string): Promise<string | null> {
     const key = this.key(email);
@@ -182,7 +201,10 @@ export class Resolver {
     const cached = this.users.get(key);
     if (cached !== undefined) return cached;
     const found = await prisma.user.findFirst({
-      where: { email: { equals: email, mode: 'insensitive' } },
+      where: {
+        email: { equals: email, mode: 'insensitive' },
+        memberships: { some: { organizationId: this.ctx.tenantId, status: 'active' } },
+      },
       select: { id: true },
     });
     const value = found?.id ?? null;

@@ -28,6 +28,11 @@ const USER_LIST_SELECT = {
   email: true,
   name: true,
   emailVerified: true,
+  // Which product this login belongs to. Selected because an address can now
+  // hold one account per product, so two rows here may differ ONLY by this
+  // column — and an operator picking between two identical-looking rows in a
+  // support conversation is exactly the situation this roster exists to prevent.
+  platformBrand: true,
   tenantId: true,
   role: true,
   lastLoginAt: true,
@@ -61,6 +66,7 @@ function toUserListItem(row: UserListRow, names: Map<string, TenantName>): Opera
     email: row.email,
     name: row.name,
     emailVerified: row.emailVerified,
+    platformBrand: row.platformBrand,
     homeTenantId: row.tenantId,
     homeTenantName: home?.name ?? null,
     homeTenantSlug: home?.slug ?? null,
@@ -117,6 +123,7 @@ export async function userDetail(userId: string): Promise<OperatorUserDetail | n
         emailVerified: true,
         image: true,
         role: true,
+        platformBrand: true,
         tenantId: true,
         lastLoginAt: true,
         createdAt: true,
@@ -165,6 +172,7 @@ export async function userDetail(userId: string): Promise<OperatorUserDetail | n
     emailVerified: data.user.emailVerified,
     image: data.user.image,
     role: data.user.role,
+    platformBrand: data.user.platformBrand,
     homeTenantId: data.user.tenantId,
     homeTenantName: home?.name ?? null,
     homeTenantSlug: home?.slug ?? null,

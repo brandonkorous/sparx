@@ -2,7 +2,13 @@
 
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { auth, authPrisma, publishAuthEmail } from '@wizeworks/auth';
+import {
+  auth,
+  authPrisma,
+  getSession,
+  invitationMatchesUserBrand,
+  publishAuthEmail,
+} from '@wizeworks/auth';
 
 // Server actions for the team-invitation acceptance flow (docs/114 §A.4). These
 // run through the Better Auth org plugin, which lives in this workbench process
@@ -27,6 +33,23 @@ function errorMessage(err: unknown, fallback: string): string {
 /** Accept a team invitation (the accepting session must be the invited address),
  *  then activate that org so the user lands directly inside it. */
 export async function acceptInvitation(invitationId: string): Promise<InviteActionResult> {
+  // An account belongs to one product and so does a workspace, so a membership
+  // joining one to the other is incoherent — nothing can render it. Better Auth's
+  // accept only compares the two email addresses, and those legitimately match:
+  // the same person may hold an account on each product under one address. So
+  // the check belongs here, before the membership row is written.
+  //
+  // Reachable by opening the other product's invitation link while signed in
+  // here. Rare, and cheap to refuse.
+  const session = await getSession();
+  if (session && !(await invitationMatchesUserBrand(invitationId, session.user.id))) {
+    return {
+      ok: false,
+      error:
+        'That invitation was sent from somewhere else and cannot be accepted with this account. Ask whoever invited you to send it again.',
+    };
+  }
+
   let organizationId: string | null = null;
   try {
     const result = (await auth.api.acceptInvitation({

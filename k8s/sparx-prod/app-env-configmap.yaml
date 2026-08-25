@@ -170,6 +170,17 @@ data:
   # address, distinct from the browser-facing app origin. NOTE: the var name is
   # legacy (predates the dashboard→workbench cutover); its value is the workbench.
   SPARX_DASHBOARD_INTERNAL_URL: http://workbench.sparx-prod.svc.cluster.local:3000
+  # Where each product's Better Auth can be reached from inside the cluster.
+  #
+  # A login belongs to exactly ONE product, so only that product's auth instance
+  # can see it — an operator's password reset aimed at the wrong one finds
+  # nothing AND reports success, because "we never say whether an address has an
+  # account" is correct for the endpoint and identical to this failure. So the
+  # address is per brand and api-rest picks it from the user's own row.
+  #
+  # Adding a product is adding a line here, never a code change.
+  SPARX_ACCOUNT_INTERNAL_URL: http://workbench.sparx-prod.svc.cluster.local:3000
+  PIGGLES_ACCOUNT_INTERNAL_URL: http://piggles-account.sparx-prod.svc.cluster.local:3000
   # PUBLIC origin of api-rest — baked into rendered email media URLs (logos,
   # product images), which resolve via GET /v1/public/media/:id (a REST-only
   # route; GraphQL at graphql.sparx.works doesn't serve bytes). Distinct from the

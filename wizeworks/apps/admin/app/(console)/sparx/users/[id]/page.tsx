@@ -6,6 +6,7 @@ import { Badge, Card, Heading, Stack, Text } from '@wizeworks/ui';
 import { OperatorApiError, type OperatorUserDetail } from '@wizeworks/operator';
 import { operatorApi } from '@/lib/operator-api';
 import { formatDate, formatRelative } from '@/lib/format';
+import { brandLabel, brandTone } from '@/lib/brands';
 import {
   memberTypeLabel,
   membershipStatusLabel,
@@ -66,6 +67,12 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
         {backLink}
         <Stack direction="row" align="center" gap={3} className="flex-wrap">
           <Heading level={1}>{label}</Heading>
+          {/* Which product this login belongs to — first badge, because the same
+              address may name a different account on the other one, and every
+              other fact on this page is only true of THIS account. */}
+          <Badge color={brandTone(user.platformBrand)} variant="soft">
+            {brandLabel(user.platformBrand)}
+          </Badge>
           <Badge color={roleTone(user.role)} variant="soft">
             {roleLabel(user.role)}
           </Badge>

@@ -1,7 +1,8 @@
 import { randomBytes } from 'node:crypto';
+import { currentPlatformBrand } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 import { auth } from './server';
-import { SignUpError } from './sign-up';
+import { SignUpError, isEmailUniqueViolation } from './sign-up';
 import { publishAuthEmail } from './email-events';
 import { provisionTenant, generateUniqueTenantSlug, workspaceNameFor } from './provision-tenant';
 
@@ -23,10 +24,23 @@ import { provisionTenant, generateUniqueTenantSlug, workspaceNameFor } from './p
 // reaches it through the dashboard's token-gated internal provisioning route.
 
 export interface ProvisionInvitedOwnerInput {
-  /** The invitee's email — their globally-unique login (existing or new). */
+  /** The invitee's email — their login within this brand (existing or new). */
   email: string;
   /** Person / business name; seeds the owner name + a placeholder workspace name. */
   name: string;
+  /**
+   * Which product the invitee is being provisioned into. Declared by the caller,
+   * exactly as `signUpMerchant` and `provisionTenant` require it.
+   *
+   * It is a PARAMETER rather than something read from the environment because
+   * this function decides whether an address already has a login, and that
+   * question only has an answer once you say "on which product". Reading the
+   * ambient brand would make this correct only in the process that happens to be
+   * the same brand as the caller — which is true today, by accident, because the
+   * one caller is sparx-only. Defaults to the deployment's brand so that stays
+   * true rather than becoming a required change at every call site.
+   */
+  platformBrand?: string;
 }
 
 export interface ProvisionInvitedOwnerResult {
@@ -54,8 +68,14 @@ export async function provisionInvitedOwner(
     throw new SignUpError('INVALID_INPUT', 'An email is required to provision an account.');
   }
 
+  const platformBrand = input.platformBrand ?? currentPlatformBrand();
+
+  // Scoped to the brand being provisioned into. Unscoped, this branch would hand
+  // a workspace on THIS product to a login that belongs to the other one —
+  // the cross-brand leak this whole change exists to close, wearing the shape of
+  // a helpful "you already have an account" fast path.
   const existingUser = await authPrisma.user.findFirst({
-    where: { email },
+    where: { email, platformBrand },
     select: { id: true, name: true },
   });
 
@@ -73,7 +93,13 @@ export async function provisionInvitedOwner(
     // Existing login → a new partner workspace they own. No user/credential row, no
     // set-password invite; the org just joins their account switcher.
     const provisioned = await authPrisma.$transaction(async (tx) => {
-      const t = await provisionTenant(tx, { slug, name: tenantName, email, acquisition: null });
+      const t = await provisionTenant(tx, {
+        slug,
+        name: tenantName,
+        email,
+        acquisition: null,
+        platformBrand,
+      });
       await tx.member.create({
         data: {
           organizationId: t.tenantId,
@@ -95,12 +121,19 @@ export async function provisionInvitedOwner(
     const passwordHash = await ctx.password.hash(randomBytes(32).toString('base64url'));
     try {
       const provisioned = await authPrisma.$transaction(async (tx) => {
-        const t = await provisionTenant(tx, { slug, name: tenantName, email, acquisition: null });
+        const t = await provisionTenant(tx, {
+          slug,
+          name: tenantName,
+          email,
+          acquisition: null,
+          platformBrand,
+        });
         const user = await tx.user.create({
           data: {
             email,
             name: displayName,
             emailVerified: false,
+            platformBrand,
             tenantId: t.tenantId,
             role: 'owner',
           },
@@ -133,12 +166,13 @@ export async function provisionInvitedOwner(
         'code' in err &&
         (err as { code: string }).code === 'P2002'
       ) {
-        const target = (err as { meta?: { target?: string[] } }).meta?.target ?? [];
+        const target = (err as { meta?: { target?: unknown } }).meta?.target;
         // A concurrent signup grabbed the email/slug between our check and insert.
-        if (target.includes('email')) {
+        if (isEmailUniqueViolation(target)) {
           throw new SignUpError('EMAIL_TAKEN', 'An account with that email already exists.');
         }
-        if (target.includes('slug')) throw new SignUpError('SLUG_TAKEN', 'Please try again.');
+        const parts = Array.isArray(target) ? target : [];
+        if (parts.includes('slug')) throw new SignUpError('SLUG_TAKEN', 'Please try again.');
       }
       throw err;
     }

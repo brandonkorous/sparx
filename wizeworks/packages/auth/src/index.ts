@@ -61,6 +61,7 @@ export {
 export {
   listMyMemberships,
   listPendingInvitations,
+  invitationMatchesUserBrand,
   getInvitationDetail,
   listOrgMembers,
   listOrgInvitations,

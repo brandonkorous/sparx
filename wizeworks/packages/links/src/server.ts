@@ -119,6 +119,32 @@ export function appOrigin(brand: string = DEFAULT_BRAND): string {
 }
 
 /**
+ * Where a brand's auth service is reached FROM INSIDE THE CLUSTER.
+ *
+ * Better Auth runs in one app per brand, and only that app can act on that
+ * brand's logins — since a login belongs to exactly one product, an instance
+ * scoped to the other brand simply cannot see the account. So a service that
+ * needs Better Auth to do something (the operator console asking for a password
+ * reset) has to reach the RIGHT brand's app, not a hardcoded one.
+ *
+ * Falls back to the public origin, which works and merely goes the long way
+ * round through the ingress. That fallback is what keeps this from being a
+ * required variable on every deployment: configure it where the extra hop
+ * matters, leave it alone everywhere else.
+ */
+export function accountInternalOrigin(brand: string = DEFAULT_BRAND): string {
+  const key = brand.trim().toLowerCase() || DEFAULT_BRAND;
+  if (typeof process === 'undefined') {
+    throw new Error(
+      `accountInternalOrigin(${key}) called with no process environment — server only.`
+    );
+  }
+  const scoped = readEnv(`${key.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}_ACCOUNT_INTERNAL_URL`);
+  if (scoped) return scoped;
+  return accountOrigin(key);
+}
+
+/**
  * Where a brand's people AUTHENTICATE — sign in, sign up, accept an invitation,
  * approve an OAuth consent.
  *

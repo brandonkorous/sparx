@@ -7,6 +7,7 @@ import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { accountOrigin, mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
 import { currentPlatformBrand, platformBrandIdentity } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
+import { brandScopedAuthPrisma } from './brand-scoped-prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
@@ -119,7 +120,13 @@ function createAuth() {
     appName,
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
     secret: process.env.BETTER_AUTH_SECRET,
-    database: prismaAdapter(authPrisma, { provider: 'postgresql' }),
+    // The BRAND-SCOPED client, never the bare one. Both products mount this
+    // instance against one `users` table, and every user lookup in the system —
+    // core sign-in, magic link, email OTP, Google account-linking, the
+    // organization plugin, OIDC/MCP — goes through this single adapter. Scoping
+    // the client underneath it is what stops one brand's credential
+    // authenticating on the other. See brand-scoped-prisma.ts.
+    database: prismaAdapter(brandScopedAuthPrisma, { provider: 'postgresql' }),
 
     emailAndPassword: {
       enabled: true,
@@ -205,6 +212,21 @@ function createAuth() {
           type: 'string',
           required: false,
           defaultValue: 'editor',
+          input: false,
+        },
+        // Which product this login belongs to. Declared here so the value is
+        // SELECTED on reads — the session carries it, which is what lets an
+        // invitation check that the person accepting belongs to the brand that
+        // owns the tenant.
+        //
+        // `input: false` for the same reason as the two above: it is never
+        // accepted from a client payload. It is not `required`, because the
+        // guarantee lives one layer down — brand-scoped-prisma.ts stamps it on
+        // every create, so a payload that omits it still lands correctly, and a
+        // payload that could contradict it never reaches the database.
+        platformBrand: {
+          type: 'string',
+          required: false,
           input: false,
         },
       },

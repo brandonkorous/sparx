@@ -12,7 +12,8 @@ import {
 } from '@wizeworks/ui';
 import type { OperatorAnnouncement } from '@wizeworks/operator';
 import { formatDateTime } from '@/lib/format';
-import { announcementState, BRAND_LABELS, SURFACE_LABELS } from '@/lib/announcements';
+import { announcementState, SURFACE_LABELS } from '@/lib/announcements';
+import { brandLabel, brandTone } from '@/lib/brands';
 import { AnnouncementControls } from './announcement-controls';
 
 // Every notice ever written, newest first — drafts and finished ones included,
@@ -56,8 +57,8 @@ export function AnnouncementsTable({ announcements }: { announcements: OperatorA
                 </Stack>
               </TableCell>
               <TableCell>
-                <Badge color={a.platformBrand === 'piggles' ? 'primary' : 'info'} variant="soft">
-                  {BRAND_LABELS[a.platformBrand] ?? a.platformBrand}
+                <Badge color={brandTone(a.platformBrand)} variant="soft">
+                  {brandLabel(a.platformBrand)}
                 </Badge>
               </TableCell>
               <TableCell>
