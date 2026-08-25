@@ -11,7 +11,12 @@ import { useMemo } from 'react';
 import { routeAcceptsId, routeForEntity } from '@wizeworks/links';
 import { useFavorites } from '../lib/api/shell-data';
 import { useDebouncedValue, useRecordSearch } from '../lib/api/search';
-import { getSurface, listedSurfaces, resolveTitle } from '../lib/surfaces/registry';
+import {
+  getSurface,
+  listedSurfaces,
+  resolveTitle,
+  surfaceKeywords,
+} from '../lib/surfaces/registry';
 import {
   surfaceIsVisible,
   useKnownModules,
@@ -40,7 +45,7 @@ export function useNavEntries(): Entry[] {
       label: resolveTitle(s, {}),
       icon: s.icon,
       module: s.module,
-      keywords: [...(s.keywords ?? []), s.module],
+      keywords: [...surfaceKeywords(s), s.module],
       run: (mods) => controller.open(s.key, undefined, { target: targetFor(mods) }),
     });
 

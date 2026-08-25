@@ -1,9 +1,9 @@
 'use client';
 
-// One collection — create it (manual or automatic), then manage it.
+// One group of products — create it (hand-picked or automatic), then manage it.
 //
 // Create and manage are the same surface: `{ id: 'new' }` builds it, `{ id }`
-// manages it. The one real fork is the KIND of collection, chosen once at
+// manages it. The one real fork is the KIND of group, chosen once at
 // creation and fixed thereafter (the server refuses a manual↔automatic flip
 // because it would throw away the other kind's data):
 //
@@ -11,7 +11,7 @@
 //   • AUTOMATIC — rules choose the products for you. The rule editor is the job,
 //                 and after saving you can ask for the matches to be re-checked.
 //
-// A collection has no draft/publish lifecycle — it is live the moment it exists —
+// A group has no draft/publish lifecycle — it is live the moment it exists —
 // so there is no publish button, just Save.
 
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -46,8 +46,8 @@ function CollectionLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            title="Could not load this collection"
-            description="This is a problem reaching the server. The collection itself is unaffected — nothing has been lost."
+            title="Could not load this group"
+            description="This is a problem reaching the server. The group itself is unaffected — nothing has been lost."
             onRetry={() => {
               void refetch();
             }}

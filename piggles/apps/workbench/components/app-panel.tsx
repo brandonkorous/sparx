@@ -26,7 +26,7 @@ import {
   SidebarFooter,
   Text,
 } from '@wizeworks/silicaui-react';
-import { resolveTitle, type SurfaceDefinition } from '@/lib/surfaces/registry';
+import { resolveTitle, surfaceKeywords, type SurfaceDefinition } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
 import { useAttention } from '@/lib/console/home-data';
 import { useOpenSurfaces } from '@/lib/console/open-surfaces';
@@ -69,7 +69,7 @@ function matches(surface: SurfaceDefinition, filter: string): boolean {
   if (!filter) return true;
   const needle = filter.toLowerCase();
   if (resolveTitle(surface, {}).toLowerCase().includes(needle)) return true;
-  return (surface.keywords ?? []).some((keyword) => keyword.toLowerCase().includes(needle));
+  return surfaceKeywords(surface).some((keyword) => keyword.toLowerCase().includes(needle));
 }
 
 export function AppPanel({

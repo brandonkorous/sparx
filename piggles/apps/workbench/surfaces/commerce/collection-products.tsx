@@ -92,7 +92,6 @@ export function CollectionProductsEditor({
                       size="xs"
                       shape="circle"
                       variant="ghost"
-                      color="neutral"
                       aria-label={`Remove ${row?.title ?? 'product'}`}
                       onClick={() => {
                         toggle(id, false);
@@ -148,7 +147,7 @@ export function CollectionProductsEditor({
               />
               <span className="min-w-0 flex-1">{row.title}</span>
               {row.status === 'archived' ? (
-                <Badge color="neutral" variant="soft" size="sm">
+                <Badge color="warning" variant="soft" size="sm">
                   Retired
                 </Badge>
               ) : row.status === 'draft' ? (

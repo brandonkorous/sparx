@@ -58,6 +58,10 @@ export function PhotoPinning({
 
   const pinnedCount = Object.values(draft.byOption).filter((id) => id !== '').length;
 
+  // These selects take no `placeholder`: "Any size" is a real choice in the list, so
+  // the empty value already has a label. Base UI counts '' as nothing-chosen, so a
+  // placeholder would print the same two words beside it (issue 198).
+
   return (
     <div className="flex flex-col gap-4">
       {options.map((option) => (
@@ -68,7 +72,6 @@ export function PhotoPinning({
               <Select
                 color="module"
                 aria-label={option.name}
-                placeholder={`Any ${option.name.toLowerCase()}`}
                 value={draft.byOption[option.id] ?? ''}
                 items={{
                   '': `Any ${option.name.toLowerCase()}`,

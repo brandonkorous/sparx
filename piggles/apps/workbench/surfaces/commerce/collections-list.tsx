@@ -1,24 +1,23 @@
 'use client';
 
-// The collections list.
+// The groups-of-products list.
 //
-// A collection is a themed group of products you show together — a sale, a gift
+// A group is a set of products shown together — a sale, a gift
 // guide, new arrivals. Two facts distinguish one from another, and this table is
 // built around them: whether it fills itself from rules (AUTOMATIC) or is a list
-// you HAND-PICK, and how many products are in it. A featured collection carries a
+// you HAND-PICK, and how many products are in it. A featured group carries a
 // state badge; recency rides its own column so the list can be sorted by it.
 //
 // It is a real <Table> like the invoicing list, not a <ul> of buttons: the same
 // sortable headers backed by SERVER-SIDE sort, the same server-paged window via
 // <ListPagination>, and the same progressive column disclosure by @container — a
-// collection pane is 320px beside an editor or the whole window, and only pane
+// group pane is 320px beside an editor or the whole window, and only pane
 // width can decide how many columns fit.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faArrowDown, faArrowUp, faLayerGroup, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { faLayerGroup, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -33,6 +32,7 @@ import {
   type SortDir,
 } from './collections-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { CollectionsTable } from './collections-list-table';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -43,18 +43,6 @@ const TYPE_FILTERS = [
   { value: 'rules', label: 'Automatic' },
   { value: 'manual', label: 'Hand-picked' },
 ] as const;
-
-/** A short, human "when" for the recency column — "Jul 20", or with the year for
- *  anything from a past year, so an old collection reads unambiguously. */
-function formatUpdated(iso: string): string {
-  const date = new Date(iso);
-  const sameYear = date.getFullYear() === new Date().getFullYear();
-  return new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    day: 'numeric',
-    ...(sameYear ? {} : { year: 'numeric' }),
-  }).format(date);
-}
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -108,30 +96,6 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
     resetWindow();
   };
 
-  const header = (key: CollectionSort, label: string, extra = '') => (
-    <th
-      className={extra}
-      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-    >
-      <button
-        type="button"
-        className="link link-hover inline-flex items-center gap-1"
-        onClick={() => {
-          toggleSort(key);
-        }}
-      >
-        {label}
-        {sort.key === key ? (
-          sort.dir === 'asc' ? (
-            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
-          ) : (
-            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
-          )
-        ) : null}
-      </button>
-    </th>
-  );
-
   const open = (row: CollectionSummary, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.collection.detail', { id: row.id }, { target: targetFor(event) });
   };
@@ -139,13 +103,13 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Collection list controls"
+        label="Group list controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search collections"
-              placeholder="Search collections…"
+              aria-label="Search your groups of products"
+              placeholder="Search your groups…"
               value={search}
               onValueChange={(next) => {
                 setSearch(next);
@@ -155,12 +119,12 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Add a collection',
+          label: 'Add a group',
           icon: faPlus,
           onClick: (event) => {
             ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Add a collection — hold Shift to open alongside, Alt for a new window',
+          title: 'Add a group — hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -200,7 +164,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            title="Could not load your collections"
+            title="Could not load your groups"
             description="Something went wrong reaching the server. It may be temporary — try again in a moment."
           />
         ) : isPending ? (
@@ -215,61 +179,13 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
               description: 'Try a different word, or switch the filter back to All.',
             }}
             firstRun={{
-              title: 'No collections yet',
+              title: 'No groups yet',
               description:
-                'A collection is a themed group of products you show together — a sale, a gift guide, new arrivals. Add your first one to get started.',
+                'A group is a set of products you show together — a sale, a gift guide, what is new this month. Add your first one to get started.',
             }}
           />
         ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                {header('name', 'Name')}
-                {header('type', 'How it fills', 'hidden @lg:table-cell')}
-                <th>State</th>
-                {header('productCount', 'Products', 'text-right')}
-                {header('updatedAt', 'Updated', 'hidden text-right @2xl:table-cell')}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="cursor-pointer"
-                  tabIndex={0}
-                  role="button"
-                  onClick={(event) => {
-                    open(row, event);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key !== 'Enter' && event.key !== ' ') return;
-                    event.preventDefault();
-                    open(row, event);
-                  }}
-                >
-                  <td className="max-w-64 truncate font-medium">{row.name}</td>
-                  <td className="hidden @lg:table-cell">
-                    {row.type === 'rules' ? 'Automatic' : 'Hand-picked'}
-                  </td>
-                  <td>
-                    {row.featured ? (
-                      <Badge color="warning" variant="soft" size="sm">
-                        Featured
-                      </Badge>
-                    ) : (
-                      <Badge color="neutral" variant="soft" size="sm">
-                        Standard
-                      </Badge>
-                    )}
-                  </td>
-                  <td className="text-right tabular-nums">{String(row.productCount)}</td>
-                  <td className="hidden text-right text-sm tabular-nums @2xl:table-cell">
-                    {formatUpdated(row.updatedAt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <CollectionsTable rows={rows} sort={sort} onToggleSort={toggleSort} onOpen={open} />
         )}
       </Card>
 

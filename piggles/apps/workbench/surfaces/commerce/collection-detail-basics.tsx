@@ -1,6 +1,6 @@
 'use client';
 
-// What the collection is called, where it lives, and how it is described.
+// What the group is called, where it lives, and how it is described.
 
 import {
   Field,
@@ -73,7 +73,7 @@ export function CollectionBasics({
           }
         />
         <FieldDescription>
-          The end of this collection&apos;s page address — yoursite.com/collections/
+          The end of this group&apos;s page address — yoursite.com/collections/
           {effectiveHandle || '…'}.
         </FieldDescription>
       </Field>
@@ -86,7 +86,7 @@ export function CollectionBasics({
               color="module"
               rows={3}
               value={draft.description}
-              placeholder="A line or two shown at the top of the collection."
+              placeholder="A line or two shown at the top of the group."
               onChange={(event) => {
                 set('description', event.target.value);
               }}
@@ -96,7 +96,7 @@ export function CollectionBasics({
       </Field>
 
       <Field>
-        <FieldLabel>Feature this collection</FieldLabel>
+        <FieldLabel>Feature this group</FieldLabel>
         <FieldControl
           render={
             <Switch
@@ -109,7 +109,7 @@ export function CollectionBasics({
           }
         />
         <FieldDescription>
-          Marks it as one to highlight — themes can show featured collections on the home page.
+          Marks it as one to highlight. Your site can show the ones you feature on its home page.
         </FieldDescription>
       </Field>
     </FormSection>

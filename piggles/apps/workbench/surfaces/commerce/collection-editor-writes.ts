@@ -1,9 +1,9 @@
 'use client';
 
-// Saving, re-checking and deleting a collection — everything the editor writes,
+// Saving, re-checking and deleting a group — everything the editor writes,
 // away from everything it draws.
 //
-// A new MANUAL collection is two calls: create it, then set its members. The
+// A new HAND-PICKED group is two calls: create it, then set its members. The
 // second is a plain POST rather than the collection-scoped hook, because that
 // hook binds to an id that did not exist a moment ago.
 
@@ -63,7 +63,7 @@ export function useCollectionWrites({
     create.isError || update.isError || setProducts.isError
       ? collectionErrorMessage(
           create.error ?? update.error ?? setProducts.error,
-          'Could not save this collection. Nothing was changed.'
+          'Could not save this group. Nothing was changed.'
         )
       : null;
 
@@ -144,7 +144,7 @@ export function useCollectionWrites({
           await setProducts.mutateAsync(draft.productIds);
         }
         onSaved();
-        toast.add({ title: 'Collection saved', type: 'success' });
+        toast.add({ title: 'Group saved', type: 'success' });
       } catch {
         // The alert in the body reports it; the draft still holds everything.
       }
@@ -178,9 +178,9 @@ export function useCollectionWrites({
       title: `Delete ${collection.name}?`,
       description:
         count > 0
-          ? `This collection is removed from your website. The ${String(count)} product${count === 1 ? '' : 's'} in it ${count === 1 ? 'is' : 'are'} kept — only the grouping goes. This cannot be undone.`
-          : 'This collection is removed from your website. The products themselves are kept. This cannot be undone.',
-      confirmLabel: 'Delete this collection',
+          ? `This group is removed from your website. The ${String(count)} product${count === 1 ? '' : 's'} in it ${count === 1 ? 'is' : 'are'} kept — only the grouping goes. This cannot be undone.`
+          : 'This group is removed from your website. The products themselves are kept. This cannot be undone.',
+      confirmLabel: 'Delete this group',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -194,7 +194,7 @@ export function useCollectionWrites({
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not delete this collection',
+          title: 'Could not delete this group',
           description: collectionErrorMessage(error, 'Nothing was removed.'),
           type: 'error',
         });

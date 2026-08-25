@@ -1,6 +1,6 @@
 'use client';
 
-// Three ways a healthy-looking catalog is quietly selling nothing, and one way
+// Ways a healthy-looking catalog is quietly costing her something, and one way
 // the screen itself is out of date.
 //
 // Each is worded as a consequence to the BUSINESS rather than as a system state:
@@ -59,13 +59,17 @@ export function ProductsListNotices({
         </Alert>
       ) : null}
       {invisibleShop ? (
-        <Alert color="warning" className="m-2">
+        // INFO, not warning. Since issue 203 the shop falls back to the catalog
+        // when this list is empty, so what is broken is the search box beside it
+        // — not the shop, and not louder than nobody being able to pay her.
+        <Alert color="info" className="m-2">
           <AlertContent>
-            <AlertTitle>Customers can’t find these on your site</AlertTitle>
+            <AlertTitle>Searching your shop won’t find these</AlertTitle>
             <AlertDescription>
-              Your shop page looks up products in a search list, and yours is empty — so anyone
-              visiting is told there is nothing to buy. Everything here is safe; it just needs
-              putting back into that list.
+              Your products are on your site and people can buy them. What isn’t working is the
+              search box and the filters beside your shop — those look things up in a separate list,
+              and yours is empty, so a customer searching for something by name may be told you
+              don’t have it.
             </AlertDescription>
           </AlertContent>
           <Button
@@ -81,7 +85,7 @@ export function ProductsListNotices({
                   toast.add({
                     title: 'Asked for your products to be put back',
                     description:
-                      'The message above will go when they are findable again. If it is still there tomorrow, tell us.',
+                      'The message above will go when searching finds them again. If it is still there tomorrow, tell us.',
                     type: 'success',
                   });
                 },

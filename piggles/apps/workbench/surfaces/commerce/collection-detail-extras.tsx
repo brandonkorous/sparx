@@ -1,7 +1,7 @@
 'use client';
 
-// The parts of a collection that are not its products: a banner, which sites
-// show it, and how it reads in a search result.
+// The parts of a group that are not its products: a banner, which sites show
+// it, and how it reads in a search result.
 
 import { Field, FieldControl, FieldLabel, Input, Textarea } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
@@ -20,11 +20,11 @@ export function CollectionExtras({
     <>
       <FormSection
         title="Banner image"
-        description="Optional. A picture your theme can show across the top of the collection's page."
+        description="Optional. A wide picture across the top of this group's page on your site."
       >
         <MediaField
           label="Banner image"
-          description="A wide picture shown at the top of this collection's page."
+          description="A wide picture shown at the top of this group's page."
           value={draft.heroMediaId}
           onChange={(next) => {
             set('heroMediaId', next);
@@ -38,12 +38,12 @@ export function CollectionExtras({
           set('propertyIds', next);
         }}
         title="Which of your sites show it"
-        description="You run more than one website, so a collection can appear on all of them or just some."
+        description="You run more than one website, so a group can appear on all of them or just some."
       />
 
       <FormSection
         title="How it looks in search results"
-        description="Optional. The title and summary shown when someone finds this collection on Google. Left empty, the name and description above are used."
+        description="Optional. The title and summary shown when someone finds this group on Google. Left empty, the name and description above are used."
       >
         <Field>
           <FieldLabel>Search title</FieldLabel>
@@ -68,7 +68,7 @@ export function CollectionExtras({
                 color="module"
                 rows={3}
                 value={draft.seoDescription}
-                placeholder="One or two sentences on what someone finds in this collection."
+                placeholder="One or two sentences on what someone finds in this group."
                 onChange={(event) => {
                   set('seoDescription', event.target.value);
                 }}
@@ -78,7 +78,7 @@ export function CollectionExtras({
         </Field>
         <MediaField
           label="Picture when shared"
-          description="Shown when a link to this collection is pasted into a message or a post."
+          description="Shown when a link to this group is pasted into a message or a post."
           value={draft.ogImageId}
           onChange={(next) => {
             set('ogImageId', next);

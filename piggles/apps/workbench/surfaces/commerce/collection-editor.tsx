@@ -1,6 +1,6 @@
 'use client';
 
-// The collection editor itself — create and manage, which are the same form at
+// The group editor itself — create and manage, which are the same form at
 // two ages. The write side is ./collection-editor-writes.ts.
 
 import { useEffect, useMemo, useState } from 'react';
@@ -56,7 +56,7 @@ export function CollectionEditor({
   }, [saved, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New collection' : (collection?.name ?? 'Collection'));
+    ctx.setTitle(isNew ? 'New group' : (collection?.name ?? 'Group of products'));
   }, [ctx, isNew, collection]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
@@ -65,7 +65,7 @@ export function CollectionEditor({
   };
 
   const effectiveHandle = isNew && !handleTouched ? slugifyHandle(draft.name) : draft.handle;
-  const nameError = draft.name.trim() === '' ? 'Give the collection a name.' : null;
+  const nameError = draft.name.trim() === '' ? 'Give the group a name.' : null;
 
   const membershipChanged = draft.type === 'manual' && !sameSet(draft.productIds, saved.productIds);
   const rulesChanged =
@@ -113,8 +113,8 @@ export function CollectionEditor({
   useDirtySource(
     dirty && !writes.created,
     isNew
-      ? 'This collection has not been created yet. Close anyway?'
-      : 'This collection has unsaved changes. Close anyway?'
+      ? 'This group has not been created yet. Close anyway?'
+      : 'This group has unsaved changes. Close anyway?'
   );
 
   const isRules = draft.type === 'rules';
@@ -122,10 +122,10 @@ export function CollectionEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Collection actions"
+        label="Group actions"
         status={
           !isNew ? (
-            <Badge color={isRules ? 'info' : 'neutral'} variant="soft" size="sm">
+            <Badge color={isRules ? 'info' : 'module'} variant="soft" size="sm">
               {isRules ? 'Automatic' : 'Hand-picked'}
             </Badge>
           ) : null
@@ -139,7 +139,7 @@ export function CollectionEditor({
             disabled={Boolean(nameError) || (!isNew && !dirty)}
             onClick={writes.submit}
           >
-            {isNew ? 'Create collection' : 'Save'}
+            {isNew ? 'Create the group' : 'Save'}
           </Button>
         }
         refresh={
@@ -157,16 +157,16 @@ export function CollectionEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A collection is a themed group of products you show together — a summer sale, a gift
-              guide, this month&apos;s arrivals. Unlike a category, it is not part of your menu: it
-              is a set you can place anywhere on your site.
+              A group is a set of products you show together — a summer sale, a gift guide, this
+              month&apos;s arrivals. Unlike a category, it is not part of your menu: it is a set you
+              can place anywhere on your site.
             </Text>
           ) : null}
 
           {writes.failure ? (
             <Alert color="error">
               <AlertContent>
-                <AlertTitle>Could not save this collection</AlertTitle>
+                <AlertTitle>Could not save this group</AlertTitle>
                 <AlertDescription>{writes.failure}</AlertDescription>
               </AlertContent>
             </Alert>
@@ -199,13 +199,13 @@ export function CollectionEditor({
           {!isNew && collection ? (
             <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
               <Text className="text-sm">
-                A collection&apos;s kind — hand-picked or automatic — is fixed once it is created.
-                To switch, delete this one and make a new one.
+                A group&apos;s kind — hand-picked or automatic — is fixed once it is created. To
+                switch, delete this one and make a new one.
               </Text>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Deleting removes this collection from your website. The products in it are kept —
-                  only the grouping goes.
+                  Deleting removes this group from your website. The products in it are kept — only
+                  the grouping goes.
                 </Text>
                 <Button
                   size="sm"
@@ -217,7 +217,7 @@ export function CollectionEditor({
                   }}
                 >
                   <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-                  Delete this collection
+                  Delete this group
                 </Button>
               </div>
             </div>

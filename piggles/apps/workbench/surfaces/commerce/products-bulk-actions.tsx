@@ -12,10 +12,16 @@
 //
 // So: same warnings, plus the count, plus the alternative offered as an actual
 // button rather than as advice.
+//
+// ── The bar has to offer the direction that makes money ─────────────────────
+//
+// It shipped with Retire and Delete only, so choosing rows meant getting rid of
+// them. Putting a set of products ON sale is the commonest bulk act there is and
+// the endpoint already did it — see issue 207.
 
 import type { ReactNode } from 'react';
 import { Button, useToast } from '@wizeworks/silicaui-react';
-import { faBoxArchive, faTrash } from '@fortawesome/pro-solid-svg-icons';
+import { faBoxArchive, faStore, faTrash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { BulkBar } from '../../components/bulk-bar';
 import { useConfirm } from '../../lib/confirm';
@@ -73,6 +79,42 @@ function useDeleteChosen(selection: Chosen) {
   return { run, isPending: remove.isPending };
 }
 
+function usePutOnSaleChosen(selection: Chosen) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const setStatus = useBulkProductStatus();
+
+  const run = async (ids: string[]) => {
+    const ok = await confirm({
+      title: `Put ${count(ids.length)} on sale?`,
+      description:
+        'They go onto your website and people can buy them straight away. You can take any of them back off at any time.',
+      confirmLabel: `Put ${count(ids.length)} on sale`,
+      cancelLabel: 'Not yet',
+      color: 'success',
+    });
+    if (!ok) return;
+    setStatus.mutate(
+      { productIds: ids, status: 'active' },
+      {
+        onSuccess: (result) => {
+          selection.clear();
+          toast.add({ title: `${count(result.updated)} put on sale`, type: 'success' });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not put those on sale',
+            description: productErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  return { run, isPending: setStatus.isPending };
+}
+
 function useRetireChosen(selection: Chosen) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -118,9 +160,14 @@ export function ProductsBulkActions({
 }) {
   const remove = useDeleteChosen(selection);
   const retire = useRetireChosen(selection);
+  const publish = usePutOnSaleChosen(selection);
 
   const ids = [...selection.chosen.keys()];
-  const busy = remove.isPending || retire.isPending;
+  // Only the ones this would actually move. "7 products put on sale" when four
+  // moved is how a number stops being believed, so the three already out are not
+  // counted and the button goes away when there is nothing off sale.
+  const offSale = [...selection.chosen.values()].filter((row) => row.status !== 'active');
+  const busy = remove.isPending || retire.isPending || publish.isPending;
 
   return (
     <BulkBar
@@ -129,8 +176,24 @@ export function ProductsBulkActions({
       onClear={selection.clear}
       toolbar={toolbar}
     >
-      {/* Reversible first, irreversible last, and only the second one is red.
-          Two danger buttons side by side make neither of them mean anything. */}
+      {/* Constructive first, reversible next, irreversible last, and only the
+          last one is red. Two danger buttons side by side make neither mean
+          anything, and a bar that offers only harm teaches that choosing rows is
+          for getting rid of them. */}
+      {offSale.length > 0 ? (
+        <Button
+          size="sm"
+          color="success"
+          disabled={busy}
+          loading={publish.isPending}
+          onClick={() => {
+            void publish.run(offSale.map((row) => row.id));
+          }}
+        >
+          <Icon glyph={faStore} className="size-4" aria-hidden />
+          Put on sale
+        </Button>
+      ) : null}
       <Button
         size="sm"
         variant="outline"

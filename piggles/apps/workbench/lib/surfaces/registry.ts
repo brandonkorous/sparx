@@ -235,3 +235,15 @@ export function titleFor(descriptor: PaneDescriptor): string {
   if (!definition) return 'Unknown';
   return resolveTitle(definition, descriptor.params ?? {});
 }
+
+/**
+ * Every extra word this surface can be found by. A Piggles name REPLACES the
+ * platform's, so "Collections" stops being findable once it reads "Groups of
+ * products" — and the old word is often the one somebody arrives knowing.
+ */
+export function surfaceKeywords(definition: SurfaceDefinition): readonly string[] {
+  const keywords = definition.keywords ?? [];
+  const platform = definition.title;
+  if (typeof platform !== 'string' || resolveTitle(definition, {}) === platform) return keywords;
+  return [...keywords, platform];
+}

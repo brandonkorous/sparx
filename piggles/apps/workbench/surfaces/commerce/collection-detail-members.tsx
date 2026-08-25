@@ -1,6 +1,6 @@
 'use client';
 
-// How products get into a collection, and which ones did.
+// How products get into a group, and which ones did.
 //
 // The WAY of choosing is fixed at create: hand-picked and automatic are two
 // different objects, and switching one for the other after products are in it
@@ -90,7 +90,7 @@ export function CollectionMembers({
       {isRules ? (
         <FormSection
           title="Which products belong here"
-          description="Describe the products this collection should contain. Anything matching is added for you."
+          description="Describe the products this group should contain. Anything matching is added for you."
           action={
             !isNew && collection ? (
               <Button
@@ -134,7 +134,7 @@ export function CollectionMembers({
       ) : (
         <FormSection
           title="The products in it"
-          description="Pick the products that belong in this collection."
+          description="Pick the products that belong in this group."
         >
           <CollectionProductsEditor
             collectionId={isNew ? null : id}

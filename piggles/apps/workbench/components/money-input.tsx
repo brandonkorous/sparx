@@ -78,8 +78,12 @@ export function MoneyInput({
       disabled={disabled}
       className={`text-right tabular-nums ${className ?? ''}`}
       value={text}
-      onFocus={() => {
+      onFocus={(event) => {
         setEditing(true);
+        // SELECT what is there. The field opens holding a real "0.00", so a caret
+        // dropped in front of it turns 9.00 into 9.000.00 — a delivery charge, or a
+        // price, a thousand times over (issues 169 and 205).
+        event.target.select();
       }}
       onChange={(event) => {
         setText(event.target.value);
