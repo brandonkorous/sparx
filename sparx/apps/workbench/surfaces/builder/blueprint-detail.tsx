@@ -28,10 +28,12 @@ import {
   Badge,
   Button,
   Field,
+  FieldControl,
   FieldDescription,
   FieldLabel,
   Heading,
   Select,
+  Switch,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -46,7 +48,8 @@ import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   blueprintErrorMessage,
-  contentsLines,
+  contentsGroups,
+  examplesSentence,
   formatDate,
   installState,
   moduleLabel,
@@ -59,6 +62,7 @@ import {
   useUpdatePlan,
   type Blueprint,
   type BlueprintInstall,
+  type ContentsLine,
 } from './blueprints-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -159,6 +163,11 @@ function BlueprintBody({
   const [chosen, setChosen] = useState('');
   const targetSite = chosen || fallbackSite;
 
+  // Whether this install brings the design's examples (issue 098). On by default —
+  // a console with nothing in it teaches a new owner nothing — and only ever asked
+  // BEFORE an install: afterwards the answer is a fact about it, not a control.
+  const [sampleData, setSampleData] = useState(true);
+
   const siteItems = useMemo(() => {
     const items: Record<string, string> = {};
     for (const site of sites ?? []) items[site.id] = site.name;
@@ -191,7 +200,8 @@ function BlueprintBody({
   // change before committing.
   const { data: plan } = useUpdatePlan(current?.id ?? '', updateAvailable);
 
-  const lines = contentsLines(blueprint.contents);
+  const groups = contentsGroups(blueprint.contents);
+  const hasContents = groups.structure.length > 0 || groups.examples.length > 0;
   // `contents` is free-form JSON on the wire, so read the theme name defensively
   // — a non-string would render as `[object Object]` or crash React.
   const themeName = typeof blueprint.contents.theme === 'string' ? blueprint.contents.theme : null;
@@ -211,32 +221,35 @@ function BlueprintBody({
     if (targetSite === '') return;
     const ok = await confirm({
       title: `Add “${blueprint.name}” to ${targetName}?`,
-      description: `This adds the design's pages and a matching look to ${targetName} — all as drafts only you can see. Your existing pages and products are left exactly as they are, and nothing goes live until you publish it.`,
+      description: `This adds the design's pages and a matching look to ${targetName} — all as drafts only you can see. ${examplesSentence(sampleData)} Your existing pages and products are left exactly as they are, and nothing goes live until you publish it.`,
       confirmLabel: 'Add it',
       cancelLabel: 'Cancel',
       color: 'module',
     });
     if (!ok) return;
-    install.mutate(targetSite, {
-      onSuccess: () => {
-        void refetchInstalls();
-        afterPaneChange(() => {
-          toast.add({
-            title: `${blueprint.name} added to ${targetName}`,
-            description:
-              'It is on your site as drafts. Review it, then publish it when you are ready.',
-            type: 'success',
+    install.mutate(
+      { propertyId: targetSite, sampleData },
+      {
+        onSuccess: () => {
+          void refetchInstalls();
+          afterPaneChange(() => {
+            toast.add({
+              title: `${blueprint.name} added to ${targetName}`,
+              description:
+                'It is on your site as drafts. Review it, then publish it when you are ready.',
+              type: 'success',
+            });
           });
-        });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not add this design',
-          description: blueprintErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not add this design',
+            description: blueprintErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
   };
 
   const onGoLive = async () => {
@@ -407,6 +420,11 @@ function BlueprintBody({
                     : current.installed_at
                       ? ` Added ${formatDate(current.installed_at)}.`
                       : ''}
+                  {/* A fact about THIS install, read from the server — never
+                      inferred from a zero count (issue 098). */}
+                  {current.sample_data
+                    ? ' Its examples came with it.'
+                    : ' Its examples were left out.'}
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -426,6 +444,9 @@ function BlueprintBody({
                     ? ` It adds ${String(plan.summary.new)} new ${plan.summary.new === 1 ? 'thing' : 'things'} (like new pages).`
                     : ''}{' '}
                   Updating keeps everything you have edited yourself.
+                  {current.sample_data
+                    ? ''
+                    : ' This design came in without its examples, and the update leaves them out too.'}
                 </AlertDescription>
               </AlertContent>
               <Button
@@ -447,27 +468,32 @@ function BlueprintBody({
             title="What this adds to your site"
             description="Everything comes in as drafts you can change — nothing here replaces what you already have."
           >
-            {lines.length === 0 ? (
+            {!hasContents ? (
               <Text className="text-sm">
                 A clean starting layout to build on, with a matching look already set up.
               </Text>
             ) : (
-              <ul className="flex flex-col">
-                {lines.map((line) => (
-                  <li
-                    key={line.key}
-                    className="border-base-300 border-b py-2 text-base last:border-b-0"
-                  >
-                    {line.text}
-                  </li>
-                ))}
-              </ul>
+              <LineList lines={groups.structure} />
             )}
             {themeName ? (
               <Text className="text-sm">
                 Comes with the <span className="font-medium">{themeName}</span> look — colors, fonts
                 and spacing — applied for you.
               </Text>
+            ) : null}
+
+            {/* The examples, listed apart from the structure — because they are the
+                half the next section makes a choice about (issue 098). */}
+            {groups.examples.length > 0 ? (
+              <>
+                <Text className="font-medium">The examples it brings</Text>
+                <LineList lines={groups.examples} />
+                <Text className="text-sm">
+                  These are somebody else&rsquo;s: a shop&rsquo;s stock, a salon&rsquo;s treatments,
+                  a writer&rsquo;s articles. They are there so every screen has something real on it
+                  while you find your way around. You can leave them out below.
+                </Text>
+              </>
             ) : null}
             {offModules.length > 0 ? (
               <Text className="text-sm">
@@ -508,6 +534,27 @@ function BlueprintBody({
                 touched.
               </FieldDescription>
             </Field>
+
+            {/* The choice the whole of issue 098 is about. Only before an install,
+                and only when this design actually brings examples — a design with
+                none never asks. */}
+            {!current && groups.examples.length > 0 ? (
+              <Field>
+                <FieldLabel>Bring its examples</FieldLabel>
+                <FieldControl
+                  render={
+                    <Switch
+                      color="module"
+                      checked={sampleData}
+                      disabled={busy}
+                      onCheckedChange={setSampleData}
+                      aria-label="Bring this design's examples"
+                    />
+                  }
+                />
+                <FieldDescription>{examplesSentence(sampleData)}</FieldDescription>
+              </Field>
+            ) : null}
 
             {current ? (
               <>
@@ -572,6 +619,18 @@ function BlueprintBody({
         </div>
       </div>
     </div>
+  );
+}
+
+function LineList({ lines }: { lines: ContentsLine[] }) {
+  return (
+    <ul className="flex flex-col">
+      {lines.map((line) => (
+        <li key={line.key} className="border-base-300 border-b py-2 text-base last:border-b-0">
+          {line.text}
+        </li>
+      ))}
+    </ul>
   );
 }
 

@@ -101,6 +101,8 @@ interface Initial {
   step: OnboardingStepKey;
   blueprintKey: string | null;
   installId: string | null;
+  /** The examples answer this setup is carrying (issue 098) — on by default. */
+  sampleData: boolean;
   templateDone: boolean;
   paymentsDone: boolean;
   companyName: string;
@@ -151,6 +153,7 @@ export function ClassicWizard({
     step: state.currentStep ?? 'modules',
     blueprintKey: state.blueprintKey ?? null,
     installId: state.installId ?? null,
+    sampleData: state.sampleData ?? true,
     templateDone: Boolean(state.completed?.template),
     paymentsDone: Boolean(state.completed?.payments),
     companyName: tenantQ.data.name ?? '',
@@ -216,6 +219,10 @@ function WizardInner({
   );
   const [installedKey, setInstalledKey] = useState<string | null>(initial.blueprintKey);
   const [installId, setInstallId] = useState<string | null>(initial.installId);
+  // Whether the chosen starting point brings its examples (issue 098). Fixed at
+  // install time, so changing it after an install re-installs — `selectTemplate`
+  // resets the old draft, which is what makes the new answer mean anything.
+  const [sampleData, setSampleData] = useState(initial.sampleData);
 
   const [companyName, setCompanyName] = useState(initial.companyName);
   // The web handle is shared: it's the story's `name`, so the summary address and the
@@ -293,7 +300,7 @@ function WizardInner({
           setInstalledKey(null);
           setInstallId(null);
         } else if (choice) {
-          const res = await actions.selectTemplate(choice);
+          const res = await actions.selectTemplate({ key: choice, sampleData });
           setInstalledKey(choice);
           setInstallId(res.installId);
         }
@@ -389,6 +396,8 @@ function WizardInner({
           blueprints={blueprints}
           selectedKey={choice}
           onSelect={setChoice}
+          sampleData={sampleData}
+          onSampleData={setSampleData}
           loading={blueprintsLoading}
         />
       );

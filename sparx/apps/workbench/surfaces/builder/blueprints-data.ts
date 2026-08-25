@@ -41,6 +41,11 @@ export interface BlueprintContents {
   content?: number;
   pages?: number;
   emails?: number;
+  /** What the design puts in the diary — a place, the people who work there, and
+   *  the menu of what they do. All three are examples (issue 098). */
+  schedulingLocations?: number;
+  schedulingResources?: number;
+  schedulingServices?: number;
   theme?: string;
   hasFrame?: boolean;
 }
@@ -80,6 +85,10 @@ export interface BlueprintInstall {
   blueprint_key: string;
   blueprint_version: string;
   status: string;
+  /** Whether the design's examples came in with it. Read from the server rather
+   *  than guessed from a zero count: an install that declined the examples and
+   *  one that failed before writing them look identical from the counts alone. */
+  sample_data: boolean;
   counts: Record<string, number>;
   installed_at: string;
   live_at: string | null;
@@ -162,18 +171,29 @@ function useInvalidateBlueprints() {
 
 export interface InstallResult {
   install_id: string;
+  sample_data: boolean;
   counts: Record<string, number>;
+}
+
+export interface InstallRequest {
+  propertyId: string;
+  /** Bring the design's example products, articles and diary with it. */
+  sampleData: boolean;
 }
 
 /** Stamp a blueprint into a chosen site (as drafts). Passing `propertyId`
  *  explicitly means the operator can install onto a site other than the one they
- *  are currently working in — the server validates it belongs to the tenant. */
+ *  are currently working in — the server validates it belongs to the tenant.
+ *  `sampleData` is the owner's answer about the examples, sent every time rather
+ *  than only when it is false: the server records it on the install, and the
+ *  answer is read again months later when a module is switched on. */
 export function useInstallBlueprint(key: string) {
   const invalidate = useInvalidateBlueprints();
   return useMutation({
-    mutationFn: (propertyId: string) =>
+    mutationFn: (input: InstallRequest) =>
       api.post<InstallResult>(`/v1/blueprints/${encodeURIComponent(key)}/install`, {
-        property_id: propertyId,
+        property_id: input.propertyId,
+        sample_data: input.sampleData,
       }),
     onSuccess: () => {
       invalidate();
@@ -332,23 +352,64 @@ export function contentsSummary(contents: BlueprintContents): string {
     .join(' · ');
 }
 
-/** Every non-empty "what it creates" count as a labelled line, largest concepts
- *  first (the whole page structure, then what fills it). */
-export function contentsLines(contents: BlueprintContents): { key: string; text: string }[] {
-  const out: { key: string; text: string }[] = [];
-  const add = (key: keyof BlueprintContents, one: string, many: string) => {
+export interface ContentsLine {
+  key: string;
+  text: string;
+}
+
+/** What the design brings, split the way the install itself splits it: the
+ *  structure it always brings, and the examples that are a choice (issue 098). */
+export interface ContentsGroups {
+  structure: ContentsLine[];
+  examples: ContentsLine[];
+}
+
+function counted(
+  contents: BlueprintContents,
+  keys: [keyof BlueprintContents, string, string][]
+): ContentsLine[] {
+  const out: ContentsLine[] = [];
+  for (const [key, one, many] of keys) {
     const value = contents[key];
     if (typeof value === 'number' && value > 0) {
       out.push({ key, text: `${String(value)} ${value === 1 ? one : many}` });
     }
-  };
-  add('pages', 'page', 'pages');
-  add('products', 'product', 'products');
-  add('categories', 'category', 'categories');
-  add('collections', 'collection', 'collections');
-  add('content', 'piece of content', 'pieces of content');
-  add('emails', 'email design', 'email designs');
+  }
   return out;
+}
+
+/** The two groups, largest concepts first inside each. The pages, the shelves and
+ *  the email designs are the design; the stock on the shelves, the articles and
+ *  the diary are somebody else's business, kept only if the owner asks for them. */
+export function contentsGroups(contents: BlueprintContents): ContentsGroups {
+  return {
+    structure: counted(contents, [
+      ['pages', 'page', 'pages'],
+      ['categories', 'category', 'categories'],
+      ['collections', 'collection', 'collections'],
+      ['emails', 'email design', 'email designs'],
+    ]),
+    examples: counted(contents, [
+      ['products', 'example product', 'example products'],
+      ['content', 'example article', 'example articles'],
+      ['schedulingServices', 'example service', 'example services'],
+      ['schedulingResources', 'example team member', 'example team members'],
+      ['schedulingLocations', 'example place', 'example places'],
+    ]),
+  };
+}
+
+/** Every non-empty "what it creates" count as a labelled line, structure first. */
+export function contentsLines(contents: BlueprintContents): ContentsLine[] {
+  const groups = contentsGroups(contents);
+  return [...groups.structure, ...groups.examples];
+}
+
+/** What taking (or leaving) the examples actually does, for a confirm. */
+export function examplesSentence(sampleData: boolean): string {
+  return sampleData
+    ? 'Its example products, articles and bookings come too, so there is something real on every screen to look at and change.'
+    : 'Its examples are left out, so nothing arrives that is not yours. The pages and shelves come in empty, ready for your own.';
 }
 
 /** The server's own sentence for a 4xx, shown verbatim: the blueprint routes

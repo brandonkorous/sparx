@@ -181,6 +181,10 @@ export function StoryComposer({
         // Default to the golden template when the story matches no more-specific
         // blueprint — a new site IS the golden template unless something else fits.
         blueprintKey: blueprint?.key ?? GOLDEN_BLUEPRINT_KEY,
+        // The story flow is the guided path: somebody describing their business
+        // in a sentence wants the screens to have something on them. The choice
+        // to take the structure alone lives in the wizard and in Designs.
+        sampleData: true,
         selling,
         story: toPersistPayload(story),
       })
