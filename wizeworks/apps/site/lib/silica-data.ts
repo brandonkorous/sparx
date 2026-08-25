@@ -38,8 +38,11 @@ import {
   type PublicCollection,
   type PublicProduct,
   type PublicProductListItem,
+  type PublicProductVariant,
 } from './commerce';
 import { getEntriesByIds, publicGetPaged, type ApiEntry } from './content';
+import { formatMoney } from './format';
+import { madeToOrderCopy, type StorefrontPaymentMode } from './made-to-order-copy';
 import { mediaUrl } from './media';
 
 /** How many products a bounded rail shows at most — a curated handful, never the whole
@@ -151,7 +154,12 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
  *  host `format` unwraps it to `<img src>`. Exported for the PDP route. */
 export function productToSilicaRecord(
   p: PublicProduct,
-  tenantSlug: string
+  tenantSlug: string,
+  /** What the made-to-order sentences need to be true: the money's currency and
+   *  locale, and whether this website takes any money at all. Optional so the
+   *  fixture/preview callers keep working; a product with no made-to-order rule
+   *  renders identically either way. */
+  commerce?: { defaultCurrency: string; defaultLocale: string; paymentMode: StorefrontPaymentMode }
 ): Record<string, unknown> {
   const primary = p.images[0];
   const url = primary ? mediaUrl(primary.mediaAssetId, tenantSlug) : null;
@@ -170,12 +178,25 @@ export function productToSilicaRecord(
     price: price != null ? price / 100 : null,
     compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
     description: p.description ?? '',
+    // The same words as paragraphs. A bind writes ONE text node and `white-space:
+    // normal` collapses the newlines an owner typed, so six paragraphs reached the
+    // page as one twenty-five-line block (issue 191). `description` stays for the
+    // cards and for every already-published tree that binds it.
+    descriptionParagraphs: descriptionParagraphs(p.description),
     // Empty-url object, never null — the host `format` turns it into the placeholder
     // tile (see makeFormat / toSilicaProduct).
     image: { url: url ?? '', alt: primary?.alt ?? p.title },
     // The add-to-cart form's hidden field; empty string (not null) when the product
     // has no live variant, so `onAction`'s empty-variant guard blocks the submit.
+    // Used ONLY when there is a single version — the picker below owns the field
+    // otherwise, and two controls of the same name would both post.
     variantId: defaultVariant?.id ?? '',
+    // What a shopper chooses between. Empty for a single-version product (issue 190).
+    versions: productVersions(
+      p,
+      commerce?.defaultCurrency ?? 'USD',
+      commerce?.defaultLocale ?? 'en-US'
+    ),
     url: p.handle ? `/products/${p.handle}` : '',
     // Typed attributes (docs/143). BOTH shapes ride the record so the two binding
     // modes work off the same product: `attributes.<key>` for an individual field
@@ -190,14 +211,124 @@ export function productToSilicaRecord(
     // absent rather than false when they do not apply: the engine drops a node whose
     // ref is absent, and a product nobody has counted must stay buyable.
     //
-    // Read off the DEFAULT VARIANT, not the product. Two reasons, and both matter:
-    // the buy box has no version picker, so the only thing its form can add to a
-    // cart is that one variant — and the variant's `inStock` is COMPUTED per request
-    // from live levels, where the product's is a denormalized column maintained by
-    // the inventory ledger. A column can lag; the thing the button actually sells
-    // cannot. Falls back to the product flag for a product with no live variant.
-    soldOut: (defaultVariant?.inStock ?? p.inStock) ? undefined : true,
+    // Read off the VARIANTS, not the product column: a variant's `inStock` is
+    // COMPUTED per request from live levels, where the product's is a denormalized
+    // column maintained by the inventory ledger. A column can lag; the thing the
+    // button actually sells cannot. Falls back to the product flag for a product with
+    // no live variant.
+    //
+    // ANY variant, not the default one. This read the default alone while the buy box
+    // had no picker and could only ever add that one thing (issue 190). Now that a
+    // shopper picks, one sold-out size must not take the whole buy box down with it —
+    // each version says "sold out" in the picker instead.
+    soldOut:
+      p.variants.some((v) => v.inStock) || (p.variants.length === 0 && p.inStock)
+        ? undefined
+        : true,
     lowStock: p.lowStock,
+    // Made to order (issue 184). Shaped as SENTENCES rather than as raw days and
+    // cents, because the tree has no arithmetic and no calendar: "5" and "3000"
+    // cannot become "we need 5 days to make it" and "Pay $30.00 today" inside a
+    // bind. `shown` is what the panel's visibility hangs on — absent, not false,
+    // because the engine drops a node whose ref is absent (see `visibleWhen`).
+    madeToOrder: madeToOrderRecord(p, price, commerce),
+  };
+}
+
+/** The made-to-order refs the buy box binds, or an empty object for the products
+ *  that carry none of the three rules — which is every product that existed
+ *  before this, and every one whose maker has not said otherwise. */
+/** The description, split at blank lines, so a shopper reads paragraphs instead of
+ *  one block. The bind writes a text node, and `white-space: normal` collapses the
+ *  newlines an owner typed, so six paragraphs arrived as a twenty-five line wall
+ *  (issue 191). Single newlines join: a wrapped line is not a new paragraph. */
+function descriptionParagraphs(description: string | null | undefined): { text: string }[] {
+  return (description ?? '')
+    .split(/\n\s*\n/)
+    .map((block) => block.replace(/\s*\n\s*/g, ' ').trim())
+    .filter((block) => block.length > 0)
+    .map((text) => ({ text }));
+}
+
+/** What a shopper picks between when a product is sold in more than one version.
+ *
+ *  Labelled from the OPTION VALUES ("M · Clay"), never the variant title, which is
+ *  usually the SKU. The PRICE joins the label only when the versions do not all cost
+ *  the same: the buy box shows one price, and a page that says $128 beside a picker
+ *  holding a $145 version is quoting a price nobody can buy at.
+ *
+ *  Empty for a product with a single version — the buy box swaps its hidden
+ *  `variantId` field back in there, and an empty array is a KNOWN empty answer, which
+ *  is what the two `visible` conditions read. */
+function productVersions(
+  p: PublicProduct,
+  currency: string,
+  locale: string
+): { id: string; label: string }[] {
+  if (p.variants.length < 2) return [];
+  // In the product's OWN option order — Size then Color, every time. Reading
+  // `optionValueIds` in its stored order gave "XS · Clay" beside "Bone · XS" in one
+  // list, because that array is ordered by nothing a shopper can see.
+  const options = [...p.options].sort((a, b) => a.position - b.position);
+  const prices = new Set(p.variants.map((v) => v.yourPriceCents ?? v.priceCents));
+  const showPrice = prices.size > 1;
+  // Sorted the way the owner listed the options — XS through XL, then by color —
+  // rather than in the order the variants happened to be generated in. A size list
+  // reading XS, S, M, L, S, XL is a list a shopper has to search.
+  const rank = (variant: PublicProductVariant): number[] =>
+    options.map((option) => {
+      const held = new Set(variant.optionValueIds);
+      const at = option.values.findIndex((value) => held.has(value.id));
+      return at === -1 ? Number.MAX_SAFE_INTEGER : at;
+    });
+  const ordered = [...p.variants].sort((a, b) => {
+    const [left, right] = [rank(a), rank(b)];
+    for (let i = 0; i < left.length; i += 1) {
+      if (left[i] !== right[i]) return (left[i] ?? 0) - (right[i] ?? 0);
+    }
+    return 0;
+  });
+  return ordered.map((variant) => {
+    const held = new Set(variant.optionValueIds);
+    const named = options
+      .map((option) => option.values.find((value) => held.has(value.id))?.value)
+      .filter((name): name is string => Boolean(name))
+      .join(' · ');
+    const parts = [named || variant.title || variant.sku];
+    if (showPrice)
+      parts.push(formatMoney(variant.yourPriceCents ?? variant.priceCents, currency, locale));
+    if (!variant.inStock) parts.push('sold out');
+    return { id: variant.id, label: parts.join(', ') };
+  });
+}
+
+function madeToOrderRecord(
+  p: PublicProduct,
+  priceCents: number | null,
+  commerce?: { defaultCurrency: string; defaultLocale: string; paymentMode: StorefrontPaymentMode }
+): Record<string, unknown> {
+  const copy = madeToOrderCopy(p.madeToOrder, {
+    priceCents,
+    ...(commerce
+      ? {
+          currency: commerce.defaultCurrency,
+          locale: commerce.defaultLocale,
+          paymentMode: commerce.paymentMode,
+        }
+      : {}),
+  });
+  // EVERY key, always, even when there is nothing to say. An ABSENT key is not the
+  // same as an empty one to the engine: `resolveBinding` answers `undefined` for a
+  // path it cannot walk, which means UNKNOWN REF, and an unknown ref keeps the node
+  // AS AUTHORED. So `madeToOrder: {}` did not hide the panel on an ordinary product —
+  // it rendered an empty bordered box above Add to cart on every one of them (issue
+  // 192). Empty strings are `found`, and the engine drops those.
+  if (!copy) return { shown: false, ready: '', deposit: '', scarce: '' };
+  return {
+    shown: true,
+    ready: copy.ready ?? '',
+    deposit: copy.deposit ?? '',
+    scarce: copy.scarce ?? '',
   };
 }
 

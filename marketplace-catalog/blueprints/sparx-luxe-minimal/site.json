@@ -965,7 +965,7 @@
                       {
                         "kind": "element",
                         "tag": "button",
-                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "class": "btn btn-circle btn-sm scroll-strip-control",
                         "attrs": {
                           "type": "button",
                           "aria-label": "Previous products"
@@ -989,7 +989,7 @@
                       {
                         "kind": "element",
                         "tag": "button",
-                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "class": "btn btn-circle btn-sm scroll-strip-control",
                         "attrs": {
                           "type": "button",
                           "aria-label": "Next products"
@@ -1021,83 +1021,97 @@
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "carousel gap-6",
+                "class": "scroll-strip",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "tag": "div",
+                    "class": "scroll-strip-track",
+                    "part": "track",
                     "children": [
-                      {
-                        "kind": "component",
-                        "component": "Image",
-                        "class": "aspect-square w-full object-cover",
-                        "props": {
-                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
-                          "alt": "Product image"
-                        },
-                        "data": {
-                          "kind": "value",
-                          "ref": "image"
-                        },
-                        "id": "3f7388c3-3a08-492f-823d-b2bf7dc2eefc",
-                        "ord": "a0"
-                      },
                       {
                         "kind": "element",
                         "tag": "div",
-                        "class": "flex flex-col gap-2 p-4",
+                        "class": "flex w-max gap-6 mx-auto",
                         "children": [
                           {
                             "kind": "element",
-                            "tag": "h3",
-                            "class": "font-semibold text-base-content",
-                            "children": ["Product name"],
+                            "tag": "a",
+                            "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary w-64 shrink-0",
+                            "children": [
+                              {
+                                "kind": "component",
+                                "component": "Image",
+                                "class": "aspect-square w-full object-cover",
+                                "props": {
+                                  "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                                  "alt": "Product image"
+                                },
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "image"
+                                },
+                                "id": "3f7388c3-3a08-492f-823d-b2bf7dc2eefc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2 p-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "font-semibold text-base-content",
+                                    "children": ["Product name"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "title"
+                                    },
+                                    "id": "e810e968-578c-4229-9fa3-3373d4b9784c",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-lg font-bold text-base-content",
+                                    "children": ["$0.00"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "price"
+                                    },
+                                    "id": "820e943f-71c4-4afc-b9dc-9ee972314dae",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "6b12263a-5778-433a-a422-969620092e45",
+                                "ord": "a1"
+                              }
+                            ],
                             "data": {
                               "kind": "value",
-                              "ref": "title"
+                              "ref": "url",
+                              "attr": "href"
                             },
-                            "id": "e810e968-578c-4229-9fa3-3373d4b9784c",
+                            "part": "slide",
+                            "id": "3d808495-fea8-4736-ba77-55f2ace6502f",
                             "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg font-bold text-base-content",
-                            "children": ["$0.00"],
-                            "data": {
-                              "kind": "value",
-                              "ref": "price"
-                            },
-                            "id": "820e943f-71c4-4afc-b9dc-9ee972314dae",
-                            "ord": "a1"
                           }
                         ],
-                        "id": "6b12263a-5778-433a-a422-969620092e45",
+                        "data": {
+                          "kind": "collection",
+                          "ref": "commerce.featured"
+                        },
+                        "id": "11939132-32e4-4bc9-9a75-18b8b666628a",
                         "ord": "a1"
                       }
-                    ],
-                    "data": {
-                      "kind": "value",
-                      "ref": "url",
-                      "attr": "href"
-                    },
-                    "part": "slide",
-                    "id": "3d808495-fea8-4736-ba77-55f2ace6502f",
-                    "ord": "a0"
+                    ]
                   }
-                ],
-                "part": "track",
-                "data": {
-                  "kind": "collection",
-                  "ref": "commerce.featured"
-                },
-                "id": "11939132-32e4-4bc9-9a75-18b8b666628a",
-                "ord": "a1"
+                ]
               }
             ],
             "behavior": {
-              "type": "carousel"
+              "type": "scroll-strip"
             },
             "id": "2904fc9b-224a-43b8-bfbd-abe39db4491b",
             "ord": "a2"
@@ -1196,7 +1210,7 @@
                       {
                         "kind": "element",
                         "tag": "button",
-                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "class": "btn btn-circle btn-sm scroll-strip-control",
                         "attrs": {
                           "type": "button",
                           "aria-label": "Previous products"
@@ -1220,7 +1234,7 @@
                       {
                         "kind": "element",
                         "tag": "button",
-                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "class": "btn btn-circle btn-sm scroll-strip-control",
                         "attrs": {
                           "type": "button",
                           "aria-label": "Next products"
@@ -1252,83 +1266,97 @@
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "carousel gap-6",
+                "class": "scroll-strip",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "tag": "div",
+                    "class": "scroll-strip-track",
+                    "part": "track",
                     "children": [
-                      {
-                        "kind": "component",
-                        "component": "Image",
-                        "class": "aspect-square w-full object-cover",
-                        "props": {
-                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
-                          "alt": "Product image"
-                        },
-                        "data": {
-                          "kind": "value",
-                          "ref": "image"
-                        },
-                        "id": "ff216525-2663-4203-8f78-668cc06bda57",
-                        "ord": "a0"
-                      },
                       {
                         "kind": "element",
                         "tag": "div",
-                        "class": "flex flex-col gap-2 p-4",
+                        "class": "flex w-max gap-6 mx-auto",
                         "children": [
                           {
                             "kind": "element",
-                            "tag": "h3",
-                            "class": "font-semibold text-base-content",
-                            "children": ["Product name"],
+                            "tag": "a",
+                            "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary w-64 shrink-0",
+                            "children": [
+                              {
+                                "kind": "component",
+                                "component": "Image",
+                                "class": "aspect-square w-full object-cover",
+                                "props": {
+                                  "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                                  "alt": "Product image"
+                                },
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "image"
+                                },
+                                "id": "ff216525-2663-4203-8f78-668cc06bda57",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2 p-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "font-semibold text-base-content",
+                                    "children": ["Product name"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "title"
+                                    },
+                                    "id": "3cd9c8f0-a86b-4f87-b233-3d581f44dd24",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-lg font-bold text-base-content",
+                                    "children": ["$0.00"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "price"
+                                    },
+                                    "id": "f2d3ee28-4b3b-457a-a687-91fef8447eac",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "136945c0-70ab-45a6-ba0e-2c18d089313f",
+                                "ord": "a1"
+                              }
+                            ],
                             "data": {
                               "kind": "value",
-                              "ref": "title"
+                              "ref": "url",
+                              "attr": "href"
                             },
-                            "id": "3cd9c8f0-a86b-4f87-b233-3d581f44dd24",
+                            "part": "slide",
+                            "id": "f8a92a9e-581a-49d7-9233-e2e3ec5b1907",
                             "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg font-bold text-base-content",
-                            "children": ["$0.00"],
-                            "data": {
-                              "kind": "value",
-                              "ref": "price"
-                            },
-                            "id": "f2d3ee28-4b3b-457a-a687-91fef8447eac",
-                            "ord": "a1"
                           }
                         ],
-                        "id": "136945c0-70ab-45a6-ba0e-2c18d089313f",
+                        "data": {
+                          "kind": "collection",
+                          "ref": "commerce.category.treat"
+                        },
+                        "id": "1b9430ed-35eb-430d-86f9-a556ad23061e",
                         "ord": "a1"
                       }
-                    ],
-                    "data": {
-                      "kind": "value",
-                      "ref": "url",
-                      "attr": "href"
-                    },
-                    "part": "slide",
-                    "id": "f8a92a9e-581a-49d7-9233-e2e3ec5b1907",
-                    "ord": "a0"
+                    ]
                   }
-                ],
-                "part": "track",
-                "data": {
-                  "kind": "collection",
-                  "ref": "commerce.category.treat"
-                },
-                "id": "1b9430ed-35eb-430d-86f9-a556ad23061e",
-                "ord": "a1"
+                ]
               }
             ],
             "behavior": {
-              "type": "carousel"
+              "type": "scroll-strip"
             },
             "id": "2c04aa3f-dc5c-42b9-a095-819fdbcd1a78",
             "ord": "a4"
@@ -2564,7 +2592,7 @@
                       {
                         "kind": "element",
                         "tag": "button",
-                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "class": "btn btn-circle btn-sm scroll-strip-control",
                         "attrs": {
                           "type": "button",
                           "aria-label": "Previous products"
@@ -2588,7 +2616,7 @@
                       {
                         "kind": "element",
                         "tag": "button",
-                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "class": "btn btn-circle btn-sm scroll-strip-control",
                         "attrs": {
                           "type": "button",
                           "aria-label": "Next products"
@@ -2620,83 +2648,97 @@
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "carousel gap-6",
+                "class": "scroll-strip",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "tag": "div",
+                    "class": "scroll-strip-track",
+                    "part": "track",
                     "children": [
-                      {
-                        "kind": "component",
-                        "component": "Image",
-                        "class": "aspect-square w-full object-cover",
-                        "props": {
-                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
-                          "alt": "Product image"
-                        },
-                        "data": {
-                          "kind": "value",
-                          "ref": "image"
-                        },
-                        "id": "01e3efd8-8785-4393-848a-4caac0066286",
-                        "ord": "a0"
-                      },
                       {
                         "kind": "element",
                         "tag": "div",
-                        "class": "flex flex-col gap-2 p-4",
+                        "class": "flex w-max gap-6 mx-auto",
                         "children": [
                           {
                             "kind": "element",
-                            "tag": "h3",
-                            "class": "font-semibold text-base-content",
-                            "children": ["Product name"],
+                            "tag": "a",
+                            "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary w-64 shrink-0",
+                            "children": [
+                              {
+                                "kind": "component",
+                                "component": "Image",
+                                "class": "aspect-square w-full object-cover",
+                                "props": {
+                                  "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                                  "alt": "Product image"
+                                },
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "image"
+                                },
+                                "id": "01e3efd8-8785-4393-848a-4caac0066286",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2 p-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "font-semibold text-base-content",
+                                    "children": ["Product name"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "title"
+                                    },
+                                    "id": "8af4963c-6580-4324-b7d2-7f9d24fbcc73",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-lg font-bold text-base-content",
+                                    "children": ["$0.00"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "price"
+                                    },
+                                    "id": "5aa07357-2de2-4310-bf77-40db6acc6187",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "31b8ad1d-dd2e-4404-8adf-8278c986d7bc",
+                                "ord": "a1"
+                              }
+                            ],
                             "data": {
                               "kind": "value",
-                              "ref": "title"
+                              "ref": "url",
+                              "attr": "href"
                             },
-                            "id": "8af4963c-6580-4324-b7d2-7f9d24fbcc73",
+                            "part": "slide",
+                            "id": "cf59d609-2921-4a03-a965-d52c1e46863f",
                             "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg font-bold text-base-content",
-                            "children": ["$0.00"],
-                            "data": {
-                              "kind": "value",
-                              "ref": "price"
-                            },
-                            "id": "5aa07357-2de2-4310-bf77-40db6acc6187",
-                            "ord": "a1"
                           }
                         ],
-                        "id": "31b8ad1d-dd2e-4404-8adf-8278c986d7bc",
+                        "data": {
+                          "kind": "collection",
+                          "ref": "commerce.related"
+                        },
+                        "id": "429f9fdf-c23a-4bce-a32b-dc57fa4c4fc6",
                         "ord": "a1"
                       }
-                    ],
-                    "data": {
-                      "kind": "value",
-                      "ref": "url",
-                      "attr": "href"
-                    },
-                    "part": "slide",
-                    "id": "cf59d609-2921-4a03-a965-d52c1e46863f",
-                    "ord": "a0"
+                    ]
                   }
-                ],
-                "part": "track",
-                "data": {
-                  "kind": "collection",
-                  "ref": "commerce.related"
-                },
-                "id": "429f9fdf-c23a-4bce-a32b-dc57fa4c4fc6",
-                "ord": "a1"
+                ]
               }
             ],
             "behavior": {
-              "type": "carousel"
+              "type": "scroll-strip"
             },
             "id": "d16e0aa4-f54b-438f-a735-bda36dacd360",
             "ord": "a1"

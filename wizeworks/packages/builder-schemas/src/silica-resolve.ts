@@ -78,8 +78,17 @@ function isEmptyValue(value: unknown): boolean {
 }
 
 /** The two required `ResolveHost` primitives, ready to spread into a `BuilderHost`
- *  or hand to `resolveTree(tree, resolver)` directly. */
-export type SilicaResolver = Required<Pick<ResolveHost, 'resolveBinding' | 'resolveCollection'>>;
+ *  or hand to `resolveTree(tree, resolver)` directly.
+ *
+ *  `imageAlts` is the description an image field carried, kept by url. An image field
+ *  resolves to `{ url, alt }` and silica can bind ONE thing per node, so the url wins and
+ *  the description was dropped here — every photo on every storefront reached the page
+ *  labelled "Product image" (issue 197). The render pipeline puts it back; this is where
+ *  it is picked up, because this is the one place both the canvas and the storefront see
+ *  the object whole. */
+export type SilicaResolver = Required<Pick<ResolveHost, 'resolveBinding' | 'resolveCollection'>> & {
+  imageAlts: ReadonlyMap<string, string>;
+};
 
 /** Resolve a binding against the enclosing `item` when a scope is active.
  *
@@ -137,12 +146,24 @@ export function defaultSilicaFormat(value: unknown, binding: NodeBinding): unkno
   return value;
 }
 
+/** Keep an image field's description against its url, before the url is unwrapped out
+ *  of the object and the description with it. Silent about anything else. */
+function rememberImageAlt(into: Map<string, string>, raw: unknown): void {
+  if (!raw || typeof raw !== 'object') return;
+  const { url, alt } = raw as { url?: unknown; alt?: unknown };
+  if (typeof url !== 'string' || url === '') return;
+  if (typeof alt !== 'string' || alt.trim() === '') return;
+  into.set(url, alt);
+}
+
 /** Build a synchronous sparx resolver over a pre-loaded data root. */
 export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolver {
   const { root, format, label, hideWhenEmpty } = opts;
   const scopeOf = (s: DataScope): Scope => ({ root, item: s.item, index: s.index });
+  const imageAlts = new Map<string, string>();
 
   return {
+    imageAlts,
     // `undefined` (not `{ value: undefined }`) when the ref is UNKNOWN — silica's
     // ResolveHost contract. The engine then keeps the node's AUTHORED content and
     // fires a diagnostic, instead of blanking it. That distinction is the difference
@@ -165,6 +186,7 @@ export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolve
         // one global answer.
         return hideWhenEmpty ? { value: undefined, visible: false } : undefined;
       }
+      rememberImageAlt(imageAlts, raw);
       const value = format ? format(raw, binding) : raw;
       const chip = label?.(binding);
       return {

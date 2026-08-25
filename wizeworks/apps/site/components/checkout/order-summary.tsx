@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { formatMoney } from '@/lib/format';
 import type { CartLine, CartMadeToOrder, CartTotals } from '../cart-provider';
 import { MadeToOrderSummary } from '../made-to-order-summary';
+import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 
 export function OrderSummary({
   lines,
@@ -14,6 +15,7 @@ export function OrderSummary({
   currency,
   surchargeLabel,
   madeToOrder,
+  paymentMode = 'card',
 }: {
   lines: CartLine[];
   totals: CartTotals;
@@ -23,6 +25,8 @@ export function OrderSummary({
   /** Made to order (issue 026). Absent on a checkout that predates it, which
    *  reads as an ordinary basket rather than as one with nothing to pay. */
   madeToOrder?: CartMadeToOrder;
+  /** Whether this website takes money at all (issue 185). */
+  paymentMode?: StorefrontPaymentMode;
 }) {
   const surchargeCents = totals.surchargeTotalCents ?? 0;
   return (
@@ -107,7 +111,12 @@ export function OrderSummary({
           than the total above. This is the last screen before paying, so the
           two numbers have to be on it together (issue 026). */}
       {madeToOrder ? (
-        <MadeToOrderSummary madeToOrder={madeToOrder} currency={currency} settled />
+        <MadeToOrderSummary
+          madeToOrder={madeToOrder}
+          currency={currency}
+          paymentMode={paymentMode}
+          settled
+        />
       ) : null}
       {surchargeCents > 0 ? (
         <p className="text-base-content" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>

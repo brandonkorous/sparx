@@ -174,38 +174,68 @@ function railContainer() {
  * `limit: 12` and a quarter-width slide. silicaui's own schema note says the same thing,
  * which is reassuring given we asked for the field.
  *
- * The basis is a CONTAINER variant ladder — one card on a phone, three at `@2xl`, four
- * at `@4xl` — because a fixed `w-64` rail (the plain `rail` layout) shows the same card
- * size at every width and simply runs off the screen on a phone. Container, not viewport:
- * the block measures the column it was dropped into, so it works in a narrow sidebar as
- * well as full-bleed. That is also the only kind that reflows correctly on the canvas.
+ * SEVERAL AT ONCE, because a featured strip is a list of things to compare and a
+ * strip showing one of them is not that. On a product page it is worse than not
+ * that: a full-width card underneath the product being sold makes the cross-sell
+ * the biggest thing on the page, and the thing the page exists for the smaller.
  *
- * With `gap-6` between quarter-width cards the fourth is clipped by the gaps rather than
- * landing flush. That is left alone on purpose: the sliver of a fifth card is the
- * affordance that says "there is more, scroll" — a carousel whose contents end exactly at
- * the edge looks like a grid that happens not to fit.
+ * ── Why this is a `scroll-strip` and not a `carousel` ────────────────────────
+ *
+ * It was a `carousel`, which shows exactly ONE slide per view: silicaui sizes the
+ * strip's children itself at a specificity a call-site utility cannot beat, and the
+ * block carried a `basis-full @2xl:basis-1/3 @4xl:basis-1/4` ladder that had never
+ * applied. Measured live at a 2543px container: strip 1152px, slide 1152px. Removing
+ * the ladder changed nothing; adding a bare `basis-1/4` changed nothing.
+ *
+ * That was read as "multi-per-view needs a silicaui change". It does not. It needs the
+ * OTHER behavior, which silicaui already ships and which describes this exact case in
+ * its own words: "not `carousel`, which translates a track of full-width slides one at
+ * a time — here every item is meant to be visible at once and the scroll position is
+ * continuous". A `carousel` is for one hero at a time; a rail of products is a
+ * `scroll-strip`. Reaching for the one named like the thing rather than the one
+ * described like the job is the whole mistake, and it cost a blocked issue.
+ *
+ * What comes with it, all from the component rather than from here: the Previous and
+ * Next controls appear only once the cards stop fitting and disable at each end, the
+ * scrollbar chrome stays hidden because the buttons replace it, and the static markup
+ * ships the controls already `hidden` so a no-JS render degrades to a plain scroller
+ * instead of two dead buttons.
+ *
+ * The cards are a real width (`w-64`), so four fit a capped page and a phone gets one
+ * plus the sliver of the next — which is the affordance that says there is more.
  */
-function carouselTrack() {
-  return part(
-    // `carousel` / `carousel-item` are the PLUGIN'S OWN component classes, not utilities.
-    // This started as `flex snap-x snap-mandatory overflow-x-auto scroll-smooth`, which is
-    // `.carousel` re-implemented by hand — the exact thing RULE #1 exists to stop. The real
-    // class also hides the scrollbar chrome (`scrollbar-width: none` + the webkit
-    // pseudo-element), which no combination of sanctioned utilities can express, and which
-    // a carousel needs: a raw scrollbar under a strip that already has Previous and Next is
-    // two competing controls for one job. Touch and trackpad swipe still work — only the
-    // chrome goes.
-    //
-    // `carousel-item` carries `flex-shrink: 0` + `scroll-snap-align: start`, so the slide
-    // only needs its per-view WIDTH. `pb-4` is gone with the scrollbar it was reserving
-    // room for.
-    el('div', 'carousel gap-6', {
-      children: [
-        part(productCardNode('carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4'), 'slide'),
-      ],
+function carouselTrack(): ElementNode {
+  // The REPEAT container: its children repeat inside it, so this is the row itself.
+  //
+  // `w-max` + `mx-auto` is what centres a strip that FITS without breaking one that
+  // does not. `justify-center` on a scroll container strands the leading card behind
+  // an unreachable edge once the row overflows; auto margins only ever distribute
+  // POSITIVE free space, so they centre one product and resolve to zero for twelve.
+  return el('div', 'flex w-max gap-6 mx-auto', {
+    children: [productCardNode('w-64 shrink-0')],
+  });
+}
+
+/** The repeat, wrapped in silica's scroll-strip track, plus whatever else
+ *  `repeatOrMaybeEmpty` returned (the empty sentence, on a layout that has one).
+ *
+ *  Split here rather than at the two call sites because the repeat is ALWAYS the
+ *  first element and the destructure would otherwise be a `Node | undefined` each
+ *  place — a type hole standing in for a shape this module guarantees. */
+function stripTrack(parts: Node[]): Node[] {
+  const [row, ...rest] = parts;
+  if (!row) return parts;
+  return [
+    // `.scroll-strip` wraps ONLY the track. It is the component's own layout class and
+    // lays its children out in a ROW (controls flanking a track), so putting it on the
+    // section's content wrapper put the heading BESIDE the products instead of above
+    // them. The controls live up in the heading row here, deliberately (issue 187), so
+    // this wrapper has one child and the behavior finds its parts by nesting anyway.
+    el('div', 'scroll-strip', {
+      children: [part(el('div', 'scroll-strip-track', { children: [row] }), 'track')],
     }),
-    'track'
-  );
+    ...rest,
+  ];
 }
 
 /**
@@ -219,16 +249,25 @@ function carouselTrack() {
  * nothing inside and nothing for a screen reader to announce. A test below pins that,
  * because it is invisible in review and obvious to anyone using the site.
  *
- * The button is still a silica button: `btn btn-circle btn-sm btn-neutral btn-outline`
- * are the plugin's own emitted classes, so it wears the theme and responds to it. The
- * icon carries `aria-hidden` itself, so the label is the only thing announced.
+ * The button is still a silica button: `btn btn-circle btn-sm` are the plugin's own
+ * emitted classes, so it wears the theme and responds to it. The icon carries
+ * `aria-hidden` itself, so the label is the only thing announced.
+ *
+ * COLORLESS ON PURPOSE. It shipped as `btn-neutral btn-outline`, which is a grey nobody
+ * approved on a control that carries no meaning to colour — moving a strip sideways is
+ * not a destructive act, not a primary one, and not a module's. A bare `.btn` resolves
+ * its ink from `base-content` and is theme-correct in both themes without naming a
+ * colour at all, which is the right control for a genuinely untyped action.
  *
  * `type="button"` because a carousel can legitimately sit inside a form (a filtered
  * PLP), where the HTML default of `submit` would navigate away on the first Next click.
  */
 function carouselControl(role: 'prev' | 'next', label: string, icon: 'arrow-left' | 'arrow-right') {
   return part(
-    el('button', 'btn btn-circle btn-sm btn-neutral btn-outline', {
+    // `scroll-strip-control` is the component's own class: the behavior ships these
+    // hidden, reveals them only once the cards stop fitting, and disables each at its
+    // end. Without it they are two buttons that are always there and never dim.
+    el('button', 'scroll-strip-control btn btn-circle btn-sm', {
       attrs: { type: 'button', 'aria-label': label },
       children: [atom('Icon', 'size-4', { name: icon })],
     }),
@@ -248,8 +287,44 @@ function carouselControl(role: 'prev' | 'next', label: string, icon: 'arrow-left
  *  no price and no stock state (issue 092). */
 const NOTHING_TO_SHOW = 'Nothing in the shop just yet. Check back soon.';
 
+/**
+ * The storefront's content width, as one name (issue 187).
+ *
+ * Every other section on a page caps itself — the footer, the shop header, the nav —
+ * and the products block did not, so its heading started at the window edge while the
+ * buy box above it started 450px in. On a page where one section is full-bleed and the
+ * rest are not, the full-bleed one does not read as "wide", it reads as broken.
+ *
+ * `6xl` because it is what the chrome already uses and what most of this file already
+ * uses. The buy box's `5xl` stays as it is: it caps a half-width product image at a
+ * sane ~500px, which is its own reason and not this one.
+ */
+const CONTENT_WIDTH = 'mx-auto w-full max-w-6xl';
+
 export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
+
+  // A CURATION says nothing when it has nothing to say (issue 187).
+  //
+  // "Featured" over "Nothing in the shop just yet. Check back soon." is a hole on a
+  // live business's page, and on a product page it is also FALSE: a bounded rail
+  // excludes the product being looked at, because it is a cross-sell, so a shop with
+  // one product renders 1 − 1 = 0 and apologises for an empty shop on the page of the
+  // product that is in it.
+  //
+  // The whole-catalog GRID keeps its sentence. A shopper who navigated to the shop
+  // asked the question and is owed the answer; a rail is a garnish nobody asked for.
+  // A CURATION says nothing when it has nothing to say. Its HEADING goes with it: the
+  // heading is the thing that turns an empty strip into a visible hole, because
+  // "Featured" over an apology is a promise the page then breaks. On a product page the
+  // apology is also FALSE — a bounded rail excludes the product being looked at, since
+  // it is a cross-sell, so a one-product shop renders 1 − 1 = 0 and tells every visitor
+  // its shop is empty on the page of the product that is in it.
+  //
+  // The whole-catalog GRID keeps both. A shopper who navigated to the shop asked the
+  // question and is owed the answer; a rail is a garnish nobody asked for.
+  const curated = layout !== 'grid';
+  const emptyText = curated ? null : NOTHING_TO_SHOW;
 
   // A carousel is a different SHAPE, not a different container class: the heading shares
   // a row with the controls, and the whole section carries the behavior. Handled first so
@@ -258,36 +333,43 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
     return behave(
       el('section', 'bg-base-100 @container px-6 py-12', {
         children: [
-          // Controls sit BESIDE the heading rather than floating over the cards. Overlaying
-          // them would need absolute positioning and a scrim to stay legible against
-          // whatever product photo happens to be underneath — a shadow by another name, and
-          // a control whose contrast depends on the tenant's imagery is one that will be
-          // unreadable on someone's site. In the header row it is legible by construction.
-          el('div', 'mb-8 flex items-center justify-between gap-6', {
+          el('div', CONTENT_WIDTH, {
             children: [
-              el('h2', 'text-2xl font-semibold text-base-content', { text: heading }),
-              el('div', 'flex gap-2', {
-                children: [
-                  carouselControl('prev', 'Previous products', 'arrow-left'),
-                  carouselControl('next', 'Next products', 'arrow-right'),
-                ],
-              }),
+              // Controls sit BESIDE the heading rather than floating over the cards.
+              // Overlaying them would need absolute positioning and a scrim to stay
+              // legible against whatever product photo happens to be underneath — a
+              // shadow by another name, and a control whose contrast depends on the
+              // tenant's imagery is one that will be unreadable on someone's site. In
+              // the header row it is legible by construction.
+              headingRow(
+                el('div', 'mb-8 flex items-center justify-between gap-6', {
+                  children: [
+                    el('h2', 'text-2xl font-semibold text-base-content', { text: heading }),
+                    el('div', 'flex gap-2', {
+                      children: [
+                        carouselControl('prev', 'Previous products', 'arrow-left'),
+                        carouselControl('next', 'Next products', 'arrow-right'),
+                      ],
+                    }),
+                  ],
+                }),
+                curated ? source : null
+              ),
+              ...stripTrack(repeatOrMaybeEmpty(carouselTrack(), source, emptyText)),
             ],
           }),
-          ...repeatOrEmpty(carouselTrack(), source, NOTHING_TO_SHOW),
         ],
       }),
-      { type: 'carousel' }
+      { type: 'scroll-strip' }
     );
   }
 
   const children: Node[] = [
-    el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
-    ...repeatOrEmpty(
-      layout === 'rail' ? railContainer() : gridContainer(),
-      source,
-      NOTHING_TO_SHOW
+    headingRow(
+      el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
+      curated ? source : null
     ),
+    ...repeatOrMaybeEmpty(layout === 'rail' ? railContainer() : gridContainer(), source, emptyText),
   ];
   // A GRID over the whole catalog gets page links under it, because that grid is the
   // one that runs out of room: it shows 24 records and the catalog has more. A RAIL is
@@ -303,7 +385,42 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   if (layout === 'grid' && source === 'commerce.product') {
     children.push(hostCore(HOST_KEYS.sitePagination, 'pt-4'));
   }
-  return el('section', 'bg-base-100 @container px-6 py-12', { children });
+  return el('section', 'bg-base-100 @container px-6 py-12', {
+    children: [el('div', CONTENT_WIDTH, { children })],
+  });
+}
+
+/** The empty sentence, or no sentence at all. `repeatOrEmpty` always writes one; a
+ *  curation passes null and gets just the repeat, because its whole section is about to
+ *  be dropped by `hideWhenCurationEmpty` anyway. */
+function repeatOrMaybeEmpty(container: ElementNode, ref: string, emptyText: string | null): Node[] {
+  if (emptyText !== null) return repeatOrEmpty(container, ref, emptyText);
+  const only = repeat(container, ref);
+  only.data = { kind: 'collection', ref, omitWhenEmpty: true };
+  return [only];
+}
+
+/**
+ * A curation's heading, which leaves when its products do. `ref` is null for the
+ * whole-catalog grid, whose heading always stands.
+ *
+ * A SIBLING of the repeat, never an ancestor of it — which is not a style preference,
+ * it is the engine's contract. `visible` reads `resolveBinding` and a repeat reads
+ * `resolveCollection` (see `conditional.ts`), so a host that implements only the latter
+ * cannot answer a `visible` carrying a collection ref. On an unanswerable ref the engine
+ * keeps the node AS AUTHORED and stops there — which, on an ancestor, means the repeat
+ * beneath it never resolves and the whole strip renders its placeholder card: "Product
+ * name · $0.00". Wrapping the section in `visible` was the first attempt here and it did
+ * exactly that; `record-templates-render` caught it.
+ *
+ * As a sibling it is the same shape the empty sentence has always used, one polarity
+ * apart, and the repeat beside it keeps resolving through its own mechanism whatever
+ * this one answers. A host that cannot answer the ref drops the heading — so a host
+ * that renders these blocks must publish its sources on the data root, which is what
+ * `createSilicaResolver` does for both the storefront and the studio canvas.
+ */
+function headingRow(row: ElementNode, ref: string | null): Node {
+  return ref === null ? row : visibleWhen(row, ref);
 }
 
 /** A HEADLESS product carousel — the same `track` + Previous/Next the carousel
@@ -311,21 +428,28 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
  *  is the section-level block a page drops in directly; this is the bare interactive strip, for
  *  a container that already frames it — a tab panel whose pill row is the heading, a column
  *  that supplies its own padding. Same `carousel` behavior + `carousel`/`carousel-item` classes,
- *  so it hydrates and scrolls identically; only the surrounding section + `<h2>` are dropped. */
+ *  so it hydrates and scrolls identically; only the surrounding section + `<h2>` are dropped.
+ *
+ *  Its controls go with its products (issue 187): two dead arrows over an apology is
+ *  worse than nothing, and the container that already frames this is the thing that
+ *  should decide what an empty strip looks like. */
 export function productCarousel(source: ProductsSource = 'commerce.product'): Node {
   return behave(
     el('div', 'flex flex-col gap-6', {
       children: [
-        el('div', 'flex items-center justify-end gap-2', {
-          children: [
-            carouselControl('prev', 'Previous products', 'arrow-left'),
-            carouselControl('next', 'Next products', 'arrow-right'),
-          ],
-        }),
-        ...repeatOrEmpty(carouselTrack(), source, NOTHING_TO_SHOW),
+        headingRow(
+          el('div', 'flex items-center justify-end gap-2', {
+            children: [
+              carouselControl('prev', 'Previous products', 'arrow-left'),
+              carouselControl('next', 'Next products', 'arrow-right'),
+            ],
+          }),
+          source
+        ),
+        ...stripTrack(repeatOrMaybeEmpty(carouselTrack(), source, null)),
       ],
     }),
-    { type: 'carousel' }
+    { type: 'scroll-strip' }
   );
 }
 
@@ -342,7 +466,14 @@ export function productGrid(): Node {
 /** A horizontal, snap-scrolling rail of FEATURED products — a preset of
  *  `productsBlock` bound to the BOUNDED `commerce.featured` source (merchant-tagged,
  *  capped to a handful, newest-few fallback, current product excluded on a PDP). A
- *  curated few, never the entire catalog. */
+ *  curated few, never the entire catalog.
+ *
+ *  **Not the default any more, and not what a page should reach for first** (issue 187).
+ *  A rail is a fixed `w-64` strip with a raw scrollbar under it: it shows the same card
+ *  size at every width, runs off the side of a phone, and offers a shopper no control
+ *  except dragging. `featuredCarousel` below does the same job with real Previous/Next
+ *  buttons and a card that reflows. This preset stays because a rail is a legitimate
+ *  thing to CHOOSE in the editor; nothing ships it by default. */
 export function featuredProducts(): Node {
   return productsBlock({ source: 'commerce.featured', layout: 'rail', heading: 'Featured' });
 }
@@ -352,7 +483,11 @@ export function featuredProducts(): Node {
  *  separate preset exists because a rail and a carousel are different promises to a
  *  shopper: a rail says "swipe if you like", a carousel says "there is more, here is how
  *  to reach it". An author who wants a different count sets `limit` on the repeat in the
- *  editor — the block deliberately hard-codes neither. */
+ *  editor — the block deliberately hard-codes neither.
+ *
+ *  **This is what every default page ships** — the starter's home page and the product
+ *  page's cross-sell both. It was built and then left uncalled, which is how a scroll
+ *  strip ended up being the thing every tenant's site was born with. */
 export function featuredCarousel(): Node {
   return productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Featured' });
 }
@@ -377,6 +512,57 @@ export function featuredCarousel(): Node {
  *  to '' for a product with no live variant. No `required` guard here, because the
  *  attribute is inert on a hidden input and `checkValidity()` would pass anyway —
  *  the storefront's `onAction` is what refuses to add an empty variant. */
+/**
+ * WHICH ONE a shopper is buying — the sizes, colors and other versions a product is
+ * sold in.
+ *
+ * The buy box had none. It posted a hidden `variantId` fixed to the default version,
+ * so every shopper on a five-size garment bought the same size whatever they wanted,
+ * and nothing on the page said so (issue 190). The platform had a full swatch picker
+ * built — `apps/site/components/product-detail.tsx`, availability per option value and
+ * an image that follows the color — but the live page takes the silica record-template
+ * branch and never reaches it.
+ *
+ * RADIOS, not a `<select>`, and no JavaScript in either case. `<option>` would have to
+ * carry its id in `value` AND its words as text, and a node carries ONE binding — so
+ * the label would have to be a `<span>` inside an `<option>`, which browsers flatten.
+ * A radio splits cleanly: the input binds its `value`, the span beside it binds the
+ * words. It is also the better control for five sizes, which want to be seen at once.
+ *
+ * `required` on every radio is what makes the browser refuse a submit with nothing
+ * picked, rather than defaulting silently to whichever version happened to be first.
+ * Empty for a single-version product, where the hidden field takes over.
+ */
+export function versionPicker(): Node {
+  return visibleWhen(
+    el('fieldset', 'flex flex-col gap-2', {
+      children: [
+        el('legend', 'text-base font-medium text-base-content', { text: 'Choose yours' }),
+        repeat(
+          el('div', 'flex flex-wrap gap-x-4 gap-y-2', {
+            children: [
+              el('label', 'flex items-center gap-2 text-base text-base-content', {
+                children: [
+                  bindAttr(
+                    el('input', 'radio', {
+                      attrs: { type: 'radio', name: 'variantId', required: 'required' },
+                    }),
+                    'value',
+                    'id'
+                  ),
+                  bind(el('span', '', { text: '' }), 'label'),
+                ],
+              }),
+            ],
+          }),
+          'versions'
+        ),
+      ],
+    }),
+    'versions'
+  );
+}
+
 export function addToCartForm(): Node {
   return action(
     behave(
@@ -390,7 +576,24 @@ export function addToCartForm(): Node {
         // overwrite it with the real reason ("Sorry, this item just sold out.").
         attrs: { 'data-success-message': '' },
         children: [
-          bind(el('input', '', { attrs: { type: 'hidden', name: 'variantId' } }), 'variantId'),
+          versionPicker(),
+          // The hidden field and the picker are the SAME form field, so exactly one of
+          // them may exist: two controls named `variantId` both post. The picker shows
+          // when there are versions to choose between; this shows when there are not.
+          // The wrapper carries the condition because the input's own binding slot is
+          // already spoken for by its value.
+          visibleWhen(
+            el('div', '', {
+              children: [
+                bind(
+                  el('input', '', { attrs: { type: 'hidden', name: 'variantId' } }),
+                  'variantId'
+                ),
+              ],
+            }),
+            'versions',
+            true
+          ),
           // The quantity control nests INSIDE its label, so the pair needs no `id`
           // — a page with two buy boxes would otherwise emit a duplicate id.
           el('label', 'flex items-center gap-3 text-base text-base-content', {
@@ -468,47 +671,58 @@ export function soldOutNotice(): Node {
  * whatever ITS type defines.
  */
 export function productAttributes(): Node {
+  // A repeat renders its container's CHILDREN once per item, INSIDE that container —
+  // it does not clone the container. So the per-section box has to be the repeat's
+  // child, not the repeat itself. It was the repeat itself, which put every section's
+  // heading and value into ONE box: five sections came out as fourteen loose siblings
+  // with no rule between them, and the nested `items` repeat did the same to the
+  // materials rows (issue 193).
+  const section = el('div', 'flex flex-col gap-2 border-t border-base-300 pt-4', {
+    children: [
+      bind(
+        el('h2', 'text-sm font-semibold uppercase tracking-wide text-base-content', {
+          text: 'Section',
+        }),
+        'label'
+      ),
+      // Scalar value — dropped for a repeater section (its `value` is '').
+      //
+      // The condition and the value are two nodes ON PURPOSE. A node carries ONE
+      // `data` marker, so `visibleWhen(bind(div))` silently threw the bind away and
+      // the div rendered EMPTY on every scalar attribute (issue 193).
+      visibleWhen(
+        el('div', '', {
+          children: [
+            bind(el('p', 'text-base leading-relaxed text-base-content', { text: '' }), 'value'),
+          ],
+        }),
+        'value'
+      ),
+      // Repeater rows (materials, specs, nutrition). `omitWhenEmpty`, because a
+      // repeat over an EMPTY list renders its template once — which on a scalar
+      // section printed the section's own label a second time with its value beside
+      // it, and that is what made every detail read twice.
+      ...repeatOrMaybeEmpty(
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            el('div', 'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1', {
+              children: [
+                bind(el('span', 'text-base font-medium text-base-content', { text: '' }), 'label'),
+                bind(el('span', 'text-base text-base-content', { text: '' }), 'value'),
+              ],
+            }),
+          ],
+        }),
+        'items',
+        null
+      ),
+    ],
+  });
+
   return visibleWhen(
-    el('div', 'mt-2 flex flex-col gap-5', {
+    el('div', 'mt-2', {
       children: [
-        repeat(
-          el('div', 'flex flex-col gap-2 border-t border-base-300 pt-4', {
-            children: [
-              bind(
-                el('h2', 'text-sm font-semibold uppercase tracking-wide text-base-content', {
-                  text: 'Section',
-                }),
-                'label'
-              ),
-              // Scalar value — dropped for a repeater section (its `value` is '').
-              visibleWhen(
-                bind(
-                  el('div', 'text-base leading-relaxed text-base-content', { text: '' }),
-                  'value'
-                ),
-                'value'
-              ),
-              // Repeater rows — an empty list for a scalar section, so this renders nothing there.
-              repeat(
-                el(
-                  'div',
-                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
-                  {
-                    children: [
-                      bind(
-                        el('span', 'text-base font-medium text-base-content', { text: '' }),
-                        'label'
-                      ),
-                      bind(el('span', 'text-base text-base-content', { text: '' }), 'value'),
-                    ],
-                  }
-                ),
-                'items'
-              ),
-            ],
-          }),
-          'attributeSections'
-        ),
+        repeat(el('div', 'flex flex-col gap-5', { children: [section] }), 'attributeSections'),
       ],
     }),
     'attributeSections'
@@ -553,6 +767,48 @@ export function productStockBadge(): Node {
       }
     ),
     'lowStock'
+  );
+}
+
+/**
+ * What a shopper has to know before they commit to a thing that has to be MADE
+ * (issue 184): how long the wait is, what happens to their money, and whether
+ * today's batch has any left.
+ *
+ * It binds three SENTENCES rather than three values, because the tree has no
+ * arithmetic and no calendar — "5" and "3000" cannot become "we need 5 days to
+ * make it" and "Pay $30.00 today" inside a bind. The storefront composes them
+ * (`lib/made-to-order-copy`) and this places them.
+ *
+ * The whole panel hangs on `madeToOrder.shown`, which is ABSENT rather than
+ * false on an ordinary product, so a product with none of the three rules
+ * renders nothing at all — which is every product that existed before this. Each
+ * line carries its own condition too: a deposit with no notice period, or a
+ * notice period with no deposit, are both ordinary.
+ *
+ * It sits ABOVE the add-to-cart form, not below it. The wait and the deposit
+ * change what somebody is agreeing to, so they have to be read before the button
+ * and not after it.
+ */
+export function madeToOrderNote(): Node {
+  const line = (ref: string, cls: string): Node =>
+    visibleWhen(
+      el('span', cls, { children: [bind(el('span', '', { text: '' }), `madeToOrder.${ref}`)] }),
+      `madeToOrder.${ref}`
+    );
+  return visibleWhen(
+    el(
+      'div',
+      'flex flex-col gap-1 rounded-box border border-base-300 bg-base-200 p-3 text-sm text-base-content',
+      {
+        children: [
+          line('ready', 'font-semibold'),
+          line('deposit', ''),
+          line('scarce', 'font-semibold'),
+        ],
+      }
+    ),
+    'madeToOrder.shown'
   );
 }
 
@@ -613,10 +869,27 @@ export function buyBox(): Node {
                 }),
                 // Honest low-stock signal (docs/143) — self-hides when stock is healthy.
                 productStockBadge(),
-                bind(
-                  el('div', 'text-base-content', { text: 'Product description.' }),
-                  'description'
+                // PARAGRAPHS, not one bind. A bind writes a single text node, and
+                // `white-space: normal` collapses the blank lines an owner typed — six
+                // paragraphs about a garment arrived as one twenty-five-line block
+                // (issue 191). The record splits the same words at blank lines.
+                //
+                // `omitWhenEmpty`, so a product that HAS no description renders
+                // nothing rather than the template's placeholder paragraph (issue
+                // 092). The scaffolding text survives only where the ref is unknown,
+                // which is an authoring canvas — a storefront record always carries
+                // the field, empty array and all.
+                ...repeatOrMaybeEmpty(
+                  el('div', 'flex flex-col gap-3 text-base-content', {
+                    children: [bind(el('p', '', { text: 'Product description.' }), 'text')],
+                  }),
+                  'descriptionParagraphs',
+                  null
                 ),
+                // Before the button, because it changes what is being agreed to
+                // (issue 184). Self-hides on every product that is not made to
+                // order, which is most of them.
+                madeToOrderNote(),
                 // The form and the notice hang off the SAME `soldOut` bind, one negated,
                 // so a product that cannot be bought never renders a control that says
                 // it can. Wrapped in a plain div because a node carries one `data`
@@ -662,9 +935,12 @@ export function productDetailPage(): Node {
   return el('div', 'flex flex-col', {
     children: [
       // `buyBox()` is a self-contained section now (its own padding + `max-w-5xl`), so the
-      // page simply stacks it above the cross-sell rail — no extra wrapper.
+      // page simply stacks it above the cross-sell strip — no extra wrapper.
       buyBox(),
-      featuredProducts(),
+      // A carousel rather than the scroll rail (issue 187), and it now removes itself
+      // when there is nothing to cross-sell — which on a one-product shop is ALWAYS,
+      // because the strip excludes the product being looked at.
+      featuredCarousel(),
     ],
   });
 }

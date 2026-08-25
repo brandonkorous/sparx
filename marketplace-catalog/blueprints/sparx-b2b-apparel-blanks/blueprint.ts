@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-apparel-blanks',
-  version: '1.4.2',
+  version: '1.4.3',
   name: 'Blank Apparel (Wholesale)',
   summary:
     'A complete, working wholesale shop for a blank-apparel supplier: a real catalogue of blank tees, fleece, headwear and bags sold by the case and priced per unit, with Color × Size variant grids, categories, collections, a bespoke trade PDP carrying bulk price breaks and net-terms, and a merchandised home page pitched at decorators. Clean, catalogue-efficient theme — cool slate paper, near-black ink, one confident cobalt accent. Shipped as Blankstock.',

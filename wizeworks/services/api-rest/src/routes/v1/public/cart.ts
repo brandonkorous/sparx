@@ -94,6 +94,22 @@ async function serializePublicCart(
           select: {
             id: true,
             title: true,
+            // What the shopper actually PICKED. A variant's `title` is usually null on
+            // a product sold by size and color, so a basket holding an S and an XL of
+            // the same garment named both of them "Marlow Knit" and left a product code
+            // as the only difference (issue 194). The option values are the words the
+            // shopper chose from, in the product's own option order.
+            optionAssignments: {
+              select: {
+                optionValue: {
+                  select: {
+                    value: true,
+                    position: true,
+                    option: { select: { position: true } },
+                  },
+                },
+              },
+            },
             product: {
               select: {
                 handle: true,
@@ -110,6 +126,20 @@ async function serializePublicCart(
     : [];
   const byVariant = new Map(variants.map((v) => [v.id, v]));
 
+  /** "S · Moss" — the version in the shopper's words, or the variant's own title when
+   *  it has one that is not just a repeat of the product name. */
+  const variantWords = (v: (typeof variants)[number]): string | null => {
+    const picked = [...v.optionAssignments]
+      .sort(
+        (a, b) =>
+          a.optionValue.option.position - b.optionValue.option.position ||
+          a.optionValue.position - b.optionValue.position
+      )
+      .map((row) => row.optionValue.value);
+    if (picked.length > 0) return picked.join(' · ');
+    return v.title;
+  };
+
   const items: PublicCartLine[] = snapshot.items.map((i) => {
     const v = byVariant.get(i.variantId);
     return {
@@ -118,7 +148,7 @@ async function serializePublicCart(
       productId: i.productId,
       productHandle: v?.product.handle ?? null,
       title: i.name,
-      variantTitle: v?.title ?? null,
+      variantTitle: v ? variantWords(v) : null,
       sku: i.sku,
       imageMediaId: v?.product.images[0]?.mediaAssetId ?? null,
       unitPriceCents: i.unitPriceCents,

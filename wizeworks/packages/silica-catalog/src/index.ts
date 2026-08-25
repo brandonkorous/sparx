@@ -34,6 +34,7 @@ export * from './base-theme';
 export * from './sections';
 export * from './site-chrome';
 export * from './site';
+export * from './image-alt';
 export * from './render';
 export * from './responsive-images';
 

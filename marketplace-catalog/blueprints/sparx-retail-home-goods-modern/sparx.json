@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-home-goods-modern",
   "name": "Home Goods (Modern Design)",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "tagline": "A crisp, modern storefront for a design-led homeware brand.",
   "description": "A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.",
   "payload": "blueprint.ts",

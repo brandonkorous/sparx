@@ -91,8 +91,10 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
   return function mountHostCore(node: HostNode): React.ReactNode {
     switch (node.component) {
       case HOST_KEYS.commerceCart:
-        // Self-contained: cart state is client-side, so no props/context needed.
-        return <CartView />;
+        // Cart state is client-side, so the basket needs nothing handed to it —
+        // except the one thing it cannot know from the basket: whether this shop
+        // takes money on this website at all (issue 185).
+        return <CartView paymentMode={ctx.site.commerce.paymentMode} />;
       case HOST_KEYS.commerceSearch:
         return <SearchExperience site={ctx.site} searchParams={ctx.searchParams ?? {}} />;
       case HOST_KEYS.commercePlp:

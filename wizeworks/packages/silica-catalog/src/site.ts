@@ -28,7 +28,7 @@ import {
 } from '@wizeworks/silicaui-html';
 
 import { blogIndexPage } from './cms';
-import { featuredProducts, productGrid, shopHeader } from './commerce';
+import { featuredCarousel, productGrid, shopHeader } from './commerce';
 import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
 import {
   RECORD_ADDRESSES,
@@ -232,7 +232,7 @@ export function starterFrame(opts: SiteChromeOptions = {}): Frame {
 export function starterPages(opts: SiteChromeOptions = {}): Page[] {
   const { commerceEnabled = true, schedulingEnabled = false, cmsEnabled = false } = opts;
   const homeSections = commerceEnabled
-    ? [hero(true), productGrid(), featuredProducts(), ctaBand()]
+    ? [hero(true), productGrid(), featuredCarousel(), ctaBand()]
     : [hero(false), ctaBand()];
   return [
     makePage('Home', '/', stampTree(pageBody(homeSections))),

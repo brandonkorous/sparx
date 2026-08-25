@@ -19,11 +19,15 @@
 //   5. responsiveImages — offer the browser the width ladder for every sparx-hosted
 //      image. Must run after resolution: a product card's image source comes
 //      from the record, so before step 3 there is no URL to build a `srcset` from.
-//   6. fillMissingImageSrc — an image with no src left after all of the above gets
+//   6. fillImageAlt   — put back the description the record carried. An image binds
+//      its `src` OR its `alt` (one marker per node), so `src` wins and the sentence
+//      the owner wrote is dropped at resolution; the resolver keeps it by url and
+//      this stage writes it back. See `image-alt.ts`.
+//   7. fillMissingImageSrc — an image with no src left after all of the above gets
 //      the placeholder, so an empty catalog draws grey art rather than the broken-
 //      image glyph. After step 5 on purpose: it must see the final src, and a data:
 //      URI is not something to build a `srcset` from.
-//   7. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
+//   8. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
 //      behavior/action nodes are lowered for the client behavior runtime to wire.
 //
 // Pure + framework-free (silicaui-html only), so it runs on the server (RSC /
@@ -31,6 +35,7 @@
 
 import { dropEmptyUrlAttrs, fillMissingImageSrc } from './attr-binding';
 import { isRecordAddress } from './record-templates';
+import { fillImageAlt } from './image-alt';
 import { responsiveImages } from './responsive-images';
 import {
   composeFrame,
@@ -71,8 +76,26 @@ export interface RenderSilicaPageOptions {
  * So there is one function, and a new stage is added HERE. A caller that resolves a tree
  * and then reaches for the individual passes is the bug both times over.
  */
-export function finalizeTree(resolved: Node): Node {
-  return fillMissingImageSrc(responsiveImages(dropEmptyUrlAttrs(resolved)));
+export function finalizeTree(resolved: Node, imageAlts?: ReadonlyMap<string, string>): Node {
+  const withAlt = imageAlts
+    ? fillImageAlt(responsiveImages(dropEmptyUrlAttrs(resolved)), imageAlts)
+    : responsiveImages(dropEmptyUrlAttrs(resolved));
+  return fillMissingImageSrc(withAlt);
+}
+
+/**
+ * The `{url → alt}` a resolver collected, if it is one of ours.
+ *
+ * A `ResolveHost` is silica's type and carries no such field; sparx's
+ * `createSilicaResolver` adds it. Read structurally rather than by import so this package
+ * keeps no dependency on `@wizeworks/builder-schemas`, and so a host that is NOT ours
+ * simply contributes nothing instead of failing.
+ */
+export function imageAltsOf(
+  host: ResolveHost | undefined
+): ReadonlyMap<string, string> | undefined {
+  const alts = (host as { imageAlts?: unknown } | undefined)?.imageAlts;
+  return alts instanceof Map ? (alts as ReadonlyMap<string, string>) : undefined;
 }
 
 /** Compose (frame ⊕ body), flatten symbols, resolve bindings, and project one
@@ -87,7 +110,7 @@ function renderComposedTree(
   const body = flattenSymbols(pageRoot, symbols);
   const composed = frameRoot ? composeFrame(flattenSymbols(frameRoot, symbols), body) : body;
   const resolved = opts.host ? resolveTree(composed, opts.host, opts.scope) : composed;
-  return toHtml(finalizeTree(resolved), opts.html);
+  return toHtml(finalizeTree(resolved, imageAltsOf(opts.host)), opts.html);
 }
 
 /** Render ONE page of a site to the full production HTML a visitor to its route

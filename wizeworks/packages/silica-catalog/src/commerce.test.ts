@@ -51,7 +51,12 @@ const PRODUCT = {
   title: 'Solo Desk',
   price: 210,
   description: 'A tidy desk.',
+  // The paragraph shape the storefront record carries (issue 191); the flat string
+  // stays because the cards still bind it.
+  descriptionParagraphs: [{ text: 'A tidy desk.' }],
   variantId: 'var_solo_default',
+  // One version, so the buy box keeps its hidden field rather than a picker.
+  versions: [],
 };
 // A collection carrying its OWN products (the shape the storefront injects) — its
 // `products` is a scope-relative field, resolved off the in-scope collection item.
@@ -61,9 +66,24 @@ const COLLECTION = {
   products: PRODUCTS,
 };
 
+// What the REAL resolver publishes on its data root, so a `value` ref naming a source
+// resolves through `resolveBinding` and not only through `resolveCollection`. This
+// double implemented the scoped-item half only, which made it lie about a contract
+// `conditional.ts` documents and the storefront depends on ("a host that publishes its
+// collections on the resolver root answers both"). A curated section hangs its heading
+// off exactly that, so without this the double reported the heading as missing on a
+// host where it is present.
+const ROOT_SOURCES: Record<string, unknown[]> = {
+  'commerce.product': PRODUCTS,
+  'commerce.featured': PRODUCTS,
+};
+
 const host: ResolveHost = {
   resolveBinding(ref: string, scope: DataScope) {
     const item = scope.item as Record<string, unknown> | undefined;
+    if (item && ref in item) return { value: item[ref] };
+    // A root path — the shape `resolvePathEx` answers in builder-schemas.
+    if (ref in ROOT_SOURCES) return { value: ROOT_SOURCES[ref] };
     return { value: item?.[ref] };
   },
   resolveCollection(ref: string, scope: DataScope) {
@@ -71,9 +91,13 @@ const host: ResolveHost = {
     if (ref === 'commerce.featured') return PRODUCTS; // bounded rail — host fills a slice
     if (ref === 'product') return [PRODUCT]; // object source → collection-of-one
     if (ref === 'collection') return [COLLECTION];
-    // Scope-relative `products` — the collection's own list, off the in-scope item
-    // (mirrors the sparx resolver's `item.products` re-rooting).
-    if (ref === 'products') return (scope.item as { products?: unknown[] })?.products ?? [];
+    // ANY array field on the in-scope item, which is what the real resolver does
+    // (`resolveScoped` reads the item first and the root second, for collections and
+    // scalars alike). It was a hardcoded `products` and then `[]` for everything else,
+    // so `descriptionParagraphs` and `versions` — both record fields the buy box
+    // repeats — came back EMPTY from the double and present from production.
+    const fromItem = (scope.item as Record<string, unknown> | undefined)?.[ref];
+    if (Array.isArray(fromItem)) return fromItem as readonly unknown[];
     return [];
   },
 };
@@ -217,6 +241,37 @@ describe('buy_box — self-scoping product detail', () => {
     expect((html.match(/Solo Desk/g) ?? []).length).toBe(1);
   });
 
+  // Her words, in the shape she typed them (issue 191). A bind writes ONE text node,
+  // and `white-space: normal` collapses the blank lines an owner left between
+  // paragraphs — six paragraphs about a garment reached the page as one block.
+  it('renders one paragraph per block of the description', () => {
+    const WRITTEN = {
+      ...PRODUCT,
+      descriptionParagraphs: [{ text: 'A tidy desk.' }, { text: 'Oak, oiled by hand.' }],
+    };
+    const wrote: ResolveHost = {
+      ...host,
+      resolveCollection: (ref, scope) =>
+        ref === 'product' ? [WRITTEN] : (host.resolveCollection?.(ref, scope) ?? []),
+    };
+    const html = toHtml(resolveTree(buyBox(), wrote));
+    expect(html).toContain('<p>A tidy desk.</p>');
+    expect(html).toContain('<p>Oak, oiled by hand.</p>');
+  });
+
+  it('says nothing at all for a product with no description', () => {
+    // The template's own placeholder must never reach a shopper as a fact (issue 092).
+    const SILENT = { ...PRODUCT, description: '', descriptionParagraphs: [] };
+    const silent: ResolveHost = {
+      ...host,
+      resolveCollection: (ref, scope) =>
+        ref === 'product' ? [SILENT] : (host.resolveCollection?.(ref, scope) ?? []),
+    };
+    const html = toHtml(resolveTree(buyBox(), silent));
+    expect(html).not.toContain('Product description.');
+    expect(html).not.toContain('<p></p>');
+  });
+
   // The add-to-cart contract, end to end through the real engine. Every one of
   // these was silently broken before silicaui 0.12: `fillValue` wrote a bound
   // value into an element's CHILDREN, and `input` is a void element, so `toHtml`
@@ -227,6 +282,56 @@ describe('buy_box — self-scoping product detail', () => {
     expect(html).toContain('value="var_solo_default"');
     // …and as an ATTRIBUTE, never as text content the browser would ignore.
     expect(html).not.toContain('>var_solo_default<');
+  });
+
+  // WHICH ONE a shopper is buying (issue 190). The buy box shipped with a hidden
+  // `variantId` fixed to the default version and no control anywhere, so on a garment
+  // in five sizes and three colors every shopper bought the same one — silently, with
+  // nothing on the page even hinting there was a choice.
+  describe('the version picker', () => {
+    const SIZED = {
+      ...PRODUCT,
+      versions: [
+        { id: 'var_s', label: 'S · Clay' },
+        { id: 'var_m', label: 'M · Clay' },
+        { id: 'var_l', label: 'L · Clay, sold out' },
+      ],
+    };
+    const sized: ResolveHost = {
+      ...host,
+      resolveCollection: (ref, scope) =>
+        ref === 'product' ? [SIZED] : (host.resolveCollection?.(ref, scope) ?? []),
+    };
+
+    it('renders one radio per version, each carrying its own variant id', () => {
+      const html = toHtml(resolveTree(buyBox(), sized));
+      expect(html).toContain('Choose yours');
+      expect((html.match(/type="radio"/g) ?? []).length).toBe(3);
+      for (const version of SIZED.versions) {
+        expect(html).toContain(`value="${version.id}"`);
+        expect(html).toContain(version.label);
+      }
+    });
+
+    it('drops the hidden field when there is a picker, so only ONE variantId posts', () => {
+      const html = toHtml(resolveTree(buyBox(), sized));
+      expect(html).not.toContain('type="hidden"');
+      expect((html.match(/name="variantId"/g) ?? []).length).toBe(3);
+    });
+
+    it('requires a choice rather than defaulting to whichever came first', () => {
+      // Without `required` the browser posts nothing for an untouched radio group and
+      // the shopper is back to buying a version they never picked.
+      const html = toHtml(resolveTree(buyBox(), sized));
+      expect(html).toMatch(/type="radio"[^>]*required/);
+    });
+
+    it('keeps the hidden field, and shows no picker, for a single-version product', () => {
+      const html = toHtml(resolveTree(buyBox(), host));
+      expect(html).not.toContain('Choose yours');
+      expect(html).not.toContain('type="radio"');
+      expect(html).toContain('value="var_solo_default"');
+    });
   });
 
   it('marks the form as both a form behavior and the add-to-cart action', () => {
@@ -244,6 +349,65 @@ describe('buy_box — self-scoping product detail', () => {
     expect(html).toContain('name="quantity"');
     expect(html).toMatch(/name="quantity"[^>]*value="1"/);
     expect(html).toMatch(/name="quantity"[^>]*min="1"/);
+  });
+
+  // A typed product's own detail blocks — fabric, fit, care, materials (issue 193).
+  // Nothing had ever rendered these against real data, and all three faults showed up
+  // the first time somebody put a real garment on a real site.
+  describe('the typed detail sections', () => {
+    const TYPED = {
+      ...PRODUCT,
+      attributeSections: [
+        { key: 'fabric', label: 'Fabric & construction', value: '11oz cotton canvas.', items: [] },
+        { key: 'care', label: 'Care', value: 'Cold wash, line dry.', items: [] },
+        {
+          key: 'materials',
+          label: 'Materials',
+          value: '',
+          items: [
+            { label: 'Cotton', value: '60%' },
+            { label: 'Linen', value: '40%' },
+          ],
+        },
+      ],
+    };
+    const typed: ResolveHost = {
+      ...host,
+      resolveCollection: (ref, scope) =>
+        ref === 'product' ? [TYPED] : (host.resolveCollection?.(ref, scope) ?? []),
+    };
+
+    it('prints a scalar detail ONCE, under its heading', () => {
+      // It printed twice: the heading, an EMPTY line where the value should have been,
+      // then the label and value again as a row. `visibleWhen(bind(div))` threw the
+      // bind away (one `data` marker per node), and the `items` repeat rendered its
+      // template against an empty list, resolving `label`/`value` off the section.
+      const html = toHtml(resolveTree(buyBox(), typed));
+      expect((html.match(/Fabric &amp; construction/g) ?? []).length).toBe(1);
+      expect((html.match(/11oz cotton canvas\./g) ?? []).length).toBe(1);
+      expect(html).toContain(
+        '<p class="text-base leading-relaxed text-base-content">11oz cotton canvas.</p>'
+      );
+    });
+
+    it('keeps each section in its own box, rather than pouring them all into one', () => {
+      // A repeat renders its container's CHILDREN once per item INSIDE the container,
+      // so making the section box the repeat itself put five sections' worth of
+      // headings and values in a single bordered box with no rule between them.
+      const html = toHtml(resolveTree(buyBox(), typed));
+      expect(
+        (html.match(/class="flex flex-col gap-2 border-t border-base-300 pt-4"/g) ?? []).length
+      ).toBe(TYPED.attributeSections.length);
+    });
+
+    it('renders a repeater detail as one row per material', () => {
+      const html = toHtml(resolveTree(buyBox(), typed));
+      expect((html.match(/border-b border-base-200 pb-1/g) ?? []).length).toBe(2);
+      expect(html).toContain('Cotton');
+      expect(html).toContain('60%');
+      expect(html).toContain('Linen');
+      expect(html).toContain('40%');
+    });
   });
 
   // The sold-out contract. Every one of these was broken in the same way: the buy box
@@ -357,20 +521,33 @@ describe('COMMERCE_CATALOG — the palette group', () => {
 });
 
 describe('featured_carousel — a rail with real controls', () => {
-  it('carries silica\u2019s carousel behavior on the section, so the runtime wires it', () => {
+  it('carries silica\u2019s SCROLL-STRIP behavior, not its carousel', () => {
+    // A carousel translates a track of FULL-WIDTH slides one at a time — one product
+    // per view, whatever the width. On a product page that made the cross-sell card
+    // bigger than the product the page exists to sell. A scroll-strip is the behavior
+    // whose own description is this job: "every item is meant to be visible at once".
     const html = toHtml(resolveTree(featuredCarousel(), host));
-    expect(html).toContain('data-sui-behavior="carousel"');
+    expect(html).toContain('data-sui-behavior="scroll-strip"');
+    expect(html).not.toContain('data-sui-behavior="carousel"');
   });
 
-  it('marks the track and every slide, which is what the behavior scrolls', () => {
+  it('shows the products SIDE BY SIDE at a real card width', () => {
     const html = toHtml(resolveTree(featuredCarousel(), host));
     expect(html).toContain('data-sui-part="track"');
-    // The plugin's real class, not a hand-rolled flex+snap+overflow imitation of it —
-    // it is also the only thing that hides the scrollbar under the prev/next controls.
-    expect(html).toContain('class="carousel gap-6"');
-    // One per product — the marker is on the repeat TEMPLATE, so it must survive
-    // being stamped per item or the behavior sees a track with nothing in it.
-    expect((html.match(/data-sui-part="slide"/g) ?? []).length).toBe(2);
+    expect(html).toContain('class="scroll-strip-track"');
+    // Both cards in ONE row, each a real 16rem card rather than a full-width slide.
+    expect((html.match(/w-64 shrink-0/g) ?? []).length).toBe(2);
+    // `carousel-item` is what pinned each card to the full strip width.
+    expect(html).not.toContain('carousel-item');
+  });
+
+  it('centres a strip that fits, without stranding one that does not', () => {
+    // `justify-center` on a scroll container puts the leading card behind an edge
+    // nobody can scroll back to. Auto margins only distribute POSITIVE free space, so
+    // they centre a shop with one featured product and resolve to zero for twelve.
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('class="flex w-max gap-6 mx-auto"');
+    expect(html).not.toContain('justify-center');
   });
 
   it('ships Previous/Next as labelled controls, not bare arrows', () => {
@@ -381,12 +558,22 @@ describe('featured_carousel — a rail with real controls', () => {
     expect(html).toContain('aria-label="Next products"');
   });
 
-  it('sizes slides by CONTAINER width so a phone gets one card, not a clipped four', () => {
+  it('lets the COMPONENT decide when the controls are there at all', () => {
+    // `scroll-strip-control` is what hides them until the cards overflow and disables
+    // each at its end. Without the class they are two buttons that are always present
+    // and never dim — which is what a rail of two products used to show.
     const html = toHtml(resolveTree(featuredCarousel(), host));
-    expect(html).toContain('carousel-item');
-    expect(html).toContain('basis-full');
-    expect(html).toContain('@2xl:basis-1/3');
-    expect(html).toContain('@4xl:basis-1/4');
+    expect((html.match(/scroll-strip-control/g) ?? []).length).toBe(2);
+  });
+
+  it('leaves the controls COLOURLESS — moving a strip sideways means nothing', () => {
+    // `btn-neutral` is a grey nobody approved (root RULE #4), on a control that carries
+    // no meaning for a colour to hold. A bare `.btn` resolves its ink from `base-content`
+    // and is correct in both themes without naming one.
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('btn btn-circle btn-sm');
+    expect(html).not.toContain('btn-neutral');
+    expect(html).not.toContain('btn-primary');
   });
 
   it('stays bound to the BOUNDED source and still links each card to its product', () => {
@@ -399,6 +586,56 @@ describe('featured_carousel — a rail with real controls', () => {
   it('carries no pager — a carousel already has its own way forward', () => {
     const html = toHtml(resolveTree(featuredCarousel(), host));
     expect(html).not.toContain('site.pagination');
+  });
+});
+
+describe('an empty curation says nothing at all (issue 187)', () => {
+  // Nothing featured, nothing in the catalog — the state a one-product shop is in on
+  // its own product page, because a bounded rail excludes the product being looked at.
+  const bare: ResolveHost = {
+    resolveBinding: () => ({ value: undefined }),
+    resolveCollection: () => [],
+  };
+
+  it('drops a carousel heading AND its controls rather than apologising under them', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), bare));
+    expect(html).not.toContain('Featured');
+    expect(html).not.toContain('data-sui-part="prev"');
+    expect(html).not.toContain('data-sui-part="next"');
+    // And it invents no apology: "Nothing in the shop just yet" on a product page whose
+    // shop demonstrably has that product in it is a false sentence.
+    expect(html).not.toContain('Nothing in the shop just yet');
+  });
+
+  it('drops a rail heading the same way', () => {
+    const html = toHtml(resolveTree(featuredProducts(), bare));
+    expect(html).not.toContain('Featured');
+    expect(html).not.toContain('Nothing in the shop just yet');
+  });
+
+  it('KEEPS both on the whole-catalog grid, which is a destination and owes an answer', () => {
+    const html = toHtml(resolveTree(productGrid(), bare));
+    expect(html).toContain('Shop our products');
+    expect(html).toContain('Nothing in the shop just yet');
+  });
+
+  it('keeps the heading when there ARE products', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('Featured');
+    expect(html).toContain('data-sui-part="prev"');
+  });
+});
+
+describe('every products section is capped to the site content width (issue 187)', () => {
+  // The block had no inner container at all, so its heading started at the window edge
+  // while the buy box above it started 450px in. One section running full-bleed on a
+  // page where every other one is capped does not read as wide, it reads as broken.
+  it.each([
+    ['grid', productGrid()],
+    ['carousel', featuredCarousel()],
+    ['rail', featuredProducts()],
+  ])('%s', (_label, node) => {
+    expect(toHtml(resolveTree(node, host))).toContain('mx-auto w-full max-w-6xl');
   });
 });
 

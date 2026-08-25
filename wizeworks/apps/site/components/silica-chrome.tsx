@@ -33,7 +33,7 @@ import {
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
-import { finalizeTree, renderSilicaBody } from '@wizeworks/silica-catalog';
+import { finalizeTree, imageAltsOf, renderSilicaBody } from '@wizeworks/silica-catalog';
 
 /** Mounts the real interactive component for a pinned functional core (docs/122) —
  *  keyed by the host node's `component`. The route supplies this (closing over its own
@@ -285,7 +285,7 @@ export function SilicaChrome({
   // logo shipped as a single full-width file on every page of every site; a later stage
   // then went to the HTML path only. "Mirror the pipeline" is the stated intent, so
   // mirror it by CALLING it. See the note on `SilicaFunctionalBody`.
-  return walk(finalizeTree(resolved), 'frame', {
+  return walk(finalizeTree(resolved, imageAltsOf(host)), 'frame', {
     outlet: children,
     ...(renderHost ? { renderHost } : {}),
   });
@@ -330,5 +330,5 @@ export function SilicaFunctionalBody({
   // function: a bound image's src only exists after `resolveTree`, so anything earlier has
   // no URL to build a `srcset` from, and an image left with no src at all has to be given
   // the placeholder after that.
-  return walk(finalizeTree(resolved), 'body', { renderHost });
+  return walk(finalizeTree(resolved, imageAltsOf(host)), 'body', { renderHost });
 }

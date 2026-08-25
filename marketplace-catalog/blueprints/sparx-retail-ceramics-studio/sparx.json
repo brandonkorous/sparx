@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-ceramics-studio",
   "name": "Ceramics Studio (Handmade)",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "tagline": "A quiet, tactile storefront for a handmade ceramics studio.",
   "description": "A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.",
   "payload": "blueprint.ts",

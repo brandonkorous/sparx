@@ -118,7 +118,13 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     if (silicaTemplate) {
       // No `searchParams`: a product detail page is one record, so nothing paginates.
       const { resolver } = await buildSilicaHost(site.slug, silicaTemplate.root, {
-        record: { key: 'product', value: productToSilicaRecord(product, site.slug) },
+        record: {
+          key: 'product',
+          // The commerce block travels with the record because the made-to-order
+          // sentences need it: the money's currency and locale, and whether this
+          // website takes any money at all (issues 184 + 185).
+          value: productToSilicaRecord(product, site.slug, site.commerce),
+        },
         currency: site.commerce.defaultCurrency,
         locale: site.commerce.defaultLocale,
         // A PDP binds `site.*` too — "questions? call us" beside an add-to-cart is

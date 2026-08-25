@@ -73,6 +73,12 @@ export interface SiteCommerce {
   showStockBelow: number;
   hidePricesWhenSignedOut: boolean;
   requireAuthForCheckout: boolean;
+  // How this shop can be paid (issue 185). `card` is the only one that takes
+  // money on this website; `in_person` settles in the room and `unavailable`
+  // takes none at all, so copy about charging a card is false under both.
+  // Defaults to `card` for an older api-rest that omits it, which is what every
+  // storefront assumed before this was carried.
+  paymentMode: 'card' | 'in_person' | 'unavailable';
 }
 
 /** Cookie-consent config (docs/42 §4) — travels in the tenant payload so the
@@ -153,6 +159,7 @@ const DEFAULT_SITE: SiteCommerce = {
   showStockBelow: 10,
   hidePricesWhenSignedOut: false,
   requireAuthForCheckout: false,
+  paymentMode: 'card',
 };
 
 // Consent defaults to 'off' (no banner, no consent cookie) so storefronts
@@ -408,7 +415,15 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
     return {
       ...data,
       name: siteName && siteName.length > 0 ? siteName : data.name,
-      commerce: data.commerce ?? (data as { storefront?: SiteCommerce }).storefront ?? DEFAULT_SITE,
+      // Merged over the defaults rather than substituted for them: an api-rest
+      // that predates a field sends the block WITHOUT it, and `??` only catches
+      // the block being missing entirely. `paymentMode` arriving as undefined
+      // while the type says it cannot is how a storefront ends up branching on a
+      // value nobody sent.
+      commerce: {
+        ...DEFAULT_SITE,
+        ...(data.commerce ?? (data as { storefront?: SiteCommerce }).storefront ?? {}),
+      },
       consent: data.consent ?? DEFAULT_CONSENT,
       // Defaults to [] so a storefront served by an older api-rest that doesn't
       // yet return `socials` behaves exactly as before (no links).

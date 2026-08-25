@@ -31,7 +31,17 @@ function readPath(source: unknown, path: string): unknown {
  *  ref it does not know (authored content stays), `{ value }` for one it does. */
 function hostFor(collections: Record<string, readonly unknown[]>) {
   return {
-    resolveCollection: (ref: string) => collections[ref],
+    // The RECORD's own array fields are collections too — `descriptionParagraphs`,
+    // `versions`, `attributeSections` all repeat off the product in scope, and
+    // `createSilicaResolver` answers them from `scope.item` exactly like a scalar.
+    // A double that only knew the named root sources reported those refs as UNKNOWN,
+    // which is the failure mode a double must never invent: it turns a working bind
+    // into a red test and, worse, would have hidden a broken one.
+    resolveCollection: (ref: string, scope: DataScope) => {
+      const fromItem = readPath(scope.item, ref);
+      if (Array.isArray(fromItem)) return fromItem as readonly unknown[];
+      return collections[ref];
+    },
     resolveBinding: (ref: string, scope: DataScope) => {
       const fromItem = readPath(scope.item, ref);
       if (fromItem !== undefined) return { value: fromItem };
@@ -45,8 +55,18 @@ const PRODUCT = {
   price: '$148.00',
   compareAtPrice: '$180.00',
   description: 'Turned oak and marine rope, made a mile from the water.',
+  // The buy box reads PARAGRAPHS (issue 191) — a bind writes one text node and the
+  // blank lines an owner typed collapse. The flat string stays for the cards.
+  descriptionParagraphs: [{ text: 'Turned oak and marine rope, made a mile from the water.' }],
   image: 'https://cdn.test/harbour-rope-lamp.jpg',
   variantId: 'var_9912',
+  // Sold in three sizes, so the buy box shows the picker and drops its hidden field
+  // (issue 190).
+  versions: [
+    { id: 'var_9912', label: 'Small' },
+    { id: 'var_9913', label: 'Medium' },
+    { id: 'var_9914', label: 'Large, sold out' },
+  ],
   url: '/products/harbour-rope-lamp',
 };
 

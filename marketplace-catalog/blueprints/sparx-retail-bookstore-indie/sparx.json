@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-bookstore-indie",
   "name": "Independent Bookshop",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "tagline": "A warm, working storefront for an independent bookshop.",
   "description": "A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme — cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.",
   "payload": "blueprint.ts",

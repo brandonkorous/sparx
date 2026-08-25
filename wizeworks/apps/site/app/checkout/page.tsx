@@ -27,7 +27,10 @@ export default async function CheckoutPage() {
       >
         Checkout
       </h1>
-      <CheckoutFlow tenantSlug={site.slug} />
+      {/* The shop's payment mode from the site payload, so the summary is honest
+          on the FIRST step — the checkout session that also carries it does not
+          exist until the shopper has given their details (issue 185). */}
+      <CheckoutFlow tenantSlug={site.slug} paymentMode={site.commerce.paymentMode} />
     </div>
   );
 }

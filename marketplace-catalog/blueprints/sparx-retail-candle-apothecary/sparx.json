@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-candle-apothecary",
   "name": "Candle Apothecary (Retail)",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "tagline": "A moody, working storefront for a candle apothecary.",
   "description": "A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme — warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.",
   "payload": "blueprint.ts",

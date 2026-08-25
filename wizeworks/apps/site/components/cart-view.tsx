@@ -14,8 +14,17 @@ import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
 import { DiscountField } from './discount-field';
 import { MadeToOrderSummary } from './made-to-order-summary';
+import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 
-export function CartView() {
+export function CartView({
+  /** Whether this website takes money at all. Handed down from the route rather
+   *  than read from the cart: it is a fact about the SHOP, not about the basket,
+   *  and the basket must not offer to charge a card that will never be charged
+   *  (issue 185). */
+  paymentMode = 'card',
+}: {
+  paymentMode?: StorefrontPaymentMode;
+} = {}) {
   const {
     lines,
     totals,
@@ -70,7 +79,12 @@ export function CartView() {
             key={line.id}
             className="border-base-300 grid grid-cols-[88px_1fr_auto] items-start gap-4 border-b py-5 max-[520px]:grid-cols-[64px_1fr]"
           >
-            <div className="rounded-field bg-base-200 relative h-[88px] w-[88px] shrink-0 overflow-hidden">
+            {/* Sized by its COLUMN, not by a fixed 88px. The grid narrows its
+                first track to 64px on a phone and the tile did not narrow with
+                it, so it hung 24px into the text beside it — the first letter of
+                every product name and every SKU sat underneath the picture
+                (issue 186). `aspect-square` keeps it the shape it was. */}
+            <div className="rounded-field bg-base-200 relative aspect-square w-full overflow-hidden">
               {line.imageUrl ? (
                 <Image
                   src={line.imageUrl}
@@ -197,7 +211,11 @@ export function CartView() {
 
         {/* The split, before the button rather than after it — a deposit
             changes what somebody is agreeing to (issue 026). */}
-        <MadeToOrderSummary madeToOrder={madeToOrder} currency={currency} />
+        <MadeToOrderSummary
+          madeToOrder={madeToOrder}
+          currency={currency}
+          paymentMode={paymentMode}
+        />
         <Button render={<Link href="/checkout" />} color="primary" size="lg" className="w-full">
           Proceed to checkout
         </Button>

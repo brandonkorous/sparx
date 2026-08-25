@@ -8,23 +8,11 @@ import Link from 'next/link';
 import { Button, Step, Steps } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
+import { readyDayLabel, type StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 import type { CheckoutMadeToOrder } from '@/lib/checkout-client';
 
 // Named CheckoutStep, not Step: silica's <Step> is the stepper node component.
 export type CheckoutStep = 'contact' | 'shipping' | 'payment' | 'done';
-
-/** A `YYYY-MM-DD` as a day a person recognises. Built from the parts rather
- *  than parsed as an instant — `new Date('2026-08-29')` is UTC midnight, which
- *  prints as the 28th anywhere west of Greenwich. */
-function readyDayLabel(day: string): string | null {
-  const [year, month, date] = day.split('-').map(Number);
-  if (!year || !month || !date) return null;
-  return new Date(year, month - 1, date).toLocaleDateString(undefined, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
-}
 
 const ORDER: CheckoutStep[] = ['contact', 'shipping', 'payment', 'done'];
 
@@ -104,14 +92,14 @@ export function EmptyCart() {
  */
 export function Confirmation({
   orderNumber,
-  paymentMode,
+  paymentMode = 'card',
   /** Nothing is being posted, so "we'll send it" would be the wrong promise. */
   collecting,
   madeToOrder,
   currency,
 }: {
   orderNumber: string;
-  paymentMode?: 'card' | 'in_person' | 'unavailable';
+  paymentMode?: StorefrontPaymentMode;
   collecting: boolean;
   /** Made to order (issue 026) — the day it can be collected and what is still
    *  owing. This is the moment somebody most needs both, and it is the last
@@ -120,7 +108,14 @@ export function Confirmation({
   currency?: string;
 }) {
   const ready = madeToOrder?.readyOn ? readyDayLabel(madeToOrder.readyOn) : null;
-  const owing = (madeToOrder?.balanceCents ?? 0) > 0;
+  // "You paid X today" describes a CARD CHARGE. A shop on manual payments took
+  // nothing — the sentence directly above says so in the same breath — and a
+  // shop with no working gateway took nothing either, so on both the deposit
+  // split is a receipt for a transaction that did not happen (issue 185). What
+  // they need is the line they already get: keep this number, you pay on
+  // collection. The whole amount is settled with the shop, so nothing is lost by
+  // not splitting it, and a number nobody collected is never printed as money.
+  const owing = paymentMode === 'card' && (madeToOrder?.balanceCents ?? 0) > 0;
   return (
     <div className="text-base-content grid min-h-[50vh] place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
       <span className="text-[2.5rem] opacity-50" aria-hidden="true">

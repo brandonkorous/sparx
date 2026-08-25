@@ -41,7 +41,10 @@ export function RateChoices({
           <span className="flex-1">
             <strong>{rate.service}</strong>
             {rate.estimatedDays != null ? (
-              <span className="text-base-content"> · {rate.estimatedDays} days</span>
+              <span className="text-base-content">
+                {' '}
+                · {rate.estimatedDays} {rate.estimatedDays === 1 ? 'day' : 'days'}
+              </span>
             ) : null}
           </span>
           <span>{rate.amountCents === 0 ? 'Free' : formatMoney(rate.amountCents, currency)}</span>

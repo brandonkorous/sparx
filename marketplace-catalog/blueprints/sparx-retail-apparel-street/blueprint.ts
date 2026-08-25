@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-apparel-street',
-  version: '1.4.2',
+  version: '1.4.3',
   name: 'Streetwear Label (Bold)',
   summary:
     'A complete, working shop for a bold graphic-streetwear label: heavyweight graphic tees, 400gsm fleece hoodies and crews, a sherpa coaches jacket, utility cargos and sweats, plus caps, a tote and a beanie — each sized XS–XXL in a loud palette, with categories, collections, a bespoke drop-forward PDP and a merchandised home page. Cool concrete ground, near-black ink, one electric cardinal red carrying the brand — heavy grotesk, big caps, drop culture. Shipped as Cardinal Supply.',

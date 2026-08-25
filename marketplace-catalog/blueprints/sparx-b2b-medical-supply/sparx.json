@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-b2b-medical-supply",
   "name": "Medical Supply (B2B / Wholesale)",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "tagline": "A wholesale storefront built for clinics and practices.",
   "description": "A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case — PPE, consumables, wound care and infection control — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme — crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.",
   "payload": "blueprint.ts",

@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-bookstore-modern',
-  version: '1.4.2',
+  version: '1.4.3',
   name: 'Modern Bookshop',
   summary:
     'A complete, working shop for a bright, contemporary bookshop: a real catalogue of new releases, fiction, nonfiction and books for young readers, plus an enamel-pin set, a clip reading light and a monthly reading subscription — with categories, collections, a bespoke cover-forward PDP and a full merchandised home page led by new releases. Crisp modern theme — a near-white ground, a confident blue, a coral accent, a clean grotesk display. Shipped as Volume Books.',

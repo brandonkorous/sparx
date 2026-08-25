@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-coffee-modern',
-  version: '1.4.2',
+  version: '1.4.3',
   name: 'Coffee Roaster (Modern)',
   summary:
     'A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme — a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.',

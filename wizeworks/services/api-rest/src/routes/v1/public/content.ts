@@ -18,7 +18,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@wizeworks/db';
-import { commerceSiteService } from '@wizeworks/commerce';
+import { checkoutService, commerceSiteService } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { notFound, badRequest } from '@wizeworks/api-core/errors';
 import { serializeEntry, PUBLIC_ENTRY_BYLINE_INCLUDE } from '@wizeworks/cms';
@@ -599,6 +599,14 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
         ])
     );
 
+    // How this shop can be paid, so the storefront knows BEFORE checkout whether
+    // this website takes any money at all (issue 185). A shop on manual payments
+    // settles in the room, and a product page that says "Pay $30.00 today" or a
+    // basket that says "To pay at checkout" is describing a charge that never
+    // happens. Its own query rather than a member of the batch above: it reads
+    // through `withTenant` itself, and it never throws.
+    const paymentMode = await checkoutService.resolvePaymentMode(tenant.id);
+
     // Merge the per-site override over the tenant brand identity (Phase 4). A
     // null override leaves the tenant brand untouched, so single-site / no-override
     // payloads are byte-for-byte unchanged.
@@ -693,6 +701,8 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
         hidePricesWhenSignedOut:
           override?.hidePricesWhenSignedOut ?? storefront?.hidePricesWhenSignedOut ?? false,
         requireAuthForCheckout: storefront?.requireAuthForCheckout ?? false,
+        // Tenant-level, not per-site: one business has one way of being paid.
+        paymentMode,
       },
       consent,
       // Per-site disabled modules (docs/49 Slice F). Empty = all tenant-active

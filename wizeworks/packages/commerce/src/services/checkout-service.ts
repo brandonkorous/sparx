@@ -518,8 +518,16 @@ const NO_PAYMENTS_MESSAGE =
  *
  * Never throws. A shop whose gateway cannot be resolved is `unavailable`, which
  * is the honest answer and the one that renders a message a customer can act on.
+ *
+ * EXPORTED because checkout is not the first place a shopper needs the answer.
+ * A product page that says "Pay $30.00 today" and a basket that says "To pay at
+ * checkout" are both describing a card charge, and at a shop that settles in the
+ * room neither happens (issue 185) — so the storefront learns the mode with the
+ * rest of the site payload rather than only once checkout has begun.
  */
-async function resolvePaymentMode(tenantId: string): Promise<'card' | 'in_person' | 'unavailable'> {
+export async function resolvePaymentMode(
+  tenantId: string
+): Promise<'card' | 'in_person' | 'unavailable'> {
   // Read the tenant's CONFIG, not the adapter registry.
   //
   // `getGatewayForTenant` resolves an adapter, and `manual` deliberately has

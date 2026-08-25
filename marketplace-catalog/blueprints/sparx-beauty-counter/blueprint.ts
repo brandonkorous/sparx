@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-beauty-counter',
-  version: '1.4.2',
+  version: '1.4.3',
   name: 'Beauty Counter',
   summary:
     'A shade-forward storefront for an own-brand color-cosmetics house — a full-bleed lifestyle hero over a "find your perfect match" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.',

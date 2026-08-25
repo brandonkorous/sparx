@@ -66,6 +66,100 @@ function isElement(node: Node): node is Element {
   return node.kind === 'element';
 }
 
+/* ── The featured strip: a carousel that could only ever show one ──────────── */
+
+/** Every class token on a node and its descendants. */
+function hasClassToken(node: Node, token: string): boolean {
+  if (node.kind === 'outlet') return false;
+  if ((node.class ?? '').split(/\s+/).includes(token)) return true;
+  const children = (node as Element).children;
+  if (!Array.isArray(children)) return false;
+  return children.some((child) => typeof child !== 'string' && hasClassToken(child, token));
+}
+
+function swapClass(cls: string, drop: readonly string[], add: readonly string[]): string {
+  const kept = cls
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((token) => !drop.includes(token));
+  return [...kept, ...add.filter((token) => !kept.includes(token))].join(' ');
+}
+
+/** The dead per-view ladder, plus the class that made it dead. */
+const SLIDE_DROP = ['carousel-item', 'basis-full', '@2xl:basis-1/3', '@4xl:basis-1/4', 'w-full'];
+
+/**
+ * Rewrite one stamped product carousel into the scroll-strip it should always have been.
+ *
+ * WHY THIS CLEARS THE BAR ABOVE. It is broken on published sites, not merely dated:
+ * silica's `carousel` shows exactly ONE slide per view, so a "Featured" strip under a
+ * product renders a single full-width card — bigger than the product the page exists to
+ * sell — and the `basis-full @2xl:basis-1/3 @4xl:basis-1/4` ladder the platform stamped
+ * beside it never applied at any width. The platform stamped all of it, and the
+ * replacement is exactly what `commerce.ts` emits today.
+ *
+ * Recognised by the `carousel-item` PRODUCT CARD, not by the behavior alone: a hero
+ * carousel an author built by hand is theirs, one slide at a time is what it is for, and
+ * this must not touch it.
+ */
+function repairProductStrip(node: Element): Element {
+  const track = (child: Node): Node => {
+    if (child.kind === 'outlet' || !isElement(child)) return child;
+    if (child.part === 'track') {
+      // The old track was the repeat container AND the scrolling box. They separate: the
+      // row keeps the collection binding and its children, the track wraps it, and the
+      // strip wraps that.
+      const row: Element = { ...child, class: 'flex w-max gap-6 mx-auto' };
+      delete row.part;
+      return {
+        kind: 'element',
+        tag: 'div',
+        class: 'scroll-strip',
+        children: [
+          {
+            kind: 'element',
+            tag: 'div',
+            class: 'scroll-strip-track',
+            part: 'track',
+            children: [row],
+          },
+        ],
+      };
+    }
+    if (child.part === 'prev' || child.part === 'next') {
+      // `btn-neutral btn-outline` goes with it: a grey nobody approved (root RULE #4),
+      // on a control that carries no meaning for a color to hold. The factory stopped
+      // emitting it, and a bare `.btn` resolves its ink from `base-content` in both
+      // themes without naming one.
+      return {
+        ...child,
+        class: swapClass(
+          child.class ?? '',
+          ['btn-neutral', 'btn-outline'],
+          ['scroll-strip-control']
+        ),
+      };
+    }
+    const kids = child.children;
+    if (!Array.isArray(kids)) return child;
+    return { ...child, children: kids.map((k) => (typeof k === 'string' ? k : track(k))) };
+  };
+
+  const slides = (child: Node): Node => {
+    if (child.kind === 'outlet') return child;
+    const cls = child.class ?? '';
+    const next = cls.split(/\s+/).includes('carousel-item')
+      ? { ...child, class: swapClass(cls, SLIDE_DROP, ['w-64', 'shrink-0']) }
+      : child;
+    const kids = (next as Element).children;
+    if (!Array.isArray(kids)) return next;
+    return { ...next, children: kids.map((k) => (typeof k === 'string' ? k : slides(k))) };
+  };
+
+  const repaired = track(slides({ ...node, behavior: { type: 'scroll-strip' } }) as Element);
+  return repaired as Element;
+}
+
 /**
  * Repair one class string, preserving order and every token that is not in the table.
  *
@@ -113,6 +207,17 @@ export function upgradePageBody(root: Node): { root: Node; changed: boolean } {
     if (!isElement(node) && node.kind !== 'component') return node;
 
     let next = node;
+
+    // Before the class walk, because it rewrites the subtree the class walk would
+    // otherwise descend into (and the classes it leaves behind are already correct).
+    if (
+      isElement(next) &&
+      next.behavior?.type === 'carousel' &&
+      hasClassToken(next, 'carousel-item')
+    ) {
+      next = repairProductStrip(next);
+      changed = true;
+    }
 
     const healedClass = node.class ? repairDeadClasses(node.class) : null;
     if (healedClass !== null) {

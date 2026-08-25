@@ -37,8 +37,19 @@ import { ContactStep, EMPTY_CONTACT, type ContactDraft } from './contact-step';
 import { CollectionStep } from './collection-step';
 import { DeliveryStep } from './delivery-step';
 import { useAddressBook } from './use-address-book';
+import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 
-export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
+export function CheckoutFlow({
+  tenantSlug,
+  /** How this shop can be paid, from the site payload. The checkout SESSION
+   *  carries the same answer, but only once it exists — and the order summary is
+   *  on screen from the first step, saying what the card will be charged before
+   *  anything has asked the server anything (issue 185). */
+  paymentMode: shopPaymentMode = 'card',
+}: {
+  tenantSlug: string;
+  paymentMode?: StorefrontPaymentMode;
+}) {
   const cart = useCart();
   const { customer } = useCustomer();
   const [step, setStep] = useState<CheckoutStep>('contact');
@@ -253,7 +264,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
     return (
       <Confirmation
         orderNumber={orderNumber}
-        {...(session?.paymentMode ? { paymentMode: session.paymentMode } : {})}
+        paymentMode={session?.paymentMode ?? shopPaymentMode}
         collecting={collectedOrder.current}
         {...(session?.madeToOrder ? { madeToOrder: session.madeToOrder } : {})}
         currency={session?.currency ?? cart.currency}
@@ -345,6 +356,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
           currency={session?.currency ?? cart.currency}
           {...(session?.surchargeLabel ? { surchargeLabel: session.surchargeLabel } : {})}
           madeToOrder={session?.madeToOrder ?? cart.madeToOrder}
+          paymentMode={session?.paymentMode ?? shopPaymentMode}
         />
       </aside>
     </div>
