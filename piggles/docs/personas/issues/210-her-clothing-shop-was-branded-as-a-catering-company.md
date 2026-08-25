@@ -32,8 +32,11 @@ Her site's stored brand is a **catering company's, entire**:
 {
   "businessName": "Saffron & Sage Catering",
   "tagline": "Seasonal food for occasions that matter.",
-  "colorPrimary": "#c77618", "colorAccent": "#6b835f", "colorSecondary": "#44342e",
-  "fontHeading": "Fraunces", "fontBody": "Inter"
+  "colorPrimary": "#c77618",
+  "colorAccent": "#6b835f",
+  "colorSecondary": "#44342e",
+  "fontHeading": "Fraunces",
+  "fontBody": "Inter"
 }
 ```
 
@@ -152,9 +155,35 @@ at all, and that is visible on all nine tenants I checked.
 
 ## What it looked like once fixed
 
-The nine tenants above resolve to their own names. Devi's tagline field is hers to
-write, cleared through the console like any other edit — and the next install onto
-her site will leave it alone.
+The nine tenants above resolve to their own names — the marketplace now agrees with
+the storefront, which already preferred the site's own name for exactly this reason:
+
+```ts
+// apps/site/lib/site-context.ts, already there
+const siteName = propertyName?.trim() || businessName?.trim();
+```
+
+Devi rewrote her tagline through the console, in her own words, and it saved:
+
+```
+Tagline
+Made here, in small runs.
+```
+
+**What is NOT fixed, and is residual rather than repaired.** Her stored override
+still carries the catering `businessName`, colors and fonts. The name is now inert
+everywhere I checked — the marketplace prefers her own, the storefront always did,
+and in email it only decides WHETHER the mail is branded, never what it is called
+(the name there is `Property.name`). The fonts are not quite inert: the layout
+deliberately unions the theme's fonts with the brand columns so a font named in one
+place but not the other still loads, so her page requests **Fraunces** and paints
+Space Grotesk. That is one wasted typeface per visit, caused by stale data rather
+than by the font code, which is doing what it should.
+
+Repairing the stored look is a console action — applying any theme merges colors
+and fonts back over the override — not a hand-edit to the database, so it stays
+hers to do. What is fixed is that no future install will put another company's
+name or words there again.
 
 ## Rating effect
 

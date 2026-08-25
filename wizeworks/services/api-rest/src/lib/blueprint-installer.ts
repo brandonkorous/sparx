@@ -726,7 +726,7 @@ export async function installBrandSlice(env: SliceEnv): Promise<void> {
   const prop = await withTenant(ctx, (tx) =>
     tx.property.findUnique({
       where: { id: propertyId },
-      select: { name: true, settings: true },
+      select: { name: true, settings: true, brandOverride: true },
     })
   );
 
@@ -738,14 +738,34 @@ export async function installBrandSlice(env: SliceEnv): Promise<void> {
   // wrote only businessName + two colors + the light logo, silently dropping the
   // fonts, the dark logo and the favicon, so a non-primary install inherited the
   // tenant's type stack instead of the blueprint's.
+  //
+  // A template gives you a LOOK. The NAME and the WORDS are the merchant's (issue
+  // 210). Two things are deliberately not carried from the blueprint:
+  //
+  //  · `businessName` — deprecated for naming (see db/scripts/backfill-property-name.ts,
+  //    which exists to STRIP this key). Writing it back on every install undid that
+  //    migration, and the marketplace preferred the dead key over the live name — so
+  //    Thistle & Rye was listed to the public as "Kettle & Crumb". Naming is
+  //    `Property.name`, handled at 3b below with the care this never had.
+  //  · `tagline` — the sample business's slogan is a false statement about the
+  //    installing one. Blank renders as nothing; "Seasonal food for occasions that
+  //    matter" on a clothing shop renders as a lie.
+  //
+  // And the write MERGES rather than replaces, so a re-install cannot wipe a tagline
+  // the merchant wrote.
   const b = blueprint.brand;
+  const prev =
+    prop?.brandOverride &&
+    typeof prop.brandOverride === 'object' &&
+    !Array.isArray(prop.brandOverride)
+      ? (prop.brandOverride as Record<string, string>)
+      : {};
   const override: Record<string, string> = {
-    businessName: b.businessName,
+    ...prev,
     colorPrimary: b.colors.primary,
     fontHeading: b.fonts.heading,
     fontBody: b.fonts.body,
   };
-  if (b.tagline !== undefined) override.tagline = b.tagline;
   if (b.colors.primaryForeground) override.colorPrimaryForeground = b.colors.primaryForeground;
   if (b.colors.accent) override.colorAccent = b.colors.accent;
   if (b.colors.accentForeground) override.colorAccentForeground = b.colors.accentForeground;
