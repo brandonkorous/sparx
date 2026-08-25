@@ -185,6 +185,14 @@ export function blueprintContents(bp: Blueprint): Record<string, number | string
     // this reads through it rather than assuming one exists.
     pages: bp.site?.pages.length ?? 0,
     emails: bp.emails.length,
+    // What the design puts in the diary (issue 098). This was absent, so the
+    // biggest set of example rows a booking blueprint installs — a premises, its
+    // staff, and its whole menu of treatments — was the one thing the card never
+    // mentioned. Somebody deciding whether to take the examples has to be able to
+    // see them first.
+    schedulingLocations: bp.scheduling?.locations?.length ?? 0,
+    schedulingResources: bp.scheduling?.resources.length ?? 0,
+    schedulingServices: bp.scheduling?.services.length ?? 0,
     theme: bp.theme.name,
     hasFrame: Boolean(bp.site?.frame),
   };

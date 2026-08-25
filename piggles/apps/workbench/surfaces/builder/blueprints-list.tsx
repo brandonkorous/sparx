@@ -31,7 +31,8 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { contentsSummary, installState, useBlueprints, type Blueprint } from './blueprints-data';
+import { useBlueprints, type Blueprint } from './blueprints-data';
+import { contentsSummary, installState } from './blueprints-words';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this

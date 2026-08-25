@@ -37,6 +37,22 @@ export type ArtifactKind =
   | 'category'
   | 'collection';
 
+/**
+ * The artifact kinds that are the design's EXAMPLES rather than its structure
+ * (issue 098) — the rows an install leaves out when the owner asks for the
+ * design without its furniture.
+ *
+ * Products and articles, and nothing else. A category, a collection and the
+ * pages are the design's shape: an empty "Knitwear" is a shelf waiting for her
+ * own stock, whereas "Cashmere Crew, $180" is somebody else's stock sitting on
+ * it. The scheduling rows are examples too, but they carry no baseline of their
+ * own, so the installer skips that whole slice instead of filtering here.
+ */
+export const EXAMPLE_ARTIFACT_KINDS: ReadonlySet<ArtifactKind> = new Set<ArtifactKind>([
+  'product',
+  'content',
+]);
+
 export interface ResolvedArtifact {
   kind: ArtifactKind;
   /** Correlation key back to the manifest (docs/55 §4). */
@@ -90,12 +106,19 @@ function resolveAssetRefs(value: unknown, assets: Map<string, string>): unknown 
 /** Build the canonical content for every artifact a blueprint version declares,
  *  paired with the row id this install created for it (from the id-map). The
  *  `base` at install and the `incoming` at update are both this, for their
- *  respective versions. */
+ *  respective versions.
+ *
+ *  `sampleData: false` drops the example kinds (issue 098). It has to apply on
+ *  BOTH sides of the merge: at install so no baseline claims a product that was
+ *  never written, and at update so a newer version of the design cannot deliver
+ *  the examples through the back door of "an artifact this version adds". */
 export function resolveBlueprintArtifacts(
   blueprint: Blueprint,
   result: InstallResult,
-  assetMap: Map<string, string>
+  assetMap: Map<string, string>,
+  options: { sampleData?: boolean } = {}
 ): ResolvedArtifact[] {
+  const sampleData = options.sampleData ?? true;
   const asset = (id?: string): string | null => (id ? (assetMap.get(id) ?? null) : null);
   const tree = (t: SilicaNode): SilicaNode => resolveBindingHandles(t, result);
   const out: ResolvedArtifact[] = [];
@@ -289,7 +312,7 @@ export function resolveBlueprintArtifacts(
     });
   }
 
-  return out;
+  return sampleData ? out : out.filter((a) => !EXAMPLE_ARTIFACT_KINDS.has(a.kind));
 }
 
 /** Persist (upsert) the per-artifact baselines for an install at a given blueprint

@@ -23,6 +23,21 @@ model TenantBlueprintInstall {
   // live; failed — a run errored (partial artifacts may exist).
   status String @default("installed") @db.VarChar(20)
 
+  // Did this install bring the design's EXAMPLES with it (issue 098)?
+  //
+  // A blueprint carries two different things: the structure (its look, its pages,
+  // its chrome, its email designs) and the furniture that makes the structure
+  // legible — example products, example articles, an example salon with example
+  // stylists. Seeding the furniture is deliberate, because an empty console tells
+  // a new owner nothing. But somebody who already knows what they are doing can
+  // ask for the structure alone, and that answer has to OUTLIVE the install: the
+  // backfill re-runs a slice when a module is switched on months later, and the
+  // updater brings whatever a newer version added. Both read this, so neither can
+  // quietly hand back the furniture she declined.
+  //
+  // Default true = how every install before this behaved.
+  sampleData Boolean @default(true) @map("sample_data")
+
   // The id map (handle/key → created UUID) + per-slice counts + any upsell flags.
   result Json @default("{}")
 

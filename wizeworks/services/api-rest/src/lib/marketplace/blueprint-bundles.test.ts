@@ -60,9 +60,36 @@ describe('first-party blueprint bundles', () => {
       const c = blueprintContents(b.blueprint);
       expect(typeof c.theme).toBe('string');
       expect(typeof c.hasFrame).toBe('boolean');
-      for (const key of ['products', 'categories', 'collections', 'content', 'pages', 'emails']) {
+      for (const key of [
+        'products',
+        'categories',
+        'collections',
+        'content',
+        'pages',
+        'emails',
+        // The diary counts (issue 098). Absent, a booking design's biggest set of
+        // example rows — a premises, its staff and its whole menu — was the one
+        // thing the card never mentioned, which is exactly what somebody deciding
+        // whether to take the examples needs to see.
+        'schedulingLocations',
+        'schedulingResources',
+        'schedulingServices',
+      ]) {
         expect(Number.isInteger(c[key])).toBe(true);
       }
+    }
+  });
+
+  it('counts the diary a booking design brings, so the examples are visible', () => {
+    // Not vacuous: at least one shipped bundle declares scheduling, and its card
+    // has to say so. Without this the assertion above passes on a wall of zeroes.
+    const booking = bundles.filter((b) => b.blueprint.scheduling);
+    expect(booking.length).toBeGreaterThan(0);
+    for (const b of booking) {
+      const c = blueprintContents(b.blueprint);
+      expect(c.schedulingServices).toBe(b.blueprint.scheduling?.services.length ?? 0);
+      expect(c.schedulingResources).toBe(b.blueprint.scheduling?.resources.length ?? 0);
+      expect(c.schedulingLocations).toBe(b.blueprint.scheduling?.locations?.length ?? 0);
     }
   });
 

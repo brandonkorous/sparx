@@ -7,7 +7,17 @@
 // path. The install itself is the orchestrator's commit — this body only chooses.
 
 import { useState } from 'react';
-import { Badge, Button, SearchInput, Text } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  SearchInput,
+  Switch,
+  Text,
+} from '@wizeworks/silicaui-react';
 import { faCheck, faPencilRuler } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { BlueprintVertical, WizardBlueprint } from '../../../lib/onboarding/types';
@@ -44,12 +54,17 @@ export function StepBlueprint({
   blueprints,
   selectedKey,
   onSelect,
+  sampleData,
+  onSampleData,
   loading,
 }: {
   blueprints: WizardBlueprint[];
   /** The selected blueprint key, the SCRATCH sentinel, or null. */
   selectedKey: string | null;
   onSelect: (key: string) => void;
+  /** Whether the chosen starting point brings its examples (issue 098). */
+  sampleData: boolean;
+  onSampleData: (next: boolean) => void;
   loading: boolean;
 }) {
   const [search, setSearch] = useState('');
@@ -112,6 +127,31 @@ export function StepBlueprint({
           ))}
         </div>
       )}
+
+      {/* The examples choice (issue 098). Only when a design is actually
+          chosen: it means nothing on the blank path, which brings nothing. */}
+      {selectedKey && selectedKey !== SCRATCH ? (
+        <div className="border-base-300 bg-base-100 rounded-xl border px-5 py-4">
+          <Field>
+            <FieldLabel>Bring its examples</FieldLabel>
+            <FieldControl
+              render={
+                <Switch
+                  color="module"
+                  checked={sampleData}
+                  onCheckedChange={onSampleData}
+                  aria-label="Bring this starting point's examples"
+                />
+              }
+            />
+            <FieldDescription>
+              {sampleData
+                ? 'Example products, articles and bookings come with it, so every screen has something real on it while you find your way around. Change or delete any of them.'
+                : 'Only the pages and the look come in. Nothing arrives that is not yours, and every screen starts empty.'}
+            </FieldDescription>
+          </Field>
+        </div>
+      ) : null}
 
       {/* Start from scratch — the blank path. */}
       <div

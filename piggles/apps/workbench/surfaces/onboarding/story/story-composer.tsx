@@ -185,6 +185,10 @@ export function StoryComposer({
         // pipeline reads as "start from scratch" — an empty site is a better
         // answer than another company's demo business.
         blueprintKey: blueprint?.key ?? goldenKey,
+        // The story flow is the guided path: somebody describing their business
+        // in a sentence wants the screens to have something on them. The choice
+        // to take the structure alone lives in the wizard and in Designs.
+        sampleData: true,
         selling,
         story: toPersistPayload(story),
       })

@@ -119,6 +119,8 @@ export interface OnboardingState {
   /** The chosen template key + its install row id (resume + the Launch publish). */
   blueprintKey?: string | null;
   installId?: string | null;
+  /** Whether that install brought the design's examples (issue 098). */
+  sampleData?: boolean;
   /** The natural-language story narrative, when onboarding came through the story
    *  flow. Persisted as the api-rest `StoryNarrative` shape; kept loose here. */
   story?: PersistedStory | null;
@@ -158,6 +160,7 @@ export type OnboardingPatch = Partial<
     | 'currentStep'
     | 'blueprintKey'
     | 'installId'
+    | 'sampleData'
     | 'story'
   >
 > & { completed?: Partial<OnboardingCompleted> };

@@ -53,7 +53,17 @@ const ListQuery = z.object({
 // Install target (docs/49 Phase 8): an explicit site to install into. Optional —
 // absent falls back to the active site (header) then primary. The body itself is
 // optional (a bare POST still installs into the active/primary site).
-const InstallBody = z.object({ property_id: z.string().uuid().optional() }).default({});
+const InstallBody = z
+  .object({
+    property_id: z.string().uuid().optional(),
+    // Bring the design's EXAMPLES — its products, its articles, its example
+    // premises and staff (issue 098). Defaults TRUE, which is both the older
+    // behaviour and the right answer for most people: a console with nothing in
+    // it does not show a new owner what any of the screens are for. False takes
+    // the structure alone.
+    sample_data: z.boolean().optional(),
+  })
+  .default({});
 // Update apply (docs/55 §10): per-conflict resolutions. Each entry is a conflict id
 // (`${kind}:${naturalKey}#${path}`) the tenant chose to take from the blueprint; any
 // conflict not listed defaults to keeping the tenant's value (docs/55 U1).
@@ -78,6 +88,7 @@ interface InstallRow {
   blueprintKey: string;
   blueprintVersion: string;
   status: string;
+  sampleData: boolean;
   result: unknown;
   installedAt: Date;
   liveAt: Date | null;
@@ -91,6 +102,10 @@ function serializeInstall(row: InstallRow) {
     blueprint_key: row.blueprintKey,
     blueprint_version: row.blueprintVersion,
     status: row.status,
+    // Whether the design's examples came with it (issue 098). On the wire so a
+    // console can say which install this is without inferring it from a zero:
+    // "0 products" is what a declined install and a failed one both look like.
+    sample_data: row.sampleData,
     counts: result.counts ?? {},
     installed_at: row.installedAt.toISOString(),
     live_at: row.liveAt?.toISOString() ?? null,
@@ -256,7 +271,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/blueprints/:key/install', async (request) => {
     const auth = requireRole(request, 'admin');
     const { key } = KeyParam.parse(request.params);
-    const { property_id } = InstallBody.parse(request.body ?? {});
+    const { property_id, sample_data } = InstallBody.parse(request.body ?? {});
     const bp = await resolveBlueprintManifest(auth.tenantId, key);
     if (!bp) throw notFound('Blueprint', key);
     // Hidden from the browse list is not the same as unreachable — this route
@@ -283,11 +298,13 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
           : `A previous install is ${existing.status}. Delete it, then install again.`
       );
     }
+    const sampleData = sample_data ?? true;
     const { installId, result } = await installBlueprint(
       { tenantId: auth.tenantId, userId: auth.actorId, propertyId, logger: request.log },
-      bp
+      bp,
+      { sampleData }
     );
-    return ok({ install_id: installId, counts: result.counts });
+    return ok({ install_id: installId, sample_data: sampleData, counts: result.counts });
   });
 
   app.get('/v1/blueprints/installs', async (request) => {

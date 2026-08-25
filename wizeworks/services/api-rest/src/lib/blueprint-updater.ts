@@ -67,6 +67,10 @@ interface InstallRowLite {
   status: string;
   propertyId: string;
   result: unknown;
+  /** Did the install bring the design's EXAMPLES (issue 098)? An update must ask
+   *  the same question: a newer version adding three products is still the
+   *  furniture she declined, and "the design changed" is not consent. */
+  sampleData: boolean;
 }
 
 /** The per-artifact outcome surfaced in a preview + recorded on apply. */
@@ -746,7 +750,9 @@ async function processUpdate(
 ): Promise<Processed> {
   const result = (install.result ?? {}) as InstallResult;
   const assetMap = await resolveAssetMap(env, incoming.assets, env.write);
-  const incomingArtifacts = resolveBlueprintArtifacts(incoming, result, assetMap);
+  const incomingArtifacts = resolveBlueprintArtifacts(incoming, result, assetMap, {
+    sampleData: install.sampleData,
+  });
   const baselines = await loadBaselines(env.ctx, install.id);
 
   const diffs: ArtifactDiff[] = [];

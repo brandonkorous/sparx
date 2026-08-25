@@ -20,7 +20,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ModuleScope } from '@/components/module-scope';
 import type { SurfaceContext } from '@/lib/surfaces/registry';
-import { useBlueprints, useUpdatePlan, type Blueprint } from '../builder/blueprints-data';
+import { useBlueprints, type Blueprint } from '../builder/blueprints-data';
+import { useUpdatePlan } from '../builder/blueprints-update';
 
 /** What is in the newer version, in her words, or nothing at all when the plan
  *  has not arrived. A count nobody has measured must never render as one. */

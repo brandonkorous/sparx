@@ -57,23 +57,38 @@ import { resolvePrimaryPropertyId } from './property.js';
  *  blueprint content (their template-agnostic defaults seed in module-provisioning.ts),
  *  so they are absent here and backfill is a no-op for them. */
 interface SliceSpec {
-  isMaterialized(result: InstallResult): boolean;
+  isMaterialized(result: InstallResult, sampleData: boolean): boolean;
   run(env: SliceEnv): Promise<void>;
+  /** Every row this slice writes is one of the design's EXAMPLES (issue 098), so an
+   *  install that declined them has nothing here to backfill — ever. Saying so is
+   *  the point: without it the gate below (which only asks "did this module write
+   *  anything?") would answer "no" on every reconcile pass, re-run a slice that
+   *  returns immediately, and log a materialization that never happened. */
+  examplesOnly?: boolean;
 }
 const MODULE_SLICE: Partial<Record<ModuleSlug, SliceSpec>> = {
   commerce: {
-    isMaterialized: (r) =>
-      r.products.length > 0 ||
+    // Commerce is the one slice with a half on each side of the line: the shelves
+    // (categories, collections) are structure and backfill either way, the stock is
+    // examples. With the examples declined, products can never arrive, so counting
+    // them here would hold the gate open forever.
+    isMaterialized: (r, sampleData) =>
+      (sampleData && r.products.length > 0) ||
       Object.keys(r.categories).length > 0 ||
       Object.keys(r.collections).length > 0,
     run: installCommerceSlice,
   },
-  cms: { isMaterialized: (r) => r.content.length > 0, run: installContentSlice },
+  cms: {
+    isMaterialized: (r) => r.content.length > 0,
+    run: installContentSlice,
+    examplesOnly: true,
+  },
   builder: { isMaterialized: (r) => r.pages.length > 0, run: installSiteSlice },
   email: { isMaterialized: (r) => r.emails.length > 0, run: installEmailSlice },
   scheduling: {
     isMaterialized: (r) => (r.scheduling?.services.length ?? 0) > 0,
     run: installSchedulingSlice,
+    examplesOnly: true,
   },
 };
 const BACKFILL_MODULES = Object.keys(MODULE_SLICE) as ModuleSlug[];
@@ -86,7 +101,8 @@ function buildEnv(
   tenantId: string,
   propertyId: string,
   blueprint: Blueprint,
-  result: InstallResult
+  result: InstallResult,
+  sampleData: boolean
 ): SliceEnv {
   const assetMap = new Map<string, string>(Object.entries(result.assets ?? {}));
   return {
@@ -96,6 +112,7 @@ function buildEnv(
     userId: null,
     propertyId,
     blueprint,
+    sampleData,
     result,
     assetMap,
     asset: (id?: string) => (id ? assetMap.get(id) : undefined),
@@ -106,7 +123,13 @@ export type BackfillOutcome =
   | { backfilled: true; installId: string }
   | {
       backfilled: false;
-      reason: 'not-a-content-module' | 'no-install' | 'already-materialized';
+      reason:
+        | 'not-a-content-module'
+        | 'no-install'
+        | 'already-materialized'
+        /** The install was taken WITHOUT the design's examples (issue 098) and this
+         *  module's slice is examples only, so there is nothing of it to bring. */
+        | 'examples-declined';
     };
 
 /**
@@ -129,15 +152,29 @@ export async function backfillInstallForModule(
   const install = await withTenant({ tenantId }, (tx) =>
     tx.tenantBlueprintInstall.findFirst({
       where: { propertyId, status: { in: ['installed', 'live'] } },
-      select: { id: true, blueprintKey: true, blueprintVersion: true, result: true },
+      select: {
+        id: true,
+        blueprintKey: true,
+        blueprintVersion: true,
+        result: true,
+        sampleData: true,
+      },
     })
   );
   // No install yet → nothing to backfill; golden-blueprint-provisioning installs first,
   // and its own event/reconcile will have run the newly-enabled slice at install time.
   if (!install) return { backfilled: false, reason: 'no-install' };
 
+  // The answer the owner gave when the design went in, asked again months later
+  // (issue 098). Switching a module on is not a second chance to hand her the
+  // furniture she turned down.
+  const sampleData = install.sampleData;
+  if (!sampleData && spec.examplesOnly) return { backfilled: false, reason: 'examples-declined' };
+
   const result = install.result as unknown as InstallResult;
-  if (spec.isMaterialized(result)) return { backfilled: false, reason: 'already-materialized' };
+  if (spec.isMaterialized(result, sampleData)) {
+    return { backfilled: false, reason: 'already-materialized' };
+  }
 
   const blueprint = await resolveBlueprintManifest(tenantId, install.blueprintKey);
   if (!blueprint) {
@@ -146,7 +183,7 @@ export async function backfillInstallForModule(
     );
   }
 
-  const env = buildEnv(tenantId, propertyId, blueprint, result);
+  const env = buildEnv(tenantId, propertyId, blueprint, result, sampleData);
   await spec.run(env);
 
   // Persist the merged id-map, then re-capture the WHOLE artifact baseline set: the
@@ -163,7 +200,7 @@ export async function backfillInstallForModule(
     env.ctx,
     install.id,
     install.blueprintVersion,
-    resolveBlueprintArtifacts(blueprint, env.result, env.assetMap)
+    resolveBlueprintArtifacts(blueprint, env.result, env.assetMap, { sampleData })
   );
 
   logger.info(

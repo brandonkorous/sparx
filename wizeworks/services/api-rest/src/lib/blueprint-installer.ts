@@ -52,6 +52,21 @@ import { decodeBindingRef, encodeBindingRef, type SilicaNode } from '@wizeworks/
 
 import { captureBaselines, resolveBlueprintArtifacts } from './blueprint-baseline.js';
 
+/** What the person installing chose, as distinct from what the design declares. */
+export interface InstallOptions {
+  /**
+   * Bring the design's EXAMPLES — its products, its articles, its example salon
+   * with its example stylists (issue 098). True is the default and the answer
+   * almost everyone wants: a console with nothing in it does not teach a new
+   * owner what the screens are for.
+   *
+   * False takes the structure alone — the look, the pages, the chrome, the email
+   * designs, the shelves without the stock. The choice is recorded on the install
+   * row, because the backfill and the updater both ask it again later.
+   */
+  sampleData?: boolean;
+}
+
 export interface InstallContext {
   tenantId: string;
   userId: string | null;
@@ -471,9 +486,11 @@ export async function findInstall(
 
 export async function installBlueprint(
   ctxIn: InstallContext,
-  blueprint: Blueprint
+  blueprint: Blueprint,
+  options: InstallOptions = {}
 ): Promise<{ installId: string; result: InstallResult }> {
   const { tenantId, userId, propertyId, logger } = ctxIn;
+  const sampleData = options.sampleData ?? true;
   const ctx = { tenantId, userId: userId ?? undefined };
   const propCtx = { tenantId, userId: userId ?? undefined, propertyId };
 
@@ -515,6 +532,9 @@ export async function installBlueprint(
           blueprintKey: blueprint.key,
           blueprintVersion: blueprint.version,
           status: 'running',
+          // Recorded with the row, not just acted on — the backfill reads it back
+          // when a module is enabled months from now (issue 098).
+          sampleData,
           result: {},
         },
         select: { id: true },
@@ -535,17 +555,26 @@ export async function installBlueprint(
       userId,
       propertyId,
       blueprint,
+      sampleData,
       result,
       assetMap,
       asset: (id?: string) => (id ? assetMap.get(id) : undefined),
     };
 
     // 2–4. Unconditional slices: media, brand identity + site name/socials, theme.
+    //
+    // The MEDIA runs whichever way the examples went. Its images are the design's
+    // own — the hero photograph, the section backgrounds — and the pages point at
+    // them by id, so withholding them would leave the structure she DID ask for
+    // full of holes. A few unused product photographs in her library is the far
+    // smaller cost.
     await installAssetsSlice(env);
     await installBrandSlice(env);
     await installThemeSlice(env);
 
     // 5–10. Module-gated content slices — each installs only when its module is on.
+    //       Each also reads `sampleData` for the parts of itself that are examples
+    //       rather than structure (issue 098); scheduling is examples end to end.
     if (isOn('cms')) await installContentSlice(env);
     if (isOn('commerce')) await installCommerceSlice(env);
     if (isOn('scheduling')) await installSchedulingSlice(env);
@@ -575,7 +604,7 @@ export async function installBlueprint(
       ctx,
       installRow.id,
       blueprint.version,
-      resolveBlueprintArtifacts(blueprint, result, assetMap)
+      resolveBlueprintArtifacts(blueprint, result, assetMap, { sampleData })
     );
 
     // 11. Finalize the install row → `installed`, with the full id-map. Use
@@ -639,6 +668,10 @@ export interface SliceEnv {
   userId: string | null;
   propertyId: string;
   blueprint: Blueprint;
+  /** Whether this install brings the design's examples (issue 098). Threaded here
+   *  rather than read per slice, so the backfill running a slice on its own gets
+   *  the SAME answer the original install was given. */
+  sampleData: boolean;
   result: InstallResult;
   assetMap: Map<string, string>;
   asset: (id?: string) => string | undefined;
@@ -808,6 +841,14 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
   const { ctx, tenantId, userId, propertyId, blueprint, result, asset, assetMap } = env;
 
   // 5. Content entries (draft) — CMS module only; a non-CMS tenant gets none.
+
+  // Every row this slice writes is an EXAMPLE (issue 098): the articles, the
+  // bylines that wrote them, the categories and tags they were filed under. The
+  // content TYPES are the structure here, and a blueprint does not install those
+  // — `resolveType` reads what the tenant already has — so declining the examples
+  // costs nothing structural. Her Content list is simply empty, which is the
+  // truth about a publication that has not published yet.
+  if (!env.sampleData) return;
 
   // 5a. Byline personas + taxonomy the entries reference (docs/131 §4). Seeded ONCE,
   //     before the entries, so each entry can link its author + terms by the slug it
@@ -1121,6 +1162,14 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
     });
   }
 
+  // The line between structure and examples runs right here (issue 098). Above it
+  // are the shelves — the categories the navigation points at, the collections the
+  // grids are bound to, the product types her own products will validate against.
+  // Below it is somebody else's stock standing on them. An owner who declines the
+  // examples gets a shop laid out and empty, which is what a shop is on its first
+  // morning; the bound grids fill in as she adds her own.
+  if (!env.sampleData) return;
+
   // Precompute each product's collections (union of its collectionHandles and
   // any collection whose productHandles names it).
   const collsForProduct = new Map<string, Set<string>>();
@@ -1293,6 +1342,16 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
 
   const sched = blueprint.scheduling;
   if (!sched) return;
+
+  // This slice is examples end to end, and it is the one issue 098 was filed on: a
+  // place called Maison Élan, three stylists named Ava, Maya and Noor, and seven
+  // treatments priced for a salon in another country, all created 0.4 seconds
+  // after the account existed. There is no structural half to keep — a booking
+  // policy with no service to govern is a row with nothing behind it — so the
+  // whole slice stands down. Bookings then opens on her own 'Main location' and
+  // nothing else, which is exactly what a business that has not written its menu
+  // yet has.
+  if (!env.sampleData) return;
 
   const idmap = result.scheduling ?? { locations: {}, policies: {}, resources: {}, services: [] };
   result.scheduling = idmap;

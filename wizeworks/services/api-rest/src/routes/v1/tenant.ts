@@ -396,6 +396,10 @@ const OnboardingPatch = z.object({
   // Both null on the "start from scratch" path (no blueprint installed).
   blueprintKey: z.string().max(64).nullable().optional(),
   installId: z.string().uuid().nullable().optional(),
+  // Whether that install brought the design's EXAMPLES (issue 098). Kept beside
+  // the key so the step resumes on the answer that was actually given, rather
+  // than re-defaulting to yes on a refresh.
+  sampleData: z.boolean().optional(),
   // The full natural-language story, when onboarding came through `/story`.
   story: StoryNarrative.nullable().optional(),
   completed: z
@@ -426,6 +430,7 @@ interface OnboardingState {
   category: string | null;
   blueprintKey: string | null;
   installId: string | null;
+  sampleData: boolean;
   story: OnboardingStory | null;
   completed: OnboardingCompleted;
 }
@@ -447,6 +452,7 @@ const DEFAULT_ONBOARDING: OnboardingState = {
   category: null,
   blueprintKey: null,
   installId: null,
+  sampleData: true,
   story: null,
   completed: DEFAULT_COMPLETED,
 };
@@ -475,6 +481,7 @@ function readOnboarding(settings: unknown): OnboardingState {
     category: typeof rec.category === 'string' ? rec.category : null,
     blueprintKey: typeof rec.blueprintKey === 'string' ? rec.blueprintKey : null,
     installId: typeof rec.installId === 'string' ? rec.installId : null,
+    sampleData: rec.sampleData === false ? false : true,
     story: story.success ? story.data : null,
     completed: {
       modules: completedRaw.modules === true,
