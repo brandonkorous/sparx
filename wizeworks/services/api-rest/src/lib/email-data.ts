@@ -21,7 +21,7 @@
 
 import { withTenant } from '@wizeworks/db';
 import { discountService, productService } from '@wizeworks/commerce';
-import { listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
+import { ALL_MODULES, listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
 import {
   collectSilicaEmailSourceKeys,
   type DataSources,
@@ -974,25 +974,10 @@ async function resolvePromotion(ctx: ServiceContext): Promise<Record<string, str
  *  BUNDLED_FREE graph, so `invoicing`/`inventory` are on for B2B/Commerce tenants). */
 async function resolveModules(ctx: ServiceContext): Promise<Record<string, string>> {
   const enabled = new Set<ModuleSlug>(await listEnabledModules(ctx.tenantId));
-  const ALL: ModuleSlug[] = [
-    'builder',
-    'commerce',
-    'cms',
-    'crm',
-    'email',
-    'b2b',
-    'invoicing',
-    'dropship',
-    'inventory',
-    'chat',
-    'ai',
-    'scheduling',
-    'social',
-    'finance',
-    'staff',
-  ];
+  // THE list, not a copy. A hand-maintained duplicate here means a new module's
+  // merge tag silently resolves to nothing in every template that reads it.
   const out: Record<string, string> = {};
-  for (const m of ALL) out[m] = enabled.has(m) ? m : '';
+  for (const m of ALL_MODULES) out[m] = enabled.has(m) ? m : '';
   return out;
 }
 

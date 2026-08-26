@@ -11,25 +11,13 @@ import type { FastifyPluginAsync } from 'fastify';
 import { prisma } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth } from '@wizeworks/api-core/auth';
-import { type ModuleSlug } from '@wizeworks/auth';
+import { ALL_MODULES, type ModuleSlug } from '@wizeworks/auth';
 
-const MODULE_SLUGS: ModuleSlug[] = [
-  'builder',
-  'commerce',
-  'cms',
-  'crm',
-  'email',
-  'b2b',
-  'dropship',
-  'inventory',
-  'chat',
-  'ai',
-  'scheduling',
-  'social',
-  'finance',
-  'staff',
-  'invoicing',
-];
+// THE list, not a copy of it. This was a hand-maintained duplicate and it had
+// already drifted: a module added to ALL_MODULES typechecks everywhere and then
+// simply does not appear on the home grid, which reads as "not built" rather
+// than as a missing line in an array.
+const MODULE_SLUGS = ALL_MODULES;
 
 function readModuleFlags(settings: unknown): Record<string, boolean> {
   const out: Record<string, boolean> = {};
