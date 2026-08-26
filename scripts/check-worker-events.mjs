@@ -66,7 +66,17 @@ function fail(...lines) {
 }
 
 function stripLineComments(src) {
+  // Strip CR FIRST. The regex below is `//.*$`, and `.` does not match a CR, so
+  // on a CRLF file `$` never matches and NO comment is ever stripped. That is not
+  // cosmetic here: the catalog scan stops at the first `;`, and `types.ts` carries
+  // a comment reading "toggles a module flag; consumed to seed module defaults"
+  // barely 800 characters in. On a CRLF working tree this check read SIX event
+  // names out of 169 and then failed 78 perfectly healthy workers. `.gitattributes`
+  // says LF, so the COMMITTED file is fine and CI passed while every Windows
+  // pre-push went red — the sibling `check-event-topics.mjs` hit the identical bug
+  // the same day. Fix it in both or in neither.
   return src
+    .replace(/\r/g, '')
     .split('\n')
     .map((l) => l.replace(/\/\/.*$/, ''))
     .join('\n');
@@ -83,10 +93,22 @@ function knownEvents() {
     const start = src.indexOf('export type ' + cat.type);
     if (start === -1) fail(cat.file + ' no longer declares `export type ' + cat.type + '`.');
     const end = src.indexOf(';', start);
+    const before = names.size;
     for (const m of src.slice(start, end).matchAll(/'([^']+)'/g)) names.add(m[1]);
-  }
-  if (names.size < 50) {
-    fail('Only ' + names.size + ' event name(s) parsed — the catalogs did not read properly.');
+    // Measured PER CATALOG, not on the total. A floor on the sum is barely a floor
+    // at all: when the CRLF bug above cut `EventType` from 169 names to 6, the 54
+    // the CRM catalog still contributed carried the total past a threshold of 50
+    // and the guard stayed silent while the check condemned 78 healthy workers.
+    // A check that has gone blind must go RED, and it can only do that if every
+    // source it reads is judged on its own.
+    const parsed = names.size - before;
+    if (parsed < 20) {
+      fail(
+        'Only ' + parsed + ' name(s) parsed from `' + cat.type + '` in ' + cat.file + '.',
+        'That catalog did not read properly, so this check cannot tell a real event',
+        'from a typo — every worker it judges after this point is judged on nothing.'
+      );
+    }
   }
   return names;
 }

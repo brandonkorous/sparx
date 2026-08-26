@@ -94,7 +94,7 @@ fi
 step "structural checks (events, routes, dockerfiles, brand isolation, console parity, migration order, blueprint versions)"
 node scripts/check-platform-brand.mjs >/dev/null || fail "shared code gained a NEW hardcoded product name — it serves both brands, so the string is wrong in one of them. Run \`pnpm check:brand\` to see it"
 node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
-node scripts/check-worker-events.mjs >/dev/null || fail "a worker subscribes to or routes an event nobody publishes — run \`pnpm check:worker-events\` to see it. NOTE: a dead `case` reads exactly like coverage, and check:events cannot see it."
+node scripts/check-worker-events.mjs >/dev/null || fail "a worker subscribes to or routes an event nobody publishes — run \`pnpm check:worker-events\` to see it. NOTE: a dead \`case\` reads exactly like coverage, and check:events cannot see it."
 node scripts/check-surface-routes.mjs >/dev/null || fail "surface/address parity failed — run \`pnpm check:routes\` to see it"
 node scripts/check-dockerfile-deps.mjs >/dev/null || fail "a Dockerfile is missing a workspace package it imports — run \`pnpm check:docker\` to see it"
 node scripts/check-service-env.mjs >/dev/null || fail "a service cannot start on a fresh checkout — its required env is not in its .env.example. Run \`pnpm check:service-env\` to see it. NOTE: this class of failure passes typecheck, lint and every test, because none of them boot the service."
@@ -105,8 +105,8 @@ node scripts/check-deletability.mjs >/dev/null || fail "piggles now depends on a
 node scripts/check-webhook-events.mjs >/dev/null || fail "webhook event lists have drifted — run \`pnpm check:webhooks\` to see it"
 node scripts/check-billing-plans.mjs >/dev/null || fail "a billing plan and the prod ConfigMap have drifted, or a plan is malformed — run \`pnpm check:billing-plans\` to see it. NOTE: this class of failure DEPLOYS green and charges the wrong price."
 node scripts/check-inventory-api-docs.mjs >/dev/null || fail "the inventory API reference is stale — run \`pnpm gen:inventory-api\` to rebuild it"
-node piggles/scripts/check-toolbar-primary.mjs >/dev/null || fail "a Piggles toolbar put a commit action in the relocatable `controls` slot — run `pnpm check:piggles-toolbars` to see it"
-node piggles/scripts/check-theme-opacity.mjs >/dev/null || fail "a Piggles color token carries an alpha byte, so everything painted from it is see-through — run `pnpm check:piggles-theme` to see it. NOTE: this class of failure is valid CSS and passes typecheck, lint and every test; the only symptom is that a whole group of apps looks washed out."
+node piggles/scripts/check-toolbar-primary.mjs >/dev/null || fail "a Piggles toolbar put a commit action in the relocatable \`controls\` slot — run \`pnpm check:piggles-toolbars\` to see it"
+node piggles/scripts/check-theme-opacity.mjs >/dev/null || fail "a Piggles color token carries an alpha byte, so everything painted from it is see-through — run \`pnpm check:piggles-theme\` to see it. NOTE: this class of failure is valid CSS and passes typecheck, lint and every test; the only symptom is that a whole group of apps looks washed out."
 node scripts/check-console-parity.mjs >/dev/null || fail "the two consoles have drifted — one has system furniture the other lacks. Run \`pnpm check:console-parity\` to see which, and either build it or argue it onto the exception list"
 # Compares against `origin/main` by default, which is what CI passes it on a
 # push. This is the ONE check CI ran that the hook did not, and the failure it
