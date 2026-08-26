@@ -25,8 +25,9 @@ import {
   MailgunParameterError,
   PostalParameterError,
   renderTemplate,
+  senderDomainOf,
 } from '@wizeworks/email';
-import { analyticsService, brandService } from '@wizeworks/email-platform';
+import { analyticsService, brandService, domainService } from '@wizeworks/email-platform';
 import { appOrigin } from '@wizeworks/links/server';
 import {
   platformBrandIdentity,
@@ -249,8 +250,22 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
     // (docs/49 Phase 7) joins the engagement back to the SITE the send was on
     // behalf of, so EmailEvent analytics break down per site; absent → tenant-wide.
     const propertyId = data.propertyId ?? null;
+    // Relay through the tenant's OWN domain when the `From` uses one they have
+    // verified, so the message is signed by a key that matches the address they
+    // are sending as. Best-effort: a lookup failure sends through the platform
+    // domain rather than not sending, which is the pre-existing behavior.
+    let senderDomain: string | null = null;
+    try {
+      senderDomain = await domainService.signingDomainFor(
+        { tenantId: event.tenantId },
+        senderDomainOf(rendered.from)
+      );
+    } catch (domainErr) {
+      childLog.warn({ err: domainErr }, 'sending-domain lookup failed — relaying via the default');
+    }
     const result = await getEmailProvider().send({
       ...rendered,
+      ...(senderDomain ? { senderDomain } : {}),
       variables: {
         ...data.variables,
         tenant_id: event.tenantId,

@@ -32,17 +32,17 @@
 //   ['email','estimate', segmentId]        how many people an audience reaches
 //   ['email','audiences']                  the CRM segments the composer offers
 //   ['email','designed']                   the Builder emails the composer offers
+//   ['email','broadcast', id, 'preview']   the send itself, rendered
 //   ['email','settings']                   the sending address (read-only)
 //
-// Every write invalidates the ['email'] ROOT, so a create, edit, send, schedule
-// or cancel is reflected across every open email surface at once.
+// The WRITES live beside this in broadcasts-mutations.ts; every one of them
+// invalidates the ['email'] ROOT, so a create, edit, send, schedule or cancel is
+// reflected across every open email surface at once.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { useQuery } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
-import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
-import { productCopy } from '../../lib/product';
 
 /* ── Semantic tone (shared with the Badge color axis) ────────────────────── */
 
@@ -102,13 +102,36 @@ export interface DesignedEmail {
   name: string;
   subject: string;
   published: boolean;
+  /** Set on a built-in email that a single event sends — an order confirmation,
+   *  an invoice reminder. Null on one the owner wrote. A broadcast may only send
+   *  the second kind: see `broadcastableEmails`. */
+  key: string | null;
 }
+
+/** The designed emails it makes sense to send to a whole audience.
+ *
+ *  A keyed email is triggered by ONE event and written about it: it says "your
+ *  order has shipped" and reads `{{order.number}}`, which no audience has. The
+ *  picker offered all forty-five, so "Payment failed" sat two rows from the
+ *  newsletter, and choosing it would have told every subscriber their payment
+ *  had failed. Only emails the owner wrote herself belong here. */
+export function broadcastableEmails(emails: DesignedEmail[] | undefined): DesignedEmail[] {
+  return (emails ?? []).filter((email) => email.key === null);
+}
+
+/** The rendered preview of a broadcast, or the reason there isn't one yet. */
+export type BroadcastPreview =
+  | { ready: false; reason: 'no-email' | 'not-published' | 'no-audience' }
+  | { ready: true; to: string; from: string; subject: string; html: string; text: string };
 
 /** This site's sender identity, shown read-only in the composer. */
 export interface EmailSettings {
   fromName: string | null;
   fromAddress: string | null;
   replyTo: string | null;
+  /** The literal `From` header the send will carry, resolved by the server —
+   *  including the platform fallback when nothing here is filled in. */
+  resolvedFrom: string;
 }
 
 /* ── Query keys ───────────────────────────────────────────────────────────── */
@@ -118,6 +141,7 @@ export const emailKeys = {
   broadcasts: ['email', 'broadcasts'] as const,
   broadcast: (id: string) => ['email', 'broadcast', id] as const,
   stats: (id: string) => ['email', 'broadcast', id, 'stats'] as const,
+  preview: (id: string) => ['email', 'broadcast', id, 'preview'] as const,
   estimate: (segmentId: string) => ['email', 'estimate', segmentId] as const,
   audiences: ['email', 'audiences'] as const,
   designed: ['email', 'designed'] as const,
@@ -179,13 +203,31 @@ export function useAudiences() {
   });
 }
 
-/** The designed emails the composer offers (Builder emails). */
+/** The designed emails the composer offers (Builder emails).
+ *
+ *  `staleTime: 0` on purpose: the composer's own "Design emails" button opens
+ *  the designer, so the list is expected to change while the composer is sitting
+ *  open behind it. Cached for a minute, an email the owner had just designed was
+ *  simply absent from the picker she designed it for. */
 export function useDesignedEmails() {
   return useQuery({
     queryKey: emailKeys.designed,
     queryFn: () =>
       api.get<{ emails: DesignedEmail[] }>('/v1/builder/emails').then((data) => data.emails),
-    staleTime: 60_000,
+    refetchOnMount: 'always',
+    staleTime: 0,
+  });
+}
+
+/** What this broadcast will look like in somebody's inbox — the send itself,
+ *  rendered for a real person out of its own audience. `ready:false` says which
+ *  piece is missing rather than showing a blank frame. */
+export function useBroadcastPreview(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: emailKeys.preview(id),
+    queryFn: () => api.get<BroadcastPreview>(`/v1/email/broadcasts/${id}/preview`),
+    enabled: enabled && id !== 'new',
+    staleTime: 0,
   });
 }
 
@@ -195,124 +237,4 @@ export function useEmailSettings() {
     queryFn: () => api.get<EmailSettings>('/v1/email/settings'),
     staleTime: 60_000,
   });
-}
-
-/* ── Invalidation ─────────────────────────────────────────────────────────── */
-
-export function useInvalidateBroadcasts() {
-  const queryClient = useQueryClient();
-  return (id?: string) => {
-    void queryClient.invalidateQueries({ queryKey: emailKeys.all });
-    if (id) void queryClient.invalidateQueries({ queryKey: emailKeys.broadcast(id) });
-  };
-}
-
-/* ── Write inputs ─────────────────────────────────────────────────────────── */
-
-export interface BroadcastCreateInput {
-  name: string;
-  subject: string;
-  preheader?: string;
-  segmentId?: string;
-  builderEmailId?: string;
-}
-
-export interface BroadcastUpdateInput {
-  name?: string;
-  subject?: string;
-  preheader?: string | null;
-  segmentId?: string | null;
-  builderEmailId?: string | null;
-}
-
-/* ── Mutations (id-agnostic, so one caller can create-or-update) ──────────── */
-
-export function useCreateBroadcast() {
-  const invalidate = useInvalidateBroadcasts();
-  return useMutation({
-    mutationFn: (input: BroadcastCreateInput) => api.post<Broadcast>('/v1/email/broadcasts', input),
-    onSuccess: (created) => {
-      invalidate(created.id);
-    },
-  });
-}
-
-export function useUpdateBroadcast() {
-  const invalidate = useInvalidateBroadcasts();
-  return useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: BroadcastUpdateInput }) =>
-      api.patch<Broadcast>(`/v1/email/broadcasts/${id}`, patch),
-    onSuccess: (updated) => {
-      invalidate(updated.id);
-    },
-  });
-}
-
-export function useSendBroadcast() {
-  const invalidate = useInvalidateBroadcasts();
-  return useMutation({
-    mutationFn: (id: string) => api.post<Broadcast>(`/v1/email/broadcasts/${id}/send`),
-    onSuccess: (row) => {
-      invalidate(row.id);
-    },
-  });
-}
-
-export function useScheduleBroadcast() {
-  const invalidate = useInvalidateBroadcasts();
-  return useMutation({
-    mutationFn: ({ id, scheduledAt }: { id: string; scheduledAt: string }) =>
-      api.post<Broadcast>(`/v1/email/broadcasts/${id}/schedule`, { scheduledAt }),
-    onSuccess: (row) => {
-      invalidate(row.id);
-    },
-  });
-}
-
-export function useCancelBroadcast() {
-  const invalidate = useInvalidateBroadcasts();
-  return useMutation({
-    mutationFn: (id: string) => api.post<Broadcast>(`/v1/email/broadcasts/${id}/cancel`),
-    onSuccess: (row) => {
-      invalidate(row.id);
-    },
-  });
-}
-
-/* ── Presentation helpers ─────────────────────────────────────────────────── */
-
-/** A broadcast's state in plain words, with the tone that carries its color.
- *  Status is a semantic color axis — never a bland neutral pill. */
-export function broadcastState(status: BroadcastStatus): { label: string; tone: Tone } {
-  switch (status) {
-    case 'draft':
-      return { label: 'Draft', tone: 'info' };
-    case 'scheduled':
-      return { label: 'Scheduled', tone: 'warning' };
-    case 'sending':
-      return { label: 'Sending', tone: 'info' };
-    case 'sent':
-      return { label: 'Sent', tone: 'success' };
-    case 'cancelled':
-      return { label: 'Cancelled', tone: 'warning' };
-    case 'failed':
-      return { label: 'Failed', tone: 'error' };
-  }
-}
-
-/** How the sending address will appear to a recipient — the same shape the send
- *  builds. Falls back to the shared sparx address when nothing is configured. */
-export function senderDisplay(settings: EmailSettings | undefined): string {
-  if (!settings?.fromAddress)
-    return productCopy('email.sender.fallbackAddress', 'noreply@sparx.email');
-  return settings.fromName
-    ? `${settings.fromName} <${settings.fromAddress}>`
-    : settings.fromAddress;
-}
-
-/** Surface the server's own sentence for a 4xx — it names the exact problem (a
- *  broadcast already sent, no designed email attached, a schedule in the past) —
- *  else a plain fallback. */
-export function broadcastErrorMessage(error: unknown, fallback: string): string {
-  return apiErrorMessage(error, fallback);
 }

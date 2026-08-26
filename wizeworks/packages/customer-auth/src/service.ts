@@ -198,7 +198,16 @@ export function signUpCustomer(
 /** Resolve the session cookie to its Better Auth user, or null. `cookieHeader`
  *  is the raw request Cookie header (name=value; …). RLS scopes the lookup, so a
  *  token from another tenant resolves to null — and the session is additionally
- *  bound to its tenant in-app (below), so isolation does not rest on RLS alone. */
+ *  bound to its tenant in-app (below), so isolation does not rest on RLS alone.
+ *
+ *  A cookie that cannot be DECODED resolves to null as well. Every other way a
+ *  session fails to resolve already answers null — absent, userless, another
+ *  tenant's — and "this viewer is not signed in" is the same answer for a cookie
+ *  signed with a secret we no longer hold, half-written, or belonging to another
+ *  auth instance on the same host. It used to throw, which made an optional
+ *  lookup able to fail its caller's request: on the public product listing that
+ *  500'd the read, and the storefront renders a failed read as "No products
+ *  found" (issue 253). */
 export function getCustomerSession(
   ctx: CustomerAuthContext,
   cookieHeader: string | undefined
@@ -208,7 +217,7 @@ export function getCustomerSession(
     const auth = getCustomerAuth();
     const headers = new Headers();
     headers.set('cookie', cookieHeader);
-    const res = await auth.api.getSession({ headers });
+    const res = await auth.api.getSession({ headers }).catch(() => null);
     if (!res) return null;
     const user = res.user;
     if (!user?.id || !user.email) return null;

@@ -68,3 +68,19 @@ export const Table = forwardRef<HTMLTableElement, TableProps>(function Table(
 ) {
   return <SilicaTable ref={ref} wrapperClassName={wrapperClassName ?? 'h-full'} {...rest} />;
 });
+
+/**
+ * How wide a list's identity column may grow before it pushes the last column
+ * off the right-hand edge.
+ *
+ * A name or subject has no natural width, so the cell needs a cap or a long one
+ * swallows the table. Written as a single desktop number (`max-w-72`, 288px) the
+ * cap is itself wider than a 360px pane once a status badge is beside it, and
+ * the badge — the column the list exists to show — is what falls off. Here the
+ * cap widens with the container instead, from 160px on a phone to the 288px it
+ * always had at full width.
+ *
+ * A constant rather than a per-list value: the number is not a property of any
+ * one list, so changing it should change every list.
+ */
+export const IDENTITY_CELL = 'max-w-40 @sm:max-w-56 @md:max-w-64 @2xl:max-w-72';

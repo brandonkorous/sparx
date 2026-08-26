@@ -129,7 +129,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
         // interactive transaction would hold a scarce PgBouncer server connection
         // across a second one.
         const identity = await loadSenderIdentity(row.tenant_id, propertyId);
-        const from = buildFrom(identity.fromName, identity.fromAddress);
+        const from = await buildFrom(row.tenant_id, identity.fromName, identity.fromAddress);
         // A per-send Reply-To (a form notification → the visitor) wins over the
         // site's default reply address.
         const replyTo = payload.replyTo ?? identity.replyTo ?? undefined;

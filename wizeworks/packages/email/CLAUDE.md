@@ -166,10 +166,16 @@ fail the business write or trigger a Pub/Sub retry loop of an already-done job:
 - **Auth contexts have no ambient tenant.** `user.tenantId` is a custom field better-auth
   doesn't surface in callback types → read it via `user as unknown as { tenantId?: string }`,
   fallback `?? ''`, exactly like `sendResetPassword` does.
-- **`from`** is `SPARX_EMAIL_FROM` / `sparx <noreply@sparx.email>` with the SENDING
-  brand's display name substituted by `platformFrom()` (`@wizeworks/brand-core`).
-  The address is shared on purpose — one Mailgun domain serves both brands, so it
-  cannot move until Piggles has DNS of its own; only the name in front of it does.
+- **`from`** comes from `platformFrom()` (`@wizeworks/brand-core`). A brand that has
+  published `<BRAND>_EMAIL_FROM` sends from **its own address, verbatim**; a brand
+  that has not falls back to `SPARX_EMAIL_FROM` with only its display NAME
+  substituted. This paragraph used to say the address "cannot move until Piggles has
+  DNS of its own" — that was a description of the configuration, not a limit of the
+  code, and it read as a limit. Two things gate moving it, both outside this package:
+  the domain must be **verified in Mailgun**, and it must be listed in
+  `SPARX_MAILGUN_DOMAINS` so the provider posts the message through it. Set the
+  `_EMAIL_FROM` without both and every send is signed by the wrong domain's DKIM key
+  and fails alignment — worse than the shared address it replaced.
   The worker resolves per-tenant BRAND (colors/logo) from `propertyId` when present,
   and overlays `brand.platform` on EVERY send, branded or not — the footer's legal
   line and the masthead state who WE are, which a fully-branded shop needs exactly

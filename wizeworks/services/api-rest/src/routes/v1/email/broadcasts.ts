@@ -6,6 +6,7 @@
 //   GET    /v1/email/broadcasts/:id             → one
 //   PATCH  /v1/email/broadcasts/:id             → update (draft only)
 //   GET    /v1/email/broadcasts/:id/stats       → engagement counts
+//   GET    /v1/email/broadcasts/:id/preview     → the send itself, rendered
 //   POST   /v1/email/broadcasts/:id/send        → send now
 //   POST   /v1/email/broadcasts/:id/schedule    → schedule
 //   POST   /v1/email/broadcasts/:id/cancel      → cancel a scheduled send
@@ -13,11 +14,13 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { broadcastService } from '@wizeworks/email-platform';
+import { emailService } from '@wizeworks/builder';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
 import { silicaEmailDataResolver } from '../../../lib/email-data.js';
+import { buildFrom, loadSenderIdentity, renderBuilderEmailDoc } from '../../../lib/tenant-email.js';
 import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
@@ -95,6 +98,54 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireEmailModule(request);
     const { id } = IdParam.parse(request.params);
     return ok(await broadcastService.stats(toEmailContext(request), id));
+  });
+
+  // What this broadcast will actually look like in somebody's inbox.
+  //
+  // Rendered through `renderBuilderEmailDoc` — the SAME core the dispatch tick
+  // runs — for a REAL person out of this broadcast's own audience, so the
+  // subject's merge tags resolve against a real name and the marketing footer
+  // (unsubscribe + postal address) is the one that will ship. The email
+  // designer's own preview answers a different question: it renders the
+  // DESIGN's subject, without the broadcast's, and without the legal footer a
+  // marketing send composes in. Proofreading one and sending the other is how
+  // an owner ends up surprised by her own email.
+  app.get('/v1/email/broadcasts/:id/preview', async (request) => {
+    requireRole(request, 'viewer');
+    await requireEmailModule(request);
+    const { id } = IdParam.parse(request.params);
+    const ctx = toEmailContext(request);
+    const broadcast = await broadcastService.get(ctx, id);
+    if (!broadcast.builderEmailId) {
+      return ok({ ready: false, reason: 'no-email' as const });
+    }
+    const doc = await emailService.getPublishedById(ctx, broadcast.builderEmailId);
+    if (!doc) return ok({ ready: false, reason: 'not-published' as const });
+    // A real recipient, or nobody — previewing as an invented person would prove
+    // the tags render, not that they render right.
+    const recipient = await broadcastService.previewRecipient(ctx, id);
+    if (!recipient) return ok({ ready: false, reason: 'no-audience' as const });
+
+    const identity = await loadSenderIdentity(ctx.tenantId, broadcast.propertyId);
+    const rendered = await renderBuilderEmailDoc(ctx, {
+      doc,
+      to: recipient.email,
+      propertyId: broadcast.propertyId,
+      ref: { email: recipient.email, customerId: recipient.customerId },
+      // A broadcast is marketing, always — the same declaration the send makes.
+      marketing: true,
+      physicalAddress: identity.physicalAddress,
+      subjectOverride: broadcast.subject,
+      preheaderOverride: broadcast.preheader,
+    });
+    return ok({
+      ready: true as const,
+      to: recipient.email,
+      from: await buildFrom(ctx.tenantId, identity.fromName, identity.fromAddress),
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+    });
   });
 
   app.post('/v1/email/broadcasts/:id/send', async (request) => {

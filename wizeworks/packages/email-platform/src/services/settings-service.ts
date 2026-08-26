@@ -19,6 +19,7 @@ import { writeAuditLog } from '../audit';
 import { publishEmailEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { UpdateEmailSettingsInput } from '../schemas/settings';
+import { buildTenantFrom } from './platform-sender';
 
 export interface EmailSettingsView {
   tenantId: string;
@@ -28,12 +29,26 @@ export interface EmailSettingsView {
   replyTo: string | null;
   physicalAddress: string | null;
   defaultSendingDomainId: string | null;
+  /**
+   * The exact `From` header a send from this site will carry — the SAME string
+   * `buildTenantFrom` gives the mailer, resolved here rather than guessed again
+   * downstream.
+   *
+   * A console that re-derived the unconfigured fallback for itself named a
+   * domain the platform does not send from, and dropped the sender NAME
+   * entirely — so an owner read "noreply@piggles.email" on the screen and her
+   * customers received "Piggles <noreply@sparx.email>". The sender name is the
+   * one part of an email a recipient actually reads, so it is not something a
+   * second implementation gets to have an opinion about.
+   */
+  resolvedFrom: string;
 }
 
 function toView(
   tenantId: string,
   propertyId: string,
-  row: EmailSettings | null
+  row: EmailSettings | null,
+  resolvedFrom: string
 ): EmailSettingsView {
   return {
     tenantId,
@@ -43,7 +58,13 @@ function toView(
     replyTo: row?.replyTo ?? null,
     physicalAddress: row?.physicalAddress ?? null,
     defaultSendingDomainId: row?.defaultSendingDomainId ?? null,
+    resolvedFrom,
   };
+}
+
+/** The `From` a send would carry with these fields — the view's `resolvedFrom`. */
+function senderFor(tenantId: string, row: EmailSettings | null): Promise<string> {
+  return buildTenantFrom(tenantId, row?.fromName ?? null, row?.fromAddress ?? null);
 }
 
 /**
@@ -59,20 +80,25 @@ export async function get(
   ctx: ServiceContext,
   propertyId: string | null
 ): Promise<EmailSettingsView> {
-  return withTenant(ctx, async (tx) => {
-    const siteId =
+  const { siteId, row } = await withTenant(ctx, async (tx) => {
+    const resolved =
       propertyId ??
       (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id;
     // A tenant with no primary site has no business to send as. All-nulls sends
     // as the platform, which is the same result an unconfigured site gives.
-    if (!siteId) return toView(ctx.tenantId, '', null);
-    const row = await tx.emailSettings.findUnique({
-      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: siteId } },
-    });
+    if (!resolved) return { siteId: '', row: null };
     // No fallback to a SIBLING site, deliberately. An unset site yields all-null
     // fields and buildFrom() drops to the platform sender.
-    return toView(ctx.tenantId, siteId, row);
+    return {
+      siteId: resolved,
+      row: await tx.emailSettings.findUnique({
+        where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: resolved } },
+      }),
+    };
   });
+  // Outside withTenant: buildTenantFrom reads the non-RLS `tenants` dispatch row
+  // on the plain client, which has no tenant context to borrow.
+  return toView(ctx.tenantId, siteId, row, await senderFor(ctx.tenantId, row));
 }
 
 export async function update(
@@ -123,5 +149,5 @@ export async function update(
     dedupeKey: `email.settings.updated:${ctx.tenantId}:${propertyId}:${row.updatedAt.toISOString()}`,
   });
 
-  return toView(ctx.tenantId, propertyId, row);
+  return toView(ctx.tenantId, propertyId, row, await senderFor(ctx.tenantId, row));
 }

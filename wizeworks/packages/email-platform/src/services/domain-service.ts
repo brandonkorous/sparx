@@ -239,3 +239,36 @@ export async function remove(ctx: ServiceContext, id: string): Promise<void> {
     });
   });
 }
+
+/**
+ * The tenant's own domain that may SIGN a message from this address, or null.
+ *
+ * Called on every send, so it does the cheap thing: the `From`'s domain is
+ * already known, and this asks only whether that exact domain is verified for
+ * this tenant. A verified domain that the `From` does not use must NOT be
+ * returned — signing an `@platform` address with the tenant's key is the same
+ * misalignment facing the other way.
+ *
+ * This is the last hop of a feature that was otherwise complete. `create()`
+ * provisions the domain in Mailgun, the console shows the DNS records to
+ * publish, `verify()` confirms them — and then every message was relayed
+ * through the platform domain regardless, so the tenant had proved they owned
+ * an address the mail was not being signed for. SPF and DKIM alignment both
+ * failed, and a tenant who had published a DMARC policy had their own
+ * customers' order confirmations rejected.
+ */
+export async function signingDomainFor(
+  ctx: ServiceContext,
+  fromDomain: string | null
+): Promise<string | null> {
+  if (!fromDomain) return null;
+  const domain = fromDomain.trim().toLowerCase();
+  if (domain === '') return null;
+  const row = await withTenant(ctx, (tx) =>
+    tx.sendingDomain.findFirst({
+      where: { domain, state: 'verified' },
+      select: { domain: true },
+    })
+  );
+  return row?.domain ?? null;
+}

@@ -13,7 +13,7 @@
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { IDENTITY_CELL, Table } from '../../components/table';
 import { faPlus, faRoute } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
@@ -198,7 +198,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(sequence.id, event);
                     }}
                   >
-                    <td className="max-w-72">
+                    <td className={IDENTITY_CELL}>
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate font-medium">{sequence.name}</span>
                         {sequence.description ? (

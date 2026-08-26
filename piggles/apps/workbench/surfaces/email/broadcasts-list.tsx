@@ -26,7 +26,7 @@ import {
   SearchInput,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { IDENTITY_CELL, Table } from '../../components/table';
 import { faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
@@ -34,12 +34,8 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import {
-  broadcastState,
-  useBroadcasts,
-  useBroadcastStats,
-  type Broadcast,
-} from './broadcasts-data';
+import { useBroadcasts, useBroadcastStats, type Broadcast } from './broadcasts-data';
+import { broadcastState } from './broadcasts-presentation';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -234,7 +230,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(broadcast.id, event);
                     }}
                   >
-                    <td className="max-w-72">
+                    <td className={IDENTITY_CELL}>
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate font-medium">{broadcast.name}</span>
                         <span className="truncate text-sm">{broadcast.subject}</span>

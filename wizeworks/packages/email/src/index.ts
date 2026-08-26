@@ -17,6 +17,7 @@ export {
   resetConsoleProvider,
   createMailgunProvider,
   MailgunParameterError,
+  senderDomainOf,
   createPostalProvider,
   PostalParameterError,
   getEmailProvider,

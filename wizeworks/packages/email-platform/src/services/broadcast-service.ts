@@ -220,6 +220,23 @@ interface Recipient {
   customerId: string | null;
 }
 
+/**
+ * One REAL person this broadcast would reach — the first of its audience, after
+ * suppressions, exactly as the send picks them.
+ *
+ * This exists so a preview can be rendered AS somebody rather than as sample
+ * data: `{{customer.greeting}}` proved out against an invented "Alex" proves
+ * nothing about the twenty-three names it will actually meet. Null when the
+ * audience is empty, which is also the case where there is nothing to preview.
+ */
+export async function previewRecipient(
+  ctx: ServiceContext,
+  id: string
+): Promise<{ email: string; customerId: string | null } | null> {
+  const recipients = await expandRecipients(ctx, await get(ctx, id));
+  return recipients[0] ?? null;
+}
+
 async function expandRecipients(ctx: ServiceContext, broadcast: Broadcast): Promise<Recipient[]> {
   if (!broadcast.segmentId) return [];
   return withTenant(ctx, async (tx) => {

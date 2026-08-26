@@ -49,6 +49,10 @@ export interface EmailSettings {
   physicalAddress: string | null;
   /** The verified sending domain to send through, or null for the shared default. */
   defaultSendingDomainId: string | null;
+  /** The literal `From` header a send from this site carries, resolved by the
+   *  server — the shared platform sender included, when nothing above is set.
+   *  Never re-derive this in the console; the two answers drifted apart once. */
+  resolvedFrom: string;
 }
 
 /** The PATCH body — every field optional, only the provided ones change. Null

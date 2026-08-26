@@ -104,8 +104,9 @@ describe('platformFrom', () => {
   const FALLBACK = 'sparx <noreply@sparx.email>';
 
   it('keeps the deliverable address and corrects only the name', () => {
-    // Both brands send through one Mailgun domain. The address has to stay;
-    // "sparx" in front of it does not.
+    // The case where the brand has published NO sending identity of its own: it
+    // borrows the shared domain, because an address has to resolve to something
+    // the provider is authorised for. The name in front of it does not.
     process.env.PIGGLES_BRAND_NAME = 'Piggles';
     const from = platformFrom(platformBrandIdentity('piggles'), FALLBACK);
     expect(from).toBe('Piggles <noreply@sparx.email>');

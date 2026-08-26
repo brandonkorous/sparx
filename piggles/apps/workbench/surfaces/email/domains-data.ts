@@ -93,6 +93,8 @@ export interface EmailSettingsView {
   replyTo: string | null;
   physicalAddress: string | null;
   defaultSendingDomainId: string | null;
+  /** The literal `From` header a send carries, resolved server-side. */
+  resolvedFrom: string;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */

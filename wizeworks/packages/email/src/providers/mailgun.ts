@@ -9,16 +9,56 @@ import type { EmailProvider, SendableEmail } from '../types';
 // Multi-tenant: the sending domain rides in the URL path, not the API key.
 // One account key authenticates calls against every verified domain in our
 // Mailgun account, so per-tenant routing is just "swap the path segment."
-// Today we send only from sparx.email; when tenant domains land, the
-// caller passes `senderDomain` to override the default.
+//
+// The path segment is chosen from the message's OWN `From` address, when that
+// domain is one this account is authorized for (`domains`). It has to be: a
+// message posted to /v3/a.example/messages carrying `From: someone@b.example`
+// is signed by a.example's DKIM key and fails alignment for b.example, so it
+// lands in spam or is rejected outright. A second platform brand with its own
+// sending domain is exactly that case, and routing everything through one
+// hardcoded default is what would have broken it.
+//
+// A From on a domain NOT in the list falls back to `defaultDomain` — that is a
+// tenant's own address on a domain we cannot send for, and going out
+// unaligned from the platform domain is what happens today.
 
 export interface MailgunConfig {
   /** Account API key (private key from Mailgun → API Keys). */
   apiKey: string;
-  /** Default sending domain, e.g. "sparx.email". Overridable per-send. */
+  /** The sending domain used when the `From` names none we are authorized for. */
   defaultDomain: string;
+  /**
+   * Every domain verified on this Mailgun account, `defaultDomain` included.
+   * A `From` on one of these routes through it, so DKIM signs with the key that
+   * matches the address. Omit for a single-domain account.
+   */
+  domains?: string[];
   /** "us" → api.mailgun.net, "eu" → api.eu.mailgun.net. */
   region?: 'us' | 'eu';
+}
+
+/** The domain part of a `From`, whether bare or in `Name <addr>` form. */
+export function senderDomainOf(from: string): string | null {
+  const address = /<([^>]+)>/.exec(from)?.[1] ?? from;
+  const at = address.lastIndexOf('@');
+  if (at === -1) return null;
+  const domain = address
+    .slice(at + 1)
+    .trim()
+    .toLowerCase();
+  return domain === '' ? null : domain;
+}
+
+/** A domain trimmed and lowercased, or null when there is nothing there. */
+function normalizeDomain(value: string | undefined): string | null {
+  const trimmed = value?.trim().toLowerCase();
+  return trimmed !== undefined && trimmed.length > 0 ? trimmed : null;
+}
+
+/** The `From`'s own domain, but only when this account may send for it. */
+function pickAuthorizedSender(from: string, authorized: ReadonlySet<string>): string | null {
+  const sender = senderDomainOf(from);
+  return sender !== null && authorized.has(sender) ? sender : null;
 }
 
 /**
@@ -47,11 +87,26 @@ const REGION_HOSTS: Record<NonNullable<MailgunConfig['region']>, string> = {
 export function createMailgunProvider(config: MailgunConfig): EmailProvider {
   const base = REGION_HOSTS[config.region ?? 'us'];
   const authHeader = `Basic ${Buffer.from(`api:${config.apiKey}`).toString('base64')}`;
+  const authorized = new Set(
+    [config.defaultDomain, ...(config.domains ?? [])].map((d) => d.trim().toLowerCase())
+  );
 
   return {
     name: 'mailgun',
     async send(email: SendableEmail) {
-      const domain = config.defaultDomain;
+      // Relay through the domain that can SIGN for this `From`, so DKIM aligns:
+      //   1. the caller's explicit domain — a tenant's, proved verified by the
+      //      row it was read from, which this layer cannot check for itself;
+      //   2. else the `From`'s own domain, when it is a platform domain we are
+      //      authorized for (a second brand sending as itself);
+      //   3. else the platform default — a `From` we cannot sign for, which
+      //      goes out misaligned exactly as it always has.
+      // Length checks rather than `??`: an empty string here means "the caller
+      // resolved nothing", which must fall through, and `??` would keep it.
+      const domain =
+        normalizeDomain(email.senderDomain) ??
+        pickAuthorizedSender(email.from, authorized) ??
+        config.defaultDomain;
       const url = `${base}/v3/${encodeURIComponent(domain)}/messages`;
 
       // Mailgun's send endpoint is form-encoded. url-encoded is fine for the

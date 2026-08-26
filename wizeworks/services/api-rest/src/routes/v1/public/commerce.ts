@@ -202,20 +202,33 @@ const resolveTenantBySlug = requireTenantIdBySlug;
  * uses (no separate "B2B site"). Resolves the viewer's ACTIVE B2B
  * membership when a customer session cookie is present, else null (the
  * common, still-cacheable case — most visitors are anonymous or retail).
+ *
+ * Whose price to show is an ENHANCEMENT on a catalog read, so it is not allowed
+ * to fail one. Anything that goes wrong in here degrades to "no B2B viewer" —
+ * list prices instead of contract prices, which is a far smaller wrong answer
+ * than the alternative: the storefront renders a failed listing as "No products
+ * found", so a viewer this could not be resolved for was told the shop was empty
+ * (issue 253). Same rule as issue 203 — a failure to answer is never an answer
+ * of zero.
  */
 async function resolveViewerB2bAccountId(
   request: FastifyRequest,
   tenantId: string
 ): Promise<string | undefined> {
-  const resolved = await optionalCustomer(request, { tenantId });
-  if (!resolved) return undefined;
-  return withTenant({ tenantId }, async (tx) => {
-    const customer = await tx.customer.findFirst({
-      where: { id: resolved.customerId },
-      select: { companyId: true },
+  try {
+    const resolved = await optionalCustomer(request, { tenantId });
+    if (!resolved) return undefined;
+    return await withTenant({ tenantId }, async (tx) => {
+      const customer = await tx.customer.findFirst({
+        where: { id: resolved.customerId },
+        select: { companyId: true },
+      });
+      return pricingService.resolveActiveB2bAccountId(tx, resolved.customerId, customer?.companyId);
     });
-    return pricingService.resolveActiveB2bAccountId(tx, resolved.customerId, customer?.companyId);
-  });
+  } catch (err) {
+    request.log.warn({ err }, 'could not resolve viewer for pricing — showing list prices');
+    return undefined;
+  }
 }
 
 /**

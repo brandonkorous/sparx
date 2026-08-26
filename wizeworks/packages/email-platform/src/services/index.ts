@@ -21,3 +21,8 @@ export * as broadcastService from './broadcast-service';
 export * as analyticsService from './analytics-service';
 export * as builderEmailService from './builder-email-service';
 export * as emailTrackingService from './email-tracking-service';
+
+// Not a service — the ONE answer to "who is this email from". Exported so
+// api-rest's dispatch tick uses it instead of keeping a second copy that
+// disagreed with this one about the platform's own name.
+export { buildTenantFrom } from './platform-sender';

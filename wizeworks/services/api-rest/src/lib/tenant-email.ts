@@ -20,7 +20,7 @@ import { publish } from '@wizeworks/api-core/pubsub';
 import type { RawEmailSendPayload } from '@wizeworks/events';
 import { renderSilicaEmail } from '@wizeworks/email/silica';
 import { emailService } from '@wizeworks/builder';
-import { brandService, emailTrackingService } from '@wizeworks/email-platform';
+import { brandService, buildTenantFrom, emailTrackingService } from '@wizeworks/email-platform';
 import {
   interpolateEmailTokens,
   resolvePath,
@@ -36,13 +36,23 @@ import {
 import { unsubscribeUrl } from './email-unsubscribe.js';
 import { resolvePrimaryPropertyId } from './property.js';
 
-const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
-
-/** `From` header from the site's EmailSettings, falling back to the platform
- *  default. Shared with the dispatch tick. */
-export function buildFrom(fromName: string | null, fromAddress: string | null): string {
-  if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
-  return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
+/**
+ * `From` header from the site's EmailSettings, falling back to the platform
+ * default. Shared with the dispatch tick.
+ *
+ * Delegates to `buildTenantFrom` rather than repeating it. This WAS a second
+ * copy, and the copy is what shipped: `buildTenantFrom` names the platform
+ * brand the tenant signed up under, this one hardcoded "sparx", and because it
+ * runs at DISPATCH it overwrote the correct value stamped at enqueue. So every
+ * scheduled send — which is every broadcast — left a Piggles business under
+ * sparx's name, in a product sparx's name does not appear in.
+ */
+export function buildFrom(
+  tenantId: string,
+  fromName: string | null,
+  fromAddress: string | null
+): Promise<string> {
+  return buildTenantFrom(tenantId, fromName, fromAddress);
 }
 
 /** The four fields that decide WHO a message is from: the visible sender, the
@@ -280,7 +290,7 @@ export async function sendTenantEmailByKey(
     // publishers already carry. `satisfies RawEmailSendPayload` makes a future
     // omission a COMPILE error rather than a silent prod regression.
     to: args.to,
-    from: buildFrom(settings.fromName, settings.fromAddress),
+    from: await buildFrom(tenantId, settings.fromName, settings.fromAddress),
     ...(settings.replyTo ? { replyTo: settings.replyTo } : {}),
     ...(args.variables ? { variables: args.variables } : {}),
   } satisfies RawEmailSendPayload);

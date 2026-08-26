@@ -98,7 +98,14 @@ function EmailPaneBody({
       // Publish folds away on a narrow pane; the status line keeps saying there is
       // something to publish, and this marks where the control went.
       attention={doc.unpublished}
-      statusBar={<EmailStatus dirty={dirty} unpublished={doc.unpublished} error={state.error} />}
+      statusBar={
+        <EmailStatus
+          dirty={dirty}
+          unpublished={doc.unpublished}
+          publishedAt={doc.publishedAt}
+          error={state.error}
+        />
+      }
     />
   );
 }
@@ -140,18 +147,28 @@ function SaveEmail({ state, unsaved }: { state: EmailDocumentState; unsaved: boo
   );
 }
 
-/** What is true right now, in the order someone worries about it. */
+/** What is true right now, in the order someone worries about it.
+ *
+ *  `unpublished` covers two different situations and they need different
+ *  sentences: an email edited since its last publish, and one that has NEVER
+ *  been published. `publishedAt` is what tells them apart. Said the same way,
+ *  the second promised a "last published version" that does not exist. */
 function EmailStatus({
   dirty,
   unpublished,
+  publishedAt,
   error,
 }: {
   dirty: boolean;
   unpublished: boolean;
+  publishedAt: string | null;
   error: string | null;
 }) {
   if (error) return <span className="text-error">{error}</span>;
   if (dirty) return <span>Not saved yet</span>;
+  if (unpublished && publishedAt === null) {
+    return <span>Saved, but never published — there is nothing here to send yet.</span>;
+  }
   if (unpublished) return <span>Saved. Recipients still get the last published version.</span>;
   return <span>Saved. This is what recipients get.</span>;
 }

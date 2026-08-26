@@ -8,6 +8,23 @@
 export interface SendableEmail {
   /** Display name + address, or just an address. */
   from: string;
+  /**
+   * The sending domain to relay THROUGH — a tenant's own, once they have proved
+   * they own it.
+   *
+   * The provider signs a message with the key belonging to the domain it is
+   * posted to, so a `From` on the tenant's domain relayed through the
+   * platform's is signed by the wrong key: SPF and DKIM alignment both fail,
+   * DMARC fails if the tenant publishes a policy, and the mail their customer
+   * was waiting for lands in spam. Verifying a domain bought a nicer `From` and
+   * WORSE deliverability until this was carried through.
+   *
+   * The caller is the one that knows a domain is verified, so the provider
+   * trusts this when set. Omit it and the provider falls back to the `From`'s
+   * own domain when that is a platform domain it is authorized for, else the
+   * platform default.
+   */
+  senderDomain?: string;
   /** Single recipient — we keep it 1:1 for transactional flows. */
   to: string;
   /** Optional reply-to override. */

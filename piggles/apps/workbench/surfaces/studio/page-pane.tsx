@@ -178,6 +178,11 @@ function PageStatus({
   if (starter) return <span>This is the page your visitors see. Save it to make it yours.</span>;
   if (!stored) return <span>Nothing saved on this page yet.</span>;
   if (dirty) return <span>Not saved yet</span>;
+  // Never published is not the same as published-then-edited: there is no last
+  // published version for a visitor to still be seeing.
+  if (unpublished && publishedAt === null) {
+    return <span>Saved, but never published — your visitors can’t see this page yet.</span>;
+  }
   if (unpublished) return <span>Saved. Visitors still see the last published version.</span>;
   // "Saved and live" the instant the API returned was a claim about the visitor
   // made from the console's own state.

@@ -5,15 +5,26 @@
 //   • The tenant has verified a sending domain and set an address. That address
 //     IS the answer — it is their domain, their name, their reputation.
 //   • They have not. The send then leaves on the PLATFORM's address, because
-//     that is the only domain the provider is authorised to send for.
+//     that is the only domain the provider is authorized to send for.
 //
 // The second case is where the leak was. It resolved to the literal
 // `sparx <noreply@sparx.email>`, so a Piggles business's first newsletter — sent
 // before they had got as far as verifying a domain, which is most of them —
 // reached their customers under a company neither party had heard of.
 //
-// The ADDRESS still cannot move: one Mailgun domain serves both brands until
-// Piggles has DNS of its own. The NAME in front of it can, and does.
+// The ADDRESS moves too, once a brand has one: `platformFrom` returns a brand's
+// own `<BRAND>_EMAIL_FROM` verbatim, and the Mailgun provider posts a message
+// through the domain its `From` names (`SPARX_MAILGUN_DOMAINS`) so the DKIM
+// signature aligns. Absent both, only the NAME in front of the shared address
+// is corrected — which is what every brand gets until its domain is verified.
+//
+// ── A SECOND COPY OF THIS SHIPPED, AND THE COPY WON ────────────────────────
+//
+// api-rest's `buildFrom` repeated this logic with the platform name hardcoded,
+// and it runs at DISPATCH — after the correct value is stamped at enqueue, and
+// spread over it. So every scheduled send, which is every broadcast, went out
+// under the wrong brand no matter what this function returned. It now delegates
+// here. If you are about to write a third "who is this from", don't.
 //
 // ── WHAT THIS DELIBERATELY DOES NOT DECIDE ─────────────────────────────────
 //

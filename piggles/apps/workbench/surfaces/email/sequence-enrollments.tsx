@@ -29,7 +29,7 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { IDENTITY_CELL, Table } from '../../components/table';
 import { faCheck, faUserPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
@@ -211,7 +211,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
                 const state = enrollmentState(row.status);
                 return (
                   <tr key={row.id}>
-                    <td className="max-w-64">
+                    <td className={IDENTITY_CELL}>
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate font-medium">{row.recipientEmail}</span>
                         {row.sourceAutomationId ? (
