@@ -9,7 +9,7 @@
 // bespoke layouts with no single atom (the joined search bar, the dashed file
 // dropzone) stay utility compositions.
 
-import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
+import { el, atom, entry, part, type PlatformCatalogEntry } from './_kit';
 import { DEFAULT_CONTACT_FORM_PROPS } from '../forms';
 
 type Node = ReturnType<typeof atom>;
@@ -318,6 +318,345 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           }),
           { cls: 'w-full' }
         ),
+      ]
+    ),
+  }),
+
+  // ── Multi-step form — the same block, asked one screen at a time (docs/152 C2) ─
+  //
+  // Not a different component: it is the SAME wired `ContactForm`, with its
+  // children grouped into containers marked `part(…, 'item')`. The island reads
+  // those marks off the rendered DOM and shows one at a time, which is why an
+  // author can add, remove or reorder a step with the ordinary builder and why a
+  // form with no marks behaves exactly as it always did.
+  //
+  // THE EMAIL IS ON STEP ONE, and that is the whole point of the arrangement.
+  // Somebody who fills in the first screen and leaves is recorded as a partial
+  // submission — a lead the tenant can still see — where before they were
+  // nothing at all. Ask for the address last and there is nothing to keep.
+  entry({
+    key: 'form_multi_step',
+    name: 'Multi-step form',
+    category: 'data-input',
+    kind: 'comprehensive',
+    icon: 'list-checks',
+    description:
+      'A longer form asked one screen at a time, which people finish far more often than one long page. Anyone who gives their email on the first screen and stops is still saved as a lead.',
+    surfaces: ['page', 'site'],
+    tags: ['form', 'multi step', 'wizard', 'steps', 'lead', 'quote', 'qualify', 'contact'],
+    tree: atom(
+      'ContactForm',
+      'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 @container',
+      { ...DEFAULT_CONTACT_FORM_PROPS },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'Tell us what you need',
+            }),
+            el('p', 'text-sm text-base-content', {
+              text: 'Three quick screens, about a minute.',
+            }),
+          ],
+        }),
+
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Step 1 — who they are',
+            children: [
+              field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
+              field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+            ],
+          }),
+          'item'
+        ),
+
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Step 2 — what they want',
+            children: [
+              field(
+                'What can we help with?',
+                atom('Select', 'input-primary', {
+                  name: 'topic',
+                  options: 'A new project\nAn existing order\nSomething else',
+                }),
+                { cls: 'w-full' }
+              ),
+              field('Phone', input('tel', 'phone', '(555) 010-0199'), { cls: 'w-full' }),
+            ],
+          }),
+          'item'
+        ),
+
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Step 3 — the detail',
+            children: [
+              field(
+                'Anything else we should know?',
+                atom('Textarea', 'input-primary', {
+                  name: 'message',
+                  placeholder: 'A sentence or two is plenty.',
+                  rows: '4',
+                }),
+                { cls: 'w-full' }
+              ),
+            ],
+          }),
+          'item'
+        ),
+      ]
+    ),
+  }),
+
+  // ── Quiz — a scored form that tells the visitor where they landed (docs/152 C3) ─
+  //
+  // Same `ContactForm` block, same stepped arrangement as the multi-step entry.
+  // What makes it a quiz is `scoring`: weights, bands, and whether the result
+  // should move the person's CRM score.
+  //
+  // `scoring` is a SECRET prop (see CONTACT_FORM_SECRET_PROPS). At publish it is
+  // lifted into the server-only FormDefinition row and deleted from the tree the
+  // browser gets — otherwise a visitor could read which answers are worth what
+  // and hand the sales team a "hot lead" who simply read the source.
+  entry({
+    key: 'quiz_fit',
+    name: 'Quiz',
+    category: 'data-input',
+    kind: 'comprehensive',
+    icon: 'clipboard-check',
+    description:
+      'A few questions that end in a personalised answer for the visitor, and a real lead score for you. People finish these far more often than a plain contact form.',
+    surfaces: ['page', 'site'],
+    tags: ['quiz', 'score', 'assessment', 'qualify', 'lead', 'form', 'questions'],
+    tree: atom(
+      'ContactForm',
+      'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 @container',
+      {
+        ...DEFAULT_CONTACT_FORM_PROPS,
+        submitLabel: 'See my result',
+        addToCrm: true,
+        scoring: {
+          weights: {
+            team_size: { 'Just me': 0, '2 to 10': 10, 'More than 10': 25 },
+            timing: { 'Just looking': 0, 'In the next few months': 15, 'As soon as possible': 30 },
+          },
+          outcomes: [
+            {
+              minScore: 0,
+              headline: 'Start with the basics',
+              body: 'Have a look around at your own pace — everything here works on the free plan.',
+            },
+            {
+              minScore: 30,
+              headline: 'You are ready for more than the basics',
+              body: 'Worth a short call to work out which parts are worth turning on first.',
+            },
+            {
+              minScore: 50,
+              headline: 'Let us talk this week',
+              body: 'You have the size and the timing for this to pay for itself quickly.',
+            },
+          ],
+          multiplier: null,
+          scoreContact: true,
+          reason: 'Answered the fit quiz',
+        },
+      },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'Which setup fits you?',
+            }),
+            el('p', 'text-sm text-base-content', { text: 'Two questions, about twenty seconds.' }),
+          ],
+        }),
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Question 1',
+            children: [
+              field(
+                'How many people are in your team?',
+                atom('Select', 'input-primary', {
+                  name: 'team_size',
+                  options: 'Just me\n2 to 10\nMore than 10',
+                }),
+                { cls: 'w-full' }
+              ),
+            ],
+          }),
+          'item'
+        ),
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Question 2',
+            children: [
+              field(
+                'When are you looking to make a change?',
+                atom('Select', 'input-primary', {
+                  name: 'timing',
+                  options: 'Just looking\nIn the next few months\nAs soon as possible',
+                }),
+                { cls: 'w-full' }
+              ),
+            ],
+          }),
+          'item'
+        ),
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Where to send it',
+            children: [
+              field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
+              field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+            ],
+          }),
+          'item'
+        ),
+      ]
+    ),
+  }),
+
+  // ── Calculator — the same machine, reporting a quantity ──────────────────────
+  //
+  // Deliberately a weighted sum times a rate, not an author-written formula. An
+  // expression language would mean shipping a parser and an evaluator that run on
+  // submitted input, which is a lot of risk to buy a feature nobody asked for,
+  // and every real "how much could you save" calculator is this shape anyway.
+  //
+  // `scoreContact` is OFF here. Someone working out a number for themselves has
+  // not told you they are ready to buy, and scoring them for curiosity would put
+  // a claim in the CRM that the visitor never made.
+  entry({
+    key: 'calculator_savings',
+    name: 'Savings calculator',
+    category: 'data-input',
+    kind: 'comprehensive',
+    icon: 'calculator',
+    description:
+      'Asks a couple of questions and shows the visitor a number — what they could save, earn, or get back. Captures their email along the way.',
+    surfaces: ['page', 'site'],
+    tags: ['calculator', 'estimate', 'savings', 'roi', 'quote', 'lead', 'form'],
+    tree: atom(
+      'ContactForm',
+      'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 @container',
+      {
+        ...DEFAULT_CONTACT_FORM_PROPS,
+        submitLabel: 'Show me the number',
+        addToCrm: true,
+        scoring: {
+          weights: {
+            monthly_orders: { 'Under 50': 50, '50 to 500': 500, 'More than 500': 2000 },
+            handling: { 'By hand': 3, 'Part automated': 1, 'Fully automated': 0 },
+          },
+          outcomes: [],
+          multiplier: { perPoint: 1.4, prefix: '$', suffix: ' a year' },
+          scoreContact: false,
+          reason: 'Used the savings calculator',
+        },
+      },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'What could you save?',
+            }),
+            el('p', 'text-sm text-base-content', {
+              text: 'Two questions and we will show you a rough figure.',
+            }),
+          ],
+        }),
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'How much they handle',
+            children: [
+              field(
+                'Roughly how many orders a month?',
+                atom('Select', 'input-primary', {
+                  name: 'monthly_orders',
+                  options: 'Under 50\n50 to 500\nMore than 500',
+                }),
+                { cls: 'w-full' }
+              ),
+              field(
+                'How do you handle them today?',
+                atom('Select', 'input-primary', {
+                  name: 'handling',
+                  options: 'By hand\nPart automated\nFully automated',
+                }),
+                { cls: 'w-full' }
+              ),
+            ],
+          }),
+          'item'
+        ),
+        part(
+          el('div', 'flex flex-col gap-4', {
+            name: 'Where to send it',
+            children: [
+              field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+            ],
+          }),
+          'item'
+        ),
+      ]
+    ),
+  }),
+
+  // ── Gated download — a file in exchange for an address (docs/152 C4) ─────────
+  //
+  // Ships with NO file attached, deliberately. The asset is a storage key in the
+  // private bucket, so there is nothing sensible to hardcode here — the author
+  // picks their own file in the form's settings, and until they do this behaves
+  // as an ordinary contact form rather than promising a download that does not
+  // exist.
+  //
+  // The file is EMAILED, never linked from the thank-you page. That is the whole
+  // difference between a gate and a formality: a download button on the success
+  // page hands the file to anyone who types anything, and the business ends up
+  // hosting a public file that also collects addresses.
+  entry({
+    key: 'gated_download',
+    name: 'Free download',
+    category: 'data-input',
+    kind: 'comprehensive',
+    icon: 'file-down',
+    description:
+      'Offers a guide, price list, or template in exchange for an email address. The file is emailed as a private link that expires, so it stays worth asking for.',
+    surfaces: ['page', 'site'],
+    tags: ['download', 'gated', 'lead magnet', 'guide', 'ebook', 'pdf', 'form', 'lead'],
+    tree: atom(
+      'ContactForm',
+      'flex w-full max-w-xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 @container',
+      {
+        ...DEFAULT_CONTACT_FORM_PROPS,
+        submitLabel: 'Send it to me',
+        addToCrm: true,
+        successMessage: 'On its way — check your inbox in a minute or two.',
+      },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'Get the guide',
+            }),
+            el('p', 'text-sm text-base-content', {
+              text: 'Tell us where to send it and it will be in your inbox in a minute.',
+            }),
+          ],
+        }),
+        el('div', 'grid grid-cols-1 gap-4 @lg:grid-cols-2', {
+          children: [
+            field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
+            field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+          ],
+        }),
       ]
     ),
   }),

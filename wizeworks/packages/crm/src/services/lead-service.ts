@@ -16,6 +16,7 @@ import * as activityService from './activity-service';
 import * as dealService from './deal-service';
 import * as pipelineService from './pipeline-service';
 import * as ticketService from './ticket-service';
+import * as leadClock from './lead-clock';
 
 export interface FormLeadInput {
   submissionId: string;
@@ -65,6 +66,16 @@ export async function captureFormLead(ctx: ServiceContext, input: FormLeadInput)
       data: { customerId: customer.id },
     })
   );
+
+  // Start the response clock (docs/152 D2). Silent when the business has
+  // published no promise about how fast it answers, and one-way: a lead that
+  // comes back through a second form has not reset the promise made the first
+  // time. This is the moment the clock legitimately starts — somebody asked a
+  // question and is now waiting for a person.
+  await leadClock.startLeadClock(ctx, {
+    customerId: customer.id,
+    propertyId: sub.propertyId,
+  });
 }
 
 export interface OpenFormDealInput {

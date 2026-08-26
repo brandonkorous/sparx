@@ -16,7 +16,7 @@ import { Signup } from './atoms';
 
 import { useBuilderRuntime } from './runtime-context';
 
-export function SignupForm({ cta }: { cta?: string }) {
+export function SignupForm({ cta, nodeId }: { cta?: string; nodeId?: string }) {
   const { subscribeEmail } = useBuilderRuntime();
   const [status, setStatus] = useState<'idle' | 'pending' | 'done' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,10 @@ export function SignupForm({ cta }: { cta?: string }) {
     setStatus('pending');
     setError(null);
     try {
-      await subscribeEmail(email);
+      // The node id is what ties this capture back to the campaign that placed
+      // the block (docs/152 C1). Without it the address still reaches CRM and the
+      // campaign reports nobody.
+      await subscribeEmail(email, nodeId);
       setStatus('done');
     } catch (err) {
       setStatus('error');

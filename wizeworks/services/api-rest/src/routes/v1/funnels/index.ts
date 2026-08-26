@@ -37,6 +37,7 @@ import {
   listFunnels,
   recordStage,
   stagesOf,
+  stallHoursOf,
   updateFunnel,
 } from '@wizeworks/funnels';
 import { isModuleEnabled } from '@wizeworks/auth';
@@ -144,7 +145,19 @@ const funnelRoutes: FastifyPluginAsync = (app) => {
     if (!funnel) throw notFound('Funnel', id);
     // The ladder comes with it. A funnel without its rungs is a name and a
     // status, and every caller that fetches one wants to draw the shape.
-    return ok({ ...funnel, stages: stagesOf(funnel) });
+    //
+    // `defaultStallHours` is what this KIND of campaign gives up after when
+    // nobody has chosen — deliberately the default rather than the resolved
+    // value, because the editor's job is to label what "leave it alone" means
+    // and a resolved number would just echo the explicit setting back. The raw
+    // `stallAfterHours` column stays alongside it: null vs a number is the
+    // difference between "follows the default" and "somebody chose this".
+    // Sent rather than mirrored so DEFAULT_STALL_HOURS has one home.
+    return ok({
+      ...funnel,
+      stages: stagesOf(funnel),
+      defaultStallHours: stallHoursOf({ kind: funnel.kind, stallAfterHours: null }),
+    });
   });
 
   app.patch('/v1/funnels/:id', async (request) => {

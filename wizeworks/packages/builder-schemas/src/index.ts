@@ -22,6 +22,7 @@ export * from './default-emails';
 export * from './binding';
 export * from './forms';
 export * from './forms-silica';
+export * from './quiz';
 export * from './nav';
 export * from './runtime';
 export * from './binding-ref';

@@ -181,6 +181,16 @@ model TicketSlaPolicy {
   /// and a five-day promise want warning at different points.
   warnAtPercent Int @default(80) @map("warn_at_percent")
 
+  /// How fast this business promises to answer a NEW ENQUIRY (docs/152 D2), in
+  /// BUSINESS minutes like every other target here. It lives on the policy
+  /// rather than in `targets` because a lead has no priority to key on — nobody
+  /// has triaged it yet, which is rather the point.
+  ///
+  /// Null means no promise, and a business that makes none must never render as
+  /// overdue. The policy is named for tickets because that is what it was built
+  /// for; a lead borrows its CALENDAR, which is the part worth not writing twice.
+  leadResponseMinutes Int? @map("lead_response_minutes")
+
   archivedAt DateTime? @map("archived_at") @db.Timestamptz
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz

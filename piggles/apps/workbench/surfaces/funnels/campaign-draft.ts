@@ -19,6 +19,8 @@ export interface CampaignDraft {
   description: string;
   stages: FunnelStage[];
   goal: ConditionGroup;
+  /** This campaign's own patience, or null to follow its kind's default. */
+  stallAfterHours: number | null;
   changed: boolean;
   /** Why this campaign cannot be turned on yet, in words, or null when it can. */
   blockedReason: string | null;
@@ -27,6 +29,7 @@ export interface CampaignDraft {
   setDescription: (value: string) => void;
   setStages: (value: FunnelStage[]) => void;
   setGoal: (value: ConditionGroup) => void;
+  setStallAfterHours: (value: number | null) => void;
 }
 
 /** The two things the server insists on before a campaign may run, said before
@@ -56,6 +59,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
   const [description, setDescription] = useState('');
   const [stages, setStages] = useState<FunnelStage[]>([]);
   const [goal, setGoal] = useState<ConditionGroup>(EMPTY_CONDITION_GROUP);
+  const [stallAfterHours, setStallAfterHours] = useState<number | null>(null);
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
 
   const stamp = funnel ? `${funnel.id}:${funnel.updatedAt}` : null;
@@ -65,6 +69,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     setDescription(funnel.description ?? '');
     setStages(funnel.stages);
     setGoal(asGoal(funnel.goal));
+    setStallAfterHours(funnel.stallAfterHours);
     setLoadedFor(stamp);
   }, [funnel, stamp, loadedFor]);
 
@@ -73,7 +78,8 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     (name !== funnel.name ||
       description !== (funnel.description ?? '') ||
       JSON.stringify(stages) !== JSON.stringify(funnel.stages) ||
-      JSON.stringify(goal) !== JSON.stringify(asGoal(funnel.goal)));
+      JSON.stringify(goal) !== JSON.stringify(asGoal(funnel.goal)) ||
+      stallAfterHours !== funnel.stallAfterHours);
 
   const hasGoal = goal.conditions.length > 0;
 
@@ -82,6 +88,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     description,
     stages,
     goal,
+    stallAfterHours,
     changed,
     hasGoal,
     blockedReason: reasonNotReady(hasGoal, stages, funnel?.entryPageId ?? null),
@@ -89,5 +96,6 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     setDescription,
     setStages,
     setGoal,
+    setStallAfterHours,
   };
 }

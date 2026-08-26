@@ -139,6 +139,8 @@ import publicToolsRoutes from './routes/v1/public/tools.js';
 import publicCareersRoutes from './routes/v1/public/careers.js';
 import publicFormsRoutes from './routes/v1/public/forms.js';
 import publicFormsUploadRoutes from './routes/v1/public/forms-upload.js';
+import publicDeliverRoutes from './routes/v1/public/deliver.js';
+import publicSmsInboundRoutes from './routes/v1/public/sms-inbound.js';
 import publicMarketplaceRoutes from './routes/v1/public/marketplace.js';
 import publicPartnerRoutes from './routes/v1/public/partners.js';
 import publicBootcampRoutes from './routes/v1/public/bootcamps.js';
@@ -993,6 +995,8 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicCareersRoutes);
   await app.register(publicFormsRoutes);
   await app.register(publicFormsUploadRoutes);
+  await app.register(publicDeliverRoutes);
+  await app.register(publicSmsInboundRoutes);
   await app.register(publicSiteAnalyticsRoutes);
   await app.register(publicMarketplaceRoutes);
   await app.register(publicPartnerRoutes);

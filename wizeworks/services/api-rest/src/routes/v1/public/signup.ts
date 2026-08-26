@@ -10,6 +10,14 @@
 // rather than a silently-dropped signup. IP is captured server-side as proof of
 // the opt-in (mirrors the consent record). The reply never reveals whether the
 // email was already on file — a signup form must not double as an email oracle.
+//
+// ── IT ALSO ENTERS A FUNNEL (docs/152 C1) ────────────────────────────────────
+//
+// The capture offers in the catalog are built on this endpoint, so without the
+// stitch below a slide-in could collect an address into CRM all week while its
+// campaign reported nobody. `formNodeId` is what ties one back to the campaign
+// that placed it — the same key the contact-form path uses, so an author who
+// points a campaign at a block gets the same answer either way.
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
@@ -18,6 +26,7 @@ import { customerService } from '@wizeworks/crm';
 import { prisma, withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { moduleDisabled, notFound } from '@wizeworks/api-core/errors';
+import { captureFunnelStage, findFormCaptureTarget } from '../../../lib/funnel-entry.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -28,10 +37,19 @@ const Body = z.object({
   email: z.string().email().max(255),
   firstName: z.string().max(255).optional(),
   lastName: z.string().max(255).optional(),
+  /** Which block on the page captured this. Optional because a signup authored
+   *  before campaigns existed still works — it simply enters no funnel. */
+  formNodeId: z.string().min(1).max(255).optional(),
 });
 
 function clientIp(request: FastifyRequest): string | undefined {
   return request.ip || undefined;
+}
+
+/** Capped: the funnel's entry attribution reads it, and a header is attacker-set. */
+function userAgent(request: FastifyRequest): string | undefined {
+  const ua = request.headers['user-agent'];
+  return typeof ua === 'string' ? ua.slice(0, 1000) : undefined;
 }
 
 const publicSignupRoutes: FastifyPluginAsync = (app) => {
@@ -73,6 +91,25 @@ const publicSignupRoutes: FastifyPluginAsync = (app) => {
         ipAddress: clientIp(request),
       }
     );
+
+    // Never inside the subscribe: the contact and its consent record are the
+    // tenant's actual business, and a reporting nicety must not be able to cost
+    // them a subscriber. Same ordering as the contact-form stitch.
+    if (body.formNodeId && propertyId) {
+      const target = await findFormCaptureTarget(tenant.id, propertyId, body.formNodeId);
+      if (target) {
+        await captureFunnelStage({
+          log: request.log,
+          tenantId: tenant.id,
+          funnelId: target.funnelId,
+          stageKey: target.stageKey,
+          subjectEmail: body.email,
+          ip: request.ip,
+          userAgent: userAgent(request) ?? '',
+          now: new Date(),
+        });
+      }
+    }
 
     return ok({ ok: true });
   });

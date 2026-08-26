@@ -62,11 +62,33 @@ model FormSubmission {
 
   // Triage lifecycle. `spam` is set when the honeypot trips or a later manual
   // flag; spam rows are excluded from the CRM backfill.
-  status String @default("new") @db.VarChar(20) // new | read | spam | archived
+  //
+  // `partial` (docs/152 C2) is somebody who filled in part of a multi-step form,
+  // gave an address, and never finished. It is deliberately NOT a lesser kind of
+  // `new`: a partial row NEVER mirrors to the CRM, NEVER sends the notification
+  // and NEVER fires the autoresponder. The visitor typed an address and pressed
+  // Next, which is a real disclosure to this site and is why the row may exist at
+  // all — but it is not consent to be marketed to, and treating it as one is how
+  // a lead-capture feature turns into a complaint. Reaching out is a deliberate
+  // act from the inbox. A partial DOES enter its funnel, because that is the
+  // tenant measuring their own site.
+  status String @default("new") @db.VarChar(20) // new | read | spam | archived | partial
+
+  // Which step they got to before stopping, 1-based. Null on anything that is
+  // not a partial. Stored as a column rather than inside `fields` because "most
+  // people give up on step 3" is a question worth being able to ASK.
+  partialStep Int? @map("partial_step")
 
   // Set once the submission is mirrored into the CRM as a prospect (idempotent).
   // SetNull so deleting the contact doesn't destroy the submission record.
   customerId String? @map("customer_id") @db.Uuid
+
+  // Set once a quiz result has been applied to the contact's CRM score
+  // (docs/152 C3). The capture action is retried on failure, and without this a
+  // retry would add the points again and drift the lead upward every time a
+  // worker hiccuped. A timestamp rather than a flag because "when did they take
+  // it" is worth knowing and costs the same.
+  quizScoredAt DateTime? @map("quiz_scored_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -78,6 +100,11 @@ model FormSubmission {
   @@index([tenantId, createdAt(sort: Desc)])
   @@index([tenantId, status, createdAt(sort: Desc)])
   @@index([tenantId, formNodeId, createdAt(sort: Desc)])
+  // NOTE: a PARTIAL UNIQUE INDEX on (tenant_id, form_node_id, email) WHERE
+  // status = 'partial' also exists — it is what keeps one unfinished form to one
+  // row as somebody works through the steps. Prisma cannot express a `WHERE` on
+  // an index, so it lives in the migration SQL like the RLS policies do, and the
+  // service does find-then-write with that index as the race backstop.
   @@map("form_submissions")
 }
 

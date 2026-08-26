@@ -50,7 +50,15 @@ export function SilicaBehaviors({
         // into marketing through the same public endpoint the legacy block used.
         if (ref === 'email-signup' || ref === 'newsletter' || ref === 'signup') {
           const email = firstValue(values.email);
-          if (email) await subscribeEmail(tenantSlug, email, propertySlug);
+          // The authored node's id, read off the element the behavior handed us —
+          // the same way the contact branch below does it. It is what enters the
+          // address into whichever campaign points at this block (docs/152 C1);
+          // absent, the signup still works and simply joins no campaign.
+          const nodeId =
+            payload.kind === 'submit'
+              ? (payload.form.getAttribute('data-sui-id') ?? undefined)
+              : undefined;
+          if (email) await subscribeEmail(tenantSlug, email, propertySlug, nodeId);
           return;
         }
 

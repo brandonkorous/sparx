@@ -27,7 +27,8 @@ import {
 } from '@wizeworks/builder-schemas';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 
-import { useBuilderRuntime } from './runtime-context';
+import { useBuilderRuntime, type BuilderFormResult } from './runtime-context';
+import { useFormSteps } from './form-steps';
 
 type Status = 'idle' | 'pending' | 'done' | 'error';
 
@@ -72,10 +73,15 @@ export function ContactForm({
   className?: string;
   children?: React.ReactNode;
 }) {
-  const { submitForm } = useBuilderRuntime();
+  const { submitForm, captureFormPartial } = useBuilderRuntime();
   const cfg = readContactFormConfig(props);
+  // A form is multi-step when the author marked steps in it. Reading that off
+  // the composed tree rather than a toggle means the two can never disagree —
+  // there is no way to switch it on and have nothing to step through.
+  const { formRef, steps } = useFormSteps();
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<BuilderFormResult['result'] | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -118,7 +124,8 @@ export function ContactForm({
     setStatus('pending');
     setError(null);
     try {
-      await submitForm({ nodeId, values, honeypot, files });
+      const outcome = await submitForm({ nodeId, values, honeypot, files });
+      setResult(outcome?.result ?? null);
       setStatus('done');
     } catch (err) {
       setStatus('error');
@@ -126,7 +133,40 @@ export function ContactForm({
     }
   }
 
+  /**
+   * Move to the next step, and tell the server what we have so far.
+   *
+   * The capture is fired and NOT awaited. A visitor moving through a form must
+   * never wait on, or be blocked by, the tenant's own measurement — if the
+   * request fails they simply continue, and the tenant is missing one partial
+   * rather than the visitor being stuck on step 2.
+   */
+  function onNext() {
+    const completed = steps.index + 1;
+    if (!steps.next()) return;
+    const values = steps.valuesSoFar();
+    // No address means nothing that could become a lead, so nothing to record.
+    if (!values.email?.includes('@')) return;
+    void captureFormPartial({ nodeId, values, step: completed }).catch(() => {
+      /* the visitor's form is the visitor's — never surface this to them */
+    });
+  }
+
   if (status === 'done') {
+    // A quiz answers the question the visitor just spent a minute on, so showing
+    // them a generic "thanks, we got it" would waste the only moment they are
+    // actually paying attention. An ordinary form still gets the thank-you.
+    if (result) {
+      return (
+        <div className={`${className ?? ''} flex flex-col gap-3`} role="status">
+          {result.amountLabel ? (
+            <p className="text-4xl font-semibold tabular-nums">{result.amountLabel}</p>
+          ) : null}
+          {result.headline ? <p className="text-xl font-semibold">{result.headline}</p> : null}
+          {result.body ? <p className="text-base">{result.body}</p> : null}
+        </div>
+      );
+    }
     return (
       <div className={className}>
         <p className="alert alert-success" role="status">
@@ -137,7 +177,7 @@ export function ContactForm({
   }
 
   return (
-    <form className={className} onSubmit={onSubmit} noValidate>
+    <form ref={formRef} className={className} onSubmit={onSubmit} noValidate>
       {/* Honeypot — off-screen, non-tabbable, ignored by humans; a filled value means
           a bot and the server silently drops the submission. */}
       <div
@@ -159,14 +199,39 @@ export function ContactForm({
         </p>
       ) : null}
 
-      <div className="flex items-center justify-end">
-        <button
-          type="submit"
-          className={buttonClasses({ color: cfg.color })}
-          disabled={status === 'pending'}
-        >
-          {status === 'pending' ? 'Sending…' : cfg.submitLabel}
-        </button>
+      <div className="flex items-center justify-between gap-3">
+        {steps.count > 1 ? (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className={buttonClasses({ variant: 'ghost' })}
+              onClick={steps.back}
+              disabled={steps.index === 0 || status === 'pending'}
+            >
+              Back
+            </button>
+            <p className="text-sm" role="status">
+              Step {steps.index + 1} of {steps.count}
+            </p>
+          </div>
+        ) : (
+          <span />
+        )}
+        {steps.isLast ? (
+          <button
+            type="submit"
+            className={buttonClasses({ color: cfg.color })}
+            disabled={status === 'pending'}
+          >
+            {status === 'pending' ? 'Sending…' : cfg.submitLabel}
+          </button>
+        ) : (
+          // Explicitly type="button": a second submit button would submit the
+          // half-filled form on Enter, which is the whole thing this avoids.
+          <button type="button" className={buttonClasses({ color: cfg.color })} onClick={onNext}>
+            Continue
+          </button>
+        )}
       </div>
     </form>
   );

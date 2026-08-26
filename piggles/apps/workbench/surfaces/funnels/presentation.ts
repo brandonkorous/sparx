@@ -77,6 +77,26 @@ export function countLabel(entered: number | null): string {
 }
 
 /** Whole currency from integer cents — cents on a headline figure are noise. */
+/**
+ * A span of hours as a person says it: "4 hours", "3 days", "2 weeks".
+ *
+ * Hours are the storage unit because the sweep works in them, and a terrible
+ * unit to show anybody: nobody calls a fortnight 336 hours.
+ */
+export function hoursLabel(hours: number): string {
+  if (hours < 24) return hours === 1 ? '1 hour' : `${hours} hours`;
+  const days = Math.round(hours / 24);
+  if (days >= 7 && days % 7 === 0) {
+    const weeks = days / 7;
+    return weeks === 1 ? '1 week' : `${weeks} weeks`;
+  }
+  return days === 1 ? '1 day' : `${days} days`;
+}
+
+/** The spans offered in the editor. Free text was the alternative, and it
+ *  invites "0". */
+export const STALL_CHOICES = [4, 12, 24, 48, 72, 168, 336, 720, 1440];
+
 export function moneyLabel(cents: number): string {
   return `$${Math.round(cents / 100).toLocaleString()}`;
 }

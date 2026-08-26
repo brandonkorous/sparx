@@ -188,6 +188,7 @@ export * as dashboardService from './dashboard-service';
 // api-rest serves it from the same allowlist the evaluator reads — so a person
 // cannot build a rule that references something scoring cannot see.
 export * as scoringService from './scoring-service';
+export * as leadClock from './lead-clock';
 export * as scoringFields from './scoring-fields';
 export * as reportCompiler from './report-compiler';
 export { seedBuiltinReports, BUILTIN_REPORTS } from './report-builtins';

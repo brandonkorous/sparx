@@ -22,12 +22,20 @@
 // publish-time extractor, and the submit endpoint.
 
 /** The node `type` of a wired form. */
+import { isQuiz, readQuizScoring, type QuizScoring } from './quiz';
+
 export const CONTACT_FORM_TYPE = 'ContactForm' as const;
 
 /** Props that carry routing SECRETS — extracted to FormDefinition and removed
  *  from the published tree at publish time so they never reach a visitor. Keep in
  *  sync with the FormDefinition columns. */
-export const CONTACT_FORM_SECRET_PROPS = ['recipients'] as const;
+// `scoring` is here for a DIFFERENT reason to `recipients` and both are real.
+// Recipients are private data about the tenant. The quiz weights are private
+// data about the tenant's JUDGEMENT: shipped in the published tree, a visitor
+// could read exactly which answers are worth what and score themselves however
+// they liked, and the "hot lead" the sales team is handed would be somebody who
+// read the source. Stripped at publish, held server-side, read only there.
+export const CONTACT_FORM_SECRET_PROPS = ['recipients', 'scoring', 'delivery'] as const;
 
 /** The normalized, defaulted form-level config the island + endpoint read. The
  *  fields, heading, and helper copy are CHILDREN, not config — this is only the
@@ -57,6 +65,10 @@ export interface ContactFormConfig {
    *  asking about an upgrade). Both default off, so no existing form starts
    *  behaving differently after this shipped. */
   openRequest: boolean;
+  /** Quiz / calculator weights, if this form scores anything (docs/152 C3).
+   *  Authored here, persisted to `FormDefinition.config` and read back from
+   *  THERE at submit time — the published tree's copy is never trusted. */
+  scoring: unknown;
   /** Send the submitter a confirmation reply. */
   autoresponder: boolean;
   /** Autoresponder subject + body (non-sensitive copy). */
@@ -165,6 +177,9 @@ export function readContactFormConfig(
     recipients: Array.isArray(p.recipients)
       ? p.recipients.filter((r): r is string => typeof r === 'string' && r.trim() !== '')
       : [],
+    // Carried through verbatim and normalized only where it is READ, so a
+    // config authored against a later shape is not flattened on the way past.
+    scoring: p.scoring ?? null,
   };
 }
 
@@ -182,10 +197,15 @@ export interface FormRoutingConfig {
   autoresponder: boolean;
   autoresponderSubject: string;
   autoresponderMessage: string;
+  /** Quiz / calculator weights (docs/152 C3). Server-only for the same reason
+   *  the recipient addresses are: a quiz that decides somebody is a strong lead
+   *  cannot let that somebody edit the arithmetic. Null on an ordinary form. */
+  scoring: QuizScoring | null;
 }
 
 /** Extract the routing subset persisted to FormDefinition.config from a full config. */
 export function formRoutingConfig(cfg: ContactFormConfig): FormRoutingConfig {
+  const scoring = readQuizScoring(cfg.scoring);
   return {
     notify: cfg.notify,
     addToCrm: cfg.addToCrm,
@@ -194,5 +214,6 @@ export function formRoutingConfig(cfg: ContactFormConfig): FormRoutingConfig {
     autoresponder: cfg.autoresponder,
     autoresponderSubject: cfg.autoresponderSubject,
     autoresponderMessage: cfg.autoresponderMessage,
+    scoring: isQuiz(scoring) ? scoring : null,
   };
 }

@@ -7,7 +7,8 @@
 //   · email → sendTenantEmailByKey — the tenant's Builder-authored booking tree
 //     by key, rendered per-recipient (the SAME path order/shipping confirmations
 //     use, so booking email is one authoring system, editable in /builder/email).
-//   · sms   → resolveSmsProvider(env).send — Twilio in prod, console in dev.
+//   · sms   → sendTenantSms (the guarded path: STOP suppression, the tenant
+//             ceiling, and the enabled switch) → Twilio in prod, console in dev.
 // and marks the row sent / failed / cancelled.
 //
 // The rows are SCHEDULED by the Scheduling engine inside the booking lifecycle
@@ -25,7 +26,7 @@ import {
   renderBookingSms,
   type BookingNotificationType,
 } from '@wizeworks/scheduling';
-import { resolveSmsProvider } from '@wizeworks/sms';
+import { sendTenantSms } from '@wizeworks/sms/delivery';
 
 import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
@@ -195,14 +196,38 @@ async function dispatch(
     whenLabel: whenLabel(d.startAt, d.timezone),
     siteName: siteName || 'Your booking',
   });
-  const result = await resolveSmsProvider(env).send({ to: d.recipient, body, tenantId });
-  if (!result.success) {
+  // Through the GUARDED path (docs/152 D1), not straight at the provider.
+  //
+  // A booking reminder is `transactional` — the person asked for it, so it does
+  // not need marketing consent and does not wait for quiet hours (a 7am
+  // appointment reminder is the one text that SHOULD arrive early). But it does
+  // obey an `all` suppression, and that is the whole reason this call moved: a
+  // STOP that the booking path ignored would be a suppression table with a hole
+  // in it, which is worse than not having one, because everybody stops looking.
+  const result = await sendTenantSms(
+    { tenantId },
+    {
+      to: d.recipient,
+      body,
+      scope: 'transactional',
+      customerId: d.customerId,
+      timezone: d.timezone,
+    },
+    env
+  );
+  if (result.outcome !== 'sent') {
     logger.warn(
-      { tenantId, bookingId: d.bookingId, type: d.type, error: result.errorMessage },
-      'scheduling-notifications: sms send failed'
+      {
+        tenantId,
+        bookingId: d.bookingId,
+        type: d.type,
+        outcome: result.outcome,
+        reason: result.reason,
+      },
+      'scheduling-notifications: sms not sent'
     );
   }
-  return result.success;
+  return result.outcome === 'sent';
 }
 
 export async function runBookingNotificationTick(

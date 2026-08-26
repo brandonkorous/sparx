@@ -4,3 +4,11 @@ export { type SmsProvider, type SendSmsParams, type SmsResult, looksLikePhone } 
 export { ConsoleSmsProvider } from './providers/console';
 export { TwilioSmsProvider, type TwilioConfig } from './providers/twilio';
 export { resolveSmsProvider, hasTwilioConfig, type SmsEnv } from './registry';
+export {
+  normalizePhone,
+  localHourIn,
+  isQuietHour,
+  nextSendableAt,
+  estimateSegments,
+  type QuietHours,
+} from './policy';

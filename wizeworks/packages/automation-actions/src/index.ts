@@ -16,6 +16,7 @@ export { installSequenceActions } from './sequences.js';
 export { installFormActions } from './forms.js';
 export { installInventoryActions } from './inventory.js';
 export { installSocialActions } from './social.js';
+export { installSmsActions } from './sms.js';
 export { installEntityResolvers } from './resolvers.js';
 export { seedSystemAutomations, SYSTEM_AUTOMATIONS } from './seeds/index.js';
 export {
@@ -32,6 +33,7 @@ import { installSequenceActions } from './sequences.js';
 import { installFormActions } from './forms.js';
 import { installInventoryActions } from './inventory.js';
 import { installSocialActions } from './social.js';
+import { installSmsActions } from './sms.js';
 import { installEntityResolvers } from './resolvers.js';
 
 /** Register every module action executor + entity resolver/scanner (idempotent). */
@@ -44,6 +46,10 @@ export function installModuleActions(): void {
   installFormActions();
   installInventoryActions();
   installSocialActions();
+  // Registered even though it ships dark: an action nobody registered cannot
+  // be chosen in the builder, and the switch that keeps it safe is the tenant's
+  // `sms_settings.enabled`, not its absence from the catalog.
+  installSmsActions();
   installEntityResolvers();
   // installCommerceActions(); — Slice F (commerce.*)
 }

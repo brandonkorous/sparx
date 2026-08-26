@@ -23,6 +23,7 @@ import {
 } from '@wizeworks/crm/services';
 import type { ActionOutput, EffectInput, TenantCtx } from '@wizeworks/automation';
 import { registerAction } from '@wizeworks/automation';
+import { scoreFormQuiz } from './quiz-scoring';
 import { z } from 'zod';
 
 import {
@@ -278,6 +279,11 @@ export function installCrmActions(): void {
       // upgrade is a question you owe an answer to AND a sale you might make.
       const svcCtx = { tenantId: ctx.tenantId, tx: ctx.tx };
       await leadService.captureFormLead(svcCtx, { submissionId });
+      // A quiz's result becomes a real CRM score, applied to the contact capture
+      // just created (docs/152 C3). No-ops unless the form actually carries
+      // scoring AND the author opted into scoring people with it, so an ordinary
+      // form pays one indexed read for it. Idempotent on the submission.
+      await scoreFormQuiz(svcCtx, { submissionId });
       if (openDeal) await leadService.openFormDeal(svcCtx, { submissionId });
       if (openRequest) await leadService.openFormRequest(svcCtx, { submissionId });
       return { submissionId, openedDeal: openDeal, openedRequest: openRequest };

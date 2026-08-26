@@ -49,8 +49,10 @@ import { StageLadderEditor } from './stage-editor';
 import {
   KIND_BLURB,
   KIND_LABEL,
+  STALL_CHOICES,
   canEditCampaigns,
   funnelErrorMessage,
+  hoursLabel,
   statusMeta,
   useCreateFunnel,
   useDeleteFunnel,
@@ -236,6 +238,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const [description, setDescription] = useState('');
   const [stages, setStages] = useState<FunnelStage[]>([]);
   const [goal, setGoal] = useState<ConditionGroup>(EMPTY_CONDITION_GROUP);
+  const [stallAfterHours, setStallAfterHours] = useState<number | null>(null);
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
 
   // Seed the form once per campaign. Keyed on the row's `updatedAt` rather than
@@ -248,6 +251,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     setDescription(funnel.data.description ?? '');
     setStages(funnel.data.stages);
     setGoal(asGoal(funnel.data.goal));
+    setStallAfterHours(funnel.data.stallAfterHours);
     setLoadedFor(stamp);
     ctx.setTitle(funnel.data.name);
   }, [funnel.data, stamp, loadedFor, ctx]);
@@ -257,7 +261,8 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     (name !== funnel.data.name ||
       description !== (funnel.data.description ?? '') ||
       JSON.stringify(stages) !== JSON.stringify(funnel.data.stages) ||
-      JSON.stringify(goal) !== JSON.stringify(asGoal(funnel.data.goal)));
+      JSON.stringify(goal) !== JSON.stringify(asGoal(funnel.data.goal)) ||
+      stallAfterHours !== funnel.data.stallAfterHours);
 
   useDirtySource(canEdit && changed, 'This campaign has unsaved changes. Close anyway?');
 
@@ -295,6 +300,10 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   // The two things the server insists on before a campaign may run. Said here
   // so the answer arrives before the click, not as a 400 after it.
   const hasGoal = goal.conditions.length > 0;
+  // Absent on a list row, present on the detail this pane fetches. Guarded
+  // rather than defaulted: a wrong number here would teach the wrong thing
+  // about what happens when nobody chooses.
+  const defaultStall = current.defaultStallHours;
   const uncountable = stages.filter((s) => s.kind === 'view' && !s.path && !current.entryPageId);
   const blockedReason = !hasGoal
     ? 'Say what has to happen for this campaign to have worked, below, before you turn it on.'
@@ -304,7 +313,13 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   const save = () => {
     update.mutate(
-      { name, description: description || null, stages, goal: hasGoal ? goal : null },
+      {
+        name,
+        description: description || null,
+        stages,
+        goal: hasGoal ? goal : null,
+        stallAfterHours,
+      },
       { onSuccess: () => toast.add({ title: 'Campaign saved', type: 'success' }) }
     );
   };
@@ -471,6 +486,50 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 it cannot be turned on.
               </Text>
               <ConditionEditor value={goal} onChange={setGoal} label="people" />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Heading level={3} className="text-base font-semibold">
+                When to give up on somebody
+              </Heading>
+              <Text className="text-sm">
+                Somebody who starts and then goes quiet is not a failure yet, but at some point they
+                are gone. This is how long to wait before saying so, which is what any follow-up you
+                have set up waits for.
+              </Text>
+              <Field>
+                <FieldLabel>Give up after</FieldLabel>
+                <FieldControl
+                  render={
+                    <Select
+                      color="module"
+                      aria-label="Give up after"
+                      disabled={!canEdit}
+                      value={stallAfterHours === null ? 'default' : String(stallAfterHours)}
+                      onValueChange={(value) => {
+                        setStallAfterHours(value === 'default' ? null : Number(value));
+                      }}
+                      items={[
+                        {
+                          value: 'default',
+                          label: defaultStall
+                            ? `The usual for this kind of campaign (${hoursLabel(defaultStall)})`
+                            : 'The usual for this kind of campaign',
+                        },
+                        ...STALL_CHOICES.map((hours) => ({
+                          value: String(hours),
+                          label: hoursLabel(hours),
+                        })),
+                      ]}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  {stallAfterHours === null
+                    ? 'Every campaign of this kind waits the same amount of time. Choose a length to give this one its own.'
+                    : 'This campaign waits longer or less than others of its kind, because you said so.'}
+                </FieldDescription>
+              </Field>
             </div>
 
             {update.isError ? (

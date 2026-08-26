@@ -34,6 +34,7 @@ export const BEHAVIOR_NAMES = [
   'counter',
   'dismiss',
   'toc',
+  'reveal',
 ] as const;
 export type BehaviorName = (typeof BEHAVIOR_NAMES)[number];
 

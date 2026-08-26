@@ -91,8 +91,9 @@ describe('every coded template renders', () => {
     // the other direction — an id removed from the union but left behind here — and
     // pins the count so a silent drop is visible.
     expect(new Set(IDS).size).toBe(IDS.length);
-    // 38 since `tool-result` — the free-tool answer a visitor asked us to send.
-    expect(IDS.length).toBe(38);
+    // 39 since `gated-delivery` — the signed, expiring link to a file somebody
+    // gave their address for (docs/152 C4).
+    expect(IDS.length).toBe(39);
   });
 });
 

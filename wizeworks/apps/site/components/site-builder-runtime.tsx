@@ -24,7 +24,7 @@ import { useCart } from './cart-provider';
 import { useCustomer } from './customer-provider';
 import type { Customer } from '@/lib/customer-client';
 import { subscribeEmail } from '@/lib/signup-client';
-import { submitContactForm } from '@/lib/contact-client';
+import { capturePartialForm, submitContactForm } from '@/lib/contact-client';
 import { pageSlugFromPath } from '@/lib/page-slug';
 
 /** Display name for the account menu: full name, else the email, else null. */
@@ -48,12 +48,17 @@ export function SiteBuilderRuntime({ children }: { children: React.ReactNode }) 
         await addItem(variantId, quantity);
         router.push('/checkout');
       },
-      subscribeEmail: (email) => subscribeEmail(tenantSlug, email, propertySlug),
+      subscribeEmail: (email, nodeId) => subscribeEmail(tenantSlug, email, propertySlug, nodeId),
       // Contact form (docs/115): the island passes node id + values; the bridge
       // adds the trusted tenant/site slugs + the current page slug so the server
       // can resolve the form's routing config. The form never composes routing.
       submitForm: (input) =>
         submitContactForm(tenantSlug, propertySlug, pageSlugFromPath(pathname), input),
+      // A form somebody started and has not finished (docs/152 C2) — same trusted
+      // slugs, same page locator, and the same rule that the form never composes
+      // its own routing.
+      captureFormPartial: (input) =>
+        capturePartialForm(tenantSlug, propertySlug, pageSlugFromPath(pathname), input),
       // The customer session for the AccountMenu island (docs/27) — signed-in name,
       // status, and a sign-out that clears the session then re-renders.
       account: {

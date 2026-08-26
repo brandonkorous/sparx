@@ -341,6 +341,7 @@ model Property {
   // unrelated businesses is not a thing anyone means. CASCADE, so deleting a
   // site narrows reach rather than promoting a campaign to tenant-wide.
   funnels           Funnel[]
+  commerceOffers    CommerceOffer[]
   rollupFunnelDaily RollupFunnelDaily[]
 
   // Which staff may open this site, when their membership is set to `selected`.

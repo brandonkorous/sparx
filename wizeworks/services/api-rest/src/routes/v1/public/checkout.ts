@@ -19,15 +19,17 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
 import {
+  cartService,
   checkoutService,
   discountService,
+  offerService,
   shippingService,
   type ServiceContext,
 } from '@wizeworks/commerce';
 import { SubmitPaymentInput } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
-import { notFound } from '@wizeworks/api-core/errors';
+import { badRequest, notFound } from '@wizeworks/api-core/errors';
 
 import { assertCartToken, publicCommerceContext } from '../../../lib/public-commerce-context.js';
 import { resolveOrderAttribution } from '../../../lib/attribution.js';
@@ -110,6 +112,11 @@ const CompleteBody = z.object({
 
 const DiscountBody = z.object({
   code: z.string().min(1).max(64),
+});
+
+const OfferAcceptBody = z.object({
+  /** The SHOWING being accepted, not the offer. See the route. */
+  impressionId: z.string().uuid(),
 });
 
 // Resolve the session → its cart, and assert the caller owns that cart.
@@ -284,6 +291,74 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, ctx } = await publicCommerceContext(request);
     const { cartId } = await assertSessionOwner(request, ctx, tenantId, sessionId);
     await discountService.redeemCode(ctx, { cartId, code: body.code });
+    return ok(await checkoutService.get(ctx, sessionId));
+  });
+
+  // ── The order bump (docs/151 §12.1, docs/152 E1) ─────────────────────────
+  //
+  // Shown during checkout, before anything is charged. There is deliberately NO
+  // payment work here: taking it is a cart line, so pricing, discounts, tax,
+  // inventory commitment and the eventual refund are all the cart's, exactly as
+  // they are for anything else in the basket.
+
+  // What to offer this basket, if anything. Nothing to offer is the common case
+  // and returns `{ offer: null }` rather than a 404 — a checkout with no add-on
+  // configured is a normal checkout.
+  app.get('/v1/public/commerce/checkout/:sessionId/offer', async (request) => {
+    const { sessionId } = SessionParam.parse(request.params);
+    const { tenantId, ctx } = await publicCommerceContext(request);
+    const { cartId } = await assertSessionOwner(request, ctx, tenantId, sessionId);
+
+    const session = await withTenant({ tenantId }, (tx) =>
+      tx.checkoutSession.findFirst({
+        where: { id: sessionId },
+        select: { cart: { select: { propertyId: true } } },
+      })
+    );
+    const propertyId = session?.cart.propertyId;
+    // A cart with no site cannot be offered a site's add-on.
+    if (!propertyId) return ok({ offer: null });
+
+    const items = await withTenant({ tenantId }, (tx) =>
+      tx.cartItem.findMany({ where: { cartId }, select: { variantId: true } })
+    );
+    const offer = await offerService.offerFor(ctx, {
+      propertyId,
+      placement: 'bump',
+      inBasketVariantIds: items.map((i) => i.variantId),
+      checkoutSessionId: sessionId,
+    });
+    return ok({ offer });
+  });
+
+  // Take it. `impressionId` rather than an offer id, because what is being
+  // accepted is a SHOWING — accepting an offer nobody was shown would put a yes
+  // in the numerator with nothing under it.
+  app.post('/v1/public/commerce/checkout/:sessionId/offer', async (request) => {
+    const { sessionId } = SessionParam.parse(request.params);
+    const body = OfferAcceptBody.parse(request.body);
+    const { tenantId, ctx } = await publicCommerceContext(request);
+    const { cartId } = await assertSessionOwner(request, ctx, tenantId, sessionId);
+
+    // Re-read the offer from the impression rather than trusting a variant id in
+    // the request: otherwise "accept the bump" is an endpoint that adds any
+    // variant a caller names, at a price the shop never offered.
+    const impression = await withTenant({ tenantId }, (tx) =>
+      tx.commerceOfferImpression.findFirst({
+        where: { id: body.impressionId, tenantId, checkoutSessionId: sessionId },
+        select: { id: true, offer: { select: { variantId: true, active: true } } },
+      })
+    );
+    if (!impression) throw notFound('Offer', body.impressionId);
+    // An offer switched off between the showing and the click is not an offer.
+    if (!impression.offer.active) throw badRequest('That offer is no longer available.');
+
+    await cartService.addItem(ctx, {
+      cartId,
+      variantId: impression.offer.variantId,
+      quantity: 1,
+    });
+    await offerService.acceptOffer(ctx, { impressionId: impression.id });
     return ok(await checkoutService.get(ctx, sessionId));
   });
 

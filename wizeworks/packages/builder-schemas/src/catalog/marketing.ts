@@ -9,7 +9,7 @@
 // Larger composites (pricing, comparison, team) are `comprehensive`; the proof
 // blocks (testimonials, logos, stats) are `common` building blocks.
 
-import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
+import { el, atom, behave, entry, part, type PlatformCatalogEntry } from './_kit';
 
 // A single feature row inside a pricing card — a check glyph + the line of copy.
 const featureLine = (text: string) =>
@@ -1365,5 +1365,164 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
         }),
       ],
     }),
+  }),
+  // ── Capture offers (docs/151 §7, docs/152 C1) ─────────────────────────────────
+  //
+  // The builder already had the SHAPES an offer takes. What it had no way to say
+  // was WHEN one should appear, so every offer was a block sitting in the page
+  // hoping to be scrolled past. These three pair a shape with the `reveal`
+  // behavior, and each captures through the Signup block — so the address lands
+  // in CRM and enters whichever campaign points at it.
+  //
+  // Each is TWO behaviors on two nodes, because a node carries one:
+  //   · the outer frame is `dismiss` — closing it hides the whole thing and
+  //     remembers that, so a visitor who says no is not asked again.
+  //   · the inner card is `reveal` — hidden in the markup, shown when its trigger
+  //     fires, and capped so it does not become furniture.
+  // Both caps are localStorage and deliberately so: a server-side counter needs
+  // the durable anonymous identity docs/151 §4 refuses, which is the same refusal
+  // that lets a sparx site run without a consent banner.
+
+  // ── Slide-in offer — a corner card, after a pause ─────────────────────────────
+  entry({
+    key: 'offer_slide_in',
+    name: 'Slide-in offer',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'gift',
+    description:
+      'A small card that slides into the corner after a visitor has been reading for a while, offering something in exchange for an email address. Closes for good when dismissed.',
+    surfaces: ['page', 'site'],
+    tags: ['offer', 'popup', 'slide in', 'capture', 'email', 'lead', 'discount', 'marketing'],
+    tree: behave(
+      el('div', 'bx-fixed-br z-60 m-4 max-w-sm', {
+        name: 'Slide-in offer',
+        attrs: { role: 'complementary', ariaLabel: 'Offer' },
+        children: [
+          behave(
+            el(
+              'div',
+              'relative flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5 text-base-content',
+              {
+                name: 'Offer card',
+                attrs: { hidden: true },
+                children: [
+                  part(
+                    el('button', 'btn btn-ghost btn-sm btn-circle absolute end-2 top-2', {
+                      text: '✕',
+                      attrs: { type: 'button', ariaLabel: 'Close this offer' },
+                    }),
+                    'trigger'
+                  ),
+                  atom('Heading', 'text-xl font-semibold', {
+                    level: 3,
+                    text: 'Take 10% off your first order',
+                  }),
+                  atom('Text', 'text-base', {
+                    text: 'Pop your email in and we will send the code straight over.',
+                  }),
+                  atom('Signup', 'w-full', { cta: 'Send my code' }),
+                ],
+              }
+            ),
+            { type: 'reveal', on: 'delay', delay: 20, key: 'slide-in-offer', every: 7 }
+          ),
+        ],
+      }),
+      { type: 'dismiss', key: 'slide-in-offer' }
+    ),
+  }),
+
+  // ── Sticky offer bar — pinned to the bottom, once they have read a bit ────────
+  entry({
+    key: 'offer_bar',
+    name: 'Sticky offer bar',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'panel-bottom',
+    description:
+      'A slim bar pinned to the bottom of the page that appears once a visitor has read part way down, with a short offer and an email field. Less interrupting than a popup.',
+    surfaces: ['page', 'site'],
+    tags: ['offer', 'bar', 'sticky', 'capture', 'email', 'lead', 'banner', 'marketing'],
+    tree: behave(
+      el('div', 'bx-fixed-bottom z-60', {
+        name: 'Sticky offer bar',
+        attrs: { role: 'complementary', ariaLabel: 'Offer' },
+        children: [
+          behave(
+            el('div', 'border-t border-base-300 bg-base-100 px-4 py-3 text-base-content', {
+              name: 'Offer bar',
+              attrs: { hidden: true },
+              children: [
+                el(
+                  'div',
+                  'mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-2',
+                  {
+                    children: [
+                      el('span', 'text-base font-medium', {
+                        text: 'Join the list and get 10% off your first order.',
+                      }),
+                      atom('Signup', 'min-w-0 flex-1', { cta: 'Get the code' }),
+                      part(
+                        el('button', 'btn btn-ghost btn-sm btn-circle shrink-0', {
+                          text: '✕',
+                          attrs: { type: 'button', ariaLabel: 'Close this offer' },
+                        }),
+                        'trigger'
+                      ),
+                    ],
+                  }
+                ),
+              ],
+            }),
+            { type: 'reveal', on: 'scroll', scroll: 40, key: 'offer-bar', every: 7 }
+          ),
+        ],
+      }),
+      { type: 'dismiss', key: 'offer-bar' }
+    ),
+  }),
+
+  // ── Timed offer — the full modal, opened on its own ───────────────────────────
+  //
+  // The host stays HIDDEN and the reveal behavior clicks the dialog's trigger, so
+  // the panel opens with no stray button left on the page. The dialog itself is
+  // the one atom that cannot be a plain composition: a dimmed full-viewport
+  // backdrop needs `fixed inset-0`, which the compile allowlist denies as a
+  // clickjacking guard, so the sanctioned path is the Dialog island.
+  entry({
+    key: 'offer_modal',
+    name: 'Timed offer',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'gift',
+    description:
+      'A full offer that opens by itself when someone looks like they are about to leave. The most interrupting of the three, so it holds itself back to once a week per visitor.',
+    surfaces: ['page', 'site'],
+    tags: ['offer', 'modal', 'popup', 'exit intent', 'capture', 'email', 'lead', 'marketing'],
+    tree: behave(
+      el('div', '', {
+        name: 'Timed offer',
+        attrs: { hidden: true },
+        children: [
+          part(
+            atom(
+              'Dialog',
+              'btn btn-primary',
+              {
+                triggerLabel: 'See the offer',
+                title: 'Before you go — take 10% off',
+                description: 'Leave your email and we will send a code you can use today.',
+                closeLabel: 'No thanks',
+                placement: 'center',
+              },
+              [atom('Signup', 'w-full', { cta: 'Send my code' })]
+            ),
+            'trigger'
+          ),
+        ],
+      }),
+      { type: 'reveal', on: 'exit', opens: true, key: 'timed-offer', every: 7 }
+    ),
   }),
 ];

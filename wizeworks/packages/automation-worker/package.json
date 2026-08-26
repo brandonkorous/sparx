@@ -19,6 +19,8 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/email-sequences": "workspace:*",
     "@wizeworks/events": "workspace:*",
+    "@wizeworks/funnels": "workspace:*",
+    "@wizeworks/modules": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"
   },

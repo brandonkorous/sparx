@@ -2,12 +2,16 @@
   "name": "@wizeworks/sms",
   "version": "0.0.0",
   "private": true,
-  "description": "sparx SMS — a provider-agnostic text-messaging abstraction (Twilio-first, swappable). Mirrors @wizeworks/payments: every caller sends through one interface and never knows the vendor. Used by the scheduling-worker for booking reminders/confirmations (docs/79 §10).",
+  "description": "sparx SMS: a provider-agnostic text-messaging abstraction (Twilio-first, swappable). Mirrors @wizeworks/payments, so every caller sends through one interface and never knows the vendor. The main entry is db-free so anything can import it; the ./delivery subpath adds the guarded send (consent, STOP suppression, quiet hours in the recipient's timezone, and a per-tenant ceiling that trips before the provider call) and needs @wizeworks/db.",
   "type": "module",
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./delivery": {
+      "types": "./src/delivery.ts",
+      "default": "./src/delivery.ts"
     }
   },
   "files": [
@@ -20,7 +24,9 @@
     "test:watch": "vitest",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@wizeworks/db": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "typescript": "^6.0.3",

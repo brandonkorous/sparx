@@ -17,7 +17,7 @@ import {
   offerWaitlistEntry,
   renderWaitlistOfferSms,
 } from '@wizeworks/scheduling';
-import { resolveSmsProvider } from '@wizeworks/sms';
+import { sendTenantSms } from '@wizeworks/sms/delivery';
 
 import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
@@ -92,8 +92,20 @@ export async function sendWaitlistOffer(
       siteName: siteName || 'Your booking',
       bookUrl: bookUrl(tenant?.slug ?? '', entry.serviceId),
     });
-    const result = await resolveSmsProvider(env).send({ to: customer.phone, body, tenantId });
-    if (!result.success) logger.warn({ tenantId, entryId }, 'waitlist: offer SMS failed');
+    // Guarded, like every other send (docs/152 D1). `transactional`: they joined
+    // this waitlist and asked to be told, so it is the thing they signed up for
+    // rather than a campaign — but a STOP still stops it.
+    const result = await sendTenantSms(
+      { tenantId },
+      { to: customer.phone, body, scope: 'transactional', customerId: entry.customerId },
+      env
+    );
+    if (result.outcome !== 'sent') {
+      logger.warn(
+        { tenantId, entryId, outcome: result.outcome, reason: result.reason },
+        'waitlist: offer SMS not sent'
+      );
+    }
   }
 }
 

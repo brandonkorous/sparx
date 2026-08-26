@@ -5,10 +5,11 @@
 //   GET /v1/crm/reports/pipeline-funnel?pipeline_id  → funnel by stage
 //   GET /v1/crm/reports/win-loss?pipeline_id&since   → win/loss by rep
 //   GET /v1/crm/reports/acquisition?months           → new customers per month
+//   GET /v1/crm/reports/lead-response                → who is still waiting
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { reportingService } from '@wizeworks/crm';
+import { leadClock, reportingService } from '@wizeworks/crm';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
@@ -23,6 +24,9 @@ const RangeQuery = z.object({
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
 });
+const LeadResponseQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(200).optional(),
+});
 const SegmentSummaryQuery = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
 });
@@ -33,6 +37,22 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const snapshot = await reportingService.tenantSnapshot(toCrmContext(request));
     return ok(snapshot);
+  });
+
+  // The lead response clock (docs/152 D2). Two numbers and a queue, because
+  // "12 waiting" and "12 waiting, 4 of them late" are different mornings — and
+  // because a clock nobody can look at is a number in a report afterwards
+  // rather than a thing that prevents the miss.
+  app.get('/v1/crm/reports/lead-response', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const ctx = toCrmContext(request);
+    const { limit } = LeadResponseQuery.parse(request.query);
+    const [counts, waiting] = await Promise.all([
+      leadClock.leadResponseCounts(ctx),
+      leadClock.leadsAwaitingResponse(ctx, limit ? { limit } : {}),
+    ]);
+    return ok({ ...counts, waiting });
   });
 
   app.get('/v1/crm/reports/pipeline-funnel', async (request) => {

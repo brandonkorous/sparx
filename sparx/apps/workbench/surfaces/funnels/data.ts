@@ -77,7 +77,14 @@ export interface Funnel {
   sequenceId: string | null;
   entryPageId: string | null;
   entryFormNodeId: string | null;
+  /** How long this campaign waits before counting somebody as gone. Null means
+   *  it follows `defaultStallHours` for its kind — the two are NOT the same
+   *  thing, and the editor has to be able to tell them apart. */
   stallAfterHours: number | null;
+  /** What this KIND gives up after when nobody has chosen. Detail responses
+   *  only, so the editor can say what "leave it alone" means without mirroring
+   *  the platform's defaults table. */
+  defaultStallHours?: number;
   recipeKey: string | null;
   createdAt: string;
   updatedAt: string;
@@ -274,6 +281,27 @@ export function countLabel(entered: number | null): string {
 
 /** Whole pounds/dollars from integer cents. Campaign value is a headline figure
  *  and cents on it are noise. */
+/**
+ * A span of hours as a person says it: "4 hours", "3 days", "2 weeks".
+ *
+ * Hours are the storage unit because the sweep works in them; they are a
+ * terrible unit to show somebody, since nobody describes a fortnight's patience
+ * as 336 hours.
+ */
+export function hoursLabel(hours: number): string {
+  if (hours < 24) return hours === 1 ? '1 hour' : `${hours} hours`;
+  const days = Math.round(hours / 24);
+  if (days >= 7 && days % 7 === 0) {
+    const weeks = days / 7;
+    return weeks === 1 ? '1 week' : `${weeks} weeks`;
+  }
+  return days === 1 ? '1 day' : `${days} days`;
+}
+
+/** The spans offered in the editor, from an abandoned checkout to a long
+ *  win-back silence. Free text was the alternative and it invites "0". */
+export const STALL_CHOICES = [4, 12, 24, 48, 72, 168, 336, 720, 1440];
+
 export function moneyLabel(cents: number): string {
   return `$${Math.round(cents / 100).toLocaleString()}`;
 }

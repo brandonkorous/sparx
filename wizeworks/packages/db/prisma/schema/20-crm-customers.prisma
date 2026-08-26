@@ -57,6 +57,14 @@ model Customer {
   jobTitle               String?  @map("job_title") @db.VarChar(255)
   preferredContactMethod String?  @map("preferred_contact_method") @db.VarChar(20) // email | phone | sms
   doNotContact           Boolean  @default(false) @map("do_not_contact")
+
+  // The lead response clock (docs/152 D2). `leadResponseDueAt` is when the
+  // business's promise runs out, in BUSINESS time, computed once at capture from
+  // the SLA policy's calendar; `firstRespondedAt` is when somebody actually got
+  // back to them. Both null on a contact nobody promised anything about, which
+  // is a normal state and must never render as overdue.
+  leadResponseDueAt      DateTime? @map("lead_response_due_at") @db.Timestamptz
+  firstRespondedAt       DateTime? @map("first_responded_at") @db.Timestamptz
   gdprConsent            Json     @default("{}") @map("gdpr_consent")
   tags                   String[] @default([]) @db.VarChar(63)
   metadata               Json     @default("{}")

@@ -54,6 +54,30 @@ export interface BuilderFormSubmit {
 
 /** The terminal side effects the interactive islands perform. Live wires these to
  *  the storefront cart/capture APIs; the canvas leaves them as no-ops. */
+/** One step of a form somebody is partway through. `values` carries the answers
+ *  from the steps completed SO FAR — never the empty fields still ahead of them,
+ *  which would blank real answers on a resumed form. */
+export interface BuilderFormPartial {
+  nodeId: string;
+  values: Record<string, string>;
+  /** Which step they just completed, 1-based. */
+  step: number;
+  honeypot?: string;
+}
+
+/** What a quiz or calculator tells the visitor once their answers are added up
+ *  (docs/152 C3). Computed on the SERVER from the server-only weights — the same
+ *  arithmetic that sets their CRM score, so the person and the sales team can
+ *  never be looking at two different results. Absent on an ordinary form. */
+export interface BuilderFormResult {
+  result?: {
+    headline: string | null;
+    body: string | null;
+    /** A calculator's rendered quantity, e.g. "$2,800 a year". */
+    amountLabel: string | null;
+  };
+}
+
 export interface BuilderRuntime {
   /** Add a resolved variant to the active cart (and surface the cart drawer). */
   addToCart: (variantId: string, quantity: number) => Promise<void>;
@@ -61,11 +85,17 @@ export interface BuilderRuntime {
    *  Live navigates to the cart/checkout; the canvas leaves it inert. */
   buyNow: (variantId: string, quantity: number) => Promise<void>;
   /** Subscribe an email address to the tenant's list via the public capture endpoint. */
-  subscribeEmail: (email: string) => Promise<void>;
+  subscribeEmail: (email: string, nodeId?: string) => Promise<void>;
   /** Submit a ContactForm to the public forms endpoint. Live posts + resolves the
    *  form's routing config server-side; the canvas no-ops it so the form validates
    *  and shows its thank-you in preview without capturing anything. */
-  submitForm: (input: BuilderFormSubmit) => Promise<void>;
+  submitForm: (input: BuilderFormSubmit) => Promise<BuilderFormResult | void>;
+  /** Record a form somebody has started and not finished (docs/152 C2). Called
+   *  as they move forward through a multi-step form, never on the final submit.
+   *  Best-effort by contract: the caller must not let a failure here block the
+   *  visitor from continuing, because this is the tenant's measurement and the
+   *  visitor's form is the visitor's. The canvas no-ops it. */
+  captureFormPartial: (input: BuilderFormPartial) => Promise<void>;
   /** The customer session, for the AccountMenu island. Optional: only the live
    *  storefront supplies it; the canvas leaves it undefined. */
   account?: BuilderAccount;
@@ -78,6 +108,7 @@ const NOOP_RUNTIME: BuilderRuntime = {
   buyNow: () => Promise.resolve(),
   subscribeEmail: () => Promise.resolve(),
   submitForm: () => Promise.resolve(),
+  captureFormPartial: () => Promise.resolve(),
 };
 
 const BuilderRuntimeContext = React.createContext<BuilderRuntime>(NOOP_RUNTIME);

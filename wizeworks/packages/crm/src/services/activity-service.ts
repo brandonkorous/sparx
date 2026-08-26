@@ -14,6 +14,7 @@ import type { CrmActivity, Prisma } from '@wizeworks/db';
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
+import * as leadClock from './lead-clock';
 
 export async function list(ctx: ServiceContext, rawFilter: unknown = {}): Promise<CrmActivity[]> {
   const filter = ListActivitiesInput.parse(rawFilter);
@@ -38,6 +39,28 @@ export async function list(ctx: ServiceContext, rawFilter: unknown = {}): Promis
     })
   );
 }
+
+/**
+ * The activity types that mean somebody ACTUALLY GOT BACK TO THEM
+ * (docs/152 D2).
+ *
+ * Deliberately narrow. A `note` is not on this list: writing something down
+ * about a person is not answering them, and a clock that stopped on internal
+ * activity would measure how busy the desk looks rather than whether the
+ * customer heard anything. Neither are `email.opened` / `email.clicked` (that
+ * is the customer acting, not us), `email.received` (they wrote to US, which
+ * starts a clock rather than stopping one), or `call.missed` — a call nobody
+ * answered is the opposite of a response.
+ */
+const RESPONSE_ACTIVITIES = new Set<string>([
+  'email.sent',
+  'email.replied',
+  'call',
+  'call.logged',
+  'meeting',
+  'meeting.booked',
+  'ticket.replied',
+]);
 
 export async function record(ctx: ServiceContext, rawInput: unknown): Promise<CrmActivity> {
   const input = CreateActivityInput.parse(rawInput);
@@ -82,6 +105,17 @@ export async function record(ctx: ServiceContext, rawInput: unknown): Promise<Cr
 
     return created;
   });
+
+  // Stop the lead response clock, if this was a real response and one was
+  // running. Best-effort and after the write: the activity is the record of
+  // what happened, and a clock update failing must not lose it.
+  if (input.customerId && RESPONSE_ACTIVITIES.has(input.type)) {
+    try {
+      await leadClock.stopLeadClock(ctx, { customerId: input.customerId, at: occurredAt });
+    } catch {
+      /* the timeline entry is the thing that matters */
+    }
+  }
 
   await publishCrmEvent({
     tenantId: ctx.tenantId,

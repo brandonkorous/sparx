@@ -10,6 +10,13 @@
 
 const API_BASE = '/api/sparx';
 
+/** What a quiz or calculator tells the visitor, as the API returns it. */
+export interface QuizResultView {
+  headline: string | null;
+  body: string | null;
+  amountLabel: string | null;
+}
+
 export interface ContactSubmitInput {
   /** Stable Builder node id of the form. */
   nodeId: string;
@@ -81,7 +88,7 @@ export async function submitContactForm(
   propertySlug: string | undefined,
   pageSlug: string | null,
   input: ContactSubmitInput
-): Promise<void> {
+): Promise<{ result: QuizResultView } | undefined> {
   const attachments: string[] = [];
   for (const file of input.files ?? []) {
     attachments.push(
@@ -103,12 +110,52 @@ export async function submitContactForm(
     }),
   });
   const body = (await res.json().catch(() => null)) as
-    | { success: true }
+    | { success: true; data?: { result?: QuizResultView } }
     | { success: false; error: { message: string; code: string } }
     | null;
   if (!res.ok || !body || body.success === false) {
     const message =
       body?.success === false ? body.error.message : `Couldn’t send your message (${res.status}).`;
     throw new Error(message);
+  }
+  // A quiz or calculator answers back (docs/152 C3). Absent on an ordinary form,
+  // and the caller falls through to its own thank-you.
+  return body.data?.result ? { result: body.data.result } : undefined;
+}
+
+/**
+ * Record a form somebody has started and not finished (docs/152 C2).
+ *
+ * Deliberately silent about failure. This is the tenant's measurement of their
+ * own site, and it fires while a visitor is midway through typing — surfacing an
+ * error, or letting one propagate, would interrupt somebody who has done nothing
+ * wrong. A dropped partial costs the tenant one row; a visible error costs them
+ * the lead.
+ */
+export async function capturePartialForm(
+  tenantSlug: string,
+  propertySlug: string | undefined,
+  pageSlug: string | null,
+  input: { nodeId: string; values: Record<string, string>; step: number; honeypot?: string }
+): Promise<void> {
+  const qs = new URLSearchParams({ tenant: tenantSlug });
+  if (propertySlug) qs.set('property', propertySlug);
+  try {
+    await fetch(`${API_BASE}/v1/public/forms/partial?${qs.toString()}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      // The page may be closing — this is the moment somebody abandons a form,
+      // and a normal fetch is cancelled on unload while keepalive survives it.
+      keepalive: true,
+      body: JSON.stringify({
+        formNodeId: input.nodeId,
+        pageSlug,
+        values: input.values,
+        step: input.step,
+        ...(input.honeypot !== undefined ? { honeypot: input.honeypot } : {}),
+      }),
+    });
+  } catch {
+    /* see the note above — never surfaced */
   }
 }

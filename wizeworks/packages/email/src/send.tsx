@@ -87,6 +87,11 @@ import {
   type FormSubmissionConfirmationEmailProps,
 } from './templates/form-submission-confirmation';
 import {
+  GatedDeliveryEmail,
+  gatedDeliverySubject,
+  type GatedDeliveryEmailProps,
+} from './templates/gated-delivery';
+import {
   ToolResultEmail,
   toolResultSubject,
   type ToolResultEmailProps,
@@ -227,6 +232,7 @@ export type TemplateId =
   | 'team-invitation'
   | 'form-submission-notification'
   | 'form-submission-confirmation'
+  | 'gated-delivery'
   // The free-tool result a visitor asked us to send them (docs/152 A3).
   | 'tool-result'
   | 'billing-receipt'
@@ -365,6 +371,13 @@ export type TemplateSend =
       template: 'form-submission-notification';
       to: string;
       props: FormSubmissionNotificationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'gated-delivery';
+      to: string;
+      props: GatedDeliveryEmailProps & { subject?: string | null };
       from?: string;
       replyTo?: string;
     }
@@ -815,6 +828,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'form-submission-confirmation',
+      };
+    }
+    case 'gated-delivery': {
+      const element = wrap(<GatedDeliveryEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: gatedDeliverySubject(input.props.subject),
+        html,
+        text,
+        templateId: 'gated-delivery',
       };
     }
     case 'tool-result': {

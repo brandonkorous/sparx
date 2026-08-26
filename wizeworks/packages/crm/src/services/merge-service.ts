@@ -148,6 +148,15 @@ export const MOVED_MODELS = [
   // here is unique per (funnel, stage, customer) — the repeat check is a read,
   // not a constraint — so a plain move cannot collide.
   'funnelStageEvent',
+  // What we texted them, and whether they told us to stop (docs/152 D1).
+  //
+  // The suppression matters more than the message log. It is keyed on the PHONE
+  // NUMBER, so a STOP keeps binding whichever record survives — but its
+  // `customerId` pointer has to follow, or the survivor's screen shows a person
+  // with no record of having opted out while the sends keep being refused, which
+  // reads as a bug in the sending rather than as the person's own decision.
+  'smsSuppression',
+  'smsMessage',
 ] as const;
 
 /**

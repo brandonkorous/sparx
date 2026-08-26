@@ -34,7 +34,12 @@ export interface Funnel {
   sequenceId: string | null;
   entryPageId: string | null;
   entryFormNodeId: string | null;
+  /** How long this campaign waits before counting somebody as gone. Null means
+   *  it follows `defaultStallHours` for its kind; the two are not the same. */
   stallAfterHours: number | null;
+  /** What this KIND gives up after when nobody has chosen. Detail responses
+   *  only, so the editor can say what "leave it alone" means. */
+  defaultStallHours?: number;
   recipeKey: string | null;
   createdAt: string;
   updatedAt: string;

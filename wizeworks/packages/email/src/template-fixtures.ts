@@ -135,6 +135,18 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
     subject: 'Thanks for getting in touch',
     message: 'Do you deliver on Saturdays?',
   },
+  'gated-delivery': {
+    siteName: 'Rosa Flowers',
+    name: 'Dev Patel',
+    subject: 'Here is your download',
+    message: 'Thanks for asking — here is the wedding flower planner.',
+    filename: 'Wedding Flower Planner.pdf',
+    // A neutral host on purpose: the real one is per-deployment
+    // (`MEDIA_PUBLIC_URL`), and a brand's domain in a fixture is a thing someone
+    // later has to reason about even though the leak assertion strips URLs.
+    url: 'https://api.example.com/v1/public/deliver/example-token',
+    expiresInDays: 7,
+  },
   'tool-result': {
     toolName: 'Margin calculator',
     toolUrl: 'https://sparx.works/tools/margin-calculator',

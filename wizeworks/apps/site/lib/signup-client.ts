@@ -10,14 +10,17 @@ const API_BASE = '/api/sparx';
 export async function subscribeEmail(
   tenantSlug: string,
   email: string,
-  propertySlug?: string
+  propertySlug?: string,
+  /** The block that captured this, so the server can enter it into whichever
+   *  campaign points at that block (docs/152 C1). */
+  formNodeId?: string
 ): Promise<void> {
   const qs = new URLSearchParams({ tenant: tenantSlug });
   if (propertySlug) qs.set('property', propertySlug);
   const res = await fetch(`${API_BASE}/v1/public/signup?${qs.toString()}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify(formNodeId ? { email, formNodeId } : { email }),
   });
   const body = (await res.json().catch(() => null)) as
     | { success: true }

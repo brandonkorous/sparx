@@ -97,37 +97,194 @@ export interface CreateSubmissionInput {
   status: string;
 }
 
-/** Insert a FormSubmission row (always — the durable inbox is the backbone). */
+/**
+ * Insert a FormSubmission row (always — the durable inbox is the backbone).
+ *
+ * If this person already has a PARTIAL row for this form, the completed
+ * submission takes it over rather than landing beside it (docs/152 C2).
+ * Otherwise finishing a form you had abandoned would leave the tenant looking at
+ * two rows for one person, one of them permanently captioned "never finished" —
+ * which is worse than not having recorded the partial at all.
+ */
 export async function createFormSubmission(
   ctx: PropertyContext,
   input: CreateSubmissionInput
 ): Promise<{ id: string }> {
-  return withTenant(ctx, (tx) =>
-    tx.formSubmission.create({
-      data: {
+  const data = {
+    tenantId: ctx.tenantId,
+    propertyId: ctx.propertyId,
+    formNodeId: input.formNodeId,
+    pageSlug: input.pageSlug,
+    formName: input.formName,
+    name: input.name,
+    email: input.email,
+    phone: input.phone,
+    message: input.message,
+    fields: input.fields,
+    attachments: (input.attachments ?? []) as unknown as Prisma.InputJsonValue,
+    context: input.context as Prisma.InputJsonValue,
+    status: input.status,
+  };
+
+  return withTenant(ctx, async (tx) => {
+    if (input.email) {
+      const abandoned = await tx.formSubmission.findFirst({
+        where: {
+          tenantId: ctx.tenantId,
+          formNodeId: input.formNodeId,
+          email: input.email,
+          status: PARTIAL_STATUS,
+        },
+        select: { id: true },
+      });
+      if (abandoned) {
+        // `partialStep` is cleared: it means "how far they got before stopping",
+        // and they did not stop. Leaving it set would report a completed form as
+        // a drop-off forever.
+        await tx.formSubmission.update({
+          where: { id: abandoned.id },
+          data: { ...data, partialStep: null },
+        });
+        return { id: abandoned.id };
+      }
+    }
+    return tx.formSubmission.create({ data, select: { id: true } });
+  });
+}
+
+// ── Partial capture (docs/151 §7, docs/152 C2) ────────────────────────────────
+
+/** The status a half-finished form carries. Deliberately not in
+ *  `SUBMISSION_STATUSES` as a WRITE target — staff triage a partial, they never
+ *  mark something partial. */
+export const PARTIAL_STATUS = 'partial';
+
+export interface PartialSubmissionInput {
+  formNodeId: string;
+  pageSlug: string | null;
+  formName: string | null;
+  name: string | null;
+  /** Required by the caller: a partial with no way to reach anybody is not a
+   *  lead, it is a row about a stranger, and we do not keep those. */
+  email: string;
+  phone: string | null;
+  fields: Record<string, string>;
+  context: Record<string, unknown>;
+  /** How far they got, 1-based. */
+  step: number;
+}
+
+/**
+ * Record (or advance) somebody's unfinished form.
+ *
+ * One unfinished form is ONE row, so this updates in place as they move through
+ * the steps. The identity is (tenant, form, email) and there is no client-side
+ * id anywhere in it — deliberately, because a durable per-visitor token is
+ * exactly the thing docs/151 §4 refuses, and it is not needed: the address they
+ * typed is the identity, and a reload simply resumes the same row.
+ *
+ * The partial unique index in the migration is what makes this safe against two
+ * tabs racing; the catch below turns that race into the update it should have
+ * been rather than a 500 the visitor sees.
+ */
+export async function capturePartialSubmission(
+  ctx: PropertyContext,
+  input: PartialSubmissionInput
+): Promise<{ id: string; created: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.formSubmission.findFirst({
+      where: {
         tenantId: ctx.tenantId,
-        propertyId: ctx.propertyId,
         formNodeId: input.formNodeId,
-        pageSlug: input.pageSlug,
-        formName: input.formName,
-        name: input.name,
         email: input.email,
-        phone: input.phone,
-        message: input.message,
-        fields: input.fields,
-        attachments: (input.attachments ?? []) as unknown as Prisma.InputJsonValue,
-        context: input.context as Prisma.InputJsonValue,
-        status: input.status,
+        status: PARTIAL_STATUS,
       },
-      select: { id: true },
-    })
-  );
+      select: { id: true, partialStep: true, fields: true },
+    });
+
+    // Merge rather than replace: somebody who goes BACK and forward again must
+    // not blank the answers they already gave, and a later step posts only the
+    // fields it can see.
+    const merged = (values: unknown): Record<string, string> => ({
+      ...(values && typeof values === 'object' ? (values as Record<string, string>) : {}),
+      ...input.fields,
+    });
+
+    if (existing) {
+      await tx.formSubmission.update({
+        where: { id: existing.id },
+        data: {
+          pageSlug: input.pageSlug,
+          formName: input.formName,
+          name: input.name,
+          phone: input.phone,
+          fields: merged(existing.fields),
+          context: input.context as Prisma.InputJsonValue,
+          // Never walks backwards: the useful number is the FURTHEST they ever
+          // reached, not wherever they happened to be when they closed the tab.
+          partialStep: Math.max(existing.partialStep ?? 0, input.step),
+        },
+      });
+      return { id: existing.id, created: false };
+    }
+
+    try {
+      const row = await tx.formSubmission.create({
+        data: {
+          tenantId: ctx.tenantId,
+          propertyId: ctx.propertyId,
+          formNodeId: input.formNodeId,
+          pageSlug: input.pageSlug,
+          formName: input.formName,
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          message: null,
+          fields: input.fields,
+          context: input.context as Prisma.InputJsonValue,
+          status: PARTIAL_STATUS,
+          partialStep: input.step,
+        },
+        select: { id: true },
+      });
+      return { id: row.id, created: true };
+    } catch (err) {
+      // The other tab won the race. Its row is the one to advance.
+      if (!isUniqueViolation(err)) throw err;
+      const row = await tx.formSubmission.findFirst({
+        where: {
+          tenantId: ctx.tenantId,
+          formNodeId: input.formNodeId,
+          email: input.email,
+          status: PARTIAL_STATUS,
+        },
+        select: { id: true, partialStep: true },
+      });
+      if (!row) throw err;
+      await tx.formSubmission.update({
+        where: { id: row.id },
+        data: { partialStep: Math.max(row.partialStep ?? 0, input.step) },
+      });
+      return { id: row.id, created: false };
+    }
+  });
+}
+
+/** Postgres 23505. The index it trips is hand-authored SQL, so Prisma reports it
+ *  as a generic known-request error rather than a typed conflict. */
+function isUniqueViolation(err: unknown): boolean {
+  return typeof err === 'object' && err !== null && 'code' in err && err.code === 'P2002';
 }
 
 // ── Inbox reads/writes (authenticated dashboard, docs/115) ────────────────────
 
 const SUBMISSION_STATUSES = ['new', 'read', 'spam', 'archived'] as const;
 export type SubmissionStatus = (typeof SUBMISSION_STATUSES)[number];
+
+/** Statuses the inbox may FILTER to. A superset of the ones it may WRITE:
+ *  `partial` is reachable as a view (a tenant should be able to see who started
+ *  and stopped) but is never something staff assign. */
+export const SUBMISSION_VIEWS = [...SUBMISSION_STATUSES, PARTIAL_STATUS] as const;
 
 export interface ListSubmissionsFilter {
   /** Filter by lifecycle status. */
@@ -140,8 +297,11 @@ export interface ListSubmissionsFilter {
 }
 
 export interface SubmissionCounts {
+  /** Finished submissions. Excludes partials — see `submissionCounts`. */
   total: number;
   new: number;
+  /** People who started this tenant's forms and never finished (docs/152 C2). */
+  partial: number;
 }
 
 /** One distinct form that has received at least one submission, for the inbox's
@@ -156,7 +316,9 @@ export interface SubmissionFormRef {
 
 /** The distinct forms that have received submissions, most-recently-active first.
  *  Computed across ALL statuses so the filter set stays stable as the operator
- *  narrows by status — filtering to "spam" must not empty the form picker. */
+ *  narrows by status — filtering to "spam" (or "partial") must not empty the
+ *  form picker. Its `count` therefore INCLUDES partials, which is right for a
+ *  picker and wrong for a headline; `submissionCounts` is the headline. */
 export async function submissionForms(ctx: ServiceContext): Promise<SubmissionFormRef[]> {
   const grouped = await withTenant(ctx, (tx) =>
     tx.formSubmission.groupBy({
@@ -182,7 +344,11 @@ export async function listSubmissions(
   return withTenant(ctx, (tx) =>
     tx.formSubmission.findMany({
       where: {
-        ...(filter.status ? { status: filter.status } : {}),
+        // Unfiltered means FINISHED submissions. A half-filled form sitting in
+        // the inbox looking like a message somebody sent is worse than not
+        // recording it: the tenant replies to something nobody sent them. It is
+        // reachable by asking for it (`status: 'partial'`) and no other way.
+        ...(filter.status ? { status: filter.status } : { status: { not: PARTIAL_STATUS } }),
         ...(filter.formNodeId ? { formNodeId: filter.formNodeId } : {}),
       },
       orderBy: { createdAt: 'desc' },
@@ -192,14 +358,18 @@ export async function listSubmissions(
   );
 }
 
-/** Total + unread counts for the inbox header. */
+/** Total + unread counts for the inbox header, plus how many people started a
+ *  form and stopped. `total` counts FINISHED submissions only — folding partials
+ *  into it would quietly inflate every "you have N enquiries" figure on the
+ *  platform. */
 export async function submissionCounts(ctx: ServiceContext): Promise<SubmissionCounts> {
   return withTenant(ctx, async (tx) => {
-    const [total, fresh] = await Promise.all([
-      tx.formSubmission.count(),
+    const [total, fresh, partial] = await Promise.all([
+      tx.formSubmission.count({ where: { status: { not: PARTIAL_STATUS } } }),
       tx.formSubmission.count({ where: { status: 'new' } }),
+      tx.formSubmission.count({ where: { status: PARTIAL_STATUS } }),
     ]);
-    return { total, new: fresh };
+    return { total, new: fresh, partial };
   });
 }
 

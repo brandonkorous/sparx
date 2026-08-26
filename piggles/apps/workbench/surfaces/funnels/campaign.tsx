@@ -82,6 +82,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         description: draft.description || null,
         stages: draft.stages,
         goal: draft.hasGoal ? draft.goal : null,
+        stallAfterHours: draft.stallAfterHours,
       },
       { onSuccess: () => toast.add({ title: 'Campaign saved', type: 'success' }) }
     );
@@ -153,6 +154,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             draft={draft}
             on={draft}
             canEdit={canEdit}
+            defaultStallHours={current.defaultStallHours}
             error={
               update.isError
                 ? funnelErrorMessage(update.error, 'That change could not be saved.')

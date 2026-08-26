@@ -542,6 +542,7 @@ export interface EmailSendPayload {
    *  by key (docs/93), so they are NOT template ids here. */
   template:
     | 'password-reset'
+    | 'gated-delivery'
     | 'welcome-merchant'
     | 'partner-welcome'
     | 'email-verification'

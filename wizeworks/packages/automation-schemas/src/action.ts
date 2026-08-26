@@ -43,6 +43,16 @@ export const ActionType = z.enum([
   // Capture a site-form submitter as a CRM prospect + log their message (docs/115).
   // Reads the triggering submission; self-gates on the form's own "add to CRM" toggle.
   'crm.capture_lead',
+  // Texting (docs/151 §8, docs/152 D1). Registered here as well as in the
+  // executor, because an action type in one list and not the other typechecks
+  // green and then rejects the slug at save time — the same footgun the
+  // `inventory` and `finance` module slugs hit (docs/152 §8 #2).
+  //
+  // It is EXTERNAL AND BILLABLE, unlike every CRM action above it, so the
+  // delivery layer enforces consent, STOP suppression, quiet hours and a
+  // per-tenant ceiling before any provider call. With no provider credential
+  // configured it resolves to the console provider and cannot spend.
+  'sms.send',
   // Site forms (docs/115) — route a form.submitted submission. `form.notify` emails
   // the owner/recipients (reply-to the submitter); `form.autoreply` confirms to the
   // submitter. Both self-gate on the form's own toggles + are platform-transactional.

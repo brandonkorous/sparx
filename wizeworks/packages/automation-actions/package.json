@@ -28,6 +28,7 @@
     "@wizeworks/email-sequences": "workspace:*",
     "@wizeworks/events": "workspace:*",
     "@wizeworks/inventory": "workspace:*",
+    "@wizeworks/sms": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

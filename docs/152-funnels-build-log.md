@@ -1,6 +1,6 @@
 # sparx Platform — Funnels Feature Build Log
 
-**Version:** 1.1
+**Version:** 1.5
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-26
 
@@ -15,25 +15,21 @@ markers + the `▶ RESUME HERE` pointer every working session.
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE: Phase C, the capture surfaces.** Phase A and **all of Phase
-> B** are done, each slice exercised against the real database rather than only
-> typechecked (A4b still parked on a reindex decision).
+> **▶ RESUME HERE: nothing is outstanding.** Phases A, B, C, D and E are done.
+> F1 (split testing) stays deferred on purpose, gated on real stage counts
+> rather than on a date.
 >
-> The module is now end to end: a campaign can be created, given a ladder and a
-> goal, turned on, fed by a real form submission on a tenant site, reported on in
-> both consoles, reached over REST and MCP, and reacted to by an automation. What
-> Phase C adds is the LAYER THAT FILLS IT — the triggers, offers and forms that
-> get somebody to the capture line in the first place.
+> What is left is not building, it is LOOKING. Every slice has been exercised
+> against the real database or covered by tests; none of the workbench surfaces
+> has been opened in a browser, no offer has been placed on a real page, and no
+> campaign has been driven end to end by a person. That is the gap
+> [[feedback_test_as_a_business_owner]] describes, and it is where the next real
+> defects are.
 >
-> C1 is node triggers plus client-local frequency caps, then the slide-in, modal
-> offer and sticky-bar catalog entries. **The frequency cap is deliberately
-> `localStorage` and not a server counter** (docs/151 §7): a server-side cap needs
-> the durable anonymous identity §4 refuses, and a cleared browser seeing the
-> offer twice is a far smaller harm than a consent banner on every tenant site.
->
-> Everything C writes lands through the ingestion built in B3, so nothing in
-> Phase C should need a new write path: a capture posts `type: 'funnel_stage'`,
-> or it is a form submission and the stitch already finds its funnel.
+> **Five migrations were authored in this run** (`…423` through `…427`). The
+> Prisma client has been regenerated against them; if the DB-backed integration
+> suites fail with "column does not exist", the database is behind the client and
+> wants `migrate deploy`.
 
 ## 1. The four decisions, settled 2026-08-25
 
@@ -705,28 +701,404 @@ value=12500`, and the cascade was proven. 16/16 schema tests, tsc and eslint
 
 ## 4. Phase C — capture
 
-- ☐ **C1 — Node triggers + client-local frequency caps**, then the slide-in,
-  modal offer and sticky bar catalog entries.
-- ☐ **C2 — Multi-step forms**, with partial capture.
-- ☐ **C3 — Quiz + calculator**, with the outcome writing a real CRM score.
-- ☐ **C4 — Gated delivery** (signed expiring link to a private asset).
+- ☑ **C1 — Node triggers + client-local frequency caps.** _(2026-08-26)_
 
-## 5. Phase D — follow-through
+  **One behavior, not four.** `data-sx-reveal` joins the closed behavior
+  vocabulary alongside `dismiss`, `carousel` and the rest. The builder already
+  had every SHAPE an offer takes — a dialog, a lightbox, an announcement bar, a
+  popover — and no way to say WHEN one should appear, so every offer was a block
+  sitting in the page hoping to be scrolled past. Five triggers: `load`, `delay`,
+  `scroll`, `exit`, `return`.
 
-- ☐ **D1 — `sms.send` automation action**, built safe and shipped dark (§1 #3).
-- ☐ **D2 — The lead response clock.** First task in the slice: confirm whether
-  the existing CRM SLA policies (`list_crm_sla_policies`) reach an inbound web
-  lead or only a ticket. If they do, extend them rather than standing up a
-  parallel clock.
-- ☐ **D3 — The shipped funnel library.** Seven recipes. The slice that decides
-  whether the module feels finished.
+  **Exit intent is desktop-only and stays that way.** It reads a `mouseout` to a
+  null `relatedTarget` above the viewport, which is the address bar and the close
+  button. Pointer-coarse devices never fire it, and the usual mobile substitutes
+  (a back-button trap, a scroll-up guess) interrupt somebody who was not leaving.
 
-## 6. Phase E — the offer stack
+  **The element starts `hidden` in the MARKUP, and the behavior removes it.**
+  Hiding from script instead would flash the offer on every page load before the
+  timer it is waiting for, and would leave a no-JS visitor an offer they can see
+  and cannot dismiss. `hidden` was already a global allowed attribute for exactly
+  this reason — the element.ts comment describes the case.
 
-Its own design pass (§1 #4), after Phase C.
+  **The frequency cap fails OPEN.** A blocked or unreadable localStorage means
+  the offer shows, because an offer nobody ever sees is a worse failure than one
+  somebody sees twice, and a private-mode visitor must not silently lose the
+  site's promotion. The `return` trigger resolves the other way — uncertainty
+  means stay quiet, since showing a "welcome back" to a first-timer is the more
+  intrusive mistake. Both are one bit in storage, never a visit count or a
+  first-seen date, which would accumulate into the persistent anonymous identity
+  docs/151 §4 refuses.
 
-- ☐ **E1 — Order bump.**
-- ☐ **E2 — Post-purchase upsell.**
+  **Each offer is two behaviors on two nodes**, because a node carries one: the
+  outer frame is `dismiss` (closing it is remembered, so somebody who says no is
+  not asked again) and the inner card is `reveal`.
+
+  **The modal opens by clicking its own trigger.** A centered modal cannot be a
+  plain hidden element — `fixed inset-0` is denied by the compile allowlist as a
+  clickjacking guard, and weakening that for a promotion would be a poor trade.
+  So `opens` clicks the Dialog island's trigger and leaves the host hidden, which
+  gives a timed modal with no second dialog implementation, no new prop on the
+  island, and no stray trigger button left on the page. It clicks THROUGH the
+  wrapper the walker puts around a registry atom, because `part(node,'trigger')`
+  on a Dialog marks the wrapper rather than the button.
+
+  _The gap this turned up, which was not in the builder:_ **`/v1/public/signup`
+  had no funnel stitch.** That is the endpoint the Signup block posts to and the
+  one in the default starter, so a slide-in built from this catalog would have
+  captured addresses into CRM all week while its campaign reported nobody. It now
+  takes an optional `formNodeId` and runs the same
+  `findFormCaptureTarget` → `captureFunnelStage` pair the contact-form path got
+  in B3, after the subscribe and never inside it — the contact and its consent
+  record are the tenant's business, and a reporting nicety must not cost them a
+  subscriber. The node id is threaded from the walker (which already hands it to
+  `ContactForm`) through the island, the runtime and the fetch; the silica path
+  reads it off `data-sui-id` exactly as its contact branch already did.
+
+  _Files:_ `builder-render/src/behaviors/{reveal.ts,reveal.test.ts}` + registration
+  in `types.ts`/`index.ts`/`attrs.ts`, the mirror in `builder-schemas/catalog/_kit.ts`,
+  three entries in `catalog/marketing.ts`, and the signup chain across
+  `render-leaf.tsx`, `signup.tsx`, `runtime-context.tsx`,
+  `apps/site/lib/signup-client.ts`, `apps/site/components/{silica-behaviors,site-builder-runtime}.tsx`
+  and `api-rest/routes/v1/public/signup.ts`.
+
+  _Verified:_ 22 new behavior tests (98 in builder-render, 331 in builder-schemas,
+  including the cross-package drift test that pins the two behavior-name mirrors);
+  tsc + eslint clean on builder-render, builder-schemas, api-rest and apps/site;
+  every class the three entries author checked against the compile allowlist; and
+  **the cap test was made to go red** by removing the cap before it was trusted
+  green. `check:routes`, `check:boundaries`, prettier.
+
+  _Not clicked:_ no offer has been placed on a real page in a browser.
+
+- ☑ **C2 — Multi-step forms, with partial capture.** _(2026-08-26)_
+
+  **The steps come from the DOM, not from a config toggle.** Fields in a builder
+  form are author-composed nodes; by the time the island sees them they are React
+  children it cannot inspect. So a step is declared the way every structural part
+  in this system is — `part(node, 'item')`, lowered to `data-sx-item` — and read
+  back off the rendered form. `toc` already works this way. The consequence worth
+  knowing: **a form with no marked steps has one step**, which is the plain form
+  that already existed, so nothing about single-step forms changed.
+
+  **Hidden, not unmounted.** Going Back and forward again has to find what you
+  already typed still there, and unmounted inputs would have thrown it away. It
+  also means `new FormData(form)` on the final submit still sees every answer —
+  which is why the submit path needed no changes at all.
+
+  **Only the visible step is validated.** Validating the whole form would refuse
+  to advance because of a required field three screens ahead that nobody has been
+  shown, with no visible explanation for the refusal.
+
+  **The identity of an unfinished form is (tenant, form, email) — there is no
+  client-side id anywhere in it.** That was a deliberate choice over a draft
+  token: a durable per-visitor identifier is exactly what docs/151 §4 refuses,
+  and it is not needed, because the address they typed IS the identity. A reload
+  resumes the same row. A partial unique index enforces one row per unfinished
+  form (`WHERE status = 'partial'` — completed submissions may legitimately
+  repeat, and a plain unique index would forbid the same person contacting a
+  business twice). Prisma cannot express a `WHERE` on an index, so it is
+  hand-authored SQL like the RLS policies, with find-then-write and the index as
+  the race backstop.
+
+  **A partial NEVER mirrors to CRM, notifies, or autoresponds.** Somebody typed
+  an address and pressed Next: a real disclosure to that site, which is why the
+  row may exist — but not consent to be marketed to, and a feature that quietly
+  treats it as one is how lead capture becomes a complaint. It DOES enter its
+  funnel, because that is the tenant measuring their own site rather than
+  contacting a stranger. Reaching out is a deliberate act from the inbox.
+
+  **Partials are kept out of the default inbox and out of `total`.** An
+  unfiltered list returns finished submissions only; a half-filled form sitting
+  there looking like a message somebody sent is worse than not recording it,
+  because the tenant replies to something nobody sent. `submissionCounts` reports
+  `partial` separately so no "you have N enquiries" figure is silently inflated.
+
+  **The capture fires and is not awaited**, and `keepalive: true` — this is the
+  moment somebody abandons a form, and a normal fetch is cancelled on unload. It
+  never surfaces an error: a dropped partial costs the tenant one row, a visible
+  error costs them the lead.
+
+  _Files:_ `builder-render/src/{form-steps.ts,form-steps.test.ts}`, the island +
+  runtime, `builder/src/services/form-submit-service.ts` (`capturePartialSubmission`,
+  and `createFormSubmission` now PROMOTES a matching partial rather than landing
+  beside it), `POST /v1/public/forms/partial`, the site fetch + bridge, and a
+  `form_multi_step` catalog entry whose email field is on step ONE — ask for the
+  address last and there is nothing to keep.
+
+  _Verified:_ 16 new tests over the pure DOM functions (the island only
+  server-renders in tests, so the logic was factored out to be testable at all),
+  and **one was made to go red** by removing the forward-reach bound before it
+  was trusted green.
+
+- ☑ **C3 — Quiz + calculator, writing a real CRM score.** _(2026-08-26)_
+
+  **The weights are server-only, and that is the whole security of it.** A quiz
+  that decides somebody is a strong lead cannot let that somebody edit the
+  arithmetic. They ride in `FormDefinition.config` beside the recipient
+  addresses, and `scoring` was added to `CONTACT_FORM_SECRET_PROPS` so publish
+  strips it from the tree the browser gets — otherwise a visitor could read which
+  answers are worth what, and the "hot lead" handed to sales would be somebody
+  who read the source.
+
+  **The result is a real CRM score, never a private number.** `applyQuizPoints`
+  is a sibling of `adjust` rather than a caller of it, for two reasons that both
+  matter: a **zero-point result is still recorded** (`adjust` refuses a change
+  that would not move the number — right for a person pressing +10, wrong here,
+  because "they took it and matched nothing" is exactly what sales needs, and
+  recording silence makes an answered quiz indistinguishable from an unopened
+  one), and there is **no actor** (a visitor scored themselves; stamping a staff
+  id would attribute a judgement to somebody who never made one). It shows up in
+  `explain_crm_score` beside every other reason.
+
+  **It lives in the ACTION layer, not in CRM.** The first cut put it in
+  `@wizeworks/crm`'s lead-service and the typecheck refused it: CRM does not
+  depend on the builder's schemas, and it should not start. Reading a form
+  definition to write a CRM score is cross-module orchestration, which is what
+  the action layer is for — and `automation-actions` already depends on both
+  sides. Idempotent on a new `quizScoredAt` stamp written in the same
+  transaction as the score, because the action is retried and points added twice
+  would drift a lead upward every time a worker hiccuped.
+
+  **The arithmetic runs ONCE, on the server, for both audiences.** The submit
+  route returns the matched band (or the calculator's quantity) and the island
+  shows it instead of a generic thank-you — computed from the same weights that
+  set the CRM score, because two implementations of one calculation is how a
+  visitor comes to be shown one result while the sales team sees another.
+
+  **A calculator is the same machine with a multiplier**, deliberately not an
+  expression language: an author-written formula means shipping a parser and an
+  evaluator that run on submitted input, which is a lot of risk to buy a feature
+  nobody asked for, and every real "how much could you save" is a weighted sum
+  times a rate anyway. A zero rate reads as NO multiplier rather than "$0", so a
+  calculator whose rate was never filled in does not confidently report nothing
+  as if it were a measurement.
+
+  _Verified:_ 20 new tests on the pure scoring module, including that an
+  unanswered quiz scores 0 and still lands in a band, that a multi-select scores
+  every option it names, and that a config which drifted degrades to
+  not-a-quiz rather than throwing on a live submit. One test failure during the
+  run was MY arithmetic, not the code's.
+
+- ☑ **C4 — Gated delivery (signed, expiring link to a private asset).** _(2026-08-26)_
+
+  The mirror image of the form-upload token, as §7 said it would be: that one
+  lets an anonymous visitor PUT bytes we have not seen, this one lets a named
+  visitor GET bytes we already hold. Same signing secret, same format, and a
+  **distinct `typ`** so a delivery link can never be replayed as an upload URL or
+  the reverse — there is a test for exactly that, because both are validly signed
+  by the same key and only the type check separates them.
+
+  **The token carries the storage key inside its own signature.** Nothing in the
+  URL a visitor can edit names an object, so the bucket cannot be walked and a
+  token minted for one asset cannot be pointed at another without invalidating
+  itself.
+
+  **The file is EMAILED, never linked from the thank-you page.** That is the
+  difference between a gate and a formality: a download button on the success
+  page hands the file to anyone who types anything, and the business ends up
+  hosting a public file that also collects addresses.
+
+  **Seven days, and the email says so.** A link that never expires is a public
+  URL that takes one extra step to find; one that silently stops working reads as
+  a broken site. Saying "seven days" in the body makes the expiry a thing the
+  link did as promised, with an obvious remedy. `expired` is reported separately
+  from `bad-signature` for the same reason — one deserves "that ran out, ask
+  again" and the other deserves nothing at all.
+
+  **The base URL is required, not defaulted.** An email is read somewhere else
+  entirely, so a relative link in one is simply broken — and sending a broken
+  download is worse than sending nothing, because the visitor has already paid
+  with their address and now believes they were given something. Unset logs
+  loudly instead of sending.
+
+  _A gap the package's own CLAUDE.md caught:_ a new email template has **six**
+  sync points and I had done five. The missing one was
+  `events/src/types.ts`'s `EmailSendPayload.template` union. Also corrected: the
+  fixture URL hardcoded a brand domain, which passed only because the
+  brand-leak assertion strips URLs before comparing.
+
+  _Verified:_ 8 new token tests (tamper, wrong secret, expiry boundary,
+  cross-type replay, malformed, weak secret), 213 in `@wizeworks/email` including the
+  every-template coverage gate whose hardcoded count fired correctly and was
+  bumped 38 → 39, and 41 in the worker.
+
+- ☑ **D1 — `sms.send`, built safe and shipped dark.** _(2026-08-26)_
+
+  All four of §8's non-optional parts, because each of them is what makes the
+  rest honest.
+
+  **Shipped dark is a COLUMN, not an absence.** `sms_settings.enabled` defaults
+  false and the guard checks it before anything else, so a tenant who has not
+  asked for texting cannot be billed for one even if a provider credential
+  appears. Relying on the credential being absent would have made "safe" a
+  property of the deployment rather than of the code.
+
+  **Five ways not to send, and they are not collapsed.** `disabled`,
+  `suppressed`, `held`, `capped`, `failed` — each has a different fix, and a
+  single "not sent" sends an owner hunting for the wrong one. **Every one writes
+  a ledger row**: "we did not text them, and here is why" is an answer, and
+  silence is what makes somebody think the feature is broken when it is
+  protecting them.
+
+  **The ceiling is counted from the ledger and trips BEFORE the provider call**,
+  so a runaway automation costs nothing rather than costing whatever it sent
+  before somebody read the invoice. Only actual sends count against it — counting
+  refusals would let a misconfigured automation lock a tenant out of texting
+  without ever sending one.
+
+  **Quiet hours are the RECIPIENT's.** A shop in London texting Sydney at 10am is
+  reaching somebody at 9pm, so an unusable timezone returns null and is treated
+  as "cannot tell" rather than as the sender's clock. `nextSendableAt` walks
+  forward an hour at a time rather than doing local-clock arithmetic, which is
+  what makes it right across a DST boundary.
+
+  **A STOP outranks everything, including a transactional send**, because the
+  person told the CARRIER to stop rather than told our marketing department.
+  `marketing` scope exists for the softer case, where someone unticked a box and
+  a booking confirmation they asked for should still reach them.
+
+  _The part that made it real:_ **every existing SMS send was routed through the
+  guard.** Booking reminders and waitlist offers were calling the provider
+  directly, so a suppression table they ignored would have been a table with a
+  hole in it — worse than not having one, because everybody stops looking. Both
+  are now `transactional` sends through `sendTenantSms`, which does not make them
+  wait for quiet hours and does make them obey a STOP.
+
+  _Two things the segment counter taught me, both by failing:_ carriers bill per
+  UCS-2 **code unit**, so an astral emoji is two of the 70 and counting code
+  points undercounts exactly the messages most likely to be long; and `ò` is in
+  GSM 03.38 while `ô` is not, which is the kind of difference nobody can eyeball
+  — two versions of that test were wrong before the function was.
+
+  _Verified:_ 26 tests on the pure policy (wrapping quiet-hour windows, whose
+  clock, segment counting), tsc + eslint clean.
+
+- ☑ **D2 — The lead response clock.** _(2026-08-26)_
+
+  **The first task was the check, and it had an answer.** Do the existing CRM SLA
+  policies reach an inbound web lead? **Only if that lead opens a support
+  request.** `crm_ticket_sla_policies` relates to tickets, its targets key on
+  `Ticket.priority`, and a lead that becomes a contact or a deal has no clock —
+  which is the common case and the expensive one, because the lead nobody
+  answered is a sale rather than a support query.
+
+  So: **extend, not duplicate.** Those policies already own the hard part — a
+  timezone, a weekly pattern, holidays, an amber threshold, and a pure engine
+  that counts BUSINESS minutes correctly across a clock change. Standing up a
+  second clock would have meant a second implementation of business-hours
+  arithmetic for the two to disagree about. One new number on the policy that
+  already owns the calendar (`leadResponseMinutes`), two instants on the person.
+
+  **Stored, not derived on read.** "Who is about to go unanswered" has to be an
+  index scan rather than a calendar computation per row — and a policy edited in
+  March must not silently move what was promised in February.
+
+  **The clock stops on a RESPONSE, and a note is not one.** `email.sent`,
+  `email.replied`, `call`, `call.logged`, `meeting`, `meeting.booked`,
+  `ticket.replied` — never `note` (writing something down about a person is not
+  answering them), never `email.opened` (that is the customer acting), never
+  `email.received` (that STARTS a clock), never `call.missed`. A clock that
+  stopped on internal activity would measure how busy the desk looks.
+
+  **Null is never overdue.** A business that has published no promise about
+  response times is in a normal state, and writing a due date it never agreed to
+  would put every contact in a queue nobody asked for.
+
+  Exposed at `GET /v1/crm/reports/lead-response` as two numbers and a queue,
+  because "12 waiting" and "12 waiting, 4 of them late" are different mornings.
+
+- ☑ **D3 — The shipped funnel library.** _(2026-08-26)_
+
+  Seven recipes, forked on install, installed on module activation through the
+  same signal `seedSystemAutomations` rides — so a tenant who turns commerce on
+  later gets basket recovery then rather than never.
+
+  **Each recipe declares its owning module**, exactly like `SYSTEM_AUTOMATIONS`.
+  A commerce tenant gets basket recovery; a CMS-only publisher never sees a
+  campaign about baskets. A campaign about an event the tenant cannot emit is not
+  a partial campaign, it is a wrong one.
+
+  **No recipe starts with an anonymous `view` rung, and that is deliberate.** A
+  view rung has to be told which page counts, and a funnel with an unresolved one
+  is refused activation (B3). Seven campaigns that all landed saying "say which
+  page counts as 'Looked at the shop' before you turn it on" would have made the
+  library homework. Every recipe starts at the CAPTURE line, which needs no
+  configuration and works the moment it installs.
+
+  **A re-run never touches a campaign that already exists.** Not its name, its
+  steps, its goal, or whether it is running. A tenant who renamed "Basket
+  recovery" to "Chase the trolley" and turned it on has made it theirs, and a
+  seed that reconciled it back on a schedule nobody can see would undo their
+  work.
+
+  **Installed PER SITE**, because a funnel is scoped to one business and an owner
+  running two shops wants basket recovery measured separately for each rather
+  than pooled into a number that describes neither.
+
+  _Verified:_ 11 tests, including that every recipe passes the same stage
+  validator a tenant's own campaign is held to, and that no recipe names a module
+  slug the platform does not have — asserted against the REAL `ALL_MODULES`
+  rather than a copy in the test file, which would go stale and stop catching it.
+  The design pass ran first (2026-08-26) and is written up as
+  [docs/151 §12](151-funnels-module.md). It changed the shape of the slice, so its
+  finding is worth repeating here: **the two halves are very different problems
+  wearing one name.**
+
+- ☑ **E1 — Order bump.** _(2026-08-26)_
+
+  **It is not payment work at all.** A bump is shown DURING checkout, before
+  anything is charged, and taking it is `cart.addItem` — so pricing, discounts,
+  tax, inventory commitment and the eventual refund are all the cart's, exactly
+  as they are for anything else in the basket. The decision recorded it as
+  touching payment capture at the same time as everything else; checking that
+  against the code is what shortened it.
+
+  **The offer carries no price.** It is read from the variant every time. A price
+  on the offer would be a second place a product costs something, and the two
+  would disagree the first time somebody edited the product.
+
+  **Accepting takes an `impressionId`, never a variant id.** What is being
+  accepted is a SHOWING — and an endpoint that added any variant a caller named
+  would be a checkout that sells things at prices the shop never offered.
+
+  **One offer, never a stack.** The limit lives in the selector rather than being
+  left to whoever builds the screen: a checkout that asks four times is the
+  pattern this feature is known for and the reason people distrust it.
+
+- ☑ **E2 — Post-purchase upsell.** _(2026-08-26)_
+
+  **A SECOND ORDER, not an amendment**, and this is the call the whole slice
+  turns on. Appending a line to the completed order would mean re-running tax on
+  a document the customer already has a receipt for, changing a total they have
+  already seen, and a refund path that has to unpick which lines belonged to
+  which capture. A second order gets its own tax, its own inventory commitment,
+  its own receipt and its own refund — the two refund independently because they
+  always were two.
+
+  **It reuses the ordinary checkout path**: cart → session → charge → complete,
+  the same four steps every other order takes. A bespoke create-an-order function
+  would have been a second order-creation path, and the first thing to diverge
+  would be something nobody notices until a tax quarter closes.
+
+  **"One click" means the card is already on file**, nothing more. The customer
+  still presses the button, the charge is off-session through
+  `chargeStoredMethod` with the stored-credential chain (a merchant-initiated
+  charge that does not name the establishing transaction is soft-declined on a
+  perfectly good card), and the idempotency key is the SHOWING — so a double-tap
+  cannot become two charges.
+
+  **A decline leaves NO order behind.** The customer's real purchase is already
+  done, and a pending order for the merchant to chase is worse than an upsell
+  that simply did not happen. Each failure is its own outcome, because "your bank
+  declined it" and "we have no card saved" send a person to different places.
+
+  _A guard that caught something real:_ `merge-covers-every-customer-table`
+  failed on the two new SMS tables. A merge has to say what happens to a
+  suppression, and the answer matters — it is keyed on the phone number so the
+  STOP keeps binding either way, but the `customerId` pointer has to follow the
+  survivor, or their screen shows a person with no record of opting out while the
+  sends keep being refused.
 
 ## 7. Phase F — experiments
 
@@ -917,6 +1289,48 @@ reads as a shape at pane width, whether "Nothing to compare yet" is the right
 sentence in the place it lands, and whether the activation tooltip is discovered
 before the disabled button frustrates somebody. Worth a pass with the dev server
 up and a seeded campaign.
+
+### B5a — the patience field, found by counting files _(2026-08-26)_
+
+Brandon noticed after committing B5 that the sparx surface is 5 files against
+piggles' 17, and asked whether they were at parity. **The file count was not the
+defect** — the two sets are 1449 and 1567 lines, the exports map one to one, and
+the split is piggles' RULE #0.5 (250 lines a file, 50 a method) doing exactly
+what it is for, against sparx's explicit "there is no line-count target."
+
+Checking the question properly turned up a real gap, and it was in BOTH consoles:
+**`stallAfterHours` was in the `Funnel` type, in `UpdateFunnelBody`, accepted by
+the API and read by the abandonment sweep, and no surface anywhere rendered or
+edited it.** [[feedback_fetched_but_never_rendered]] again, and this time the
+value was already typed in the component's own hand.
+
+It matters more than a missing field usually would: that column is the ONLY
+thing deciding when `funnel.abandoned` fires for a given campaign. Without the
+control, every campaign silently runs on its kind's default and a B2B quote on a
+30-day cycle has no way to say so — the per-funnel column added in B4 was
+decoration.
+
+**The API sends `defaultStallHours`, not the resolved patience.** The first cut
+sent the resolved value and it was wrong: once a campaign has an override the
+resolved value IS the override, so the editor would have labelled its
+"use the usual" option with the number the owner had just chosen. What the
+editor needs is the kind's default, which is also the thing it must not mirror
+locally — `DEFAULT_STALL_HOURS` keeps one home and the client is told.
+
+**Hours are stored and never shown.** The sweep works in hours; nobody describes
+a fortnight's patience as 336 of them. `hoursLabel()` renders the span the way a
+person says it and the control offers a fixed set of spans, because the
+alternative — a number box — invites `0`, and a campaign that gives up instantly
+is not a thing anyone means.
+
+_Verified:_ tsc + eslint clean on `@sparx/workbench`, `@piggles/console`,
+`@wizeworks/funnels`, `@wizeworks/api-rest`; `check:routes` (340 surfaces),
+`check:events`, `check:boundaries`; and a 12/12 probe against the real database
+whose load-bearing assertion is that with an override of 720h set, the reported
+default is still 336h rather than an echo of the override.
+
+_Still not clicked_ — see below. This closed a gap a typecheck could not see;
+it did not close the one a browser would.
 
 ### Verification that was run, and how
 

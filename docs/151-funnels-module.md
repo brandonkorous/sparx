@@ -301,7 +301,83 @@ that tells a business owner their campaign failed when it has not started:
 The same rule governs `goalValueCents`: a value nobody set is rendered as "not
 set", never as `$0.00`.
 
-## 12. Both brands
+## 12. The offer stack
+
+The design pass §1 #4 asked for, done 2026-08-26 before any of it was built.
+
+The decision recorded it as "the only work that touches payment capture, tax,
+inventory commitment and refunds at once". Checking that against the code
+changed the shape of the slice, and the two halves turn out to be very different
+problems wearing one name.
+
+### 12.1 An order bump is not payment work at all
+
+An order bump is an offer shown DURING checkout, before anything is charged.
+Adding it to the sale is `cart.addItem` — and the cart already owns pricing,
+discounts, tax, inventory commitment and its share of a refund. Nothing about
+the payment path changes, because payment has not happened yet.
+
+So E1 is an OFFER SURFACE plus an existing call. The work is deciding what to
+show and recording whether it was taken, and the thing to be careful about is
+not money but honesty:
+
+- **The bump is priced from the real variant.** It never carries its own price
+  in the offer config. An offer that could set its own price would be a second
+  place a product costs something, and the two would disagree the first time
+  somebody edited the product.
+- **Declining is one click and is never pre-ticked.** A pre-selected add-on is a
+  charge somebody did not choose, and it arrives as a chargeback rather than as
+  feedback.
+- **Out of stock means no offer.** The bump is checked against the same
+  availability the product page uses, because an offer for something that cannot
+  ship is a checkout that fails after the customer said yes.
+
+### 12.2 A post-purchase upsell is a SECOND ORDER, not an amendment
+
+This is the call that makes E2 tractable, and it is worth stating plainly
+because the obvious implementation is the other one.
+
+Amending the completed order — appending a line and re-charging the difference —
+means re-running tax on a document the customer already has a receipt for,
+changing a total they have already seen, and building a refund path that has to
+unpick which lines belonged to which capture. Every one of those is a place to
+be wrong about money.
+
+**A second order linked to the first gets all of that for free.** Its own tax
+calculation, its own inventory commitment, its own receipt, its own refund. The
+link is `upsellOfOrderId`, which is PROVENANCE — it answers "where did this come
+from" for reporting, and nothing about fulfilment or money reads back through
+it.
+
+"One click" then means exactly one thing: **reusing the payment method already
+on file from the order a moment ago.** Not a new checkout, not a stored card the
+customer has to find, and not a charge without a decision — they still press the
+button. The platform already has saved payment methods and an order path that
+takes one; this is those two, pointed at a page that appears after checkout.
+
+### 12.3 What that leaves
+
+| Concern              | Order bump                       | Post-purchase upsell                  |
+| -------------------- | -------------------------------- | ------------------------------------- |
+| Payment capture      | untouched (pre-payment)          | a second capture, on a saved method   |
+| Tax                  | the cart's, recomputed as normal | the new order's own                   |
+| Inventory commitment | the cart's                       | the new order's own                   |
+| Refunds              | the order's, undivided           | per order, each refundable on its own |
+
+The row that matters is the last one. Under the amendment design a refund has to
+be told which part of one order it is refunding; under this one, the two orders
+refund independently because they always were two.
+
+### 12.4 What is deliberately NOT in scope
+
+- **A funnel of upsells.** One offer after checkout, not a chain. A second and
+  third page of offers is where this pattern earns its reputation, and a
+  business that wants one can build it from the offer surfaces in §7.
+- **Discounting the upsell below the product's price.** The offer shows the real
+  price. A "post-purchase only" price is a second price list, and §12.1's
+  reasoning applies twice as hard once money has already changed hands.
+
+## 13. Both brands
 
 The engine, the schema, the builder nodes, the automation action and the capture
 endpoints are platform code and live under `wizeworks/`. Piggles may not import

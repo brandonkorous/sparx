@@ -1,0 +1,102 @@
+// The offer stack (docs/151 §12, docs/152 E1 + E2).
+//
+// ONE table for both the order bump and the post-purchase upsell, because they
+// differ in exactly one thing: WHEN they are shown. Everything else about them
+// is the same question ("offer this variant to somebody buying that one"), and
+// two tables would mean two places to fix a pricing bug.
+
+/// An offer to show somebody who is buying something.
+model CommerceOffer {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  /// Which business's offer. A tenant running two shops is running two sets.
+  propertyId String @map("property_id") @db.Uuid
+
+  name String @db.VarChar(160)
+
+  /// `bump` — shown during checkout, before anything is charged. Adding it is a
+  ///          cart line, so tax, discounts, inventory and refunds are the cart's
+  ///          and NOTHING about payment changes.
+  /// `upsell` — shown after the order completes, and creates a SECOND ORDER
+  ///          rather than amending the first (docs/151 §12.2). That is what
+  ///          keeps tax, receipts and refunds correct: the two orders were
+  ///          always two, so they refund independently.
+  placement String @db.VarChar(20)
+
+  /// The variant being offered. Restricted rather than cascaded: deleting a
+  /// product that an offer points at should fail loudly, because the silent
+  /// alternative is an offer that renders as a blank card on a live checkout.
+  variantId String @map("variant_id") @db.Uuid
+
+  /// What the customer is told. The PRICE is deliberately not here — it is read
+  /// from the variant every time (docs/151 §12.1). An offer that carried its own
+  /// price would be a second place a product costs something, and the two would
+  /// disagree the first time somebody edited the product.
+  headline String  @db.VarChar(200)
+  blurb    String? @db.Text
+  /// The button. "Add it to my order" reads better than "Buy now" on a bump.
+  ctaLabel String  @default("Add this") @map("cta_label") @db.VarChar(60)
+
+  /// Only offer it when the basket already contains one of these variants. Empty
+  /// means "offer it to anybody" — a legitimate choice for a low-priced add-on
+  /// and a bad one for anything else, which is the author's call to make.
+  triggerVariantIds String[] @default([]) @map("trigger_variant_ids") @db.Uuid
+
+  /// Off by default. An offer that started appearing on a live checkout the
+  /// moment somebody saved a draft would be charging customers for a decision
+  /// nobody finished making.
+  active Boolean @default(false)
+
+  /// Lowest number wins when several offers match. One offer is shown, never a
+  /// stack of them: a checkout that asks four times is the pattern this feature
+  /// is known for and the reason people distrust it.
+  priority Int @default(100)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  impressions CommerceOfferImpression[]
+
+  @@index([tenantId, propertyId, placement, active, priority])
+  @@map("commerce_offers")
+}
+
+/// One showing, and what came of it.
+///
+/// Written when the offer is SHOWN, not when it is taken — otherwise the only
+/// thing on record is the yes, and "3 people accepted" with no denominator is
+/// not a conversion rate, it is a number. docs/152 has this as a recurring rule:
+/// never present absence as measurement.
+model CommerceOfferImpression {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  offerId  String @map("offer_id") @db.Uuid
+
+  /// Where it was shown. A bump names its checkout session, an upsell names the
+  /// order it followed. Exactly one is set.
+  checkoutSessionId String? @map("checkout_session_id") @db.Uuid
+  orderId           String? @map("order_id") @db.Uuid
+
+  /// Set when they said yes. Null is not "no" — it is "not yet, or never", and
+  /// the difference is why this is nullable rather than a boolean.
+  acceptedAt DateTime? @map("accepted_at") @db.Timestamptz
+
+  /// For an accepted UPSELL: the second order it created. Provenance only —
+  /// nothing about fulfilment or money reads back through it.
+  resultOrderId String? @map("result_order_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  offer  CommerceOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  /// One impression per offer per place it was shown, so a customer reloading
+  /// the payment step does not inflate the denominator.
+  @@unique([offerId, checkoutSessionId])
+  @@unique([offerId, orderId])
+  @@index([tenantId, offerId, createdAt(sort: Desc)])
+  @@map("commerce_offer_impressions")
+}

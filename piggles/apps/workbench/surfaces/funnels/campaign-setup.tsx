@@ -1,18 +1,22 @@
 'use client';
 
-// The setup half of a campaign: its name, its steps, and what counts as success.
+// The setup half of a campaign: its name, its steps, what counts as success,
+// and how long it waits before calling somebody gone.
 
 import {
   Field,
   FieldControl,
+  FieldDescription,
   FieldLabel,
   Heading,
   Input,
+  Select,
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
 import type { ConditionGroup } from '@wizeworks/automation-schemas';
 import { ConditionEditor } from '../automations/condition-editor';
+import { STALL_CHOICES, hoursLabel } from './presentation';
 import { StageLadderEditor } from './stage-editor';
 import type { FunnelStage } from './types';
 
@@ -21,6 +25,7 @@ export interface SetupDraft {
   description: string;
   stages: FunnelStage[];
   goal: ConditionGroup;
+  stallAfterHours: number | null;
 }
 
 export interface SetupHandlers {
@@ -28,6 +33,7 @@ export interface SetupHandlers {
   setDescription: (value: string) => void;
   setStages: (value: FunnelStage[]) => void;
   setGoal: (value: ConditionGroup) => void;
+  setStallAfterHours: (value: number | null) => void;
 }
 
 function Identity({
@@ -76,16 +82,77 @@ function Identity({
   );
 }
 
+function Patience({
+  draft,
+  on,
+  canEdit,
+  defaultStallHours,
+}: {
+  draft: SetupDraft;
+  on: SetupHandlers;
+  canEdit: boolean;
+  defaultStallHours: number | undefined;
+}) {
+  const chosen = draft.stallAfterHours;
+  return (
+    <div className="flex flex-col gap-2">
+      <Heading level={3} className="text-base font-semibold">
+        When to give up on somebody
+      </Heading>
+      <Text className="text-sm">
+        Somebody who starts and then goes quiet is not a failure yet, but at some point they are
+        gone. This is how long to wait before saying so, which is what any follow-up you have set up
+        waits for.
+      </Text>
+      <Field>
+        <FieldLabel>Give up after</FieldLabel>
+        <FieldControl
+          render={
+            <Select
+              color="module"
+              aria-label="Give up after"
+              disabled={!canEdit}
+              value={chosen === null ? 'default' : String(chosen)}
+              onValueChange={(value) => {
+                on.setStallAfterHours(value === 'default' ? null : Number(value));
+              }}
+              items={[
+                {
+                  value: 'default',
+                  label: defaultStallHours
+                    ? `The usual for this kind of campaign (${hoursLabel(defaultStallHours)})`
+                    : 'The usual for this kind of campaign',
+                },
+                ...STALL_CHOICES.map((hours) => ({
+                  value: String(hours),
+                  label: hoursLabel(hours),
+                })),
+              ]}
+            />
+          }
+        />
+        <FieldDescription>
+          {chosen === null
+            ? 'Every campaign of this kind waits the same amount of time. Choose a length to give this one its own.'
+            : 'This campaign waits a different amount of time to others of its kind, because you said so.'}
+        </FieldDescription>
+      </Field>
+    </div>
+  );
+}
+
 export function CampaignSetup({
   draft,
   on,
   canEdit,
   error,
+  defaultStallHours,
 }: {
   draft: SetupDraft;
   on: SetupHandlers;
   canEdit: boolean;
   error: string | null;
+  defaultStallHours: number | undefined;
 }) {
   return (
     <section className="flex flex-col gap-3">
@@ -116,6 +183,8 @@ export function CampaignSetup({
         </Text>
         <ConditionEditor value={draft.goal} onChange={on.setGoal} label="people" />
       </div>
+
+      <Patience draft={draft} on={on} canEdit={canEdit} defaultStallHours={defaultStallHours} />
 
       {error ? <Text className="text-danger text-sm">{error}</Text> : null}
     </section>

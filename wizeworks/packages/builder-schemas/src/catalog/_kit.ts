@@ -201,6 +201,7 @@ export const SX_BEHAVIOR_NAMES = [
   'counter',
   'dismiss',
   'toc',
+  'reveal',
 ] as const;
 export type SxBehaviorName = (typeof SX_BEHAVIOR_NAMES)[number];
 

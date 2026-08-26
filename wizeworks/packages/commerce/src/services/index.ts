@@ -105,5 +105,7 @@ export * as commerceSiteService from './site-commerce-service';
 
 // Phase 9 — reporting + dashboard home metrics
 export * as reportingService from './reporting-service';
+export * as offerService from './offer-service';
+export * as upsellService from './upsell-service';
 
 export { CommerceNotImplementedError, notImplemented } from './not-implemented';

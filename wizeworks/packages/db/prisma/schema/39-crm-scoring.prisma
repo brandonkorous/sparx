@@ -97,7 +97,9 @@ model ScoreEvent {
   /// for a decay row or a manual adjustment.
   reason String? @db.VarChar(255)
 
-  /// `rule` | `decay` | `manual` | `recompute`
+  /// `rule` | `decay` | `manual` | `recompute` | `quiz`
+  /// `quiz` is a visitor who scored themselves by answering (docs/152 C3) — it
+  /// carries no actorId, because nobody on staff made that judgement.
   source String @default("rule") @db.VarChar(20)
 
   actorId String? @map("actor_id") @db.Uuid

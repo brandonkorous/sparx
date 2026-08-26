@@ -870,7 +870,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     // The email-capture block (docs/51 §7). The island owns submit + the thank-you
     // state via the injected runtime (no-op in the canvas, capture endpoint live).
     case 'Signup':
-      return <SignupForm cta={str('cta') || undefined} />;
+      return <SignupForm nodeId={node.id} cta={str('cta') || undefined} />;
     // Wired form (docs/115). A leaf-with-children: the render walker passes the
     // author-composed field atoms as `children`, which the island wraps in a real
     // <form>. Only the live runtime's `submitForm` captures. node.class lands on the

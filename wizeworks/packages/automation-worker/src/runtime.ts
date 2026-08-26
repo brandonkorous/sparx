@@ -42,7 +42,9 @@ import {
   type TriggerEnvelope,
 } from '@wizeworks/automation';
 import { installCrmPubSubBridge } from '@wizeworks/crm/pubsub';
-import { prisma } from '@wizeworks/db';
+import { prisma, withTenant } from '@wizeworks/db';
+import { activeModules, isModuleEnabled } from '@wizeworks/modules';
+import { installFunnelLibrary } from '@wizeworks/funnels';
 import { drainDueEnrollments, type DrainResult } from '@wizeworks/email-sequences';
 import { createPublisher } from '@wizeworks/events';
 import type { Logger } from 'pino';
@@ -106,6 +108,44 @@ function activatedModule(data: unknown): string | undefined {
   return undefined;
 }
 
+/**
+ * Install the shipped funnel library for every one of this tenant's sites.
+ *
+ * PER SITE, not per tenant: a funnel is scoped to one business, and an owner
+ * running two shops wants basket recovery measured separately for each rather
+ * than pooled into a number that describes neither.
+ *
+ * Best-effort. Automation seeding is the job this handler exists for; a library
+ * install failing must not make the broker redeliver an envelope whose real work
+ * is already done.
+ */
+async function installLibraryFor(tenantId: string, logger: Logger): Promise<void> {
+  try {
+    if (!(await isModuleEnabled(tenantId, 'funnels'))) return;
+    const active = await activeModules(tenantId);
+    const sites = await withTenant({ tenantId }, (tx) =>
+      tx.property.findMany({ where: { tenantId }, select: { id: true }, take: 25 })
+    );
+    for (const site of sites) {
+      const result = await installFunnelLibrary(
+        { tenantId },
+        {
+          propertyId: site.id,
+          activeModules: active,
+        }
+      );
+      if (result.installed.length > 0) {
+        logger.info(
+          { tenantId, propertyId: site.id, installed: result.installed },
+          'installed funnel library recipes'
+        );
+      }
+    }
+  } catch (err) {
+    logger.warn({ tenantId, err }, 'funnel library install failed (automations are seeded)');
+  }
+}
+
 export async function ingest(envelope: TriggerEnvelope, logger: Logger): Promise<void> {
   const deps = makeDeps(logger);
 
@@ -123,6 +163,13 @@ export async function ingest(envelope: TriggerEnvelope, logger: Logger): Promise
       { tenantId: envelope.tenantId, module, count: installed.length },
       'seeded system automations on module activation'
     );
+    // The shipped funnel library (docs/152 D3) rides the same signal, for the
+    // same reason: a tenant who turns commerce on later should get basket
+    // recovery then, not never. Gated on the FUNNELS module rather than the
+    // activated one — the campaigns are funnels' content, and installing them
+    // for a tenant who has not turned funnels on would put rows in a module
+    // they are not paying attention to.
+    await installLibraryFor(envelope.tenantId, logger);
     return;
   }
 

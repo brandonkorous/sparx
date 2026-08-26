@@ -38,6 +38,7 @@
     "@wizeworks/automation-schemas": "workspace:*",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
+    "@wizeworks/modules": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

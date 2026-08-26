@@ -1,0 +1,125 @@
+// SMS delivery — consent, suppression, quiet hours, and a ceiling (docs/151 §8,
+// docs/152 D1).
+//
+// The module ships FULLY BUILT AND SWITCHED OFF. `SmsSettings.enabled` defaults
+// false and the provider credential is absent by default, so nothing here can
+// spend until a tenant deliberately turns it on. That is the point: a runaway
+// automation must hit a ceiling, not an invoice.
+
+/// A number that must not be texted again.
+///
+/// Deliberately its own table rather than a flag on Customer, for the same
+/// reason `EmailSuppression` is: a STOP applies to the NUMBER, and the number
+/// may belong to a person we have no contact record for, may be shared, and may
+/// arrive from the carrier before anyone has ever been a customer. A flag on a
+/// row that might not exist cannot hold that.
+model SmsSuppression {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// E.164, normalized on write. The comparison key — never a display format.
+  phone String @db.VarChar(20)
+
+  /// `marketing` | `all`. A STOP from the carrier means ALL: the person told the
+  /// network to stop, not our marketing department. `marketing` exists for the
+  /// softer case (they unticked a box) where a booking confirmation they asked
+  /// for should still reach them.
+  scope String @default("all") @db.VarChar(20)
+
+  /// stop | manual | invalid | complaint
+  reason String  @db.VarChar(20)
+  /// twilio | manual | import
+  source String? @db.VarChar(63)
+
+  /// Soft reference — a suppression outlives the contact it was linked to.
+  customerId String? @map("customer_id") @db.Uuid
+  note       String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, phone, scope])
+  @@index([tenantId, phone])
+  @@map("sms_suppressions")
+}
+
+/// One send attempt — the ledger.
+///
+/// Every attempt is written, INCLUDING the ones that were refused. A message
+/// held for quiet hours, dropped for a STOP, or blocked by the daily cap is a
+/// thing the tenant needs to be able to see: "we did not text them, and here is
+/// why" is an answer, and silence is not. It is also what the rate limit counts,
+/// which is why it has to be written before the provider call rather than after.
+model SmsMessage {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  customerId String? @map("customer_id") @db.Uuid
+  toPhone    String  @map("to_phone") @db.VarChar(20)
+  body       String  @db.Text
+
+  /// `sent` | `failed` | `suppressed` | `held` | `capped` | `disabled`
+  ///
+  /// Five ways not to send and they are NOT collapsed, because each has a
+  /// different fix: suppressed means never again, held means later today,
+  /// capped means the tenant is at their ceiling, disabled means nobody turned
+  /// SMS on. A single "not sent" would send an owner hunting for the wrong one.
+  status String @db.VarChar(20)
+
+  /// Human-readable detail for the status, shown as-is.
+  reason String? @db.VarChar(120)
+
+  /// `marketing` | `transactional`. Decides which suppressions and which quiet
+  /// hours apply — a booking confirmation somebody asked for is not a campaign.
+  scope String @default("marketing") @db.VarChar(20)
+
+  providerName String? @map("provider_name") @db.VarChar(40)
+  providerId   String? @map("provider_id") @db.VarChar(120)
+
+  /// What it will actually be billed as. Recorded because "why was the bill
+  /// that size" is answered by segments, not by message count — a 480-character
+  /// message is four texts.
+  segments Int? @db.SmallInt
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  sentAt    DateTime? @map("sent_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  /// The rate-limit read: today's attempts for this tenant.
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, toPhone, createdAt(sort: Desc)])
+  @@map("sms_messages")
+}
+
+/// Per-tenant SMS policy. One row per tenant, created on demand.
+model SmsSettings {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  /// OFF by default, and this is the switch the whole slice hangs on. Shipped
+  /// dark means a tenant who has not asked for SMS cannot be billed for one.
+  enabled Boolean @default(false)
+
+  /// Attempts per rolling 24 hours, per tenant. Trips BEFORE the provider call,
+  /// so a runaway automation costs nothing rather than costing whatever it sent
+  /// before somebody noticed the invoice.
+  dailyCap Int @default(200) @map("daily_cap")
+
+  /// Local-clock hours, inclusive start / exclusive end, in the RECIPIENT's
+  /// timezone. 21→9 means "not between 9pm and 9am where they are".
+  quietStartHour Int @default(21) @map("quiet_start_hour")
+  quietEndHour   Int @default(9) @map("quiet_end_hour")
+
+  /// Used when the recipient's own timezone is unknown. Not defaulted to the
+  /// TENANT's timezone on purpose: a shop in London texting someone in Sydney at
+  /// 10am London time is 9pm there, and guessing the sender's zone is how quiet
+  /// hours end up enforced against the wrong clock.
+  fallbackTimezone String @default("UTC") @map("fallback_timezone")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("sms_settings")
+}

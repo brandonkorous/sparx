@@ -557,6 +557,82 @@ export async function adjust(ctx: ServiceContext, rawInput: unknown): Promise<Sc
   });
 }
 
+// ─── a quiz result (docs/152 C3) ─────────────────────────────────────────────
+
+export interface QuizPointsInput {
+  customerId: string;
+  /** What the answers added up to. May be 0 — see below. */
+  points: number;
+  /** What the history entry says, in the business's own words. */
+  reason: string;
+}
+
+/**
+ * Apply a quiz outcome to a contact's score.
+ *
+ * A sibling of `adjust` rather than a caller of it, for two reasons that matter:
+ *
+ *  1. **A zero-point result is still recorded.** `adjust` refuses a change that
+ *     would not move the number, which is right for somebody pressing +10 by
+ *     hand and wrong here: "they took the quiz and matched nothing" is precisely
+ *     what the sales side needs to see, and recording silence would make an
+ *     answered quiz indistinguishable from one nobody ever opened.
+ *
+ *  2. **There is no actor.** A visitor scored themselves by answering; stamping
+ *     a staff member's id on it would attribute a judgement to somebody who
+ *     never made one.
+ *
+ * Like `adjust`, the points bank against the standing hand offset so the visible
+ * number moves by what the quiz was actually worth, and a later recompute does
+ * not quietly undo it — a quiz result is a judgement about the person, and a
+ * judgement keeps counting until somebody takes it back.
+ */
+export async function applyQuizPoints(
+  ctx: ServiceContext,
+  input: QuizPointsInput
+): Promise<ScoreResult> {
+  const now = new Date();
+  return withTenant(ctx, async (tx) => {
+    const state = await currentScore(tx, 'contact', input.customerId);
+    // Null is not zero: the contact is gone, and writing an event about nothing
+    // is worse than writing nothing.
+    if (state === null)
+      return { recordId: input.customerId, score: 0, previous: 0, changed: false, reasons: [] };
+
+    const previous = state.score;
+    const model = await activeModel(
+      tx,
+      'contact',
+      await recordProperty(tx, 'contact', input.customerId)
+    );
+    const score = clampScore(previous + input.points, model?.maxScore ?? 100);
+    // Banks what the score ACTUALLY moved, so points that hit the ceiling are not
+    // held in reserve to reappear later.
+    const moved = score - previous;
+
+    if (moved !== 0) {
+      await writeScore(tx, 'contact', input.customerId, score, now, state.offset + moved);
+    }
+
+    await tx.scoreEvent.create({
+      data: {
+        tenantId: ctx.tenantId,
+        modelId: model?.id ?? null,
+        objectKey: 'contact',
+        recordId: input.customerId,
+        delta: moved,
+        score,
+        reason: input.reason.slice(0, 255),
+        source: 'quiz',
+        actorId: null,
+        occurredAt: now,
+      },
+    });
+
+    return { recordId: input.customerId, score, previous, changed: moved !== 0, reasons: [] };
+  });
+}
+
 /** A record's score history, newest first — the "why is this 74" panel. */
 export async function history(
   ctx: ServiceContext,

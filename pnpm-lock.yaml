@@ -1173,6 +1173,9 @@ importers:
       '@wizeworks/inventory':
         specifier: workspace:*
         version: link:../inventory
+      '@wizeworks/sms':
+        specifier: workspace:*
+        version: link:../sms
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -1232,6 +1235,12 @@ importers:
       '@wizeworks/events':
         specifier: workspace:*
         version: link:../events
+      '@wizeworks/funnels':
+        specifier: workspace:*
+        version: link:../funnels
+      '@wizeworks/modules':
+        specifier: workspace:*
+        version: link:../modules
       pino:
         specifier: ^9.5.0
         version: 9.14.0
@@ -2350,6 +2359,9 @@ importers:
       '@wizeworks/events':
         specifier: workspace:*
         version: link:../events
+      '@wizeworks/modules':
+        specifier: workspace:*
+        version: link:../modules
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -3240,6 +3252,10 @@ importers:
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
   wizeworks/packages/sms:
+    dependencies:
+      '@wizeworks/db':
+        specifier: workspace:*
+        version: link:../db
     devDependencies:
       '@types/node':
         specifier: ^25.9.1

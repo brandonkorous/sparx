@@ -266,6 +266,21 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
     }),
   }),
   z.object({
+    template: z.literal('gated-delivery'),
+    ...TemplateMeta,
+    props: z.object({
+      siteName: z.string().nullable().optional(),
+      name: z.string().nullable().optional(),
+      subject: z.string().nullable().optional(),
+      message: z.string().nullable().optional(),
+      filename: z.string().min(1).max(255),
+      // The signed link. Minted by api-rest and carried verbatim — the worker
+      // never composes it, because the storage key lives inside the signature.
+      url: z.string().url(),
+      expiresInDays: z.number().int().positive().max(365),
+    }),
+  }),
+  z.object({
     template: z.literal('tool-result'),
     ...TemplateMeta,
     props: z.object({

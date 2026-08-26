@@ -290,6 +290,20 @@ export function invalidateModuleCache(tenantId?: string, module?: ModuleSlug): v
 
 /** Check whether a module is enabled for a tenant. Reads tenant.settings
  *  with a per-process map + 60s TTL. */
+/**
+ * Every module active for this tenant.
+ *
+ * Reads through the same per-module cache rather than a second query path, so
+ * it cannot disagree with `isModuleEnabled` — two answers to "is commerce on"
+ * is exactly the bug a helper like this invites.
+ */
+export async function activeModules(tenantId: string): Promise<ModuleSlug[]> {
+  const flags = await Promise.all(
+    ALL_MODULES.map(async (m) => [m, await isModuleEnabled(tenantId, m)] as const)
+  );
+  return flags.filter(([, on]) => on).map(([m]) => m);
+}
+
 export async function isModuleEnabled(tenantId: string, module: ModuleSlug): Promise<boolean> {
   const key = cacheKey(tenantId, module);
   const hit = cache.get(key);

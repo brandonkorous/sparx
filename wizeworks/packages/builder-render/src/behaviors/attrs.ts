@@ -66,8 +66,12 @@ export function sxAttrs(node: { props?: Record<string, unknown> }): Record<strin
 export interface BehaviorParam {
   key: string;
   label: string;
-  kind: 'bool' | 'number';
-  default: boolean | number;
+  kind: 'bool' | 'number' | 'choice' | 'text';
+  default: boolean | number | string;
+  /** `choice` only: the options offered, in order. */
+  options?: { value: string; label: string }[];
+  /** Shown under the control when the label alone cannot carry the meaning. */
+  help?: string;
 }
 export interface BehaviorDescriptor {
   name: BehaviorName;
@@ -136,5 +140,41 @@ export const BEHAVIOR_DESCRIPTORS: BehaviorDescriptor[] = [
     label: 'Table of contents',
     help: 'Builds links in [data-sx-panel] from the headings in [data-sx-spy] and tracks scroll.',
     params: [],
+  },
+  {
+    name: 'reveal',
+    label: 'Show it when…',
+    help: 'Reveals a hidden offer on a trigger, and remembers not to show it again too soon.',
+    params: [
+      {
+        key: 'on',
+        label: 'Show it',
+        kind: 'choice',
+        default: 'delay',
+        options: [
+          { value: 'load', label: 'As soon as the page opens' },
+          { value: 'delay', label: 'After a few seconds' },
+          { value: 'scroll', label: 'Once they have read part of the page' },
+          { value: 'exit', label: 'When they look like they are leaving' },
+          { value: 'return', label: 'Only on a repeat visit' },
+        ],
+      },
+      { key: 'delay', label: 'Seconds to wait', kind: 'number', default: 10 },
+      { key: 'scroll', label: 'How far down the page (%)', kind: 'number', default: 50 },
+      {
+        key: 'every',
+        label: 'Days before showing it again',
+        kind: 'number',
+        default: 7,
+        help: 'Set to 0 to show it every single visit.',
+      },
+      {
+        key: 'key',
+        label: 'Remember it as',
+        kind: 'text',
+        default: '',
+        help: 'A short name so this offer is remembered separately from your others.',
+      },
+    ],
   },
 ];

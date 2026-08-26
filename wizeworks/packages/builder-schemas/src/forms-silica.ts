@@ -25,6 +25,7 @@
 // Strictly safer than the legacy design, and it needs no migration: `FormDefinition`
 // already had a `config Json` column.
 
+import { isQuiz, readQuizScoring, type QuizScoring } from './quiz';
 import type { SilicaNode } from './site-sync';
 
 /** The host action ref silica's `contactSection` block dispatches on a valid submit
@@ -67,6 +68,30 @@ export interface SilicaFormConfig {
   autoresponder: boolean;
   autoresponderSubject: string;
   autoresponderMessage: string;
+  /** Quiz / calculator weights (docs/152 C3). Null on an ordinary form.
+   *
+   *  This is the ONE place they live. They are read from here on the submit path
+   *  and never from the request, because a quiz that decides somebody is a strong
+   *  lead cannot let that somebody edit the arithmetic — the same reason the
+   *  recipient addresses are a server-only column rather than a tree prop. */
+  scoring: QuizScoring | null;
+  /** The file to send somebody in exchange for their address (docs/152 C4).
+   *  Null on an ordinary form. Server-only, like the recipients and the quiz
+   *  weights: the storage key never reaches the published tree. */
+  delivery: GatedDelivery | null;
+}
+
+/** A gated asset: what to send, and what to say when sending it. */
+export interface GatedDelivery {
+  /** Storage key in the PRIVATE bucket. Never a public URL — see deliver.ts. */
+  key: string;
+  /** Filename the visitor's browser saves it as. */
+  filename: string;
+  mimeType: string;
+  /** Subject line of the delivery email. */
+  subject: string;
+  /** The line above the download button. */
+  message: string;
 }
 
 export const DEFAULT_SILICA_FORM_CONFIG: SilicaFormConfig = {
@@ -80,6 +105,8 @@ export const DEFAULT_SILICA_FORM_CONFIG: SilicaFormConfig = {
   autoresponderSubject: 'We received your message',
   autoresponderMessage:
     "Thanks for reaching out — we've received your message and will get back to you shortly.",
+  scoring: null,
+  delivery: null,
 };
 
 const bool = (v: unknown, dflt: boolean): boolean => (typeof v === 'boolean' ? v : dflt);
@@ -107,6 +134,33 @@ export function readSilicaFormConfig(raw: unknown): SilicaFormConfig {
     addToCrm: addToCrm || openDeal || openRequest,
     openDeal,
     openRequest,
+    // `isQuiz` is the gate rather than mere presence: a config carrying an empty
+    // weights bag is a plain form wearing a quiz's clothes, and must behave like
+    // the plain form it is.
+    // Complete or nothing: a delivery missing its key would send an email with a
+    // download button that 404s, which is worse than not offering the download.
+    delivery: (() => {
+      const d = c.delivery;
+      if (!d || typeof d !== 'object') return null;
+      const g = d as Record<string, unknown>;
+      const key = typeof g.key === 'string' ? g.key : '';
+      const filename = typeof g.filename === 'string' ? g.filename : '';
+      if (!key || !filename) return null;
+      return {
+        key,
+        filename,
+        mimeType: typeof g.mimeType === 'string' ? g.mimeType : 'application/octet-stream',
+        subject: str(g.subject, 'Here is your download'),
+        message: str(
+          g.message,
+          'Thanks for asking — here is the file you wanted. The link works for the next seven days.'
+        ),
+      };
+    })(),
+    scoring: (() => {
+      const parsed = readQuizScoring(c.scoring);
+      return isQuiz(parsed) ? parsed : null;
+    })(),
     autoresponder: bool(c.autoresponder, d.autoresponder),
     autoresponderSubject: str(c.autoresponderSubject, d.autoresponderSubject),
     autoresponderMessage: str(c.autoresponderMessage, d.autoresponderMessage),

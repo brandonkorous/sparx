@@ -527,6 +527,11 @@ model Tenant {
   broadcasts          Broadcast[]
   emailEvents         EmailEvent[]
   emailSuppressions   EmailSuppression[]
+  smsSuppressions     SmsSuppression[]
+  smsMessages         SmsMessage[]
+  smsSettings         SmsSettings?
+  commerceOffers      CommerceOffer[]
+  offerImpressions    CommerceOfferImpression[]
 
   // Legal & consent (docs/42)
   siteDocPlacements SiteDocPlacement[]

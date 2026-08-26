@@ -36,6 +36,7 @@ import {
   listFunnels,
   recordStage,
   stagesOf,
+  stallHoursOf,
   updateFunnel,
 } from './index.js';
 import { announceStage } from './announce.js';
@@ -104,7 +105,11 @@ const readTools: AnyMcpTool[] = [
       const { funnelId } = input as { funnelId: string };
       const funnel = await getFunnel(ctx, funnelId);
       if (!funnel) throw new Error(`No funnel with id ${funnelId}`);
-      return { ...funnel, stages: stagesOf(funnel) };
+      return {
+        ...funnel,
+        stages: stagesOf(funnel),
+        defaultStallHours: stallHoursOf({ kind: funnel.kind, stallAfterHours: null }),
+      };
     },
   },
   {
