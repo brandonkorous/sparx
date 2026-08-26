@@ -60,12 +60,24 @@ module "dns" {
   # into state by import blocks in the v1.227.1 release rather than created; the
   # import file was one-shot and has been removed now that it has applied.
 
-  # kanninja_dns_enabled is left at its default, which is OFF — unlike every
-  # other brand, and deliberately. kanNINJA is LIVE on GKE and its four records
-  # point at a Google address. The module writes them with `allow_overwrite`, so
-  # turning this on does not begin managing them, it REPOINTS them here. That is
-  # the DNS cutover itself, and it belongs in a scheduled window with the
-  # workloads already running in the `kanninja` namespace — not in whichever
-  # apply happens to come next. See docs/azure-migration-plan.md Phase 5 in the
-  # kanNINJA repository, and the variable's own description.
+  # THE kanNINJA CUTOVER SWITCH — flipped 2026-08-26.
+  #
+  # Until now this was left at its default of OFF, alone among the brands here,
+  # because kanNINJA was LIVE on GKE and its four records pointed at a Google
+  # address. The module writes them with `allow_overwrite`, so turning this on
+  # does not begin managing them — it REPOINTS them. Enabling it IS the cutover,
+  # which is why it waited for a window rather than riding along with whichever
+  # apply happened to come next.
+  #
+  # Preconditions, all verified rather than assumed, before this line changed:
+  #   - backend / frontend / mcp each 1/1 on aks-sparx-prod-cus
+  #   - the backend's readiness probe answering 200 from a real `select 1` as
+  #     kanninja_app against Azure Postgres
+  #   - 2,963 rows migrated from Supabase and reconciled, 49 foreign keys
+  #     re-applied, every profile linked to a Better Auth user
+  #   - Caddy already serving the four host blocks, with all four names
+  #     allow-listed in api-rest's PLATFORM_HOSTNAMES for on-demand TLS
+  #
+  # See docs/azure-migration-plan.md Phase 5 in the kanNINJA repository.
+  kanninja_dns_enabled = true
 }
