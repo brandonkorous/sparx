@@ -11,7 +11,6 @@
 import {
   CreatePageInput,
   ReorderPagesInput,
-  STARTER_PAGES,
   UpdatePageInput,
   blankPageTree,
   type BuilderNode,
@@ -22,6 +21,8 @@ import {
 } from '@wizeworks/builder-schemas';
 import type { BuilderPage, Prisma } from '@wizeworks/db';
 import { withTenant, type TxClient } from '@wizeworks/db';
+import { starterPages, type SiteChromeOptions } from '@wizeworks/silica-catalog';
+import type { Node as SilicaNode } from '@wizeworks/silicaui-html';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
@@ -120,6 +121,9 @@ function publishedSeo(row: BuilderPage) {
   };
 }
 
+const asSilicaJson = (tree: SilicaNode): Prisma.InputJsonValue =>
+  tree as unknown as Prisma.InputJsonValue;
+
 const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
   tree as unknown as Prisma.InputJsonValue;
 
@@ -144,9 +148,11 @@ async function assertValidRecordType(ctx: ServiceContext, recordType: string): P
   }
 }
 
-// The HOME starter — the slugless landing singleton, pulled from STARTER_PAGES so
-// an injected default is identical to a freshly-seeded site's home.
-const HOME_STARTER = STARTER_PAGES.find((s) => s.key === 'home');
+/** The HOME starter — the site-root singleton, taken from the SAME silica starter
+ *  `listOrSeed` seeds and the storefront falls back to, so an injected default is
+ *  identical to a freshly-seeded site's home and is editable on arrival. */
+const homeStarter = (modules: SiteChromeOptions) =>
+  starterPages(modules).find((p) => p.slug === '/' || p.slug === '') ?? null;
 
 // ── WHAT COUNTS AS THE HOME PAGE ────────────────────────────────────────────
 //
@@ -178,18 +184,23 @@ export function isHomeRow(row: { kind: string; slug: string | null }): boolean {
 }
 
 // Inject the slugless landing singleton (the site's `/`, getPublishedHome) when the
-// property has none. STARTER_PAGES seeds it on an EMPTY property, but any path that
+// property has none. `listOrSeed` seeds it on an EMPTY property, but any path that
 // creates pages FIRST — a blueprint shipping only collection templates, a fixture,
 // or deleting the home — would otherwise leave the property permanently home-less
 // (listOrSeed only seeds when the table is empty). A site with no `/` has no front
 // door and the Builder can't author one. Idempotent: a no-op once a slugless
 // singleton exists. Returns the row it created, or null if a home already existed.
-async function ensureHomeTx(tx: TxClient, ctx: PropertyContext): Promise<BuilderPage | null> {
+async function ensureHomeTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  modules: SiteChromeOptions
+): Promise<BuilderPage | null> {
   const existing = await tx.builderPage.findFirst({
     where: homeWhere(ctx.propertyId),
     select: { id: true },
   });
-  if (existing || !HOME_STARTER) return null;
+  const starter = homeStarter(modules);
+  if (existing || !starter) return null;
   // Land the home FIRST in the catalog — shift any existing pages down one.
   await tx.builderPage.updateMany({
     where: { propertyId: ctx.propertyId },
@@ -199,10 +210,12 @@ async function ensureHomeTx(tx: TxClient, ctx: PropertyContext): Promise<Builder
     data: {
       tenantId: ctx.tenantId,
       propertyId: ctx.propertyId,
-      name: HOME_STARTER.name,
-      kind: HOME_STARTER.kind,
+      name: starter.name,
+      kind: 'singleton',
       recordType: null,
-      draftTree: asJson(HOME_STARTER.tree),
+      slug: starter.slug,
+      draftTree: asJson(blankPageTree()),
+      silicaDraftTree: asSilicaJson(starter.root),
       position: 0,
     },
   });
@@ -224,9 +237,12 @@ async function ensureHomeTx(tx: TxClient, ctx: PropertyContext): Promise<Builder
  *  ships only collection templates, a fixture, a deleted home) can leave a site
  *  without a front door. Idempotent. Returns the created page, or null if a home
  *  already existed. */
-export function ensureHome(ctx: PropertyContext): Promise<BuilderPageDto | null> {
+export function ensureHome(
+  ctx: PropertyContext,
+  modules: SiteChromeOptions = {}
+): Promise<BuilderPageDto | null> {
   return withTenant(ctx, async (tx) => {
-    const home = await ensureHomeTx(tx, ctx);
+    const home = await ensureHomeTx(tx, ctx, modules);
     return home ? toDto(home) : null;
   });
 }
@@ -235,7 +251,10 @@ export function ensureHome(ctx: PropertyContext): Promise<BuilderPageDto | null>
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Also heals a
  *  home-less property (pages but no slugless singleton) by injecting the default
  *  home, so every site that's ever opened has a `/`. Idempotent. */
-export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageSummaryDto[]> {
+export function listOrSeed(
+  ctx: PropertyContext,
+  modules: SiteChromeOptions = {}
+): Promise<BuilderPageSummaryDto[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
@@ -246,7 +265,7 @@ export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageSummaryDto[
       // Pages exist but none is a home (e.g. a blueprint shipped only collection
       // templates) — inject the default landing page, then re-read in order.
       const hasHome = rows.some(isHomeRow);
-      if (!hasHome && (await ensureHomeTx(tx, ctx))) {
+      if (!hasHome && (await ensureHomeTx(tx, ctx, modules))) {
         const healed = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
           select: PAGE_SUMMARY_SELECT,
@@ -257,14 +276,33 @@ export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageSummaryDto[
       return rows.map(toSummaryDto);
     }
 
+    // SILICA rows, not `STARTER_PAGES`.
+    //
+    // The legacy tier is being retired (`ops:retire-legacy-tier`), and this seed was
+    // still minting new sites into it. A legacy-only property is half broken in a way
+    // that is easy to miss because each half looks fine alone: the storefront serves
+    // the code starter (only silica reaches the renderer), the editor lists the rows
+    // (only silica reaches the page switcher, so each one opens EMPTY), and no screen
+    // says the two are different sites. Every path that creates pages FIRST — a
+    // blueprint, a fixture — already writes silica; this branch, reached by a fresh
+    // property and by the one after `reset`, was the last door back into the old tier.
+    //
+    // Record pages are deliberately NOT seeded here: `load`'s `ensureRecordPagesTx`
+    // composes them once a site exists, and seeding them from two places is how a
+    // property ends up with two rows claiming `/products/:handle`.
+    const starters = starterPages(modules);
     await tx.builderPage.createMany({
-      data: STARTER_PAGES.map((s, i) => ({
+      data: starters.map((p, i) => ({
         tenantId: ctx.tenantId,
         propertyId: ctx.propertyId,
-        name: s.name,
-        kind: s.kind,
-        recordType: s.recordType ?? null,
-        draftTree: asJson(s.tree),
+        name: p.name,
+        kind: 'singleton',
+        recordType: null,
+        slug: p.slug,
+        // The legacy column stays EMPTY rather than absent: `reset` reads a null
+        // `publishedTree` as "silica-only, safe to delete", which is what these are.
+        draftTree: asJson(blankPageTree()),
+        silicaDraftTree: asSilicaJson(p.root),
         position: i,
       })),
     });
@@ -276,7 +314,7 @@ export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageSummaryDto[
       action: 'builder.pages.seeded',
       entityType: 'BuilderPage',
       entityId: null,
-      diff: { after: { count: STARTER_PAGES.length } },
+      diff: { after: { count: starters.length } },
     });
     const seeded = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },

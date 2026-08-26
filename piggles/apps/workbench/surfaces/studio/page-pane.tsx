@@ -107,6 +107,7 @@ function PagePaneBody({
         <PageStatus
           dirty={unsaved}
           stored={state.stored}
+          starter={state.starter}
           unpublished={doc.unpublished}
           publishedAt={doc.publishedAt}
           error={state.error}
@@ -157,12 +158,14 @@ function SavePage({ state, unsaved }: { state: PageDocumentState; unsaved: boole
 function PageStatus({
   dirty,
   stored,
+  starter,
   unpublished,
   publishedAt,
   error,
 }: {
   dirty: boolean;
   stored: boolean;
+  starter: boolean;
   unpublished: boolean;
   publishedAt: string | null;
   error: string | null;
@@ -170,6 +173,9 @@ function PageStatus({
   const catchingUp = useJustPublished(publishedAt);
 
   if (error) return <span className="text-error">{error}</span>;
+  // "Nothing saved" was read as "nothing here", and it was printed over the page
+  // her visitors were reading — the starter the site serves until she saves her own.
+  if (starter) return <span>This is the page your visitors see. Save it to make it yours.</span>;
   if (!stored) return <span>Nothing saved on this page yet.</span>;
   if (dirty) return <span>Not saved yet</span>;
   if (unpublished) return <span>Saved. Visitors still see the last published version.</span>;

@@ -63,9 +63,13 @@ export function MadeToOrderSummary({
           collect.
         </p>
       ) : null}
+      {/* Names no room. "Takes payment in person" was printed in the basket of a
+          mail-order maker who has no counter and posts everything (issue 215) —
+          manual payments means the owner records it by hand, which says nothing
+          about where the money changes hands. */}
       {!takesMoneyHere && paymentMode === 'in_person' && madeToOrder.balanceCents > 0 ? (
         <p className="text-base-content m-0 text-sm">
-          This shop takes payment in person, so nothing is charged on this website.
+          This shop does not take card payments on this website, so nothing is charged here.
         </p>
       ) : null}
     </div>

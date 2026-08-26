@@ -61,10 +61,13 @@ function readyLine(madeToOrder: PublicMadeToOrder, locale?: string): string | nu
  * What the shopper's money does, which depends on whether this website can take
  * any.
  *
- * A shop on MANUAL payments settles in the room: no card is charged here, so
- * "Pay $30.00 today" would describe a transaction that does not happen. A shop
- * with no working gateway at all cannot say anything about money either, and
- * saying nothing is the honest answer rather than a promise it cannot keep.
+ * A shop on MANUAL payments charges no card here, so "Pay $30.00 today" would
+ * describe a transaction that does not happen. It does NOT follow that the money
+ * changes hands over a counter — a mail-order maker with no shop is on manual
+ * payments too — so this line says what is true of every one of them and names
+ * no room (issue 215). A shop with no working gateway at all cannot say anything
+ * about money either, and saying nothing is the honest answer rather than a
+ * promise it cannot keep.
  */
 function depositLine(
   madeToOrder: PublicMadeToOrder,
@@ -74,7 +77,7 @@ function depositLine(
   if (deposit.type === 'none') return null;
   if (paymentMode === 'unavailable') return null;
   if (paymentMode === 'in_person') {
-    return 'This shop takes payment in person, so nothing is charged on this website.';
+    return 'This shop does not take card payments on this website, so nothing is charged here.';
   }
   const money = (cents: number) => formatMoney(cents, currency, locale);
   if (deposit.type === 'amount') {

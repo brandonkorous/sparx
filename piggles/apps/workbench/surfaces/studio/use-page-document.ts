@@ -125,6 +125,9 @@ export interface PageDocumentState extends PageWrites {
   loading: boolean;
   /** False until this page has a saved body — what is on screen is an empty start. */
   stored: boolean;
+  /** What is on screen is the page the SITE is serving, not the author's own work.
+   *  Unsaved, but not blank — the one state the pane must not call empty. */
+  starter: boolean;
   /** The page id could not be loaded — deleted, or from another site. */
   missing: boolean;
 }
@@ -148,6 +151,7 @@ export function usePageDocument(pageId: string | null): PageDocumentState {
     store,
     loading: Boolean(pageId) && page.isPending,
     stored,
+    starter: !stored && Boolean(page.data?.starter),
     missing: Boolean(pageId) && page.isError,
   };
 }

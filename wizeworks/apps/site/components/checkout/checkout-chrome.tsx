@@ -125,7 +125,9 @@ export function Confirmation({
       <p className="text-base-content m-0">
         Thank you! Your order <strong>{orderNumber}</strong> has been placed.{' '}
         {paymentMode === 'in_person'
-          ? 'Keep this order number — you pay when you collect.'
+          ? collecting
+            ? 'Keep this order number — you pay when you collect.'
+            : 'Keep this order number — we’ll be in touch about paying.'
           : 'A confirmation email is on its way.'}
       </p>
       {ready ? (

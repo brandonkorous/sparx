@@ -39,6 +39,8 @@ export interface PageRow extends Omit<PageSummary, 'published'> {
   root: Node;
   /** False when the page has no saved body yet — this is an empty one to start from. */
   stored: boolean;
+  /** True when `root` is the starter body the live site is already serving. */
+  starter: boolean;
   unpublished: boolean;
 }
 

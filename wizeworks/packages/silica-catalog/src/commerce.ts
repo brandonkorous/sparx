@@ -538,28 +538,64 @@ export function versionPicker(): Node {
     el('fieldset', 'flex flex-col gap-2', {
       children: [
         el('legend', 'text-base font-medium text-base-content', { text: 'Choose yours' }),
+        // The container renders ONCE and its children repeat, so both branches below
+        // are authored per version and the engine drops whichever one does not apply.
         repeat(
           el('div', 'flex flex-wrap gap-x-4 gap-y-2', {
-            children: [
-              el('label', 'flex items-center gap-2 text-base text-base-content', {
-                children: [
-                  bindAttr(
-                    el('input', 'radio', {
-                      attrs: { type: 'radio', name: 'variantId', required: 'required' },
-                    }),
-                    'value',
-                    'id'
-                  ),
-                  bind(el('span', '', { text: '' }), 'label'),
-                ],
-              }),
-            ],
+            children: [versionChoice(false), versionChoice(true)],
           }),
           'versions'
         ),
       ],
     }),
     'versions'
+  );
+}
+
+/**
+ * One version's radio — the buyable branch, or the sold-out one.
+ *
+ * A size that is gone must be UNPICKABLE, not merely annotated. It was neither: every
+ * version rendered the same enabled radio, so a shopper could select "XS · Bone, sold
+ * out", press Add to cart, and learn from a red line under the button that they could
+ * not have it (issue 214). The words were in the label the whole time — the control
+ * simply did not act on them.
+ *
+ * `disabled` is what makes it impossible rather than discouraged, and it is also what
+ * makes the storefront's "Sorry, this item just sold out." true again: with the option
+ * unpickable, that sentence can only reach a shopper in the race it describes.
+ *
+ * The sold-out radio binds NOTHING. A node carries one binding and the enabled radio
+ * spends its on `value`; a disabled control never posts, so it has nothing to carry.
+ * That is what leaves the branch free to be gated on `soldOut` instead.
+ *
+ * The buyable branch is NEGATED rather than gated on a `sellable` twin, which means the
+ * host must publish `soldOut` on EVERY version, false included. An absent ref is
+ * UNKNOWN to the engine, not false — it keeps the node and stops resolving the bindings
+ * underneath it, so leaving the flag off the in-stock versions drew fourteen radios
+ * with no words beside them. The screen caught that; the types could not.
+ */
+function versionChoice(soldOut: boolean): ElementNode {
+  const input = el('input', 'radio', {
+    attrs: soldOut
+      ? { type: 'radio', name: 'variantId', disabled: true }
+      : { type: 'radio', name: 'variantId', required: 'required' },
+  });
+  return visibleWhen(
+    el(
+      'label',
+      soldOut
+        ? 'flex cursor-not-allowed items-center gap-2 text-base text-base-content line-through'
+        : 'flex items-center gap-2 text-base text-base-content',
+      {
+        children: [
+          soldOut ? input : bindAttr(input, 'value', 'id'),
+          bind(el('span', '', { text: '' }), 'label'),
+        ],
+      }
+    ),
+    'soldOut',
+    !soldOut
   );
 }
 

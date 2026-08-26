@@ -337,6 +337,7 @@ export function CheckoutFlow({
           <PaymentStep
             tenantSlug={tenantSlug}
             session={session}
+            collecting={collectedOrder.current}
             onBack={() => setStep('shipping')}
             onPaid={handlePaid}
             createIntent={() =>

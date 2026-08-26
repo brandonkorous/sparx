@@ -28,7 +28,11 @@ import { pageService, siteService } from '@wizeworks/builder';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
-import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import {
+  requireBuilderModule,
+  siteChromeOptions,
+  toBuilderContext,
+} from '../../../lib/builder-context.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
@@ -38,7 +42,10 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/pages', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const pages = await pageService.listOrSeed(await toBuilderContext(request));
+    const ctx = await toBuilderContext(request);
+    // A first-call seed writes the starter the tenant's OWN modules call for — no
+    // Shop page for a business that does not sell, no Book page without Scheduling.
+    const pages = await pageService.listOrSeed(ctx, await siteChromeOptions(ctx.tenantId));
     return ok({ pages });
   });
 
@@ -113,7 +120,10 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const page = await siteService.loadPage(await toBuilderContext(request), id);
+    const ctx = await toBuilderContext(request);
+    // The module flags decide WHICH starter body a page with none of its own opens
+    // on — the same read `GET /v1/builder/site` does, for the same reason.
+    const page = await siteService.loadPage(ctx, id, await siteChromeOptions(ctx.tenantId));
     return ok(page);
   });
 

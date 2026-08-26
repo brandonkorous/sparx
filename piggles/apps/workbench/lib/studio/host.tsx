@@ -22,6 +22,7 @@ import { useMediaPicker, type PickedAsset } from '../../surfaces/cms/media-picke
 import { useActivePropertyId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { HostSettingsPanel } from '../../surfaces/studio/host-settings-panel';
+import { ProductsSourcePanel } from '../../surfaces/studio/products-source-panel';
 import { PieceSettingsPanel } from '../../surfaces/studio/piece-settings-panel';
 import { EmailTagsPanel } from '../../surfaces/studio/email-tags-panel';
 import { catalogFor } from './catalog-scope';
@@ -172,11 +173,19 @@ function buildHost({
     ...(emailColors ? { emailColors } : {}),
     emailCatalog: () => EMAIL_CONTENT_BLOCKS,
     // The document's own settings at the root; below it, a live region's declared
-    // props. Without the second half a core's `props` were metadata nothing drew,
-    // so a map could be placed and never told where it is.
+    // props and — on a product listing — which products it shows. Without the second
+    // half a core's `props` were metadata nothing drew, so a map could be placed and
+    // never told where it is; without the third, every Products block anyone dropped
+    // was the whole catalog for good (issue 211).
     inspectorPanels: (node, ctx) => {
       if (ctx.isRoot) return panelFor(ctx.doc.kind);
-      return node ? <HostSettingsPanel node={node} /> : null;
+      if (!node) return null;
+      return (
+        <>
+          <HostSettingsPanel node={node} />
+          <ProductsSourcePanel node={node} />
+        </>
+      );
     },
     // Platform policy, not a tenant setting: a viewport variant makes the device
     // toggle lie about the page, and no business benefits from opting into that.

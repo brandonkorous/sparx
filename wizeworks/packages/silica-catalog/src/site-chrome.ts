@@ -35,7 +35,7 @@
 // cookie-backed, SSR-no-flash, policy-gated switch. We take the block's SHAPE and
 // keep our controls.
 
-import { bind, el, type Node } from '@wizeworks/silicaui-html';
+import { bind, el, type ElementNode, type Node } from '@wizeworks/silicaui-html';
 // `/blocks` is its own entry point — the composed sections live behind a subpath so
 // a consumer that only needs the node primitives doesn't pull 44 block trees in.
 import { getBlock } from '@wizeworks/silicaui-html/blocks';
@@ -75,8 +75,10 @@ export type NavbarVariant = keyof typeof NAVBAR_VARIANTS;
  *    · `newsletter` — silica's `footer_newsletter`: a working "join our list" subscribe form
  *      leading two link columns, over a copyright bar. The editorial (Kith-family) footer —
  *      a capture up front, small-caps columns, a `© <business name>` bottom bar. It has NO
- *      third column, so the legal-links host core has no slot here; a tenant's published legal
- *      pages stay reachable from the builder-authored body, not this block. */
+ *      third column, so `ensureLegalLinks` APPENDS the core into the link grid rather than
+ *      filling a slot. This line used to say the legal pages "stay reachable from the
+ *      builder-authored body, not this block" — which read as a decision and was in fact a
+ *      site with no privacy link anywhere, and stood for a while after that was fixed. */
 export const FOOTER_VARIANTS = {
   columns: 'footer',
   newsletter: 'footer_newsletter',
@@ -468,12 +470,48 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
 function ensureLegalLinks(footer: Node): Node {
   if (typeof footer === 'string' || footer.kind !== 'element') return footer;
   if (containsHostCore(footer, HOST_KEYS.siteLegalLinks)) return footer;
+  return addAt(
+    footer,
+    columnHome(footer),
+    hostCore(HOST_KEYS.siteLegalLinks, 'flex flex-col gap-3')
+  );
+}
+
+/**
+ * WHERE the appended column goes — beside the other columns, not after the footer.
+ *
+ * Appending to the FOOTER's own children put it outside the container that carries
+ * the band's background and padding, so on the newsletter variant the legal links
+ * rendered as a bare strip below the footer, on the page's own background, in a
+ * different type size to the columns they belong with (issue 218). The safety net
+ * worked and the result did not look like part of the site.
+ *
+ * The last grid inside the footer is the one holding the link columns in every
+ * variant that ships. Falling back to the first container keeps a future variant
+ * with no grid at all inside the band, which is the property that actually matters.
+ */
+function columnHome(footer: ElementNode): ElementNode {
+  let home: ElementNode | null = null;
+  const walk = (node: Node | string): void => {
+    if (typeof node === 'string' || node.kind !== 'element') return;
+    if (` ${node.class ?? ''} `.includes(' grid ')) home = node;
+    (node.children ?? []).forEach(walk);
+  };
+  (footer.children ?? []).forEach(walk);
+  const container = (footer.children ?? []).find(
+    (child): child is ElementNode => typeof child !== 'string' && child.kind === 'element'
+  );
+  return home ?? container ?? footer;
+}
+
+/** Put `child` inside `target`, wherever `target` sits in `root`. */
+function addAt(root: ElementNode, target: ElementNode, child: Node): ElementNode {
+  if (root === target) return { ...root, children: [...(root.children ?? []), child] };
   return {
-    ...footer,
-    children: [
-      ...(footer.children ?? []),
-      hostCore(HOST_KEYS.siteLegalLinks, 'flex flex-col gap-3'),
-    ],
+    ...root,
+    children: (root.children ?? []).map((node) =>
+      typeof node === 'string' || node.kind !== 'element' ? node : addAt(node, target, child)
+    ),
   };
 }
 

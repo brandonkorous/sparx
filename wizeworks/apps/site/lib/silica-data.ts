@@ -264,7 +264,7 @@ function productVersions(
   p: PublicProduct,
   currency: string,
   locale: string
-): { id: string; label: string }[] {
+): { id: string; label: string; soldOut: boolean }[] {
   if (p.variants.length < 2) return [];
   // In the product's OWN option order — Size then Color, every time. Reading
   // `optionValueIds` in its stored order gave "XS · Clay" beside "Bone · XS" in one
@@ -302,7 +302,12 @@ function productVersions(
     if (showPrice)
       parts.push(formatMoney(variant.yourPriceCents ?? variant.priceCents, currency, locale));
     if (!variant.inStock) parts.push('sold out');
-    return { id: variant.id, label: parts.join(', ') };
+    // PRESENT and false, NOT absent — the one place in this file where the
+    // absent-rather-than-false convention is wrong. The picker gates its buyable
+    // radio on `soldOut` being falsy, and an ABSENT ref is UNKNOWN to the engine,
+    // not false: it keeps the node AND leaves the bindings inside it unresolved, so
+    // every in-stock size rendered a radio with no words beside it (issue 214).
+    return { id: variant.id, label: parts.join(', '), soldOut: !variant.inStock };
   });
 }
 
@@ -690,15 +695,23 @@ export async function buildSilicaHost(
           }
           if (p.featured) {
             // "Featured" = products the merchant tagged `featured` (a no-schema curation
-            // signal on the existing `tags` field); newest-few fallback so the rail is
-            // never an empty heading when nothing is tagged yet.
-            const flagged = items.filter((i) =>
-              i.tags?.some((t) => t.toLowerCase() === 'featured')
-            );
+            // signal on the existing `tags` field), and NOTHING ELSE.
+            //
+            // It used to fall back to the whole catalog when nothing was tagged, so the
+            // rail would not be an empty heading. That hazard no longer exists: issue 187
+            // put the heading inside `headingRow`, so a curation with nothing to say now
+            // hides its heading along with itself. What the fallback did instead was put
+            // the catalog on the page TWICE — on Juniper Row's homepage, the same seven
+            // garments in the same order, the second time under a heading claiming a
+            // curation nobody had made. A rail labelled "the ones you have featured"
+            // showing the ones she has not is the plainest kind of untrue.
             setAtPath(
               root,
               'commerce.featured',
-              bounded(flagged.length > 0 ? flagged : items, 'commerce.featured')
+              bounded(
+                items.filter((i) => i.tags?.some((t) => t.toLowerCase() === 'featured')),
+                'commerce.featured'
+              )
             );
           }
           if (needs.productPins.length > 0) {

@@ -291,10 +291,12 @@ describe('buy_box — self-scoping product detail', () => {
   describe('the version picker', () => {
     const SIZED = {
       ...PRODUCT,
+      // `soldOut` on EVERY version, false included: an absent ref is UNKNOWN to the
+      // engine, which keeps the node and stops resolving what is inside it.
       versions: [
-        { id: 'var_s', label: 'S · Clay' },
-        { id: 'var_m', label: 'M · Clay' },
-        { id: 'var_l', label: 'L · Clay, sold out' },
+        { id: 'var_s', label: 'S · Clay', soldOut: false },
+        { id: 'var_m', label: 'M · Clay', soldOut: false },
+        { id: 'var_l', label: 'L · Clay', soldOut: false },
       ],
     };
     const sized: ResolveHost = {
@@ -331,6 +333,55 @@ describe('buy_box — self-scoping product detail', () => {
       expect(html).not.toContain('Choose yours');
       expect(html).not.toContain('type="radio"');
       expect(html).toContain('value="var_solo_default"');
+    });
+
+    // A size that is gone has to be UNPICKABLE, not merely annotated (issue 214). It
+    // said "sold out" in its own label and was selectable anyway, so the only way to
+    // learn was to press Add to cart and be refused under the button.
+    describe('a version that is sold out', () => {
+      const GONE = {
+        ...PRODUCT,
+        versions: [
+          { id: 'var_s', label: 'S · Clay', soldOut: false },
+          { id: 'var_m', label: 'M · Clay', soldOut: false },
+          { id: 'var_l', label: 'L · Clay, sold out', soldOut: true },
+        ],
+      };
+      const gone: ResolveHost = {
+        ...host,
+        resolveCollection: (ref, scope) =>
+          ref === 'product' ? [GONE] : (host.resolveCollection?.(ref, scope) ?? []),
+      };
+
+      it('cannot be chosen', () => {
+        const html = toHtml(resolveTree(buyBox(), gone));
+        expect(html).toMatch(/type="radio"[^>]*disabled/);
+        expect((html.match(/disabled/g) ?? []).length).toBe(1);
+      });
+
+      it('still says so in words, so the size reads as gone rather than missing', () => {
+        const html = toHtml(resolveTree(buyBox(), gone));
+        expect(html).toContain('L · Clay, sold out');
+        expect((html.match(/type="radio"/g) ?? []).length).toBe(3);
+      });
+
+      it('carries no variant id, so nothing can post it', () => {
+        const html = toHtml(resolveTree(buyBox(), gone));
+        expect(html).toContain('value="var_s"');
+        expect(html).toContain('value="var_m"');
+        expect(html).not.toContain('value="var_l"');
+      });
+
+      it('does not cost the sizes still for sale their labels', () => {
+        // The first cut gated the buyable branch on `soldOut` being ABSENT, which the
+        // engine reads as an UNKNOWN ref: it keeps the node and stops resolving the
+        // bindings underneath, so all fourteen in-stock sizes drew a bare radio with
+        // no words. Every version carries the flag now, false included.
+        const html = toHtml(resolveTree(buyBox(), gone));
+        expect(html).toContain('S · Clay');
+        expect(html).toContain('M · Clay');
+        expect(html).not.toContain('data-sui-visible');
+      });
     });
   });
 

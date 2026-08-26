@@ -47,6 +47,10 @@ export interface PaymentStepProps {
   createIntent: () => Promise<PaymentIntentResult>;
   onBack: () => void;
   onPaid: (orderNumber: string) => void;
+  /** Whether THIS order is being handed over rather than posted. The manual
+   *  payment screen is the only one that reads it, and it is the difference
+   *  between a true sentence and a false one (issue 215). */
+  collecting: boolean;
 }
 
 // Top-level payment step. A signed-in B2B customer (session.companyId
@@ -133,12 +137,30 @@ function CardOrAccountPaymentStep(props: PaymentStepProps) {
 /**
  * Paying the shop directly.
  *
- * No card fields, no gateway, nothing to confirm — the order is placed and the
- * money changes hands where the goods do. The one thing this screen owes the
- * customer is to be unambiguous that they have NOT paid yet, because every other
- * checkout they have ever used took the money at this point.
+ * No card fields, no gateway, nothing to confirm. The one thing this screen owes
+ * the customer is to be unambiguous that they have NOT paid yet, because every
+ * other checkout they have ever used took the money at this point.
+ *
+ * It owed them a second thing and did not pay it: WHERE. "You pay when you
+ * collect" was printed on every manual order, including one being posted to
+ * another state, on the last screen before it was placed — so a mail-order maker
+ * with no counter told her customer to come and fetch it, and never said how to
+ * pay instead (issue 215). The mode is named `in_person`; what the owner chose is
+ * named "Manual payments — record check, cash, wire or bank transfer by hand",
+ * which says nothing about a room.
+ *
+ * So the collection line is kept for an order actually being collected, and a
+ * delivered one gets the thing that is true of it: nothing has been taken, and
+ * the shop has to come to them about it. No promise of an email — an order that
+ * never takes a card payment never triggers one (see `Confirmation`).
  */
-function InPersonPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStepProps) {
+function InPersonPaymentStep({
+  session,
+  onBack,
+  onPaid,
+  tenantSlug,
+  collecting,
+}: PaymentStepProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -165,8 +187,9 @@ function InPersonPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentSte
         How you&rsquo;ll pay
       </h2>
       <Alert color="info">
-        You pay when you collect. Placing this order does not take any money now, and no card
-        details are needed.
+        {collecting
+          ? 'You pay when you collect. Placing this order does not take any money now, and no card details are needed.'
+          : 'Placing this order does not take any money now, and no card details are needed. We’ll be in touch about paying for it.'}
       </Alert>
       {error ? <Alert color="danger">{error}</Alert> : null}
       <div className="flex gap-3">

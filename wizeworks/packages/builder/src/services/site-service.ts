@@ -57,8 +57,10 @@ import {
   recordAddressFor,
   ensureUniqueIds,
   recordPage,
+  recordTemplate,
   slugCandidatesForPath,
   starterFrame,
+  starterPages,
   type RecordAddress,
   type SiteChromeOptions,
 } from '@wizeworks/silica-catalog';
@@ -1919,8 +1921,51 @@ export interface PageDocument {
   root: SilicaNode;
   /** False when the page has no silica body yet — this is an empty one to start from. */
   stored: boolean;
+  /** True when `root` is the starter body the live site is serving, not the author's
+   *  own — unsaved, but not blank, and not theirs until they save it. */
+  starter: boolean;
   publishedAt: string | null;
   unpublished: boolean;
+}
+
+/**
+ * The body the WEBSITE is already serving for a page that has no silica tree.
+ *
+ * `wizeworks/apps/site` falls back to the code starter for any property that has
+ * published no silica (lib/silica.ts), so a legacy-tier row is NOT a blank page —
+ * it is a real page every visitor is reading. Opening it empty told the author
+ * their home page did not exist while the live one said "edit every word to make
+ * it yours", and their first Save would have replaced it sight unseen.
+ *
+ * Matched the way the storefront matches: a record template by its record type,
+ * any other page by its address. Ids are re-minted, because these trees are
+ * code-authored and shared by every tenant.
+ *
+ * \`isHome\` is passed in rather than inferred from the slug. The legacy seed wrote
+ * NO slug on any page, so "slugless singleton = the site root" — true of every
+ * other reader in the platform — makes About the home page too, and it opened
+ * showing the homepage. Only the row the property's home query actually returns
+ * gets the root starter; the rest match by name, which is all a slugless legacy
+ * row has left to identify it.
+ */
+function starterBody(
+  row: Pick<BuilderPage, 'kind' | 'slug' | 'name' | 'recordType'>,
+  modules: SiteChromeOptions,
+  isHome: boolean
+): SilicaNode | null {
+  if (row.kind === 'collection') {
+    const template = row.recordType ? recordTemplate(row.recordType) : null;
+    return template ? ensureUniqueIds(template.root) : null;
+  }
+  const at = (slug: string): string => slug.replace(/^\/+/, '');
+  const pages = starterPages(modules);
+  const address = at(row.slug ?? '');
+  const page = isHome
+    ? pages.find((p) => at(p.slug) === '')
+    : address
+      ? pages.find((p) => at(p.slug) === address)
+      : pages.find((p) => p.name.toLowerCase() === row.name.trim().toLowerCase());
+  return page ? ensureUniqueIds(page.root) : null;
 }
 
 /**
@@ -1931,11 +1976,30 @@ export interface PageDocument {
  * page panes open at once are several independent reads rather than several copies
  * of one site blob racing each other.
  */
-export function loadPage(ctx: PropertyContext, id: string): Promise<PageDocument> {
+export function loadPage(
+  ctx: PropertyContext,
+  id: string,
+  modules: SiteChromeOptions = {}
+): Promise<PageDocument> {
   return withTenant(ctx, async (tx) => {
     const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!row) throw new BuilderNotFoundError('BuilderPage', id);
     const stored = row.silicaDraftTree != null;
+    // THE home row, not "a page with no address". Her four legacy rows all had a
+    // null slug, so every one of them looked like the site root.
+    const home =
+      stored || row.kind === 'collection'
+        ? null
+        : await tx.builderPage.findFirst({
+            where: {
+              propertyId: ctx.propertyId,
+              kind: 'singleton',
+              OR: [{ slug: null }, { slug: { in: ['', '/'] } }],
+            },
+            orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+            select: { id: true },
+          });
+    const live = stored ? null : starterBody(row, modules, home?.id === row.id);
     return {
       id: row.id,
       name: row.name,
@@ -1950,10 +2014,16 @@ export function loadPage(ctx: PropertyContext, id: string): Promise<PageDocument
       canonical: row.canonical,
       ogImage: row.ogImage,
       noindex: row.noindex,
-      // An empty page BODY, not an empty node: the Navigator needs a real root to
-      // hang sections off, and the author needs something to drop the first one into.
-      root: stored ? asNode(row.silicaDraftTree) : stampTree(pageBody([])),
+      // The stored body; else the one the site is SERVING (`starterBody`); else an
+      // empty page BODY rather than an empty node, because the Navigator needs a real
+      // root to hang sections off and the author needs something to drop the first
+      // one into.
+      root: stored ? asNode(row.silicaDraftTree) : (live ?? stampTree(pageBody([]))),
       stored,
+      // TRUE when what is on screen is the live starter rather than the author's own
+      // work. `stored` alone could not tell those apart, and the pane said "nothing
+      // saved on this page yet" over a page the whole world was reading.
+      starter: !stored && live != null,
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
       // The chrome POINTER counts as unpublished work too. Moving a page off the
       // site header and seeing "nothing to publish" is how that change reached

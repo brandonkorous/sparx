@@ -157,6 +157,32 @@ describe('siteFooter — legal links are live, never hardcoded', () => {
     expect(hostKeys(siteFooter({ commerceEnabled: false }))).toContain(HOST_KEYS.siteLegalLinks);
   });
 
+  it('puts the appended column INSIDE the footer band, beside the other columns', () => {
+    // The newsletter variant has no `link9` slot, so the core is appended. Appended to
+    // the FOOTER's own children it landed outside the container carrying the band's
+    // background and padding, and rendered as a bare strip below the footer on the
+    // page's own background (issue 218). It belongs in the grid the link columns are in.
+    const footer = siteFooter({ commerceEnabled: true, footer: 'newsletter' });
+    const holder = find(
+      footer,
+      (n) =>
+        n.kind === 'element' &&
+        Array.isArray(n.children) &&
+        n.children.some((c) => {
+          const rec = c as Record<string, unknown> | string;
+          return (
+            typeof rec !== 'string' &&
+            rec.kind === 'host' &&
+            rec.component === HOST_KEYS.siteLegalLinks
+          );
+        })
+    );
+    expect(holder, 'the legal core has no element parent at all').toBeTruthy();
+    expect(holder?.tag).not.toBe('footer');
+    const cls = typeof holder?.class === 'string' ? holder.class : '';
+    expect(` ${cls} `).toContain(' grid ');
+  });
+
   it('links to NO legal page directly — those routes may not exist', () => {
     // The regression tripwire. Any href that looks like a legal document means someone
     // re-authored the column and re-introduced the 404s.
