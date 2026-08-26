@@ -7,6 +7,7 @@ import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { cartContact } from './cart-contact.js';
 
 const CartParam = z.object({ cartId: z.string().uuid() });
 const SessionParam = z.object({ sessionId: z.string().uuid() });
@@ -23,10 +24,20 @@ const cartRoutes: FastifyPluginAsync = async (app) => {
     // `recoveredAt` — a storefront never needs it. The admin detail view does:
     // without it a recovered cart reads as "in progress". Read the one column
     // here rather than widening the storefront-facing snapshot type.
-    const meta = await withRequestTenant(request, (tx) =>
-      tx.cart.findFirst({ where: { id: cartId }, select: { recoveredAt: true } })
-    );
-    return ok({ ...snapshot, recoveredAt: meta?.recoveredAt?.toISOString() ?? null });
+    //
+    // `contact` is the same read, and the same reason: the snapshot's
+    // `customerName` is a SIGNED-IN shopper's, so a guest basket read as having
+    // nobody attached while its checkout session held a name and an email
+    // (issue 216).
+    const { meta, contact } = await withRequestTenant(request, async (tx) => ({
+      meta: await tx.cart.findFirst({ where: { id: cartId }, select: { recoveredAt: true } }),
+      contact: await cartContact(tx, cartId),
+    }));
+    return ok({
+      ...snapshot,
+      recoveredAt: meta?.recoveredAt?.toISOString() ?? null,
+      contact,
+    });
   });
 
   app.post('/v1/commerce/carts/:cartId/abandoned', async (request) => {

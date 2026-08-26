@@ -14,7 +14,7 @@
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
-import type { Tone } from './data';
+import { formatMoney, type Tone } from './data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -26,6 +26,17 @@ export interface CartCustomer {
   lastName: string | null;
   email: string | null;
   company: string | null;
+}
+
+/** What the shopper typed into checkout before they stopped, whether or not
+ *  they were signed in. This is the only thing that makes an abandoned basket
+ *  actionable, and it was not being read (issue 216). */
+export interface CartContact {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  /** The furthest checkout step this basket reached. */
+  reached: string | null;
 }
 
 /** A row in the carts list. */
@@ -43,6 +54,7 @@ export interface CartRow {
   expiresAt: string | null;
   updatedAt: string;
   customer: CartCustomer | null;
+  contact: CartContact | null;
 }
 
 export interface CartItemDetail {
@@ -88,6 +100,9 @@ export interface CartDetail {
    *  omits this; the admin detail endpoint merges it in so a recovered cart
    *  reads correctly here instead of looking live again. */
   recoveredAt: string | null;
+  /** Merged in by the same read, for the same reason: `customerName` above is
+   *  a SIGNED-IN shopper's, and most are not. */
+  contact: CartContact | null;
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -202,15 +217,22 @@ export const CART_CHANNEL_LABELS: Record<string, string> = {
   mcp: 'AI assistant',
 };
 
+/** Cart money is integer CENTS (see the note at the top of this file), so every
+ *  cart surface renders through here rather than dividing at each call site. */
+export function cartMoney(cents: number, currency: string): string {
+  return formatMoney(cents / 100, currency);
+}
+
 export function cartChannelLabel(channel: string): string {
   return CART_CHANNEL_LABELS[channel] ?? channel;
 }
 
-/** A cart's buyer in one line, or a clear "guest" when there is no account. A
- *  cart, unlike an order, genuinely may have no customer. */
+/** A basket's shopper in one line. A cart genuinely may have no account behind
+ *  it — but "guest" is the last answer, not the first: whatever they typed into
+ *  checkout names them better than the word for what they are not (issue 216). */
 export function cartShopperName(
   customer: CartCustomer | null,
-  fallbackName?: string | null
+  contact?: CartContact | null
 ): string {
   if (customer) {
     if (customer.company) return customer.company;
@@ -218,6 +240,5 @@ export function cartShopperName(
     if (person) return person;
     if (customer.email) return customer.email;
   }
-  if (fallbackName) return fallbackName;
-  return 'Guest shopper';
+  return contact?.name ?? contact?.email ?? 'Nobody left a name';
 }

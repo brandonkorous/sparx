@@ -19,6 +19,10 @@ const SlugParam = z.object({ slug: z.string().min(1).max(128) });
 
 const ListReturnsQuery = z.object({
   status: z.string().optional(),
+  // The service has always filtered by order; nothing could ask it to. The
+  // order pane needs it to know what is already coming back before offering to
+  // send more of the same line back twice (persona issue 219).
+  order_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -112,10 +116,29 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     const q = ListReturnsQuery.parse(request.query);
     const { items, total } = await returnService.list(toCommerceContext(request), {
       status: q.status as never,
+      ...(q.order_id ? { orderId: q.order_id } : {}),
       take: q.take,
       skip: q.skip,
     });
     return paged(items, { total, per_page: q.take ?? 50 });
+  });
+
+  // Opening one. Every other endpoint below moves a return that already exists,
+  // and for a long time nothing anywhere could create the first row — the
+  // service was written and had no caller, so the whole module was sealed
+  // (persona issue 219).
+  //
+  // `requestedBy` is pinned to `staff` rather than read from the body: this is
+  // the operator console, so a person on the team typed it, and that is what
+  // the audit entry records. A customer-initiated route would be a different
+  // one on the shopper's side of the wall.
+  app.post('/v1/commerce/returns', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = (request.body as Record<string, unknown>) ?? {};
+    return ok(
+      await returnService.create(toCommerceContext(request), { ...body, requestedBy: 'staff' })
+    );
   });
 
   app.get('/v1/commerce/returns/:id', async (request) => {
@@ -195,6 +218,19 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
       .parse(request.query);
     return ok(
       await returnDispositionService.summarizeDispositions(toCommerceContext(request), q.days ?? 90)
+    );
+  });
+
+  // Settling an EXCHANGE. Deliberately not the refund route with a zero amount:
+  // an even swap moves no money and must not leave a $0.00 refund in the
+  // tenant's books (persona issue 220).
+  app.post('/v1/commerce/returns/:id/exchange', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (request.body as Record<string, unknown>) ?? {};
+    return ok(
+      await returnService.settleExchange(toCommerceContext(request), { ...body, returnId: id })
     );
   });
 

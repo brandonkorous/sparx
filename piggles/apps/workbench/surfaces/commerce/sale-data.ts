@@ -227,7 +227,9 @@ export function useTakeSale() {
           processor: input.paidWith,
           status: 'captured',
           capturedAt: new Date().toISOString(),
-          ...(input.paidNote.trim() ? { processorRef: input.paidNote.trim() } : {}),
+          // `metadata`, not `processorRef` — see the note in order-actions.ts
+          // and persona issue 223. A cheque number is not a gateway reference.
+          ...(input.paidNote.trim() ? { metadata: { note: input.paidNote.trim() } } : {}),
         });
       }
       // A sale at a counter is over when it is made — UNLESS something on it

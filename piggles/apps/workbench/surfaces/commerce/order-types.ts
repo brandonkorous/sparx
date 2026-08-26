@@ -111,7 +111,10 @@ export interface Order {
 export interface OrderPayment {
   id: string;
   processor: string;
+  /** The GATEWAY's reference for this charge. Null on anything taken by hand —
+   *  what a person wrote down about a cheque lives in `metadata.note`. */
   processorRef: string | null;
+  metadata?: Record<string, unknown> | null;
   amount: number;
   currency: string;
   status: string; // pending | authorized | captured | failed | voided | refunded

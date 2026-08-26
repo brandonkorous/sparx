@@ -104,6 +104,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <OrderBody
         order={order}
         facts={facts}
+        ctx={ctx}
         siteName={site?.name ?? null}
         canSeeCommission={canSeeCommission}
         payments={payments}

@@ -31,6 +31,7 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { computeLine, computeTotals } from './order-totals';
 import { resolveReadyOn } from './order-ready-on';
 import { nextOrderNumber } from './record-numbers';
+import { recomputeCustomerCommerce } from './customer-rollup';
 
 /** The customer summary joined onto both the list rows and a single order —
  *  enough to name the buyer and, when they belong to one, their B2B account and
@@ -255,6 +256,11 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
       },
     });
 
+    // The buyer's figures, in the same transaction as the order. They used to be
+    // an increment applied by a consumer, which is how three of five orders on
+    // one shop never reached the buyer at all — see customer-rollup.ts.
+    await recomputeCustomerCommerce(tx, ctx.tenantId, created.customerId);
+
     return created;
   });
 
@@ -341,6 +347,10 @@ export async function cancel(ctx: ServiceContext, rawInput: unknown): Promise<Or
       entityId: updated.id,
       diff: { before: { status: before.status }, after: { status: updated.status } },
     });
+    // A cancelled order stops counting. Nothing did this before, so a cancelled
+    // sale went on contributing to the buyer's lifetime spend and order count for
+    // ever — the increment had already been applied and nothing took it back.
+    await recomputeCustomerCommerce(tx, ctx.tenantId, updated.customerId);
     return updated;
   });
 

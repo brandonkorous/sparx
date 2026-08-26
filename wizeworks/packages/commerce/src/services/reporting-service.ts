@@ -49,9 +49,11 @@ export interface RevenueSummary {
   currency: string;
 }
 
+/** Revenue for one site (docs/131 §6); undefined is every site. */
 export async function revenueSummary(
   ctx: ServiceContext,
-  range: DateRange
+  range: DateRange,
+  propertyId?: string
 ): Promise<RevenueSummary> {
   const { from, to } = bounds(range);
 
@@ -60,6 +62,7 @@ export async function revenueSummary(
       where: {
         placedAt: { gte: from, lte: to },
         status: { not: 'cancelled' },
+        ...(propertyId ? { propertyId } : {}),
       },
       _count: { _all: true },
       _sum: { total: true, refundTotal: true },
@@ -134,11 +137,12 @@ async function topProductsForOrders(
 
 export async function topProducts(
   ctx: ServiceContext,
-  input: { range: DateRange; limit?: number }
+  input: { range: DateRange; limit?: number; propertyId?: string }
 ): Promise<TopProductRow[]> {
   const { from, to } = bounds(input.range);
   const limit = input.limit ?? 10;
-  return withTenant(ctx, (tx) => topProductsForOrders(tx, {}, { from, to }, limit));
+  const orderWhere = input.propertyId ? { propertyId: input.propertyId } : {};
+  return withTenant(ctx, (tx) => topProductsForOrders(tx, orderWhere, { from, to }, limit));
 }
 
 // ─── Top customers ───────────────────────────────────────────────────
@@ -152,7 +156,7 @@ export interface TopCustomerRow {
 
 export async function topCustomers(
   ctx: ServiceContext,
-  input: { range: DateRange; limit?: number }
+  input: { range: DateRange; limit?: number; propertyId?: string }
 ): Promise<TopCustomerRow[]> {
   const { from, to } = bounds(input.range);
   const limit = input.limit ?? 10;
@@ -163,6 +167,7 @@ export async function topCustomers(
       where: {
         placedAt: { gte: from, lte: to },
         status: { not: 'cancelled' },
+        ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       },
       _count: { _all: true },
       _sum: { total: true },
@@ -195,45 +200,110 @@ export async function topCustomers(
 
 export interface ConversionFunnel {
   rangeLabel: string;
+  /** Distinct session hashes on this site's pageviews in the window (docs/76). */
   sessions: number;
+  /** Distinct visitor hashes — smaller than `sessions` when people return. */
+  visitors: number;
   cartsCreated: number;
   checkoutsStarted: number;
   ordersPlaced: number;
-  cartToCheckoutRate: number;
-  checkoutToOrderRate: number;
-  overallConversion: number;
+  // Every rate is NULLABLE, and null is the answer whenever the stage above it
+  // was empty. See `rate` below for why this is not the same as zero.
+  sessionToCartRate: number | null;
+  cartToCheckoutRate: number | null;
+  checkoutToOrderRate: number | null;
+  /** Cart-funnel completion: orders ÷ carts. */
+  overallConversion: number | null;
+  /** Storefront conversion: orders ÷ sessions — the figure "conversion rate"
+   *  normally means, and the one that was unreportable while sessions read 0. */
+  sessionToOrderRate: number | null;
 }
 
+/** A rate, or NULL when there is nothing to divide by.
+ *
+ *  Returning 0 here is the tempting shape and it is a lie: a tenant selling
+ *  through B2B, POS or the phone has no web sessions at all, and "0% conversion"
+ *  tells them their storefront is failing when they do not have one. An absence
+ *  must never render as a measurement — the UI says "no traffic yet", not "0%". */
+function rate(numerator: number, denominator: number): number | null {
+  return denominator > 0 ? numerator / denominator : null;
+}
+
+interface SessionCounts {
+  sessions: number;
+  visitors: number;
+}
+
+/** Window-unique sessions + visitors from the first-party analytics capture,
+ *  scoped to one site when asked. Mirrors the `summary()` aggregation in
+ *  api-rest's site-analytics-reports, deliberately: two definitions of "a
+ *  session" that can drift is worse than one raw query in two places. */
+async function sessionCounts(
+  tx: TxClient,
+  from: Date,
+  to: Date,
+  propertyId?: string
+): Promise<SessionCounts> {
+  const rows = await tx.$queryRaw<{ sessions: number; visitors: number }[]>`
+    SELECT
+      COUNT(DISTINCT session_hash)::int AS sessions,
+      COUNT(DISTINCT visitor_hash)::int AS visitors
+    FROM site_analytics_events
+    WHERE type = 'pageview'
+      AND created_at >= ${from} AND created_at <= ${to}
+      ${propertyId ? Prisma.sql`AND property_id = ${propertyId}::uuid` : Prisma.empty}
+  `;
+  const r = rows[0];
+  return { sessions: Number(r?.sessions ?? 0), visitors: Number(r?.visitors ?? 0) };
+}
+
+/**
+ * The storefront funnel: sessions → carts → checkouts → orders.
+ *
+ * `propertyId` scopes it to ONE business (docs/131 §6); undefined is every site.
+ * That scoping is not cosmetic — a tenant running a machine shop and a donut shop
+ * under one account was getting a single blended rate in which each business's
+ * traffic diluted the other's, which is the same defect the property column on
+ * Automation and Segment was added to remove.
+ *
+ * CheckoutSession carries no property_id of its own, so it scopes through its
+ * cart, which does.
+ */
 export async function conversionFunnel(
   ctx: ServiceContext,
-  range: DateRange
+  range: DateRange,
+  propertyId?: string
 ): Promise<ConversionFunnel> {
   const { from, to } = bounds(range);
+  const cartScope = propertyId ? { propertyId } : {};
 
   return withTenant(ctx, async (tx) => {
-    const [cartsCreated, checkoutsStarted, ordersPlaced] = await Promise.all([
-      tx.cart.count({ where: { createdAt: { gte: from, lte: to } } }),
-      tx.checkoutSession.count({ where: { createdAt: { gte: from, lte: to } } }),
+    const [counts, cartsCreated, checkoutsStarted, ordersPlaced] = await Promise.all([
+      sessionCounts(tx, from, to, propertyId),
+      tx.cart.count({ where: { createdAt: { gte: from, lte: to }, ...cartScope } }),
+      tx.checkoutSession.count({
+        where: {
+          createdAt: { gte: from, lte: to },
+          ...(propertyId ? { cart: { propertyId } } : {}),
+        },
+      }),
       tx.order.count({
-        where: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } },
+        where: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' }, ...cartScope },
       }),
     ]);
 
-    // Sessions tracking requires analytics tooling that hasn't landed
-    // yet; surface as 0 + the existing funnel stages so the dashboard
-    // strip works today and grows seamlessly when sessions arrive.
-    const sessions = 0;
-    const rate = (a: number, b: number) => (b > 0 ? a / b : 0);
-
     return {
       rangeLabel: rangeLabel(range),
-      sessions,
+      sessions: counts.sessions,
+      visitors: counts.visitors,
       cartsCreated,
       checkoutsStarted,
       ordersPlaced,
+      sessionToCartRate: rate(cartsCreated, counts.sessions),
       cartToCheckoutRate: rate(checkoutsStarted, cartsCreated),
       checkoutToOrderRate: rate(ordersPlaced, checkoutsStarted),
       overallConversion: rate(ordersPlaced, cartsCreated),
+      sessionToOrderRate: rate(ordersPlaced, counts.sessions),
     };
   });
 }
@@ -244,36 +314,41 @@ export interface AbandonedCartReport {
   rangeLabel: string;
   abandonedCount: number;
   recoveredCount: number;
-  recoveryRate: number;
+  /** Null when no cart was abandoned OR recovered in the window — nothing to
+   *  compute a rate over. A recovery rate of 0% against no abandonment reads as
+   *  a failed recovery flow rather than a quiet week. */
+  recoveryRate: number | null;
   recoveredRevenueCents: number;
 }
 
+/** Abandonment + recovery for one site (docs/131 §6); undefined is every site. */
 export async function abandonedCarts(
   ctx: ServiceContext,
-  range: DateRange
+  range: DateRange,
+  propertyId?: string
 ): Promise<AbandonedCartReport> {
   const { from, to } = bounds(range);
+  const scope = propertyId ? { propertyId } : {};
 
   return withTenant(ctx, async (tx) => {
     const [abandonedCount, recoveredAgg] = await Promise.all([
       tx.cart.count({
-        where: { abandonedAt: { gte: from, lte: to } },
+        where: { abandonedAt: { gte: from, lte: to }, ...scope },
       }),
       tx.cart.aggregate({
-        where: { recoveredAt: { gte: from, lte: to } },
+        where: { recoveredAt: { gte: from, lte: to }, ...scope },
         _count: { _all: true },
         _sum: { totalCents: true },
       }),
     ]);
 
     const recoveredCount = recoveredAgg._count._all;
-    const totalLooked = abandonedCount + recoveredCount;
 
     return {
       rangeLabel: rangeLabel(range),
       abandonedCount,
       recoveredCount,
-      recoveryRate: totalLooked > 0 ? recoveredCount / totalLooked : 0,
+      recoveryRate: rate(recoveredCount, abandonedCount + recoveredCount),
       recoveredRevenueCents: recoveredAgg._sum.totalCents ?? 0,
     };
   });
@@ -1553,8 +1628,9 @@ interface RawDiscountRow {
 
 export async function discountPerformance(
   ctx: ServiceContext,
-  input?: { range?: DateRange; limit?: number }
+  input?: { range?: DateRange; limit?: number; propertyId?: string }
 ): Promise<DiscountPerformance> {
+  const propertyId = input?.propertyId;
   const limit = Math.min(Math.max(input?.limit ?? 8, 1), 50);
   const to = input?.range ? new Date(input.range.to) : new Date();
   const from = input?.range
@@ -1562,8 +1638,20 @@ export async function discountPerformance(
     : new Date(Date.now() - DISCOUNT_DEFAULT_DAYS * 86_400_000);
   const label = input?.range ? rangeLabel(input.range) : `Last ${DISCOUNT_DEFAULT_DAYS} days`;
 
+  // A redemption carries no property of its own — it belongs to whichever site
+  // took the ORDER, so scoping joins through it. DiscountUsage declares no
+  // Prisma relation to Order (just a bare `order_id` column), so the scoped read
+  // is raw on BOTH halves rather than a relation filter that will not compile.
+  //
+  // A usage with no order (a redemption recorded against a cart that never
+  // converted) cannot be attributed to a site, so a site-scoped read excludes it
+  // rather than counting it under every site.
+  const usageScope = propertyId
+    ? Prisma.sql`AND order_id IN (SELECT id FROM orders WHERE property_id = ${propertyId}::uuid)`
+    : Prisma.empty;
+
   return withTenant(ctx, async (tx) => {
-    const [rows, totals, activeDiscounts] = await Promise.all([
+    const [rows, totalRows, activeDiscounts] = await Promise.all([
       tx.$queryRaw<RawDiscountRow[]>`
         SELECT
           discount_id,
@@ -1572,17 +1660,22 @@ export async function discountPerformance(
           COUNT(DISTINCT order_id)::int          AS unique_orders
         FROM commerce_discount_usages
         WHERE redeemed_at >= ${from} AND redeemed_at <= ${to}
+        ${usageScope}
         GROUP BY discount_id
         ORDER BY discount_cents DESC
         LIMIT ${limit}
       `,
-      tx.discountUsage.aggregate({
-        where: { redeemedAt: { gte: from, lte: to } },
-        _count: { _all: true },
-        _sum: { appliedCents: true },
-      }),
+      tx.$queryRaw<{ redemptions: number; discount_cents: bigint }[]>`
+        SELECT
+          COUNT(*)::int                           AS redemptions,
+          COALESCE(SUM(applied_cents), 0)::bigint AS discount_cents
+        FROM commerce_discount_usages
+        WHERE redeemed_at >= ${from} AND redeemed_at <= ${to}
+        ${usageScope}
+      `,
       tx.discount.count({ where: { status: 'active', deletedAt: null } }),
     ]);
+    const totals = totalRows[0];
 
     const discounts =
       rows.length > 0
@@ -1609,8 +1702,8 @@ export async function discountPerformance(
 
     return {
       rangeLabel: label,
-      totalRedemptions: totals._count._all,
-      totalDiscountCents: totals._sum.appliedCents ?? 0,
+      totalRedemptions: Number(totals?.redemptions ?? 0),
+      totalDiscountCents: Number(totals?.discount_cents ?? 0),
       activeDiscounts,
       byDiscount,
       currency: DEFAULT_CURRENCY,
@@ -1642,7 +1735,8 @@ export interface ChannelBreakdown {
 
 export async function channelBreakdown(
   ctx: ServiceContext,
-  range?: DateRange
+  range?: DateRange,
+  propertyId?: string
 ): Promise<ChannelBreakdown> {
   const to = range ? new Date(range.to) : new Date();
   const from = range
@@ -1653,7 +1747,11 @@ export async function channelBreakdown(
   return withTenant(ctx, async (tx) => {
     const groups = await tx.order.groupBy({
       by: ['channel'],
-      where: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } },
+      where: {
+        placedAt: { gte: from, lte: to },
+        status: { not: 'cancelled' },
+        ...(propertyId ? { propertyId } : {}),
+      },
       _count: { _all: true },
       _sum: { total: true },
     });
@@ -1717,7 +1815,8 @@ export interface AttributionBreakdown {
 
 export async function attributionBreakdown(
   ctx: ServiceContext,
-  range?: DateRange
+  range?: DateRange,
+  propertyId?: string
 ): Promise<AttributionBreakdown> {
   const to = range ? new Date(range.to) : new Date();
   const from = range
@@ -1726,7 +1825,11 @@ export async function attributionBreakdown(
   const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
 
   return withTenant(ctx, async (tx) => {
-    const baseWhere = { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } };
+    const baseWhere = {
+      placedAt: { gte: from, lte: to },
+      status: { not: 'cancelled' },
+      ...(propertyId ? { propertyId } : {}),
+    };
 
     const groups = await tx.order.groupBy({
       by: ['attributionSource'],
@@ -1802,7 +1905,8 @@ export interface EmailCampaignRevenueBreakdown {
 
 export async function emailCampaignRevenue(
   ctx: ServiceContext,
-  range?: DateRange
+  range?: DateRange,
+  propertyId?: string
 ): Promise<EmailCampaignRevenueBreakdown> {
   const to = range ? new Date(range.to) : new Date();
   const from = range
@@ -1818,6 +1922,7 @@ export async function emailCampaignRevenue(
         status: { not: 'cancelled' },
         attributionSource: 'email',
         attributionCampaign: { not: null },
+        ...(propertyId ? { propertyId } : {}),
       },
       _count: { _all: true },
       _sum: { total: true },
@@ -1924,14 +2029,19 @@ export interface ChannelRevenueReport {
  *  out by source). Defaults to the last 30 days when no range is given. */
 export async function channelComparison(
   ctx: ServiceContext,
-  range?: DateRange
+  range?: DateRange,
+  propertyId?: string
 ): Promise<ChannelRevenueReport> {
   const { from, to, label } = defaultedBounds(range);
 
   return withTenant(ctx, async (tx) => {
     const groups = await tx.order.groupBy({
       by: ['channel', 'source'],
-      where: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } },
+      where: {
+        placedAt: { gte: from, lte: to },
+        status: { not: 'cancelled' },
+        ...(propertyId ? { propertyId } : {}),
+      },
       _count: { _all: true },
       _sum: { total: true, refundTotal: true, channelFeeCents: true },
     });
@@ -1999,7 +2109,7 @@ export interface ChannelRevenueSummary extends Omit<ChannelRevenueRow, 'sharePct
  *  a marketplace source slug. Defaults to the last 30 days. */
 export async function channelRevenue(
   ctx: ServiceContext,
-  input: { channel: string; range?: DateRange }
+  input: { channel: string; range?: DateRange; propertyId?: string }
 ): Promise<ChannelRevenueSummary> {
   const { from, to, label } = defaultedBounds(input.range);
 
@@ -2009,6 +2119,7 @@ export async function channelRevenue(
         ...channelKeyWhere(input.channel),
         placedAt: { gte: from, lte: to },
         status: { not: 'cancelled' },
+        ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       },
       _count: { _all: true },
       _sum: { total: true, refundTotal: true, channelFeeCents: true },
@@ -2038,11 +2149,13 @@ export async function channelRevenue(
 /** Top products sold through one channel for the window. */
 export async function channelTopProducts(
   ctx: ServiceContext,
-  input: { channel: string; range?: DateRange; limit?: number }
+  input: { channel: string; range?: DateRange; limit?: number; propertyId?: string }
 ): Promise<TopProductRow[]> {
   const { from, to } = defaultedBounds(input.range);
   const limit = input.limit ?? 10;
-  return withTenant(ctx, (tx) =>
-    topProductsForOrders(tx, channelKeyWhere(input.channel), { from, to }, limit)
-  );
+  const orderWhere = {
+    ...channelKeyWhere(input.channel),
+    ...(input.propertyId ? { propertyId: input.propertyId } : {}),
+  };
+  return withTenant(ctx, (tx) => topProductsForOrders(tx, orderWhere, { from, to }, limit));
 }

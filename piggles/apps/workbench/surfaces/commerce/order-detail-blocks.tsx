@@ -28,11 +28,15 @@ export function MoneyRow({
   amount,
   currency,
   emphasis = false,
+  /** Words in place of the figure, for a real charge that came to nothing —
+   *  "Free" delivery reads as a decision, where $0.00 reads as a gap. */
+  reads,
 }: {
   label: string;
   amount: number;
   currency: string;
   emphasis?: boolean;
+  reads?: string;
 }) {
   return (
     <div
@@ -42,7 +46,7 @@ export function MoneyRow({
       ].join(' ')}
     >
       <span>{label}</span>
-      <span className="tabular-nums">{formatMoney(amount, currency)}</span>
+      <span className="tabular-nums">{reads ?? formatMoney(amount, currency)}</span>
     </div>
   );
 }

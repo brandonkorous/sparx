@@ -26,14 +26,15 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { faCartShopping } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { FormSection } from '../../components/form-section';
-import { ModuleScope } from '../../components/module-scope';
+import { CartLines } from './cart-lines';
+import { CartShopper } from './cart-shopper';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatMoney, formatDateTime } from './data';
+import { formatDateTime } from './data';
 import {
   cartChannelLabel,
+  cartMoney as money,
   cartErrorMessage,
   cartShopperName,
   cartStateFrom,
@@ -43,34 +44,6 @@ import {
 } from './carts-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-function money(cents: number, currency: string): string {
-  return formatMoney(cents / 100, currency);
-}
-
-function MoneyRow({
-  label,
-  cents,
-  currency,
-  emphasis = false,
-}: {
-  label: string;
-  cents: number;
-  currency: string;
-  emphasis?: boolean;
-}) {
-  return (
-    <div
-      className={[
-        'flex items-baseline justify-between gap-4',
-        emphasis ? 'text-lg font-semibold' : 'text-base',
-      ].join(' ')}
-    >
-      <span>{label}</span>
-      <span className="tabular-nums">{money(cents, currency)}</span>
-    </div>
-  );
-}
 
 export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
@@ -82,7 +55,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // The tab is where a cart says whose it is — a basket has no name of its own,
   // so the shopper plus the noun is the only label that reads on its own.
-  const shopperName = data ? cartShopperName(null, data.customerName) : null;
+  const shopperName = data ? cartShopperName(null, data.contact) : null;
   useEffect(() => {
     if (shopperName) ctx.setTitle(`${shopperName} · basket`);
   }, [ctx, shopperName]);
@@ -126,10 +99,14 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const cart: CartDetail = data;
   const state = cartStateFrom(cart);
-  const shopper = cartShopperName(null, cart.customerName);
+  const shopper = cartShopperName(null, cart.contact);
   const canRecover = Boolean(cart.abandonedAt) && !cart.recoveredAt;
 
-  const facts = [cartChannelLabel(cart.channel), `${String(cart.items.length)} lines`];
+  const lines = cart.items.length;
+  const facts = [
+    cartChannelLabel(cart.channel),
+    `${String(lines)} ${lines === 1 ? 'line' : 'lines'}`,
+  ];
 
   const onRecover = async () => {
     const ok = await confirm({
@@ -189,77 +166,9 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertContent>
           </Alert>
 
-          <FormSection title="What’s in it">
-            {cart.items.length === 0 ? (
-              <Text>This cart is empty — every line was removed before they left.</Text>
-            ) : (
-              <ul className="flex flex-col">
-                {cart.items.map((item) => (
-                  <li
-                    key={item.cartItemId}
-                    className="border-base-300 flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
-                  >
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      <span className="text-base font-medium">{item.name}</span>
-                      <span className="font-mono text-sm break-all">{item.sku}</span>
-                      <span className="text-sm">
-                        {item.quantity} × {money(item.unitPriceCents, cart.currency)}
-                      </span>
-                    </div>
-                    <span className="text-base font-medium tabular-nums">
-                      {money(item.subtotalCents, cart.currency)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <CartLines cart={cart} />
 
-            <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
-              <MoneyRow label="Items" cents={cart.totals.subtotalCents} currency={cart.currency} />
-              {cart.totals.discountTotalCents > 0 ? (
-                <MoneyRow
-                  label="Discount"
-                  cents={-cart.totals.discountTotalCents}
-                  currency={cart.currency}
-                />
-              ) : null}
-              {cart.totals.shippingTotalCents > 0 ? (
-                <MoneyRow
-                  label="Delivery"
-                  cents={cart.totals.shippingTotalCents}
-                  currency={cart.currency}
-                />
-              ) : null}
-              {cart.totals.taxTotalCents > 0 ? (
-                <MoneyRow label="Tax" cents={cart.totals.taxTotalCents} currency={cart.currency} />
-              ) : null}
-              <MoneyRow
-                label="Cart total"
-                cents={cart.totals.totalCents}
-                currency={cart.currency}
-                emphasis
-              />
-            </div>
-
-            {cart.appliedDiscountCodes.length > 0 ? (
-              <Text className="text-sm">Codes applied: {cart.appliedDiscountCodes.join(', ')}</Text>
-            ) : null}
-          </FormSection>
-
-          {cart.customerName ? (
-            <ModuleScope module="crm">
-              <FormSection title="Whose cart it is">
-                <Text className="text-base font-medium">{cart.customerName}</Text>
-              </FormSection>
-            </ModuleScope>
-          ) : (
-            <FormSection title="Whose cart it is">
-              <Text className="text-base">
-                A guest — this cart was filled by someone who was not signed in, so there is no
-                account attached to it.
-              </Text>
-            </FormSection>
-          )}
+          <CartShopper customer={null} contact={cart.contact} />
 
           {canRecover ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-4">

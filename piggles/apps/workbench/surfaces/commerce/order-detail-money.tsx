@@ -24,6 +24,26 @@ import {
 const ROW =
   'border-base-300 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0';
 
+/**
+ * What a person wrote down about this payment.
+ *
+ * `metadata.note` is where it belongs and where it goes now. `processorRef` is
+ * read as a fallback because payments taken before issue 223 was fixed have the
+ * note stored there — on a hand-taken payment that field only ever held what
+ * somebody typed, so showing it is the honest reading of an old row.
+ */
+function paymentNote(payment: {
+  processor: string;
+  processorRef: string | null;
+  metadata?: Record<string, unknown> | null;
+}): string | null {
+  const note = payment.metadata?.note;
+  if (typeof note === 'string' && note.trim()) return note.trim();
+  if (payment.processor === 'stripe' || payment.processor === 'paypal') return null;
+  const older = payment.processorRef?.trim() ?? '';
+  return older === '' ? null : older;
+}
+
 export function PaymentsSection({
   order,
   payments,
@@ -58,6 +78,11 @@ export function PaymentsSection({
               <span className="text-sm">
                 {formatDateTime(payment.capturedAt ?? payment.createdAt)}
               </span>
+              {/* What she wrote down when the money came in. The box asked for a
+                  cheque number and then showed it back nowhere (issue 223). */}
+              {paymentNote(payment) ? (
+                <span className="text-sm">{paymentNote(payment)}</span>
+              ) : null}
               {payment.failureReason ? (
                 <span className="text-sm">{payment.failureReason}</span>
               ) : null}

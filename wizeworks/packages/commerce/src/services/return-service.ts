@@ -10,8 +10,10 @@ import {
   DenyReturnInput,
   IssueReturnRefundInput,
   RecordReturnInspectionInput,
+  SettleReturnExchangeInput,
   type ReturnStatus,
 } from '@wizeworks/commerce-schemas';
+import { orderRefundsService } from '@wizeworks/crm';
 import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@wizeworks/payments';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, ReturnLineItem, ReturnRequest, TxClient } from '@wizeworks/db';
@@ -24,6 +26,15 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 import { attemptReturnLabel } from './return-label-purchase';
+
+/**
+ * The processors that actually hold a charge somewhere else.
+ *
+ * Everything absent from this set is money a person handed over — `manual`,
+ * `check`, `wire`, `ach`, `card` (the shop's OWN terminal), `net_terms` — and
+ * giving it back is the shop counting notes out, not an API call.
+ */
+const TAKEN_BY_GATEWAY = new Set(['stripe', 'paypal']);
 
 /** A restockable return line resolved to its variant + (optional) location. */
 interface RestockLine {
@@ -315,8 +326,11 @@ export async function approve(
         throw new CommerceNotFoundError('ReturnLineItem', decision.returnLineItemId);
       }
       if (decision.approvedQuantity > line.quantity) {
+        // Read by a shop owner in a toast, so it says what she can DO about it.
+        // It used to name the return line's uuid, which is a sentence for a
+        // developer on a screen about somebody's shirt (persona issue 224).
         throw new CommerceValidationError(
-          `Approved quantity ${decision.approvedQuantity} exceeds requested ${line.quantity} on line ${decision.returnLineItemId}`
+          `You can accept back at most ${line.quantity}, because that is what the customer asked to send.`
         );
       }
       await tx.returnLineItem.update({
@@ -465,6 +479,138 @@ export async function recordInspection(ctx: ServiceContext, rawInput: unknown): 
   });
 }
 
+/**
+ * Settle an exchange by sending the replacement. NO money moves.
+ *
+ * The only other way out of `inspected` was `issueRefund`, so an even swap could
+ * be ended only by refunding a customer who was owed nothing (persona issue
+ * 220). This is its own terminal status rather than a zero refund: a $0.00
+ * refund per swap makes "how much did we give back" unanswerable.
+ *
+ * The returned goods restock exactly as they do on a refund — same collector,
+ * same idempotency key — so a line already put back by an explicit disposition
+ * is a no-op here rather than a second movement.
+ */
+export async function settleExchange(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<{ returnId: string }> {
+  const input = SettleReturnExchangeInput.parse(rawInput);
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
+
+  let restockLines: RestockLine[] = [];
+  let sentLabel = '';
+  await withTenant(ctx, async (tx) => {
+    const ret = await assertReturnWritable(tx, input.returnId);
+    if (ret.status !== 'inspected' && ret.status !== 'received') {
+      throw new CommerceConflictError(
+        `Cannot settle an exchange from status "${ret.status}"; expected "inspected" or "received"`
+      );
+    }
+    const replacement = await tx.productVariant.findFirst({
+      where: { id: input.replacementVariantId },
+      select: {
+        id: true,
+        sku: true,
+        title: true,
+        product: { select: { title: true } },
+        optionAssignments: { select: { optionValue: { select: { value: true } } } },
+      },
+    });
+    if (!replacement) {
+      throw new CommerceNotFoundError('ProductVariant', input.replacementVariantId);
+    }
+    // The product's name plus the version a person would say. Most catalogs
+    // leave `title` blank, and a note reading "THE-ASH-OVER-M-SLATE" is a note
+    // for a developer — "M · Slate" is what Devi called it when she picked it.
+    const values = replacement.optionAssignments.map((row) => row.optionValue.value).join(' · ');
+    const version = replacement.title ?? (values === '' ? replacement.sku : values);
+    sentLabel = `${replacement.product.title} — ${version}`;
+
+    // The staff note is the only place the record can say WHAT went out — a
+    // return has no column for a replacement. Appended rather than replacing so
+    // an approval note survives (issue 220's remaining gap).
+    const said = [ret.staffNote, input.staffNote, `Sent instead: ${sentLabel} ×${input.quantity}`]
+      .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
+      .join('\n');
+
+    await tx.returnRequest.update({
+      where: { id: ret.id },
+      data: {
+        status: 'exchanged',
+        refundedAt: new Date(),
+        refundedAmountCents: 0,
+        staffNote: said,
+      },
+    });
+    if (inventoryActive) restockLines = await collectRestockLines(tx, ret.id);
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.return.exchanged',
+      entityType: 'ReturnRequest',
+      entityId: ret.id,
+      diff: {
+        after: {
+          status: 'exchanged',
+          replacementVariantId: input.replacementVariantId,
+          quantity: input.quantity,
+          refundAmountCents: 0,
+        },
+      },
+    });
+  });
+
+  // Both halves of the swap, post-commit for the same reason a refund's restock
+  // is: the settlement is the authority and a stock hiccup must not unwind it.
+  if (inventoryActive) {
+    const fallbackWarehouseId = await inventoryService.resolveDefaultWarehouseId(ctx);
+    for (const line of restockLines) {
+      const warehouseId = line.warehouseId ?? fallbackWarehouseId;
+      if (!warehouseId) continue;
+      await inventoryService.adjust(ctx, {
+        variantId: line.variantId,
+        warehouseId,
+        delta: line.quantity,
+        reason: 'return',
+        referenceType: 'Return',
+        referenceId: input.returnId,
+        idempotencyKey: `return-restock:${input.returnId}:${line.inspectionId}`,
+        ...(line.binId ? { binId: line.binId } : {}),
+      });
+    }
+    if (fallbackWarehouseId) {
+      await inventoryService.adjust(ctx, {
+        variantId: input.replacementVariantId,
+        warehouseId: fallbackWarehouseId,
+        delta: -input.quantity,
+        // It left the building for a customer. `sale` is what that is, and it
+        // keeps the replacement out of shrinkage reports.
+        reason: 'sale',
+        referenceType: 'Return',
+        referenceId: input.returnId,
+        idempotencyKey: `return-exchange-out:${input.returnId}`,
+        note: `Replacement sent for return ${input.returnId}`,
+      });
+    }
+  }
+
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'return.exchanged',
+    data: {
+      returnId: input.returnId,
+      replacementVariantId: input.replacementVariantId,
+      quantity: input.quantity,
+    },
+  });
+
+  return { returnId: input.returnId };
+}
+
 export async function issueRefund(
   ctx: ServiceContext,
   rawInput: unknown
@@ -487,9 +633,15 @@ export async function issueRefund(
     const payment = await tx.orderPayment.findFirst({
       where: { orderId: ret.orderId, status: 'captured' },
       orderBy: { capturedAt: 'desc' },
-      select: { processorRef: true },
+      select: { processor: true, processorRef: true },
     });
-    return payment?.processorRef ?? null;
+    // A reference alone is NOT proof there is a charge to reverse. Money taken
+    // by hand — cash, a cheque, a bank transfer — never passed through a
+    // gateway, whatever got written in the reference box, and asking a gateway
+    // to reverse it fails with "no payment gateway is configured" on a shop
+    // that never had one (persona issue 223). The PROCESSOR is what decides.
+    if (!payment || !TAKEN_BY_GATEWAY.has(payment.processor)) return null;
+    return payment.processorRef ?? null;
   });
 
   // Settle through the tenant's gateway (sparx Pay / Stripe Direct). The charge.refunded
@@ -519,9 +671,15 @@ export async function issueRefund(
 
   let refundId = '';
   let restockLines: RestockLine[] = [];
+  // The order this money came off, and which of its lines. Captured inside the
+  // txn and used AFTER it to record the refund against the order itself
+  // (persona issue 222).
+  let refundedOrderId = '';
+  let refundedLines: { orderItemId: string; quantity: number; amount: number; name: string }[] = [];
   await withTenant(ctx, async (tx) => {
     const ret = await assertReturnWritable(tx, input.returnId);
     const issuedAs = input.asAccountCredit ? 'account_credit' : 'original_payment';
+    refundedOrderId = ret.orderId;
     await tx.returnRequest.update({
       where: { id: ret.id },
       data: {
@@ -533,6 +691,7 @@ export async function issueRefund(
       },
     });
     refundId = ret.id;
+    refundedLines = await refundShareByLine(tx, ret.id, input.refundAmountCents);
     if (inventoryActive) {
       restockLines = await collectRestockLines(tx, ret.id);
     }
@@ -579,6 +738,51 @@ export async function issueRefund(
     }
   }
 
+  // Record it against the ORDER, not only against the return.
+  //
+  // Without this the return said "$42.00 given back" while the order it came
+  // from still read "Paid $147.00, nothing refunded" and went on offering to
+  // refund the whole $147.00 — money already handed back, offered again
+  // (persona issue 222). `recordRefund` is the one write path that keeps
+  // amountPaid, paymentStatus, refundTotal and each line's quantityRefunded in
+  // step, and publishes `order.refunded` for the CRM's lifetime-spend.
+  //
+  // Post-commit, and swallowed: the return IS settled and the customer has
+  // their money. A bookkeeping write that fails must not unwind that, exactly
+  // as the restock above must not.
+  if (refundedOrderId !== '' && input.refundAmountCents > 0) {
+    try {
+      // The reason is READ on the order pane by a shop owner, so it names what
+      // came back rather than the return's id. An id there is a sentence for a
+      // developer sitting on a screen about money.
+      const sentBack = refundedLines.map((line) => line.name).join(', ');
+      await orderRefundsService.recordRefund(ctx, {
+        orderId: refundedOrderId,
+        amount: input.refundAmountCents / 100,
+        reason: sentBack === '' ? 'Sent back by the customer' : `Sent back: ${sentBack}`,
+        ...(refundedLines.length > 0
+          ? {
+              lines: refundedLines.map(({ orderItemId, quantity, amount }) => ({
+                orderItemId,
+                quantity,
+                amount,
+              })),
+            }
+          : {}),
+        metadata: {
+          returnId: input.returnId,
+          issuedAs: input.asAccountCredit ? 'account_credit' : 'original_payment',
+        },
+      });
+    } catch (err) {
+      console.error('[returns] refund settled but not recorded against the order', {
+        err,
+        returnId: input.returnId,
+        orderId: refundedOrderId,
+      });
+    }
+  }
+
   await publishCommerceEvent({
     tenantId: ctx.tenantId,
     actorId: ctx.userId ?? null,
@@ -591,6 +795,73 @@ export async function issueRefund(
   });
 
   return { refundId };
+}
+
+/**
+ * Split a return's refund across the order lines it came back from.
+ *
+ * The operator types ONE figure, and `recordRefund` caps each line at what is
+ * left un-refunded on it — so the figure has to be apportioned before it can be
+ * recorded per line. Shared by unit price, which is what the money actually
+ * represents; the remainder lands on the last line so the parts always sum to
+ * the whole and never a cent more.
+ *
+ * Returns an empty list when nothing can be apportioned (free-text lines, or a
+ * refund that is all shipping). `recordRefund` then books it against the order
+ * header, which is the honest answer for postage given back.
+ */
+async function refundShareByLine(
+  tx: TxClient,
+  returnId: string,
+  refundAmountCents: number
+): Promise<{ orderItemId: string; quantity: number; amount: number; name: string }[]> {
+  if (refundAmountCents <= 0) return [];
+  const lines = await tx.returnLineItem.findMany({
+    where: { returnId },
+    select: { orderItemId: true, approvedQuantity: true, quantity: true },
+  });
+  if (lines.length === 0) return [];
+
+  const orderItems = await tx.orderItem.findMany({
+    where: { id: { in: lines.map((line) => line.orderItemId) } },
+    select: { id: true, name: true, unitPrice: true, quantity: true, quantityRefunded: true },
+  });
+  const priceByItem = new Map(orderItems.map((item) => [item.id, Number(item.unitPrice)]));
+  const nameByItem = new Map(orderItems.map((item) => [item.id, item.name]));
+  const leftByItem = new Map(
+    orderItems.map((item) => [item.id, item.quantity - item.quantityRefunded])
+  );
+
+  const taking = lines
+    .map((line) => {
+      const asked = line.approvedQuantity > 0 ? line.approvedQuantity : line.quantity;
+      return {
+        orderItemId: line.orderItemId,
+        quantity: Math.min(asked, leftByItem.get(line.orderItemId) ?? 0),
+        unit: priceByItem.get(line.orderItemId) ?? 0,
+        name: nameByItem.get(line.orderItemId) ?? 'Item',
+      };
+    })
+    .filter((line) => line.quantity > 0 && line.unit > 0);
+  if (taking.length === 0) return [];
+
+  const worth = taking.reduce((sum, line) => sum + Math.round(line.unit * 100) * line.quantity, 0);
+  if (worth <= 0) return [];
+
+  let spent = 0;
+  return taking.map((line, index) => {
+    const share =
+      index === taking.length - 1
+        ? refundAmountCents - spent
+        : Math.round((refundAmountCents * (Math.round(line.unit * 100) * line.quantity)) / worth);
+    spent += share;
+    return {
+      orderItemId: line.orderItemId,
+      quantity: line.quantity,
+      amount: share / 100,
+      name: line.name,
+    };
+  });
 }
 
 /**

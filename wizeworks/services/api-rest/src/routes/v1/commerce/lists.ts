@@ -18,6 +18,7 @@ import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
 import { requireCommerceModule } from '../../../lib/commerce-context.js';
+import { cartContacts } from './cart-contact.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -300,7 +301,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
           ? { recoveredAt: { not: null } }
           : { abandonedAt: null, recoveredAt: null };
 
-    const { rows, total } = await withRequestTenant(request, async (tx) => {
+    const { rows, total, contacts } = await withRequestTenant(request, async (tx) => {
       const [rows, total] = await Promise.all([
         tx.cart.findMany({
           where,
@@ -327,7 +328,16 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         }),
         tx.cart.count({ where }),
       ]);
-      return { rows, total };
+      // Most shoppers are not signed in, so the `customer` join above answers
+      // "guest" for somebody who typed their name into checkout (issue 216).
+      return {
+        rows,
+        total,
+        contacts: await cartContacts(
+          tx,
+          rows.map((r) => r.id)
+        ),
+      };
     });
     return paged(
       rows.map((r) => ({
@@ -339,6 +349,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         subtotalCents: r.subtotalCents,
         totalCents: r.totalCents,
         itemCount: r._count.items,
+        contact: contacts.get(r.id) ?? null,
         abandonedAt: r.abandonedAt?.toISOString() ?? null,
         recoveredAt: r.recoveredAt?.toISOString() ?? null,
         expiresAt: r.expiresAt?.toISOString() ?? null,

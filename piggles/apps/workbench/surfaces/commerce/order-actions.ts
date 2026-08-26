@@ -45,7 +45,13 @@ export function useRecordOrderPayment(id: string) {
         processor: input.processor,
         status: 'captured',
         capturedAt: new Date().toISOString(),
-        ...(input.reference?.trim() ? { processorRef: input.reference.trim() } : {}),
+        // Her note goes in `metadata`, NOT `processorRef`. That field means "the
+        // gateway's own reference for this charge", and writing a cheque number
+        // into it told the refund path a gateway charge existed — so an order
+        // became un-refundable the moment somebody filled in the note box the
+        // screen asked them to fill in (persona issue 223). It is also part of
+        // a uniqueness constraint, so two cheques noted the same way collided.
+        ...(input.reference?.trim() ? { metadata: { note: input.reference.trim() } } : {}),
       }),
     onSuccess: () => {
       // The order's own payment_status and amount_paid move with this, so the

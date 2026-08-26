@@ -16,6 +16,7 @@ import { writeAuditLog } from '../audit';
 import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { recomputeCustomerCommerce } from './customer-rollup';
 
 export async function listForOrder(ctx: ServiceContext, orderId: string): Promise<OrderPayment[]> {
   return withTenant(ctx, (tx) =>
@@ -70,6 +71,11 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
       diff: { after: { amount: created.amount.toString(), status: created.status } },
     });
 
+    // "Total spent" is money received, so taking a payment is the moment it
+    // changes. Nothing updated it here before — the whole order total was
+    // credited to the buyer the instant the order was RAISED, paid or not.
+    await recomputeCustomerCommerce(tx, ctx.tenantId, order.customerId);
+
     return { payment: created, becamePaid };
   });
 
@@ -120,6 +126,14 @@ export async function voidPayment(ctx: ServiceContext, rawInput: unknown): Promi
       },
     });
     await recomputeOrderPaymentRollup(tx, ctx.tenantId, before.orderId);
+    // A voided payment drops the order's amountPaid, so the buyer's total has to
+    // drop with it. `order.customerId` via the payment's order — voidPayment only
+    // ever holds the payment.
+    const order = await tx.order.findUnique({
+      where: { id: before.orderId },
+      select: { customerId: true },
+    });
+    if (order) await recomputeCustomerCommerce(tx, ctx.tenantId, order.customerId);
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,

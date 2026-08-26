@@ -11,14 +11,19 @@ import { BuyerSection, DestinationSection, OrderHeadline } from './order-detail-
 import { SoldBySection } from './sold-by-section';
 import { PaymentsSection, RefundsSection } from './order-detail-money';
 import { HandoverSection } from './order-detail-handover';
+import { ReturnsSection } from './order-detail-returns';
 import { CancelRow, OrderNotes, RefundRow } from './order-detail-risk';
 import type { OrderFacts } from './order-detail-facts';
 import type { useOrderRisk } from './order-detail-actions';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
 import type { useOrderFulfillments, useOrderPayments, useOrderRefunds, Order } from './data';
 
 export interface OrderBodyProps {
   order: Order;
   facts: OrderFacts;
+  /** The returns section opens the return it makes, so it needs the pane's own
+   *  way of opening things rather than a route push. */
+  ctx: SurfaceContext;
   siteName: string | null;
   /** Every /v1/staff/sales/* route is admin-only, so "who sold it" needs the
    *  staff module AND pay access — a viewer gets no section rather than a 403. */
@@ -54,6 +59,9 @@ export function OrderBody(props: OrderBodyProps) {
           stillToFulfil={facts.stillToFulfil}
           fulfillments={props.fulfillments}
         />
+        {/* It went out, it came back, and only then does the money change —
+            so this reads between the handover and what was given back. */}
+        <ReturnsSection order={order} ctx={props.ctx} />
         <RefundsSection refunds={props.refunds} />
         <OrderNotes order={order} />
         <RefundRow

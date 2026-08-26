@@ -21,6 +21,17 @@ function resolveRequestProperty(request: FastifyRequest, actor: SiteActor) {
 const RangeQuery = z.object({
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
+  // docs/131 §6: which business's figures. A site id → that site; `all` → the
+  // tenant-wide total (revenue whose site was deleted included, member-access
+  // gated); absent → the active site (x-sparx-property-id). Resolved by
+  // resolveListScope, which returns undefined for the all-sites total.
+  //
+  // This lives on the BASE range query, not just the timeseries one, because
+  // every report below reads the same tables. While only the timeseries carried
+  // it, a tenant running two businesses saw one blended conversion rate, one
+  // blended AOV and one blended channel mix, each diluting the other business —
+  // the same defect the property column on Automation and Segment removed.
+  property: z.string().min(1).max(63).optional(),
 });
 
 const LimitedRangeQuery = RangeQuery.extend({
@@ -29,11 +40,6 @@ const LimitedRangeQuery = RangeQuery.extend({
 
 const TimeseriesQuery = RangeQuery.extend({
   grain: z.enum(['day', 'week', 'month']).optional(),
-  // docs/131 §6: which business's figures. A site id → that site; `all` → the
-  // tenant-wide total (revenue whose site was deleted included, member-access
-  // gated); absent → the active site (x-sparx-property-id). Resolved by
-  // resolveListScope, which returns undefined for the all-sites total.
-  property: z.string().min(1).max(63).optional(),
 });
 
 // `channel` is a derived channel key — a bucket (storefront, b2b_portal, …) or a
@@ -46,6 +52,16 @@ function resolveRange(input: { from?: string; to?: string }): { from: string; to
   const to = input.to ?? new Date().toISOString();
   const from = input.from ?? new Date(new Date(to).getTime() - 30 * 24 * 60 * 60_000).toISOString();
   return { from, to };
+}
+
+/** Which site a report covers: the explicit `?property=`, else the active site
+ *  from the header, and `undefined` only for an explicit `?property=all` from a
+ *  caller allowed to read across sites. */
+function reportScope(
+  request: FastifyRequest,
+  q: { property?: string }
+): Promise<string | undefined> {
+  return resolveListScope(requireAuth(request), q.property, request.headers['x-sparx-property-id']);
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
@@ -89,8 +105,10 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/reports/revenue-summary', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const range = resolveRange(RangeQuery.parse(request.query));
-    return ok(await reportingService.revenueSummary(toCommerceContext(request), range));
+    const q = RangeQuery.parse(request.query);
+    const range = resolveRange(q);
+    const propertyId = await reportScope(request, q);
+    return ok(await reportingService.revenueSummary(toCommerceContext(request), range, propertyId));
   });
 
   // Daily/weekly/monthly revenue timeseries from the rollup (docs/97). Closed
@@ -101,11 +119,7 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = TimeseriesQuery.parse(request.query);
     const range = resolveRange(q);
-    const propertyId = await resolveListScope(
-      requireAuth(request),
-      q.property,
-      request.headers['x-sparx-property-id']
-    );
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.revenueTimeseries(toCommerceContext(request), {
         range,
@@ -120,10 +134,12 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = LimitedRangeQuery.parse(request.query);
     const range = resolveRange(q);
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.topProducts(toCommerceContext(request), {
         range,
         ...(q.limit ? { limit: q.limit } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });
@@ -133,10 +149,12 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = LimitedRangeQuery.parse(request.query);
     const range = resolveRange(q);
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.topCustomers(toCommerceContext(request), {
         range,
         ...(q.limit ? { limit: q.limit } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });
@@ -144,15 +162,21 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/reports/conversion-funnel', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const range = resolveRange(RangeQuery.parse(request.query));
-    return ok(await reportingService.conversionFunnel(toCommerceContext(request), range));
+    const q = RangeQuery.parse(request.query);
+    const range = resolveRange(q);
+    const propertyId = await reportScope(request, q);
+    return ok(
+      await reportingService.conversionFunnel(toCommerceContext(request), range, propertyId)
+    );
   });
 
   app.get('/v1/commerce/reports/abandoned-carts', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const range = resolveRange(RangeQuery.parse(request.query));
-    return ok(await reportingService.abandonedCarts(toCommerceContext(request), range));
+    const q = RangeQuery.parse(request.query);
+    const range = resolveRange(q);
+    const propertyId = await reportScope(request, q);
+    return ok(await reportingService.abandonedCarts(toCommerceContext(request), range, propertyId));
   });
 
   app.get('/v1/commerce/reports/subscription-metrics', async (request) => {
@@ -174,10 +198,12 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = LimitedRangeQuery.parse(request.query);
     const hasRange = q.from !== undefined && q.to !== undefined;
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.discountPerformance(toCommerceContext(request), {
         ...(hasRange ? { range: resolveRange(q) } : {}),
         ...(q.limit ? { limit: q.limit } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });
@@ -188,10 +214,12 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = RangeQuery.parse(request.query);
     const hasRange = q.from !== undefined && q.to !== undefined;
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.channelBreakdown(
         toCommerceContext(request),
-        hasRange ? resolveRange(q) : undefined
+        hasRange ? resolveRange(q) : undefined,
+        propertyId
       )
     );
   });
@@ -204,10 +232,12 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = RangeQuery.parse(request.query);
     const hasRange = q.from !== undefined && q.to !== undefined;
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.channelComparison(
         toCommerceContext(request),
-        hasRange ? resolveRange(q) : undefined
+        hasRange ? resolveRange(q) : undefined,
+        propertyId
       )
     );
   });
@@ -218,11 +248,13 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = ChannelTopProductsQuery.parse(request.query);
     const hasRange = q.from !== undefined && q.to !== undefined;
+    const propertyId = await reportScope(request, q);
     return ok(
       await reportingService.channelTopProducts(toCommerceContext(request), {
         channel: q.channel,
         ...(hasRange ? { range: resolveRange(q) } : {}),
         ...(q.limit ? { limit: q.limit } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });

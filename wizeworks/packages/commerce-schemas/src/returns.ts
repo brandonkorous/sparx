@@ -17,6 +17,11 @@ export const ReturnStatus = z.enum([
   'inspecting',
   'inspected',
   'refunded',
+  // Settled by sending a replacement rather than by moving money. Its own
+  // terminal state on purpose: recording an even swap as a refund of zero puts a
+  // $0.00 refund in the tenant's books for every exchange they ever do, and
+  // makes "how much did we refund" unanswerable (persona issue 220).
+  'exchanged',
   'cancelled',
 ]);
 export type ReturnStatus = z.infer<typeof ReturnStatus>;
@@ -118,3 +123,18 @@ export const IssueReturnRefundInput = z.object({
   restockingFeeCents: MoneyCents.optional(),
 });
 export type IssueReturnRefundInput = z.infer<typeof IssueReturnRefundInput>;
+
+/**
+ * Settling an exchange: the replacement that goes out instead of money.
+ *
+ * `replacementVariantId` is required rather than optional — an exchange with no
+ * replacement named is a return somebody closed without saying what they sent,
+ * and it takes one unit off no shelf at all.
+ */
+export const SettleReturnExchangeInput = z.object({
+  returnId: Uuid,
+  replacementVariantId: Uuid,
+  quantity: z.number().int().positive().max(100).default(1),
+  staffNote: z.string().max(2000).optional(),
+});
+export type SettleReturnExchangeInput = z.infer<typeof SettleReturnExchangeInput>;

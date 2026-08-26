@@ -101,7 +101,11 @@ export async function listReturnDispositions(
              ins.return_line_item_id AS "returnLineItemId",
              oi.variant_id           AS "variantId",
              v.sku                   AS "variantSku",
-             v.title                  AS "variantName",
+             -- The variant's own title is blank on most catalogs, and falling
+             -- through to the SKU made the decision table name the goods
+             -- "THE-EVER…" while the card above it said "The Everyday Tee".
+             -- The order line's frozen name is what the rest of the pane uses.
+             COALESCE(v.title, oi.name) AS "variantName",
              GREATEST(rli.approved_quantity, 0) + CASE WHEN rli.approved_quantity > 0 THEN 0
                                                        ELSE rli.quantity END AS "quantity",
              ins.condition,

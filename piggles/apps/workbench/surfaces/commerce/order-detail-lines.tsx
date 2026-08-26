@@ -10,6 +10,7 @@ import { Text } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
 import { MoneyRow } from './order-detail-blocks';
 import { amountDue, formatMoney, type Order } from './data';
+import { deliveryPlan } from './order-types';
 
 type OrderItem = NonNullable<Order['items']>[number];
 
@@ -49,14 +50,22 @@ function LineRow({ item, currency }: { item: OrderItem; currency: string }) {
 function OrderTotals({ order }: { order: Order }) {
   const currency = order.currency;
   const due = amountDue(order);
+  // Free delivery is a decision she made, not a line with nothing in it, so a
+  // posted order shows the row at zero. Only a collected one has no delivery.
+  const posted = !deliveryPlan(order).collected;
   return (
     <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
       <MoneyRow label="Items" amount={order.subtotal} currency={currency} />
       {order.discountTotal > 0 ? (
         <MoneyRow label="Discount" amount={-order.discountTotal} currency={currency} />
       ) : null}
-      {order.shippingTotal > 0 ? (
-        <MoneyRow label="Delivery" amount={order.shippingTotal} currency={currency} />
+      {posted ? (
+        <MoneyRow
+          label="Delivery"
+          amount={order.shippingTotal}
+          currency={currency}
+          {...(order.shippingTotal > 0 ? {} : { reads: 'Free' })}
+        />
       ) : null}
       {order.surchargeTotal > 0 ? (
         <MoneyRow label="Card fee passed on" amount={order.surchargeTotal} currency={currency} />

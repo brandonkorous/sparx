@@ -24,6 +24,21 @@ const DateRange = z.object({
   to: z.string().datetime(),
 });
 
+/**
+ * The site CEILING on a report, honored (docs/131 §3.2).
+ *
+ * `restrictToPropertyId` is set when the CREDENTIAL is site-scoped — currently an
+ * `sk_live_` key issued for one business. Builder and sitebuilder already enforce
+ * it in their MCP contexts; the commerce reports did not, so a key issued for the
+ * donut shop answered "what was our revenue" with the machine shop's numbers in
+ * the total. RLS never caught it because both sites belong to the same tenant.
+ *
+ * Undefined (an unrestricted caller) stays tenant-wide, exactly as before.
+ */
+function siteCeiling(ctx: { restrictToPropertyId?: string | null }): string | undefined {
+  return ctx.restrictToPropertyId ?? undefined;
+}
+
 const getProducts: McpToolDefinition = {
   name: 'get_products',
   description: 'List products with optional filters (status, category, vendor, tag, search).',
@@ -55,7 +70,8 @@ const getRevenueSummary: McpToolDefinition = {
   scope: 'read:commerce',
   confirmation: false,
   input: DateRange,
-  run: (ctx, input) => reportingService.revenueSummary(ctx, input as { from: string; to: string }),
+  run: (ctx, input) =>
+    reportingService.revenueSummary(ctx, input as { from: string; to: string }, siteCeiling(ctx)),
 };
 
 const getTopProducts: McpToolDefinition = {
@@ -67,11 +83,13 @@ const getTopProducts: McpToolDefinition = {
     range: DateRange,
     limit: z.number().int().min(1).max(100).default(10),
   }),
-  run: (ctx, input) =>
-    reportingService.topProducts(
-      ctx,
-      input as { range: { from: string; to: string }; limit: number }
-    ),
+  run: (ctx, input) => {
+    const propertyId = siteCeiling(ctx);
+    return reportingService.topProducts(ctx, {
+      ...(input as { range: { from: string; to: string }; limit: number }),
+      ...(propertyId ? { propertyId } : {}),
+    });
+  },
 };
 
 const getTopCustomers: McpToolDefinition = {
@@ -87,11 +105,13 @@ const getTopCustomers: McpToolDefinition = {
     range: DateRange,
     limit: z.number().int().min(1).max(100).default(10),
   }),
-  run: (ctx, input) =>
-    reportingService.topCustomers(
-      ctx,
-      input as { range: { from: string; to: string }; limit: number }
-    ),
+  run: (ctx, input) => {
+    const propertyId = siteCeiling(ctx);
+    return reportingService.topCustomers(ctx, {
+      ...(input as { range: { from: string; to: string }; limit: number }),
+      ...(propertyId ? { propertyId } : {}),
+    });
+  },
 };
 
 const getConversionFunnel: McpToolDefinition = {
@@ -101,7 +121,7 @@ const getConversionFunnel: McpToolDefinition = {
   confirmation: false,
   input: DateRange,
   run: (ctx, input) =>
-    reportingService.conversionFunnel(ctx, input as { from: string; to: string }),
+    reportingService.conversionFunnel(ctx, input as { from: string; to: string }, siteCeiling(ctx)),
 };
 
 const getAbandonedCarts: McpToolDefinition = {
@@ -110,7 +130,8 @@ const getAbandonedCarts: McpToolDefinition = {
   scope: 'read:commerce',
   confirmation: false,
   input: DateRange,
-  run: (ctx, input) => reportingService.abandonedCarts(ctx, input as { from: string; to: string }),
+  run: (ctx, input) =>
+    reportingService.abandonedCarts(ctx, input as { from: string; to: string }, siteCeiling(ctx)),
 };
 
 const getSubscriptionStats: McpToolDefinition = {
@@ -259,11 +280,13 @@ const getChannelRevenue: McpToolDefinition = {
   scope: 'read:commerce',
   confirmation: false,
   input: z.object({ channel: ChannelKey, range: OptionalDateRange }),
-  run: (ctx, input) =>
-    reportingService.channelRevenue(
-      ctx,
-      input as { channel: string; range?: { from: string; to: string } }
-    ),
+  run: (ctx, input) => {
+    const propertyId = siteCeiling(ctx);
+    return reportingService.channelRevenue(ctx, {
+      ...(input as { channel: string; range?: { from: string; to: string } }),
+      ...(propertyId ? { propertyId } : {}),
+    });
+  },
 };
 
 const getChannelComparison: McpToolDefinition = {
@@ -276,7 +299,8 @@ const getChannelComparison: McpToolDefinition = {
   run: (ctx, input) =>
     reportingService.channelComparison(
       ctx,
-      (input as { range?: { from: string; to: string } }).range
+      (input as { range?: { from: string; to: string } }).range,
+      siteCeiling(ctx)
     ),
 };
 
@@ -290,7 +314,8 @@ const getSalesByTrafficSource: McpToolDefinition = {
   run: (ctx, input) =>
     reportingService.attributionBreakdown(
       ctx,
-      (input as { range?: { from: string; to: string } }).range
+      (input as { range?: { from: string; to: string } }).range,
+      siteCeiling(ctx)
     ),
 };
 
@@ -305,11 +330,13 @@ const getChannelTopProducts: McpToolDefinition = {
     range: OptionalDateRange,
     limit: z.number().int().min(1).max(100).default(10),
   }),
-  run: (ctx, input) =>
-    reportingService.channelTopProducts(
-      ctx,
-      input as { channel: string; range?: { from: string; to: string }; limit: number }
-    ),
+  run: (ctx, input) => {
+    const propertyId = siteCeiling(ctx);
+    return reportingService.channelTopProducts(ctx, {
+      ...(input as { channel: string; range?: { from: string; to: string }; limit: number }),
+      ...(propertyId ? { propertyId } : {}),
+    });
+  },
 };
 
 export const readTools: AnyMcpTool[] = [

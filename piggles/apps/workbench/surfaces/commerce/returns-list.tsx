@@ -163,7 +163,13 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   >
                     <td className="font-mono text-sm">{row.orderNumber ?? '—'}</td>
                     <td className="hidden max-w-48 truncate @lg:table-cell">
-                      {row.customerName ?? 'Unknown customer'}
+                      {/* A null order number means the SALE is gone, and then
+                          "Unknown customer" is a guess dressed as a fact — the
+                          customer is not unknown, there is nobody to know
+                          (issue 225). */}
+                      {row.orderNumber === null
+                        ? 'The sale is gone'
+                        : (row.customerName ?? 'Unknown customer')}
                     </td>
                     <td className="hidden text-sm @2xl:table-cell">
                       {formatDate(row.requestedAt)}
@@ -171,9 +177,15 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden @xl:table-cell">{outcomeLabel(row.preferredOutcome)}</td>
                     <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
                     <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
-                        {state.label}
-                      </Badge>
+                      {row.orderNumber === null ? (
+                        <Badge color="warning" variant="soft" size="sm">
+                          Nothing to do
+                        </Badge>
+                      ) : (
+                        <Badge color={state.tone} variant="soft" size="sm">
+                          {state.label}
+                        </Badge>
+                      )}
                     </td>
                   </tr>
                 );

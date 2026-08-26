@@ -151,13 +151,19 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.inspectionId}>
-                  <td className="max-w-0">
+                  {/* Wraps rather than truncates. `max-w-0` + `truncate` let the
+                      one column that NAMES the goods collapse to "T…" at 360px
+                      while Qty and Condition kept their room — on the table
+                      whose whole job is deciding about that item. */}
+                  <td className="min-w-[7rem]">
                     <span className="flex min-w-0 flex-col">
-                      <span className="truncate">
+                      <span className="break-words">
                         {row.variantName ?? row.variantSku ?? 'A free-text line'}
                       </span>
                       {row.dispositionBinCode ? (
-                        <span className="truncate text-sm">On shelf {row.dispositionBinCode}</span>
+                        <span className="text-sm break-words">
+                          On shelf {row.dispositionBinCode}
+                        </span>
                       ) : null}
                     </span>
                   </td>

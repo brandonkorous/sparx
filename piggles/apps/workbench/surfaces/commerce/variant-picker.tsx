@@ -15,6 +15,24 @@ import { Icon } from '@piggles/ui';
 import { formatCents } from './products-data';
 import { useVariantCatalog, type VariantChoice } from './bundles-data';
 
+/**
+ * What tells one version of a product from another, on screen.
+ *
+ * `title` first when a shop has written one, then the option values, then the
+ * code. Nothing at all only for a product with a single unnamed version, where
+ * a second line would repeat the first.
+ *
+ * The option values were already loaded and were never drawn, so searching
+ * "slate" returned five rows all reading "The Ash Overshirt · $128.00" and the
+ * only way to tell which was the M was to guess (persona issue 221).
+ */
+export function versionOf(variant: VariantChoice): string {
+  if (variant.title) return variant.title;
+  const options = variant.options.map((option) => option.value).join(' · ');
+  if (options) return options;
+  return variant.isDefault ? '' : variant.sku;
+}
+
 export function VariantPicker({
   onPick,
   excludeIds = [],
@@ -40,7 +58,10 @@ export function VariantPicker({
         return (
           v.productTitle.toLowerCase().includes(term) ||
           v.sku.toLowerCase().includes(term) ||
-          (v.title?.toLowerCase().includes(term) ?? false)
+          (v.title?.toLowerCase().includes(term) ?? false) ||
+          // "slate" and "medium" are what a person types, and on a catalog with
+          // no variant titles they live nowhere else.
+          v.options.some((option) => option.value.toLowerCase().includes(term))
         );
       })
       .slice(0, 40);
@@ -88,9 +109,9 @@ export function VariantPicker({
             >
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">{variant.productTitle}</span>
-                {!variant.isDefault && variant.title ? (
+                {versionOf(variant) ? (
                   <Text as="span" className="block text-sm">
-                    {variant.title}
+                    {versionOf(variant)}
                   </Text>
                 ) : null}
               </span>
