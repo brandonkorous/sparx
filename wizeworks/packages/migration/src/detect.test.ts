@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { detect, mapManually, readSource, sniffFormat } from './detect';
+import { CERTAIN, detect, mapManually, readSource, sniffFormat } from './detect';
+
+/** A shop's own mailing list. Not an export from anywhere. */
+const OWN_SPREADSHEET = [
+  'First Name,Last Name,Email,Phone,Address,City,State,Zip,Country,Tags,Accepts Marketing',
+  'Marguerite,Adeyemi,marguerite@example.com,(503) 555-0142,1184 SE Ash St,Portland,OR,97214,US,newsletter,yes',
+].join('\n');
+
+/** The real thing, which carries the column only Squarespace writes. */
+const SQUARESPACE_CONTACTS = [
+  'Email,First Name,Last Name,Subscribed,Created',
+  'sam@example.com,Sam,Quinn,Yes,2026-01-02',
+].join('\n');
 
 const SHOPIFY_PRODUCTS = [
   'Handle,Title,Body (HTML),Vendor,Type,Tags,Published,Option1 Name,Option1 Value,Variant SKU,Variant Inventory Qty,Variant Price,Image Src,Status',
@@ -71,6 +83,21 @@ describe('detect', () => {
     expect(best?.reasons.join(' ')).toContain('Handle');
     expect(best?.reasons.join(' ')).toContain('file name');
   });
+
+  it('keeps a one-column gate below the certainty line when nothing corroborates it', () => {
+    // Four contact exports require `Email` and nothing else. A shop's own mailing
+    // list cleared every one of those gates at an identical 0.6 and the tie went to
+    // whichever adapter the registry listed first.
+    const found = detect({ text: OWN_SPREADSHEET, fileName: 'juniper-row-mailing-list.csv' });
+    expect(found.length).toBeGreaterThan(1);
+    for (const candidate of found) expect(candidate.confidence).toBeLessThan(CERTAIN);
+  });
+
+  it('still answers outright when the vendor’s own columns are there', () => {
+    const [best] = detect({ text: SQUARESPACE_CONTACTS, fileName: 'contacts.csv' });
+    expect(best?.vendorSlug).toBe('squarespace');
+    expect(best?.confidence).toBeGreaterThanOrEqual(CERTAIN);
+  });
 });
 
 describe('readSource', () => {
@@ -96,6 +123,25 @@ describe('readSource', () => {
     expect(result.headers).toEqual(['color', 'size']);
     expect(result.raw).toEqual([{ color: 'red', size: 'large' }]);
     expect(result.entities).toEqual([]);
+  });
+
+  it('is not sure about a spreadsheet that only has an Email column', () => {
+    const result = readSource({ text: OWN_SPREADSHEET, fileName: 'juniper-row-mailing-list.csv' });
+    expect(result.sure).toBe(false);
+    // The headers are all still there, which is what the manual mapper needs to
+    // carry the phone, address and tags the vendor's map would have dropped.
+    expect(result.headers).toContain('Phone');
+    expect(result.headers).toContain('Tags');
+  });
+
+  it('is sure about a real export', () => {
+    expect(readSource({ text: SHOPIFY_PRODUCTS, fileName: 'products_export.csv' }).sure).toBe(true);
+    expect(readSource({ text: SQUARESPACE_CONTACTS, fileName: 'contacts.csv' }).sure).toBe(true);
+  });
+
+  it('takes the tenant’s word for it when they choose the source themselves', () => {
+    const result = readSource({ text: OWN_SPREADSHEET }, 'squarespace.contacts');
+    expect(result.sure).toBe(true);
   });
 
   it('honours an explicitly chosen source over the top candidate', () => {

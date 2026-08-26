@@ -60,6 +60,7 @@ export {
 export { parseWxr, type WxrDocument } from './parse/wxr';
 
 export {
+  CERTAIN,
   detect,
   mapManually,
   readSource,

@@ -30,6 +30,16 @@ import { validateRows, type ValidationReport } from './validate';
 import { allSources } from './vendors';
 import { normalizeHeader } from './vendors/_helpers';
 
+/**
+ * The line between an answer and a question.
+ *
+ * It was written down at the top of this file from the beginning and then computed
+ * and thrown away: `confidence` reached no caller, and the migration surface put
+ * EVERY non-null detection in a green tick that reads "This is a Squarespace
+ * contacts export". `sure` on the read result is that line made reachable.
+ */
+export const CERTAIN = 0.5;
+
 export interface DetectionCandidate {
   vendorSlug: string;
   vendorName: string;
@@ -90,19 +100,38 @@ function scoreDelimited(
   let confidence = source.required.length === 0 ? 0.3 : 0.6;
 
   const hints = source.hints ?? [];
+  let corroborated = false;
   if (hints.length > 0) {
     const hit = hints.filter((header) => headers.has(normalizeHeader(header)));
     confidence += 0.3 * (hit.length / hints.length);
-    if (hit.length > 0)
+    if (hit.length > 0) {
+      corroborated = true;
       // No leading conjunction: the surface joins these into one sentence and
       // supplies its own. "…, and plus 4 of 4 columns only shopify writes" is
       // what came out when both ends tried.
       reasons.push(`${hit.length} of ${hints.length} columns only ${vendorName} writes`);
+    }
   }
 
   if (source.filePattern !== undefined && fileName !== '' && source.filePattern.test(fileName)) {
     confidence += 0.1;
     reasons.push('the file name matches too');
+  }
+
+  // A one-column gate is not a fingerprint, whatever this file's header says.
+  //
+  // Four contact exports require `Email` (or `Email Address`) and nothing else, so
+  // a shop's own mailing-list spreadsheet cleared all four gates at exactly 0.6 and
+  // the tie went to whichever adapter the registry happened to list first. It was
+  // then announced as fact — and that vendor's column map reads four fields, so the
+  // phone numbers, addresses and tags in the same file were dropped without a word
+  // (persona issue 228).
+  //
+  // Not a hard rejection: the file really might be that export. It is demoted to a
+  // question, and a genuine export is unaffected because it carries the hint columns
+  // that corroborate it.
+  if (source.required.length <= 1 && !corroborated) {
+    confidence = Math.min(confidence, CERTAIN - 0.05);
   }
 
   return { confidence: Math.min(confidence, 1), reasons };
@@ -202,6 +231,16 @@ export interface MappedEntity {
 export interface ReadResult {
   /** Best candidate, or null when nothing recognised the file. */
   detected: DetectionCandidate | null;
+  /**
+   * True when `detected` is an ANSWER rather than a guess.
+   *
+   * False means either that the best candidate is below the certainty line, or that
+   * a rival from a different platform explains the file just as well. A caller that
+   * is about to say "this is an X export" must check this first; a caller that shows
+   * the manual column mapper should show it whenever this is false, so a file we are
+   * only guessing at never has columns silently dropped by the wrong vendor's map.
+   */
+  sure: boolean;
   candidates: DetectionCandidate[];
   format: SourceFormat;
   /** Headers as they appear in the file — the manual mapper's left-hand column. */
@@ -260,7 +299,34 @@ export function readSource(input: DetectInput, sourceId?: string): ReadResult {
     }
   }
 
-  return { detected: chosen, candidates, format, headers, raw, entities };
+  return {
+    detected: chosen,
+    // An explicitly chosen source IS the answer — the tenant said so.
+    sure: sourceId === undefined ? isSure(chosen, candidates) : chosen !== null,
+    candidates,
+    format,
+    headers,
+    raw,
+    entities,
+  };
+}
+
+/**
+ * Is the top candidate worth stating as fact?
+ *
+ * Two ways it is not. It can be under the certainty line — a gate it cleared on one
+ * universal column with nothing corroborating it. Or another PLATFORM can explain
+ * the file exactly as well, which makes naming one of them a coin toss wearing a
+ * green tick. Rival sources from the same vendor do not count: "contacts or
+ * customers, from Wix" is still Wix, and the chosen one carries the right map.
+ */
+function isSure(best: DetectionCandidate | null, candidates: DetectionCandidate[]): boolean {
+  if (best === null) return false;
+  if (best.confidence < CERTAIN) return false;
+  return !candidates.some(
+    (other) =>
+      other.vendorSlug !== best.vendorSlug && Math.abs(best.confidence - other.confidence) < 0.001
+  );
 }
 
 /**
