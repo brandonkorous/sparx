@@ -120,7 +120,25 @@ variable "jotacular_github_subject_prefix" {
     like this failure.
   EOT
   type        = string
-  default     = "repo:brandonkorous@13042540/jotacular@1341839746"
+  # CORRECTED 2026-08-25. This read `.../jotacular@1341839746`, which does not
+  # exist: `gh repo view brandonkorous/jotacular` returns "Could not resolve to
+  # a Repository", and the live credential in Azure has always carried
+  # `jotdojo`. Read back authoritatively rather than reasoned about:
+  #
+  #   gh api repos/brandonkorous/jotdojo/actions/oidc/customization/sub
+  #     -> {"sub_claim_prefix":"repo:brandonkorous@13042540/jotdojo@1341839746"}
+  #
+  # The variable ABOVE already said `brandonkorous/jotdojo` — the rename sweep
+  # that fixed it missed this string, so the two disagreed and only this one was
+  # wrong. A plan therefore showed a pending in-place UPDATE of jotDOJO's live
+  # federated subject, which any apply of this state would have silently taken:
+  # every jotDOJO Actions run would then fail Azure login with AADSTS700213,
+  # exactly the failure the paragraphs above describe, and nothing in that error
+  # names this line.
+  #
+  # Found because an unrelated apply (kanNINJA's identity) planned it as
+  # collateral. It was not triggered.
+  default = "repo:brandonkorous@13042540/jotdojo@1341839746"
 
   validation {
     condition     = startswith(var.jotacular_github_subject_prefix, "repo:")

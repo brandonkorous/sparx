@@ -33,8 +33,28 @@
 #                      would be inert, and an inert entry that looks load-bearing
 #                      is worse than no entry.
 #
-#   Azure OpenAI       kanNINJA calls OpenAI directly through OPENAI_API_KEY.
-#                      There is no Azure-hosted model seam to provision.
+#   Azure OpenAI       NO LONGER TRUE AS WRITTEN, and left here with the
+#                      correction rather than quietly edited. This said
+#                      "kanNINJA calls OpenAI directly through OPENAI_API_KEY;
+#                      there is no Azure-hosted model seam to provision." Then
+#                      built-in AI was removed from the product and the one
+#                      remaining model call became WHISPER TRANSCRIPTION for
+#                      voice capture (backend/src/services/transcription.service.ts).
+#
+#                      That seam currently points at JOTDOJO'S ACCOUNT: env.ts
+#                      defaults AZURE_OPENAI_ENDPOINT to
+#                      oai-jotdojo-prod-eus2 and the deployment to
+#                      `jotdojo-speech`. So kanNINJA borrows another product's
+#                      resource — sharing a whisper quota jotacular.tf sets to
+#                      ONE unit (three requests per minute, for both products
+#                      together), and breaking silently whenever jotDOJO
+#                      rotates that account key.
+#
+#                      Provisioning kanNINJA its own account + whisper
+#                      deployment is ~40 lines mirroring jotacular.tf's AI
+#                      section, and S0 has no base fee, so an idle account
+#                      bills nothing. Until that happens the coupling is real
+#                      and undocumented anywhere the jotDOJO side would see it.
 #
 # DEPENDS ON jotacular.tf for `data.azurerm_client_config.current`, which is
 # declared there and used here. If that file is ever removed, move the data
@@ -338,6 +358,175 @@ resource "azurerm_storage_container" "kanninja_attachments" {
 }
 
 # ---------------------------------------------------------------------------
+# Azure OpenAI - Whisper, and nothing else.
+#
+# kanNINJA runs no reasoning models: planning and drafting belong to the agent
+# the user already pays for, reached over MCP. The one model call left is
+# turning speech into text, because a phone cannot do it and no MCP client can
+# do it for us (backend/src/config/azure-openai.ts says the same thing from the
+# other side).
+#
+# THIS EXISTS TO STOP BORROWING JOTDOJO'S. Before it, env.ts defaulted
+# AZURE_OPENAI_ENDPOINT to `oai-jotdojo-prod-eus2` and the deployment to
+# `jotdojo-speech` - so kanNINJA transcribed on another product's resource,
+# against another product's key, inside a rate limit jotacular.tf sets to a
+# single unit. A key rotation over there broke voice capture over here, with
+# nothing on this side to explain it.
+#
+# COST, read from the Azure retail pricing API on 2026-08-25 rather than
+# recalled:
+#
+#     Azure OpenAI | Speech-to-Text-Batch-Whisper-glbl | 0.36 USD per 1 Hour
+#
+# $0.36 per HOUR OF AUDIO - $0.006 a minute. A thirty-second voice note costs
+# about a third of a cent. S0 carries no base fee, and a Standard deployment's
+# capacity is a rate ceiling rather than a reservation, so an idle account and
+# an idle deployment bill exactly nothing.
+#
+# THE ONE LINE THAT WOULD CHANGE THAT is the deployment SKU below. `Standard`
+# bills per use. `ProvisionedManaged` reserves throughput and bills
+# continuously, in the hundreds of dollars a month, whether or not a single
+# request ever arrives. Do not "upgrade" it.
+# ---------------------------------------------------------------------------
+
+variable "kanninja_ai_enabled" {
+  description = <<-EOT
+    Master switch for the account, the deployment, and the four secrets that
+    point at them.
+
+    Off is a real state rather than a broken one, PROVIDED the backend is the
+    version that treats an unset endpoint as "voice capture is off" instead of
+    constructing a client at import time. That was changed alongside this file;
+    against an older backend, off means the server does not boot.
+  EOT
+  type        = bool
+  default     = true
+}
+
+variable "kanninja_ai_location" {
+  description = <<-EOT
+    DELIBERATELY NOT `var.location`, and verified rather than assumed.
+
+    WHISPER IS NOT DEPLOYABLE IN centralus. Checked against this subscription on
+    2026-08-25:
+
+        az cognitiveservices model list -l centralus
+          --query "[?kind=='OpenAI' && model.name=='whisper']"
+        -> whisper is LISTED, with NO SKU
+
+        az cognitiveservices model list -l eastus2   -> whisper / Standard
+
+    A model can be listed in a region and carry no deployable SKU, which is why
+    "is it available there" is the wrong question to ask.
+
+    The cluster and the database must share centralus because the VNet is
+    regional. This account is reached over HTTPS and shares nothing with the
+    VNet, so it is under no such constraint - the cost of the split is a few
+    milliseconds on an already-asynchronous transcription.
+  EOT
+  type        = string
+  default     = "eastus2"
+}
+
+variable "kanninja_ai_capacity" {
+  description = <<-EOT
+    Rate ceiling, in units of THREE REQUESTS PER MINUTE. `1` therefore means
+    3 RPM, which is what a voice-capture button across ten accounts needs.
+
+    A LIMIT, NOT A RESERVATION - Standard bills per audio-minute consumed, so a
+    generous ceiling on an idle deployment costs nothing.
+
+    QUOTA IS PER SUBSCRIPTION AND PER REGION, so this does not conjure capacity;
+    it claims a share of what eastus2 already allows. Read on 2026-08-25:
+
+        OpenAI.Standard.whisper    used 1.0    limit 3.0
+
+    jotDOJO holds that 1.0. Taking one more brings the subscription to 2 of 3
+    and leaves a spare unit, so no quota request is needed - and, unlike the
+    arrangement this replaces, the two products stop sharing one rate limit.
+  EOT
+  type        = number
+  default     = 1
+}
+
+locals {
+  kanninja_ai_on    = var.kanninja_enabled && var.kanninja_ai_enabled
+  kanninja_ai_count = local.kanninja_ai_on ? 1 : 0
+  kanninja_ai_loc   = local.location_short[var.kanninja_ai_location]
+  kanninja_ai_name  = "oai-kanninja-${var.environment}-${local.kanninja_ai_loc}"
+}
+
+resource "azurerm_cognitive_account" "kanninja" {
+  count               = local.kanninja_ai_count
+  name                = local.kanninja_ai_name
+  location            = var.kanninja_ai_location
+  resource_group_name = azurerm_resource_group.main.name
+  kind                = "OpenAI"
+  sku_name            = "S0"
+  tags                = local.tags
+
+  # Required for the data-plane hostname the SDK builds. Without it the account
+  # answers only on the shared regional endpoint, which the OpenAI SDK does not
+  # accept as an Azure endpoint.
+  custom_subdomain_name = local.kanninja_ai_name
+
+  # Reached from the cluster over the public internet, like jotDOJO's. A private
+  # endpoint would work and costs about $7/mo, for a call carrying no customer
+  # data beyond audio that has already left the browser.
+  public_network_access_enabled = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "azurerm_cognitive_deployment" "kanninja_speech" {
+  count                = local.kanninja_ai_count
+  name                 = "kanninja-speech"
+  cognitive_account_id = azurerm_cognitive_account.kanninja[0].id
+
+  model {
+    format = "OpenAI"
+    name   = "whisper"
+    # Whisper's only version. Quoted because the provider wants a string, and an
+    # unquoted 001 is the number 1, which matches nothing.
+    version = "001"
+  }
+
+  sku {
+    # STANDARD. See the header - ProvisionedManaged bills continuously.
+    name     = "Standard"
+    capacity = var.kanninja_ai_capacity
+  }
+
+  # Whisper has had one version for years, so this is close to inert. It is here
+  # so that when a successor does arrive the deployment moves on its own
+  # schedule, rather than on the day the old one is withdrawn.
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
+locals {
+  kanninja_ai_secrets = local.kanninja_ai_on ? {
+    "AZURE-OPENAI-ENDPOINT" = {
+      value = azurerm_cognitive_account.kanninja[0].endpoint
+      type  = "url; not secret. The client strips a trailing slash itself"
+    }
+    "AZURE-OPENAI-API-KEY" = {
+      value = azurerm_cognitive_account.kanninja[0].primary_access_key
+      type  = "account key; regenerating it in the portal makes this value stale"
+    }
+    "AZURE-OPENAI-API-VERSION" = {
+      value = "2024-06-01"
+      type  = "api version; config/env.ts defaults to this same value if absent"
+    }
+    "AZURE-OPENAI-SPEECH-DEPLOYMENT" = {
+      value = azurerm_cognitive_deployment.kanninja_speech[0].name
+      type  = "deployment name; not secret, carried here so one lookup finds all four"
+    }
+  } : {}
+}
+
+# ---------------------------------------------------------------------------
 # Generated credentials
 # ---------------------------------------------------------------------------
 
@@ -369,6 +558,41 @@ resource "random_password" "kanninja_app" {
   length           = 32
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+# The MCP OAuth signing key, and the service-to-service token beside it.
+#
+# ALPHANUMERIC, for the same reason as the Better Auth secret below: both are
+# used as HMAC key material via the string's own bytes, and alphanumeric cannot
+# express a trailing-newline or encoding fault that silently changes the key.
+#
+# ROTATING MCP-JWT-SECRET IS CHEAP, which is why Terraform may own it. It signs
+# only the ACCESS token, whose TTL is five minutes
+# (backend/src/services/oauth.service.ts). Refresh tokens are opaque —
+# `mcp_rt_` + randomBytes(32), stored as a SHA-256 in oauth_refresh_tokens with
+# a 30-day life — and never touch this secret. So a rotation costs, at worst,
+# one 401 on an in-flight access token, after which the agent refreshes and
+# carries on. It does NOT force re-authorization, and the 1064 refresh-token
+# rows are unaffected.
+resource "random_password" "kanninja_mcp_jwt" {
+  count   = local.kanninja_count
+  length  = 48
+  special = false
+  upper   = true
+  lower   = true
+  numeric = true
+}
+
+# Rotating this is likewise safe: mcp-remote sends it and the backend checks it,
+# and BOTH read the value from this vault in the same release — so they change
+# together or not at all.
+resource "random_password" "kanninja_mcp_s2s" {
+  count   = local.kanninja_count
+  length  = 48
+  special = false
+  upper   = true
+  lower   = true
+  numeric = true
 }
 
 # Better Auth session-signing key material, so ALPHANUMERIC ONLY — deliberately.
@@ -420,6 +644,44 @@ locals {
       value = random_password.kanninja_auth_secret[0].result
       type  = "key material; ROTATING THIS SIGNS EVERY USER OUT"
     }
+    "MCP-JWT-SECRET" = {
+      value = random_password.kanninja_mcp_jwt[0].result
+      type  = "key material; signs 5-minute MCP access tokens. Rotation is cheap"
+    }
+    "MCP-S2S-TOKEN" = {
+      value = random_password.kanninja_mcp_s2s[0].result
+      type  = "shared bearer; mcp-remote -> backend. Both read it from here"
+    }
+
+    # ---------------------------------------------------------------------
+    # INTEGRATION-ENCRYPTION-KEY IS DELIBERATELY NOT HERE. DO NOT ADD IT.
+    #
+    # It is the AES-256-GCM key that encrypts every stored integration OAuth
+    # token (backend/src/integrations/crypto.ts). Terraform-managed secrets are
+    # REGENERATED whenever their random_password is replaced — a taint, a
+    # provider upgrade that changes the resource, a `-replace`, or someone
+    # tidying state. Every one of those would silently swap the key, and every
+    # previously stored token would fail to decrypt with an auth-tag error that
+    # names nothing.
+    #
+    # Losing it is not recoverable by re-running anything: the ciphertext is
+    # only meaningful under the exact key that produced it.
+    #
+    # So it is set ONCE, BY HAND, and lives only in this vault:
+    #
+    #   az keyvault secret set --vault-name kv-kanninja-prod-cus \
+    #     --name INTEGRATION-ENCRYPTION-KEY --file <64-hex-chars-no-newline>
+    #
+    # 64 hex characters, exactly 32 bytes — crypto.ts does
+    # Buffer.from(value,'hex') straight into aes-256-gcm, and a wrong length
+    # throws "Invalid key length" the first time an integration is connected
+    # rather than at boot, so a deploy looks healthy.
+    #
+    # It was safe to generate on 2026-08-25 only because
+    # `integration_connections` held zero rows. That is no longer true the
+    # moment anyone connects Slack or GitHub, and there is no warning when it
+    # stops being true.
+    # ---------------------------------------------------------------------
     "AZURE-STORAGE-ACCOUNT" = {
       value = azurerm_storage_account.kanninja[0].name
       type  = "account name; not secret, carried here so one lookup finds everything"
@@ -432,7 +694,15 @@ locals {
 }
 
 resource "azurerm_key_vault_secret" "kanninja" {
-  for_each = local.kanninja_secrets
+  # Two maps, one resource. The AI half is empty unless kanninja_ai_enabled,
+  # so switching that off REMOVES those four rather than stranding entries
+  # that point at a deleted account.
+  #
+  # Note the interaction with prevent_destroy below: turning AI off once these
+  # exist produces a plan Terraform refuses. That is the same trade
+  # jotacular.tf makes, and the escape is to remove the flag deliberately
+  # rather than to discover it mid-apply.
+  for_each = merge(local.kanninja_secrets, local.kanninja_ai_secrets)
 
   name         = each.key
   value        = each.value.value
@@ -476,4 +746,9 @@ output "kanninja_owner_password" {
   EOT
   value       = var.kanninja_enabled ? random_password.kanninja_owner[0].result : null
   sensitive   = true
+}
+
+output "kanninja_openai_endpoint" {
+  description = "Azure OpenAI data plane for kanNINJA's Whisper transcription. Null when kanninja_ai_enabled is false."
+  value       = local.kanninja_ai_on ? azurerm_cognitive_account.kanninja[0].endpoint : null
 }
