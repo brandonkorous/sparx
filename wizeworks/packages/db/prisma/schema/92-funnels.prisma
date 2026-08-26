@@ -1,0 +1,282 @@
+// Funnels module (docs/151, docs/152) — the binding and measurement entity for
+// a marketing campaign that already has all its parts.
+//
+// ── WHAT THIS IS NOT ────────────────────────────────────────────────────────
+//
+// It is NOT a second rule engine and NOT a page builder. The platform already
+// has the capture surface (site forms), the follow-up (email sequences), the
+// rules (automations), the traffic record (site analytics) and the outcome
+// (orders, bookings, deals). What was missing is the thing that says THESE
+// belong to one campaign, and here is whether it worked.
+//
+// So a funnel OWNS nothing it can borrow. Goals evaluate through the automation
+// evaluator, so there is exactly one condition language in the platform;
+// follow-up runs through Automation and EmailSequence as they already are.
+//
+// ── THE PRIVACY LINE, WHICH RUNS THROUGH THE MIDDLE OF THIS FILE ───────────
+//
+// Site analytics is deliberately cookieless: a visitor is a salted daily-rotating
+// hash of (date + tenant + IP + user-agent), and that hash is a LOOKUP KEY, never
+// a stored column. It is what lets a sparx site ship with no consent banner.
+//
+// A funnel must not quietly undo that, so identity is split at the capture line:
+//
+//   · ABOVE it — aggregate counts only, in rollup_funnel_daily. How many people
+//     reached a stage. No identity of any kind, not even a hash.
+//   · BELOW it — one row per KNOWN person in funnel_stage_events. Somebody who
+//     gave us an email address or is an existing customer, and therefore told us
+//     who they are.
+//
+// The two are joined exactly ONCE, at the moment of capture, by recomputing the
+// visitor hash in-request, reading that visitor's earliest pageview of the day,
+// copying the DERIVED facts (source, landing path, campaign) onto the row, and
+// throwing the hash away — the same mechanism resolveOrderAttribution already
+// uses for orders. There is deliberately no visitor-hash column on any table
+// here, and adding one would be the change that puts a consent banner on every
+// tenant's site.
+//
+// All three tables are tenant-scoped → ENABLE + FORCE RLS + a tenant_isolation
+// policy on current_tenant_id(), hand-authored in the migration SQL. All three
+// are new and empty, so there is no FORCE-RLS backfill loop to get wrong.
+
+// One campaign, for one business.
+model Funnel {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // NOT NULL, unlike Automation.property_id, and the difference is deliberate.
+  // A rule can sensibly apply to every business a tenant runs ("tax any order
+  // shipping to California"). A funnel cannot: it is a named campaign with a
+  // landing page, an offer and a follow-up, and one spanning a machine shop and
+  // a donut shop is not a thing anybody means. Making it required removes the
+  // "which business is this for" ambiguity from every report downstream.
+  //
+  // CASCADE with the site, for Automation's reason: deleting a site must NARROW
+  // a campaign's reach, never widen it. SetNull would silently promote a site's
+  // funnel to tenant-wide, which is precisely the bug being avoided.
+  propertyId String @map("property_id") @db.Uuid
+
+  name        String  @db.VarChar(255)
+  description String? @db.Text
+
+  // draft | active | paused | archived. A funnel only measures while `active`.
+  status String @default("draft") @db.VarChar(20)
+
+  // lead | recovery | purchase | booking | winback | custom.
+  //
+  // Drives the DEFAULT stage ladder and the recipe gallery's grouping — it is a
+  // starting shape, not a constraint. Every kind's ladder is editable, and
+  // `custom` exists so the shipped set never has to grow a member just because
+  // somebody sells something we did not anticipate.
+  kind String @default("lead") @db.VarChar(20)
+
+  // The ordered ladder, as ONE JSON document rather than a child table.
+  //
+  // Same call automations.actions and email_sequences.steps already make, for
+  // the same reason: the ladder is always read whole, always written whole, and
+  // its order is part of its meaning. A stage row would buy referential
+  // integrity nobody needs and cost a join on every read.
+  //
+  // Each entry: { key, name, kind: view|capture|qualify|engage|convert, match }.
+  // `key` is stable and is what funnel_stage_events and rollup_funnel_daily
+  // record — renaming a stage's display name must never orphan its history.
+  stages Json @default("[]")
+
+  // WHAT THIS CAMPAIGN IS TRYING TO CAUSE — the same ConditionGroup shape as
+  // Automation.goal, evaluated by the same evaluator.
+  //
+  // Nullable at the column, REQUIRED on an active funnel (enforced in the
+  // service layer, where a draft is allowed to be incomplete). A funnel without
+  // a goal is a list of things that happened, which is the exact artifact this
+  // module exists to replace.
+  goal Json?
+
+  // What one conversion is worth when it is NOT an order total — a booked job, a
+  // qualified lead, a signed quote.
+  //
+  // NULLABLE, and it must render as "not set" rather than as $0.00. A funnel
+  // nobody has priced and a funnel priced at zero are different facts, and a
+  // defaulted 0 makes them identical while quietly reporting that every lead the
+  // campaign produced was worth nothing.
+  goalValueCents BigInt? @map("goal_value_cents")
+
+  // WHAT RUNS IT. Both SetNull rather than Cascade: the evidence outlives the
+  // rule. Deleting the automation that drove a campaign must not delete the
+  // record that the campaign converted eleven people.
+  automationId String? @map("automation_id") @db.Uuid
+  sequenceId   String? @map("sequence_id") @db.Uuid
+
+  // WHERE IT STARTS. The landing page, and the form node on it that captures.
+  // `entryFormNodeId` is a node id inside a builder page document, not a row in
+  // a table, so it is a plain string with no FK to point at.
+  entryPageId     String? @map("entry_page_id") @db.Uuid
+  entryFormNodeId String? @map("entry_form_node_id") @db.VarChar(64)
+
+  // HOW LONG SOMEBODY MAY SIT STILL before the nightly sweep calls it abandoned,
+  // in hours. NULL means "use the default for this kind", which is not the same
+  // as "never" — a funnel that never gives up never fires the follow-up that
+  // recovers the sale, and that follow-up is most of why a business builds one.
+  //
+  // Per-funnel rather than a platform constant because the same word means
+  // wildly different things: a cart left for four hours is abandoned, a B2B
+  // quote left for four hours is Tuesday afternoon. `kind` supplies the default
+  // (DEFAULT_STALL_HOURS in @wizeworks/funnels); this overrides it.
+  stallAfterHours Int? @map("stall_after_hours")
+
+  // user | system, mirroring Automation.origin, plus which shipped recipe this
+  // was stamped from. A recipe is FORKED on install, never referenced — so
+  // `recipeKey` is provenance for the gallery ("you already have this one"), and
+  // editing a stamped funnel never edits the library.
+  origin    String  @default("user") @db.VarChar(10)
+  recipeKey String? @map("recipe_key") @db.VarChar(63)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property   Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  automation Automation?    @relation(fields: [automationId], references: [id], onDelete: SetNull)
+  sequence   EmailSequence? @relation(fields: [sequenceId], references: [id], onDelete: SetNull)
+  entryPage  BuilderPage?   @relation(fields: [entryPageId], references: [id], onDelete: SetNull)
+
+  stageEvents FunnelStageEvent[]
+  dailyRollup RollupFunnelDaily[]
+
+  // The list read is "this site's funnels, most recently touched first"; the
+  // second index backs the engine's "which active funnels might this event
+  // belong to" scan.
+  @@index([tenantId, propertyId, updatedAt(sort: Desc)])
+  @@index([tenantId, status])
+  @@map("funnels")
+}
+
+// One append-only row per (funnel, stage, KNOWN subject, occurrence).
+//
+// ── NOBODY ANONYMOUS IS EVER WRITTEN HERE ───────────────────────────────────
+//
+// Exactly one of `customerId` / `subjectEmail` identifies the subject, and both
+// are people who told us who they are. Rows for anonymous visitors do not exist
+// in this table, and there is no visitor-hash column to put them under — see the
+// file header. Everything above the capture line is counted in
+// rollup_funnel_daily and identified nowhere.
+model FunnelStageEvent {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // A plain scalar with the FK hand-added in the migration, matching the other
+  // high-volume leaf tables: FORCE RLS needs tenant_id ON THE ROW, and Tenant
+  // does not need a back-relation to a table nobody reads from that direction.
+  tenantId String @map("tenant_id") @db.Uuid
+  funnelId String @map("funnel_id") @db.Uuid
+
+  // Denormalized from the funnel at write time. A funnel's property is NOT NULL
+  // and does not move, so this cannot disagree — it is here so a per-site report
+  // filters without a join on a table that grows per person per stage.
+  propertyId String @map("property_id") @db.Uuid
+
+  // Which rung. Matches a `key` in the funnel's `stages` document, NOT its
+  // display name, so renaming a stage keeps its history.
+  stageKey String @map("stage_key") @db.VarChar(63)
+
+  // THE SUBJECT — exactly one of these, enforced by a CHECK in the migration.
+  // A customer id when we already know them; a bare address when this is the
+  // moment they first told us and no contact record exists yet.
+  //
+  // `customer_id` carries an SQL-only FK to customers ON DELETE CASCADE, the
+  // same hand-added shape as tenant_id above. CASCADE because this is per-person
+  // history and an erasure request must take it along; SET NULL would keep the
+  // history after the person was erased AND leave a row with neither subject,
+  // which the CHECK forbids. Rows held by `subject_email` have no key to cascade
+  // from — erasing one is a delete by (tenant, email) in the erasure path.
+  customerId   String? @map("customer_id") @db.Uuid
+  subjectEmail String? @map("subject_email") @db.VarChar(255)
+
+  // WHERE THIS PERSON CAME FROM, copied in at capture and frozen.
+  //
+  // Same vocabulary as SiteAnalyticsEvent.source (search | direct | social |
+  // referral | email), which is what lets a funnel report break down by source
+  // with no mapping table — the same reason Order.attribution* uses it. Frozen
+  // rather than joined: attribution is a fact about a moment, and the pageview
+  // it was derived from is inside a rotating window that will not survive.
+  entrySource      String? @map("entry_source") @db.VarChar(20)
+  entryLandingPath String? @map("entry_landing_path") @db.VarChar(2048)
+  entryCampaign    String? @map("entry_campaign") @db.VarChar(64)
+
+  // What this occurrence was worth, on the CONVERTING stage only. Null
+  // everywhere else, and null on a converting stage whose funnel has no
+  // `goalValueCents` and whose conversion carries no order total — "we do not
+  // know what this was worth" is a real answer and must not be reported as zero.
+  valueCents BigInt? @map("value_cents")
+
+  // What this stage attached to: { cartId, orderId, bookingId, submissionId }.
+  // JSON rather than five nullable FK columns because the set is open — a stage
+  // can convert onto anything the platform can sell, and a new one must not be a
+  // migration. Nothing here is a foreign key; they are pointers for a detail
+  // view to follow, and a dangling one renders as "no longer available".
+  refs Json @default("{}")
+
+  // When it HAPPENED, which is not always when it was written — a stitched entry
+  // event is recorded at capture time but occurred when the person landed.
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  funnel Funnel @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  // The ladder read is "this funnel, this window, grouped by stage".
+  @@index([tenantId, funnelId, stageKey, occurredAt])
+  // The abandonment sweep's read is "this funnel's subjects, most recent first",
+  // regardless of rung — the index above leads with stage_key and cannot serve it.
+  @@index([tenantId, funnelId, occurredAt(sort: Desc)])
+  // "Everything this person did in this campaign" — the detail view, and the
+  // dedupe check before writing a repeat stage for the same subject.
+  @@index([tenantId, funnelId, customerId])
+  @@index([tenantId, funnelId, subjectEmail])
+  @@map("funnel_stage_events")
+}
+
+// The above-the-line half: how many people reached each rung, per day, with no
+// identity of any kind.
+//
+// Maintained by the same nightly reconcile that owns rollup_site_daily, and read
+// with the open day live-overlaid so today is fresh. Recomputable from source,
+// which is what makes reconcile-plus-overlay correct rather than merely cheap.
+model RollupFunnelDaily {
+  tenantId   String   @map("tenant_id") @db.Uuid
+  // NON-null, unlike the commerce and dropship rollups: a funnel's property is
+  // required and cascades with it, so a row here can never outlive its site into
+  // an "unattributed" bucket. The grain is exact and needs no surrogate key.
+  propertyId String   @map("property_id") @db.Uuid
+  funnelId   String   @map("funnel_id") @db.Uuid
+  stageKey   String   @map("stage_key") @db.VarChar(63)
+  // The UTC day this row aggregates (date only — no time component).
+  bucket     DateTime @db.Date
+
+  // How many subjects reached this stage that day. Distinct within the day, so
+  // it charts correctly per bucket and must NOT be summed for a window-unique
+  // figure — the same caveat rollup_site_daily.visitors carries.
+  entered    Int    @default(0)
+  // How many of them went on to satisfy the funnel's goal.
+  converted  Int    @default(0)
+  // Attributed value of those conversions, in integer cents. Zero is honest
+  // here in a way it is not on the funnel itself: this is a SUM over rows, and
+  // a sum of nothing is nothing.
+  valueCents BigInt @default(0) @map("value_cents")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  // CASCADE from the funnel, which the other rollups deliberately do NOT do —
+  // and the difference is worth stating. Those aggregate a stream (orders, runs)
+  // that outlives any one rule, so a source row disappearing is normal. This one
+  // is keyed BY the campaign, so a deleted funnel's counts are not history, they
+  // are garbage that every all-funnels total would keep adding in. The reconcile
+  // only self-heals its trailing window, so anything older than that would sit
+  // there permanently. Proven by deleting a probe funnel and finding its rows
+  // still standing (docs/152 B2).
+  funnel   Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, propertyId, funnelId, stageKey, bucket], map: "rollup_funnel_daily_pkey")
+  // The chart reads one funnel across a date range; the PK's leading tenant_id
+  // and property_id cannot serve that on their own.
+  @@index([tenantId, funnelId, bucket])
+  @@map("rollup_funnel_daily")
+}

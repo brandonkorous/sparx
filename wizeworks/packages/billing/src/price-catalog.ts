@@ -45,6 +45,15 @@ export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   // module here is a flat monthly price, and a headcount billing dimension for one
   // of them complicates reconciliation and `activeTotalCents` for no real gain.
   staff: 2900,
+  // NOTE: `funnels` (docs/151) is intentionally absent, and FOR A DIFFERENT
+  // REASON than social's below. Social is free because it is cross-cutting.
+  // Funnels is free because every part it measures is already paid for: the
+  // landing page is builder, the follow-up is email, the outcome is commerce or
+  // scheduling. Charging again to find out whether they worked prices the answer
+  // out of reach of exactly the businesses that most need it — and it is the
+  // module most likely to make the others look worth keeping. See docs/152 §1 #1
+  // for the counter-argument that was considered and rejected.
+  //
   // NOTE: `social` (docs/133) is intentionally absent — it is a FREE module. No
   // entry ⇒ `isBillableModule` is false ⇒ the toggle path creates no Stripe item,
   // so it activates at $0 through the normal flow. Do not add a price here without

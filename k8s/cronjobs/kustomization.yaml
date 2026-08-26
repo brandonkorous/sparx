@@ -54,3 +54,9 @@ resources:
   # and called by nothing: a dropshipped order is submitted and then never asked
   # about again, so the customer is never told their parcel moved.
   - dropship-tracking-poll.yaml
+  # Without the first, a funnel's anonymous half is never aggregated and the
+  # chart at the top of the ladder stays empty. Without the second,
+  # `funnel.abandoned` has no publisher at all — the one funnel signal nobody
+  # triggers, and the one a recovery follow-up hangs off.
+  - funnels-rollup.yaml
+  - funnels-abandonment-sweep.yaml

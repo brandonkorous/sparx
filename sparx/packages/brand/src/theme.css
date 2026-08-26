@@ -292,6 +292,20 @@
      (~8:1), in both themes, because the fill is dark. */
   --color-module-staff: #92400e;
   --color-module-staff-content: #ffffff;
+  /* Funnels — WINE (#881337, rose-900). The hue question was real: eighteen
+     module identities were already taken, so this was picked by DISTANCE rather
+     than by category convention. Measured hue 342°, lightness 30%. The nearest
+     neighbour is scheduling rose-600 (347°, L 50%), and the 20-point lightness
+     gap is what separates them — the same move staff rust makes against
+     commerce orange. White ink clears AA comfortably at 9.56:1 because the fill
+     is dark, in both themes.
+
+     A funnel also BORROWS: a stage ladder wears the hue of the module whose
+     outcome it drives (a purchase rung is commerce orange, a booking rung is
+     scheduling rose), so wine marks the campaign itself rather than every rung
+     of it. */
+  --color-module-funnels: #881337;
+  --color-module-funnels-content: #ffffff;
   --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
   --color-module-partner-content: #ffffff;
   /* Social posting — a true blue (blue-600), the hue business owners map to social
@@ -372,6 +386,12 @@
      the hue is brown. */
   --color-module-staff: #92400e;
   --color-module-staff-content: #ffffff;
+  /* Funnels keeps WHITE ink in dark mode, like staff and for the same reason:
+     wine is a genuinely dark fill, so the light-to-dark ink flip that rescues
+     finance's green would put near-black on near-wine. See the light-theme note
+     for how the hue was chosen. */
+  --color-module-funnels: #881337;
+  --color-module-funnels-content: #ffffff;
   --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
   --color-module-partner-content: #ffffff;
   /* Social posting — a true blue (blue-600), the hue business owners map to social
@@ -501,6 +521,10 @@
 [data-module='social'] {
   --color-module: var(--color-module-social);
   --color-module-content: var(--color-module-social-content);
+}
+[data-module='funnels'] {
+  --color-module: var(--color-module-funnels);
+  --color-module-content: var(--color-module-funnels-content);
 }
 [data-module='platform'] {
   --color-module: var(--color-module-platform);

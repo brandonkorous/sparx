@@ -59,6 +59,7 @@ export const MODULE_HEX = {
   social: '#2563eb',
   finance: '#16a34a',
   staff: '#92400e',
+  funnels: '#881337',
 } as const;
 
 export type ModuleKey = keyof typeof MODULE_HEX;

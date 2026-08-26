@@ -1,0 +1,48 @@
+{
+  "name": "@wizeworks/funnels",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Marketing funnels (docs/151) — the binding and measurement entity for a campaign whose parts already exist. Owns nothing it can borrow: goals evaluate through @wizeworks/automation-schemas' evaluator so there is one condition language in the platform, and follow-up runs through Automation and EmailSequence as they already are. Backend-safe (deps: @wizeworks/db + the schema packages, no render/React) so the event-worker can run the nightly reconcile. The client-safe ./schemas subpath is what the workbench editor imports.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./schemas": {
+      "types": "./src/schemas.ts",
+      "default": "./src/schemas.ts"
+    },
+    "./announce": {
+      "types": "./src/announce.ts",
+      "default": "./src/announce.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp.ts",
+      "default": "./src/mcp.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@wizeworks/api-core": "workspace:*",
+    "@wizeworks/automation-schemas": "workspace:*",
+    "@wizeworks/db": "workspace:*",
+    "@wizeworks/events": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

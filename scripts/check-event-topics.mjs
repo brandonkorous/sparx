@@ -40,6 +40,13 @@ const CATALOGS = [
 // first member. After de-commenting, the only quoted strings on these lines are
 // union members (`| 'name'`), so we can safely collect every literal.
 function parseUnion(source, typeName) {
+  // Strip CR first. The comment-stripping regex below is `//.*$`, and `.` does
+  // not match a CR — so on a CRLF file NO comment is ever stripped, the scan
+  // breaks at the first comment containing a semicolon, and the check reports
+  // green having read about a dozen of 300+ names. `.gitattributes` says LF
+  // everywhere, but a tool that writes CRLF locally silences this check rather
+  // than failing it, which is the worst thing a guard can do. Seen 2026-08-26.
+  source = source.replace(/\r/g, '');
   const startLine = source.split('\n').findIndex((l) => l.includes(`export type ${typeName} =`));
   if (startLine < 0)
     throw new Error(

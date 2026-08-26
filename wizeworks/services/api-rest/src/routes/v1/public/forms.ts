@@ -32,6 +32,7 @@ import { formService } from '@wizeworks/builder';
 import { type FormAttachment, MAX_FORM_ATTACHMENTS } from '@wizeworks/builder-schemas';
 import { getStorage, formUploadAttachedKey } from '../../../lib/storage.js';
 import { verifyFormUploadToken } from '../../../lib/form-upload-token.js';
+import { captureFunnelStage, findFormCaptureTarget } from '../../../lib/funnel-entry.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -214,6 +215,39 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
         addToCrm: form.config.addToCrm,
         attachmentCount: attachments.length,
       });
+
+      // The capture stitch (docs/151 §4, docs/152 B3). If a live funnel names this
+      // form as where it starts, this submission IS its capture rung: the moment
+      // an anonymous visitor became a person. Record it with the entry facts
+      // derived from their own traffic today.
+      //
+      // Needs an address, because everything below a funnel's capture line is
+      // keyed on a known subject and a form with no email field produces no
+      // subject to key on.
+      //
+      // AFTER the submission is stored and the event published, and self-guarded
+      // inside `captureFunnelStage`: the inbox row and the automation fan-out are
+      // the tenant's actual business, and a reporting nicety must never be able
+      // to cost them a lead.
+      if (email) {
+        const target = await findFormCaptureTarget(tenantId, property.id, body.formNodeId);
+        if (target) {
+          await captureFunnelStage({
+            log: request.log,
+            tenantId,
+            funnelId: target.funnelId,
+            stageKey: target.stageKey,
+            subjectEmail: email,
+            // A pointer for the funnel's detail view to follow back to what the
+            // person actually wrote. Not a foreign key — a submission that is
+            // later deleted renders as "no longer available".
+            refs: { submissionId: submission.id },
+            ip: request.ip,
+            userAgent: userAgent(request) ?? '',
+            now: new Date(),
+          });
+        }
+      }
 
       return ok({ received: true });
     }

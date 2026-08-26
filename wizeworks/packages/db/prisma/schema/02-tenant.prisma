@@ -610,6 +610,12 @@ model Tenant {
   siteAnalyticsEvents SiteAnalyticsEvent[]
   rollupSiteDaily     RollupSiteDaily[]
 
+  // Funnels module (docs/151) — campaigns and their above-the-line counts.
+  // funnel_stage_events is deliberately absent: it carries its own tenant_id for
+  // FORCE RLS, but it is a high-volume leaf nothing reads from this direction.
+  funnels           Funnel[]
+  rollupFunnelDaily RollupFunnelDaily[]
+
   // Scheduling module (docs/79) — appointments / classes / reservations / rentals.
   // The legacy B2B fleet tables (service_types/service_appointments) were retired
   // onto this engine 2026-07-14 (docs/79 §15.7); B2B fleet context now rides on

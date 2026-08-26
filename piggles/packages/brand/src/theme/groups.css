@@ -130,6 +130,12 @@
   --color-module-seo-content: var(--color-group-web-content);
   --color-module-social: var(--color-group-web);
   --color-module-social-content: var(--color-group-web-content);
+  /* Funnels sits in `web` because a campaign starts on a page: its entry is a
+     landing page and a form, which is the same job the rest of this group does.
+     sparx gives it its own wine hue; here it groups, which is the whole
+     difference between the two brands' wheels. */
+  --color-module-funnels: var(--color-group-web);
+  --color-module-funnels-content: var(--color-group-web-content);
 
   --color-module-commerce: var(--color-group-sell);
   --color-module-commerce-content: var(--color-group-sell-content);

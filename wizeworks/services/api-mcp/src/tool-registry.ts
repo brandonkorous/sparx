@@ -16,6 +16,7 @@ import { schedulingMcpTools } from '@wizeworks/scheduling';
 import { cmsMcpTools } from '@wizeworks/cms/mcp';
 import { socialMcpTools } from '@wizeworks/social/mcp';
 import { b2bMcpTools } from '@wizeworks/b2b/mcp';
+import { funnelsMcpTools } from '@wizeworks/funnels/mcp';
 import { domainMcpTools } from './domain-tools.js';
 import { searchAdminMcpTools } from './search-admin-tools.js';
 
@@ -74,6 +75,12 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   // Thin wrappers over @wizeworks/b2b's service layer (extracted from the api-rest
   // routes so REST + MCP share one implementation — one service, many transports).
   ...(b2bMcpTools as unknown as AnyMcpTool[]),
+  // Funnels (docs/151) — campaigns and whether they worked; own read:funnels /
+  // write:funnels scopes, additionally gated on the `funnels` module flag in
+  // server.ts. The report tool is the one that matters: docs/152 A1 found that
+  // the conversion funnel was reachable ONLY by asking an AI, so the answer an
+  // agent gets has to be the whole ladder rather than a row count.
+  ...(funnelsMcpTools as unknown as AnyMcpTool[]),
 ];
 
 /**
@@ -94,13 +101,43 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
  * yet do something is a limitation someone reports, whereas a key that quietly
  * returns another business's customers is the defect this exists to remove.
  */
-const SITE_SCOPABLE_TOOL_NAMES: ReadonlySet<string> = new Set(
-  [
+/**
+ * Commerce REPORT tools, listed BY NAME rather than derived from the array.
+ *
+ * The three families above are whole packages whose every tool resolves a site
+ * through `toPropertyContext`, so deriving from the array is right for them.
+ * Commerce is different: only its reporting half became site-aware (docs/152 A2
+ * — each of these now takes an optional `propertyId` and passes the credential's
+ * ceiling), while the rest of `commerceMcpTools` still reads tenant-wide. Adding
+ * the array would quietly declare products, carts, reviews and fitment scopable
+ * when they are not, which is the exact defect the refusal exists to prevent.
+ *
+ * The cost of a by-name list is the one the comment above warns about: a new
+ * report added to the service is NOT covered here until someone adds it, and the
+ * symptom is a site key refusing a tool that would have worked. That is the safe
+ * direction to fail in, and it is why this list stays short and separate rather
+ * than growing into a hand-kept mirror of the whole module.
+ */
+export const SITE_SCOPABLE_COMMERCE_REPORTS: readonly string[] = [
+  'get_revenue_summary',
+  'get_top_products',
+  'get_top_customers_by_revenue',
+  'get_conversion_funnel',
+  'get_abandoned_carts',
+  'get_channel_revenue',
+  'get_channel_comparison',
+  'get_channel_top_products',
+  'get_sales_by_traffic_source',
+];
+
+const SITE_SCOPABLE_TOOL_NAMES: ReadonlySet<string> = new Set([
+  ...[
     ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
     ...(builderMcpTools as unknown as AnyMcpTool[]),
     ...(mediaMcpTools as unknown as AnyMcpTool[]),
-  ].map((t) => t.name)
-);
+  ].map((t) => t.name),
+  ...SITE_SCOPABLE_COMMERCE_REPORTS,
+]);
 
 /** Can this tool run under a site-restricted credential? */
 export function isSiteScopableTool(name: string): boolean {
@@ -123,6 +160,7 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:cms',
   'write:social',
   'write:b2b',
+  'write:funnels',
   'write:search',
 ]);
 

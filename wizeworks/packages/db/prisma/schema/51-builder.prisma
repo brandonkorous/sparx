@@ -98,9 +98,12 @@ model BuilderPage {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant      Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property    Property                @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  assignments BuilderPageAssignment[]
+  tenant       Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property     Property                @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  assignments  BuilderPageAssignment[]
+  // Campaigns that start on this page (docs/151). SetNull — a campaign's history
+  // survives the landing page being deleted or replaced.
+  entryFunnels Funnel[]
 
   // Slug is unique per (tenant, property) — two sibling sites can each have an
   // `/about`. The per-(tenant, property, recordType) default-template partial

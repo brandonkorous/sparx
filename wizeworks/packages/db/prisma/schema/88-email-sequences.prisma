@@ -52,6 +52,9 @@ model EmailSequence {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   enrollments EmailSequenceEnrollment[]
+  // Campaigns whose follow-up is this series (docs/151). SetNull on the funnel
+  // side: deleting the series must not delete the record of what it achieved.
+  funnels     Funnel[]
 
   @@index([tenantId, status])
   @@index([tenantId, propertyId])

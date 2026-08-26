@@ -38,6 +38,7 @@ export const WORKBENCH_MODULES = [
   'staff',
   'partner',
   'social',
+  'funnels',
   'platform',
 ] as const;
 

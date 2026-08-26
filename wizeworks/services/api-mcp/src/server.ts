@@ -71,6 +71,10 @@ const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
   // the tenant doesn't have the `b2b` module active.
   'read:b2b': 'b2b',
   'write:b2b': 'b2b',
+  // Funnels (docs/151) — campaign + report tools refuse when the tenant doesn't
+  // have the `funnels` module active. Free to run, still opt-in to have.
+  'read:funnels': 'funnels',
+  'write:funnels': 'funnels',
 };
 
 export async function buildServerForRequest(auth: McpAuthContext): Promise<McpServer> {

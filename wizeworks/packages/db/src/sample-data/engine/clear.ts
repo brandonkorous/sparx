@@ -41,7 +41,26 @@ export async function clearSampleDataOnTx(
     await tx.cartItem.deleteMany({ where: { tenantId, variantId: { in: variantIds } } });
   }
 
-  // Orders (cascade items/payments/fulfillments/returns), deals.
+  // Returns, BEFORE the orders they point at.
+  //
+  // This used to read "Orders (cascade items/payments/fulfillments/returns)"
+  // and the returns half of that was never true: `ReturnRequest.orderId` is a
+  // bare uuid column with NO foreign key, so deleting the order left the whole
+  // return subtree behind, orphaned. Four sample reloads left Juniper Row with
+  // twenty returns naming twenty orders that do not exist, and its Returns list
+  // — a work queue — filled with rows reading "Order —", "Unknown customer",
+  // "Item", each still offering to approve and buy a prepaid label (issue 225).
+  const sampleOrders = await tx.order.findMany({
+    where: { tenantId, metadata: sampleMeta },
+    select: { id: true },
+  });
+  if (sampleOrders.length > 0) {
+    await tx.returnRequest.deleteMany({
+      where: { tenantId, orderId: { in: sampleOrders.map((order) => order.id) } },
+    });
+  }
+
+  // Orders (cascade items/payments/fulfillments), deals.
   await tx.order.deleteMany({ where: { tenantId, metadata: sampleMeta } });
   await tx.deal.deleteMany({ where: { tenantId, metadata: sampleMeta } });
   // Support requests (docs/144 §7). The queue's PIPELINE stays — it is durable

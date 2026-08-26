@@ -48,7 +48,9 @@ export type McpBusinessScope =
   | 'read:b2b'
   | 'write:b2b'
   | 'read:social'
-  | 'write:social';
+  | 'write:social'
+  | 'read:funnels'
+  | 'write:funnels';
 
 export interface McpScopeMeta {
   scope: McpBusinessScope;
@@ -284,6 +286,24 @@ export const MCP_SCOPE_CATALOG: readonly McpScopeMeta[] = [
     kind: 'write',
     label: 'Manage social',
     description: 'Compose, schedule, approve, and publish social posts.',
+  },
+  // Funnels (docs/151). Added in the SAME change as the tools, deliberately: the
+  // three notes above all record the same defect from the other direction — a
+  // tool registry requiring a scope this catalog had never heard of, which makes
+  // the whole surface unreachable on both auth paths while everything typechecks.
+  {
+    scope: 'read:funnels',
+    module: 'Funnels',
+    kind: 'read',
+    label: 'Read campaigns',
+    description: 'View campaigns, their stages, and how many people reached each one.',
+  },
+  {
+    scope: 'write:funnels',
+    module: 'Funnels',
+    kind: 'write',
+    label: 'Manage campaigns',
+    description: 'Create and change campaigns, and record what happened to the people in them.',
   },
 ] as const;
 

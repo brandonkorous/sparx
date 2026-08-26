@@ -61,6 +61,7 @@
     "@wizeworks/email-sequences": "workspace:*",
     "@wizeworks/events": "workspace:*",
     "@wizeworks/finance": "workspace:*",
+    "@wizeworks/funnels": "workspace:*",
     "@wizeworks/godaddy": "workspace:*",
     "@wizeworks/integration-framework": "workspace:*",
     "@wizeworks/integrations": "workspace:*",

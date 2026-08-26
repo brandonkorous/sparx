@@ -1,0 +1,75 @@
+# Reconciles the funnel daily rollup (docs/151, docs/152 B3/B4).
+#
+# Recomputes a trailing window of rollup_funnel_daily from BOTH sources a funnel
+# is made of: the stage events below the capture line, and the site traffic above
+# it (counted as distinct visitors on each view rung's page). Idempotent
+# (delete-window-then-insert), so a replay is free.
+#
+# Runs at 10:00 UTC — after site-analytics-rollup at 09:00, and that order is
+# load-bearing rather than tidy: this job reads site_analytics_events for its
+# anonymous half, and running it first would count a day the beacon was still
+# writing into. Everything else stays clear of the 06:00–09:00 nightly reconcile
+# block so they don't pile onto the DB at once.
+#
+# The ladder read live-overlays today and counts from source either way, so a
+# late or skipped run only delays correcting closed days — never the live figure.
+# Forbid concurrency so a slow run never overlaps the next.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: funnels-rollup
+  namespace: sparx-prod
+  labels:
+    app: funnels-cron
+    job: funnels-rollup
+spec:
+  schedule: '0 10 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: funnels-cron
+            job: funnels-rollup
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/funnels/rollup
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

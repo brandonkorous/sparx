@@ -11,6 +11,7 @@ export type {
   FeedbackSubmittedPayload,
   FeedbackRespondedPayload,
   FormSubmittedPayload,
+  FunnelStageEventPayload,
 } from './types';
 export {
   createPublisher,

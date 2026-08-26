@@ -91,6 +91,9 @@ model Automation {
   clones         Automation[]        @relation("AutomationClone")
   runs           AutomationRun[]
   versions       AutomationVersion[]
+  // Campaigns this rule drives (docs/151). SetNull on the funnel side — the
+  // evidence that a campaign converted outlives the rule that drove it.
+  funnels        Funnel[]
 
   // propertyId TRAILS the dispatch predicate's three leading columns: the engine
   // selects on (tenant, status, triggerType) then narrows with

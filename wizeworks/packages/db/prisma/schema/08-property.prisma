@@ -336,6 +336,13 @@ model Property {
   // reach the whole tenant. CASCADE — a credential must never gain reach.
   apiKeys ApiKey[]
 
+  // Campaigns for THIS business, and their daily counts (docs/151). Unlike
+  // automations, a funnel's property is REQUIRED: a campaign spanning two
+  // unrelated businesses is not a thing anyone means. CASCADE, so deleting a
+  // site narrows reach rather than promoting a campaign to tenant-wide.
+  funnels           Funnel[]
+  rollupFunnelDaily RollupFunnelDaily[]
+
   // Which staff may open this site, when their membership is set to `selected`.
   // JUNCTION mirroring MemberModuleAccess — no rows under `all` means no
   // restriction at all.

@@ -74,7 +74,21 @@ export type ModuleSlug =
   //
   // NOT payroll, permanently. sparx records hours and rates and hands them to
   // whoever runs payroll. It never withholds, never files, never pays anyone.
-  | 'staff';
+  | 'staff'
+  // Campaigns and whether they worked (docs/151). A funnel is the entity that
+  // says a landing page, a form, a follow-up sequence and an outcome belong to
+  // ONE campaign, and reports how many people made it from one end to the other.
+  //
+  // FREE, with no MODULE_MONTHLY_CENTS entry, and that is a deliberate call
+  // rather than an oversight (docs/152 §1 #1). Every part it measures is already
+  // paid for; charging again to find out whether they worked prices the answer
+  // out of reach of exactly the businesses that most need it. It is also the
+  // module most likely to make the others look worth keeping.
+  //
+  // No REQUIRES and no BUNDLED_FREE. A funnel can measure a CMS publisher's
+  // newsletter list, a CRM team's outreach, or a storefront's checkout, so
+  // binding it to any one of them would be wrong for the other two.
+  | 'funnels';
 
 /**
  * THE closed set of module slugs — the one list, exported so nothing re-declares
@@ -106,6 +120,7 @@ export const ALL_MODULES: readonly ModuleSlug[] = [
   'social',
   'finance',
   'staff',
+  'funnels',
 ];
 
 // ── Module dependency graph ──────────────────────────────────────────────────

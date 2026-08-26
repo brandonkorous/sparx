@@ -39,6 +39,7 @@ export type ModuleSlug =
   | 'staff'
   | 'finance'
   | 'dropship'
+  | 'funnels'
   | 'platform';
 
 // Exhaustive by construction — `Record<ModuleSlug, string>` means adding to the
@@ -46,6 +47,7 @@ export type ModuleSlug =
 // leaking onto the screen through `moduleLabel`'s fallback.
 const MODULE_LABEL: Record<ModuleSlug, string> = {
   crm: 'Customers',
+  funnels: 'Campaigns',
   email: 'Email',
   commerce: 'Selling',
   b2b: 'Wholesale',
@@ -295,6 +297,31 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
     label: 'A social account needs reconnecting',
     module: 'social',
   },
+  // ── Campaigns (docs/151) ──
+  //
+  // These are what let an automation REACT to a campaign rather than only drive
+  // one, and they are the reason the events exist at all. `entered` fires when
+  // somebody first tells you who they are, never on a page view — everything
+  // above that line is anonymous by design, so there is no person to act on.
+  //
+  // `abandoned` is the one that earns its keep: it fires because somebody
+  // STOPPED, from a nightly sweep with no request behind it, and it is what a
+  // recovery follow-up hangs off.
+  {
+    eventType: 'funnel.entered',
+    label: 'Somebody enters a campaign',
+    module: 'funnels',
+  },
+  {
+    eventType: 'funnel.converted',
+    label: 'Somebody finishes a campaign',
+    module: 'funnels',
+  },
+  {
+    eventType: 'funnel.abandoned',
+    label: 'Somebody goes quiet in a campaign',
+    module: 'funnels',
+  },
 ];
 
 /** A scheduled trigger scans a kind of record on a timer; these are the kinds it
@@ -366,6 +393,7 @@ export function moduleForEventType(eventType: string): ModuleSlug {
   if (head === 'email') return 'email';
   if (head === 'cms' || head === 'content' || head === 'site' || head === 'form') return 'cms';
   if (head === 'social') return 'social';
+  if (head === 'funnel') return 'funnels';
   return 'platform';
 }
 

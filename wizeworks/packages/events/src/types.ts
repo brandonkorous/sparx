@@ -206,6 +206,7 @@ export type EventType =
   | 'return.approved'
   | 'return.received'
   | 'return.refunded'
+  | 'return.exchanged'
   // Reviews + Q&A
   | 'review.submitted'
   | 'review.published'
@@ -433,7 +434,26 @@ export type EventType =
   // status-changed, because the approver and the requester are different people
   // and the notifications go in opposite directions.
   | 'staff.timeoff.requested'
-  | 'staff.timeoff.decided';
+  | 'staff.timeoff.decided'
+  // ── Funnels (docs/151 §6.1) ───────────────────────────────────────────────
+  // What lets an automation REACT to a campaign rather than only drive one. A
+  // funnel already reads the same condition language automations do; these are
+  // the other direction — "somebody reached the end of the spring promotion" is
+  // a trigger a business wants, and without them a funnel is a report nobody can
+  // act on until they open it.
+  //
+  // `funnel.entered` fires on the CAPTURE rung, not on a page view. Everything
+  // above the capture line is anonymous and aggregate by design (docs/151 §4),
+  // so there is no person for an event to be about — an entered event for a
+  // pageview would either carry no subject or carry an identity the privacy
+  // model refuses to hold.
+  | 'funnel.entered'
+  | 'funnel.converted'
+  // Nobody DID anything, and that is the point: it is emitted by a sweep when a
+  // subject has sat on a rung past the funnel's patience without moving. The
+  // only one of the three with no request behind it, and the one that drives the
+  // follow-up that recovers a sale.
+  | 'funnel.abandoned';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -536,6 +556,7 @@ export interface EmailSendPayload {
     | 'login-otp'
     | 'form-submission-notification'
     | 'form-submission-confirmation'
+    | 'tool-result'
     | 'billing-receipt'
     | 'billing-payment-failed'
     | 'billing-trial-ending'
@@ -682,4 +703,39 @@ export interface FeedbackRespondedPayload {
   /** The staff reply body, when the response carried one (vs. a silent status flip). */
   messagePreview: string | null;
   recipientEmail: string;
+}
+
+/** Payload shared by `funnel.entered` / `funnel.converted` / `funnel.abandoned`
+ *  (docs/151 §6.1). The tenant is on the envelope.
+ *
+ *  `subjectEmail` is present when the person is not (yet) a contact record —
+ *  exactly one of it and `customerId` is set, the same exclusive-or the stage
+ *  row and its CHECK constraint enforce. A consumer that needs to reach the
+ *  person reads whichever is there; a consumer that needs to COUNT should read
+ *  the funnel's own reporting rather than tallying these, because an event is a
+ *  moment and the report is window-unique.
+ *
+ *  `valueCents` is only ever set on `funnel.converted`, and only when somebody
+ *  can actually say what the conversion was worth. Null means unpriced, never
+ *  zero — a funnel nobody has priced and a funnel priced at nothing are
+ *  different facts. */
+export interface FunnelStageEventPayload {
+  funnelId: string;
+  funnelName: string;
+  propertyId: string;
+  /** The rung's stable key, not its display name — a renamed stage keeps its
+   *  history, and a consumer keyed on the label breaks the first time somebody
+   *  edits it. */
+  stageKey: string;
+  /** What the rung DOES — `capture` on entered, `convert` on converted. Carried
+   *  so a consumer can branch without re-reading the funnel's ladder, and so a
+   *  future rung kind does not silently look like an existing one. */
+  stageKind: string;
+  customerId: string | null;
+  subjectEmail: string | null;
+  valueCents: number | null;
+  /** Where this person came from, as frozen onto the stage row at capture. Same
+   *  vocabulary as `site_analytics_events.source`. Null is common and honest. */
+  entrySource: string | null;
+  entryCampaign: string | null;
 }

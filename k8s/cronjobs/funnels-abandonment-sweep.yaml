@@ -1,0 +1,83 @@
+# Publishes funnel.abandoned for everyone who went quiet (docs/151 §6.1).
+#
+# The only funnel signal with nobody behind it: entered and converted are
+# announced by whoever handled the request, but abandonment is an ABSENCE, and an
+# absence needs a clock. It is what a recovery follow-up hangs off, so without
+# this job a funnel is a report somebody has to remember to open.
+#
+# ── THE SCHEDULE IS PART OF THE CORRECTNESS ─────────────────────────────────
+#
+# The sweep is stateless: it announces only subjects whose patience ran out SINCE
+# THE LAST RUN, using a 25-hour window (its own 24-hour interval plus an hour of
+# slack). That is what keeps each person announced exactly once with nothing to
+# remember, and it is why the interval must stay DAILY. Change this schedule and
+# `DEFAULT_SWEEP_WINDOW_HOURS` in routes/internal/funnels-cron.ts has to change
+# with it, or subjects are announced twice (window too wide) or missed entirely
+# (too narrow).
+#
+# The honest cost: a missed run skips those subjects permanently. Replay a known
+# outage with `?windowHours=` widened to cover it.
+#
+# Runs at 10:30 UTC, after the funnel rollup at 10:00 — not because it reads the
+# rollup (it reads the raw stage events), but so a night's funnel work finishes
+# as one block. Forbid concurrency: two overlapping sweeps would announce the
+# same people twice.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: funnels-abandonment-sweep
+  namespace: sparx-prod
+  labels:
+    app: funnels-cron
+    job: abandonment-sweep
+spec:
+  schedule: '30 10 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: funnels-cron
+            job: abandonment-sweep
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/funnels/abandonment-sweep
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

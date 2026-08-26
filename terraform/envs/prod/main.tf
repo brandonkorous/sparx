@@ -336,6 +336,18 @@ module "pubsub" {
     "staff.timeoff.requested"      = []
     "staff.timeoff.decided"        = []
 
+    # Funnels (docs/151 §6.1). Topic-only: nothing consumes these directly, and
+    # that is the point — they exist so an AUTOMATION can trigger on a campaign
+    # rather than only drive one, and automations are reached through the
+    # fan-in tee below rather than by a subscription of their own.
+    #
+    # `funnel.entered` fires on the CAPTURE rung, never on a page view: above
+    # that line a funnel counts anonymous visits and has no person for an event
+    # to be about (docs/151 §4).
+    "funnel.entered"   = []
+    "funnel.converted" = []
+    "funnel.abandoned" = []
+
     # A won deal, on the PLATFORM bus. `crm.deal.stage_changed` is a CrmTopic and
     # never reaches an in-process consumer, so staff-worker could not hear about
     # a closed sale to commission it.
@@ -451,6 +463,7 @@ module "pubsub" {
     "return.approved"  = []
     "return.received"  = []
     "return.refunded"  = []
+    "return.exchanged" = []
 
     # Customer-generated content — reviews + product questions
     "review.submitted"   = []
