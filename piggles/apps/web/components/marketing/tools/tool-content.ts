@@ -75,7 +75,19 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Can I use a PNG with a transparent background?',
-        a: 'For the tab icon, yes — transparency is fine and usually better. For the Apple touch icon it is not: iOS renders transparent pixels as black, so a logo with a see-through background becomes a logo on a black square on somebody’s home screen. A good generator fills that one with a background color for you.',
+        a: 'Yes, but it depends on your logo, and the answer is not automatically yes. A see-through icon sits straight on the browser’s own color, and roughly a third of people browse in dark mode — so a black or navy mark that looks sharp in a white tab is close to invisible in a dark one. A see-through background is right when your mark is mid-toned enough to be seen against white and against near-black. If it is not, give it a solid background, which is the whole reason favicons have one. Separately, the Apple touch icon can never be see-through: iOS renders those pixels as black, so it is always filled with a color.',
+      },
+      {
+        q: 'Should my favicon have a background or be transparent?',
+        a: 'Look at your mark on its own and ask whether it would be visible on white and on near-black. A logo that uses a mid-strength color — a red, a teal, an orange — usually survives both, and see-through is the tidier choice. Black text, a dark navy wordmark or a very pale mark survives one and disappears on the other, and those need a solid background: white behind a dark mark, a dark tone behind a pale one. This tool measures your logo against both kinds of tab and tells you which case you are in, and it shows you the icon in a light tab strip and a dark one side by side so you can see it rather than take our word for it.',
+      },
+      {
+        q: 'Does this remove the background from my picture?',
+        a: 'No. Nothing here erases anything from your picture — a logo that arrives with a solid white background keeps it. Two things get mistaken for removal. The first is that a see-through PNG usually looks white in a photo viewer, because the viewer puts it on white, so a picture you believed was white was already see-through before it got here. The second is that an icon has to be square: a wide logo is fitted inside the square whole, which leaves an empty strip above and below it. Set "Behind your logo" to a solid color and that color is filled in behind your logo on every icon in the set.',
+      },
+      {
+        q: 'Why is my tab icon see-through when my home-screen icon is not?',
+        a: 'A home-screen icon cannot be see-through at all — iPhones turn those pixels black — so it is always filled with a color, whatever else you choose. A tab icon can go either way, which is why it is a choice rather than something decided for you. Set "Behind your logo" to a solid color and every icon in the set is built on exactly that color, the one you picked, unchanged.',
       },
       {
         q: 'Where do the files go on my site?',

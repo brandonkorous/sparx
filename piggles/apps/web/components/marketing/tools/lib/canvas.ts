@@ -173,28 +173,3 @@ export function canvasToRgba(canvas: HTMLCanvasElement): Uint8ClampedArray {
   if (!ctx) throw new ImageError('This browser would not give us a canvas to read.');
   return ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 }
-
-/** The average color of the image, used to suggest a background for the Apple
- *  touch icon. Transparent pixels are skipped — including them drags every
- *  suggestion towards black, which is exactly the wrong answer for a logo on a
- *  transparent background. */
-export function averageColor(canvas: HTMLCanvasElement): string {
-  const data = canvasToRgba(canvas);
-  let r = 0;
-  let g = 0;
-  let b = 0;
-  let n = 0;
-  for (let i = 0; i < data.length; i += 4) {
-    if (data[i + 3]! < 128) continue;
-    r += data[i]!;
-    g += data[i + 1]!;
-    b += data[i + 2]!;
-    n++;
-  }
-  if (n === 0) return '#FFFFFF';
-  const hex = (v: number) =>
-    Math.round(v / n)
-      .toString(16)
-      .padStart(2, '0');
-  return `#${hex(r)}${hex(g)}${hex(b)}`.toUpperCase();
-}
