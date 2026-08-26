@@ -32,23 +32,27 @@ export interface ToolDeliveryState {
   message?: string;
 }
 
+/** A form field as text. A FormData entry can also be a File, which stringifies
+ *  to "[object Object]" — so anything that is not text reads as empty. */
+function field(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value === 'string' ? value : '';
+}
+
 export async function sendToolResult(
   _prev: ToolDeliveryState,
   formData: FormData
 ): Promise<ToolDeliveryState> {
   // Honeypot — a hidden field real people never see. A bot that fills it gets a
   // silent success and nothing is sent.
-  const honeypot = formData.get('website');
-  if (typeof honeypot === 'string' && honeypot.trim() !== '') {
-    return { status: 'success', email: String(formData.get('email') ?? '') };
+  if (field(formData, 'website').trim() !== '') {
+    return { status: 'success', email: field(formData, 'email') };
   }
 
-  const email = String(formData.get('email') ?? '')
-    .trim()
-    .slice(0, 255);
-  const toolSlug = String(formData.get('toolSlug') ?? '').slice(0, 63);
-  const rawLines = String(formData.get('lines') ?? '');
-  const note = String(formData.get('note') ?? '').slice(0, 2000);
+  const email = field(formData, 'email').trim().slice(0, 255);
+  const toolSlug = field(formData, 'toolSlug').slice(0, 63);
+  const rawLines = field(formData, 'lines');
+  const note = field(formData, 'note').slice(0, 2000);
 
   if (!EMAIL_RE.test(email)) {
     return { status: 'error', message: 'Please enter a valid email address.' };
