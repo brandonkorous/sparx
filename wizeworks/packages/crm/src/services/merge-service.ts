@@ -142,6 +142,12 @@ export const MOVED_MODELS = [
   // handled separately — they have a composite primary key that a plain move
   // would collide on.
   'segmentMembershipEvent',
+  // Which rungs of which campaigns this person reached. If the two records are
+  // one person then so is their campaign history, and leaving it behind makes
+  // the survivor look like they never entered a funnel they converted. Nothing
+  // here is unique per (funnel, stage, customer) — the repeat check is a read,
+  // not a constraint — so a plain move cannot collide.
+  'funnelStageEvent',
 ] as const;
 
 /**
