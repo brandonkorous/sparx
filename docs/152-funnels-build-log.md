@@ -1126,211 +1126,114 @@ Recorded up front because each has already cost this repo an incident.
    invisible in production: the funnel converts and the event silently does not
    fire. Four separate incidents already. `check:events` catches it at push time.
 
-## 9. Session handoff — 2026-08-26
+## 9. Session handoff — 2026-08-26 (browser pass)
 
-Everything above is the state of the work. This section is the state of the
-WORKING TREE, which no other file records.
+Everything above is the state of the WORK. This section is the state of the
+WORKING TREE and of the local environment, which no other file records.
 
-### Nothing is committed
+### ⚠ The database is behind the Prisma client — fix this first
 
-Phase A, B1, B2 and B3 all live in the working tree. The changed files, so
-staging is unambiguous:
+`prisma generate` has run against the new schema; `migrate deploy` has NOT. The
+generated client therefore selects columns the database does not have, and this
+is **not** confined to tests:
 
-**Funnels module (B1 + B2, all new)**
+```
+The column `customers.lead_response_due_at` does not exist in the current database.
+```
 
-- `wizeworks/packages/db/prisma/schema/92-funnels.prisma`
-- `wizeworks/packages/db/prisma/migrations/20270420000000_a_campaign_says_whether_it_worked/`
-- `wizeworks/packages/db/prisma/migrations/20270421000000_a_deleted_campaign_takes_its_numbers_with_it/`
-- `wizeworks/packages/funnels/` — `package.json`, `tsconfig.json`,
-  `src/{index,schemas,ladder,reconcile,schemas.test}.ts`
-- The five schema files that grew a back-relation, 25 added lines between them:
-  `02-tenant`, `08-property`, `51-builder`, `71-automation`, `88-email-sequences`
-- `pnpm-lock.yaml` — from `pnpm install` linking the new workspace package
+Any `customer` read or write through Prisma fails, because a select without an
+explicit projection asks for every scalar field. **The CRM screens in the running
+dev app are broken until the migrations are applied**, so there is no point
+opening a browser before that.
 
-**API, events, MCP, module registration (B4 + B6)**
+Five migrations are waiting, and they must go on in name order:
 
-- `wizeworks/packages/db/prisma/migrations/20270422000000_a_campaign_says_when_to_give_up/`
-  plus the `stall_after_hours` column and the sweep index in `92-funnels.prisma`
-- `wizeworks/packages/funnels/src/{abandon,announce,mcp}.ts` _(new)_ +
-  `package.json` (the `./announce` and `./mcp` subpaths, and the api-core / events
-  deps that only those subpaths pull)
-- `wizeworks/packages/events/src/{types,index}.ts` — the three events and
-  `FunnelStageEventPayload`
-- `terraform/envs/prod/main.tf` — the three topics
-- `scripts/check-event-topics.mjs` — the CRLF blindness fix
-- `wizeworks/services/api-rest/src/routes/v1/funnels/index.ts` _(new)_,
-  `routes/internal/funnels-cron.ts` _(new)_, `src/app.ts`
-- `wizeworks/services/api-mcp/src/{tool-registry,server}.ts` + `package.json`
-- `wizeworks/packages/auth/src/mcp-scopes.ts` — the two consent-catalog entries
-- `wizeworks/packages/modules/src/index.ts`,
-  `wizeworks/packages/billing/src/price-catalog.ts` — the slug, and why it is free
-- `wizeworks/services/api-rest/src/routes/v1/dashboard.ts`, `src/lib/email-data.ts`
-  — the two hardcoded module lists, now reading `ALL_MODULES`
-- `k8s/cronjobs/funnels-rollup.yaml`, `funnels-abandonment-sweep.yaml` _(new)_ +
-  `kustomization.yaml`
-- `sparx/packages/brand/src/{theme.css,marks.ts}`,
-  `piggles/packages/brand/src/theme/groups.css`, three `globals.css`, both
-  `components/module-scope.tsx`, both `surfaces/automations/automations-catalog.ts`
+| Migration                                          | What it adds                                                          |
+| -------------------------------------------------- | --------------------------------------------------------------------- |
+| `20270423000000_an_abandoned_form_is_still_a_lead` | `partial_step` + the partial unique index on form submissions         |
+| `20270424000000_a_quiz_result_is_a_real_score`     | `quiz_scored_at`                                                      |
+| `20270425000000_texting_ships_switched_off`        | `sms_suppressions`, `sms_messages`, `sms_settings` + RLS              |
+| `20270426000000_a_new_lead_starts_a_clock`         | `lead_response_minutes`, `lead_response_due_at`, `first_responded_at` |
+| `20270427000000_one_offer_at_the_right_moment`     | `commerce_offers`, `commerce_offer_impressions` + RLS                 |
 
-**Workbench surfaces (B5)**
+The tell that they are on: `pnpm --filter @wizeworks/crm test` (without `CI=true`)
+runs the DB-backed suites green instead of printing "column does not exist".
 
-- `sparx/apps/workbench/surfaces/funnels/{data,ladder,campaigns,campaign,stage-editor}.tsx`
-  _(new)_ + `lib/surfaces/catalog/funnels.ts` _(new)_
-- `piggles/apps/workbench/surfaces/funnels/*` _(new, 15 files — RULE #0.5)_ +
-  its own `lib/surfaces/catalog/funnels.ts`
-- Both apps' `lib/surfaces/catalog/index.ts` and `lib/surfaces/nav.ts` (the rail
-  slot, the label, the icon)
-- `wizeworks/packages/links/src/routes.ts` — `/campaigns` and `/campaigns/:id`
-- The A1 gap, in both apps: `surfaces/commerce/conversion-funnel.tsx` _(new)_,
-  plus `reports.tsx` and `reports-data.ts`. Piggles' `reports.tsx` was split
-  under RULE #0.5, which added `revenue-bars.tsx` and `report-sections.tsx`.
+### What is committed
 
-**Ingestion + the capture stitch (B3)**
+Everything. The working tree is clean as of 2026-08-26, in three commits split
+by the effort rather than by the phase, because the three efforts in this tree
+were not all funnels work:
 
-- `wizeworks/services/api-rest/src/lib/funnel-entry.ts` _(new)_ — the stitch
-- `wizeworks/services/api-rest/src/routes/v1/public/site-analytics.ts` —
-  `type: 'funnel_stage'`, the DNT carve-out, the rate limit, the two things a
-  public body may not name
-- `wizeworks/services/api-rest/src/routes/v1/public/forms.ts` — the form-submit
-  stitch, which is the path that actually fires
-- `wizeworks/services/api-rest/src/routes/internal/site-analytics-cron.ts` — the
-  nightly funnel reconcile, separately guarded, reporting `skipped`
-- `wizeworks/services/api-rest/package.json` — the `@wizeworks/funnels` dep, and
-  a second `pnpm install` to link it
-- `wizeworks/packages/funnels/src/{schemas,index,ladder,reconcile,schemas.test}.ts`
-  — the `path` field, the two new refusals, the nullable rung, the derived view
-  half. **Every file in the package changed**, so B2 and B3 are not separable in
-  this tree.
+- `feat(funnels)` — B5a and the whole of Phases C, D and E, 97 files including
+  the five migrations listed above.
+- `fix(email)` — the Juniper Row act 10/11 defects, 245 through 253: the Mailgun
+  sending-domain slice, the broadcast composer, and the session-cookie fix
+  behind an empty shop.
+- `feat(tools)` — the favicon tool's see-through legibility reading.
 
-**Platform (`wizeworks/`)**
+Phase A and Phase B went in earlier, across `cb91d27ea`, `04ef4b154`,
+`baeabe4e0` and `537434efb`.
 
-- `packages/commerce/src/services/reporting-service.ts` — A1 + A2
-- `packages/commerce/src/mcp/read-tools.ts` — the site ceiling on report tools
-- `packages/email/src/templates/tool-result.tsx` _(new)_
-- `packages/email/src/templates/index.ts`, `send.tsx`, `template-ids.ts`,
-  `template-fixtures.ts` — the four in-package registration points
-- `packages/email-worker/src/template-schema.ts` — the delivery gate
-- `packages/events/src/types.ts` — the template literal in the events union
-- `services/api-mcp/src/tool-registry.ts` + `src/site-scopable.test.ts` _(new)_
-- `services/api-rest/src/routes/v1/public/tools.ts` _(new)_ + `src/app.ts`
-- `services/api-rest/src/routes/v1/public/search.ts` — A4
-- `services/api-rest/src/routes/v1/commerce/site.ts` — the report routes
+### The browser pass: what to actually click
 
-**sparx marketing site**
+Nothing below has been done. Every slice has probe coverage or tests; none of it
+has been LOOKED at, which is the gap [[feedback_test_as_a_business_owner]]
+describes. Drive each one as the business owner, not as an agent — reading a JSON
+response proves nothing about whether anybody can reach the screen.
 
-- `app/tools/actions.ts` _(new)_
-- `components/marketing/tools/tool-result-context.tsx` _(new)_
-- `components/marketing/tools/tool-email-capture.tsx` _(new)_
-- `components/marketing/tools/tool-shell.tsx`
-- `components/marketing/tools/trust-row.tsx` — the reassurance copy that the
-  capture offer made untrue
-- All 16 tool components under `components/marketing/tools/` (17 tools:
-  `document-tool` is both invoice and quote)
+**1. The Campaigns surfaces (B5 + B5a), both consoles.** Never opened.
 
-**piggles marketing site** — its own copy of everything, by RULE #0
+- Does the ladder read as a SHAPE at pane width, or does it collapse into bars
+  that all look the same?
+- A campaign with no data at all vs one that ran and converted nobody: §11 says
+  those are two different empty states and collapsing them tells an owner their
+  campaign failed when it has not started. Check both actually differ.
+- The activation button is disabled with its reason in a tooltip. Is the reason
+  discoverable before the disabled button is frustrating?
+- The "Give up after" control (B5a) — does the default option name the right
+  number for the campaign's kind, and does it still say the KIND's default after
+  an override is chosen?
 
-- `app/tools/actions.ts` _(new)_
-- `components/marketing/tools/tool-result-context.tsx` _(new)_
-- `components/marketing/tools/tool-email-capture.tsx` _(new)_
-- `components/marketing/tools/lib/{document,margin,share-card}-email.ts` _(new)_
-- `components/marketing/tools/tool-shell.tsx` — provider + card + the two
-  assurance lines
-- All 16 tool components under `components/marketing/tools/`
+**2. A capture offer on a real page (C1).** Place a slide-in, a sticky bar and a
+timed offer from the Add palette.
 
-**Docs**: `docs/151-funnels-module.md`, `docs/152-funnels-build-log.md` (both new)
+- Do they stay HIDDEN until their trigger fires, or flash on load? The flash is
+  the exact failure the `hidden`-in-markup design exists to prevent.
+- Dismiss one, reload: it should stay gone.
+- The modal offer should open its dialog with no stray trigger button left on the
+  page.
+- In the CANVAS all three should be visible and editable at rest.
 
-### Dirty files that belong to ANOTHER session — do not stage
+**3. A multi-step form (C2), and then abandon it.** Fill step one with an email,
+press Continue, close the tab. A `partial` submission should exist, the inbox's
+default list should NOT show it, and the campaign it feeds should count one
+person. Then complete the same form with the same address: the partial should be
+PROMOTED, not duplicated.
 
-**Stage by path from the list above, never `git add -A`.** Other sessions are
-working in the same checkout and their dirty files come and go, so an enumerated
-list here goes stale within hours — it already did once. Anything not named
-above is somebody else's.
+**4. A quiz and a calculator (C3).** Take the quiz — the visitor should see their
+band, not a generic thank-you, and the contact's CRM score should move with the
+quiz named in `explain_crm_score`. The calculator should show a number and NOT
+score anybody.
 
-As of this writing that included `piggles/apps/workbench/{lib,surfaces}/studio/*`,
-`piggles/docs/personas/*`, `wizeworks/packages/builder/src/services/*`,
-`wizeworks/services/api-rest/src/routes/v1/builder/pages.ts`,
-`wizeworks/apps/site/components/checkout/*`, `wizeworks/packages/silica-catalog/*`,
-`wizeworks/packages/db/src/sample-data/engine/clear.ts`,
-`wizeworks/packages/commerce{,-schemas}/src/{events,returns}.ts` and two
-`terraform/` files.
+**5. A gated download (C4).** Needs `MEDIA_PUBLIC_URL` set, or the send is
+skipped with a loud log (by design — a relative link in an email is broken).
+Check the email arrives, the link downloads, and an expired token says "that link
+ran out" rather than 404.
 
-**Two of their migrations are also untracked and are NOT ours:**
-`20270418000000_a_customers_lifetime_spend_agrees_with_their_orders` and
-`20270419000000_new_customers_are_the_people_who_just_arrived`. Ours are
-`20270420000000` and `20270421000000`, named to sort after both so the order
-holds whichever session commits first.
+**6. The library (D3).** Activate a module on a test tenant and see whether the
+recipes land as drafts that can be turned on WITHOUT further configuration.
 
-### The local database is AHEAD of the repo
+**7. An order bump (E1)** on a real checkout, and a **post-purchase upsell (E2)**
+against a saved card. E2 is the one to be careful with: confirm a decline leaves
+NO pending order behind, and that a double-tap does not charge twice.
 
-This is the unusual bit, and it is easy to trip over. Brandon stopped the dev
-server and cleared the Prisma work, so against docker Postgres on `:5544`:
+### Two things worth doing before clicking
 
-- All five pending migrations are **applied**, including the other session's two
-  — `migrate deploy` applies everything pending, not just yours.
-- `prisma generate` has run **twice** (once after B1, once after B2's cascade
-  relation), so the client in `node_modules` knows `funnel`, `funnelStageEvent`
-  and `rollupFunnelDaily`.
-
-Consequences worth knowing: a `migrate status` will look clean while git shows
-those migrations as untracked, and a teammate pulling this branch has an empty
-database by comparison. B3 added no migration, so this is unchanged from B2. Probe rows were all cleaned up (`orphans platform-wide:
-0`), and the customer-erasure test ran inside a rolled-back transaction, so no
-real tenant data was touched.
-
-### What has NOT been clicked
-
-The surfaces have never been opened in a browser. Everything under them is
-exercised — the service layer, the ingestion, the events and the report all have
-probe coverage against the real database — but no one has looked at the pane.
-
-That is the exact gap [[feedback_test_as_a_business_owner]] describes, and the
-things it usually catches are the things a typecheck cannot: whether the ladder
-reads as a shape at pane width, whether "Nothing to compare yet" is the right
-sentence in the place it lands, and whether the activation tooltip is discovered
-before the disabled button frustrates somebody. Worth a pass with the dev server
-up and a seeded campaign.
-
-### B5a — the patience field, found by counting files _(2026-08-26)_
-
-Brandon noticed after committing B5 that the sparx surface is 5 files against
-piggles' 17, and asked whether they were at parity. **The file count was not the
-defect** — the two sets are 1449 and 1567 lines, the exports map one to one, and
-the split is piggles' RULE #0.5 (250 lines a file, 50 a method) doing exactly
-what it is for, against sparx's explicit "there is no line-count target."
-
-Checking the question properly turned up a real gap, and it was in BOTH consoles:
-**`stallAfterHours` was in the `Funnel` type, in `UpdateFunnelBody`, accepted by
-the API and read by the abandonment sweep, and no surface anywhere rendered or
-edited it.** [[feedback_fetched_but_never_rendered]] again, and this time the
-value was already typed in the component's own hand.
-
-It matters more than a missing field usually would: that column is the ONLY
-thing deciding when `funnel.abandoned` fires for a given campaign. Without the
-control, every campaign silently runs on its kind's default and a B2B quote on a
-30-day cycle has no way to say so — the per-funnel column added in B4 was
-decoration.
-
-**The API sends `defaultStallHours`, not the resolved patience.** The first cut
-sent the resolved value and it was wrong: once a campaign has an override the
-resolved value IS the override, so the editor would have labelled its
-"use the usual" option with the number the owner had just chosen. What the
-editor needs is the kind's default, which is also the thing it must not mirror
-locally — `DEFAULT_STALL_HOURS` keeps one home and the client is told.
-
-**Hours are stored and never shown.** The sweep works in hours; nobody describes
-a fortnight's patience as 336 of them. `hoursLabel()` renders the span the way a
-person says it and the control offers a fixed set of spans, because the
-alternative — a number box — invites `0`, and a campaign that gives up instantly
-is not a thing anyone means.
-
-_Verified:_ tsc + eslint clean on `@sparx/workbench`, `@piggles/console`,
-`@wizeworks/funnels`, `@wizeworks/api-rest`; `check:routes` (340 surfaces),
-`check:events`, `check:boundaries`; and a 12/12 probe against the real database
-whose load-bearing assertion is that with an override of 720h set, the reported
-default is still 336h rather than an echo of the override.
-
-_Still not clicked_ — see below. This closed a gap a typecheck could not see;
-it did not close the one a browser would.
+- **Seed richer data.** Most of these screens need a tenant with a site, a form,
+  some traffic and at least one campaign that has actually recorded people.
+- **Ask for a dev restart** rather than starting one. `pnpm install` ran during
+  this work, so the stack is holding an older client.
 
 ### Verification that was run, and how
 
@@ -1379,15 +1282,12 @@ phase/slice reasoning in fuller form than the summaries here:
 - Analysis: https://claude.ai/code/artifact/d65b906d-0ecf-497a-858f-4e4d201af753
 - Build plan: https://claude.ai/code/artifact/9fc77430-8253-426d-b8fd-df3d8800dcb6
 
-### Immediate next step
+### Lessons worth carrying forward
 
-**Phase A and B1-B6 are finished.** Next is **B5**, the workbench surfaces in
-both apps — see the RESUME HERE pointer at the top.
-
-All 309 migrations are applied to the local database and the client is
-regenerated; `prisma migrate status` reads "Database schema is up to date".
-
-Things worth carrying forward from this session:
+_(This section used to open by naming B5 as the next slice and claiming every
+migration was applied. Both went stale within a day. The RESUME pointer at the
+top of the file and §9 above are the current state; what follows is the part that
+does not go out of date.)_
 
 - **The root `postinstall` runs `prisma generate`.** So `pnpm install` is a
   DB-adjacent command here, not a neutral one: adding a workspace dependency
