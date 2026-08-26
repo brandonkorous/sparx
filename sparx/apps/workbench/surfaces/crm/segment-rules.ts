@@ -105,6 +105,12 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
   },
   'customer.company': { label: 'Company', group: 'Customer', kind: 'text' },
   'customer.createdAt': { label: 'Date added', group: 'Customer', kind: 'date' },
+  'customer.daysSinceCreated': {
+    label: 'Days since they were added',
+    group: 'Customer',
+    kind: 'number',
+    hint: 'E.g. at most 30 for “people who joined this month”.',
+  },
   'customer.totalSpent': {
     label: 'Total spent',
     group: 'Customer',
@@ -234,6 +240,7 @@ export const OFFERED_FIELDS: SegmentField[] = [
   'customer.daysSinceLastOrder',
   'customer.lastOrderAt',
   'customer.firstOrderAt',
+  'customer.daysSinceCreated',
   'customer.createdAt',
   'customer.assignedRepId',
   'customer.doNotContact',
