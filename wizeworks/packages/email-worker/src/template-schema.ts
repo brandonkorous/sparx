@@ -282,7 +282,9 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
         .min(1)
         .max(50),
       note: z.string().max(2000).nullable().optional(),
-      brandName: z.string().max(120).nullable().optional(),
+      // No brandName. The template reads the sending brand from the provider
+      // that paints the masthead, so a caller cannot sign the email off as a
+      // company other than the one whose wordmark is on it.
     }),
   }),
   z.object({

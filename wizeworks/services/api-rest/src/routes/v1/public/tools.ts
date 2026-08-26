@@ -11,9 +11,11 @@
 //
 // BRAND IS RESOLVED, NEVER PASSED
 //
-// The sign-off name and the link back come from `platformBrandIdentity`, keyed by
-// the tenant's own `platformBrand` — the resolution path shared code is required
-// to use when it has no request host to read. There is deliberately no brand
+// The link back comes from `platformBrandIdentity`, keyed by the tenant's own
+// `platformBrand` — the resolution path shared code is required to use when it
+// has no request host to read. The SIGN-OFF NAME is not sent at all: the
+// template reads it from the same provider that paints the masthead, so the
+// words and the wordmark cannot disagree. There is deliberately no brand
 // parameter and no per-brand table here: a lookup keyed by brand is a brand
 // conditional wearing a nicer hat, and it is the thing that has to be edited the
 // day a third brand launches.
@@ -160,7 +162,6 @@ const publicToolsRoutes: FastifyPluginAsync = (app) => {
         ...(toolUrl ? { toolUrl } : {}),
         lines: body.lines,
         note: body.note ?? null,
-        brandName: identity.name,
       },
     });
 

@@ -146,7 +146,6 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
       { label: 'Profit per unit', value: '$25.60' },
     ],
     note: 'Prices exclude tax and shipping.',
-    brandName: 'sparx',
   },
   'billing-receipt': {
     accountName: 'Rosa Flowers',

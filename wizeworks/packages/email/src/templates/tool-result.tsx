@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { Section } from '@react-email/components';
 import { EmailLayout } from './_layout';
-import { EmailHeading, EmailLink, EmailMuted, EmailParagraph } from '../components';
+import {
+  EmailHeading,
+  EmailLink,
+  EmailMuted,
+  EmailParagraph,
+  usePlatformName,
+} from '../components';
 
 // The free-tool result a visitor asked us to send them (docs/152 A3).
 //
@@ -42,17 +48,15 @@ export interface ToolResultEmailProps {
   lines: { label: string; value: string }[];
   /** Optional closing note from the tool (a caveat, a next step). */
   note?: string | null;
-  /** Which brand sent this — "sparx" or "Piggles". Falls back to a neutral line. */
-  brandName?: string | null;
 }
 
-export function ToolResultEmail({
-  toolName,
-  toolUrl,
-  lines,
-  note,
-  brandName,
-}: ToolResultEmailProps) {
+export function ToolResultEmail({ toolName, toolUrl, lines, note }: ToolResultEmailProps) {
+  // The sending brand, read from the same provider that paints the masthead —
+  // never a name the caller passed in. A caller-supplied brand can disagree with
+  // the brand the layout renders, and it did: a Piggles tool page signed off as
+  // sparx under a piggles wordmark.
+  const brandName = usePlatformName();
+
   return (
     <EmailLayout preview={`Your ${toolName} results`}>
       <Section>
@@ -81,9 +85,8 @@ export function ToolResultEmail({
         ) : null}
 
         <EmailMuted>
-          {brandName
-            ? `You asked ${brandName} to send this. It is the only thing we will send unless you tell us otherwise.`
-            : 'You asked us to send this. It is the only thing we will send unless you tell us otherwise.'}
+          You asked {brandName} to send this. It is the only thing we will send unless you tell us
+          otherwise.
         </EmailMuted>
       </Section>
     </EmailLayout>
