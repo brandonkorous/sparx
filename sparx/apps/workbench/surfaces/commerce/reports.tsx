@@ -32,6 +32,7 @@ import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { ConversionFunnelReport } from './conversion-funnel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   RANGE_LABEL,
@@ -41,6 +42,7 @@ import {
   presetRange,
   reportsErrorMessage,
   useChannelBreakdown,
+  useConversionFunnel,
   useRevenueSummary,
   useRevenueTimeseries,
   useTopProducts,
@@ -111,6 +113,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const series = useRevenueTimeseries(range);
   const products = useTopProducts(range);
   const channels = useChannelBreakdown(range);
+  const funnel = useConversionFunnel(range);
 
   const isFetching =
     summary.isFetching || series.isFetching || products.isFetching || channels.isFetching;
@@ -267,6 +270,24 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                           </div>
                         ))}
                       </div>
+                    )}
+                  </FormSection>
+
+                  <FormSection
+                    title="How many visits became orders"
+                    description="Where people stop between arriving and buying. A step with nothing to compare against says so rather than showing 0%."
+                  >
+                    {funnel.isPending ? (
+                      <Text className="text-sm" role="status">
+                        Loading…
+                      </Text>
+                    ) : funnel.data ? (
+                      <ConversionFunnelReport funnel={funnel.data} />
+                    ) : (
+                      <Text className="text-sm">
+                        This could not be worked out just now. Nothing about your orders has
+                        changed.
+                      </Text>
                     )}
                   </FormSection>
 

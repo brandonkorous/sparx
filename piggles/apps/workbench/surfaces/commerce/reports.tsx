@@ -18,7 +18,6 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
-  Badge,
   Card,
   Heading,
   Select,
@@ -28,13 +27,14 @@ import {
   StatValue,
   Stats,
   Text,
-  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { faChartLine } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { ConversionFunnelReport } from './conversion-funnel';
+import { BestSellersSection, ChannelsSection, DayByDaySection } from './report-sections';
 
 /** Registry module for this pane, so the brand draws Sell's own picture rather
  *  than the generic one. */
@@ -42,73 +42,19 @@ const MODULE = 'commerce';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   RANGE_LABEL,
-  channelLabel,
   formatCents,
   formatCentsRounded,
   presetRange,
   reportsErrorMessage,
   useChannelBreakdown,
+  useConversionFunnel,
   useRevenueSummary,
   useRevenueTimeseries,
   useTopProducts,
   type RangePreset,
-  type RevenuePoint,
 } from './reports-data';
 
 const NUMBER = new Intl.NumberFormat();
-
-// Bar heights as literal classes rather than an inline style (see the note in
-// sites/traffic.tsx): quantising to 5% steps makes the set finite, so Tailwind
-// can see and emit every one.
-const BAR_HEIGHT = [
-  'h-px',
-  'h-[5%]',
-  'h-[10%]',
-  'h-[15%]',
-  'h-[20%]',
-  'h-[25%]',
-  'h-[30%]',
-  'h-[35%]',
-  'h-[40%]',
-  'h-[45%]',
-  'h-[50%]',
-  'h-[55%]',
-  'h-[60%]',
-  'h-[65%]',
-  'h-[70%]',
-  'h-[75%]',
-  'h-[80%]',
-  'h-[85%]',
-  'h-[90%]',
-  'h-[95%]',
-  'h-full',
-];
-
-function RevenueBars({ points, currency }: { points: RevenuePoint[]; currency: string }) {
-  const peak = Math.max(1, ...points.map((p) => p.grossCents));
-  return (
-    <div className="flex h-20 items-end gap-0.5" role="img" aria-label="Sales each day">
-      {points.map((point) => {
-        const label = new Date(point.bucket).toLocaleDateString(undefined, {
-          day: 'numeric',
-          month: 'short',
-        });
-        const step = point.grossCents <= 0 ? 0 : Math.round((point.grossCents / peak) * 20);
-        return (
-          <Tooltip
-            key={point.bucket}
-            delay={100}
-            content={`${label} · ${formatCents(point.grossCents, currency)} · ${
-              point.ordersCount === 1 ? '1 order' : `${String(point.ordersCount)} orders`
-            }`}
-          >
-            <div className={`bg-module flex-1 rounded-sm ${BAR_HEIGHT[step] ?? 'h-px'}`} />
-          </Tooltip>
-        );
-      })}
-    </div>
-  );
-}
 
 export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const [preset, setPreset] = useState<RangePreset>('30');
@@ -118,6 +64,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const series = useRevenueTimeseries(range);
   const products = useTopProducts(range);
   const channels = useChannelBreakdown(range);
+  const funnel = useConversionFunnel(range);
 
   const isFetching =
     summary.isFetching || series.isFetching || products.isFetching || channels.isFetching;
@@ -232,90 +179,41 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                     </Text>
                   ) : null}
 
-                  <FormSection title="Sales day by day">
-                    {series.data && series.data.points.length > 0 ? (
-                      <div className="flex flex-col gap-1">
-                        <RevenueBars points={series.data.points} currency={currency} />
-                        <Text className="text-sm">
-                          One bar per day, tallest being the busiest. Hover a bar for its date and
-                          takings.
-                        </Text>
-                      </div>
-                    ) : (
+                  <DayByDaySection
+                    series={series.data}
+                    currency={currency}
+                    isPending={series.isPending}
+                  />
+
+                  <FormSection
+                    title="How many visits became orders"
+                    description="Where people stop between arriving and buying. A step with nothing to compare against says so rather than showing 0%."
+                  >
+                    {funnel.isPending ? (
                       <Text className="text-sm" role="status">
-                        {series.isPending ? 'Loading…' : 'No day-by-day figures for this period.'}
+                        Loading…
+                      </Text>
+                    ) : funnel.data ? (
+                      <ConversionFunnelReport funnel={funnel.data} />
+                    ) : (
+                      <Text className="text-sm">
+                        This could not be worked out just now. Nothing about your orders has
+                        changed.
                       </Text>
                     )}
                   </FormSection>
 
-                  <FormSection
-                    title="Best sellers"
-                    description="Your top products by revenue in this period."
-                  >
-                    {products.isPending ? (
-                      <Text className="text-sm" role="status">
-                        Loading…
-                      </Text>
-                    ) : (products.data ?? []).length === 0 ? (
-                      <Text className="text-sm">No products sold in this period yet.</Text>
-                    ) : (
-                      <div className="flex flex-col">
-                        {(products.data ?? []).map((product) => (
-                          <div
-                            key={product.productId}
-                            className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0"
-                          >
-                            <span className="min-w-0 flex-1 font-medium">
-                              {product.productTitle}
-                            </span>
-                            <Text as="span" className="shrink-0 text-sm tabular-nums">
-                              {product.unitsSold === 1
-                                ? '1 sold'
-                                : `${NUMBER.format(product.unitsSold)} sold`}
-                            </Text>
-                            <Text as="span" className="shrink-0 text-sm font-medium tabular-nums">
-                              {formatCents(product.revenueCents, currency)}
-                            </Text>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </FormSection>
+                  <BestSellersSection
+                    products={products.data ?? []}
+                    currency={currency}
+                    isPending={products.isPending}
+                  />
 
-                  <FormSection
-                    title="Where sales came from"
-                    description="Your revenue split by how the order was placed."
-                  >
-                    {channels.isPending ? (
-                      <Text className="text-sm" role="status">
-                        Loading…
-                      </Text>
-                    ) : (channels.data?.byChannel ?? []).length === 0 ? (
-                      <Text className="text-sm">No sales to break down in this period.</Text>
-                    ) : (
-                      <div className="flex flex-col">
-                        {(channels.data?.byChannel ?? []).map((row) => (
-                          <div
-                            key={row.channel}
-                            className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0"
-                          >
-                            <span className="min-w-0 flex-1 font-medium">
-                              {channelLabel(row.channel)}
-                            </span>
-                            <Badge color="neutral" variant="soft" size="sm">
-                              {row.sharePct}%
-                            </Badge>
-                            <Text as="span" className="shrink-0 text-sm tabular-nums">
-                              {row.orders === 1 ? '1 order' : `${NUMBER.format(row.orders)} orders`}
-                            </Text>
-                            <Text as="span" className="shrink-0 text-sm font-medium tabular-nums">
-                              {formatCents(row.revenueCents, currency)}
-                            </Text>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </FormSection>
+                  <ChannelsSection
+                    channels={channels.data}
+                    currency={currency}
+                    isPending={channels.isPending}
+                  />
                 </>
               )}
             </>

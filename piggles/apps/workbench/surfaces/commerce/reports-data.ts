@@ -74,6 +74,26 @@ export interface ChannelBreakdown {
   currency: string;
 }
 
+/**
+ * How many visits became orders.
+ *
+ * EVERY rate is `number | null`, and null is never 0 (docs/152 A1): a business
+ * selling at the counter or over the phone has no web visits at all.
+ */
+export interface ConversionFunnel {
+  rangeLabel: string;
+  sessions: number;
+  visitors: number;
+  cartsCreated: number;
+  checkoutsStarted: number;
+  ordersPlaced: number;
+  sessionToCartRate: number | null;
+  cartToCheckoutRate: number | null;
+  checkoutToOrderRate: number | null;
+  overallConversion: number | null;
+  sessionToOrderRate: number | null;
+}
+
 /* ── The window ─────────────────────────────────────────────────────────── */
 
 export type RangePreset = '7' | '30' | '90';
@@ -131,6 +151,15 @@ export function useTopProducts(range: Range) {
         ...rangeQuery(range),
         limit: 8,
       }),
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useConversionFunnel(range: Range) {
+  return useQuery({
+    queryKey: ['commerce', 'reports', 'conversion-funnel', range],
+    queryFn: () =>
+      api.get<ConversionFunnel>('/v1/commerce/reports/conversion-funnel', rangeQuery(range)),
     placeholderData: (previous) => previous,
   });
 }
