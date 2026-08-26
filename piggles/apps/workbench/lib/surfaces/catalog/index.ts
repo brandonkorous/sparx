@@ -36,6 +36,7 @@ import { CMS_SURFACES } from './cms';
 import { EMAIL_SURFACES } from './email';
 import { SCHEDULING_SURFACES } from './scheduling';
 import { SOCIAL_SURFACES } from './social';
+import { FUNNEL_SURFACES } from './funnels';
 import { FINANCE_SURFACES } from './finance';
 import { STAFF_SURFACES } from './staff';
 import { DROPSHIP_SURFACES } from './dropship';
@@ -62,6 +63,9 @@ registerSurfaces([
   ...EMAIL_SURFACES,
   ...SCHEDULING_SURFACES,
   ...SOCIAL_SURFACES,
+  // Campaigns — after the apps that CARRY a campaign, before the money it
+  // brings in.
+  ...FUNNEL_SURFACES,
   ...FINANCE_SURFACES,
   // Your team — immediately after finance, because that is the relationship:
   // staff is where the biggest number in the ledger comes from.

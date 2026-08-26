@@ -11,6 +11,7 @@
 
 import {
   faAddressBook,
+  faArrowProgress,
   faBoxes,
   faBuilding,
   faCalendarClock,
@@ -71,6 +72,9 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
   staff: 'Your team',
   scheduling: 'Scheduling',
   social: 'Social',
+  // "Campaigns", not "Funnels". An owner runs a spring promotion; a funnel is
+  // the shape of the report about it.
+  funnels: 'Campaigns',
   dropship: 'Dropshipping',
   automations: 'Automations',
   // SEO is the value-add itself — business owners know the term and pay for it,
@@ -161,6 +165,8 @@ const MODULE_ORDER: WorkbenchModule[] = [
   'email',
   'scheduling',
   'social',
+  // Between the apps that DO the campaign and the money it brings in.
+  'funnels',
   'invoicing',
   'finance',
   // Immediately after finance, because that is the relationship: staff is where
@@ -205,6 +211,9 @@ const MODULE_ICONS: Partial<Record<WorkbenchModule, PigglesIcon>> = {
   staff: faAddressBook,
   scheduling: faCalendarClock,
   social: faShareNodes,
+  // A path that advances. NOT a filter funnel: at 16px that reads as "filter
+  // the list", which is the wrong promise entirely.
+  funnels: faArrowProgress,
   dropship: faTruck,
   automations: faDiagramProject,
   seo: faMagnifyingGlass,

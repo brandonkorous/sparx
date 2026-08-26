@@ -615,6 +615,14 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/social/posting-times', surface: 'social.cadence' },
   { path: '/social/connections', surface: 'social.connections' },
 
+  /* ── Campaigns ────────────────────────────────────────────────────────── */
+  { path: '/campaigns', surface: 'funnels.campaigns' },
+  // A path segment, not a query parameter like the social composer's. This
+  // surface opens for a new campaign too, but as `{ id: 'new' }` — and
+  // `/campaigns/new` is a real address, where `/social/composer/` with nothing
+  // after it was not.
+  { path: '/campaigns/:id', surface: 'funnels.campaign' },
+
   /* ── Scheduling ───────────────────────────────────────────────────────── */
   { path: '/scheduling', surface: 'scheduling.calendar' },
   { path: '/scheduling/linked-calendars', surface: 'scheduling.calendar.connections' },

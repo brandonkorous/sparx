@@ -15,23 +15,25 @@ markers + the `▶ RESUME HERE` pointer every working session.
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE: B5, the workbench surfaces, in BOTH apps.** Phase A and
-> **B1-B4 and B6** are done and each one has been exercised against the real
-> database, not only typechecked (A4b still parked on a reindex decision).
+> **▶ RESUME HERE: Phase C, the capture surfaces.** Phase A and **all of Phase
+> B** are done, each slice exercised against the real database rather than only
+> typechecked (A4b still parked on a reindex decision).
 >
-> B5 is the last piece of the module and the first one a person can see. Both
-> apps get it, `sparx/apps/workbench/surfaces/funnels/*` and
-> `piggles/apps/workbench/surfaces/funnels/*`, and piggles has its own RULE #0.5
-> (no file over 250 lines, no method over 50).
+> The module is now end to end: a campaign can be created, given a ladder and a
+> goal, turned on, fed by a real form submission on a tenant site, reported on in
+> both consoles, reached over REST and MCP, and reacted to by an automation. What
+> Phase C adds is the LAYER THAT FILLS IT — the triggers, offers and forms that
+> get somebody to the capture line in the first place.
 >
-> **Everything the surface needs already exists and is exercised.** `buildLadder`
-> returns the assembled report with both halves counted and every rate as
-> `number | null`; `/v1/funnels/*` exposes it; the module hue is registered
-> (`module-funnels`, wine) in both theme files and both `WORKBENCH_MODULES`. So
-> B5 is presentation, not plumbing, and the one thing it must get right is that a
-> null rate is drawn as "nothing to compare yet", never as 0%.
+> C1 is node triggers plus client-local frequency caps, then the slide-in, modal
+> offer and sticky-bar catalog entries. **The frequency cap is deliberately
+> `localStorage` and not a server counter** (docs/151 §7): a server-side cap needs
+> the durable anonymous identity §4 refuses, and a cleared browser seeing the
+> offer twice is a far smaller harm than a consent banner on every tenant site.
 >
-> The conversion-funnel tile noted as missing in A1 belongs in this slice.
+> Everything C writes lands through the ingestion built in B3, so nothing in
+> Phase C should need a new write path: a capture posts `type: 'funnel_stage'`,
+> or it is a form submission and the stitch already finds its funnel.
 
 ## 1. The four decisions, settled 2026-08-25
 
@@ -645,9 +647,61 @@ value=12500`, and the cascade was proven. 16/16 schema tests, tsc and eslint
   module would have been absent from the home grid and from every email merge
   tag, silently, while everything typechecked. Both now read `ALL_MODULES`.
 
-- ☐ **B5 — Workbench surfaces, in BOTH apps.** List, detail with the stage
-  ladder, editor, recipe gallery. `sparx/apps/workbench/surfaces/funnels/*` and
-  `piggles/apps/workbench/surfaces/funnels/*`.
+- ☑ **B5 — Workbench surfaces, in BOTH apps.** _(2026-08-26)_
+
+  Two surfaces per app and no more: **Campaigns** is the module landing, and
+  **Campaign** is where one is set up AND where its report is read. Splitting
+  those would mean two panes open to answer one question. Creating is the same
+  pane with `{ id: 'new' }`, which is the house rule for anything where create
+  has the shape of edit.
+
+  **The report sits ABOVE the setup**, because a campaign is configured once and
+  looked at for months — putting the form first would make the common visit
+  scroll past a form nobody is editing. A draft has no report, so the order
+  inverts itself and the setup becomes the top of the pane.
+
+  **The ladder is drawn as narrowing bars, on silica's `<Progress>`.** The SHAPE
+  of a funnel is the finding, so a table of numbers makes the reader do the
+  arithmetic and a chart library makes them learn a legend. `<Progress>` was the
+  right primitive rather than a styled div for two reasons: it carries the ARIA
+  progressbar role, so the shape is announced as well as drawn, and it took a
+  `value` — **the first draft used `style={{ width }}`, which is the banned
+  inline-style prop.** A dynamic width looked like the one case that had to break
+  that rule, and it was not.
+
+  **Nothing anywhere in these surfaces prints 0% for a null.** `rateLabel` and
+  `countLabel` own that, an uncounted rung draws NO bar rather than an empty one
+  (a zero-length bar is indistinguishable from "nobody got here"), and the
+  activation button is disabled with the REASON in its tooltip rather than
+  letting a 400 teach the two rules the server enforces.
+
+  **The A1 gap is closed, in both apps.** `conversionFunnel()` had been computed,
+  exposed over REST and offered as an MCP tool for its whole life with nothing
+  drawing it, so a tenant could see their own conversion rate only by asking
+  their AI. It is now a section on the Reports surface, drawn the same way as a
+  campaign ladder and honouring the same null rule — which matters most here,
+  because a business selling through wholesale, the counter or the phone has no
+  web sessions at all.
+
+  **Piggles is a real fork, not a copy.** Fifteen files instead of five, because
+  RULE #0.5 caps a file at 250 lines and a method at 50: the draft state, the
+  toolbar, the setup form, the report panel and the row all became their own
+  units. It uses piggles' own idioms throughout — FontAwesome glyphs through
+  `<Icon>`, `PaneEmpty` / `PaneLoadError` / `PaneWaiting`, `<Card>`-wrapped
+  states, and the slot-based `PaneToolbar` (`search` / `filters` / `primaryAction`
+  / `refresh`) rather than sparx's `wrap` children. Touching piggles'
+  `reports.tsx` meant applying the rule to it too, so it went from 327 lines to
+  225 with `revenue-bars.tsx` and `report-sections.tsx` extracted.
+
+  _A gap `check:routes` caught:_ both surfaces were registered and neither had an
+  address, so a deep link or an MCP `open` could not reach them. Added
+  `/campaigns` and `/campaigns/:id` to `@wizeworks/links`. That check exists
+  because a surface that is registered and unreachable typechecks green.
+
+  _Verified:_ tsc + eslint clean on both workbench apps, `check:routes` (340
+  surfaces, all addressed), `check:boundaries`, `check:deletability`, prettier.
+  **Not verified by clicking**, because the surfaces have never been opened in a
+  browser — see the note at the end of §9.
 
 ## 4. Phase C — capture
 
@@ -746,6 +800,19 @@ staging is unambiguous:
   `piggles/packages/brand/src/theme/groups.css`, three `globals.css`, both
   `components/module-scope.tsx`, both `surfaces/automations/automations-catalog.ts`
 
+**Workbench surfaces (B5)**
+
+- `sparx/apps/workbench/surfaces/funnels/{data,ladder,campaigns,campaign,stage-editor}.tsx`
+  _(new)_ + `lib/surfaces/catalog/funnels.ts` _(new)_
+- `piggles/apps/workbench/surfaces/funnels/*` _(new, 15 files — RULE #0.5)_ +
+  its own `lib/surfaces/catalog/funnels.ts`
+- Both apps' `lib/surfaces/catalog/index.ts` and `lib/surfaces/nav.ts` (the rail
+  slot, the label, the icon)
+- `wizeworks/packages/links/src/routes.ts` — `/campaigns` and `/campaigns/:id`
+- The A1 gap, in both apps: `surfaces/commerce/conversion-funnel.tsx` _(new)_,
+  plus `reports.tsx` and `reports-data.ts`. Piggles' `reports.tsx` was split
+  under RULE #0.5, which added `revenue-bars.tsx` and `report-sections.tsx`.
+
 **Ingestion + the capture stitch (B3)**
 
 - `wizeworks/services/api-rest/src/lib/funnel-entry.ts` _(new)_ — the stitch
@@ -837,6 +904,19 @@ those migrations as untracked, and a teammate pulling this branch has an empty
 database by comparison. B3 added no migration, so this is unchanged from B2. Probe rows were all cleaned up (`orphans platform-wide:
 0`), and the customer-erasure test ran inside a rolled-back transaction, so no
 real tenant data was touched.
+
+### What has NOT been clicked
+
+The surfaces have never been opened in a browser. Everything under them is
+exercised — the service layer, the ingestion, the events and the report all have
+probe coverage against the real database — but no one has looked at the pane.
+
+That is the exact gap [[feedback_test_as_a_business_owner]] describes, and the
+things it usually catches are the things a typecheck cannot: whether the ladder
+reads as a shape at pane width, whether "Nothing to compare yet" is the right
+sentence in the place it lands, and whether the activation tooltip is discovered
+before the disabled button frustrates somebody. Worth a pass with the dev server
+up and a seeded campaign.
 
 ### Verification that was run, and how
 

@@ -29,6 +29,7 @@ import {
   Store,
   Truck,
   Users,
+  Waypoints,
   Workflow,
   type LucideIcon,
 } from 'lucide-react';
@@ -71,6 +72,9 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
   staff: 'Your team',
   scheduling: 'Scheduling',
   social: 'Social',
+  // "Campaigns", not "Funnels". An owner runs a spring promotion; a funnel is
+  // the shape of the report about it, which is our word rather than theirs.
+  funnels: 'Campaigns',
   dropship: 'Dropshipping',
   automations: 'Automations',
   // SEO is the value-add itself — business owners know the term and pay for it,
@@ -161,6 +165,9 @@ const MODULE_ORDER: WorkbenchModule[] = [
   'email',
   'scheduling',
   'social',
+  // Campaigns sit between the things that DO the campaign and the money it
+  // brings in, which is the order somebody thinks about them in.
+  'funnels',
   'invoicing',
   'finance',
   // Immediately after finance, because that is the relationship: staff is where
@@ -205,6 +212,9 @@ const MODULE_ICONS: Partial<Record<WorkbenchModule, LucideIcon>> = {
   staff: ContactRound,
   scheduling: CalendarClock,
   social: Share2,
+  // A path that branches and narrows. NOT a filter funnel glyph: at 16px that
+  // reads as "filter the list", which is the wrong promise entirely.
+  funnels: Waypoints,
   dropship: Truck,
   automations: Workflow,
   seo: Search,
