@@ -3,9 +3,8 @@
 // The segments list — the saved groups of customers.
 //
 // A table, matching the customers and accounts lists: name is the anchor, with
-// the rule count and the segment's state (built-in / archived / custom) in their
-// own columns. Counts of members are NOT shown here — that is a per-row read, and
-// the list must stay one request; membership lives on the detail.
+// the size, what the group selects, and its state in their own columns. The
+// count rides along on the list request, so the list stays ONE request.
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -18,7 +17,9 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
-import { ruleCount, segmentMembership, useSegments, type Segment } from './segments-data';
+import { segmentMembership, useSegments, type Segment } from './segments-data';
+import { RecomputeAllButton } from './segments-recompute-all';
+import { describeRule } from './segment-summary';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -31,10 +32,9 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
+/** A hand-picked list has no rules to describe — somebody chose who is in it. */
 function ruleSummary(segment: Segment): string {
-  const count = ruleCount(segment.rules);
-  if (count === 0) return 'From activity';
-  return count === 1 ? '1 rule' : `${String(count)} rules`;
+  return segment.kind === 'static' ? 'Picked by hand' : describeRule(segment.rules);
 }
 
 /** The segment's state as one soft badge — never a bland empty cell. */
@@ -96,18 +96,21 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0"
-            title="New segment — hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New segment
-          </Button>
+          <>
+            <RecomputeAllButton />
+            <Button
+              color="module"
+              size="sm"
+              className="shrink-0"
+              title="New segment — hold Shift to open alongside, Alt for a new window"
+              onClick={(event) => {
+                ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
+              }}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              New segment
+            </Button>
+          </>
         }
         controls={
           <div className="w-44 shrink-0">

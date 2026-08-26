@@ -11,7 +11,7 @@
 import type { Logger } from 'pino';
 
 import { processB2bAccountRows } from './b2b_accounts';
-import { processCustomerRows } from './customers';
+import { customersProcessor } from './customers';
 import { processDiscountRows } from './discounts';
 import { companiesProcessor } from './companies';
 import { contentProcessor } from './content';
@@ -79,7 +79,7 @@ const ALL: EntityProcessor[] = [
   segmentsProcessor,
   suppliersProcessor,
   purchaseOrdersProcessor,
-  wrapLegacy('customers', 'crm', processCustomerRows),
+  customersProcessor,
   wrapLegacy('discounts', 'commerce', processDiscountRows),
   wrapLegacy('b2b_accounts', 'b2b', processB2bAccountRows),
 ];

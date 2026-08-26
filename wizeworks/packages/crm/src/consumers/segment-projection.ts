@@ -43,6 +43,10 @@ export async function buildSegmentRuleProjection(
     const daysSinceLastOrder = customer.lastOrderAt
       ? Math.floor((now - customer.lastOrderAt.getTime()) / 86_400_000)
       : null;
+    // Never null: everyone has a day they were added. That is the point of it —
+    // "new customers" has to mean everyone who joined recently, including the
+    // ones who have not bought anything.
+    const daysSinceCreated = Math.floor((now - customer.createdAt.getTime()) / 86_400_000);
 
     // Marketing-subscribed = holds marketing consent AND isn't do-not-contact.
     // Reads the gdpr_consent JSON the signup/checkout opt-in writes (docs/51 §7).
@@ -66,6 +70,7 @@ export async function buildSegmentRuleProjection(
         tags: customer.tags ?? [],
         company: customer.companyName,
         createdAt: customer.createdAt,
+        daysSinceCreated,
         totalSpent: Number(customer.totalSpent),
         orderCount: customer.orderCount,
         firstOrderAt: customer.firstOrderAt,

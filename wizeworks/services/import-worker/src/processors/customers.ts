@@ -17,11 +17,15 @@
 import type { Logger } from 'pino';
 import { withTenant } from '@wizeworks/db';
 import {
+  checkCustomerInput,
   customerService,
   describeColumnProblems,
+  describeCustomerError,
   objectDefService,
   propertiesFromRow,
 } from '@wizeworks/crm';
+
+import type { EntityProcessor, PreviewResult } from './types';
 
 export interface CustomerRow {
   email?: string;
@@ -52,6 +56,14 @@ function normalizeType(val: string | undefined): 'retail' | 'b2b' | 'partner' | 
   return 'retail';
 }
 
+const AFFIRMATIVE = ['true', 'yes', 'y', '1', 'subscribed', 'subscriber', 'opted_in', 'opted in'];
+
+/** An explicit yes in the opt-in column, and nothing else. Both readings below
+ *  hang off this, so they can never disagree about what the cell said. */
+function saidYes(value: string | undefined): boolean {
+  return AFFIRMATIVE.includes((value ?? '').trim().toLowerCase());
+}
+
 /**
  * Marketing consent, which is the one field on this row that has legal weight.
  *
@@ -63,9 +75,118 @@ function normalizeType(val: string | undefined): 'retail' | 'b2b' | 'partner' | 
 function doNotContactFrom(value: string | undefined): boolean {
   const text = (value ?? '').trim().toLowerCase();
   if (text === '') return false;
-  return !['true', 'yes', 'y', '1', 'subscribed', 'subscriber', 'opted_in', 'opted in'].includes(
-    text
-  );
+  return !saidYes(text);
+}
+
+/**
+ * The consent RECORD behind that yes, which is a separate thing from the flag.
+ *
+ * `doNotContact: false` only says nobody has objected; being subscribed needs
+ * `gdpr_consent.scope` to hold `marketing`, and nothing here ever wrote it. So a
+ * shop mapped its opt-in column, imported its mailing list, opened the built-in
+ * "Newsletter Subscribers" group and found it empty — with every contact showing
+ * as contactable one screen away.
+ *
+ * No `grantedAt`: the file does not say when they agreed, and stamping the import
+ * time would put a date on a consent record that nobody measured. `source` records
+ * where it came from instead, which is the part we actually know.
+ */
+function consentFrom(value: string | undefined): { scope: ['marketing']; source: 'import' } | null {
+  return saidYes(value) ? { scope: ['marketing'], source: 'import' } : null;
+}
+
+/**
+ * The two-letter code an address needs, from whatever the spreadsheet says.
+ *
+ * Short on purpose. A shop's own list writes the country the way a person says it,
+ * and `CreateCustomerAddressInput` will only take ISO alpha-2 — so without this the
+ * entire address is refused over the word "United States". Anything not here is not
+ * guessed at: the contact still lands and the row carries a note saying the address
+ * did not, which is recoverable. A wrong country on a parcel is not.
+ */
+const COUNTRY_CODES: Record<string, string> = {
+  'united states': 'US',
+  'united states of america': 'US',
+  usa: 'US',
+  america: 'US',
+  'united kingdom': 'GB',
+  uk: 'GB',
+  'great britain': 'GB',
+  england: 'GB',
+  scotland: 'GB',
+  wales: 'GB',
+  canada: 'CA',
+  australia: 'AU',
+  'new zealand': 'NZ',
+  ireland: 'IE',
+  germany: 'DE',
+  deutschland: 'DE',
+  france: 'FR',
+  spain: 'ES',
+  italy: 'IT',
+  netherlands: 'NL',
+  mexico: 'MX',
+};
+
+function countryCode(value: string | undefined): string | null {
+  const text = (value ?? '').trim();
+  if (text === '') return null;
+  if (/^[A-Za-z]{2}$/.test(text)) return text.toUpperCase();
+  return COUNTRY_CODES[text.toLowerCase()] ?? null;
+}
+
+interface ImportedAddress {
+  line1: string;
+  line2?: string;
+  city: string;
+  region?: string;
+  postalCode?: string;
+  country: string;
+}
+
+/**
+ * The address on a contact row, when there is a whole one.
+ *
+ * `address1`, `city`, `province`, `country` and `zip` were listed as reserved
+ * columns from the beginning — so the mapper offered them, the tenant assigned
+ * them, and nothing ever wrote them. Every street address in the file was read,
+ * claimed and dropped in silence (persona issue 230).
+ *
+ * Returns a reason instead of an address when the file has SOME of one: an
+ * incomplete address is worth telling somebody about, and no address at all is not.
+ */
+function addressFrom(row: CustomerRow): { address: ImportedAddress } | { note: string } | null {
+  const line1 = (row.address1 ?? '').trim();
+  const city = (row.city ?? '').trim();
+  const rawCountry = (row.country ?? '').trim();
+  const parts = [line1, city, rawCountry, (row.zip ?? '').trim(), (row.province ?? '').trim()];
+  if (parts.every((part) => part === '')) return null;
+
+  if (line1 === '' || city === '')
+    return { note: 'Their address needs at least a street line and a town to be saved.' };
+
+  const country = countryCode(rawCountry);
+  if (country === null)
+    return {
+      note:
+        rawCountry === ''
+          ? 'Their address needs a country to be saved.'
+          : `We could not tell which country “${rawCountry}” is, so their address was not saved.`,
+    };
+
+  const line2 = (row.address2 ?? '').trim();
+  const region = (row.province ?? '').trim();
+  const postalCode = (row.zip ?? '').trim();
+  return {
+    address: {
+      line1,
+      city,
+      country,
+      ...(line2 === '' ? {} : { line2 }),
+      ...(region === '' ? {} : { region }),
+      ...(postalCode === '' ? {} : { postalCode }),
+    },
+  };
 }
 
 /** The headers the mapping above already owns — see `propertiesFromRow`. */
@@ -92,6 +213,37 @@ const RESERVED_COLUMNS = [
   'country',
   'zip',
 ] as const;
+
+/**
+ * Write the row's address, and say so when it could not be.
+ *
+ * On a customer who is already here it is added only when they have NO address:
+ * their address book is theirs, and a file imported twice must not leave them with
+ * the same street on file three times. Returns a note for the run report, or null
+ * when there was nothing to say.
+ */
+async function saveAddress(
+  ctx: { tenantId: string },
+  customerId: string,
+  row: CustomerRow,
+  isNew: boolean
+): Promise<string | null> {
+  const found = addressFrom(row);
+  if (found === null) return null;
+  if ('note' in found) return found.note;
+
+  if (!isNew) {
+    const already = await customerService.listAddresses(ctx, customerId);
+    if (already.length > 0) return 'They already had an address on file, so this one was left off.';
+  }
+
+  await customerService.addAddress(ctx, customerId, {
+    type: 'both',
+    isDefault: true,
+    ...found.address,
+  });
+  return null;
+}
 
 export async function processCustomerRows(
   ctx: { tenantId: string },
@@ -141,6 +293,8 @@ export async function processCustomerRows(
         );
       }
 
+      const consent = consentFrom(row.accepts_marketing);
+
       if (existing && opts.upsert) {
         await customerService.update(ctx, existing.id, {
           ...(row.first_name !== undefined ? { firstName: row.first_name } : {}),
@@ -152,6 +306,10 @@ export async function processCustomerRows(
           ...(row.accepts_marketing !== undefined
             ? { doNotContact: doNotContactFrom(row.accepts_marketing) }
             : {}),
+          // Only ever ADDED on an update. A file saying no already lands as
+          // do-not-contact, which is what stops the send; erasing the record of a
+          // consent they once gave would destroy the evidence for sends already made.
+          ...(consent === null ? {} : { gdprConsent: consent }),
           ...(row.tags
             ? {
                 tags: row.tags
@@ -162,13 +320,19 @@ export async function processCustomerRows(
             : {}),
           ...customProperties,
         });
-        results.push({ rowIndex: i, status: 'updated', naturalKey: email });
+        const note = await saveAddress(ctx, existing.id, row, false);
+        results.push({
+          rowIndex: i,
+          status: 'updated',
+          naturalKey: email,
+          ...(note === null ? {} : { errorMsg: note }),
+        });
         log.debug('updated');
       } else if (existing && !opts.upsert) {
         results.push({ rowIndex: i, status: 'skipped', naturalKey: email });
         log.debug('skipped (upsert off)');
       } else {
-        await customerService.create(ctx, {
+        const created = await customerService.create(ctx, {
           type: normalizeType(row.type),
           email: email ?? null,
           firstName: row.first_name ?? null,
@@ -183,13 +347,23 @@ export async function processCustomerRows(
                 .filter(Boolean)
             : [],
           doNotContact: doNotContactFrom(row.accepts_marketing),
+          ...(consent === null ? {} : { gdprConsent: consent }),
           ...customProperties,
         });
-        results.push({ rowIndex: i, status: 'imported', naturalKey: email });
+        const note = await saveAddress(ctx, created.id, row, true);
+        results.push({
+          rowIndex: i,
+          status: 'imported',
+          naturalKey: email,
+          ...(note === null ? {} : { errorMsg: note }),
+        });
         log.debug('imported');
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      // A rejected row is read by the person whose spreadsheet it came from, so
+      // a schema failure is turned into a sentence rather than handed over as
+      // `ZodError.message`, which is a JSON array (persona issue 233).
+      const msg = describeCustomerError(err);
       log.warn({ err }, 'row error');
       results.push({ rowIndex: i, status: 'error', naturalKey: email, errorMsg: msg });
     }
@@ -197,3 +371,97 @@ export async function processCustomerRows(
 
   return results;
 }
+
+/**
+ * What each row WOULD do, resolved against the contacts already here.
+ *
+ * The customers processor used the shared legacy wrapper, whose preview calls every
+ * row a `create` because the three processors it wraps resolve their natural keys
+ * inside the write path. Customers do not — the match is one lookup by email — and
+ * the screen offering the practice run says it "checks every row against what you
+ * already have and shows you exactly what would happen". It did not: a list whose
+ * every name is already a customer previewed as 25 brand-new people (issue 231).
+ *
+ * One query for the file, not one per row: a 10,000-row list would otherwise be
+ * 10,000 round trips to answer a question about a set we can fetch once.
+ */
+export async function previewCustomerRows(
+  ctx: { tenantId: string },
+  rows: CustomerRow[],
+  opts: { upsert: boolean }
+): Promise<PreviewResult[]> {
+  const emails = [
+    ...new Set(
+      rows.map((row) => row.email?.trim().toLowerCase()).filter((email): email is string => !!email)
+    ),
+  ];
+
+  const here = new Set<string>();
+  if (emails.length > 0) {
+    const found = await withTenant(ctx, (tx) =>
+      tx.customer.findMany({
+        where: { tenantId: ctx.tenantId, email: { in: emails }, deletedAt: null },
+        select: { email: true },
+      })
+    );
+    for (const row of found) if (row.email) here.add(row.email.toLowerCase());
+  }
+
+  return rows.map((row, rowIndex) => {
+    const email = row.email?.trim().toLowerCase();
+    const key = email === undefined || email === '' ? {} : { naturalKey: email };
+
+    // Would the write REFUSE this row? A preview that only answers
+    // create-or-update is answering half the question: the first practice run of
+    // a real mailing list reported 25 rows and no problems, and the import that
+    // followed rejected ten of them over a tag with a space in it. The screen
+    // says the practice run shows "exactly what would happen", so it has to run
+    // the same validation the write does.
+    const refusal = wouldRefuse(row);
+    if (refusal !== null) return { rowIndex, action: 'error' as const, errorMsg: refusal, ...key };
+
+    const known = email !== undefined && email !== '' && here.has(email);
+    const action: PreviewResult['action'] = known ? (opts.upsert ? 'update' : 'skip') : 'create';
+    return { rowIndex, action, ...key };
+  });
+}
+
+/**
+ * The reason the write would reject this row, or null.
+ *
+ * Runs the row through the SAME schema `customerService.create` parses it with,
+ * so the two cannot disagree. Deliberately not a second list of rules — a copy
+ * would drift, and drift here means the practice run lying again.
+ */
+function wouldRefuse(row: CustomerRow): string | null {
+  return checkCustomerInput({
+    type: normalizeType(row.type),
+    email: row.email?.trim() ? row.email.trim() : null,
+    firstName: row.first_name ?? null,
+    lastName: row.last_name ?? null,
+    companyName: row.company ?? null,
+    phone: row.phone ?? null,
+    jobTitle: row.job_title ?? null,
+    tags: tagsFrom(row.tags),
+    doNotContact: doNotContactFrom(row.accepts_marketing),
+  });
+}
+
+/** One spreadsheet cell of comma-separated tags, as a list. */
+function tagsFrom(cell: string | undefined): string[] {
+  return cell
+    ? cell
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    : [];
+}
+
+/** The customers entity, with a preview that is actually a preview. */
+export const customersProcessor: EntityProcessor = {
+  entity: 'customers',
+  module: 'crm',
+  run: (ctx, rows, options, logger) =>
+    processCustomerRows(ctx, rows, { upsert: options.upsert }, logger),
+  preview: (ctx, rows) => previewCustomerRows(ctx, rows, { upsert: true }),
+};

@@ -41,6 +41,13 @@ export type PlatformEventHandler<T = unknown> = (event: PlatformEvent<T>) => Pro
 export interface PlatformEventBus {
   publish(event: PlatformEvent): Promise<void>;
   subscribe(topic: string, handler: PlatformEventHandler): () => void;
+  /** Does anything in THIS process handle `topic` right now?
+   *
+   *  The CRM→platform bridge (./platform-fanout.ts) asks before forwarding, so
+   *  "which topics are consumed in-process" is answered by the subscriptions
+   *  themselves rather than by a hand-kept list beside them. It used to be a
+   *  list, and it went stale: seven topics with live subscribers were dropped. */
+  consumes(topic: string): boolean;
   /** Convenience for tests — drains in-flight work. No-op in Pub/Sub. */
   drain(): Promise<void>;
 }
@@ -61,7 +68,20 @@ class InMemoryPlatformBus implements PlatformEventBus {
     const work = Promise.all(
       snapshot.map((h) =>
         h(event).catch((err: unknown) => {
-          console.error('[crm-consumer]', event.topic, err);
+          // Name the tenant and the record, not just the topic. This line used
+          // to read `[crm-consumer] order.created <err>`, which says a consumer
+          // failed and nothing about WHOSE — so three orders that never reached
+          // their buyer's timeline could not be traced back from the log to the
+          // people they belonged to. Everything a consumer can be asked to fix
+          // has to be findable from here, because the failure is recovered and
+          // there is nothing else to notice it.
+          console.error('[crm-consumer] handler failed', {
+            topic: event.topic,
+            tenantId: event.tenantId,
+            eventId: event.id,
+            payload: event.payload,
+            err,
+          });
         })
       )
     );
@@ -77,6 +97,10 @@ class InMemoryPlatformBus implements PlatformEventBus {
     }
     set.add(handler);
     return () => set.delete(handler);
+  }
+
+  consumes(topic: string): boolean {
+    return (this.handlers.get(topic)?.size ?? 0) > 0;
   }
 
   async drain(): Promise<void> {

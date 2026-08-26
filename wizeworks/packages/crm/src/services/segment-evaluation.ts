@@ -73,7 +73,12 @@ export async function previewCount(
 
 /** Full recompute — re-evaluate every customer against every active
  *  segment for the tenant, reconciling segment_members. Nightly batch path;
- *  expensive (O(customers × segments × projection-fetch)). Use sparingly. */
+ *  expensive (O(customers × segments × projection-fetch)). Use sparingly.
+ *
+ *  `args.segmentId` re-cuts ONE group across every customer — the segment-driven
+ *  pass behind create / rule-change. It used to narrow only the `changed` tally
+ *  while still deriving every other segment for every customer, which is work
+ *  nobody asked for on the one path an owner waits on. */
 export async function recomputeFull(
   ctx: ServiceContext,
   args: { segmentId?: string } = {}
@@ -93,7 +98,9 @@ export async function recomputeFull(
   const { evaluateCustomerForTenant } = await import('../consumers/segment-evaluator');
 
   for (const { id } of customerIds) {
-    const { entered, exited } = await evaluateCustomerForTenant(ctx.tenantId, id);
+    const { entered, exited } = await evaluateCustomerForTenant(ctx.tenantId, id, {
+      segmentId: args.segmentId,
+    });
     scanned += 1;
     if (args.segmentId) {
       if (entered.includes(args.segmentId) || exited.includes(args.segmentId)) changed += 1;

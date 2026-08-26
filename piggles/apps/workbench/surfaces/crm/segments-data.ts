@@ -1,14 +1,14 @@
 'use client';
 
 // ══════════════════════════════════════════════════════════════════════════
-// THE SEGMENT DATA LAYER
+// THE SEGMENT DATA LAYER — reads, and the one import site for the whole layer
 //
 // A segment is a saved GROUP of customers who share something — big spenders,
 // or everyone who has not bought in a year. Its membership is worked out from a
-// rule tree and materialised by a background evaluator; this surface reads that
-// membership and lets an owner rename, re-describe, recolor or archive a
-// segment. The rule tree itself is authored elsewhere (it needs a predicate
-// builder), so it is shown here as a read-only summary rather than edited.
+// rule tree and materialised by a background evaluator; this file reads that
+// membership. Shapes and keys are in ./segments-types, writing in
+// ./segments-mutations, hand-picked lists in ./segments-lists-data — all three
+// re-exported here so a call site imports one module.
 //
 //   ['crm','segments']              the root every read nests under
 //   ['crm','segments','list',{…}]   one list window
@@ -16,79 +16,24 @@
 //   ['crm','segments', id,'members'] a sample of who is in it
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { useQuery } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
-import type { Customer } from './customers-data';
+import {
+  segmentKeys,
+  type Segment,
+  type SegmentListParams,
+  type SegmentMember,
+} from './segments-types';
 import type { SegmentRule } from './segment-rules';
 
-/* ── Shapes ─────────────────────────────────────────────────────────────── */
+export * from './segments-types';
+export * from './segments-mutations';
+export * from './segments-lists-data';
 
-export interface Segment {
-  id: string;
-  propertyId: string | null;
-  name: string;
-  slug: string;
-  description: string | null;
-  /**
-   * How membership is decided (docs/144 §10).
-   *
-   * `dynamic` — the rules decide, and the evaluator keeps it current.
-   * `static` — a hand-picked set; the evaluator leaves it alone entirely.
-   */
-  kind: 'dynamic' | 'static';
-  /** The predicate tree. Opaque here — shown as a count, never edited. */
-  rules: unknown;
-  color: string | null;
-  isSystem: boolean;
-  isBuiltIn: boolean;
-  archivedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  /** How many customers are in it right now. Present on LIST rows only — the
-   *  detail pane counts live against the rules being edited, which is a
-   *  different (and more expensive) question. */
-  _count?: { members: number };
-}
-
-/** One materialised membership, with the customer it points at. */
-export interface SegmentMember {
-  customerId: string;
-  enteredAt: string;
-  customer: Customer;
-}
-
-export interface SegmentListParams {
-  q?: string;
-  includeArchived?: boolean;
-}
-
-export const segmentKeys = {
-  all: ['crm', 'segments'] as const,
-  list: (params: SegmentListParams) => [...segmentKeys.all, 'list', params] as const,
-  detail: (id: string) => [...segmentKeys.all, id] as const,
-  members: (id: string) => [...segmentKeys.all, id, 'members'] as const,
-  count: (id: string) => [...segmentKeys.all, id, 'member-count'] as const,
-  history: (id: string) => [...segmentKeys.all, id, 'history'] as const,
-};
-
-/* ── Presentation ───────────────────────────────────────────────────────── */
-
-/** How many conditions a rule tree carries, best-effort, so the list can say
- *  "3 rules" without understanding the predicate language. Falls back to a
- *  generic phrase for a shape it does not recognise. */
-export function ruleCount(rules: unknown): number {
-  if (!rules || typeof rules !== 'object') return 0;
-  const node = rules as { conditions?: unknown; rules?: unknown; all?: unknown; any?: unknown };
-  const branch = node.conditions ?? node.rules ?? node.all ?? node.any;
-  return Array.isArray(branch) ? branch.length : 0;
-}
-
-export function segmentMembership(count: number): string {
-  if (count === 0) return 'No members yet';
-  if (count === 1) return '1 customer';
-  return `${count.toLocaleString()} customers`;
+export function segmentErrorMessage(error: unknown, fallback: string): string {
+  return apiErrorMessage(error, fallback);
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -135,71 +80,6 @@ export function useSegmentMembers(id: string, limit = 25) {
   });
 }
 
-/* ── Invalidation + mutations ───────────────────────────────────────────── */
-
-export function useInvalidateSegments() {
-  const queryClient = useQueryClient();
-  return (id?: string) => {
-    void queryClient.invalidateQueries({ queryKey: segmentKeys.all });
-    if (id) void queryClient.invalidateQueries({ queryKey: segmentKeys.detail(id) });
-  };
-}
-
-/**
- * Re-cut the segment across every customer, now.
- *
- * Membership normally keeps itself up to date — the evaluator re-checks a person
- * when they change, and re-cuts a segment when its rules change. This is the
- * escape hatch for the case neither covers: a segment that was SEEDED rather
- * than created (every built-in arrived that way, which is why they sat at zero),
- * or one whose customers changed while something was down. Without it an owner
- * looking at an empty segment they know should have people in it has nothing to
- * press.
- */
-export function useRecomputeSegment() {
-  const invalidate = useInvalidateSegments();
-  return useMutation({
-    mutationFn: (id: string) =>
-      api.post<{ scanned: number; changed: number }>(`/v1/crm/segments/${id}/recompute`, {}),
-    onSuccess: (_result, id) => {
-      invalidate(id);
-    },
-  });
-}
-
-/** The editable slice. `rules` is the server's predicate tree; `slug` is the
- *  kebab id the audience is addressed by. All optional on a PATCH; create sends
- *  name + slug + rules. */
-export interface SegmentInput {
-  name?: string;
-  slug?: string;
-  description?: string | null;
-  color?: string | null;
-  kind?: 'dynamic' | 'static';
-  rules?: SegmentRule;
-}
-
-/** Create and manage are the same surface, so create sends the whole record. */
-export function useCreateSegment() {
-  const invalidate = useInvalidateSegments();
-  return useMutation({
-    mutationFn: (input: SegmentInput) => api.post<Segment>('/v1/crm/segments', input),
-    onSuccess: (created) => {
-      invalidate(created.id);
-    },
-  });
-}
-
-export function useUpdateSegment(id: string) {
-  const invalidate = useInvalidateSegments();
-  return useMutation({
-    mutationFn: (patch: SegmentInput) => api.patch<Segment>(`/v1/crm/segments/${id}`, patch),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
-}
-
 /* ── Live preview ───────────────────────────────────────────────────────── */
 
 export interface PreviewCount {
@@ -211,12 +91,9 @@ export interface PreviewCount {
   total: number;
 }
 
-/**
- * How many customers a DRAFT rule matches right now — the live number the rule
- * builder shows as you edit. Distinct from `useSegmentMemberCount`, which is the
- * SAVED, materialised membership (only refreshed when the evaluator re-runs after
- * a save). Pass `null` while the rule is incomplete to skip the request.
- */
+/** How many customers a DRAFT rule matches right now — the live number the rule
+ *  builder shows as you edit. Distinct from `useSegmentMemberCount`, which is the
+ *  SAVED membership. Pass `null` while the rule is incomplete to skip the request. */
 export function usePreviewCount(rule: SegmentRule | null) {
   return useQuery({
     queryKey: [...segmentKeys.all, 'preview', rule],
@@ -225,76 +102,4 @@ export function usePreviewCount(rule: SegmentRule | null) {
     enabled: rule !== null,
     staleTime: 30_000,
   });
-}
-
-/** Archive (soft-delete) a segment — it stops targeting anything but its
- *  definition is kept. */
-export function useArchiveSegment(id: string) {
-  const invalidate = useInvalidateSegments();
-  return useMutation({
-    mutationFn: () => api.delete(`/v1/crm/segments/${id}`),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
-}
-
-/* ── Hand-picked lists (docs/144 §10) ───────────────────────────────────── */
-
-/** One join or departure. Kept even after the membership row is gone, which is
- *  the whole reason this exists — "who came off this list" is unanswerable from
- *  current membership alone. */
-export interface MembershipEvent {
-  id: string;
-  segmentId: string;
-  customerId: string;
-  kind: 'entered' | 'exited';
-  source: 'rule' | 'manual' | 'automation' | 'import';
-  actorId: string | null;
-  occurredAt: string;
-  customer: Customer;
-}
-
-export const MEMBERSHIP_SOURCE_LABEL: Record<MembershipEvent['source'], string> = {
-  rule: 'The rules',
-  manual: 'Added by hand',
-  automation: 'An automation',
-  import: 'An import',
-};
-
-export function useSegmentHistory(id: string, kind?: 'entered' | 'exited') {
-  return useQuery({
-    queryKey: [...segmentKeys.history(id), kind ?? null],
-    queryFn: () =>
-      api.list<MembershipEvent>(`/v1/crm/segments/${id}/history`, kind ? { kind } : {}),
-    enabled: id !== 'new' && id !== '',
-  });
-}
-
-export function useAddListMembers(id: string) {
-  const invalidate = useInvalidateSegments();
-  return useMutation({
-    mutationFn: (customerIds: string[]) =>
-      api.post<{ added: number; alreadyOn: number }>(`/v1/crm/segments/${id}/members`, {
-        customerIds,
-      }),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
-}
-
-export function useRemoveListMembers(id: string) {
-  const invalidate = useInvalidateSegments();
-  return useMutation({
-    mutationFn: (customerIds: string[]) =>
-      api.post<{ removed: number }>(`/v1/crm/segments/${id}/members/remove`, { customerIds }),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
-}
-
-export function segmentErrorMessage(error: unknown, fallback: string): string {
-  return apiErrorMessage(error, fallback);
 }

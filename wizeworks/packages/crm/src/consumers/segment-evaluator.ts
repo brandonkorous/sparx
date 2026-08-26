@@ -10,7 +10,7 @@
 // Topics watched:
 //   • order.created / order.cancelled / order.refunded
 //   • crm.activity.recorded (covers email opens/clicks via consumers)
-//   • crm.customer.updated
+//   • crm.customer.created / crm.customer.updated
 //   • crm.customer.subscribed (storefront newsletter opt-in → marketing segment)
 //   • crm.b2b.account_updated
 //   • crm.segment.created / crm.segment.updated — the SEGMENT-driven pass, which
@@ -47,6 +47,12 @@ export function registerSegmentEvaluatorConsumers(ctx: ConsumerContext): (() => 
     'order.cancelled',
     'order.refunded',
     'crm.activity.recorded',
+    // A person who has just been ADDED is the commonest reason a group should
+    // change, and it was the one arrival nobody watched: only `updated` was
+    // subscribed, so a new contact joined nothing until something later edited
+    // them. Importing a mailing list is exactly that shape — twenty-five people
+    // arrived and every group still said "No members yet".
+    'crm.customer.created',
     'crm.customer.updated',
     'crm.customer.subscribed',
     'crm.b2b.account_updated',
@@ -86,9 +92,13 @@ export function registerSegmentEvaluatorConsumers(ctx: ConsumerContext): (() => 
           const payload = (event as PlatformEvent<SegmentEventPayload>).payload;
           if (!payload?.segmentId) return;
           if (topic === 'crm.segment.updated' && payload.rulesChanged === false) return;
-          // Here rather than inline in the service on purpose: this walks every
-          // customer in the tenant, and an owner pressing Create should not wait
-          // on it (docs/02 — side effects are consumed, not inlined).
+          // A consumer, so the service does not carry the scan — but the owner DOES
+          // wait on it: the platform bus dispatches in-process and awaits its
+          // handlers, so Create returns with the group already filled. That is the
+          // behaviour the screen promises, and it is why the count in the bar and
+          // the membership below it now agree. The cost is one pass over the
+          // tenant's customers per segment saved; revisit with a batched
+          // recompute if a tenant's list grows past what a request should hold.
           const { recomputeFull } = await import('../services/segment-evaluation');
           await recomputeFull(
             { tenantId: event.tenantId, userId: undefined },
@@ -120,10 +130,15 @@ async function resolveCustomerId(event: PlatformEvent<EventPayload>): Promise<st
 }
 
 /** Re-evaluate every active segment for one customer; diff against the
- *  current segment_members rows and write entries/exits accordingly. */
+ *  current segment_members rows and write entries/exits accordingly.
+ *
+ *  `opts.segmentId` narrows it to ONE segment — what the segment-driven pass
+ *  wants, since re-cutting one group across every customer has no reason to
+ *  re-derive the other groups for each of them. */
 export async function evaluateCustomerForTenant(
   tenantId: string,
-  customerId: string
+  customerId: string,
+  opts: { segmentId?: string } = {}
 ): Promise<{ entered: string[]; exited: string[] }> {
   const ctx = { tenantId, userId: undefined };
   const projection = await buildSegmentRuleProjection(ctx, customerId).catch(() => null);
@@ -145,6 +160,7 @@ export async function evaluateCustomerForTenant(
     const segments = await tx.segment.findMany({
       where: {
         archivedAt: null,
+        ...(opts.segmentId ? { id: opts.segmentId } : {}),
         // STATIC LISTS ARE NOT THE EVALUATOR'S BUSINESS (docs/144 §10). A
         // hand-picked list has no rules to re-derive membership from, so
         // evaluating one would find nothing matched and remove everybody —

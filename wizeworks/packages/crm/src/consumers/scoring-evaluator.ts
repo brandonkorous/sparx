@@ -34,6 +34,10 @@ const CONTACT_TOPICS = [
   'order.cancelled',
   'order.refunded',
   'crm.activity.recorded',
+  // Kept identical to the segment evaluator's list, deliberately: these two
+  // arrays are meant to mirror each other, and two lists that are supposed to
+  // agree are exactly what went wrong in the bridge below them.
+  'crm.customer.created',
   'crm.customer.updated',
   'crm.customer.subscribed',
   'email.opened',

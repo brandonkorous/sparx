@@ -8,6 +8,7 @@
 //   GET    /v1/crm/segments/:id/members           → materialized membership
 //   GET    /v1/crm/segments/:id/member-count      → count of members
 //   POST   /v1/crm/segments/preview-count         → match-count for a draft rule
+//   POST   /v1/crm/segments/recompute             → re-evaluate EVERY segment
 //   POST   /v1/crm/segments/:id/recompute         → full re-evaluation
 //   POST   /v1/crm/segments/:id/members           → add to a hand-picked list (§10)
 //   POST   /v1/crm/segments/:id/members/remove    → take off a hand-picked list
@@ -137,6 +138,17 @@ const segmentRoutes: FastifyPluginAsync = (app) => {
       ...body,
       propertyId,
     } as never);
+    return ok(result);
+  });
+
+  // Re-cut EVERY group, which is what an owner looking at a list of stale ones
+  // actually wants. The nightly CronJob calls the same service the same way
+  // (routes/internal/crm-cron.ts) — this is that, on demand, for one tenant.
+  // Declared before `:id` so the static path wins the match, as preview-count is.
+  app.post('/v1/crm/segments/recompute', async (request) => {
+    requireRole(request, 'admin');
+    await requireCrmModule(request);
+    const result = await segmentService.recomputeFull(toCrmContext(request));
     return ok(result);
   });
 

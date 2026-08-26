@@ -25,6 +25,7 @@ import { prisma, withTenant } from '@wizeworks/db';
 
 import { getProcessor } from './processors';
 import type { ImportRow, ProcessorContext } from './processors';
+import { reconcileSegmentsAfterImport } from './reconcile-segments.js';
 
 const ImportJobCreatedPayload = z.object({
   jobId: z.string().uuid(),
@@ -233,6 +234,14 @@ export async function handle(payload: ImportJobEvent, logger: Logger): Promise<H
       { imported, updated, skipped, errors, dryRun: options.dryRun === true },
       'job completed'
     );
+
+    // The rows are in; who they now belong to is a separate question, and this
+    // process cannot answer it by publishing. See ./reconcile-segments.
+    await reconcileSegmentsAfterImport(
+      { tenantId: job.tenantId, entityType: job.entityType, dryRun: options.dryRun === true },
+      log
+    );
+
     return { jobId, status: 'completed', imported, updated, errors, skipped };
   } catch (err) {
     log.error({ err }, 'job run failed — marking as failed');

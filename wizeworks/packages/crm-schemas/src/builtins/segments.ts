@@ -65,14 +65,19 @@ const B2B_FLEET: SegmentTemplate = {
   },
 };
 
+// This read `customer.daysSinceLastOrder` under a description promising
+// "regardless of order activity" — the exact opposite, and it excluded everyone
+// who had never bought. A shop that imported twenty-five contacts saw two in it.
+// The description was right about the intent and the rule could not express it,
+// there being no relative-date operator; `daysSinceCreated` is that expression.
 const NEW_CUSTOMERS: SegmentTemplate = {
   name: 'New Customers',
   slug: 'new-customers',
-  description: 'Created in the last 30 days, regardless of order activity.',
+  description: 'Added in the last 30 days, whether or not they have bought yet.',
   color: '#10B981',
   rules: {
     kind: 'predicate',
-    field: 'customer.daysSinceLastOrder',
+    field: 'customer.daysSinceCreated',
     op: 'lte',
     value: 30,
   },

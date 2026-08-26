@@ -10,16 +10,35 @@ export const Uuid = z.string().uuid();
 
 export const OptionalUuid = z.string().uuid().optional().nullable();
 
-// Tags are stored as text[] in Postgres with VARCHAR(63) per slot; mirror
-// the constraint at validation time so we never accept a tag that won't
-// fit in the column.
+// Tags are stored as text[] in Postgres with VARCHAR(63) per slot; the length
+// cap mirrors that column so we never accept a tag that will not fit.
+//
+// ── Why a tag may contain a space ────────────────────────────────────────────
+//
+// It could not, until a clothes shop imported her own mailing list and ten of
+// her twenty-five contacts were refused because they were tagged
+// "market stall" and "gift guide" (persona issue 233). Those are what a tag IS
+// to the person writing it — two words, in English, the way she would say it
+// out loud. `^[a-zA-Z0-9_-]+$` describes a slug, and nothing here ever wanted a
+// slug: the only filter over tags is `tags: { has: value }`, an exact,
+// parameterised array match that is indifferent to spacing.
+//
+// A COMMA is still refused, and that one is real: tags arrive from a
+// spreadsheet as one comma-separated cell, so a tag containing a comma cannot
+// survive the round trip and would silently split into two. Refusing it with a
+// sentence that says so is better than accepting it and quietly changing it.
 const TagArray = z
   .array(
     z
       .string()
+      .trim()
       .min(1)
       .max(63)
-      .regex(/^[a-zA-Z0-9_-]+$/, 'Tags must be alphanumeric (plus _ and -)')
+      .refine((tag) => !tag.includes(','), 'A tag cannot contain a comma. Commas separate tags.')
+      .refine(
+        (tag) => ![...tag].some((ch) => (ch.codePointAt(0) ?? 0) < 0x20),
+        'A tag cannot contain hidden characters.'
+      )
   )
   .max(50);
 

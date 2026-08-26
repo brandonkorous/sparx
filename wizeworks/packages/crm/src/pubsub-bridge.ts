@@ -248,6 +248,12 @@ class PubSubTeePlatformBus implements PlatformEventBus {
     return this.inner.subscribe(topic, handler);
   }
 
+  /** Subscriptions live on the inner bus, so it is the one that knows. Teeing to
+   *  Pub/Sub is a separate question from whether this process handles the topic. */
+  consumes(topic: string): boolean {
+    return this.inner.consumes(topic);
+  }
+
   drain(): Promise<void> {
     return this.inner.drain();
   }

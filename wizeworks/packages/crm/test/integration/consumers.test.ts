@@ -1,21 +1,18 @@
 // Consumer integration tests.
 //
-// The Phase 2 consumers subscribe to platform events (order.*, email.*,
-// quote.*, user.*) and translate them into CrmActivity rows + denormalized
-// customer stats. Tests here:
+// The consumers subscribe to platform events (order.*, email.*, quote.*,
+// user.*) and turn them into CrmActivity rows — the customer's timeline.
+// Tests here:
 //
-//   1. Publish a synthetic order.created → confirm the activity row, the
-//      bumped total_spent/order_count, and the first_order_at/last_order_at
-//      timestamps.
-//   2. Publish a refund → confirm total_spent decrements.
-//   3. Publish a duplicate event with the same id → confirm the dedupe layer
-//      skips reprocessing (no double-counting).
-//   4. Publish an event for a tenant where CRM is DISABLED → confirm zero
-//      rows land and zero stats change. This is the locked-decision #6
-//      guarantee.
-//   5. Publish an email.unsubscribed → confirm do_not_contact flips.
-//   6. Publish a user.login keyed by authUserId → confirm the activity lands
-//      on the correct customer via the FK lookup.
+//   1. order.created / order.refunded → the activity row lands.
+//   2. Neither one touches total_spent or order_count. Those are money, they
+//      are derived from the orders inside the order write path, and a consumer
+//      whose failure is swallowed has no business writing them. See
+//      src/services/customer-rollup.ts and customer-rollup.test.ts.
+//   3. An event for a tenant where CRM is DISABLED lands nothing at all —
+//      locked decision #6.
+//   4. email.unsubscribed flips do_not_contact.
+//   5. user.login keyed by authUserId lands on the right customer via the FK.
 
 import crypto from 'node:crypto';
 
@@ -82,13 +79,12 @@ describe('CRM consumers', () => {
     resetDedupeForTesting();
   });
 
-  it('order.created → activity row + total_spent/order_count bump', async () => {
-    const eventId = crypto.randomUUID();
+  it('order.created writes the timeline entry', async () => {
     const orderId = crypto.randomUUID();
     const placedAt = new Date();
 
     await bus.publish({
-      id: eventId,
+      id: crypto.randomUUID(),
       topic: 'order.created',
       tenantId: alice.tenantId,
       occurredAt: placedAt,
@@ -102,12 +98,6 @@ describe('CRM consumers', () => {
     });
     await bus.drain();
 
-    const customer = await customerService.get(aliceCtx, aliceCustomerId);
-    expect(Number(customer.totalSpent)).toBe(250);
-    expect(customer.orderCount).toBe(1);
-    expect(customer.firstOrderAt).not.toBeNull();
-    expect(customer.lastOrderAt).not.toBeNull();
-
     const activities = await withTenant(aliceCtx, (tx) =>
       tx.crmActivity.findMany({
         where: { customerId: aliceCustomerId, type: 'order.placed' },
@@ -117,40 +107,27 @@ describe('CRM consumers', () => {
     expect(activities[0]?.linkedEntityId).toBe(orderId);
   });
 
-  it('duplicate event id is deduped — no double counting', async () => {
-    const eventId = crypto.randomUUID();
-    const placedAt = new Date();
-
+  it('leaves the money columns alone — they belong to the order write path', async () => {
+    // The consumer used to increment total_spent here, and an increment is only
+    // as reliable as its delivery: a swallowed handler failure corrupted the
+    // figure permanently, and once one increment was lost the refund decrement
+    // drove a customer's lifetime spend below zero. A synthetic event for an
+    // order that does not exist must now move nothing.
     const before = await customerService.get(aliceCtx, aliceCustomerId);
-    const beforeSpent = Number(before.totalSpent);
 
-    const event = {
-      id: eventId,
+    await bus.publish({
+      id: crypto.randomUUID(),
       topic: 'order.created',
       tenantId: alice.tenantId,
-      occurredAt: placedAt,
+      occurredAt: new Date(),
       payload: {
         orderId: crypto.randomUUID(),
         customerId: aliceCustomerId,
         total: 100,
         currency: 'USD',
-        placedAt: placedAt.toISOString(),
+        placedAt: new Date().toISOString(),
       },
-    };
-
-    await bus.publish(event);
-    await bus.publish(event); // same id — should be skipped
-    await bus.drain();
-
-    const after = await customerService.get(aliceCtx, aliceCustomerId);
-    expect(Number(after.totalSpent)).toBe(beforeSpent + 100);
-    expect(after.orderCount).toBe(before.orderCount + 1);
-  });
-
-  it('order.refunded decrements total_spent', async () => {
-    const before = await customerService.get(aliceCtx, aliceCustomerId);
-    const beforeSpent = Number(before.totalSpent);
-
+    });
     await bus.publish({
       id: crypto.randomUUID(),
       topic: 'order.refunded',
@@ -166,7 +143,24 @@ describe('CRM consumers', () => {
     await bus.drain();
 
     const after = await customerService.get(aliceCtx, aliceCustomerId);
-    expect(Number(after.totalSpent)).toBe(beforeSpent - 50);
+    expect(Number(after.totalSpent)).toBe(Number(before.totalSpent));
+    expect(after.orderCount).toBe(before.orderCount);
+  });
+
+  it('order.refunded writes the timeline entry', async () => {
+    await bus.publish({
+      id: crypto.randomUUID(),
+      topic: 'order.refunded',
+      tenantId: alice.tenantId,
+      occurredAt: new Date(),
+      payload: {
+        orderId: crypto.randomUUID(),
+        customerId: aliceCustomerId,
+        refundAmount: 50,
+        currency: 'USD',
+      },
+    });
+    await bus.drain();
 
     const refund = await withTenant(aliceCtx, (tx) =>
       tx.crmActivity.findFirst({

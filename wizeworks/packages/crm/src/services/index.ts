@@ -124,6 +124,12 @@ export {
 // target by splitting subresources into their own files.
 export * as orderService from './order-service';
 export * as orderPaymentsService from './order-payments-service';
+export { recomputeCustomerCommerce, type CustomerCommerceRollup } from './customer-rollup';
+export {
+  checkCustomerInput,
+  describeCustomerError,
+  describeCustomerProblems,
+} from './customer-input-check';
 export * as orderRefundsService from './order-refunds-service';
 export * as orderFulfillmentsService from './order-fulfillments-service';
 

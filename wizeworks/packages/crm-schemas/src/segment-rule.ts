@@ -29,6 +29,11 @@ export const SegmentField = z.enum([
   'customer.tags',
   'customer.company',
   'customer.createdAt',
+  // How long they have been on the books, as a NUMBER — because a date field
+  // takes absolute values, so "added in the last 30 days" cannot be written as
+  // one without freezing on the day it was written. Same reason
+  // `daysSinceLastOrder` sits beside `lastOrderAt`.
+  'customer.daysSinceCreated',
   'customer.totalSpent',
   'customer.orderCount',
   'customer.firstOrderAt',
@@ -181,6 +186,7 @@ export const CustomerProjection = z.object({
     tags: z.array(z.string()),
     company: z.string().nullable(),
     createdAt: z.string().datetime(),
+    daysSinceCreated: z.number().int(),
     totalSpent: z.number(),
     orderCount: z.number().int(),
     firstOrderAt: z.string().datetime().nullable(),

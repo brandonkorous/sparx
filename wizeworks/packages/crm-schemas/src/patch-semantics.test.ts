@@ -71,7 +71,35 @@ describe('TagListPatch', () => {
     expect(schemas.TagList.parse(undefined)).toEqual([]);
     expect(schemas.TagListPatch.safeParse(undefined).success).toBe(false);
     expect(schemas.TagListPatch.parse(['vip', 'net-30'])).toEqual(['vip', 'net-30']);
-    expect(schemas.TagListPatch.safeParse(['not a tag']).success).toBe(false);
+  });
+});
+
+describe('a tag is what a person would write on a label', () => {
+  it('takes the words a shop actually tags with', () => {
+    // Ten of a clothes shop's twenty-five contacts were refused on import
+    // because they were tagged "market stall" and "gift guide" — the tag rule
+    // described a slug, and nobody writing a tag was writing a slug.
+    expect(schemas.TagList.parse(['market stall', 'gift guide', 'made to order'])).toEqual([
+      'market stall',
+      'gift guide',
+      'made to order',
+    ]);
+  });
+
+  it('trims what came out of a spreadsheet cell', () => {
+    expect(schemas.TagList.parse(['  newsletter  '])).toEqual(['newsletter']);
+  });
+
+  it('still refuses a comma, because a comma is what separates tags', () => {
+    const refused = schemas.TagList.safeParse(['spring, summer']);
+    expect(refused.success).toBe(false);
+    expect(refused.error?.issues[0]?.message).toContain('comma');
+  });
+
+  it('still refuses hidden characters and an over-long tag', () => {
+    expect(schemas.TagList.safeParse(['new\nline']).success).toBe(false);
+    expect(schemas.TagList.safeParse(['x'.repeat(64)]).success).toBe(false);
+    expect(schemas.TagList.safeParse(['   ']).success).toBe(false);
   });
 });
 

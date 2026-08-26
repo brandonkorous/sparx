@@ -1,17 +1,16 @@
-// Order-lifecycle consumers.
+// Order-lifecycle consumers — the customer's TIMELINE, and nothing else.
 //
-// Subscribes to Commerce's order.* topics and:
-//   1. Appends a matching activity row.
-//   2. Updates the customer's denormalized commerce stats (total_spent,
-//      order_count, first_order_at, last_order_at).
+// One job: append an activity row so an order shows up in the customer's
+// history. Best-effort by nature, because the bus catches a failing handler and
+// logs it; a missing timeline entry is a gap in a story, and recoverable.
 //
-// Both happen in the same withTenant() transaction so a half-applied write
-// is impossible. The activity is the audit trail; the denormalized columns
-// are the read-side optimization for list filters and segment rules.
+// It used to have a second job — maintaining `total_spent`, `order_count`,
+// `first_order_at` and `last_order_at` by increment — and that job is not
+// best-effort. Those are money, they are read as fact, and a lost event
+// corrupted them permanently and invisibly. They moved into the order write
+// path, derived rather than nudged: services/customer-rollup.ts.
 //
-// Until Commerce lands, the payload shape comes from docs/06 §8. Tests in
-// Phase 2 publish synthetic events against this shape — when Commerce
-// ships, swap the publisher; consumers don't change.
+// The payload shape comes from docs/06 §8.
 
 import { withTenant } from '@wizeworks/db';
 
@@ -76,27 +75,16 @@ export function registerOrderEventConsumers(ctx: ConsumerContext): (() => void)[
             },
           });
 
-          // Bump denormalized commerce stats. We use atomic increments so
-          // two concurrent order.created events for the same customer
-          // can't lose a write to a read-modify-write race.
-          await tx.customer.update({
-            where: { id: payload.customerId },
-            data: {
-              totalSpent: { increment: payload.total },
-              orderCount: { increment: 1 },
-              lastOrderAt: occurredAt,
-            },
-          });
-
-          // first_order_at: only set if currently null. Raw UPDATE avoids
-          // the SELECT-then-UPDATE roundtrip and stays atomic with the
-          // surrounding transaction.
-          await tx.$executeRaw`
-            UPDATE customers
-            SET first_order_at = ${occurredAt}
-            WHERE id = ${payload.customerId}::uuid
-              AND first_order_at IS NULL
-          `;
+          // The customer's commerce figures are NOT written here any more.
+          //
+          // They were, as `{ increment: payload.total }` plus a matching
+          // decrement on refund, and an increment is only ever as reliable as
+          // its delivery. Three of five orders on one shop never reached the
+          // buyer's record — the failure was swallowed by the bus's own catch —
+          // and because the refund half kept working, one customer's lifetime
+          // spend rendered as -$42.00. They are now derived from the orders
+          // inside the same transaction that writes the order (see
+          // services/customer-rollup.ts), which cannot be lost or double-applied.
         });
       })
     ),
@@ -158,11 +146,10 @@ export function registerOrderEventConsumers(ctx: ConsumerContext): (() => void)[
               },
             },
           });
-          // Negative spend so the customer's lifetime value tracks reality.
-          await tx.customer.update({
-            where: { id: payload.customerId },
-            data: { totalSpent: { decrement: payload.refundAmount } },
-          });
+          // No decrement here either — see the note on order.created above.
+          // This one is why the rule matters: the decrement kept firing after
+          // its matching increment had been lost, and drove a lifetime spend
+          // below zero.
         });
       })
     ),

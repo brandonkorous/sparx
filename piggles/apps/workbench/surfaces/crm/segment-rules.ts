@@ -1,15 +1,12 @@
 'use client';
 
 // ══════════════════════════════════════════════════════════════════════════
-// THE SEGMENT RULE MODEL
+// THE SEGMENT RULE TREE
 //
-// A segment's membership is a recursive boolean tree stored in `segments.rules`.
-// The tree's vocabulary — the field whitelist, the operator set, the predicate
-// leaf and the recursive rule shape — comes STRAIGHT FROM `@wizeworks/crm-schemas`
-// (`SegmentField` / `SegmentOperator` / `PredicateLeaf` / `SegmentRule`), the same
-// Zod the server validates writes and evaluates membership against, so the builder
-// can never drift from it. This file adds only workbench-side concerns on top: the
-// editor's friendlier tree, the field metadata/labels, and serialize/parse.
+// A segment's membership is a recursive boolean tree stored in `segments.rules`,
+// shaped by `SegmentRule` in `@wizeworks/crm-schemas` — the same Zod the server
+// validates and evaluates against, so the builder cannot drift from it. Field
+// labels live in ./segment-fields, operator labels in ./segment-operators.
 //
 // ── The server's tree ──────────────────────────────────────────────────────
 //   leaf : { kind:'predicate', field, op, value? }
@@ -18,351 +15,34 @@
 //   not  : { kind:'not', child: SegmentRule }
 //
 // ── The EDITOR's tree ───────────────────────────────────────────────────────
-// The builder works in a friendlier shape — a group carries a combinator AND a
-// `negate` flag, so a "none of these" is one node rather than a not() wrapping an
-// and(). `serializeNode` collapses that back to the server's tree; `parseServerRule`
-// lifts a stored tree into it. A round-trip is lossless for anything the builder
-// can author, and safe (never throws) for anything it cannot.
+// A group carries a combinator AND a `negate` flag, so "none of these" is one
+// node rather than a not() wrapping an and(). `serializeNode` collapses that
+// back to the server's tree and `parseServerRule` lifts a stored one into it —
+// lossless for anything the builder can author, safe for anything it cannot.
 // ══════════════════════════════════════════════════════════════════════════
 
 import type {
   PredicateLeaf,
-  SegmentField,
   SegmentFieldPath,
   SegmentOperator,
   SegmentRule,
 } from '@wizeworks/crm-schemas';
+import { fieldMeta, type CustomFieldIndex, type ValueKind } from './segment-fields';
 import {
-  LEAD_STATUSES,
-  LIFECYCLE_STAGES,
-  RELATIONSHIP_TYPES,
-  customerTypeMeta,
-  leadStatusMeta,
-  lifecycleStageMeta,
-} from './customers-data';
-import { PAYMENT_TERM_PRESETS } from '../../lib/payment-terms';
+  defaultOperator,
+  operatorIsList,
+  operatorIsRange,
+  operatorTakesValue,
+} from './segment-operators';
 
-// Re-exported so the rest of the surface imports these from one place — but they
-// are the REAL shared types, not a local copy.
-export type { PredicateLeaf, SegmentField, SegmentFieldPath, SegmentOperator, SegmentRule };
+// One import site for the whole surface: the field and operator vocabularies
+// reach call sites through here rather than making each know three files.
+export * from './segment-fields';
+export * from './segment-operators';
 
 /** A JSON scalar — the concrete leaf a predicate value can be. Not a server enum,
  *  just the shape `coerceScalar` produces before it goes into a `PredicateLeaf`. */
 type Literal = string | number | boolean | null;
-
-/* ── Field metadata — what each field is and how it is edited ────────────── */
-
-/** How a field's value is entered, which drives the operator set and the value
- *  control. `rep`/`account` are uuid fields backed by a live picker. */
-export type ValueKind =
-  | 'enum'
-  | 'text'
-  | 'number'
-  | 'date'
-  | 'boolean'
-  | 'tags'
-  | 'rep'
-  | 'account';
-
-interface FieldMeta {
-  label: string;
-  /** Which card the field is grouped under in the picker. Open, not a union:
-   *  a tenant-declared property group is named after the business's own record
-   *  type, which cannot be known here (docs/144 §3.4). */
-  group: string;
-  kind: ValueKind;
-  /** For `enum` fields — the allowed values and their plain labels. */
-  options?: { value: string; label: string }[];
-  /** One line under the value control. */
-  hint?: string;
-}
-
-export const FIELD_META: Record<SegmentField, FieldMeta> = {
-  'customer.type': {
-    label: 'Relationship',
-    group: 'Customer',
-    kind: 'enum',
-    options: RELATIONSHIP_TYPES.map((t) => ({ value: t, label: customerTypeMeta(t).label })),
-  },
-  'customer.lifecycleStage': {
-    label: 'Lifecycle stage',
-    group: 'Customer',
-    kind: 'enum',
-    options: LIFECYCLE_STAGES.map((s) => ({ value: s, label: lifecycleStageMeta(s).label })),
-  },
-  'customer.leadStatus': {
-    label: 'Lead status',
-    group: 'Customer',
-    kind: 'enum',
-    options: LEAD_STATUSES.map((s) => ({ value: s, label: leadStatusMeta(s).label })),
-  },
-  'customer.email': { label: 'Email', group: 'Customer', kind: 'text' },
-  'customer.tags': {
-    label: 'Label',
-    group: 'Customer',
-    kind: 'tags',
-    hint: 'Matches one of the labels on the customer.',
-  },
-  'customer.company': { label: 'Company', group: 'Customer', kind: 'text' },
-  'customer.createdAt': { label: 'Date added', group: 'Customer', kind: 'date' },
-  'customer.totalSpent': {
-    label: 'Total spent',
-    group: 'Customer',
-    kind: 'number',
-    hint: 'A whole amount, e.g. 500.',
-  },
-  'customer.orderCount': { label: 'Number of orders', group: 'Customer', kind: 'number' },
-  'customer.firstOrderAt': { label: 'First order date', group: 'Customer', kind: 'date' },
-  'customer.lastOrderAt': { label: 'Last order date', group: 'Customer', kind: 'date' },
-  'customer.daysSinceLastOrder': {
-    label: 'Days since last order',
-    group: 'Customer',
-    kind: 'number',
-    hint: 'E.g. more than 365 for “not bought in a year”.',
-  },
-  'customer.assignedRepId': { label: 'Looked after by', group: 'Customer', kind: 'rep' },
-  'customer.doNotContact': { label: 'Do not send marketing', group: 'Customer', kind: 'boolean' },
-  'customer.b2bAccountId': {
-    label: 'Linked wholesale account',
-    group: 'Customer',
-    kind: 'account',
-  },
-  'b2bAccount.pricingTier': { label: 'Price tier', group: 'Wholesale account', kind: 'text' },
-  'b2bAccount.creditUtilization': {
-    label: 'Credit used (share)',
-    group: 'Wholesale account',
-    kind: 'number',
-    hint: 'A share between 0 and 1 — 0.8 means 80% of their limit is used.',
-  },
-  'b2bAccount.fleetSize': { label: 'Fleet size', group: 'Wholesale account', kind: 'number' },
-  'b2bAccount.status': {
-    label: 'Account status',
-    group: 'Wholesale account',
-    kind: 'enum',
-    options: [
-      { value: 'active', label: 'Active' },
-      { value: 'credit_hold', label: 'Credit hold' },
-      { value: 'suspended', label: 'Suspended' },
-      { value: 'inactive', label: 'Inactive' },
-    ],
-  },
-  'b2bAccount.paymentTerms': {
-    label: 'Payment terms',
-    group: 'Wholesale account',
-    kind: 'enum',
-    // Same presets the company form offers, from the one place they live. A
-    // segment that could only be built on four of the terms a business can
-    // actually agree would quietly exclude every customer on any other.
-    options: PAYMENT_TERM_PRESETS,
-  },
-  'email.openedLast30d': { label: 'Emails opened (30 days)', group: 'Email', kind: 'number' },
-  'email.clickedLast30d': { label: 'Emails clicked (30 days)', group: 'Email', kind: 'number' },
-  'email.unsubscribed': { label: 'Has unsubscribed', group: 'Email', kind: 'boolean' },
-  'email.subscribed': { label: 'Subscribed to marketing', group: 'Email', kind: 'boolean' },
-};
-
-/** Total accessor for {@link FIELD_META}. The map has an entry for every
- *  `SegmentField`, so this always resolves — wrapping the lookup here keeps that
- *  guarantee in one place and hands callers a `FieldMeta`, not the
- *  `FieldMeta | undefined` a bare `FIELD_META[field]` widens to across a module
- *  boundary under `noUncheckedIndexedAccess`. */
-export function fieldMeta(field: SegmentFieldPath, custom: CustomFieldIndex = {}): FieldMeta {
-  // A tenant-declared property (docs/144 §3.4). It cannot be in the map above —
-  // it did not exist when this file was written — so its metadata is derived
-  // from the object's own schema, and falls back to a readable label if the
-  // property has since been removed (an old rule must still RENDER).
-  if (field.startsWith('custom.')) {
-    const [, objectKey = '', propertyKey = ''] = field.split('.');
-    const declared = custom[objectKey]?.find((f) => f.key === propertyKey);
-    return {
-      label: declared?.label ?? propertyKey,
-      group: CUSTOM_GROUP_LABELS[objectKey] ?? 'Extra details',
-      kind: declared ? valueKindFor(declared.type) : 'text',
-      hint: declared?.helpText,
-    };
-  }
-  return FIELD_META[field as SegmentField];
-}
-
-/** Tenant-declared property fields, by object key, as the builder knows them. */
-export type CustomFieldIndex = Record<
-  string,
-  { key: string; label: string; type: string; helpText?: string }[]
->;
-
-const CUSTOM_GROUP_LABELS: Record<string, string> = {
-  contact: 'Your customer details',
-  company: 'Your company details',
-  deal: 'Your deal details',
-};
-
-/** Map a field-engine type onto the builder's value kinds. */
-function valueKindFor(type: string): ValueKind {
-  switch (type) {
-    case 'number':
-    case 'currency':
-    case 'calculated':
-      return 'number';
-    case 'boolean':
-      return 'boolean';
-    case 'date':
-    case 'datetime':
-      return 'date';
-    case 'enum':
-      return 'text';
-    case 'user':
-      return 'rep';
-    default:
-      return 'text';
-  }
-}
-
-/**
- * The fields the builder OFFERS, grouped for the picker. Date fields ("date
- * added", "first / last order date") compare by timestamp now that the server
- * evaluator's `toComparable` handles ISO strings, so a "last order before X"
- * rule matches correctly — recency can be expressed either as a date or as the
- * numeric "days since last order".
- */
-export const OFFERED_FIELDS: SegmentField[] = [
-  'customer.type',
-  'customer.tags',
-  'customer.email',
-  'customer.company',
-  'customer.totalSpent',
-  'customer.orderCount',
-  'customer.daysSinceLastOrder',
-  'customer.lastOrderAt',
-  'customer.firstOrderAt',
-  'customer.createdAt',
-  'customer.assignedRepId',
-  'customer.doNotContact',
-  'customer.b2bAccountId',
-  'b2bAccount.status',
-  'b2bAccount.pricingTier',
-  'b2bAccount.paymentTerms',
-  'b2bAccount.fleetSize',
-  'b2bAccount.creditUtilization',
-  'email.subscribed',
-  'email.unsubscribed',
-  'email.openedLast30d',
-  'email.clickedLast30d',
-];
-
-/** The field picker's items, always including `current` even when it is a field
- *  the builder does not otherwise offer (a stored date rule, say), so loading
- *  never drops a condition. Grouped by area, offered fields first. */
-export function fieldOptionsIncluding(
-  current: SegmentFieldPath,
-  custom: CustomFieldIndex = {}
-): { value: string; label: string }[] {
-  // Every tenant-declared property, offered alongside the built-in ones — a
-  // property you cannot filter on is a text box, not a property (docs/144 §3.4).
-  const customPaths: SegmentFieldPath[] = Object.entries(custom).flatMap(([objectKey, fields]) =>
-    fields
-      // A calculated property is a real number and filters fine; an asset or a
-      // repeater has no sensible comparison, so it is not offered.
-      .filter((f) => !['asset', 'object', 'repeater', 'rich_text'].includes(f.type))
-      .map((f) => `custom.${objectKey}.${f.key}`)
-  );
-
-  const all: SegmentFieldPath[] = [...OFFERED_FIELDS, ...customPaths];
-  const fields = all.includes(current) ? all : [...all, current];
-  return fields.map((f) => {
-    const meta = fieldMeta(f, custom);
-    return { value: f, label: `${meta.group} · ${meta.label}` };
-  });
-}
-
-/* ── Operators ──────────────────────────────────────────────────────────── */
-
-const OPERATORS_BY_KIND: Record<ValueKind, SegmentOperator[]> = {
-  enum: ['eq', 'neq'],
-  boolean: ['eq', 'neq'],
-  text: ['eq', 'neq', 'contains', 'not_contains', 'is_null', 'is_not_null'],
-  number: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'is_null', 'is_not_null'],
-  date: ['gt', 'gte', 'lt', 'lte', 'between', 'is_null', 'is_not_null'],
-  tags: ['contains', 'not_contains'],
-  rep: ['eq', 'neq', 'is_null', 'is_not_null'],
-  account: ['eq', 'neq', 'is_null', 'is_not_null'],
-};
-
-/** The operators offered for a field, always including `current` so a stored
- *  operator the builder would not offer still renders. */
-export function operatorOptionsIncluding(
-  field: SegmentFieldPath,
-  current: SegmentOperator,
-  custom: CustomFieldIndex = {}
-): { value: SegmentOperator; label: string }[] {
-  const kind = fieldMeta(field, custom).kind;
-  const base = OPERATORS_BY_KIND[kind];
-  const ops = base.includes(current) ? base : [...base, current];
-  return ops.map((op) => ({ value: op, label: operatorLabel(op, kind) }));
-}
-
-export function defaultOperator(
-  field: SegmentFieldPath,
-  custom: CustomFieldIndex = {}
-): SegmentOperator {
-  return OPERATORS_BY_KIND[fieldMeta(field, custom).kind][0] ?? 'eq';
-}
-
-/** Plain-language operator label, tuned per value kind (a date reads "is after",
- *  a number reads "is more than"). */
-export function operatorLabel(op: SegmentOperator, kind: ValueKind): string {
-  const dateLabels: Partial<Record<SegmentOperator, string>> = {
-    gt: 'is after',
-    gte: 'is on or after',
-    lt: 'is before',
-    lte: 'is on or before',
-    between: 'is between',
-  };
-  const dateLabel = dateLabels[op];
-  if (kind === 'date' && dateLabel) return dateLabel;
-  switch (op) {
-    case 'eq':
-      return 'is';
-    case 'neq':
-      return 'is not';
-    case 'gt':
-      return 'is more than';
-    case 'gte':
-      return 'is at least';
-    case 'lt':
-      return 'is less than';
-    case 'lte':
-      return 'is at most';
-    case 'in':
-      return 'is one of';
-    case 'not_in':
-      return 'is not one of';
-    case 'contains':
-      return kind === 'tags' ? 'includes' : 'contains';
-    case 'not_contains':
-      return kind === 'tags' ? 'does not include' : 'does not contain';
-    case 'is_null':
-      return 'is empty';
-    case 'is_not_null':
-      return 'is set';
-    case 'between':
-      return 'is between';
-  }
-}
-
-/** Whether this operator needs a value control at all. */
-export function operatorTakesValue(op: SegmentOperator): boolean {
-  return op !== 'is_null' && op !== 'is_not_null';
-}
-
-export function operatorIsRange(op: SegmentOperator): boolean {
-  return op === 'between';
-}
-
-export function operatorIsList(op: SegmentOperator): boolean {
-  return op === 'in' || op === 'not_in';
-}
-
-/* ── The editor tree ────────────────────────────────────────────────────── */
 
 export type Combinator = 'and' | 'or';
 
