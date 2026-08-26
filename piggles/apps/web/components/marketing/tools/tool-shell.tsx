@@ -12,6 +12,8 @@ import { ToolJsonLd } from './tool-jsonld';
 import { ToolLearn } from './tool-learn';
 import { ToolLadder } from './tool-ladder';
 import { RelatedTools } from './related-tools';
+import { ToolResultProvider } from './tool-result-context';
+import { ToolEmailCapture } from './tool-email-capture';
 
 /**
  * The frame every tool page wears.
@@ -59,10 +61,13 @@ export function ToolShell({ tool, children }: { tool: PigglesTool; children: Rea
   const group = toolGroup(tool);
   const photo = toolPhoto(tool);
 
+  // The middle clause used to read "no email address". The tool now offers to
+  // send you what it made, so the flat version was no longer true — and an
+  // untrue reassurance is worse than none. Nothing is gated; that is the claim.
   const NO_ACCOUNT = {
     icon: faUserXmark,
     title: 'No account, ever',
-    body: 'No sign-up, no email address, no trial that turns into a bill.',
+    body: 'No sign-up and no trial that turns into a bill. We only take your email if you ask us to send you the result.',
   };
   const YOURS = {
     icon: faBadgeCheck,
@@ -78,7 +83,7 @@ export function ToolShell({ tool, children }: { tool: PigglesTool; children: Rea
         {
           icon: faLaptop,
           title: 'It all happens here',
-          body: 'Every part runs in your browser. Nothing you type is uploaded, and it works with the internet off.',
+          body: 'Every part runs in your browser and it works with the internet off. Nothing leaves this page unless you ask us to send it to you.',
         },
         NO_ACCOUNT,
         YOURS,
@@ -146,8 +151,16 @@ export function ToolShell({ tool, children }: { tool: PigglesTool; children: Rea
         </Section>
 
         {/* The tool. On the page ground, full width, with real air around it —
-            it is the thing somebody came for. */}
-        <Section>{children}</Section>
+            it is the thing somebody came for. The capture card sits below it,
+            inside the provider: it can only offer what is already on screen. */}
+        <Section>
+          <ToolResultProvider>
+            {children}
+            <div className="mt-8">
+              <ToolEmailCapture toolSlug={tool.slug} toolName={tool.name} />
+            </div>
+          </ToolResultProvider>
+        </Section>
 
         <ToolLearn tool={tool} />
 

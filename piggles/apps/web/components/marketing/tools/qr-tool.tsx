@@ -26,6 +26,7 @@ import {
   TextField,
   ToolLayout,
 } from './ui-kit';
+import { useReportToolResult, type ToolResultLine } from './tool-result-context';
 
 type Kind = 'link' | 'text' | 'wifi' | 'card' | 'email' | 'sms' | 'phone';
 
@@ -138,6 +139,66 @@ export function QrTool() {
   // documents, and holding a phone number at the size of a vCard wastes half the
   // print area on empty pattern.
   useEffect(() => setFloor(1), [kind]);
+
+  /** What the code holds, in words rather than as its raw payload. A Wi-Fi
+   *  payload carries the PASSWORD in clear text and an email outlives the code,
+   *  so that one is described and never quoted; a contact card is multi-line. */
+  const contentLines = (): ToolResultLine[] => {
+    switch (kind) {
+      case 'link':
+        return [{ label: 'Web address', value: link.trim() }];
+      case 'text':
+        return [{ label: 'Message', value: text }];
+      case 'wifi':
+        return [
+          { label: 'Network name', value: ssid },
+          {
+            label: 'Security',
+            value: wifiSecurity === 'nopass' ? 'Open, no password' : wifiSecurity,
+          },
+          { label: 'Hidden network', value: wifiHidden ? 'Yes' : 'No' },
+        ];
+      case 'email':
+        return [
+          { label: 'Email address', value: emailTo },
+          ...(emailSubject.trim() ? [{ label: 'Subject', value: emailSubject }] : []),
+        ];
+      case 'sms':
+        return [
+          { label: 'Phone number', value: phone },
+          ...(smsMessage.trim() ? [{ label: 'The message it writes', value: smsMessage }] : []),
+        ];
+      case 'phone':
+        return [{ label: 'Phone number', value: phone }];
+      case 'card':
+        return [
+          ...(cardName.trim() ? [{ label: 'Name', value: cardName }] : []),
+          ...(cardPhone.trim() ? [{ label: 'Phone', value: cardPhone }] : []),
+          ...(cardEmail.trim() ? [{ label: 'Email', value: cardEmail }] : []),
+        ];
+    }
+  };
+
+  useReportToolResult(
+    result
+      ? {
+          lines: [
+            {
+              label: 'What the code does',
+              value: KINDS.find((k) => k.value === kind)?.label ?? kind,
+            },
+            ...contentLines(),
+            { label: 'Code color', value: dark.toUpperCase() },
+            { label: 'Background', value: light.toUpperCase() },
+            { label: 'Error correction', value: ec },
+          ],
+          note:
+            kind === 'wifi'
+              ? 'Your Wi-Fi password is deliberately not in this email. Open the tool again with the details above, type the password back in, and download the code. Print it big enough to scan from where people will actually be standing.'
+              : 'Open the tool again with these to download the code. Scan a printed one, at the size you are going to print it, before you order a batch — a code that is slightly too small looks perfectly fine and simply will not read.',
+        }
+      : null
+  );
 
   const darkRgb = parseHex(dark);
   const lightRgb = parseHex(light);

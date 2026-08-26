@@ -11,6 +11,8 @@ import { ToolLearn } from './tool-learn';
 import { ToolJsonLd } from './tool-jsonld';
 import { RelatedTools } from './related-tools';
 import { TrustRow } from './trust-row';
+import { ToolResultProvider } from './tool-result-context';
+import { ToolEmailCapture } from './tool-email-capture';
 
 /**
  * Shared page frame for every tool. Server-rendered chrome (hero, ladder CTA,
@@ -118,7 +120,17 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
         </Band>
 
         <Band tone="page">
-          <ModuleProvider module={tool.module}>{children}</ModuleProvider>
+          {/* The tool and its capture card share one result channel, so the card
+              can offer to send what the tool computed without every page
+              becoming a client component to thread it out. Both sit inside the
+              ModuleProvider, so the card's action wears the same hue as the
+              controls above it. */}
+          <ModuleProvider module={tool.module}>
+            <ToolResultProvider>
+              {children}
+              <ToolEmailCapture toolSlug={tool.slug} toolName={tool.name} />
+            </ToolResultProvider>
+          </ModuleProvider>
         </Band>
 
         <ToolLearn tool={tool} />

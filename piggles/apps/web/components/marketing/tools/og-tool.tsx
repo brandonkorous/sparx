@@ -16,6 +16,8 @@ import {
   TextField,
   ToolLayout,
 } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
+import { shareCardLines, shareCardMarkup, SHARE_CARD_NOTE } from './lib/share-card-email';
 
 /**
  * The picture that shows up when somebody posts your link.
@@ -50,6 +52,24 @@ export function OgTool() {
   }, [title, subtitle, footer, background, accent, layout, logo]);
 
   const filename = safeFilename(title || footer, 'share-image');
+
+  useReportToolResult(
+    title.trim()
+      ? {
+          lines: shareCardLines({
+            title,
+            subtitle,
+            footer,
+            layout,
+            background,
+            accent,
+            hasLogo: logo !== null,
+            filename,
+          }),
+          note: SHARE_CARD_NOTE,
+        }
+      : null
+  );
 
   return (
     <ToolLayout
@@ -168,13 +188,7 @@ export function OgTool() {
                 Upload the image to your site, then point at it from the {'<head>'} of the page.
               </p>
               <div className="mt-4">
-                <CodeOut
-                  code={`<meta property="og:image" content="https://yoursite.example/${filename}.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">`}
-                  language="html"
-                />
+                <CodeOut code={shareCardMarkup(filename)} language="html" />
               </div>
               <p className="mt-3 text-base">
                 <strong>Still showing the old one?</strong> The platform cached it, sometimes for

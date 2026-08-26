@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Input, Textarea } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, CodeBlock } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -51,6 +52,31 @@ export function MetaTool() {
     image && `<meta name="twitter:image" content="${esc(image)}">`,
   ].filter(Boolean);
   const snippet = lines.join('\n');
+
+  // The tags are the deliverable, and the two lengths go with them because they
+  // are the thing that gets clipped later without warning — worth having in front
+  // of whoever pastes this in.
+  useReportToolResult(
+    title.trim()
+      ? {
+          lines: [
+            { label: 'Title', value: title },
+            { label: 'Title length', value: `${title.length} of 60 characters` },
+            ...(description.trim()
+              ? [
+                  { label: 'Description', value: description },
+                  {
+                    label: 'Description length',
+                    value: `${description.length} of 160 characters`,
+                  },
+                ]
+              : []),
+            { label: 'Tags', value: snippet },
+          ],
+          note: 'Paste the tags into the <head> of that page. Anything over the character counts gets cut short in search results and on social, so trim before you publish.',
+        }
+      : null
+  );
 
   return (
     <Workbench>

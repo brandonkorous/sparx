@@ -7,6 +7,7 @@ import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from '.
 import { renderQrCanvas } from './lib/qr';
 import { downloadBlob, downloadText } from './lib/download';
 import { useLocalStorageState } from './lib/use-local-storage';
+import { useReportToolResult } from './tool-result-context';
 
 interface CardData {
   firstName: string;
@@ -61,6 +62,26 @@ export function DigitalCardTool() {
       logo: null,
     });
   }, [vcard]);
+
+  // The vCard's line breaks are load-bearing — an email collapses them, so a
+  // pasted copy would be a broken file. The card's contents go instead, which is
+  // what someone actually wants to check away from the screen, and the .vcf stays
+  // a download.
+  useReportToolResult(
+    data.firstName.trim() || data.lastName.trim()
+      ? {
+          lines: [
+            { label: 'Name', value: full },
+            ...(data.title.trim() ? [{ label: 'Job title', value: data.title }] : []),
+            ...(data.company.trim() ? [{ label: 'Company', value: data.company }] : []),
+            ...(data.phone.trim() ? [{ label: 'Phone', value: data.phone }] : []),
+            ...(data.email.trim() ? [{ label: 'Email', value: data.email }] : []),
+            ...(data.website.trim() ? [{ label: 'Website', value: data.website }] : []),
+          ],
+          note: 'These are the details your card hands over when someone scans it. Open the tool again to download the contact file or the QR code.',
+        }
+      : null
+  );
 
   const slug =
     full

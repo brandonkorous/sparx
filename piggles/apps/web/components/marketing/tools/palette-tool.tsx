@@ -6,7 +6,9 @@ import { ExportPanel } from './palette/export-panel';
 import { Pairs } from './palette/pairs';
 import { Preview } from './palette/preview';
 import { usePalette } from './palette/use-palette';
-import { assign, type ContentInk, type Role } from './palette/roles';
+import { assign, ROLE_JOBS, ROLE_ORDER, type ContentInk, type Role } from './palette/roles';
+import { cssVars } from './palette/code';
+import { MAX_LINE_VALUE, useReportToolResult } from './tool-result-context';
 import type { Vision } from './palette/vision';
 import type { Scheme } from './palette/generate';
 
@@ -41,6 +43,25 @@ export function PaletteTool() {
   /** Dropping an override restores silica's measured answer rather than freezing
    *  today's value, so it keeps tracking a color that changes underneath it. */
   const resetInk = (role: Role) => setInk(({ [role]: _dropped, ...rest }) => rest);
+
+  // A palette found by pressing space is gone the second the tab closes. Each
+  // color is labeled by the JOB it was given, never by its slot name: a printer
+  // can act on "buttons and links" and cannot act on "primary".
+  const css = cssVars(p.palette, roles);
+  useReportToolResult({
+    lines: [
+      ...ROLE_ORDER.flatMap((role, i) => {
+        const hex = p.palette[i]?.hex;
+        return hex ? [{ label: ROLE_JOBS[role], value: hex.toUpperCase() }] : [];
+      }),
+      ...p.palette.slice(ROLE_ORDER.length).map((swatch, i) => ({
+        label: `Spare color ${i + 1}`,
+        value: swatch.hex.toUpperCase(),
+      })),
+      ...(css.length <= MAX_LINE_VALUE ? [{ label: 'Code for your website', value: css }] : []),
+    ],
+    note: 'The codes are what a printer, a sign writer or whoever built your site will ask for. Keep this somewhere you will find it — using the same five everywhere is most of what makes a small business look put together.',
+  });
 
   return (
     <div className="flex flex-col gap-10">

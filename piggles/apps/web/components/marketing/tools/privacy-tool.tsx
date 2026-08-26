@@ -19,6 +19,20 @@ import {
 import { copyText, downloadText, safeFilename } from './lib/download';
 import { useLocalStorage } from './lib/use-local-storage';
 import { Aside, CheckField, Panel, SelectField, TextField, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
+
+/** The answers, in the same words the questions used. Keyed off the shape of
+ *  `collects` so a new question here is a compile error rather than a line that
+ *  quietly goes missing from the email. */
+const COLLECTS_LABELS: Record<keyof LegalInput['collects'], string> = {
+  contactForm: 'A contact form',
+  accounts: 'People can create accounts',
+  payments: 'You take payments',
+  shipping: 'You send things to people',
+  marketingEmail: 'A mailing list',
+  analytics: 'Analytics',
+  cookies: 'Cookies',
+};
 
 /**
  * A privacy policy and terms, from a few questions.
@@ -75,6 +89,40 @@ export function PrivacyTool() {
   const policy = useMemo(() => buildPrivacyPolicy(withProcessors), [withProcessors]);
   const terms = useMemo(() => buildTerms(withProcessors), [withProcessors]);
   const slug = safeFilename(input.businessName, 'policy');
+
+  // Both documents run to thousands of words that an email would flatten into
+  // one unreadable block, so the ANSWERS go instead. Come back with these and
+  // both documents rebuild in seconds — and the answers are the part to reread.
+  const covered = (Object.keys(COLLECTS_LABELS) as (keyof LegalInput['collects'])[])
+    .filter((key) => input.collects[key])
+    .map((key) => COLLECTS_LABELS[key]);
+
+  useReportToolResult(
+    input.businessName.trim()
+      ? {
+          lines: [
+            { label: 'Business name', value: input.businessName },
+            ...(input.websiteUrl.trim() ? [{ label: 'Website', value: input.websiteUrl }] : []),
+            ...(input.contactEmail.trim()
+              ? [{ label: 'Contact email', value: input.contactEmail }]
+              : []),
+            ...(input.country.trim() ? [{ label: 'Country', value: input.country }] : []),
+            ...(input.effectiveDate
+              ? [{ label: 'In force from', value: input.effectiveDate }]
+              : []),
+            {
+              label: 'What your business does',
+              value: covered.length > 0 ? covered.join(', ') : 'Nothing ticked yet',
+            },
+            { label: 'How long you keep things', value: `${input.retentionMonths} months` },
+            ...(withProcessors.processors.length > 0
+              ? [{ label: 'Services you use', value: withProcessors.processors.join(', ') }]
+              : []),
+          ],
+          note: `Open the tool again with these answers and both documents come straight back, ready to download. ${LEGAL_DISCLAIMER}`,
+        }
+      : null
+  );
 
   return (
     <ToolLayout

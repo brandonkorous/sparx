@@ -17,6 +17,7 @@ import {
 import { loadImageFromFile } from './lib/canvas';
 import { generateFavicons, type FaviconResult } from './lib/favicon';
 import { FaviconOutput } from './favicon-output';
+import { useReportToolResult } from './tool-result-context';
 
 function slugify(s: string): string {
   return (
@@ -71,6 +72,29 @@ export function FaviconTool() {
       clearTimeout(timer);
     };
   }, [img, transparent, bgColor, padding, radius, themeColor, manifestBg, appName, shortName]);
+
+  // This page promises the uploaded image never leaves the browser, and that
+  // promise is only worth anything if it holds here too. The icons themselves
+  // stay on the device: what travels is the markup and the manifest, both of
+  // which this tool wrote, plus the settings needed to regenerate the same set.
+  useReportToolResult(
+    result
+      ? {
+          lines: [
+            { label: 'App name', value: appName || 'My App' },
+            { label: 'Home-screen name', value: shortName || appName || 'My App' },
+            { label: 'Theme color', value: themeColor },
+            { label: 'Splash background', value: manifestBg },
+            { label: 'Icon background', value: transparent ? 'Transparent' : bgColor },
+            { label: 'Padding', value: `${padding}%` },
+            { label: 'Corner radius', value: `${radius}%` },
+            { label: 'Markup', value: result.htmlSnippet },
+            { label: 'Manifest', value: result.manifest },
+          ],
+          note: 'The icon files stay on your device, exactly as promised. Open the tool again with the same image and these settings to download the package, drop the files in your site root, then paste the markup into your <head>.',
+        }
+      : null
+  );
 
   const handleFiles = async (files: File[]) => {
     const file = files[0];

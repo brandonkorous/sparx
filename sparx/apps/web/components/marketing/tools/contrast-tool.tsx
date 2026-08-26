@@ -15,6 +15,7 @@ import {
   Stats,
 } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, HexColorField } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 import { contrastRatio, rateContrast } from './lib/color';
 
 /** One WCAG threshold and whether the current pair clears it. */
@@ -62,6 +63,19 @@ export function ContrastTool() {
       : rating.largeAA
         ? 'Large text only — too low for body copy'
         : 'Below every WCAG level';
+
+  // A contrast check is a pass/fail judgment, so the email carries the verdict as
+  // well as the number — the ratio alone means nothing to someone who has not
+  // memorized the WCAG thresholds.
+  useReportToolResult({
+    lines: [
+      { label: 'Foreground', value: fg },
+      { label: 'Background', value: bg },
+      { label: 'Contrast ratio', value: `${ratio.toFixed(2)}:1` },
+      { label: 'Verdict', value: summary },
+    ],
+    note: 'WCAG AA needs 4.5:1 for body text and 3:1 for large text; AAA needs 7:1.',
+  });
 
   return (
     <Workbench>

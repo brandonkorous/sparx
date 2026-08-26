@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { Badge, Button, Card, CardBody, Input, Loading } from '@wizeworks/silicaui-react';
 import { checkDomain, DOMAIN_ENDINGS, normaliseDomainInput, type DomainResult } from './lib/dns';
 import { Aside, Panel, Problem, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 /**
  * Is this name taken?
@@ -64,6 +65,32 @@ export function DomainTool() {
     (r) => r !== 'checking' && r.status === 'available'
   ).length;
   const done = Object.values(results).length > 0 && !Object.values(results).includes('checking');
+
+  // Three answers stay three answers on the way out. Rounding "could not find
+  // out" down to "taken" is how somebody talks themselves out of a name that was
+  // free, which is the exact mistake this tool exists to stop.
+  useReportToolResult(
+    done && searched
+      ? {
+          lines: DOMAIN_ENDINGS.flatMap((ending) => {
+            const r = results[ending.tld];
+            if (!r || r === 'checking') return [];
+            return [
+              {
+                label: `${searched}.${ending.tld}`,
+                value:
+                  r.status === 'available'
+                    ? 'Free to register'
+                    : r.status === 'taken'
+                      ? 'Somebody has it'
+                      : `We could not find out — ${r.note ?? 'this ending has no lookup we can reach'}`,
+              },
+            ];
+          }),
+          note: 'That was true at the moment you looked, and good names go quickly. Buy the one you want from any registrar, and buy it before you print it on anything.',
+        }
+      : null
+  );
 
   return (
     <ToolLayout

@@ -17,6 +17,14 @@ import { Text } from '@wizeworks/silicaui-react';
  * The `tone` prop is gone with the colored bands that needed it. Both surfaces
  * are the dark island now, so the ink resolves from the band's own `-content`
  * and there is nothing left to switch on.
+ *
+ * ── DO NOT SHORTEN THE THIRD CLAIM BACK TO "NO EMAIL" ───────────────────────
+ *
+ * It read "No account, no email, no watermark" until the tool pages grew an
+ * "email this to me" card (docs/152 A3). Nothing is gated and nobody is asked
+ * for an address to use a tool — but the offer exists, so the flat claim was no
+ * longer true, and a reassurance row that is not true is worse than no row. The
+ * qualified version is the whole point of the sentence.
  */
 const TRUST = [
   {
@@ -25,11 +33,11 @@ const TRUST = [
   },
   {
     v: 'Nothing uploaded',
-    s: 'Your file, logo and text never leave the tab.',
+    s: 'Your file and your logo never leave the tab.',
   },
   {
     v: 'No sign-up',
-    s: 'No account, no email, no watermark on the way out.',
+    s: 'No account and no watermark. We only take an email address if you ask us to send your results.',
   },
 ] as const;
 

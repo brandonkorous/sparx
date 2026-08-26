@@ -135,6 +135,19 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
     subject: 'Thanks for getting in touch',
     message: 'Do you deliver on Saturdays?',
   },
+  'tool-result': {
+    toolName: 'Margin calculator',
+    toolUrl: 'https://sparx.works/tools/margin-calculator',
+    // Computed values only — never a file the visitor supplied (see the template).
+    lines: [
+      { label: 'Cost', value: '$18.40' },
+      { label: 'Price', value: '$44.00' },
+      { label: 'Margin', value: '58.2%' },
+      { label: 'Profit per unit', value: '$25.60' },
+    ],
+    note: 'Prices exclude tax and shipping.',
+    brandName: 'sparx',
+  },
   'billing-receipt': {
     accountName: 'Rosa Flowers',
     amountLabel: '$49.00',

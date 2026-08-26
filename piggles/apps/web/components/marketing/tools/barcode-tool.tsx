@@ -5,6 +5,7 @@ import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { barcodeSvg, encodeBarcode, SYMBOLOGIES, type Symbology } from './lib/barcode';
 import { downloadBlob, safeFilename } from './lib/download';
 import { Aside, CheckField, Panel, Problem, SelectField, TextField, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 /**
  * Barcodes for products, shelves and stock takes.
@@ -44,6 +45,24 @@ export function BarcodeTool() {
     : null;
 
   const isRetail = symbology !== 'code128' && symbology !== 'code39';
+
+  // The barcode is a picture, and a picture is the one thing this email cannot
+  // carry. What it can carry is the recipe — the number, the type and the two
+  // sizes — which is everything needed to make the same one again.
+  useReportToolResult(
+    result
+      ? {
+          lines: [
+            { label: 'The number', value },
+            { label: 'Type of barcode', value: spec.label },
+            { label: 'Bar height', value: `${Math.max(20, Number(height) || 80)}` },
+            { label: 'Bar width', value: `${Math.max(1, Number(moduleWidth) || 2)}` },
+            { label: 'Number printed underneath', value: showText ? 'Yes' : 'No' },
+          ],
+          note: 'Open the tool again with these and download it. Print one and scan it before you print a whole sheet — a barcode that is slightly too small looks perfectly fine and will not read.',
+        }
+      : null
+  );
 
   return (
     <ToolLayout

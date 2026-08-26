@@ -17,6 +17,44 @@ import {
 import { QrFieldSet } from './qr-fields';
 import { buildQrPayload, renderQrCanvas, renderQrSvg, type QrType, type QrStyle } from './lib/qr';
 import { downloadBlob, downloadText, readAsDataUrl } from './lib/download';
+import { useReportToolResult, type ToolResultLine } from './tool-result-context';
+
+/** What the encoded content is worth repeating back in an email.
+ *
+ *  A Wi-Fi code is the exception: its payload carries the network PASSWORD in
+ *  clear text, and an email sits in an inbox for years. The network name and the
+ *  security type identify which code this was; the password stays on the screen
+ *  the person typed it into. A contact card is skipped for a duller reason — its
+ *  payload is multi-line, and email collapses those into one unusable run. */
+function encodedLines(
+  type: QrType,
+  fields: Record<string, string>,
+  payload: string
+): ToolResultLine[] {
+  if (type === 'wifi') {
+    return [
+      { label: 'Network name', value: fields.ssid ?? '' },
+      // Same default the payload builder applies, so the email describes the code
+      // that was actually generated rather than the field that was left blank.
+      {
+        label: 'Security',
+        value: fields.encryption && fields.encryption.length > 0 ? fields.encryption : 'WPA',
+      },
+      { label: 'Hidden network', value: fields.hidden === 'true' ? 'Yes' : 'No' },
+    ];
+  }
+  if (type === 'vcard') {
+    return [
+      { label: 'Name', value: `${fields.firstName ?? ''} ${fields.lastName ?? ''}`.trim() },
+      ...(fields.org ? [{ label: 'Company', value: fields.org }] : []),
+      ...(fields.title ? [{ label: 'Job title', value: fields.title }] : []),
+      ...(fields.phone ? [{ label: 'Phone', value: fields.phone }] : []),
+      ...(fields.email ? [{ label: 'Email', value: fields.email }] : []),
+      ...(fields.url ? [{ label: 'Website', value: fields.url }] : []),
+    ];
+  }
+  return [{ label: 'Encoded content', value: payload }];
+}
 
 const TYPES: { value: QrType; label: string }[] = [
   { value: 'url', label: 'URL' },
@@ -59,6 +97,25 @@ export function QrTool() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payload, fg, bg, ecc, margin, logo, hasData]);
+
+  useReportToolResult(
+    hasData
+      ? {
+          lines: [
+            { label: 'Code type', value: TYPES.find((t) => t.value === type)?.label ?? type },
+            ...encodedLines(type, fields, payload),
+            { label: 'Foreground', value: fg },
+            { label: 'Background', value: bg },
+            { label: 'Error correction', value: ecc },
+            { label: 'Center logo', value: logo ? 'Yes' : 'No' },
+          ],
+          note:
+            type === 'wifi'
+              ? 'The Wi-Fi password is deliberately left out of this email. Open the tool again with the details above, type the password back in, and download the code. Print it big enough to scan from where people will stand.'
+              : 'Open the tool again with these settings to download the PNG or SVG. Scan the printed version once before you order a batch of them.',
+        }
+      : null
+  );
 
   const set = (key: string, value: string) => setFields((prev) => ({ ...prev, [key]: value }));
 

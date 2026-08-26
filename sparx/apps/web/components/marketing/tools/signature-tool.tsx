@@ -21,6 +21,7 @@ import {
 } from './lib/signature';
 import { useLocalStorageState } from './lib/use-local-storage';
 import { readAsDataUrl } from './lib/download';
+import { MAX_LINE_VALUE, useReportToolResult } from './tool-result-context';
 
 const DEFAULT_DATA: SignatureData = {
   name: 'Jordan Rivera',
@@ -147,6 +148,33 @@ export function SignatureTool() {
   const set: SetField = (k, v) => setData((prev) => ({ ...prev, [k]: v }));
 
   const html = buildSignatureHtml(data, layout);
+
+  // A photo or a logo is embedded straight into the signature markup as the
+  // picture's own bytes, so a signature carrying one is not markup this tool
+  // wrote — it is the visitor's file wearing markup, and it does not go in an
+  // email. Their details still do, and the note says where the rest lives.
+  const carriesUpload = Boolean(data.photo) || Boolean(data.logo);
+  const sendable = !carriesUpload && html.length <= MAX_LINE_VALUE;
+  useReportToolResult(
+    data.name.trim()
+      ? {
+          lines: [
+            { label: 'Name', value: data.name },
+            ...(data.title ? [{ label: 'Job title', value: data.title }] : []),
+            ...(data.company ? [{ label: 'Company', value: data.company }] : []),
+            ...(data.phone ? [{ label: 'Phone', value: data.phone }] : []),
+            ...(data.email ? [{ label: 'Email', value: data.email }] : []),
+            ...(data.website ? [{ label: 'Website', value: data.website }] : []),
+            { label: 'Layout', value: LAYOUTS.find((l) => l.value === layout)?.label ?? layout },
+            { label: 'Accent color', value: data.accent },
+            ...(sendable ? [{ label: 'Signature HTML', value: html }] : []),
+          ],
+          note: sendable
+            ? 'Paste the HTML into the signature box in your email settings. Most email apps have a source or HTML view; if yours does not, open the tool again and use Copy signature, which pastes it already formatted.'
+            : 'Your signature includes a picture, which is built into it on your own device and stays there. Open the tool again and use Copy signature, then paste it into your email settings.',
+        }
+      : null
+  );
 
   const upload = (key: 'photo' | 'logo') => async (files: File[]) => {
     const file = files[0];

@@ -5,6 +5,7 @@ import { Bookmark, Download, Link2 } from 'lucide-react';
 import { toast } from '@wizeworks/ui';
 import { Alert, Button, EmptyState, Input, Switch } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, CodeBlock } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 import { SavedLinks, type SavedLink } from './utm-saved-links';
 import { renderQrCanvas, renderQrSvg, type QrStyle } from './lib/qr';
 import { useLocalStorageState } from './lib/use-local-storage';
@@ -75,6 +76,25 @@ export function UtmTool() {
   const ready =
     valid && (p.source.trim() !== '' || p.medium.trim() !== '' || p.campaign.trim() !== '');
   const set = (k: keyof UtmParams, v: string) => setP((prev) => ({ ...prev, [k]: v }));
+
+  // The built link plus the tags that went into it, so the email is something
+  // they can paste and also audit later. Null until the URL is actually valid —
+  // a half-typed address is not a result.
+  useReportToolResult(
+    ready
+      ? {
+          lines: [
+            { label: 'Tagged link', value: url },
+            ...(p.source.trim() ? [{ label: 'Source', value: p.source }] : []),
+            ...(p.medium.trim() ? [{ label: 'Medium', value: p.medium }] : []),
+            ...(p.campaign.trim() ? [{ label: 'Campaign', value: p.campaign }] : []),
+            ...(p.term.trim() ? [{ label: 'Term', value: p.term }] : []),
+            ...(p.content.trim() ? [{ label: 'Content', value: p.content }] : []),
+          ],
+          note: 'Use this link wherever you share the campaign so the visits it brings show up under this name in your reports.',
+        }
+      : null
+  );
 
   React.useEffect(() => {
     if (!ready || !canvasRef.current) return;

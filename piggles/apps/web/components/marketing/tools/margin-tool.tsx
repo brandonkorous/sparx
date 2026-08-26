@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { CURRENCIES, formatMoney } from './lib/document';
 import { Aside, Panel, SelectField, TextField, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
+import { marginLines, MARGIN_NOTE } from './lib/margin-email';
 
 /**
  * What should I charge?
@@ -57,6 +59,24 @@ export function MarginTool() {
 
   const money = (n: number) => formatMoney(n, currency);
   const impossible = solve === 'price' && marginNum >= 100;
+
+  useReportToolResult(
+    !impossible && finalPrice > 0
+      ? {
+          lines: marginLines({
+            currency,
+            cost: finalCost,
+            price: finalPrice,
+            profit,
+            margin,
+            markup,
+            fixedCosts: fixedNum,
+            breakEven,
+          }),
+          note: MARGIN_NOTE,
+        }
+      : null
+  );
 
   return (
     <ToolLayout

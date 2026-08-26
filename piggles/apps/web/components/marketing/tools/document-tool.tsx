@@ -26,6 +26,8 @@ import {
   TextField,
   ToolLayout,
 } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
+import { documentHasContent, documentLines } from './lib/document-email';
 
 /**
  * The invoice maker and the quote maker.
@@ -99,6 +101,18 @@ export function DocumentTool({ kind }: { kind: DocumentKind }) {
 
   const removeItem = (id: string) =>
     setDoc((prev) => ({ ...prev, items: prev.items.filter((i) => i.id !== id) }));
+
+  // One wiring covers both documents this becomes. The PDF stays here, the logo
+  // especially — what travels is what the document SAYS, which is the half worth
+  // having in an inbox when somebody checks a total from their phone.
+  useReportToolResult(
+    documentHasContent(full)
+      ? {
+          lines: documentLines(full),
+          note: `Open the tool again to download the ${kind} as a PDF. Your own details are still saved in that browser, so it opens ready to go — the customer's are not, which is deliberate if you are on a shared computer.`,
+        }
+      : null
+  );
 
   const download = async () => {
     setBuilding(true);

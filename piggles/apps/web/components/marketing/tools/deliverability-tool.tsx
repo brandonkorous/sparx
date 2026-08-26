@@ -34,6 +34,17 @@ import {
   TextField,
   ToolLayout,
 } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
+
+/** The heading each check wears on screen, reused so the email says the same
+ *  thing. "Could not find" stays distinct from "missing" all the way out — the
+ *  four states are the whole point of this tool. */
+const findingLabel = (kind: 'spf' | 'dkim' | 'dmarc'): string =>
+  kind === 'spf'
+    ? 'SPF — who is allowed to send as you'
+    : kind === 'dkim'
+      ? 'DKIM — the signature on your mail'
+      : 'DMARC — what to do with fakes';
 
 /**
  * Will your email actually arrive?
@@ -98,6 +109,26 @@ export function DeliverabilityTool() {
 
   const spfRecord = buildSpf({ includes, allowA, allowMx, policy: spfPolicy });
   const dmarcRecord = buildDmarc({ policy: dmarcPolicy, reportTo, percentage: 100 });
+
+  // Two records that get typed into a control panel, very often by somebody
+  // other than the person reading this screen. That is what an email is for, so
+  // they go every time and the check results ride along when there are any.
+  useReportToolResult({
+    lines: [
+      ...(findings && checked
+        ? [
+            { label: 'Domain checked', value: checked },
+            ...findings.map((f) => ({
+              label: findingLabel(f.kind),
+              value: f.record ? `${f.title} — ${f.record}` : f.title,
+            })),
+          ]
+        : []),
+      { label: 'SPF record — name it @ or leave the name blank', value: spfRecord },
+      { label: 'DMARC record — name it _dmarc', value: dmarcRecord },
+    ],
+    note: 'Both go in wherever your domain is managed, as TXT records. Leave DMARC on monitor for a couple of weeks and read what comes back before you tighten it — going straight to reject can bounce your own mail. DKIM is not here because your email provider makes that one for you.',
+  });
 
   return (
     <ToolLayout

@@ -35,6 +35,7 @@ import {
 } from './lib/color';
 import { usePalette } from './use-palette';
 import { PalettePreview } from './palette-preview';
+import { MAX_LINE_VALUE, useReportToolResult } from './tool-result-context';
 
 export function PaletteTool() {
   const p = usePalette();
@@ -64,6 +65,22 @@ export function PaletteTool() {
   const { css, tailwind } = buildExports(name, p.colors);
   const silica = buildSilicaTheme(name, p.colors);
   const sparx = buildSparxExport(name, p.colors);
+
+  // A palette found by shuffling is gone the moment the tab closes, and the hex
+  // codes are the part someone needs in front of them when they are picking a
+  // logo or briefing a printer. Those go plainly, with the CSS underneath for
+  // whoever builds the site.
+  useReportToolResult({
+    lines: [
+      ...p.colors.map((c) => ({ label: c.role, value: c.hex.toUpperCase() })),
+      {
+        label: 'Scheme',
+        value: HARMONY_KINDS.find((k) => k.value === p.harmony)?.label ?? p.harmony,
+      },
+      ...(css.length <= MAX_LINE_VALUE ? [{ label: 'CSS variables', value: css }] : []),
+    ],
+    note: 'The hex codes are the ones to give a designer or a printer. The CSS goes at the top of your stylesheet, and every shade of each color is generated for you so you are not picking hover and border tones by eye.',
+  });
 
   return (
     <div ref={containerRef}>

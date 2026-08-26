@@ -14,6 +14,7 @@ import {
   Loading,
 } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 const TLDS = ['com', 'co', 'io', 'app', 'dev', 'net', 'org', 'ai', 'xyz', 'store'];
 const DEFAULT_TLDS = ['com', 'co', 'io', 'app', 'net'];
@@ -70,6 +71,28 @@ export function DomainTool() {
   };
 
   const ordered = TLDS.filter((t) => selected.has(t)).map((t) => `${base}.${t}`);
+  const checked = ordered.filter((d) => results[d]);
+
+  // A name search is the one result people most want to sit on overnight, so the
+  // whole list goes — including the ones nobody could answer for. A lookup that
+  // failed says so; it never gets rounded down to "taken", which would talk
+  // someone out of a name that is sitting there free.
+  useReportToolResult(
+    !loading && checked.length > 0
+      ? {
+          lines: checked.map((domain) => ({
+            label: domain,
+            value:
+              results[domain]?.available === true
+                ? 'Available'
+                : results[domain]?.available === false
+                  ? 'Taken'
+                  : 'We could not reach the registry for this one',
+          })),
+          note: 'Availability was live at the moment you checked, and good names go quickly. Register the one you want at any registrar, then point it at your site.',
+        }
+      : null
+  );
 
   return (
     <Workbench>

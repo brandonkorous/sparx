@@ -87,6 +87,11 @@ import {
   type FormSubmissionConfirmationEmailProps,
 } from './templates/form-submission-confirmation';
 import {
+  ToolResultEmail,
+  toolResultSubject,
+  type ToolResultEmailProps,
+} from './templates/tool-result';
+import {
   BillingReceiptEmail,
   billingReceiptSubject,
   type BillingReceiptEmailProps,
@@ -222,6 +227,8 @@ export type TemplateId =
   | 'team-invitation'
   | 'form-submission-notification'
   | 'form-submission-confirmation'
+  // The free-tool result a visitor asked us to send them (docs/152 A3).
+  | 'tool-result'
   | 'billing-receipt'
   | 'billing-payment-failed'
   | 'billing-trial-ending'
@@ -365,6 +372,13 @@ export type TemplateSend =
       template: 'form-submission-confirmation';
       to: string;
       props: FormSubmissionConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'tool-result';
+      to: string;
+      props: ToolResultEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -801,6 +815,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'form-submission-confirmation',
+      };
+    }
+    case 'tool-result': {
+      const element = wrap(<ToolResultEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: toolResultSubject(input.props.toolName),
+        html,
+        text,
+        templateId: 'tool-result',
       };
     }
     case 'billing-receipt': {

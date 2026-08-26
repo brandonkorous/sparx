@@ -16,6 +16,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, CodeBlock } from './ui-kit';
 import { lookupTxt, cleanDomain } from './lib/dns';
+import { useReportToolResult, type ToolResultLine } from './tool-result-context';
 
 type Status = 'found' | 'missing' | 'error' | 'skip';
 interface CheckResult {
@@ -48,6 +49,20 @@ function classify(records: string[] | null, error: string | undefined, re: RegEx
   if (error) return { status: 'error', error };
   const rec = records.find((r) => re.test(r));
   return rec ? { status: 'found', record: rec } : { status: 'missing' };
+}
+
+/** One check, said in a sentence rather than a colored pill.
+ *
+ *  The three failure states stay distinct on the way out. A lookup that errored
+ *  is NOT reported as missing: telling someone their DMARC record is absent when
+ *  the resolver simply did not answer sends them to publish a second copy of a
+ *  record they already have. */
+function checkLine(label: string, result: CheckResult): ToolResultLine {
+  if (result.status === 'found') return { label, value: `Found — ${result.record ?? 'published'}` };
+  if (result.status === 'missing') return { label, value: 'Not published' };
+  if (result.status === 'error')
+    return { label, value: `We could not read this one (${result.error ?? 'lookup failed'})` };
+  return { label, value: 'Not checked' };
 }
 
 function ResultRow({ label, full, result }: { label: string; full: string; result: CheckResult }) {
@@ -98,6 +113,26 @@ export function DeliverabilityTool() {
       : SPF_PROVIDERS[provider];
   const spfRecord = `v=spf1 ${include} ${spfPolicy}`.replace(/\s+/g, ' ').trim();
   const dmarcRecord = `v=DMARC1; p=${dmarcPolicy};${rua.trim() ? ` rua=mailto:${rua.trim()};` : ''} adkim=s; aspf=s; pct=100`;
+
+  // Two records that have to be typed into a DNS panel, often by somebody other
+  // than the person looking at this screen. That is exactly what an email is for,
+  // so the records go out whether or not a domain was checked, and the check
+  // results ride along when there are any.
+  useReportToolResult({
+    lines: [
+      ...(results && cleanDomain(domain)
+        ? [
+            { label: 'Domain checked', value: cleanDomain(domain) },
+            checkLine('SPF — authorized senders', results.spf),
+            checkLine('DKIM — message signature', results.dkim),
+            checkLine('DMARC — failure policy', results.dmarc),
+          ]
+        : []),
+      { label: 'SPF record — host @ (root)', value: spfRecord },
+      { label: 'DMARC record — host _dmarc', value: dmarcRecord },
+    ],
+    note: 'Add both as TXT records wherever your domain is managed. Leave DMARC on monitor for a couple of weeks and read the reports before you tighten it, or you can start bouncing your own mail. DKIM is not here because your email provider generates that one for you.',
+  });
 
   const check = async () => {
     const d = cleanDomain(domain);

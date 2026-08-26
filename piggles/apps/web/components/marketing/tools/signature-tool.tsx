@@ -21,6 +21,7 @@ import {
   TextField,
   ToolLayout,
 } from './ui-kit';
+import { MAX_LINE_VALUE, useReportToolResult } from './tool-result-context';
 
 /**
  * The few tidy lines under everything you send.
@@ -59,6 +60,38 @@ export function SignatureTool() {
   const plain = useMemo(() => signaturePlainText(input), [input]);
   const warnings = useMemo(() => signatureWarnings(input), [input]);
   const empty = !input.name && !input.email && !input.phone;
+
+  // The code goes too: a signature is usually set up on a different machine from
+  // the one it was designed on. Any picture is referenced by its own web address
+  // rather than carried, so nothing off anybody's disk travels here.
+  const codeFits = html.length <= MAX_LINE_VALUE;
+  useReportToolResult(
+    !empty
+      ? {
+          lines: [
+            ...(input.name ? [{ label: 'Name', value: input.name }] : []),
+            ...(input.jobTitle ? [{ label: 'What you do', value: input.jobTitle }] : []),
+            ...(input.company ? [{ label: 'Business', value: input.company }] : []),
+            ...(input.email ? [{ label: 'Email', value: input.email }] : []),
+            ...(input.phone ? [{ label: 'Phone', value: input.phone }] : []),
+            ...(input.website ? [{ label: 'Website', value: input.website }] : []),
+            ...(input.tagline ? [{ label: 'Tagline', value: input.tagline }] : []),
+            {
+              label: 'Arrangement',
+              value: SIGNATURE_LAYOUTS.find((l) => l.value === input.layout)?.label ?? input.layout,
+            },
+            { label: 'Accent color', value: input.accent.toUpperCase() },
+            ...(warnings.length > 0
+              ? [{ label: 'Worth fixing first', value: warnings.join(' ') }]
+              : []),
+            ...(codeFits ? [{ label: 'The code', value: html }] : []),
+          ],
+          note: codeFits
+            ? 'Most email apps have a box that takes code — paste it there. If yours only has a plain box and you end up looking at the code instead of the signature, open the tool again and use the copy button, which pastes it already formatted.'
+            : 'Your signature is too long to send in one piece by email. Open the tool again and use the copy button, then paste it into your email settings.',
+        }
+      : null
+  );
 
   return (
     <ToolLayout

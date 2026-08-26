@@ -5,6 +5,7 @@ import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { useLocalStorage } from './lib/use-local-storage';
 import { copyText } from './lib/download';
 import { Aside, CodeOut, Panel, Problem, SelectField, TextField, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 /**
  * Build a link that tells you where somebody came from.
@@ -94,6 +95,27 @@ export function UtmTool() {
       return '';
     }
   }, [base, source, medium, campaign, content, term]);
+
+  // The tags go out beside the link, not only buried inside it. Six weeks later
+  // the question is never "what was the link" but "did I write instagram or
+  // Instagram", and a spelled-out tag is the answer to that one.
+  useReportToolResult(
+    built
+      ? {
+          lines: [
+            { label: 'Your tagged link', value: built },
+            ...(source.trim() ? [{ label: 'Where it is going (source)', value: source }] : []),
+            ...(medium.trim() ? [{ label: 'What kind of place (medium)', value: medium }] : []),
+            ...(campaign.trim()
+              ? [{ label: 'What you are running (campaign)', value: campaign }]
+              : []),
+            ...(content.trim() ? [{ label: 'Which version (content)', value: content }] : []),
+            ...(term.trim() ? [{ label: 'Search words (term)', value: term }] : []),
+          ],
+          note: 'Use this link wherever you are sharing it, and use exactly these spellings next time. The tags are case-sensitive, so instagram and Instagram become two rows in your reports and each one looks half as good as the truth.',
+        }
+      : null
+  );
 
   const knownSources = [
     ...new Set(saved.map((s) => new URL(s.url).searchParams.get('utm_source')).filter(Boolean)),

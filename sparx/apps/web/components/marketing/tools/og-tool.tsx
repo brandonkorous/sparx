@@ -16,6 +16,7 @@ import {
 } from './ui-kit';
 import { renderOgCanvas, type OgOptions } from './lib/og-image';
 import { downloadBlob, readAsDataUrl } from './lib/download';
+import { useReportToolResult } from './tool-result-context';
 
 const META_SNIPPET = [
   '<meta property="og:image" content="https://yoursite.com/og-image.png">',
@@ -49,6 +50,27 @@ export function OgTool() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, eyebrow, siteName, accent, theme, logo]);
+
+  // The image is a PNG the browser drew, and the logo inside it came off the
+  // visitor's own disk — neither leaves this page. What goes in the email is the
+  // wording, the settings that produced the image, and the tags that make a
+  // shared link show it. The logo is reported as a yes, never as its bytes.
+  useReportToolResult(
+    title.trim()
+      ? {
+          lines: [
+            { label: 'Headline', value: title },
+            ...(eyebrow.trim() ? [{ label: 'Label above the headline', value: eyebrow }] : []),
+            ...(siteName.trim() ? [{ label: 'Site name', value: siteName }] : []),
+            { label: 'Theme', value: theme === 'dark' ? 'Dark' : 'Light' },
+            { label: 'Accent color', value: accent },
+            { label: 'Logo', value: logo ? 'Added' : 'None' },
+            { label: 'Tags', value: META_SNIPPET },
+          ],
+          note: 'Open the tool again with these settings to download the 1200×630 PNG, upload it to your site, then point the tags at where it lives.',
+        }
+      : null
+  );
 
   const handleLogo = async (files: File[]) => {
     const file = files[0];

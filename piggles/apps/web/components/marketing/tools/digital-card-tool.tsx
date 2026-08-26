@@ -7,6 +7,7 @@ import { encodeQr } from './lib/qr';
 import { downloadBlob, safeFilename } from './lib/download';
 import { useLocalStorage } from './lib/use-local-storage';
 import { Aside, Blank, Panel, TextField, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 /**
  * Your details as something a phone can swallow whole.
@@ -79,6 +80,40 @@ export function DigitalCardTool() {
 
   const filename = safeFilename(`${input.firstName}-${input.lastName}`, 'contact');
   const dense = qr ? qr.version >= 12 : false;
+
+  // The contact file's line breaks do real work and an email flattens them, so
+  // the details go instead — which is what somebody wants to check before this
+  // gets printed on a thousand cards. The density warning goes with them.
+  useReportToolResult(
+    usable
+      ? {
+          lines: [
+            { label: 'Name', value: `${input.firstName} ${input.lastName}`.trim() },
+            ...(input.jobTitle ? [{ label: 'What you do', value: input.jobTitle }] : []),
+            ...(input.company ? [{ label: 'Business', value: input.company }] : []),
+            ...(input.email ? [{ label: 'Email', value: input.email }] : []),
+            ...(input.phone ? [{ label: 'Phone', value: input.phone }] : []),
+            ...(input.mobile ? [{ label: 'Mobile', value: input.mobile }] : []),
+            ...(input.website ? [{ label: 'Website', value: input.website }] : []),
+            ...([input.street, input.city, input.region, input.postcode, input.country].some(
+              Boolean
+            )
+              ? [
+                  {
+                    label: 'Address',
+                    value: [input.street, input.city, input.region, input.postcode, input.country]
+                      .filter(Boolean)
+                      .join(', '),
+                  },
+                ]
+              : []),
+          ],
+          note: dense
+            ? 'These are the details your code hands over. It has grown dense enough that it needs printing larger than a business card usually allows, so test a printed one at the real size before you order any. Open the tool again to download the code and the contact file.'
+            : 'These are the details your code hands over. Open the tool again to download the code and the contact file, and scan a printed one before you order a box of them.',
+        }
+      : null
+  );
 
   return (
     <ToolLayout

@@ -21,6 +21,7 @@ import {
   type BarcodeStyle,
 } from './lib/barcode';
 import { downloadBlob, downloadText } from './lib/download';
+import { useReportToolResult } from './tool-result-context';
 
 export function BarcodeTool() {
   const [format, setFormat] = React.useState<BarcodeFormat>('CODE128');
@@ -47,6 +48,28 @@ export function BarcodeTool() {
   }, [value, format, lineColor, background, height, displayValue]);
 
   const valid = !error && value.trim().length > 0;
+
+  // The barcode itself is an image the browser drew, and an image is exactly what
+  // this email may not carry. What survives is the recipe: the encoded value and
+  // the settings that produced it, which is enough to redraw the same barcode.
+  useReportToolResult(
+    valid
+      ? {
+          lines: [
+            { label: 'Encoded value', value },
+            {
+              label: 'Format',
+              value: BARCODE_FORMATS.find((f) => f.value === format)?.label ?? format,
+            },
+            { label: 'Bar color', value: lineColor },
+            { label: 'Background', value: background },
+            { label: 'Height', value: `${height}px` },
+            { label: 'Number shown under the bars', value: displayValue ? 'Yes' : 'No' },
+          ],
+          note: 'Open the tool again with these settings to download the PNG or SVG. Print it at the size you will actually scan it at, and test one before you print a whole run.',
+        }
+      : null
+  );
 
   const downloadPng = () => {
     canvasRef.current?.toBlob((b) => b && downloadBlob(b, `barcode-${value}.png`), 'image/png');

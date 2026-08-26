@@ -8,6 +8,7 @@ import { LegalDocument } from './legal-markdown';
 import { buildPrivacyPolicy, buildTerms, type LegalData } from './lib/legal-templates';
 import { downloadText } from './lib/download';
 import { useLocalStorageState } from './lib/use-local-storage';
+import { useReportToolResult } from './tool-result-context';
 
 const DEFAULT: LegalData = {
   businessName: 'Acme Co.',
@@ -41,6 +42,34 @@ export function PrivacyTool() {
 
   const text = doc === 'privacy' ? buildPrivacyPolicy(data) : buildTerms(data);
   const filename = doc === 'privacy' ? 'privacy-policy.md' : 'terms-of-service.md';
+  const docName = doc === 'privacy' ? 'Privacy policy' : 'Terms of service';
+  const covers = TOGGLES.filter((t) => data[t.key]).map((t) => t.label);
+
+  // The document itself is thousands of words with headings that an email would
+  // flatten into one unreadable block, so what goes out is the answers it was
+  // built from. Someone who comes back with these can regenerate the same
+  // document in a few seconds, which is the honest version of "keep this".
+  useReportToolResult(
+    data.businessName.trim()
+      ? {
+          lines: [
+            { label: 'Document', value: docName },
+            { label: 'Business name', value: data.businessName },
+            ...(data.website.trim() ? [{ label: 'Website', value: data.website }] : []),
+            ...(data.email.trim() ? [{ label: 'Contact email', value: data.email }] : []),
+            ...(data.effectiveDate ? [{ label: 'Effective date', value: data.effectiveDate }] : []),
+            ...(data.jurisdiction.trim()
+              ? [{ label: 'Governing law', value: data.jurisdiction }]
+              : []),
+            {
+              label: 'What it covers',
+              value: covers.length > 0 ? covers.join(', ') : 'Nothing selected yet',
+            },
+          ],
+          note: `Open the tool again with these answers to rebuild your ${docName.toLowerCase()} and download it. It is a strong starting point, not legal advice, so read it against how your business actually works before you publish it.`,
+        }
+      : null
+  );
 
   return (
     <Workbench>

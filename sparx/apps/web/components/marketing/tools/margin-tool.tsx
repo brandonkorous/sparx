@@ -12,6 +12,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 import { CURRENCIES, formatMoney } from './lib/invoice';
 
 function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
@@ -41,6 +42,31 @@ export function MarginTool() {
   const breakEven = profit > 0 && fixed > 0 ? Math.ceil(fixed / profit) : null;
   const money = (n: number) => formatMoney(n, currency);
   const pct = (n: number) => `${n.toFixed(1)}%`;
+
+  // Publish the computed figures so the page can offer to email them. Null until
+  // there is a real price to report — at zero the margin reads 0.0%, which is a
+  // number nobody entered, and sending it would be presenting a default as a
+  // result.
+  useReportToolResult(
+    p > 0
+      ? {
+          lines: [
+            { label: 'Cost', value: money(c) },
+            { label: 'Price', value: money(p) },
+            { label: 'Profit per unit', value: money(profit) },
+            { label: 'Profit margin', value: pct(margin) },
+            { label: 'Markup', value: pct(markup) },
+            ...(breakEven !== null
+              ? [{ label: 'Break-even units', value: String(breakEven) }]
+              : []),
+          ],
+          note:
+            breakEven !== null
+              ? `At ${money(profit)} profit per unit you cover ${money(fixed)} of fixed costs after ${breakEven} units.`
+              : 'Margin is profit as a share of price; markup is profit as a share of cost.',
+        }
+      : null
+  );
 
   return (
     <Workbench>

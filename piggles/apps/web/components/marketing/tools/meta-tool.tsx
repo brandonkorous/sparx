@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { AreaField, CodeOut, Panel, TextField, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 /**
  * Write the two lines Google shows, and see them before the page is live.
@@ -47,6 +48,23 @@ export function MetaTool() {
   ]
     .filter((line) => line !== '')
     .join('\n');
+
+  // The two lines go on their own, above the code, because they are the half
+  // somebody wants to reread and rewrite. The code is for whoever puts it on the
+  // site, which is often a different person on a different day.
+  useReportToolResult(
+    title.trim()
+      ? {
+          lines: [
+            { label: 'Page title', value: title },
+            ...(description.trim() ? [{ label: 'Description', value: description }] : []),
+            { label: 'Page address', value: url },
+            { label: 'Code to add', value: code },
+          ],
+          note: 'The code goes inside the <head> of that page. If you are not the one who does that, forward this to whoever looks after your site. Check the preview before you publish — search results cut off by width, so a title full of capitals gets shortened earlier than one without.',
+        }
+      : null
+  );
 
   return (
     <ToolLayout

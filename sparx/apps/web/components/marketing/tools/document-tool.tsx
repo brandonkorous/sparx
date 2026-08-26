@@ -8,7 +8,8 @@ import { Workbench, ControlsPane, OutputPane, Panel } from './ui-kit';
 import { DocumentFields } from './document-fields';
 import { InvoiceItems } from './invoice-items';
 import { InvoicePreview } from './invoice-preview';
-import { type InvoiceData } from './lib/invoice';
+import { computeTotals, formatMoney, type InvoiceData } from './lib/invoice';
+import { useReportToolResult, type ToolResultLine } from './tool-result-context';
 import { generateInvoicePdf } from './lib/invoice-pdf';
 import { useLocalStorageState } from './lib/use-local-storage';
 import { downloadBlob, readAsDataUrl } from './lib/download';
@@ -26,6 +27,52 @@ export interface DocConfig {
 }
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+/** How many line items the email repeats before it stops and says so.
+ *
+ *  The delivery gate accepts fifty lines in total and the header, dates and
+ *  totals claim some of those. A long invoice is summarized rather than silently
+ *  cut: the count is stated so nobody reconciles against a partial list. */
+const MAX_ITEM_LINES = 30;
+
+/** The document's contents as email lines.
+ *
+ *  Item labels are numbered because two items can legitimately share a
+ *  description ("Consulting" twice at different rates) and an unlabeled item is
+ *  possible while someone is still typing — the number keeps every label present
+ *  and distinct, which is what both the gate and the email's own markup need. */
+function documentLines(data: InvoiceData, config: DocConfig): ToolResultLine[] {
+  const totals = computeTotals(data);
+  const money = (n: number) => formatMoney(n, data.currency);
+  const shown = data.items.slice(0, MAX_ITEM_LINES);
+
+  return [
+    { label: config.numberLabel, value: data.invoiceNumber || 'Not numbered yet' },
+    ...(data.clientName.trim() ? [{ label: 'Billed to', value: data.clientName }] : []),
+    ...(data.issueDate ? [{ label: 'Issued', value: data.issueDate }] : []),
+    ...(data.dueDate ? [{ label: config.dateFieldLabel, value: data.dueDate }] : []),
+    ...shown.map((item, i) => ({
+      label: `${i + 1}. ${item.description.trim() || 'Untitled item'}`,
+      value: `${item.quantity} × ${money(Number(item.unitPrice) || 0)} = ${money(
+        (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0)
+      )}`,
+    })),
+    ...(data.items.length > shown.length
+      ? [
+          {
+            label: 'More items',
+            value: `${data.items.length - shown.length} further items are on the document but not listed here.`,
+          },
+        ]
+      : []),
+    { label: 'Subtotal', value: money(totals.subtotal) },
+    ...(totals.discount > 0 ? [{ label: 'Discount', value: `-${money(totals.discount)}` }] : []),
+    ...(totals.taxAmount > 0
+      ? [{ label: `Tax (${data.taxRate}%)`, value: money(totals.taxAmount) }]
+      : []),
+    { label: 'Total', value: money(totals.total) },
+  ];
+}
 
 export function DocumentTool({ config }: { config: DocConfig }) {
   const initial: InvoiceData = React.useMemo(
@@ -70,6 +117,22 @@ export function DocumentTool({ config }: { config: DocConfig }) {
     const file = files[0];
     if (file) set({ logo: await readAsDataUrl(file) });
   };
+
+  // One wiring covers both documents this component becomes. The PDF is built in
+  // the browser and stays there — the logo especially, which came off the
+  // visitor's own disk. What travels is what the document SAYS, which is the half
+  // worth having in an inbox when someone wants to check a total on their phone.
+  const hasContent = data.items.some(
+    (item) => item.description.trim() !== '' || Number(item.unitPrice) > 0
+  );
+  useReportToolResult(
+    hasContent
+      ? {
+          lines: documentLines(data, config),
+          note: `Open the tool again to download the ${config.docTitle.toLowerCase()} as a PDF. Your details are still saved in that browser, so it opens exactly as you left it.`,
+        }
+      : null
+  );
 
   const download = async () => {
     setBusy(true);

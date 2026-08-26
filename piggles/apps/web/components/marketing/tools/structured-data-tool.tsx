@@ -13,6 +13,7 @@ import {
   TextField,
   ToolLayout,
 } from './ui-kit';
+import { MAX_LINE_VALUE, useReportToolResult } from './tool-result-context';
 
 /**
  * The hidden lines that let Google show your opening hours instead of a link.
@@ -46,6 +47,16 @@ interface Hours {
   from: string;
   to: string;
 }
+
+/** The picker's own words, reused so the email describes the page the same way
+ *  the screen did. The word "schema" appears nowhere here either. */
+const KIND_LABELS: Record<Kind, string> = {
+  business: 'Your business — address, hours, phone',
+  product: 'One thing you sell',
+  article: 'Something you wrote',
+  event: 'Something happening on a date',
+  faq: 'Questions and answers',
+};
 
 export function StructuredDataTool() {
   const [kind, setKind] = useState<Kind>('business');
@@ -92,6 +103,38 @@ export function StructuredDataTool() {
     const graph = buildGraph(kind, { business, hours, product, article, event, faqs });
     return `<script type="application/ld+json">\n${JSON.stringify(graph, null, 2)}\n</script>`;
   }, [kind, business, hours, product, article, event, faqs]);
+
+  // The code travels whole or not at all. A long list of questions can outgrow
+  // one email line, and half a block of code looks perfectly valid while being
+  // useless — so an oversized one is described rather than cut in two.
+  const subject =
+    kind === 'business'
+      ? business.name
+      : kind === 'product'
+        ? product.name
+        : kind === 'article'
+          ? article.headline
+          : kind === 'event'
+            ? event.name
+            : faqs.filter((f) => f.q.trim()).length > 0
+              ? `${faqs.filter((f) => f.q.trim()).length} questions`
+              : '';
+  const codeFits = json.length <= MAX_LINE_VALUE;
+
+  useReportToolResult(
+    subject.trim()
+      ? {
+          lines: [
+            { label: 'What the page is about', value: KIND_LABELS[kind] },
+            { label: kind === 'faq' ? 'How many' : 'Which one', value: subject },
+            ...(codeFits ? [{ label: 'Code to add', value: json }] : []),
+          ],
+          note: codeFits
+            ? 'This goes inside the <head> of that one page, and only that page — it describes that page specifically. If somebody else looks after your website, forward this to them.'
+            : 'Your code is too long to send by email in one piece. Open the tool again and use the copy button, then paste it into the <head> of that page.',
+        }
+      : null
+  );
 
   return (
     <ToolLayout

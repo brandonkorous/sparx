@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { contrastRatio, gradeContrast, parseHex, readableInk, toHex } from './lib/color';
 import { ColorField, Panel, Problem, ToolLayout } from './ui-kit';
+import { useReportToolResult } from './tool-result-context';
 
 /**
  * The pairings that actually go wrong.
@@ -109,6 +110,34 @@ export function ContrastTool() {
     }
     return null;
   }, [fgRgb, bgRgb, verdict]);
+
+  // The verdict travels as a sentence, the same way the page says it. And when
+  // the pair fails, the suggested shade goes WITH it: an email that says "this
+  // does not work" and stops has handed somebody a problem and kept the answer.
+  useReportToolResult(
+    verdict
+      ? {
+          lines: [
+            { label: 'Text color', value: fg.toUpperCase() },
+            { label: 'Background color', value: bg.toUpperCase() },
+            { label: 'Contrast', value: `${verdict.ratio.toFixed(2)} to 1` },
+            {
+              label: 'Smallest size it can be read at',
+              value: verdict.smallestUsable ?? 'Not readable at any size',
+            },
+            ...(suggestion
+              ? [
+                  {
+                    label: 'Nearest shade that works',
+                    value: `${suggestion.hex.toUpperCase()} — the same color, ${suggestion.direction}`,
+                  },
+                ]
+              : []),
+          ],
+          note: 'This is about whether people can read it, not about whether it looks good. Bright sunlight, an old screen and tired eyes all take contrast away, and the person who cannot read it will not tell you.',
+        }
+      : null
+  );
 
   const swap = () => {
     setFg(bg);

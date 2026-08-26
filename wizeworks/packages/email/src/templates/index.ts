@@ -196,3 +196,5 @@ export {
   type InventoryReportEmailProps,
   type InventoryReportLine,
 } from './inventory-report';
+
+export { ToolResultEmail, toolResultSubject, type ToolResultEmailProps } from './tool-result';

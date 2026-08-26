@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Button, Text } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, CopyButton, CodeBlock } from './ui-kit';
+import { MAX_LINE_VALUE, useReportToolResult } from './tool-result-context';
 import {
   SCHEMA_TYPES,
   SchemaFields,
@@ -92,6 +93,23 @@ export function StructuredDataTool() {
 
   const json = JSON.stringify(prune(build(type, fields, faq)), null, 2);
   const snippet = `<script type="application/ld+json">\n${json}\n</script>`;
+
+  // The generated markup is the whole point, so it travels verbatim. It is
+  // something this tool COMPUTED, never a file anyone uploaded.
+  //
+  // A long FAQ can outgrow what one email line may carry. Half a snippet looks
+  // valid and is not, so an oversized one is not sent truncated — the email says
+  // so plainly and the markup stays on the screen, where the copy button is.
+  const fits = snippet.length <= MAX_LINE_VALUE;
+  useReportToolResult({
+    lines: [
+      { label: 'Schema type', value: type },
+      ...(fits ? [{ label: 'Markup', value: snippet }] : []),
+    ],
+    note: fits
+      ? 'Paste this into the <head> of the page it describes.'
+      : 'Your markup is too long to send by email in one piece. Open the tool again and use Copy, then paste it into the <head> of the page it describes.',
+  });
 
   return (
     <Workbench>

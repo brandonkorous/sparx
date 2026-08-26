@@ -266,6 +266,26 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
     }),
   }),
   z.object({
+    template: z.literal('tool-result'),
+    ...TemplateMeta,
+    props: z.object({
+      toolName: z.string().min(1),
+      // Optional: derived from the resolved brand's site URL, which can be unset.
+      toolUrl: z.string().url().optional(),
+      // Computed label/value pairs only. There is deliberately NO attachment or
+      // file field here: several tool pages promise the visitor's own file never
+      // leaves their browser, and a schema that cannot express a file is the
+      // cheapest way to keep that promise true. Capped so a malformed caller
+      // cannot post an unbounded body through the public endpoint.
+      lines: z
+        .array(z.object({ label: z.string().min(1).max(120), value: z.string().max(4000) }))
+        .min(1)
+        .max(50),
+      note: z.string().max(2000).nullable().optional(),
+      brandName: z.string().max(120).nullable().optional(),
+    }),
+  }),
+  z.object({
     template: z.literal('billing-receipt'),
     ...TemplateMeta,
     props: z.object({
