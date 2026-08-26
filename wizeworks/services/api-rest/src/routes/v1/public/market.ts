@@ -533,13 +533,10 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
     const { cartId, code } = CodeParam.parse(request.params);
     const { tenantId, ctx } = await publicMarketContext(request);
     await assertCartToken(request, tenantId, cartId);
-    // No service method removes a cart discount; the join row is safe to drop under
-    // RLS. Recompute happens lazily on the next cart read (serializePublicMarketCart).
-    await withTenant({ tenantId }, (tx) =>
-      tx.cartDiscount.deleteMany({
-        where: { cartId, discount: { code: { equals: code, mode: 'insensitive' } } },
-      })
-    );
+    // Through the service, which puts the money back. The "lazy recompute on the
+    // next cart read" this used to rely on does not exist — the serializer
+    // returns the stored total, so the saving outlived the code.
+    await discountService.removeCode(ctx, { cartId, code });
     return ok(await serializePublicMarketCart(ctx, tenantId, cartId));
   });
 

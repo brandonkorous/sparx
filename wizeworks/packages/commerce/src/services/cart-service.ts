@@ -98,7 +98,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<{ 
     // Bootstrap lines from an accepted quote when carried over (B2B path).
     if (input.fromDocumentId) {
       await bootstrapFromDocument(tx, ctx, cart.id, input.fromDocumentId);
-      await recomputeTotals(tx, ctx, cart.id);
+      await recomputeCartTotals(tx, ctx, cart.id);
     }
 
     await writeAuditLog({
@@ -360,7 +360,7 @@ export async function addItem(
       });
     }
 
-    await recomputeTotals(tx, ctx, input.cartId);
+    await recomputeCartTotals(tx, ctx, input.cartId);
 
     await writeAuditLog({
       tx,
@@ -451,7 +451,7 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
       });
     }
 
-    await recomputeTotals(tx, ctx, item.cartId);
+    await recomputeCartTotals(tx, ctx, item.cartId);
 
     await writeAuditLog({
       tx,
@@ -930,10 +930,21 @@ async function repriceItems(
     });
   }
 
-  await recomputeTotals(tx, ctx, cart.id);
+  await recomputeCartTotals(tx, ctx, cart.id);
 }
 
-async function recomputeTotals(tx: TxClient, _ctx: ServiceContext, cartId: string): Promise<void> {
+/**
+ * Re-derive a cart's money from its lines and its applied discounts.
+ *
+ * Exported because discount-service writes CartDiscount rows and must call it:
+ * a discount that is stored but never folded into `discountTotalCents` is one
+ * the shopper is told they have and is then charged in full for.
+ */
+export async function recomputeCartTotals(
+  tx: TxClient,
+  _ctx: ServiceContext,
+  cartId: string
+): Promise<void> {
   const items = await tx.cartItem.findMany({
     where: { cartId },
     select: { subtotalCents: true },

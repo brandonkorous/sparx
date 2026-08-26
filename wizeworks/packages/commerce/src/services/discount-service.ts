@@ -34,6 +34,8 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 import { indexCommerceEntity, publishCommerceEvent } from '../events';
+import { recomputeCartTotals } from './cart-service';
+import { eligibleBaseCents, gatherCartFacts, refusalReason } from './discount-conditions';
 
 // ─── Discounts ────────────────────────────────────────────────────────
 
@@ -389,8 +391,19 @@ export async function redeemCode(
       return { discountId: discount.id, appliedDeltaCents: -existing.appliedCents };
     }
 
-    const cartTotalCents = await sumCartLineSubtotals(tx, input.cartId);
-    const appliedDeltaCents = computeDiscountDelta(discount, cartTotalCents);
+    // THE CONDITIONS ARE PART OF THE OFFER. They were stored and never read, so
+    // "minimum spend $100" applied to a $42 basket and a core-range promotion
+    // came off everything. The refusal carries the reason, because a code that
+    // just fails tells a shopper nothing about what to do next.
+    const conditions = Array.isArray(discount.conditions)
+      ? (discount.conditions as unknown as DiscountCondition[])
+      : [];
+    const facts = await gatherCartFacts(tx, cart, conditions);
+    const refusal = refusalReason(conditions, facts);
+    if (refusal) throw new CommercePricingError(refusal);
+
+    // Only the qualifying lines, so a restricted offer discounts what it says.
+    const appliedDeltaCents = computeDiscountDelta(discount, eligibleBaseCents(conditions, facts));
 
     await tx.cartDiscount.create({
       data: {
@@ -402,6 +415,11 @@ export async function redeemCode(
         appliedCents: Math.abs(appliedDeltaCents),
       },
     });
+
+    // Fold it into the cart's money. Without this the row exists, the code
+    // shows as accepted, and the shopper is charged the undiscounted total —
+    // which is what order O-000006 was: a recorded $6.30 saving, $0.00 off.
+    await recomputeCartTotals(tx, ctx, input.cartId);
 
     await writeAuditLog({
       tx,
@@ -415,6 +433,35 @@ export async function redeemCode(
     });
 
     return { discountId: discount.id, appliedDeltaCents };
+  });
+}
+
+/**
+ * Take a code back off a cart, and put the money back.
+ *
+ * This had no service method at all. The public route deleted the join row
+ * directly and left a comment saying "recompute happens lazily on the next cart
+ * read" — which nothing does: the serializer returns the STORED
+ * `discountTotalCents`. So removing a code made the chip disappear while the
+ * saving stayed on the basket, and the shopper checked out still discounted
+ * with nothing on screen to say why.
+ *
+ * Returns how many codes came off, so a caller can tell "removed" from "was
+ * not on there".
+ */
+export async function removeCode(
+  ctx: ServiceContext,
+  args: { cartId: string; code: string }
+): Promise<{ removed: number }> {
+  return withTenant(ctx, async (tx) => {
+    const { count } = await tx.cartDiscount.deleteMany({
+      where: {
+        cartId: args.cartId,
+        discount: { code: { equals: args.code, mode: 'insensitive' } },
+      },
+    });
+    if (count > 0) await recomputeCartTotals(tx, ctx, args.cartId);
+    return { removed: count };
   });
 }
 

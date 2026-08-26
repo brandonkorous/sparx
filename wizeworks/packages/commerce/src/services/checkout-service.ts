@@ -239,10 +239,24 @@ export async function submitContact(ctx: ServiceContext, rawInput: unknown): Pro
   const input = SubmitContactInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
     const session = await assertSessionWritable(tx, input.sessionId);
+
+    // GIVING AN EMAIL IS IDENTIFYING YOURSELF, and until now nothing acted on it:
+    // the address went onto the session and the cart stayed anonymous until the
+    // order was placed. Everything that asks "who is this" therefore got null —
+    // most visibly the per-customer discount limit, which skips silently on a
+    // null customer, so "one per customer" was unenforceable for a guest.
+    //
+    // Recognise a returning shopper; do NOT create a record for a new one.
+    // `ensureCheckoutCustomer` at order placement is what mints a customer, and
+    // it promotes them to the customer lifecycle stage — which is true of
+    // somebody who bought and false of somebody still typing their address.
+    const known = await linkKnownCustomer(tx, session.cartId, input.email);
+
     await tx.checkoutSession.update({
       where: { id: session.id },
       data: {
         step: furthestStep(session.step, 'contact'),
+        ...(known ? { customerId: known } : {}),
         customerEmail: input.email,
         // Trimmed to null rather than stored blank: an empty string here would
         // read as somebody who was asked and declined, which is not the same as
@@ -1372,6 +1386,37 @@ export function splitName(fullName?: string | null): { firstName?: string; lastN
   const gap = trimmed.indexOf(' ');
   if (gap === -1) return { firstName: trimmed };
   return { firstName: trimmed.slice(0, gap), lastName: trimmed.slice(gap + 1).trim() };
+}
+
+/**
+ * Attach an already-known customer to the cart, by the email they just typed.
+ *
+ * Returns the customer id when this address belongs to somebody the shop
+ * already has, null otherwise. Scoped to the cart's own site, the same way
+ * `ensureCheckoutCustomer` is, so one business cannot recognise the other's
+ * shoppers. Never creates and never changes a lifecycle stage: this only
+ * answers "have we met before".
+ */
+async function linkKnownCustomer(
+  tx: TxClient,
+  cartId: string,
+  email: string
+): Promise<string | null> {
+  const cart = await tx.cart.findFirst({
+    where: { id: cartId },
+    select: { customerId: true, propertyId: true },
+  });
+  if (!cart) return null;
+  if (cart.customerId) return cart.customerId;
+
+  const existing = await tx.customer.findFirst({
+    where: { propertyId: cart.propertyId, email: email.trim().toLowerCase(), deletedAt: null },
+    select: { id: true },
+  });
+  if (!existing) return null;
+
+  await tx.cart.update({ where: { id: cartId }, data: { customerId: existing.id } });
+  return existing.id;
 }
 
 async function assertSessionWritable(tx: TxClient, sessionId: string): Promise<CheckoutSession> {

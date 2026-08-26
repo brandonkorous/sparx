@@ -299,16 +299,12 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
 
   app.delete('/v1/public/commerce/cart/:cartId/discount/:code', async (request) => {
     const { cartId, code } = CodeParam.parse(request.params);
-    const { tenantId } = await publicCommerceContext(request);
+    const { ctx, tenantId } = await publicCommerceContext(request);
     await assertCartToken(request, tenantId, cartId);
-    // No service method removes a cart discount; the join row is safe to drop
-    // directly under RLS. Recompute happens lazily on the next cart read.
-    await withTenant({ tenantId }, (tx) =>
-      tx.cartDiscount.deleteMany({
-        where: { cartId, discount: { code: { equals: code, mode: 'insensitive' } } },
-      })
-    );
-    const ctx = toPublicCommerceContext(tenantId);
+    // Through the service, which puts the money back. Dropping the join row
+    // here and trusting a "lazy recompute on the next read" left the saving on
+    // the basket after the code came off — nothing recomputes on a read.
+    await discountService.removeCode(ctx, { cartId, code });
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });
 
