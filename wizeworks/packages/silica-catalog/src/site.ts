@@ -36,6 +36,7 @@ import {
   RECORD_TEMPLATE_LABELS,
   type RecordAddress,
 } from './record-templates';
+import { boundContactAction } from './sections/_contact-fields';
 import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
 
 // ── Page content (sparx-authored, neutral copy) ──────────────────────────────
@@ -176,10 +177,10 @@ function contactContent(): Node {
           el('p', 'text-lg text-base-content', {
             text: 'Have a question or want to work together? Tell visitors the best way to reach you — an email, a phone number, or a form you add from the builder.',
           }),
-          el('a', 'btn btn-primary btn-lg mt-2', {
-            attrs: { href: 'mailto:hello@example.com' },
-            text: 'Email us',
-          }),
+          // Bound, never a literal address: this button shipped pointing at
+          // `mailto:hello@example.com`, on a starter page that LOOKS finished
+          // (issue 265). It hides itself until the business has typed an email.
+          boundContactAction('email', 'btn btn-primary btn-lg mt-2', 'Email us'),
         ],
       }),
     ],

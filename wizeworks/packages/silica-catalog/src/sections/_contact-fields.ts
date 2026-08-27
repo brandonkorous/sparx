@@ -53,3 +53,38 @@ export function boundContactLink(kind: 'phone' | 'email', cls: string, sample: s
   });
   return whenSet(valueRef, bindAttr(anchor, 'href', hrefRef));
 }
+
+/**
+ * A call to action whose WORDS are the author's and whose destination is the
+ * business's.
+ *
+ * `boundContactLink` prints the address as its own label, which is right in a
+ * footer and wrong on a button — "Email us" has to go on saying "Email us". The
+ * button goes when the field is unset, because a contact page that offers a
+ * button going nowhere is worse than one that offers none.
+ */
+export function boundContactAction(kind: 'phone' | 'email', cls: string, label: string): Node {
+  const valueRef = kind === 'phone' ? CONTACT_REF.phone : CONTACT_REF.email;
+  const hrefRef = kind === 'phone' ? CONTACT_REF.phoneHref : CONTACT_REF.emailHref;
+  return whenSet(valueRef, bindAttr(el('a', cls, { text: label }), 'href', hrefRef));
+}
+
+/**
+ * A sentence with the business's phone number inside it.
+ *
+ * The number is a node of its own so it can be bound, and the words either side
+ * stay the author's. The whole line goes when there is no phone: half a sentence
+ * reads worse than none.
+ */
+export function boundPhoneLine(cls: string, before: string, after: string, sample: string): Node {
+  return whenSet(
+    CONTACT_REF.phone,
+    el('p', cls, {
+      children: [
+        el('span', '', { text: before }),
+        bind(el('span', '', { text: sample }), CONTACT_REF.phone),
+        el('span', '', { text: after }),
+      ],
+    })
+  );
+}
