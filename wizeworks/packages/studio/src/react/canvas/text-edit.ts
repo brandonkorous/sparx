@@ -19,7 +19,7 @@
  * HTML as a character nobody typed and nobody can see.
  */
 export function textIn(element: HTMLElement): string {
-  return (element.textContent ?? '').replace(/ /g, ' ');
+  return (element.textContent ?? '').replace(/\u00a0/g, ' ');
 }
 
 /**
