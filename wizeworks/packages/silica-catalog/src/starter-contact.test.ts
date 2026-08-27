@@ -17,7 +17,7 @@ import { describe, expect, it } from 'vitest';
 import { starterFrame, starterPages } from './site';
 
 /** Details that read as a real business's, wherever they appear. */
-const LITERALS: Array<{ what: string; re: RegExp }> = [
+const LITERALS: { what: string; re: RegExp }[] = [
   { what: 'an email address', re: /[\w.+-]+@[\w-]+\.[\w.]+/ },
   { what: 'a mailto: or tel: link', re: /^(mailto|tel):/i },
   { what: 'a phone number', re: /\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/ },
