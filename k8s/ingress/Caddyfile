@@ -494,6 +494,39 @@ import mode.caddy
 	reverse_proxy mcp.jotacular.svc.cluster.local:80
 }
 
+# ----- WizeWorks marketing site (co-tenant in the `wizeworks` namespace) ------
+# The PARENT COMPANY's own site, from the brandonkorous/wizeworks repository.
+# A Next.js app (not a static export — it has an /api/contact route), reached
+# cross-namespace via its ClusterIP Service on :80 like every other co-tenant.
+#
+# Uses the on-demand policy, matching silicaui and for the same reason: this
+# Caddy is a single replica on a Recreate rollout, so every boot has a window
+# with no registered LB backend and an explicit managed block would burn its
+# startup issuance attempts inside it. On-demand defers issuance to the first
+# HTTPS request, which lands on a warm pod.
+#
+# wize.works and www.wize.works are allow-listed in the ask endpoint
+# (wizeworks/services/api-rest/src/routes/internal/domain-check.ts). Removing
+# either there breaks certificate issuance HERE, and it presents as a TLS error
+# rather than a 404 — which is why the pairing is called out in both files.
+#
+# NOT `import tls_admin_origin`. That snippet exists because Cloudflare Access
+# sits in front of admin.wize.works and intercepts the ACME challenge path. The
+# apex has no Access policy, so ordinary issuance works; borrowing the admin
+# host's tls directive would make this block depend on a mounted certificate
+# secret it does not need, and Caddy fails config load as a UNIT.
+{$SX_SCHEME:https}://wize.works {
+	import tls_policy
+	import security_headers
+	reverse_proxy site.wizeworks.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.wize.works {
+	import tls_policy
+	import security_headers
+	redir https://wize.works{uri} permanent
+}
+
 # ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
 # The Layer-4 operator console (docs/16 §2.4). Access control is enforced IN
 # FRONT by Cloudflare Access, the load-bearing gate until operator MFA ships;

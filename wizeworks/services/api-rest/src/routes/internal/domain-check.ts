@@ -189,6 +189,20 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'app.jotacular.com',
   'api.jotacular.com',
   'mcp.jotacular.com',
+  // ── WizeWorks ────────────────────────────────────────────────────────────
+  // The PARENT COMPANY's marketing site, in the `wizeworks` namespace from the
+  // brandonkorous/wizeworks repository. Same shape as silicaui above: a static
+  // Next.js site that is not a sparx tenant, so resolveSiteByHost cannot
+  // authorize it and it must be listed here or on-demand TLS 403s the apex.
+  //
+  // NOTE the zone already appears on this cluster as `admin.wize.works`, which
+  // does NOT go through this endpoint — it carries a Cloudflare Origin CA
+  // certificate because Cloudflare Access intercepts the ACME challenge path in
+  // front of it. The apex has no Access policy, so ordinary on-demand issuance
+  // works and is what these two entries authorize. Do not copy the admin host's
+  // tls directive onto them.
+  'wize.works',
+  'www.wize.works',
 ]);
 
 const domainCheckRoutes: FastifyPluginAsync = (app) => {
