@@ -695,10 +695,36 @@ import mode.caddy
 # `tls_admin_origin` because it sits behind Cloudflare Access; AGCONN's admin is a
 # Next.js app gated by Clerk, with no such arrangement, so it takes the same
 # on-demand policy as everything else.
+# X-FORWARDED-PORT IS LOAD-BEARING ON THE TWO NEXT.JS BLOCKS, and it is the one
+# thing these need that no other tenant's blocks do.
+#
+# AGCONN's web and admin are Next.js 16 apps whose `src/proxy.ts` runs next-intl's
+# locale middleware. That middleware answers `/` with a 307 to `/<locale>` and
+# builds the Location as an ABSOLUTE url from `request.nextUrl`. Caddy sets
+# X-Forwarded-Proto and X-Forwarded-Host by default but NOT X-Forwarded-Port, so
+# Next fell back to the port it listens on and published
+#
+#     https://agconn.com:3000/es
+#
+# a public redirect to a port nothing serves. Measured against the running pod:
+#
+#     Host only                -> http://web:3000/es
+#     + XF-Proto / XF-Host     -> https://agconn.com:3000/es
+#     + XF-Port 443            -> https://agconn.com/es
+#
+# `{http.request.port}` rather than a literal 443, because this same file is
+# mounted in workstation mode from k8s/local where the scheme is http and the
+# port is not 443. A hardcoded value would be right in cloud and wrong on a
+# laptop — exactly the divergence the mode.caddy split exists to prevent.
+#
+# kanNINJA and jotacular do not need this: neither serves a locale-prefix
+# redirect from its apex, so nothing there builds an absolute URL from the port.
 {$SX_SCHEME:https}://agconn.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy web.agconn.svc.cluster.local:80
+	reverse_proxy web.agconn.svc.cluster.local:80 {
+		header_up X-Forwarded-Port {http.request.port}
+	}
 }
 
 {$SX_SCHEME:https}://www.agconn.com {
@@ -716,5 +742,11 @@ import mode.caddy
 {$SX_SCHEME:https}://admin.agconn.com {
 	import tls_policy
 	import security_headers
-	reverse_proxy admin.agconn.svc.cluster.local:80
+	# Same reasoning as the apex block. Admin's redirects happen to come from
+	# Clerk today, which builds its own absolute URLs from configuration and so
+	# is unaffected — but it is the same Next.js runtime with the same proxy.ts,
+	# and the first redirect it emits itself would carry :3100.
+	reverse_proxy admin.agconn.svc.cluster.local:80 {
+		header_up X-Forwarded-Port {http.request.port}
+	}
 }
