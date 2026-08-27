@@ -4,22 +4,18 @@
 //
 // The engine knows what a node is; this knows what this business can put on a
 // page, what its live regions look like, and what its own data says. The catalog,
-// the pinned functional cores, the class policy and the brand-derived fallback
-// theme all come from the shared platform packages, so the blocks an author can
-// insert here are the same ones the storefront renders.
+// the pinned functional cores, the class policy and the fallback theme all come
+// from the shared platform packages, so the blocks an author can insert here are
+// the same ones the storefront renders — in the same colors.
 
 import { useMemo, type ReactNode } from 'react';
 import type { DocumentKind } from '@wizeworks/studio';
 import type { EmailPreviewHost, StudioHost } from '@wizeworks/studio/react';
 import type { Theme } from '@wizeworks/silicaui-html';
 import type { EmailColorDefaults } from '@wizeworks/silicaui-builder/email';
-import { validateResponsiveVocabulary } from '@wizeworks/silica-catalog';
-import { useBrand, useSiteConfig } from './site-data';
-import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
+import { BASE_SILICA_THEME, validateResponsiveVocabulary } from '@wizeworks/silica-catalog';
 import { makeRenderHostNode } from './host-cores';
-import { useActiveProperty } from './site-data';
 import { useMediaPicker, type PickedAsset } from '../../surfaces/cms/media-picker';
-import { useActivePropertyId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { HostSettingsPanel } from '../../surfaces/studio/host-settings-panel';
 import { ProductsSourcePanel } from '../../surfaces/studio/products-source-panel';
@@ -31,35 +27,27 @@ import { useCanvasPreview, type CanvasPreview } from './preview';
 import { EMAIL_CONTENT_BLOCKS, useEmailIdentity, useEmailPreview } from './email-domain';
 import { useEmailColors } from './email-data';
 
-/** A blank brand, so theming degrades to bare defaults rather than crashing while
- *  `/v1/brand` is still in flight. */
-const EMPTY_BRAND: BrandColumns = {
-  tagline: null,
-  logoLightMediaId: null,
-  logoDarkMediaId: null,
-  faviconMediaId: null,
-  colorPrimary: null,
-  colorPrimaryForeground: null,
-  colorSecondary: null,
-  colorSecondaryForeground: null,
-  colorAccent: null,
-  colorAccentForeground: null,
-  fontHeading: null,
-  fontBody: null,
-  tokens: null,
-};
-
 /**
- * The host, or null until the brand has resolved.
+ * The host. Never null — there is nothing left to wait for.
  *
- * Null rather than a placeholder theme on purpose: a canvas that opens in the
- * platform's default colors and re-paints a moment later in the business's own
- * is a flash of somebody else's brand on their own site.
+ * THE FALLBACK THEME IS THE STOREFRONT'S FALLBACK THEME, and that is the whole
+ * point of the constant. A site whose author has never published a theme wears
+ * `BASE_SILICA_THEME` when it is served (`app/layout.tsx`:
+ * `silicaFrame.theme ?? BASE_SILICA_THEME`), so the canvas has to open on the
+ * same thing or the editor is showing colors nobody will ever see.
+ *
+ * It used to compile the tenant's brand columns plus `property.brandOverride`
+ * into a theme. That was correct while the storefront did the same, and the
+ * storefront stopped: brand is identity-only now (logo, favicon, tagline) and the
+ * brand-derived theme tier was deleted from the served page. Only this half was
+ * left behind, so Juniper Row's canvas painted every primary button #c77618 and
+ * her live site painted them #e04631 — an owner designing against one color and
+ * shipping another, with nothing anywhere saying so (issue 271).
+ *
+ * A site that HAS a theme is unaffected: `resolveTheme` reads the session's own
+ * theme store first and only reaches this when there is none.
  */
 export function useStudioHostConfig(): StudioHost | null {
-  const brand = useBrand();
-  const config = useSiteConfig();
-  const property = useActiveProperty(useActivePropertyId());
   const preview = useCanvasPreview();
   // `site.*` in an email is THIS business, not a sample — the same identity the
   // header draws, the theme board names, and the merge-tag panel lists.
@@ -67,22 +55,17 @@ export function useStudioHostConfig(): StudioHost | null {
   const emailColors = useEmailColors();
   const pickMedia = useMediaPicker();
 
-  const fallbackTheme = useMemo(() => {
-    if (brand.isPending || config.isPending) return null;
-    const columns = applyBrandOverride(brand.data ?? EMPTY_BRAND, property.data?.brandOverride);
-    return tenantTheme(columns, { themeKey: config.data?.themeKey ?? 'default' });
-  }, [brand.isPending, brand.data, config.isPending, config.data, property.data]);
-
-  return useMemo(() => {
-    if (!fallbackTheme) return null;
-    return buildHost({
-      fallbackTheme,
-      preview,
-      emailPreview,
-      emailColors: emailColors.data,
-      pickMedia,
-    });
-  }, [fallbackTheme, preview, emailPreview, emailColors.data, pickMedia]);
+  return useMemo(
+    () =>
+      buildHost({
+        fallbackTheme: BASE_SILICA_THEME,
+        preview,
+        emailPreview,
+        emailColors: emailColors.data,
+        pickMedia,
+      }),
+    [preview, emailPreview, emailColors.data, pickMedia]
+  );
 }
 
 /** A document's own settings live UNDER the document — select the page (or the piece,

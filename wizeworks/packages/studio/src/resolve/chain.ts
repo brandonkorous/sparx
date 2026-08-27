@@ -35,9 +35,14 @@ export interface CanvasResolution {
 
 export interface ResolveOptions {
   /**
-   * The theme to use when the site wears none — derived from the tenant's brand by
-   * the app, never by this package. A site whose author has never opened the theme
-   * builder still renders in its own colors, exactly as the storefront does.
+   * The theme to use when the site wears none.
+   *
+   * It must be THE SAME VALUE the storefront falls back to, because the canvas
+   * promising a color the served page does not paint is the one way a visual
+   * builder can be confidently wrong. It used to say "derived from the tenant's
+   * brand by the app" and the app duly derived one, months after the storefront
+   * had stopped: an owner designed against #c77618 and shipped #e04631, with
+   * nothing on either screen to say so (issue 271).
    */
   fallbackTheme: Theme;
 }
