@@ -1006,20 +1006,38 @@ resource "cloudflare_record" "agconn_root" {
   comment         = "AGCONN web — shared Caddy, agconn namespace"
 }
 
-# CNAME at the apex is not possible, so `www` is the CNAME and the apex is the A
-# record. Caddy 301s www to the apex before any application code runs, which is
-# why `www.agconn.com` deliberately does NOT appear in the storage account's CORS
-# origins if AGCONN ever uploads direct-to-blob: a browser never holds it as an
-# origin.
+# AN `A` RECORD, NOT A CNAME — the one place this block deviates from jotacular
+# and kanNINJA, and it is a correction rather than a preference.
+#
+# It was a CNAME to the apex, matching the other two. That failed the release on
+# 2026-08-27 with:
+#
+#   Error: attempted to override existing record however didn't find an exact
+#          match ... with module.dns.cloudflare_record.agconn_www
+#
+# `allow_overwrite` matches on name AND TYPE. agconn.com predates this cluster:
+# AgConnect's own infra/terraform/dns.tf already published `www` as an A record
+# at the GKE ingress, so there was no CNAME to overwrite and the provider will
+# not convert one type into the other. jotacular and kanNINJA had no such
+# incumbent record, which is why the CNAME form worked for them and cannot here.
+#
+# The two forms are equivalent behind Cloudflare's proxy — both resolve to the
+# proxy and both reach this ingress — and an A record additionally lets
+# `allow_overwrite` REPOINT the stale GKE address rather than needing it deleted
+# by hand first. Caddy 301s www to the apex before any application code runs.
+#
+# Deleting the old record and reverting to a CNAME would also work. It is not
+# worth a manual step in a zone Terraform now owns.
 resource "cloudflare_record" "agconn_www" {
   count           = local.agconn_enabled ? 1 : 0
   zone_id         = data.cloudflare_zone.agconn[0].id
   name            = "www"
-  type            = "CNAME"
-  content         = "agconn.com"
+  type            = "A"
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
+  comment         = "AGCONN www — 301s to the apex at Caddy"
 }
 
 resource "cloudflare_record" "agconn_hosts" {
