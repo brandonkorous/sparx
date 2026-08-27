@@ -91,6 +91,32 @@ fi
 # they catch the class of drift that otherwise surfaces minutes into a release
 # build: an event with no topic, a surface with no address, an image built
 # without a package it imports.
+# ── UNTRACKED FILES MAKE THE PRESENCE CHECKS BELOW PASS FOR THE WRONG REASON ─
+#
+# Everything from here reads the WORKING TREE. For the compile-shaped checks
+# that is the point — you are pushing what you just built. For the checks that
+# ask WHETHER A FILE EXISTS it is not, because an untracked file exists here and
+# does not exist on CI.
+#
+# check:console-parity is the one that bit, on 2026-08-27. It counted 21 Piggles
+# routes, paired every one, and went green; CI counted the 14 that were committed
+# and failed with 7 divergent. Seven route files were sitting untracked in a
+# parallel agent's working tree. Nothing was wrong with the check — it answered
+# honestly about a tree that is not what `git push` sends.
+#
+# Note the direction. The worktree recipe further up exists for WIP that BLOCKS a
+# push, which is loud and self-correcting. This is WIP that UNBLOCKS one, which
+# is silent: the hook goes green, the push succeeds, and CI fails on a commit
+# that is already on main.
+#
+# Counted, not failed. Pushing with unrelated work in progress is normal, and a
+# hook that refused it would simply get bypassed — so this buys back the one
+# thing the green below cannot tell you on its own.
+untracked=$(git ls-files --others --exclude-standard | wc -l | tr -d '[:space:]')
+if [ "$untracked" -gt 0 ]; then
+  printf "  %s untracked file(s) in the tree — the presence checks below can see them and CI cannot\n" "$untracked"
+fi
+
 step "structural checks (events, routes, dockerfiles, brand isolation, console parity, migration order, blueprint versions)"
 node scripts/check-platform-brand.mjs >/dev/null || fail "shared code gained a NEW hardcoded product name — it serves both brands, so the string is wrong in one of them. Run \`pnpm check:brand\` to see it"
 node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
