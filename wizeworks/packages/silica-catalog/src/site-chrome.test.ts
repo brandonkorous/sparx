@@ -118,6 +118,14 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         // their mind.
         HOST_KEYS.siteMap,
         HOST_KEYS.siteEmbed,
+        // Reviews are a CHOICE, not a transaction. Every other `Your shop` core
+        // protects money or identity — the cart, the checkout, the sign-in form — and
+        // a tenant who deleted one would break their own shop. Plenty of businesses
+        // deliberately do not show reviews, and one that tries them and changes its
+        // mind has to be able to take the section off the page. Pinning it would
+        // leave an undeletable "Reviews · No reviews yet" band on a product page
+        // whose owner asked for it once.
+        HOST_KEYS.commerceProductReviews,
       ].sort()
     );
   });
