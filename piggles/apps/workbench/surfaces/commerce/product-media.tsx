@@ -35,6 +35,7 @@ import {
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useConfirm } from '../../lib/confirm';
 import { useTabSave } from './product-tab-save';
+import { MediaPickerProvider } from '../cms/media-picker';
 import { PhotoGallery } from './product-media-gallery';
 import { ImageDetails } from './product-media-details';
 import { useGalleryActions } from './product-media-actions';
@@ -160,65 +161,72 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* ONE message, the most specific one — the server's own sentence when it
+    // `source="product"` so the picker OPENS on this shop's product photographs
+    // rather than everything it has ever uploaded.
+    <MediaPickerProvider source="product">
+      <div className="flex flex-col gap-4">
+        {/* ONE message, the most specific one — the server's own sentence when it
           gave us one. Sits above the gallery because every action below can
           raise it. */}
-      {gallery.failure ? (
-        <Alert color="error">
-          <AlertContent>
-            <AlertTitle>That did not work</AlertTitle>
-            <AlertDescription>{gallery.failure}</AlertDescription>
-          </AlertContent>
-        </Alert>
-      ) : null}
+        {gallery.failure ? (
+          <Alert color="error">
+            <AlertContent>
+              <AlertTitle>That did not work</AlertTitle>
+              <AlertDescription>{gallery.failure}</AlertDescription>
+            </AlertContent>
+          </Alert>
+        ) : null}
 
-      <PhotoGallery
-        productTitle={product.title}
-        images={images}
-        assets={assets}
-        variants={variants}
-        options={options}
-        selectedId={selectedId}
-        loading={media.isPending || variantsQuery.isPending}
-        uploading={gallery.uploading}
-        onSelect={(imageId) => {
-          void selectImage(imageId);
-        }}
-        onFiles={(files) => {
-          void gallery.addFiles(files);
-        }}
-        onReject={gallery.setFailure}
-      />
-
-      {selected && binding ? (
-        <ImageDetails
-          image={selected}
-          index={selectedIndex}
-          total={images.length}
-          canMoveEarlier={
-            !selected.isPrimary && selectedIndex > 0 && !images[selectedIndex - 1]?.isPrimary
-          }
-          canMoveLater={!selected.isPrimary && selectedIndex < images.length - 1}
-          asset={assets.get(selected.mediaAssetId) ?? null}
+        <PhotoGallery
+          productTitle={product.title}
+          images={images}
+          assets={assets}
           variants={variants}
           options={options}
-          draft={binding}
-          busy={gallery.busy}
-          onDraftChange={(next) => {
-            setEdit({ imageId: selected.id, binding: next });
+          selectedId={selectedId}
+          loading={media.isPending || variantsQuery.isPending}
+          uploading={gallery.uploading}
+          onSelect={(imageId) => {
+            void selectImage(imageId);
           }}
-          onMove={(delta) => {
-            gallery.move(selectedIndex, delta);
+          onFiles={(files) => {
+            void gallery.addFiles(files);
           }}
-          onSetPrimary={() => {
-            gallery.makeMain(selected.id);
+          onChooseExisting={(assets) => {
+            void gallery.addExisting(assets);
           }}
-          onRemove={() => {
-            void gallery.takeOff(selected);
-          }}
+          onReject={gallery.setFailure}
         />
-      ) : null}
-    </div>
+
+        {selected && binding ? (
+          <ImageDetails
+            image={selected}
+            index={selectedIndex}
+            total={images.length}
+            canMoveEarlier={
+              !selected.isPrimary && selectedIndex > 0 && !images[selectedIndex - 1]?.isPrimary
+            }
+            canMoveLater={!selected.isPrimary && selectedIndex < images.length - 1}
+            asset={assets.get(selected.mediaAssetId) ?? null}
+            variants={variants}
+            options={options}
+            draft={binding}
+            busy={gallery.busy}
+            onDraftChange={(next) => {
+              setEdit({ imageId: selected.id, binding: next });
+            }}
+            onMove={(delta) => {
+              gallery.move(selectedIndex, delta);
+            }}
+            onSetPrimary={() => {
+              gallery.makeMain(selected.id);
+            }}
+            onRemove={() => {
+              void gallery.takeOff(selected);
+            }}
+          />
+        ) : null}
+      </div>
+    </MediaPickerProvider>
   );
 }

@@ -29,6 +29,8 @@ export interface GalleryActions {
   uploading: boolean;
   busy: { reorder: boolean; primary: boolean; remove: boolean };
   addFiles: (files: File[]) => Promise<void>;
+  /** Photos the business already has, chosen from the library rather than uploaded. */
+  addExisting: (assets: readonly { id: string; filename: string }[]) => Promise<void>;
   move: (index: number, delta: number) => void;
   makeMain: (imageId: string) => void;
   takeOff: (image: ProductImage) => Promise<void>;
@@ -72,6 +74,31 @@ export function useGalleryActions(
     }
     toast.add({
       title: files.length === 1 ? 'Photo added' : `${String(files.length)} photos added`,
+      type: 'success',
+    });
+  };
+
+  const addExisting = async (assets: readonly { id: string; filename: string }[]) => {
+    setFailure(null);
+    // Sequential for the same reason as `addFiles`: `position` is assigned from
+    // the count so far. There is no upload step — the file is already theirs.
+    let position = images.length;
+    for (const asset of assets) {
+      try {
+        await addImage.mutateAsync({ mediaAssetId: asset.id, position });
+        position += 1;
+      } catch (error) {
+        setFailure(
+          productErrorMessage(
+            error,
+            `“${asset.filename}” could not be added. Any photos before it were saved.`
+          )
+        );
+        return;
+      }
+    }
+    toast.add({
+      title: assets.length === 1 ? 'Photo added' : `${String(assets.length)} photos added`,
       type: 'success',
     });
   };
@@ -138,6 +165,7 @@ export function useGalleryActions(
       remove: removeImage.isPending,
     },
     addFiles,
+    addExisting,
     move,
     makeMain,
     takeOff,

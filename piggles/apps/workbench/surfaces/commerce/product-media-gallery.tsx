@@ -13,6 +13,8 @@ import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { FormSection } from '../../components/form-section';
 import { ACCEPTED_PHOTOS, MAX_PHOTO_BYTES, bindingSummary } from './product-media-binding';
+import { ChooseFromLibrary } from './product-media-library';
+import type { PickedAsset } from '../cms/media-picker';
 import type { MediaAsset, ProductImage, ProductOption, Variant } from './products-data';
 
 export function PhotoGallery({
@@ -26,6 +28,7 @@ export function PhotoGallery({
   uploading,
   onSelect,
   onFiles,
+  onChooseExisting,
   onReject,
 }: {
   productTitle: string;
@@ -38,6 +41,7 @@ export function PhotoGallery({
   uploading: boolean;
   onSelect: (imageId: string | null) => void;
   onFiles: (files: File[]) => void;
+  onChooseExisting: (assets: PickedAsset[]) => void;
   onReject: (message: string) => void;
 }) {
   return (
@@ -55,7 +59,7 @@ export function PhotoGallery({
         <EmptyState
           icon={<Icon glyph={faImageSlash} className="size-6" aria-hidden />}
           title="No photos yet"
-          description="A product with a photo sells; a product without one looks unfinished. Drag pictures onto the box below, or click it to choose files."
+          description="A product with a photo sells; a product without one looks unfinished. Choose one you have already, or drop a new file on the box below."
           size="sm"
         />
       ) : (
@@ -86,6 +90,11 @@ export function PhotoGallery({
           </ul>
         </>
       )}
+
+      {/* Two ways in, and the library one first: a business that has photographed
+          a run has these pictures already, and the file input alone sent them
+          back to their hard drive for a copy they had uploaded once. */}
+      <ChooseFromLibrary disabled={uploading} onChosen={onChooseExisting} />
 
       <Dropzone
         accept={ACCEPTED_PHOTOS}
