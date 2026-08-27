@@ -11,10 +11,14 @@
             "id": "e4b0fd419e17f491",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "apps/packages.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "packages"
             }
           }
         ]
@@ -176,8 +180,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "e4b0fd419e17f491",
+  "active": "893107a87859995f",
   "lastOpenFiles": [
+    "apps/services.md",
+    "business/audience.md",
     "tasks/open-punch-list.md.tmp.33660.a5f1fe94dfe6",
     "tasks/open-punch-list.md.tmp.33660.1a3cbf2275e6",
     "components/surface-frame.md.tmp.33660.3f2b34283488",
@@ -190,7 +196,6 @@
     "business/billing-model.md.tmp.43832.68b92ea997c5",
     "business.md.tmp.43832.bf9a334add2a",
     "business/pricing.md",
-    "business/pricing.md.tmp.43832.b4502d506b37",
     "lessons-learned/terminology-drift.md",
     "business/terminology.md",
     "design/dashboard-tokens.md",
@@ -212,7 +217,6 @@
     "infrastructure/terraform.md",
     "infrastructure/deploy-workflows.md",
     "infrastructure/topology.md",
-    "infrastructure.md",
-    "apps/packages.md"
+    "infrastructure.md"
   ]
 }

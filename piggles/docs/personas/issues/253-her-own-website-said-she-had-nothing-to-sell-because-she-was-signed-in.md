@@ -1,11 +1,11 @@
 # 253 — Her own website said she had nothing to sell, because she was signed in
 
-**Status:** open
+**Status:** fixed
 **Severity:** blocker
 **Found by:** P03 · Juniper Row · act 11 — opening her published shop to leave a review on it
 **Surface:** the published site › /shop (and every collection and category page)
 **Filed:** 2026-08-26
-**Blocked on:** confirmation — api-rest is down and only Brandon restarts it
+**Confirmed:** 2026-08-26
 
 ## What happened
 
@@ -56,8 +56,6 @@ Who it reaches, worst first:
 
 ## Where it lives
 
-Traced, not yet confirmed on a running server (see Status).
-
 [commerce.ts](../../../../wizeworks/services/api-rest/src/routes/v1/public/commerce.ts)'s
 product listing resolves the viewer so a B2B customer sees their own price:
 
@@ -88,7 +86,7 @@ to resolve — no cookie, no user on it, a session belonging to another tenant.
 An undecodable cookie is the same answer: **this viewer is not signed in.** It
 is the one case that throws instead.
 
-## The fix (written and unit-proved; not yet driven through the screen)
+## The fix
 
 Two layers, because the failure had two halves.
 
@@ -108,40 +106,30 @@ contract prices, which is a smaller wrong answer than an empty shop by a
 distance, and it is the same principle [203] settled: never let a failure to
 answer a question print as an answer of zero.
 
-## Not proved yet, and why
+## Confirmed
 
-api-rest exited while this was being traced and nothing was listening on 3100
-afterwards. The console, the site and the marketing app all stayed up.
+Re-run as Devi on 2026-08-26, in the same browser profile, signed in to the
+console at `localhost:3022` as she was when she found it.
 
-**My first thought was that the requests I had just sent caused it, and that
-looks wrong.** Its own typecheck is red in three packages, none of them touched
-here:
+`localhost:3004/shop` — the exact URL that read **0 products · No products
+found** — now lists **7 products**: The Everyday Tee $42.00, Linen Shirtdress
+$145.00, The Ash Overshirt $128.00, Marlow Knit $96.00, Silk twill scarf $58.00,
+Leather-covered belt $72.00, Sunday Trouser wide leg. Her shop is her shop again
+whether or not she is signed in to anything.
 
-```
-packages/crm/src/services/lead-clock.ts      leadResponseDueAt does not exist on Customer
-packages/builder/src/services/form-submit-service.ts   partialStep does not exist
-packages/sms/src/delivery.ts                 Cannot find module '@wizeworks/db'
-```
+Against the running API, the listing answers 200 with all seven both with no
+cookie at all and with a session cookie that cannot be decoded. The difference
+the defect turned on is gone.
 
-All three belong to work in progress in the same tree: four uncommitted
-migrations (`20270423`–`20270426`), a new `93-sms.prisma`, and the two service
-files that read the columns they add. The Prisma client has not been regenerated
-against them — correctly, since regenerating rewrites the client the running
-stack imports and is nobody's to run mid-session. A service importing a module
-that does not resolve, or reading a Prisma field that is not on the generated
-client, is a far likelier way for the process to end than a 500 inside a request
-handler, which Fastify turns into a response rather than an exit.
+### The exit did not recur, and a malformed cookie cannot cause one
 
-So the exit is recorded as **unexplained and probably unrelated**, not as a
-finding. What is NOT in doubt is the defect above: seven products signed out,
-zero signed in, on two different tenants, read off the screen twice.
-
-The confirmation beat of RULE #3 is owed, and needs the server back:
-
-1. reproduce the failed listing with a foreign cookie against a running api-rest,
-2. re-open `/shop` signed in and read seven products,
-3. and confirm the exit does not recur — if a malformed cookie CAN take the API
-   down, that is a bigger issue than this one and gets its own number.
+The third owed check, because "if a malformed cookie CAN take the API down, that
+is a bigger issue than this one." It cannot. Five shapes of undecodable
+credential — empty, bare dots, invalid percent-escapes, a two-part token, an
+alg-none JWT — each answered 200, and `/health` answered 200 before and after.
+The process that exited during the trace stayed exited for reasons of its own;
+nothing here reproduces it, so it is recorded as unexplained and closed with the
+issue rather than carried as a finding.
 
 ## Related
 
