@@ -41,22 +41,27 @@ const MAX_RECIPIENTS = 50;
  * the vocabulary an author already learned rather than inventing a second one.
  *
  * An unresolved placeholder collapses to empty rather than rendering the raw
- * `{{…}}` at a person, which would read as a bug in the product.
+ * `{{…}}` at a person, which would read as a bug in the product. It is also
+ * REPORTED, because collapsing quietly is how "{{product.title}} is out of
+ * stock" reached an owner's bell as " is out of stock" — see `executeNotify`.
  */
-function fill(template: string, fields: ResolvedFields): string {
-  return template
+function fill(template: string, fields: ResolvedFields): { text: string; missing: string[] } {
+  const missing: string[] = [];
+  const text = template
     .replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_match, path: string) => {
       const value = fields[path];
       // ONLY primitives interpolate. A resolved field can be an object or an
       // array, and `String()` would put a literal "[object Object]" in front of
       // a person — worse than saying nothing, because it reads as a broken
       // product rather than a missing detail.
-      if (typeof value === 'string') return value;
+      if (typeof value === 'string' && value.length > 0) return value;
       if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+      missing.push(path);
       return '';
     })
     .replace(/\s{2,}/g, ' ')
     .trim();
+  return { text, missing };
 }
 
 function readString(config: Record<string, unknown>, key: string): string | null {
@@ -92,21 +97,43 @@ async function executeNotify(ctx: TenantCtx, effect: EffectInput): Promise<Actio
   const body = readString(effect.config, 'body');
   const entityId = readString(effect.config, 'entityId');
 
+  const filledTitle = fill(title, effect.fields);
+  // A title is not decoration — it IS the notification, and every one of these
+  // templates puts the SUBJECT in a placeholder. Lose it and the row reads
+  // " is out of stock" over a body that says "customers cannot buy this",
+  // where "this" names nothing; the reader is told something is wrong and
+  // denied the one word that would let them act. So: write nothing, and say in
+  // the run ledger which path came back empty.
+  //
+  // The same reasoning the `entityId` guard below already applies. It was
+  // written for the broken LINK and left the broken SENTENCE alone, which is
+  // the more important of the two. Guarding the title rather than each
+  // resolver is what makes it hold: a missing field is a per-event mistake
+  // somebody has to remember not to make, and this one was made twice — see
+  // `ORDER_EVENTS` in the builtins resolver, where `order.payment_failed` had
+  // to be added after the same seed shipped "Payment failed on order ".
+  //
+  // Body is deliberately NOT guarded: it is supporting prose, the title
+  // carries the fact, and a notification is worth sending with a thin second
+  // line.
+  if (filledTitle.missing.length > 0) {
+    return { notified: 0, reason: `title unresolved: ${filledTitle.missing.join(', ')}` };
+  }
+
+  const filledEntityId = entityId ? fill(entityId, effect.fields).text : null;
+
   await ctx.tx.notification.createMany({
     data: recipients.map((user) => ({
       tenantId: ctx.tenantId,
       userId: user.id,
       kind,
-      title: fill(title, effect.fields).slice(0, 255),
-      body: body ? fill(body, effect.fields) : null,
+      title: filledTitle.text.slice(0, 255),
+      body: body ? fill(body, effect.fields).text : null,
       module: readString(effect.config, 'module'),
       severity,
       entityType: readString(effect.config, 'entityType'),
       // Only a real uuid — a templated miss must not write a broken link.
-      entityId:
-        entityId && /^[0-9a-f-]{36}$/i.test(fill(entityId, effect.fields))
-          ? fill(entityId, effect.fields)
-          : null,
+      entityId: filledEntityId && /^[0-9a-f-]{36}$/i.test(filledEntityId) ? filledEntityId : null,
     })),
   });
 

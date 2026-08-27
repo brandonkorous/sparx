@@ -348,7 +348,15 @@ export const ROUTES: readonly AppRoute[] = [
 
   /* ── Inventory ────────────────────────────────────────────────────────── */
   { path: '/inventory/stock', surface: 'inventory.stock.list' },
-  { path: '/inventory/stock/:variantId', surface: 'inventory.stock.item' },
+  // `entity: 'variant'` is what lets an out-of-stock notification LEAD here.
+  // The bell resolves a destination through this table, so a notification
+  // about one size had nowhere to go while nothing claimed the type.
+  {
+    path: '/inventory/stock/:variantId',
+    surface: 'inventory.stock.item',
+    entity: 'variant',
+    entityLabel: 'Stock items',
+  },
   // "Where this number came from" (docs/146 Phase 1). Two segments because a
   // stock number IS a (item, location) pair — an address with only the item
   // would not identify the number it claims to explain.

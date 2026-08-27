@@ -96,6 +96,7 @@ node scripts/check-platform-brand.mjs >/dev/null || fail "shared code gained a N
 node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
 node scripts/check-worker-events.mjs >/dev/null || fail "a worker subscribes to or routes an event nobody publishes — run \`pnpm check:worker-events\` to see it. NOTE: a dead \`case\` reads exactly like coverage, and check:events cannot see it."
 node scripts/check-surface-routes.mjs >/dev/null || fail "surface/address parity failed — run \`pnpm check:routes\` to see it"
+node scripts/check-notification-entities.mjs >/dev/null || fail "a notification would lead nowhere — its \`entityType\` is not a key in the links entity table, or its route takes an id it was never given. Run \`pnpm check:notify-entities\` to see it. NOTE: a dead-end notification looks IDENTICAL to a working one until somebody clicks it, and no test connects a string in a seed to a key in another package."
 node scripts/check-dockerfile-deps.mjs >/dev/null || fail "a Dockerfile is missing a workspace package it imports — run \`pnpm check:docker\` to see it"
 node scripts/check-service-env.mjs >/dev/null || fail "a service cannot start on a fresh checkout — its required env is not in its .env.example. Run \`pnpm check:service-env\` to see it. NOTE: this class of failure passes typecheck, lint and every test, because none of them boot the service."
 node scripts/check-brand-wordmark.mjs >/dev/null || fail "a brand wordmark and its deployed copy have drifted — run \`pnpm check:brand-wordmark\` to see it, and \`--update\` to rewrite it from the art. NOTE: this class of failure DEPLOYS green and draws last year's logo on every tenant site."
@@ -119,6 +120,11 @@ node scripts/check-migration-order.mjs >/dev/null || fail "a new migration sorts
 # already installed it — which is how a bakery kept showing prices with no
 # currency for two days after they were "fixed".
 node scripts/check-blueprint-versions.mjs >/dev/null || fail "a blueprint's content changed with no version bump — run \`pnpm check:blueprint-versions\` to see which. NOTE: this class of failure is INVISIBLE. Every test passes, the fix ships, and not one existing tenant is ever offered it, because the catalog says nothing changed."
+
+# A blueprint's journal posts publish on the tenant's own site, for their customers,
+# the moment it installs. Twenty-two blueprints shipped the same three posts about
+# running an online store — so a dental clinic and an accountancy opened with them.
+node scripts/check-blueprint-journal.mjs >/dev/null || fail "a blueprint ships a journal made entirely of other blueprints' posts — run \`pnpm check:blueprint-journal\` to see which. Those publish under the business's own name at install."
 ok "structure clean"
 
 step "pnpm format:check"

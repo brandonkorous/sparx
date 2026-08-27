@@ -34,7 +34,11 @@ export const NOTIFY_PAYMENT_FAILED: SystemAutomationSpec = {
         module: 'commerce',
         title: 'Payment failed on order {{order.number}}',
         body: 'The customer’s payment did not go through, so this order is not paid yet.',
-        entityType: 'Order',
+        // `entityType` is the key in @wizeworks/links' entity table, NOT the Prisma
+        // model name — that lookup is an exact, case-sensitive `Map.get`, so
+        // 'Order' resolved to nothing and the row led nowhere.
+        entityType: 'order',
+        entityId: '{{order.id}}',
       },
     },
   ],
@@ -59,7 +63,11 @@ export const NOTIFY_STOCK_DEPLETED: SystemAutomationSpec = {
         module: 'inventory',
         title: '{{product.title}} is out of stock',
         body: 'Customers cannot buy this until it is back in stock.',
-        entityType: 'ProductVariant',
+        // The VARIANT, not the product: one size being gone is what happened,
+        // and its stock screen is where she puts it right. The product page
+        // would open a page on which most sizes are fine.
+        entityType: 'variant',
+        entityId: '{{variant.id}}',
       },
     },
   ],
@@ -87,7 +95,8 @@ export const NOTIFY_SUBSCRIPTION_PAYMENT_FAILED: SystemAutomationSpec = {
         // field paths are not verified, and a title reading "A subscription
         // payment failed" beats one with a hole in it.
         body: 'The renewal did not go through. The customer may lose access until it is fixed.',
-        entityType: 'Subscription',
+        entityType: 'subscription',
+        entityId: '{{subscription.id}}',
       },
     },
   ],
