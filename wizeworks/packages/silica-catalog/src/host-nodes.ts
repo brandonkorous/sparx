@@ -72,6 +72,13 @@ export const HOST_KEYS = {
    *  collection). A per-record functional template (`commerce.collection` record type);
    *  the route passes the collection handle + search params via context. Read-only. */
   commerceCollectionDetail: 'commerce.collection-detail',
+  /** A product's REVIEWS — the rating summary, the approved reviews, and the
+   *  write-a-review form. A per-record functional template (`commerce.product` record
+   *  type); the route passes the product handle via context. Interactive: the form
+   *  posts to the public reviews endpoint and what comes back is moderated
+   *  server-side, which is why this is a core and not bound refs — a binding can draw
+   *  the list, but it cannot carry the form. */
+  commerceProductReviews: 'commerce.product-reviews',
   /** The bookable-service DETAIL — one service's header + its LIVE time-picker (availability,
    *  slot selection, booking). A per-record functional template (`scheduling.service` record
    *  type); the route passes the service id via context. Interactive (client widget). */
@@ -367,6 +374,46 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     icon: 'gallery',
     hint: 'One collection: its header and members as a filterable, sortable, paginated grid. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
+  },
+  {
+    key: HOST_KEYS.commerceProductReviews,
+    // What a shop owner calls it. Not "review widget" and not "PDP reviews" — she
+    // is looking for the thing customers write, and that word is "reviews".
+    label: 'Reviews and ratings',
+    category: 'Your shop',
+    // The same glyph `review_summary` wears, because they are the same subject and
+    // an author scanning the palette should see them as a pair. (An UNREGISTERED
+    // name renders an empty square — the curated set is the only safe source.)
+    icon: 'article',
+    hint: 'What customers said about this product: the star rating, their reviews, and a form for writing one. Put it on your product page.',
+    // NOT pinned. Every other shop core protects a transaction the tenant must not
+    // be able to delete — a cart, a checkout, a sign-in form. Reviews are a choice:
+    // plenty of businesses do not want them, and one that adds this and changes its
+    // mind must be able to take it off the page again.
+    pinned: false,
+    defaultClass: 'mx-auto w-full max-w-4xl px-6',
+    props: [
+      {
+        name: 'heading',
+        label: 'Heading',
+        type: 'text',
+        default: 'Reviews',
+      },
+      {
+        name: 'emptyText',
+        label: 'What to say before anyone has reviewed',
+        type: 'text',
+        // Says the true thing and asks for the next one. A brand-new shop's product
+        // page shows this for weeks, so it is real copy, not a placeholder.
+        default: 'No reviews yet — be the first.',
+      },
+      {
+        name: 'showForm',
+        label: 'Let customers write a review',
+        type: 'boolean',
+        default: true,
+      },
+    ],
   },
   {
     key: HOST_KEYS.schedulingServiceDetail,

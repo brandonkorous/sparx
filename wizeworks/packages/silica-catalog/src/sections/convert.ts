@@ -28,6 +28,7 @@ import {
   sectionHead,
   CARD,
 } from './_shell';
+import { boundPhoneLine } from './_contact-fields';
 
 /** A labelled text field. The label wraps the control, so the pair needs no `id` —
  *  which matters because two of these blocks on one page would otherwise emit
@@ -83,7 +84,17 @@ export function enquiryForm(): Node {
               'A real person reads every one of these and replies, usually the same day. There is no ' +
                 'obligation and we will not add you to anything.'
             ),
-            caption('Or call (555) 123-4567, Monday to Friday, 8am to 5pm.'),
+            // Bound, and gone when there is no phone. As a plain caption this
+            // read "Or call (555) 123-4567, Monday to Friday, 8am to 5pm." —
+            // an invented number AND invented hours, in prose that looks like
+            // the business wrote it (issue 265). The hours had nothing to bind
+            // to, so they are not claimed at all.
+            boundPhoneLine(
+              'text-sm text-base-content',
+              'Or call ',
+              ' if that is quicker.',
+              '(555) 123-4567'
+            ),
           ],
         }),
         form(

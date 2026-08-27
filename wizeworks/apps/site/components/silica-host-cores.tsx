@@ -24,6 +24,7 @@ import { CategoryIndex } from '@/components/category/category-index';
 import { CategoryDetail } from '@/components/category/category-detail';
 import { BookingServices, toHeadingText } from '@/components/booking/booking-services';
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
+import { ProductReviewsCore } from '@/components/products/product-reviews-core';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { ArticleBody } from '@/components/cms/article-body';
@@ -132,6 +133,19 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             site={ctx.site}
             handle={ctx.recordHandle ?? ''}
             searchParams={ctx.searchParams}
+          />
+        );
+      case HOST_KEYS.commerceProductReviews:
+        // Per-record: the route passes the product handle, and the core fetches its
+        // own reviews from it (a host core cannot read the URL). Author-tunable
+        // words, because "Reviews" is not what every shop calls them.
+        return (
+          <ProductReviewsCore
+            tenantSlug={ctx.site.slug}
+            handle={ctx.recordHandle ?? ''}
+            heading={toHeadingText(node.props?.heading, 'Reviews')}
+            emptyText={toHeadingText(node.props?.emptyText, 'No reviews yet — be the first.')}
+            showForm={node.props?.showForm !== false}
           />
         );
       case HOST_KEYS.schedulingServiceDetail:

@@ -449,6 +449,10 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
             status: true,
             orderId: true,
             createdAt: true,
+            // Searched by the WHERE clause above, so it was already half-present:
+            // an owner could FIND a review by the name on it and then read
+            // "A guest" in the table (issue 257).
+            displayName: true,
             customer: { select: { id: true, firstName: true, lastName: true, email: true } },
             product: { select: { id: true, title: true, handle: true } },
           },
@@ -469,6 +473,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         createdAt: r.createdAt.toISOString(),
         productTitle: r.product?.title ?? null,
         productHandle: r.product?.handle ?? null,
+        displayName: r.displayName,
         customer: r.customer
           ? {
               id: r.customer.id,
@@ -515,6 +520,10 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
             body: true,
             status: true,
             createdAt: true,
+            // Searched by the WHERE clause above, so it was already half-present:
+            // an owner could FIND a review by the name on it and then read
+            // "A guest" in the table (issue 257).
+            displayName: true,
             customer: { select: { id: true, firstName: true, lastName: true, email: true } },
             product: { select: { id: true, title: true, handle: true } },
           },
@@ -532,6 +541,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         createdAt: r.createdAt.toISOString(),
         productTitle: r.product?.title ?? null,
         productHandle: r.product?.handle ?? null,
+        displayName: r.displayName,
         customer: r.customer
           ? {
               id: r.customer.id,

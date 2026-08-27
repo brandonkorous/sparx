@@ -470,7 +470,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {row.productTitle ?? '—'}
                     </td>
                     <td className="hidden max-w-40 truncate text-sm @xl:table-cell">
-                      {customerLabel(row.customer)}
+                      {customerLabel(row.customer, row.displayName)}
                     </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">

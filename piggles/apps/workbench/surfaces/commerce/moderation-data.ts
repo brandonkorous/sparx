@@ -124,6 +124,8 @@ export interface QuestionListRow {
   status: string;
   createdAt: string;
   customer: QueueCustomer | null;
+  /** The name they signed it with, for someone asking without an account. */
+  displayName: string | null;
 }
 
 /** One row of the reviews TABLE. */
@@ -139,15 +141,22 @@ export interface ReviewListRow {
   verifiedPurchase: boolean;
   createdAt: string;
   customer: QueueCustomer | null;
+  /** The name they signed it with, for someone reviewing without an account. */
+  displayName: string | null;
 }
 
-/** A person's name from their account, or their email, or a plain fallback —
- *  the label a table cell shows under "Asked by" / "By". */
-export function customerLabel(customer: QueueCustomer | null): string {
-  if (!customer) return 'A guest';
-  const name = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-  if (name) return name;
-  return customer.email ?? 'A guest';
+/** A person's name from their account, then the name they SIGNED the review with,
+ *  then a plain fallback — the label under "Asked by" / "By". Someone who is not a
+ *  customer still typed a name, and the card flow shows it; the table printed
+ *  "A guest" over it, so two signed reviews read the same. */
+export function customerLabel(customer: QueueCustomer | null, signedAs?: string | null): string {
+  const account = customer
+    ? [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim()
+    : '';
+  if (account) return account;
+  const signed = signedAs?.trim();
+  if (signed) return signed;
+  return customer?.email ?? 'A guest';
 }
 
 /* ── Keys ───────────────────────────────────────────────────────────────── */
