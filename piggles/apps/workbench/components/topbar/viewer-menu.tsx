@@ -21,9 +21,12 @@ import {
   faCookie,
   faCreditCard,
   faRightFromBracket,
+  faShield,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useViewer } from '@/lib/api/shell-data';
+import { surfaceTitle } from '@/lib/surfaces/registry';
+import { useWorkbench } from '@/lib/workbench/context';
 
 /**
  * The person's role, in words a business owner uses. The platform's roles are
@@ -68,8 +71,10 @@ export function ViewerMenu({
   accountOrigin: string;
 }) {
   const signOutForm = useRef<HTMLFormElement>(null);
+  const { controller } = useWorkbench();
   const { data: viewer } = useViewer();
   const role = roleLabel(viewer?.role);
+  const securityLabel = surfaceTitle('platform.settings.security');
 
   return (
     <>
@@ -104,6 +109,20 @@ export function ViewerMenu({
             </DropdownMenuLabel>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          {/* Her password, the devices she is signed in on, and two-step
+              verification. It is the first thing a person looks for under their
+              own name, and this menu used to offer everything except it — she
+              had to know to search for it (issue 278). */}
+          {securityLabel !== null ? (
+            <DropdownMenuItem
+              onClick={() => {
+                controller.open('platform.settings.security');
+              }}
+            >
+              <Icon glyph={faShield} className="size-4" aria-hidden />
+              {securityLabel}
+            </DropdownMenuItem>
+          ) : null}
           {/* Off to the account app, because that is where the subscription
               lives. The console never shows a price and never takes a payment
               (piggles/CLAUDE.md RULE #2). */}

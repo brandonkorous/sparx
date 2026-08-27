@@ -228,6 +228,16 @@ export function resolveTitle(definition: SurfaceDefinition, params: SurfaceParam
   return productSurfaceTitle(definition.key) ?? definition.title;
 }
 
+/**
+ * What the brand calls the screen at `key`, for a menu row or a link that opens
+ * it. Null when the key is unknown or hidden here, which is the caller's cue to
+ * not offer the row at all rather than to offer a dead one.
+ */
+export function surfaceTitle(key: string): string | null {
+  const definition = getSurface(key);
+  return definition ? resolveTitle(definition, {}) : null;
+}
+
 /** Tab label for a descriptor, preferring an operator-set title. */
 export function titleFor(descriptor: PaneDescriptor): string {
   if (descriptor.title) return descriptor.title;

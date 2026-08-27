@@ -19,6 +19,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { PRODUCT } from '@piggles/config';
+import { surfaceTitle } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
 import { useFeedback } from '@/components/feedback/provider';
 import { AppearanceMenuItems } from '@/components/appearance-menu';
@@ -44,6 +45,7 @@ export function AccountMenu({
   const { controller } = useWorkbench();
   const feedback = useFeedback();
   const signOutForm = useRef<HTMLFormElement>(null);
+  const securityLabel = surfaceTitle('platform.settings.security');
 
   return (
     <>
@@ -72,8 +74,20 @@ export function AccountMenu({
               controller.open('platform.settings.general');
             }}
           >
-            Business details
+            {surfaceTitle('platform.settings.general') ?? 'Business details'}
           </DropdownMenuItem>
+          {/* The same door to her password, devices and two-step verification
+              the desktop bar now carries. A phone is where a person is most
+              likely to be told to turn two-step on. */}
+          {securityLabel !== null ? (
+            <DropdownMenuItem
+              onClick={() => {
+                controller.open('platform.settings.security');
+              }}
+            >
+              {securityLabel}
+            </DropdownMenuItem>
+          ) : null}
           {/* Feedback reaches the same inbox from a phone as from a desk —
               the account menu carries it here because a one-column header has
               no room for another icon, not because it matters less. */}

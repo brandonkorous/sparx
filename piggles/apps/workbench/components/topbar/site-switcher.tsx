@@ -15,9 +15,10 @@ import {
   DropdownMenuTrigger,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { faCheck, faChevronDown, faGlobe } from '@fortawesome/pro-solid-svg-icons';
+import { faCheck, faChevronDown, faGear, faGlobe } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { switchSite, useSites } from '@/lib/api/shell-data';
+import { surfaceTitle } from '@/lib/surfaces/registry';
 import { useConfirm } from '@/lib/confirm';
 import { deferTick } from '@/lib/defer';
 import { useWorkbench } from '@/lib/workbench/context';
@@ -51,6 +52,10 @@ export function SiteSwitcher({ siteKey }: { siteKey: string }) {
   };
 
   if (!sites || sites.length === 0) return null;
+
+  // Null when this brand hides the screen — the helper's documented cue to not
+  // offer a row rather than to offer a dead one.
+  const hasSitesScreen = surfaceTitle('platform.settings.sites') !== null;
 
   return (
     <span className="inline-flex items-center gap-1">
@@ -92,7 +97,26 @@ export function SiteSwitcher({ siteKey }: { siteKey: string }) {
             ))}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>Each site keeps its own arrangement</DropdownMenuItem>
+          {/* The screen where a site is added, renamed or given its own address.
+              This row used to be the sentence the trigger's tooltip already
+              says, rendered as a DISABLED menu item — so the one place a person
+              thinks about their sites offered a greyed-out fact where the way
+              to a second site belonged, and read it out to a screen reader as
+              an action she could not take (issue 279). */}
+          {hasSitesScreen ? (
+            <DropdownMenuItem
+              onClick={() => {
+                controller.open('platform.settings.sites');
+              }}
+            >
+              <Icon glyph={faGear} className="size-4" aria-hidden />
+              {/* Written, not the screen's own name. Every other menu in this
+                  bar names the JOB — "Your plan and billing", "A product" — and
+                  a row reading "Sites" directly under a list of her sites reads
+                  as one more site rather than the way to another. */}
+              Add or manage sites
+            </DropdownMenuItem>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
     </span>
