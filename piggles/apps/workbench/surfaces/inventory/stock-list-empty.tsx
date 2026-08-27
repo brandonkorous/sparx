@@ -1,8 +1,8 @@
 'use client';
 
-// The empty states for the stock list — four different problems that all render
+// The empty states for the stock list — five different problems that all render
 // as "no rows", split out because deciding WHICH nothing this is has nothing to
-// do with drawing a table.
+// do with drawing a table. Two of the five are good news.
 //
 // ── Nothing here describes a journey ─────────────────────────────────────
 //
@@ -15,12 +15,13 @@
 // action instead, and carry the button that performs it.
 
 import { Button, EmptyState } from '@wizeworks/silicaui-react';
-import { faArrowTrendDown, faBoxes } from '@fortawesome/pro-solid-svg-icons';
+import { faArrowTrendDown, faBoxes, faBoxOpen } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { openProductFacet } from '../commerce/product-scope';
-import type { CatalogMatch } from './data';
+import { useScopeHasStock, type CatalogMatch } from './data';
+import type { StockLevelFilter } from './stock-list-toolbar';
 
 /**
  * What to try when nothing matched — naming ONLY what is actually narrowing the
@@ -41,8 +42,10 @@ export function emptyAdvice(search: string, locationName: string | null): string
 interface EmptyProps {
   ctx: SurfaceContext;
   search: string;
+  /** Which location is chosen, for the probe. Empty means every location. */
+  locationId: string;
   locationName: string | null;
-  lowOnly: boolean;
+  level: StockLevelFilter;
   narrowed: boolean;
   /** Products the search found that simply have no count behind them. */
   catalogMatches: CatalogMatch[];
@@ -51,18 +54,44 @@ interface EmptyProps {
 }
 
 export function StockListEmpty(props: EmptyProps) {
-  const { ctx, search, locationName, lowOnly, narrowed, catalogMatches, checkingCatalog } = props;
+  const { ctx, search, locationId, locationName, level, narrowed, catalogMatches } = props;
+  const { checkingCatalog } = props;
 
-  // "Nothing is running low" is good news, and an empty state that reads like a
-  // failure over good news is its own kind of wrong.
-  if (lowOnly && search.trim() === '') {
+  // Good news needs EVIDENCE. A location nobody has counted anything into is
+  // not running low and has not run out, and saying so reads as reassurance
+  // about a shelf that is simply empty — so the claim waits on a scope that
+  // holds something, and falls through to "nothing matches that" when it does
+  // not. Asked only here, where the answer changes the sentence.
+  const goodNewsCandidate = level !== '' && search.trim() === '';
+  const scope = useScopeHasStock(locationId, goodNewsCandidate);
+  const scopeHasStock = (scope.data?.total ?? 0) > 0;
+
+  if (goodNewsCandidate && scope.isFetching) {
+    return <PaneWaiting label="Checking your stock…" />;
+  }
+
+  if (level === 'out' && goodNewsCandidate && scopeHasStock) {
+    return (
+      <EmptyState
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+        title={
+          locationName
+            ? `Everything has some to sell at ${locationName}`
+            : 'Everything has some to sell'
+        }
+        description="Nothing you are counting has run out. Everything a customer can see is something they can actually buy. Choose All to see the rest of your stock."
+      />
+    );
+  }
+
+  if (level === 'low' && goodNewsCandidate && scopeHasStock) {
     return (
       <EmptyState
         icon={<Icon glyph={faArrowTrendDown} className="size-6" aria-hidden />}
         title={
           locationName ? `Nothing is running low at ${locationName}` : 'Nothing is running low'
         }
-        description="Everything with a reorder rule is above the level you asked to be warned at. Turn the filter off to see all your stock."
+        description="Everything with a reorder rule is above the level you asked to be warned at. Choose All to see the rest of your stock."
       />
     );
   }
@@ -77,7 +106,13 @@ export function StockListEmpty(props: EmptyProps) {
     return <UncountedMatches ctx={ctx} search={search} matches={catalogMatches} />;
   }
 
-  if (narrowed) {
+  // With no stock in the scope at all, the state chip is not what emptied the
+  // list, so it does not get to decide which nothing this is: a chosen location
+  // says which one, and a shop that has counted nothing anywhere gets the two
+  // ways to start.
+  const reallyNarrowed = goodNewsCandidate && !scopeHasStock ? locationId !== '' : narrowed;
+
+  if (reallyNarrowed) {
     return (
       <EmptyState
         icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}

@@ -21,6 +21,13 @@ export interface Signal {
   /** The app this belongs to, so the row wears that app's hue. */
   module: string;
   surface: string;
+  /**
+   * What the screen must be narrowed to for the number to be visible on it. A
+   * sentence naming a count promises the screen behind it shows THAT count:
+   * "1 item is sold out" opened 62 unnarrowed rows with the one ninth ([258]).
+   * Same values the pane's own chips use, so she can see it and turn it off.
+   */
+  params?: Record<string, string>;
   /** The sentence AFTER the number. Two forms, because "1 orders" is the kind of
    *  small wrongness that makes software feel unattended. */
   one: string;
@@ -81,6 +88,7 @@ export const SIGNALS: Signal[] = [
     icon: faBoxOpen,
     module: 'inventory',
     surface: 'inventory.stock.list',
+    params: { level: 'out' },
     one: 'item is sold out',
     many: 'items are sold out',
     clear: 'nothing is sold out',
@@ -91,6 +99,7 @@ export const SIGNALS: Signal[] = [
     icon: faBoxMagnifyingGlass,
     module: 'inventory',
     surface: 'inventory.stock.list',
+    params: { level: 'low' },
     one: 'product is running low',
     many: 'products are running low',
     // "stock is healthy" was a claim this count cannot support. It measures ONE

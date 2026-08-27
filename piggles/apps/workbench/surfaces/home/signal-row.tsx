@@ -27,7 +27,8 @@ export function SignalRow({
 }) {
   const glyph = signal.icon;
   const open = () => {
-    ctx.open(signal.surface);
+    // The narrowing travels with the sentence — see `params` on Signal.
+    ctx.open(signal.surface, signal.params ?? {});
   };
 
   return (

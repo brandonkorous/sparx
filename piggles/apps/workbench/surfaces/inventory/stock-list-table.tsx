@@ -69,7 +69,7 @@ export function StockListTable({ rows, sort, onSort, onOpen, onExplain }: TableP
           {header('available', 'To sell', 'text-right whitespace-nowrap')}
           <th className="hidden text-right @xl:table-cell">On the shelf</th>
           <th className="hidden text-right @3xl:table-cell">Spoken for</th>
-          <th>State</th>
+          <th className="hidden @md:table-cell">State</th>
           {/* An icon-only column: the header is for screen readers, and a word
               here would claim width the numbers need more. */}
           <th className="w-8">
@@ -100,7 +100,6 @@ function StockRow({
   onOpen: (level: StockLevel, event: Modifiers) => void;
   onExplain: (level: StockLevel) => void;
 }) {
-  const state = levelState(level);
   return (
     <tr
       className="cursor-pointer"
@@ -129,26 +128,22 @@ function StockRow({
           {/* Below @lg the Location column is gone, so it comes back here — a
               stock row without a place is not an answer. */}
           <span className="truncate text-sm @lg:hidden">{locationLabel(level)}</span>
+          {/* And below @md the State column goes the same way. It was taking
+              126px of a 360px row while the name it describes had 64 and read
+              "Th…" — the header above promises the two that matter are what it
+              is and how many can be sold, and this is what kept that promise
+              from being true on a phone. */}
+          <span className="mt-1 @md:hidden">
+            <StateBadges level={level} />
+          </span>
         </span>
       </td>
       <td className="hidden max-w-48 truncate @lg:table-cell">{locationLabel(level)}</td>
       <td className="text-right font-medium whitespace-nowrap tabular-nums">{sellable(level)}</td>
       <td className="hidden text-right tabular-nums @xl:table-cell">{level.onHand}</td>
       <td className="hidden text-right tabular-nums @3xl:table-cell">{level.allocated}</td>
-      <td>
-        <span className="flex flex-wrap items-center gap-1">
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-          {/* Only when the number has actually gone stale. A row of "2 hours"
-              beside every healthy line is noise that trains people to stop
-              reading the column before it ever means anything. */}
-          {stockAgeTone(level.ageSeconds) !== 'success' ? (
-            <Badge color={stockAgeTone(level.ageSeconds)} variant="soft" size="sm">
-              {humanDuration(level.ageSeconds)} old
-            </Badge>
-          ) : null}
-        </span>
+      <td className="hidden @md:table-cell">
+        <StateBadges level={level} />
       </td>
       <td>
         {/* `stopPropagation` because the row itself is a button: without it this
@@ -169,5 +164,27 @@ function StockRow({
         </Tooltip>
       </td>
     </tr>
+  );
+}
+
+/** What this level IS, plus how long since anybody checked. One component
+ *  because the row shows it in a column when there is room and under the
+ *  product name when there is not. */
+function StateBadges({ level }: { level: StockLevel }) {
+  const state = levelState(level);
+  return (
+    <span className="flex flex-wrap items-center gap-1">
+      <Badge color={state.tone} variant="soft" size="sm">
+        {state.label}
+      </Badge>
+      {/* Only when the number has actually gone stale. A row of "2 hours"
+          beside every healthy line is noise that trains people to stop reading
+          the column before it ever means anything. */}
+      {stockAgeTone(level.ageSeconds) !== 'success' ? (
+        <Badge color={stockAgeTone(level.ageSeconds)} variant="soft" size="sm">
+          {humanDuration(level.ageSeconds)} old
+        </Badge>
+      ) : null}
+    </span>
   );
 }

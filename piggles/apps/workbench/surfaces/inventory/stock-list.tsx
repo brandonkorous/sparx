@@ -2,29 +2,23 @@
 
 // STOCK — how much of each thing you have right now, everywhere you keep it.
 //
-// This file owns the pane: its filters, its window over the data, and its
-// toolbar. The table is stock-list-table.tsx and the several kinds of nothing
-// are stock-list-empty.tsx.
+// This file owns the pane: its filters, its window over the data, its toolbar.
+// Which answer is on screen is stock-list-body.tsx, the table is
+// stock-list-table.tsx, the several kinds of nothing are stock-list-empty.
 //
 // ── Every narrowing is a SERVER filter ───────────────────────────────────
 //
-// Search, location, "running low", the sort and the paging all go to the API.
+// Search, location, which state, the sort and the paging all go to the API.
 // Sorting the loaded window in the browser sorts ONE page and presents it as the
 // answer, so "what is closest to running out" would return the scarcest of the
 // fifty rows that happen to be in hand.
 //
-// ── Four empty states, because they are four different problems ──────────
 // This list can only see what has a level row, and a level row appears only when
-// somebody counts something — so a bakery typing "rye", the exact name of a
-// product on her own shop page, was told to try part of a product name. When the
-// search is the ONLY thing narrowing the list we ask the catalog too, which is
-// what `searchOnly` decides. The states themselves are in stock-list-empty.
+// somebody counts something — so a real product typed by its real name can come
+// back empty. `searchOnly` below is what lets us ask the catalog instead.
 
-import { useMemo, useState } from 'react';
-import { PaneWaiting } from '../../components/pane-waiting';
-import { Card, EmptyState } from '@wizeworks/silicaui-react';
-import { faBoxes } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
+import { useEffect, useMemo, useState } from 'react';
+import { Card } from '@wizeworks/silicaui-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -37,9 +31,14 @@ import {
   type StockSortKey,
 } from './data';
 import { RowOpenHint } from '../../components/row-open-hint';
-import { StockListEmpty } from './stock-list-empty';
-import { StockListTable } from './stock-list-table';
-import { StockListToolbar, parseSort } from './stock-list-toolbar';
+import { StockListBody } from './stock-list-body';
+import {
+  StockListToolbar,
+  parseLevel,
+  parseSort,
+  titleForLevel,
+  type StockLevelFilter,
+} from './stock-list-toolbar';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -51,7 +50,12 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [locationId, setLocationId] = useState('');
-  const [lowOnly, setLowOnly] = useState(false);
+  // Seeded from the address so "1 item is sold out" can open this showing that
+  // item. Read ONCE: after the first render the chips own it, and re-reading
+  // would fight a person who has since changed it.
+  const [level, setLevel] = useState<StockLevelFilter>(() =>
+    parseLevel(typeof ctx.params.level === 'string' ? ctx.params.level : undefined)
+  );
   // Most recently changed first: opened cold, the useful question is "what
   // moved". Switching to "To sell" answers "what is nearly gone" instead.
   const [sort, setSort] = useState<{ key: StockSortKey; dir: SortDirection }>({
@@ -62,9 +66,11 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   // The half of this list's state the toolbar does not already hold. The
   // location filter rides the `filters` slot, so a saved view picks it up
   // without being told.
+  // `level` is NOT here — it rides the `filters` slot, which composes it into
+  // the snapshot under its own key and puts it back on apply.
   const viewParams = useMemo(
-    () => ({ q: search.trim(), low: lowOnly ? '1' : '', sort: `${sort.key}:${sort.dir}` }),
-    [search, lowOnly, sort]
+    () => ({ q: search.trim(), sort: `${sort.key}:${sort.dir}` }),
+    [search, sort]
   );
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
@@ -72,6 +78,12 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   // How wide the current window has grown. "Load more" raises this; anything
   // that changes WHICH rows match resets it.
   const [take, setTake] = useState<number>(50);
+
+  // Follows the chips, not just the address: narrowed by hand and by link land
+  // in the same state, so they read the same.
+  useEffect(() => {
+    ctx.setTitle(titleForLevel(level));
+  }, [ctx, level]);
 
   const skip = (page - 1) * pageSize;
   const locations = useStockLocations();
@@ -81,7 +93,8 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useStockLevels({
     q: search.trim(),
     ...(locationId ? { warehouseId: locationId } : {}),
-    lowStockOnly: lowOnly,
+    lowStockOnly: level === 'low',
+    outOfStockOnly: level === 'out',
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -92,7 +105,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   // Only askable when the search is the only thing narrowing the list: with a
   // location filter on, an empty result means "not here", and the product could
   // be sitting counted at the place next door.
-  const searchOnly = search.trim() !== '' && locationId === '' && !lowOnly;
+  const searchOnly = search.trim() !== '' && locationId === '' && level === '';
   const catalog = useCatalogMatches(
     search.trim(),
     searchOnly && !isLoading && !isError && rowCount === 0
@@ -100,7 +113,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const narrowed = search.trim() !== '' || locationId !== '' || lowOnly;
+  const narrowed = search.trim() !== '' || locationId !== '' || level !== '';
 
   /** Anything that changes which rows match returns to the first window —
    *  staying on page 5 of a result set that now has two pages shows nothing. */
@@ -120,59 +133,17 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     resetWindow();
   };
 
-  const open = (level: StockLevel, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('inventory.stock.item', { variantId: level.variantId }, { target: targetFor(event) });
+  const open = (row: StockLevel, event: { shiftKey: boolean; altKey: boolean }) => {
+    ctx.open('inventory.stock.item', { variantId: row.variantId }, { target: targetFor(event) });
   };
 
   /** Always beside, never in place: the whole point of the explanation is to
    *  read it while still looking at the number it explains. */
-  const explain = (level: StockLevel) => {
+  const explain = (row: StockLevel) => {
     ctx.open(
       'inventory.stock.provenance',
-      { variantId: level.variantId, warehouseId: level.warehouseId },
+      { variantId: row.variantId, warehouseId: row.warehouseId },
       { target: 'beside' }
-    );
-  };
-
-  const body = () => {
-    // A failed load REPLACES the table. Rendering an empty grid under live
-    // filters invites someone to conclude they have no stock.
-    if (isError) {
-      return (
-        <EmptyState
-          icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-          title="Could not load your stock"
-          description="This is a problem reaching the server. Your stock is unaffected — the numbers just could not be read just now."
-        />
-      );
-    }
-
-    if (isLoading) {
-      return <PaneWaiting label="Loading stock…" />;
-    }
-
-    if (rows.length === 0) {
-      return (
-        <StockListEmpty
-          ctx={ctx}
-          search={search}
-          locationName={locationName}
-          lowOnly={lowOnly}
-          narrowed={narrowed}
-          catalogMatches={catalog.data?.items ?? []}
-          checkingCatalog={catalog.isFetching}
-        />
-      );
-    }
-
-    return (
-      <StockListTable
-        rows={rows}
-        sort={sort}
-        onSort={toggleSort}
-        onOpen={open}
-        onExplain={explain}
-      />
     );
   };
 
@@ -190,15 +161,17 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           resetWindow();
         }}
         locations={activeLocations}
-        lowOnly={lowOnly}
-        onLowOnly={(next) => {
-          setLowOnly(next);
+        level={level}
+        onLevel={(next) => {
+          setLevel(next);
           resetWindow();
         }}
         viewParams={viewParams}
         onApplyView={(next) => {
           setSearch(next.q ?? '');
-          setLowOnly(next.low === '1');
+          // A view saved while this was a yes/no toggle stored `low: '1'`; the
+          // filters slot has already put `level` back by the time this runs.
+          if (next.low === '1') setLevel('low');
           const parsed = parseSort(next.sort);
           if (parsed) setSort(parsed);
           resetWindow();
@@ -211,7 +184,25 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}
-      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
+      <Card className="min-h-0 flex-1 overflow-y-auto">
+        <StockListBody
+          ctx={ctx}
+          rows={rows}
+          isError={isError}
+          isLoading={isLoading}
+          search={search}
+          locationId={locationId}
+          locationName={locationName}
+          level={level}
+          narrowed={narrowed}
+          catalogMatches={catalog.data?.items ?? []}
+          checkingCatalog={catalog.isFetching}
+          sort={sort}
+          onSort={toggleSort}
+          onOpen={open}
+          onExplain={explain}
+        />
+      </Card>
 
       {/* Sits on the pane, not in the card — it describes the table rather than
           being part of it, which is what the recessed surface says. */}

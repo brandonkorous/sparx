@@ -149,8 +149,10 @@ export interface StockQuery {
   q?: string;
   /** Narrow to one location. Undefined means everywhere. */
   warehouseId?: string;
-  /** Only what is at or below its reorder point. */
+  /** Only what is at or below its reorder point AND still sellable. */
   lowStockOnly?: boolean;
+  /** Only what has nothing left to sell. Disjoint from `lowStockOnly` above. */
+  outOfStockOnly?: boolean;
   sortBy: StockSortKey;
   order: SortDirection;
   take: number;
@@ -197,6 +199,29 @@ export function useCatalogMatches(search: string, enabled: boolean) {
   });
 }
 
+/**
+ * Whether the scope in view holds ANY counted stock, ignoring every other
+ * narrowing.
+ *
+ * Only asked on the dead end it exists for: "nothing is running low here" and
+ * "everything has some to sell here" are good news, and both are false over a
+ * location nobody has counted anything into. A place holding nothing scores zero
+ * on every worry there is, so a screen that reads zero as reassurance reports
+ * absence as a measurement.
+ */
+export function useScopeHasStock(warehouseId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...stockKeys.all, 'scope-has-stock', warehouseId] as const,
+    queryFn: () =>
+      api.list<StockLevel>('/v1/inventory', {
+        ...(warehouseId ? { warehouse_id: warehouseId } : {}),
+        take: 1,
+        skip: 0,
+      }),
+    enabled,
+  });
+}
+
 /** Just enough of a product to name it and open its stock panel. */
 export interface CatalogMatch {
   id: string;
@@ -218,7 +243,11 @@ export function useStockLevels(query: StockQuery) {
       api.list<StockLevel>('/v1/inventory', {
         ...(query.q ? { q: query.q } : {}),
         ...(query.warehouseId ? { warehouse_id: query.warehouseId } : {}),
-        ...(query.lowStockOnly ? { low_stock_only: true } : {}),
+        // `sellable_only` alongside `low_stock_only` is what makes the filter
+        // agree with the badge: bare, the low predicate also matches levels at
+        // zero, which every row badges "None to sell" and never "Running low".
+        ...(query.lowStockOnly ? { low_stock_only: true, sellable_only: true } : {}),
+        ...(query.outOfStockOnly ? { out_of_stock_only: true } : {}),
         sort_by: query.sortBy,
         order: query.order,
         take: query.take,

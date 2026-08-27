@@ -5,6 +5,7 @@
 **Found by:** P01 · Thistle & Rye · standing checks — re-scoring in light
 **Surface:** mypiggles in LIGHT mode. 1,005 `variant="soft"` across 411 files
 **Filed:** 2026-08-21
+**Re-confirmed:** 2026-08-27 (P03 · Juniper Row · stock list, light)
 **Measured:** in the browser, on her own Home, against the rendered pixels
 
 ## What happened
@@ -92,6 +93,36 @@ first.
 Not a palette bug. `#ffd166` is a fine warning color: the **solid** variant puts
 dark ink on it and measures **6.35:1**. The hue is right; using it as ink on a
 tint of itself is what fails.
+
+### Re-measured 2026-08-27, and the "softer palette" defence does not hold
+
+Confirmed still live on P03's stock list — `danger` **2.28:1**, `warning`
+**1.37:1**, the same two numbers to the hundredth, six days on.
+
+The paragraph above said a saturated palette "lands somewhere near legible", which
+leaves open the answer "then Piggles' palette is too pale". It is not. Silica's
+**own default light theme** (quartz, from `get_tokens`) put through the same
+recipe:
+
+| tone      | silica's own light value | soft ink |
+| --------- | ------------------------ | -------- |
+| `warning` | `oklch(80% 0.11 85)`     | **1.71** |
+| `success` | `oklch(70% 0.12 150)`    | **2.26** |
+| `info`    | `oklch(68% 0.1 232)`     | **2.49** |
+| `accent`  | `oklch(64% 0.13 211)`    | **2.74** |
+| `error`   | `oklch(58% 0.17 25)`     | 4.00     |
+| `primary` | `oklch(42% 0.055 252)`   | 6.98     |
+
+**Four of silica's own eight fail on silica's own palette**, and the three that
+pass are the three it happens to have made dark. So there is no palette that
+rescues this: a light-mode semantic hue is a light color by definition, and the
+recipe asks it to be ink on itself. The fix has to be the recipe.
+
+One more thing the upstream fix needs to carry: **`contrastWarnings` cannot see
+this.** It measures a role's `-content` ink against the role color — the SOLID
+pairing, which passes everywhere. The pairing that fails is the one nothing
+checks, which is why an API written for exactly this class of problem has never
+gone red over it.
 
 Not a call-site bug either. 1,005 sites all made the same correct choice from the
 component's own API.

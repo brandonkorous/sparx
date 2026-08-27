@@ -167,16 +167,22 @@ parameter being ignored. Clicking the row opens the Stock list.
 
 Checked in dark at 1288px and at 360px; the notice reads as prose at both.
 
-## Still open, and why it is not fixed in this pass
+## The half left open here, and how it closed
 
-The "1 item is sold out" row opens the Stock list at 62 rows with the sold-out
-one **ninth**, because the list holds its filters in `useState` and reads no
-parameters on open — there is no way to hand it "show me the sold-out one", and
-its toolbar offers "Running low" but not "Sold out".
+The "1 item is sold out" row opened the Stock list at 62 rows with the sold-out
+one **ninth**, because the list held its filters in `useState` and read no
+parameters on open — there was no way to hand it "show me the sold-out one", and
+its toolbar offered "Running low" but not "Sold out".
 
-Those files (`surfaces/inventory/stock-list*.tsx`) are being refactored by
-another agent in this working tree right now, so editing them would collide.
-It is one prop and one toggle once that work lands.
+Those files (`surfaces/inventory/stock-list*.tsx`) were being refactored by
+another agent in this working tree at the time, so editing them would have
+collided. It was one prop and one toggle once that work landed.
+
+**Closed 2026-08-27 in [282].** The estimate was right — and building it turned
+up three more defects on that screen that reading it had not: the "Running low"
+filter returning rows badged "None to sell", a good-news empty state claiming
+everything was sellable at a location holding nothing, and an identity column
+squeezed to 64px on a phone. None of the three was visible from the code.
 
 ## Related
 
