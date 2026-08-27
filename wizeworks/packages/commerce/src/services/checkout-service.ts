@@ -1318,19 +1318,13 @@ async function ensureCheckoutCustomer(
   }
   const existing = await tx.customer.findFirst({
     where: { propertyId, email: normalizedEmail, deletedAt: null },
-    select: { id: true, lifecycleStage: true },
+    select: { id: true },
   });
-  if (existing) {
-    // A completed purchase advances a pre-customer to the customer stage and
-    // clears any open lead work-state; a settled customer/evangelist keeps theirs.
-    if (existing.lifecycleStage !== 'customer' && existing.lifecycleStage !== 'evangelist') {
-      await tx.customer.update({
-        where: { id: existing.id },
-        data: { lifecycleStage: 'customer', leadStatus: null },
-      });
-    }
-    return existing.id;
-  }
+  // Their stage is not set here. The purchase advances it, and that is derived
+  // from the orders themselves in `recomputeCustomerCommerce`, which
+  // `orderService.create` runs in this same transaction a moment from now. Set
+  // here as well, it was a second copy of the rule that the till never got.
+  if (existing) return existing.id;
   const created = await tx.customer.create({
     data: {
       tenantId,

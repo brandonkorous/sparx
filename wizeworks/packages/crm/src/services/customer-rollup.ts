@@ -47,10 +47,33 @@
 // this person has paid them, so that is what it answers, and an unpaid order now
 // correctly contributes nothing until it is paid.
 
+// ── Why the lifecycle stage is derived here too ──────────────────────────────
+//
+// "Has this person ever bought from us" is the same kind of fact as the four
+// above, and it used to be maintained the way they used to be: nudged at the
+// call site. Storefront checkout promoted the buyer to the `customer` stage,
+// marketplace ingest promoted them again in its own copy of the rule, and a sale
+// rung up at the till promoted nobody — so a shop's in-person buyers stayed
+// filed as leads forever, while a web shopper who had not paid a penny was a
+// customer. Ravi Naidoo had handed over $30 across the counter and every
+// segment, filter and report that asks for customers left him out (issue 280).
+//
+// Deriving it here gives it the same three properties the figures have: a path
+// that forgets to promote is healed by the next write, promoting twice is a
+// no-op, and the stage can never disagree with the orders on the same screen.
+//
+// It only ever moves FORWARD. Someone already recognised as a customer or an
+// evangelist keeps that, a cancelled order never demotes anyone, and a stage a
+// person set by hand on the customer's own pane is never walked back — the one
+// thing it does is stop a buyer being filed as a stranger.
+
 import type { TxClient } from '@wizeworks/db';
 
 /** Orders that never happened do not count toward anything. */
 const COUNTED = { not: 'cancelled' } as const;
+
+/** Stages a purchase does not move: the person is already known to have bought. */
+const SETTLED: readonly string[] = ['customer', 'evangelist'];
 
 export interface CustomerCommerceRollup {
   totalSpent: string;
@@ -70,7 +93,7 @@ export async function recomputeCustomerCommerce(
   tenantId: string,
   customerId: string
 ): Promise<CustomerCommerceRollup> {
-  const [totals, dates] = await Promise.all([
+  const [totals, dates, current] = await Promise.all([
     tx.order.aggregate({
       where: { tenantId, customerId, status: COUNTED },
       _sum: { amountPaid: true },
@@ -81,6 +104,7 @@ export async function recomputeCustomerCommerce(
       _min: { placedAt: true },
       _max: { placedAt: true },
     }),
+    tx.customer.findUnique({ where: { id: customerId }, select: { lifecycleStage: true } }),
   ]);
 
   const rollup: CustomerCommerceRollup = {
@@ -90,6 +114,12 @@ export async function recomputeCustomerCommerce(
     lastOrderAt: dates._max.placedAt ?? null,
   };
 
+  // An order on the record is what makes someone a customer, whichever door it
+  // came through. `leadStatus` goes with it: work-in-progress on a lead means
+  // nothing once they have bought.
+  const becomesCustomer =
+    rollup.orderCount > 0 && current !== null && !SETTLED.includes(current.lifecycleStage);
+
   await tx.customer.update({
     where: { id: customerId },
     data: {
@@ -97,6 +127,7 @@ export async function recomputeCustomerCommerce(
       orderCount: rollup.orderCount,
       firstOrderAt: rollup.firstOrderAt,
       lastOrderAt: rollup.lastOrderAt,
+      ...(becomesCustomer ? { lifecycleStage: 'customer', leadStatus: null } : {}),
     },
   });
 

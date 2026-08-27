@@ -32,6 +32,17 @@
  *      This is the half that bit — the subscription list and the handler drifted
  *      apart, and neither one on its own looked wrong.
  *
+ *   3. Every event a handler routes is one the worker actually SUBSCRIBES to.
+ *      Claims 1 and 2 judge each list against the catalog and never against each
+ *      other, so this check could watch the drift it was written for happen
+ *      again — and did. `commerce-indexer` routed all four `crm.customer.*`
+ *      events in its handler and asked for none of them in `EVENTS`, so the
+ *      customers collection never received a single real customer while both
+ *      halves read as healthy: the cases name real events, the subscription
+ *      names real events, and nothing compared them. The console answered
+ *      "Nothing in your orders, customers or products matches" for a shopper in
+ *      the owner's own customer list (issue 281).
+ *
  * "Real" means present in one of the same catalogs `check:events` reads, so the
  * two checks can never disagree about what an event is.
  *
@@ -148,6 +159,12 @@ for (const root of SCAN_ROOTS) {
     if (!hasEvents) continue;
     workers += 1;
 
+    // Gathered across the WHOLE package, because the two halves live in
+    // different files — the subscription in `index.ts`, the routing in
+    // `handler.ts` — which is precisely how they drift apart unnoticed.
+    const subscribed = new Set();
+    const routed = [];
+
     for (const file of files) {
       const text = stripLineComments(readFileSync(file, 'utf8'));
       const rel = relative(ROOT, file).split(sep).join('/');
@@ -156,6 +173,7 @@ for (const root of SCAN_ROOTS) {
       if (list) {
         for (const m of list[1].matchAll(/'([^']+)'/g)) {
           claims += 1;
+          subscribed.add(m[1]);
           if (!known.has(m[1])) {
             problems.push({ where: rel, name: m[1], how: 'subscribed to in EVENTS' });
           }
@@ -166,10 +184,24 @@ for (const root of SCAN_ROOTS) {
         const literal = m[1];
         if (!EVENT_SHAPED.test(literal)) continue;
         claims += 1;
+        routed.push({ name: literal, where: rel });
         if (!known.has(literal)) {
           problems.push({ where: rel, name: literal, how: 'routed by a `case`' });
         }
       }
+    }
+
+    // Claim 3. Only for names the catalog recognises — an unreal name is
+    // already reported above, and saying it twice buries the first answer.
+    for (const route of routed) {
+      if (!known.has(route.name) || subscribed.has(route.name)) continue;
+      claims += 1;
+      problems.push({
+        where: route.where,
+        name: route.name,
+        how: 'routed by a `case`',
+        why: 'but this worker never subscribes to it in EVENTS',
+      });
     }
   }
 }
@@ -197,16 +229,17 @@ console.log(
 );
 
 if (problems.length > 0) {
-  console.error(
-    '\nWorker event check FAILED: ' + problems.length + ' claim(s) name no real event.\n'
-  );
+  console.error('\nWorker event check FAILED: ' + problems.length + ' bad claim(s).\n');
+  // Two faults, reported as two different things. They used to share one
+  // trailing sentence, "but no catalog declares it", which is the wrong
+  // diagnosis for a name the catalog declares perfectly well and this worker
+  // simply never asked for, and would send a reader off to edit the catalog.
   for (const p of problems) {
-    console.error(
-      '  ' + p.where + '\n    ' + p.name + ' — ' + p.how + ', but no catalog declares it\n'
-    );
+    const why = p.why ?? 'but no catalog declares it';
+    console.error('  ' + p.where + '\n    ' + p.name + ' — ' + p.how + ', ' + why + '\n');
   }
-  console.error('  A handler that routes an event nobody publishes is dead code that reads as');
-  console.error('  coverage. Check the name against wizeworks/packages/events/src/types.ts.\n');
+  console.error('  A handler that routes an event it never receives is dead code that reads as');
+  console.error('  coverage. Subscribe to it in EVENTS, delete the case, or fix the name.\n');
   process.exit(1);
 }
 console.log('OK: every worker subscription and handler case names a real event.');

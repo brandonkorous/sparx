@@ -20,7 +20,7 @@ import { randomUUID } from 'node:crypto';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 import { inventoryService, type CommittedSale } from '@wizeworks/inventory';
-import { publishPlatformEvent } from '@wizeworks/crm';
+import { publishPlatformEvent, recomputeCustomerCommerce } from '@wizeworks/crm';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -133,18 +133,12 @@ async function ensureChannelCustomer(
 
   const existing = await tx.customer.findFirst({
     where: { propertyId, email, deletedAt: null },
-    select: { id: true, lifecycleStage: true },
+    select: { id: true },
   });
-  if (existing) {
-    // A marketplace order makes them a customer (see checkout-service).
-    if (existing.lifecycleStage !== 'customer' && existing.lifecycleStage !== 'evangelist') {
-      await tx.customer.update({
-        where: { id: existing.id },
-        data: { lifecycleStage: 'customer', leadStatus: null },
-      });
-    }
-    return existing.id;
-  }
+  // Their stage is not set here. A marketplace order makes them a customer the
+  // same way every other order does — derived from the orders themselves, in
+  // `recomputeCustomerCommerce` below.
+  if (existing) return existing.id;
 
   const [firstName, ...rest] = (customer.name ?? '').trim().split(/\s+/).filter(Boolean);
   const created = await tx.customer.create({
@@ -335,6 +329,13 @@ export async function ingestChannelOrder(
       entityId: order.id,
       diff: { after: { orderNumber, source: input.channel, externalId: input.externalId } },
     });
+
+    // The buyer's figures, in the same transaction as the order. This path
+    // writes the order row directly rather than through `orderService.create`,
+    // so it has to ask for the rollup that path gets for free — without it a
+    // marketplace order, which arrives already paid, never reached the buyer's
+    // total spent, order count or first/last order date at all.
+    await recomputeCustomerCommerce(tx, ctx.tenantId, customerId);
 
     // Decrement stock for every mapped, non-dropship line, atomic with the
     // order write — the single sale authority (idempotency-keyed off the

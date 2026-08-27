@@ -19,7 +19,29 @@ export const EVENTS = [
   'variant.created',
   'variant.updated',
   'variant.deleted',
+  // The handler routes all three together — a stock change re-projects the
+  // product so search and the market listing stop saying it is available. Only
+  // the first was ever subscribed, so the two events that fire when something
+  // actually runs LOW or OUT were the two that never arrived. Found by the new
+  // claim in `check:worker-events`, not by a person.
   'inventory.adjusted',
+  'inventory.low',
+  'inventory.depleted',
+  // Every one of these four was absent while handler.ts carried a `case` for
+  // it, so the customers collection had never received a single real customer —
+  // its only documents were fixtures left by an integration suite. The console's
+  // search box says it looks in "your orders, customers or products" and then
+  // answered "Nothing matches that" for a shopper sitting in the owner's own
+  // customer list (issue 281).
+  //
+  // Note what this list sits directly above: the same omission, for orders,
+  // found and fixed on its own. A subscription list is where this mistake
+  // LIVES — `check:worker-events` now fails a routed `case` that nothing here
+  // asks for, which is what would have caught both at once.
+  'crm.customer.created',
+  'crm.customer.updated',
+  'crm.customer.deleted',
+  'crm.customer.merged',
   // `order.placed` and `order.paid` were BOTH absent, so a new order was never
   // indexed and a paid one was never re-indexed. See handler.ts's order case.
   'order.placed',
