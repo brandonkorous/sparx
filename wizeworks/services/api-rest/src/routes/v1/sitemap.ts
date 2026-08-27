@@ -5,9 +5,16 @@
 // Streams a sitemap covering everything ONE web property (site) serves: the home
 // page, published CMS content entries (whose content type is routable — see
 // IMPLICIT_URL_PATTERNS for how routability is decided), active commerce products
-// (`/products/{handle}`) and collections (`/collections/{handle}`). The commerce
-// index pages are only listed when the site actually has commerce content, so a
-// content-only site doesn't advertise empty `/products` / `/collections` surfaces.
+// (`/products/{handle}`), collections (`/collections/{handle}`), the categories that
+// hold at least one, and the starter pages the storefront serves for addresses the
+// property has published no page at. The index surfaces are only listed when the site
+// actually has something behind them, so a content-only site doesn't advertise an
+// empty `/products` and a shop with no journal doesn't advertise an empty `/blog`.
+//
+// "Everything it serves" is the whole contract, and the two ways it has been broken
+// are worth naming: a page can be SERVED BY THE PLATFORM with no row of its own (the
+// starter fallback — issue 274), and a stored slug can carry a leading slash, which
+// this file used to concatenate into `//shop` (issue 275).
 //
 // Multi-site scoping (docs/49 §3 Model B): products + content entries are scoped
 // to the active property — global items (no scope rows) plus this site's
@@ -30,8 +37,11 @@ import {
   productSiteVisibilityWhere,
   contentSiteVisibilityWhere,
   collectionSiteVisibilityWhere,
+  categorySiteVisibilityWhere,
 } from '../../lib/property.js';
 import { mintZoneHost } from '../../lib/domain.js';
+import { siteChromeOptions } from '../../lib/builder-context.js';
+import { pageAddress, starterAddresses } from '../../lib/sitemap-urls.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -135,64 +145,111 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
     const baseUrl = `https://${baseHost}`;
 
     // Everything is read inside this tenant's RLS context in one round-trip.
-    const { entries, types, products, collections, builderPages } = await withTenant(
-      { tenantId: tenant.id },
-      async (tx) => {
-        const [entries, products, collections, builderPages] = await Promise.all([
-          // Published, routable CMS entries scoped to this site (Model B).
-          tx.contentEntry.findMany({
-            where: {
-              status: 'published',
-              deletedAt: null,
-              slug: { not: null },
-              ...contentSiteVisibilityWhere(propertyId),
-            },
-            select: { slug: true, typeKey: true, updatedAt: true, publishedAt: true },
-          }),
-          // Active commerce products — mirrors the public PDP visibility filter
-          // (status active + not deleted) plus this site's Model B scope.
-          tx.product.findMany({
-            where: {
-              status: 'active',
-              deletedAt: null,
-              ...productSiteVisibilityWhere(propertyId),
-            },
-            select: { handle: true, updatedAt: true, publishedAt: true },
-            orderBy: { updatedAt: 'desc' },
-            take: COMMERCE_URL_LIMIT,
-          }),
-          // Collections — not deleted AND visible on THIS site, which is what the public
-          // `/collections/:handle` read tests (`public/commerce.ts`). This used to say
-          // collections "aren't site-scoped in Model B (shared across sites)"; they are,
-          // and the storefront has always scoped them — so a tenant with a second site
-          // published that site's exclusive collections into the primary's sitemap, and a
-          // crawler following one got a 404 on a URL we told it about.
-          tx.productCollection.findMany({
-            where: { deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
-            select: { handle: true, updatedAt: true },
-            orderBy: { updatedAt: 'desc' },
-            take: COMMERCE_URL_LIMIT,
-          }),
-          // Published Builder SINGLETON pages that own a storefront slug (docs/50),
-          // scoped to THIS site's page tree (property_id, docs/49 Phase 1B).
-          // publishedAt is set on publish; noindex pages are filtered out below.
-          //
-          // A RECORD PAGE MUST NEVER REACH THIS QUERY. `/products/:handle` is an address,
-          // not a URL — emitting it would publish a literal `:handle` to Google, which
-          // crawls it and gets a 404. `kind:'singleton'` already excludes them today, but
-          // that is the column Stage 2 removes; `isRecordAddress` is the filter that
-          // still holds afterwards, and having both means the column can go without this
-          // file being the thing that breaks.
-          tx.builderPage.findMany({
-            where: {
-              kind: 'singleton',
-              slug: { not: null },
-              publishedAt: { not: null },
-              propertyId,
-            },
-            select: { slug: true, updatedAt: true, publishedAt: true, noindex: true },
-          }),
-        ]);
+    const { entries, types, products, collections, bookableCount, categories, builderPages } =
+      await withTenant({ tenantId: tenant.id }, async (tx) => {
+        const [entries, products, collections, bookableCount, categories, builderPages] =
+          await Promise.all([
+            // Published, routable CMS entries scoped to this site (Model B).
+            tx.contentEntry.findMany({
+              where: {
+                status: 'published',
+                deletedAt: null,
+                slug: { not: null },
+                ...contentSiteVisibilityWhere(propertyId),
+              },
+              select: { slug: true, typeKey: true, updatedAt: true, publishedAt: true },
+            }),
+            // Active commerce products — mirrors the public PDP visibility filter
+            // (status active + not deleted) plus this site's Model B scope.
+            tx.product.findMany({
+              where: {
+                status: 'active',
+                deletedAt: null,
+                ...productSiteVisibilityWhere(propertyId),
+              },
+              select: { handle: true, updatedAt: true, publishedAt: true },
+              orderBy: { updatedAt: 'desc' },
+              take: COMMERCE_URL_LIMIT,
+            }),
+            // Collections — not deleted AND visible on THIS site, which is what the public
+            // `/collections/:handle` read tests (`public/commerce.ts`). This used to say
+            // collections "aren't site-scoped in Model B (shared across sites)"; they are,
+            // and the storefront has always scoped them — so a tenant with a second site
+            // published that site's exclusive collections into the primary's sitemap, and a
+            // crawler following one got a 404 on a URL we told it about.
+            tx.productCollection.findMany({
+              where: { deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
+              select: { handle: true, updatedAt: true },
+              orderBy: { updatedAt: 'desc' },
+              take: COMMERCE_URL_LIMIT,
+            }),
+            // Whether ANYTHING is bookable — the one fact `/book` needs, so a count
+            // rather than the rows. Same predicate the public services read applies
+            // (`bookableOnline` + `isActive`, this site's or shared), because a sitemap
+            // that disagrees with the page advertises "No services are bookable yet".
+            tx.schedulingService.count({
+              where: {
+                deletedAt: null,
+                isActive: true,
+                bookableOnline: true,
+                OR: [{ propertyId }, { propertyId: null }],
+              },
+            }),
+            // Categories — the taxonomy half of a shop, served at `/category/{handle}`
+            // and, until now, in no sitemap at all. All eighteen of Juniper Row's
+            // answered 200 and not one was advertised.
+            //
+            // Filtered to categories that HOLD something, which collections deliberately
+            // are not. The two are not the same kind of object: a collection is a thing a
+            // merchant made and named, so an empty one is a page they are about to fill;
+            // a category tree arrives with the blueprint, so most of its branches are
+            // taxonomy nobody chose. Hers is the case that decided it — every category
+            // she has is empty, because the only products ever filed in them were the
+            // blueprint's samples and she deleted those. Eighteen headings over
+            // "No products found", one of them a Kids page on a womenswear label.
+            tx.productCategory.findMany({
+              where: {
+                deletedAt: null,
+                ...categorySiteVisibilityWhere(propertyId),
+                products: {
+                  some: {
+                    product: {
+                      status: 'active',
+                      deletedAt: null,
+                      ...productSiteVisibilityWhere(propertyId),
+                    },
+                  },
+                },
+              },
+              select: { handle: true, updatedAt: true },
+              orderBy: { updatedAt: 'desc' },
+              take: COMMERCE_URL_LIMIT,
+            }),
+            // Published Builder SINGLETON pages that own a storefront slug (docs/50),
+            // scoped to THIS site's page tree (property_id, docs/49 Phase 1B).
+            // publishedAt is set on publish; noindex pages are filtered out below.
+            //
+            // A RECORD PAGE MUST NEVER REACH THIS QUERY. `/products/:handle` is an address,
+            // not a URL — emitting it would publish a literal `:handle` to Google, which
+            // crawls it and gets a 404. `kind:'singleton'` already excludes them today, but
+            // that is the column Stage 2 removes; `isRecordAddress` is the filter that
+            // still holds afterwards, and having both means the column can go without this
+            // file being the thing that breaks.
+            //
+            // NOT filtered to `publishedAt: { not: null }` any more, because the starter
+            // pass below needs to see an UNPUBLISHED row too: a page whose author has
+            // ticked "keep this out of search" is still being served by the starter
+            // fallback at its address, and the sitemap must respect that tick whether or
+            // not the page was ever published. The publish test moved into the loop.
+            tx.builderPage.findMany({
+              where: {
+                kind: 'singleton',
+                slug: { not: null },
+                propertyId,
+              },
+              select: { slug: true, updatedAt: true, publishedAt: true, noindex: true },
+            }),
+          ]);
 
         // url patterns for the entry types in one more query.
         const typeKeys = Array.from(new Set(entries.map((r) => r.typeKey)));
@@ -203,9 +260,8 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
             })
           : [];
 
-        return { entries, types, products, collections, builderPages };
-      }
-    );
+        return { entries, types, products, collections, bookableCount, categories, builderPages };
+      });
 
     const patterns = new Map(types.map((t) => [t.key, t.urlPattern!]));
     const seen = new Set<string>();
@@ -243,10 +299,19 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
     // — so every site built by sparx has been offering Google its cart, its search page
     // and its four account pages. Matching the closed slug set fixes that for sites that
     // already exist, which seeding the column cannot.
+    //
+    // `declined` collects the addresses whose author has said "not in search" — read
+    // from every row, published or not, and consulted by the starter pass below.
+    const declined = new Set<string>();
     for (const b of builderPages) {
-      if (b.noindex || !b.slug || isRecordAddress(b.slug) || isUtilityPage(b.slug)) continue;
+      if (!b.slug || isRecordAddress(b.slug) || isUtilityPage(b.slug)) continue;
+      if (b.noindex) {
+        declined.add(pageAddress(b.slug));
+        continue;
+      }
+      if (!b.publishedAt) continue;
       push({
-        path: `/${b.slug}`,
+        path: pageAddress(b.slug),
         lastmod: b.publishedAt ?? b.updatedAt,
         changefreq: 'weekly',
         priority: 0.8,
@@ -276,6 +341,39 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
           priority: 0.6,
         });
       }
+    }
+    // Same "only advertise a surface with something behind it" rule as `/products` and
+    // `/collections` above — the query has already dropped the empty branches, so an
+    // index here means there is at least one category page worth landing on.
+    if (categories.length) {
+      push({ path: '/category', changefreq: 'weekly', priority: 0.7, lastmod: new Date() });
+      for (const c of categories) {
+        push({
+          path: `/category/${c.handle}`,
+          lastmod: c.updatedAt,
+          changefreq: 'weekly',
+          priority: 0.6,
+        });
+      }
+    }
+
+    // Pages the platform SERVES that the property has no published row for — the
+    // starter fallback, which is a real part of the site and was in no sitemap.
+    // Runs last, so `seen` already holds every address that earned one.
+    const starters = starterAddresses(
+      await siteChromeOptions(tenant.id),
+      {
+        products: products.length,
+        collections: collections.length,
+        categories: categories.length,
+        posts: entries.filter((r) => r.typeKey === 'blog_post').length,
+        bookable: bookableCount,
+      },
+      seen,
+      declined
+    );
+    for (const path of starters) {
+      push({ path, changefreq: 'weekly', priority: 0.8, lastmod: new Date() });
     }
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${out
