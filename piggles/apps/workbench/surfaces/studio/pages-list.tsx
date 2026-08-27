@@ -116,9 +116,9 @@ function PagesTable({
       <thead>
         <tr>
           <th>Page</th>
-          <th>Address</th>
+          <th className="hidden @md:table-cell">Address</th>
           <th className="hidden @lg:table-cell">Kind</th>
-          <th>Status</th>
+          <th className="hidden @md:table-cell">Status</th>
           <th className="w-0">
             <span className="sr-only">Actions</span>
           </th>

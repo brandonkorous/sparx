@@ -66,6 +66,7 @@ import {
 } from '@wizeworks/silica-catalog';
 
 import { writeAuditLog } from '../audit';
+import { isLive as isPageLive } from './page-liveness';
 import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
 import { dropOwnerTx, reindexTreeTx } from './node-index-service';
@@ -1924,6 +1925,10 @@ export interface PageDocument {
   /** True when `root` is the starter body the live site is serving, not the author's
    *  own — unsaved, but not blank, and not theirs until they save it. */
   starter: boolean;
+  /** Whether a VISITOR can reach this page right now — wider than "published", because
+   *  the platform draws a standard design at record addresses and at every starter
+   *  address. A page can be saved, unpublished, and read by the whole world. */
+  live: boolean;
   publishedAt: string | null;
   unpublished: boolean;
 }
@@ -2024,6 +2029,7 @@ export function loadPage(
       // work. `stored` alone could not tell those apart, and the pane said "nothing
       // saved on this page yet" over a page the whole world was reading.
       starter: !stored && live != null,
+      live: isPageLive(row, modules),
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
       // The chrome POINTER counts as unpublished work too. Moving a page off the
       // site header and seeing "nothing to publish" is how that change reached

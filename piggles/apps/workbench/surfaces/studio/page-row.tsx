@@ -5,8 +5,9 @@
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { faColumns, faTrash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { IDENTITY_CELL } from '../../components/table';
 import type { PageSummary } from '../../lib/studio/page-data';
-import { addressOf, addressPeers, kindOf } from './page-address';
+import { addressOf, addressPeers, kindOf, statusOf } from './page-address';
 import { rowOpenProps } from './row-open';
 import { useRemovePage } from './use-remove-page';
 
@@ -25,16 +26,10 @@ export function PageRow({
 
   return (
     <tr {...rowOpenProps(page.id, onOpen, onOpenBeside)}>
-      <td>
-        <span className="block max-w-56 truncate font-medium">{page.name}</span>
-      </td>
-      <AddressCell page={page} pages={pages} />
+      <NameCell page={page} pages={pages} />
+      <AddressCell page={page} />
       <td className="hidden @lg:table-cell">{kindOf(page)}</td>
-      <td>
-        <Badge color={page.published ? 'success' : 'warning'} variant="soft">
-          {page.published ? 'Live' : 'Not live yet'}
-        </Badge>
-      </td>
+      <StatusCell page={page} />
       <td className="w-0">
         <RowActions page={page} removing={removing} onRemove={remove} onOpenBeside={onOpenBeside} />
       </td>
@@ -42,18 +37,62 @@ export function PageRow({
   );
 }
 
-/** The address, and the site check's finding about it — two pages cannot both
- *  answer to one address, and only one of them will. */
-function AddressCell({ page, pages }: { page: PageSummary; pages: readonly PageSummary[] }) {
+/**
+ * The page's name — and, on a phone, its address and its status underneath it.
+ *
+ * Four columns need 498px and a phone pane is 323. The old answer was a horizontal
+ * scrollbar, which is the worst one available here: it reads as the end of the table,
+ * so the column this list exists for — whether visitors can see the page — was simply
+ * gone at phone width, with nothing to say it was there.
+ *
+ * Nothing is dropped; the facts MOVE into one cell, the same two-line shape the
+ * page-performance list already uses. `Live · standard design` cannot be shortened to
+ * fit a 100px column and should not be: it is the sentence that stopped an owner
+ * reading three of her live page types as missing (issue 270).
+ *
+ * The clash warning lives here at every width. It is a warning about the PAGE, it
+ * reads correctly under the name, and it must never sit in a column that disappears.
+ */
+function NameCell({ page, pages }: { page: PageSummary; pages: readonly PageSummary[] }) {
   const peers = addressPeers(page, pages);
+  const status = statusOf(page);
   return (
     <td>
-      <span className="block max-w-56 truncate">{addressOf(page)}</span>
-      {peers.length > 0 ? (
-        <Badge color="danger" variant="soft" size="sm" className="mt-1">
-          {peers.length === 1 ? `Also ${peers[0]}` : `Also ${String(peers.length)} others`}
+      <span className={`block truncate font-medium ${IDENTITY_CELL}`}>{page.name}</span>
+      <span className={`block truncate @md:hidden ${IDENTITY_CELL}`}>{addressOf(page)}</span>
+      <div className="mt-1 flex flex-wrap items-center gap-1 @md:mt-0">
+        <Badge color={status.tone} variant="soft" size="sm" className="@md:hidden">
+          {status.label}
         </Badge>
-      ) : null}
+        {peers.length > 0 ? (
+          <Badge color="danger" variant="soft" size="sm">
+            {peers.length === 1 ? `Also ${peers[0]}` : `Also ${String(peers.length)} others`}
+          </Badge>
+        ) : null}
+      </div>
+    </td>
+  );
+}
+
+/** Whether visitors can see it — which for a record template is YES before it has
+ *  ever been saved, because the standard design is already serving. */
+function StatusCell({ page }: { page: PageSummary }) {
+  const { label, tone } = statusOf(page);
+  return (
+    <td className="hidden @md:table-cell">
+      <Badge color={tone} variant="soft">
+        {label}
+      </Badge>
+    </td>
+  );
+}
+
+/** Where a visitor lands. Its own column from `@md` up; below that it rides under the
+ *  name in `NameCell`, which is the only place there is room for it. */
+function AddressCell({ page }: { page: PageSummary }) {
+  return (
+    <td className={`hidden @md:table-cell ${IDENTITY_CELL}`}>
+      <span className="block truncate">{addressOf(page)}</span>
     </td>
   );
 }
@@ -74,9 +113,12 @@ function RowActions({
   return (
     // The row itself is the open action, so each button stops the click travelling up.
     <div className="flex items-center justify-end gap-1">
+      {/* Two panes side by side is a desktop idea. On a phone the button is a
+          promise the screen cannot keep, and it costs the width the status needs. */}
       <Button
         size="sm"
         shape="square"
+        className="hidden @md:inline-flex"
         aria-label={`Open ${page.name} alongside`}
         title="Open alongside"
         onClick={(event) => {

@@ -108,6 +108,7 @@ function PagePaneBody({
           dirty={unsaved}
           stored={state.stored}
           starter={state.starter}
+          live={state.live}
           unpublished={doc.unpublished}
           publishedAt={doc.publishedAt}
           error={state.error}
@@ -159,6 +160,7 @@ function PageStatus({
   dirty,
   stored,
   starter,
+  live,
   unpublished,
   publishedAt,
   error,
@@ -166,6 +168,7 @@ function PageStatus({
   dirty: boolean;
   stored: boolean;
   starter: boolean;
+  live: boolean;
   unpublished: boolean;
   publishedAt: string | null;
   error: string | null;
@@ -180,6 +183,14 @@ function PageStatus({
   if (dirty) return <span>Not saved yet</span>;
   // Never published is not the same as published-then-edited: there is no last
   // published version for a visitor to still be seeing.
+  //
+  // Unless the PLATFORM is serving one. A record template's address and every starter
+  // address are drawn by the standard design whether or not this page went live, so
+  // "your visitors can't see this page yet" is false about them — said over `/blog`,
+  // which was serving her three articles as she read it (issue 274).
+  if (unpublished && publishedAt === null && live) {
+    return <span>Saved. Visitors still see the standard design until you publish.</span>;
+  }
   if (unpublished && publishedAt === null) {
     return <span>Saved, but never published — your visitors can’t see this page yet.</span>;
   }

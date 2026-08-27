@@ -25,6 +25,7 @@ import { starterPages, type SiteChromeOptions } from '@wizeworks/silica-catalog'
 import type { Node as SilicaNode } from '@wizeworks/silicaui-html';
 
 import { writeAuditLog } from '../audit';
+import { atAddress, isLive } from './page-liveness';
 import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
 import type { PropertyContext, ServiceContext } from '../errors';
@@ -60,7 +61,7 @@ const PAGE_SUMMARY_SELECT = {
 
 type PageSummaryRow = Pick<BuilderPage, keyof typeof PAGE_SUMMARY_SELECT>;
 
-function toSummaryDto(row: PageSummaryRow): BuilderPageSummaryDto {
+function toSummaryDto(row: PageSummaryRow, modules: SiteChromeOptions = {}): BuilderPageSummaryDto {
   return {
     id: row.id,
     name: row.name,
@@ -71,6 +72,7 @@ function toSummaryDto(row: PageSummaryRow): BuilderPageSummaryDto {
     // A page is published iff it has been published — `publishedAt` answers that
     // without reading the tree it would otherwise be tested against.
     published: row.publishedAt != null,
+    live: isLive(row, modules),
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     isDefault: row.isDefault,
@@ -85,7 +87,7 @@ function toSummaryDto(row: PageSummaryRow): BuilderPageSummaryDto {
   };
 }
 
-function toDto(row: BuilderPage): BuilderPageDto {
+function toDto(row: BuilderPage, modules: SiteChromeOptions = {}): BuilderPageDto {
   return {
     id: row.id,
     name: row.name,
@@ -96,6 +98,7 @@ function toDto(row: BuilderPage): BuilderPageDto {
     // Stored validated on write; the editor depends on a well-formed tree.
     tree: row.draftTree as unknown as BuilderNode,
     published: row.publishedTree != null,
+    live: isLive(row, modules),
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     isDefault: row.isDefault,
@@ -232,6 +235,102 @@ async function ensureHomeTx(
   return home;
 }
 
+/**
+ * The starter pages this property holds no row for — pure and exported for tests, the
+ * same way `recordPagePlan` is, so the transaction below is a transcription of the
+ * answer rather than the place the answer is decided.
+ *
+ * Compared BY ADDRESS, not by stored slug. Both spellings are in the store and they
+ * are the same page to a visitor, so an `about` row must count as holding `/about`;
+ * matching on the raw string would mint a second About page beside the real one on the
+ * very next list read.
+ */
+export function missingStarterPages(
+  rows: readonly { slug: string | null }[],
+  modules: SiteChromeOptions
+): { name: string; slug: string; root: SilicaNode }[] {
+  const held = new Set(rows.map((r) => atAddress(r.slug)));
+  return starterPages(modules)
+    .filter((p) => !held.has(atAddress(p.slug)))
+    .map((p) => ({ name: p.name, slug: p.slug, root: p.root }));
+}
+
+/**
+ * Give the property a row for every ORDINARY page its site is already serving.
+ *
+ * The twin of `siteService.ensureRecordPagesTx`, and it exists for the same reason.
+ * The storefront falls back to the code starter PER SLUG (wizeworks/apps/site
+ * lib/silica.ts `getPublishedSilicaPage` → `starterPageDtoForSlug`), so an address in
+ * the starter set is LIVE whether or not the property has a page there. `listOrSeed`
+ * writes the whole starter set only when the table is EMPTY, so any path that creates
+ * pages first — a blueprint whose page set is narrower than the starter, a fixture, an
+ * import — leaves the difference serving and unreachable: live to every visitor,
+ * absent from the one screen its owner would go to to change it.
+ *
+ * Juniper Row is what that looks like from the owner's chair. Her blueprint shipped no
+ * Journal, so `/blog` served the platform's own words — "News, notes, and what we have
+ * been working on" — over her three articles, under her name, with nothing in her list
+ * of pages to open (issue 274). Naming a new page "Journal" built a second, blank one
+ * at `/journal`, because the address she needed was already answered by something that
+ * did not exist as far as the console was concerned.
+ *
+ * The row carries the starter BODY, exactly as `ensureRecordPagesTx` does, so opening
+ * it shows what visitors see rather than a blank page to rebuild from. Appended at the
+ * end, so no existing page's position moves. Idempotent: a no-op once every starter
+ * address is held.
+ *
+ * NOT a way to resurrect a page someone deleted on purpose — but it will, and that is
+ * honest rather than a bug: deleting the row never took the address down, so a list
+ * that shows it again is the first screen to tell the truth about it.
+ */
+async function ensureStarterPagesTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  modules: SiteChromeOptions
+): Promise<boolean> {
+  const rows = await tx.builderPage.findMany({
+    where: { propertyId: ctx.propertyId },
+    select: { slug: true },
+  });
+  const missing = missingStarterPages(rows, modules);
+  if (missing.length === 0) return false;
+
+  const last = await tx.builderPage.findFirst({
+    where: { propertyId: ctx.propertyId },
+    orderBy: { position: 'desc' },
+    select: { position: true },
+  });
+  let position = last ? last.position + 1 : 0;
+  for (const page of missing) {
+    await tx.builderPage.create({
+      data: {
+        tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
+        name: page.name,
+        kind: 'singleton',
+        recordType: null,
+        slug: page.slug,
+        // The legacy column stays EMPTY rather than absent, same as the seed above:
+        // `reset` reads a null `publishedTree` as "silica-only, safe to delete".
+        draftTree: asJson(blankPageTree()),
+        silicaDraftTree: asSilicaJson(page.root),
+        position: position++,
+      },
+    });
+  }
+  await writeAuditLog({
+    tx,
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    actorType: 'user',
+    action: 'builder.pages.starter_backfilled',
+    entityType: 'BuilderPage',
+    entityId: null,
+    diff: { after: { addresses: missing.map((p) => p.slug) } },
+  });
+  return true;
+}
+
 /** Ensure the property has a home page (the slugless landing singleton), injecting
  *  the default starter when absent — so no provisioning path (a blueprint that
  *  ships only collection templates, a fixture, a deleted home) can leave a site
@@ -262,18 +361,22 @@ export function listOrSeed(
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     if (rows.length > 0) {
-      // Pages exist but none is a home (e.g. a blueprint shipped only collection
-      // templates) — inject the default landing page, then re-read in order.
+      // Pages exist, but the property may hold fewer than the site SERVES. Two ways:
+      // no home at all (a blueprint that shipped only collection templates), and any
+      // other starter address it never got a page for. Both are live either way, so
+      // both get a row here; a re-read follows so the caller sees them in order.
       const hasHome = rows.some(isHomeRow);
-      if (!hasHome && (await ensureHomeTx(tx, ctx, modules))) {
+      const healedHome = !hasHome && (await ensureHomeTx(tx, ctx, modules)) !== null;
+      const healedStarters = await ensureStarterPagesTx(tx, ctx, modules);
+      if (healedHome || healedStarters) {
         const healed = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
           select: PAGE_SUMMARY_SELECT,
           orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
         });
-        return healed.map(toSummaryDto);
+        return healed.map((r) => toSummaryDto(r, modules));
       }
-      return rows.map(toSummaryDto);
+      return rows.map((r) => toSummaryDto(r, modules));
     }
 
     // SILICA rows, not `STARTER_PAGES`.
@@ -320,7 +423,7 @@ export function listOrSeed(
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    return seeded.map(toDto);
+    return seeded.map((r) => toDto(r, modules));
   });
 }
 
@@ -487,7 +590,7 @@ export async function reorder(ctx: PropertyContext, rawInput: unknown): Promise<
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    return rows.map(toDto);
+    return rows.map((r) => toDto(r));
   });
 }
 

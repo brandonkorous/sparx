@@ -73,6 +73,17 @@ export interface BuilderPageSummaryDto {
    *  this page designs (`apparel`, …); null = the default product page. */
   recordSubtype: string | null;
   published: boolean;
+  /**
+   * Whether a VISITOR can reach this page right now.
+   *
+   * Wider than `published`, and the gap is the point. The platform SERVES two kinds of
+   * page nobody published: a record template's address (`/blog/:slug`), drawn by the
+   * code composite, and an ordinary starter address (`/blog`, `/about`), drawn by the
+   * storefront's per-slug starter fallback. Both answer 200 while `published` is
+   * false, so a list that reads `published` alone tells an owner her live pages are
+   * missing (issues 270, 274). Publish state is still `published` — this is reach.
+   */
+  live: boolean;
   publishedAt: string | null;
   position: number;
   /** Whether this collection template is the DEFAULT for its `recordType`

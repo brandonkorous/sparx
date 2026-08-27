@@ -25,6 +25,9 @@ export interface PageSummary {
   isDefault: boolean;
   frameId: string | null;
   published: boolean;
+  /** Whether a visitor can reach this page right now — wider than `published`, because
+   *  the platform serves record templates and starter addresses that nobody published. */
+  live: boolean;
   publishedAt: string | null;
   position: number;
 }
@@ -41,6 +44,8 @@ export interface PageRow extends Omit<PageSummary, 'published'> {
   stored: boolean;
   /** True when `root` is the starter body the live site is already serving. */
   starter: boolean;
+  /** Whether a visitor can reach this page right now — wider than published. */
+  live: boolean;
   unpublished: boolean;
 }
 
