@@ -31,7 +31,11 @@ import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { badRequest, notFound } from '@wizeworks/api-core/errors';
 
-import { assertCartToken, publicCommerceContext } from '../../../lib/public-commerce-context.js';
+import {
+  assertCartToken,
+  assertCartTokenForWrite,
+  publicCommerceContext,
+} from '../../../lib/public-commerce-context.js';
 import { resolveOrderAttribution } from '../../../lib/attribution.js';
 import { reconcileCompletedCheckoutPayment } from '../../../lib/payment-webhook-reconcile.js';
 
@@ -139,7 +143,9 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/checkout', async (request) => {
     const body = StartBody.parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
-    await assertCartToken(request, tenantId, body.cartId);
+    // Starting a checkout on a basket the sweep had marked quiet is the
+    // strongest "came back" there is - they are here to pay for it.
+    await assertCartTokenForWrite(request, ctx, tenantId, body.cartId);
     const currency = await withTenant({ tenantId }, (tx) =>
       tx.cart.findFirst({ where: { id: body.cartId }, select: { currency: true } })
     );

@@ -14,7 +14,7 @@
 import type { FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
-import type { ServiceContext } from '@wizeworks/commerce';
+import { cartService, type ServiceContext } from '@wizeworks/commerce';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { withTenant } from '@wizeworks/db';
 import { forbidden, moduleDisabled, notFound } from '@wizeworks/api-core/errors';
@@ -72,4 +72,28 @@ export async function assertCartToken(
   if (!token || typeof token !== 'string' || cart.guestToken !== token) {
     throw forbidden('Cart token does not match.');
   }
+}
+
+/**
+ * The ownership check for a shopper WRITE, plus the recovery that write implies.
+ *
+ * A shopper touching a basket the abandonment sweep had marked quiet IS the
+ * shopper coming back, so this clears `abandonedAt` and publishes
+ * `cart.recovered` - the only way the console's "Came back" tab and the
+ * recovery rate in the report can ever fill from a real storefront rather than
+ * a staff click. `markRecovered` no-ops on a basket that was never marked, so
+ * the common path costs one indexed lookup.
+ *
+ * Deliberately paired with the token check rather than left as a second call at
+ * each route: every shopper write already goes through one door, and splitting
+ * them is how one route ends up checking ownership and forgetting the recovery.
+ */
+export async function assertCartTokenForWrite(
+  request: FastifyRequest,
+  ctx: ServiceContext,
+  tenantId: string,
+  cartId: string
+): Promise<void> {
+  await assertCartToken(request, tenantId, cartId);
+  await cartService.markRecovered(ctx, cartId);
 }

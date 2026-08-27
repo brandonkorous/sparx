@@ -61,11 +61,16 @@ type SettingsRow = NonNullable<Awaited<ReturnType<TxClient['commerceSiteSettings
 export async function resolveSettingsRow(
   tx: TxClient,
   tenantId: string,
-  propertyId: string
+  /** Null means "no site in hand" — a record that carries none inherits the
+   *  primary site's row, which is the same fallback a site without its own row
+   *  already gets. */
+  propertyId: string | null
 ): Promise<SettingsRow | null> {
-  const own = await tx.commerceSiteSettings.findUnique({
-    where: { tenantId_propertyId: { tenantId, propertyId } },
-  });
+  const own = propertyId
+    ? await tx.commerceSiteSettings.findUnique({
+        where: { tenantId_propertyId: { tenantId, propertyId } },
+      })
+    : null;
   if (own) return own;
   const primary = await tx.property.findFirst({
     where: { isPrimary: true },
@@ -79,7 +84,7 @@ export async function resolveSettingsRow(
 
 export async function getSettings(
   ctx: ServiceContext,
-  propertyId: string
+  propertyId: string | null
 ): Promise<CommerceSiteSettings> {
   return withTenant(ctx, async (tx) => {
     const row = await resolveSettingsRow(tx, ctx.tenantId, propertyId);

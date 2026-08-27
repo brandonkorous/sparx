@@ -9,6 +9,7 @@ resources:
   - crm-mailbox-sync.yaml
   # Without this, a support promise is a number in a column nobody ever reads.
   - crm-sla-sweep.yaml
+  - commerce-cart-abandonment-sweep.yaml
   - commerce-reservation-reaper.yaml
   - commerce-revenue-rollup.yaml
   - commerce-payment-reconcile-sweep.yaml

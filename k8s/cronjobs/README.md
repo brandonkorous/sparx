@@ -13,11 +13,12 @@ Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. 
 
 Wiring for the schedulers under [wizeworks/packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/).
 
-| CronJob                            | Schedule      | Endpoint                                          | Why this time                                            |
-| ---------------------------------- | ------------- | ------------------------------------------------- | -------------------------------------------------------- |
-| `commerce-reservation-reaper`      | `*/1 * * * *` | `POST /internal/commerce/reservation-reaper`      | Every minute — a stuck cart reservation holds stock      |
-| `commerce-revenue-rollup`          | `0 6 * * *`   | `POST /internal/commerce/revenue-rollup`          | Nightly, after the day closes and the CRM jobs (docs/97) |
-| `commerce-payment-reconcile-sweep` | `*/5 * * * *` | `POST /internal/commerce/payment-reconcile-sweep` | Every 5 min — heals rare orders stranded "Not paid"      |
+| CronJob                            | Schedule       | Endpoint                                          | Why this time                                                |
+| ---------------------------------- | -------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| `commerce-cart-abandonment-sweep`  | `*/10 * * * *` | `POST /internal/commerce/cart-abandonment-sweep`  | A 120-minute threshold means nothing if the sweep is nightly |
+| `commerce-reservation-reaper`      | `*/1 * * * *`  | `POST /internal/commerce/reservation-reaper`      | Every minute — a stuck cart reservation holds stock          |
+| `commerce-revenue-rollup`          | `0 6 * * *`    | `POST /internal/commerce/revenue-rollup`          | Nightly, after the day closes and the CRM jobs (docs/97)     |
+| `commerce-payment-reconcile-sweep` | `*/5 * * * *`  | `POST /internal/commerce/payment-reconcile-sweep` | Every 5 min — heals rare orders stranded "Not paid"          |
 
 `commerce-revenue-rollup` reconciles `rollup_commerce_daily_revenue` per active
 tenant. It accepts an optional `?days=N` to widen the recomputed window for a

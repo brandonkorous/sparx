@@ -11,6 +11,11 @@
 // Ownership: cart creation issues an opaque guest token returned in the body
 // AND surfaced for the client to store; every later call must echo it via the
 // `x-cart-token` header (assertCartToken). RLS scopes all reads to the tenant.
+//
+// Every WRITE goes through assertCartTokenForWrite, which also records that a
+// shopper acting on a basket the abandonment sweep had marked quiet has come
+// back. The GET stays a pure read - a basket still sitting in a browser tab is
+// not somebody returning to buy it.
 
 import { randomUUID } from 'node:crypto';
 
@@ -31,6 +36,7 @@ import { badRequest } from '@wizeworks/api-core/errors';
 import { optionalCustomer } from '../../../lib/customer-session.js';
 import {
   assertCartToken,
+  assertCartTokenForWrite,
   publicCommerceContext,
   resolveTenantId,
   toPublicCommerceContext,
@@ -255,7 +261,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const { cartId } = CartParam.parse(request.params);
     const body = AddItemBody.parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
-    await assertCartToken(request, tenantId, cartId);
+    await assertCartTokenForWrite(request, ctx, tenantId, cartId);
     // Claim an anonymous cart the shopper started browsing before signing in —
     // a no-op once the cart is already linked (cartService.claim never
     // reassigns an existing link) — so the item this call adds prices off
@@ -270,7 +276,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const { cartId, itemId } = ItemParam.parse(request.params);
     const body = UpdateItemBody.parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
-    await assertCartToken(request, tenantId, cartId);
+    await assertCartTokenForWrite(request, ctx, tenantId, cartId);
     await cartService.updateItem(ctx, { cartItemId: itemId, quantity: body.quantity });
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });
@@ -278,7 +284,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/public/commerce/cart/:cartId/items/:itemId', async (request) => {
     const { cartId, itemId } = ItemParam.parse(request.params);
     const { tenantId, ctx } = await publicCommerceContext(request);
-    await assertCartToken(request, tenantId, cartId);
+    await assertCartTokenForWrite(request, ctx, tenantId, cartId);
     await cartService.removeItem(ctx, itemId);
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });
@@ -287,7 +293,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const { cartId } = CartParam.parse(request.params);
     const body = DiscountBody.parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
-    await assertCartToken(request, tenantId, cartId);
+    await assertCartTokenForWrite(request, ctx, tenantId, cartId);
     try {
       await discountService.redeemCode(ctx, { cartId, code: body.code });
     } catch (err) {
@@ -300,7 +306,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/public/commerce/cart/:cartId/discount/:code', async (request) => {
     const { cartId, code } = CodeParam.parse(request.params);
     const { ctx, tenantId } = await publicCommerceContext(request);
-    await assertCartToken(request, tenantId, cartId);
+    await assertCartTokenForWrite(request, ctx, tenantId, cartId);
     // Through the service, which puts the money back. Dropping the join row
     // here and trusting a "lazy recompute on the next read" left the saving on
     // the basket after the code came off — nothing recomputes on a read.

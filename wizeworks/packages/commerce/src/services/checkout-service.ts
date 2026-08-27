@@ -89,7 +89,8 @@ export async function start(
 
   const sessionId = await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
-      where: { id: input.cartId, abandonedAt: null },
+      // `abandonedAt` deliberately NOT filtered here - see markAbandoned.
+      where: { id: input.cartId },
       include: { items: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);

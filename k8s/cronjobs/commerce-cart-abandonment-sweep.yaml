@@ -1,0 +1,74 @@
+# Marks baskets that have gone quiet past their own site's
+# `cart_abandonment_minutes` (default 120), which is what puts them in the
+# console's "Baskets left behind → Walked away" tab and fires `cart.abandoned`.
+#
+# Everything else about abandonment shipped without this job: the per-site
+# setting an owner can edit, the `findIdleCarts` query documented as a worker
+# sweep, `markAbandoned`, the console tab and the abandonment report. The only
+# caller of the marker was a manual admin endpoint, so `abandoned_at` was null
+# on every cart of every tenant and the tab could never hold a row.
+#
+# Every 10 minutes rather than nightly: the default threshold is 120 minutes and
+# the whole value of the signal is following a shopper up while they might still
+# come back, so a once-a-day sweep would make a two-hour setting mean "tomorrow".
+# Cheap — one indexed lookup per site, and only carts actually past the line are
+# written. Forbid concurrency so a slow run cannot double up.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: commerce-cart-abandonment-sweep
+  namespace: sparx-prod
+  labels:
+    app: commerce-cron
+    job: cart-abandonment-sweep
+spec:
+  schedule: '*/10 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: commerce-cron
+            job: cart-abandonment-sweep
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 120
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/commerce/cart-abandonment-sweep
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

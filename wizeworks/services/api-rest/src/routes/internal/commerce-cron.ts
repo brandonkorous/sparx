@@ -6,6 +6,11 @@
 //
 // Each endpoint runs one scheduler:
 //   • POST /internal/commerce/reservation-reaper       → releases expired cart reservations
+//   • POST /internal/commerce/cart-abandonment-sweep   → marks baskets that have gone
+//     quiet past their own site's `cartAbandonmentMinutes`. Everything else about
+//     abandonment shipped without it: the setting, the query, the marker, the console
+//     tab and the report all existed while `abandoned_at` stayed null on every row of
+//     every tenant, because the only caller of `markAbandoned` was a manual endpoint.
 //   • POST /internal/commerce/revenue-rollup           → reconciles the daily-revenue rollup
 //   • POST /internal/commerce/payment-reconcile-sweep  → heals orders stranded "Not paid"
 //     by the client-confirm race (BUG-002): a card OrderPayment left `pending` whose
@@ -122,6 +127,14 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
       return { success: true, data: summary };
     }
   );
+
+  app.post('/internal/commerce/cart-abandonment-sweep', async (request) => {
+    authorize(request);
+    const summary = await forEachActiveTenant((tenantId) =>
+      commerceSchedulers.sweepAbandonedCarts({ tenantId })
+    );
+    return { success: true, data: summary };
+  });
 
   app.post('/internal/commerce/payment-reconcile-sweep', async (request) => {
     authorize(request);

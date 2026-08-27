@@ -173,7 +173,8 @@ export async function getByGuestToken(
 ): Promise<CartSnapshot | null> {
   return withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
-      where: { guestToken, abandonedAt: null, customerId: null },
+      // `abandonedAt` deliberately NOT filtered here - see markAbandoned.
+      where: { guestToken, customerId: null },
       orderBy: { updatedAt: 'desc' },
       select: { id: true },
     });
@@ -194,7 +195,8 @@ export async function addItem(
 
   const cartItemId = await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
-      where: { id: input.cartId, abandonedAt: null },
+      // `abandonedAt` deliberately NOT filtered here - see markAbandoned.
+      where: { id: input.cartId },
       select: {
         id: true,
         channel: true,
@@ -720,7 +722,6 @@ export async function reconcileCartOnAuth(
           where: {
             guestToken: input.guestToken,
             channel: input.channel,
-            abandonedAt: null,
             customerId: null,
           },
           orderBy: { updatedAt: 'desc' },
@@ -734,7 +735,6 @@ export async function reconcileCartOnAuth(
       where: {
         customerId: input.customerId,
         channel: input.channel,
-        abandonedAt: null,
         ...(guestCart ? { id: { not: guestCart.id } } : {}),
       },
       orderBy: { updatedAt: 'desc' },
@@ -763,15 +763,40 @@ export async function reconcileCartOnAuth(
 
 // ─── abandonment lifecycle ───────────────────────────────────────────
 
+/**
+ * Flag a basket as having gone quiet.
+ *
+ * This is a SIGNAL, never a lifecycle state. The basket stays completely usable
+ * to the shopper, because the entire point of recording it is that they come
+ * back and buy it. So every shopper-facing lookup ignores `abandonedAt`, and any
+ * shopper WRITE clears it back through `markRecovered` - which is what "came
+ * back" means and the only way that tab can fill from a real shopper.
+ *
+ * It used to read as a state, with `abandonedAt: null` on the guest-token
+ * lookup, add-item, sign-in handoff, checkout and all three discount paths. A
+ * marked basket vanished from the shopper's own browser and 404'd on add, on a
+ * code and on checkout, while remove-item had no such filter - so they could
+ * empty the basket but never buy it. Nothing had ever set the column, so none of
+ * it was reachable until the abandonment sweep shipped and set it on every quiet
+ * basket on the platform.
+ */
 export async function markAbandoned(ctx: ServiceContext, cartId: string): Promise<void> {
   const now = new Date();
   await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
       where: { id: cartId, abandonedAt: null },
-      select: { id: true },
+      select: { id: true, updatedAt: true },
     });
     if (!cart) return;
-    await tx.cart.update({ where: { id: cartId }, data: { abandonedAt: now } });
+    // `updatedAt` is written back UNCHANGED, deliberately. It is `@updatedAt`,
+    // so a plain update stamps it with the sweep's own clock, and the console
+    // reads it as "Last active" - the one fact that says whether this shopper
+    // walked away twenty minutes ago or three days ago. A system write is not
+    // the shopper being active, and `findIdleCarts` reads the same column.
+    await tx.cart.update({
+      where: { id: cartId },
+      data: { abandonedAt: now, updatedAt: cart.updatedAt },
+    });
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -822,14 +847,44 @@ export async function markRecovered(ctx: ServiceContext, cartId: string): Promis
   });
 }
 
-/** Worker sweep — returns cart ids that have been idle longer than
- *  `cutoffMinutes` and are eligible to be marked abandoned. */
-export async function findIdleCarts(ctx: ServiceContext, cutoffMinutes: number): Promise<string[]> {
+/**
+ * Every site a live basket currently belongs to, including `null` for baskets
+ * with no site on them at all.
+ *
+ * The sweep needs this because `cartAbandonmentMinutes` is a PER-SITE setting,
+ * so "which baskets have gone quiet" has a different answer per site and cannot
+ * be asked once for a tenant. `null` is in the list deliberately: 19 of the 34
+ * baskets in the database carry no property, and a sweep that enumerated
+ * properties instead would have skipped every one of them while reporting
+ * success — the scan-nothing-and-print-green shape.
+ */
+export async function listCartSiteScopes(ctx: ServiceContext): Promise<(string | null)[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.cart.findMany({
+      where: { abandonedAt: null, recoveredAt: null, items: { some: {} } },
+      distinct: ['propertyId'],
+      select: { propertyId: true },
+    });
+    return rows.map((r) => r.propertyId);
+  });
+}
+
+/** Worker sweep — returns cart ids in one SITE that have been idle longer than
+ *  `cutoffMinutes` and are eligible to be marked abandoned. `propertyId: null`
+ *  scopes to baskets carrying no site, which inherit the primary site's
+ *  setting. */
+export async function findIdleCarts(
+  ctx: ServiceContext,
+  cutoffMinutes: number,
+  propertyId: string | null,
+  now: Date = new Date()
+): Promise<string[]> {
   if (cutoffMinutes <= 0) return [];
-  const cutoff = new Date(Date.now() - cutoffMinutes * 60_000);
+  const cutoff = new Date(now.getTime() - cutoffMinutes * 60_000);
   return withTenant(ctx, async (tx) => {
     const rows = await tx.cart.findMany({
       where: {
+        propertyId,
         abandonedAt: null,
         recoveredAt: null,
         updatedAt: { lt: cutoff },
