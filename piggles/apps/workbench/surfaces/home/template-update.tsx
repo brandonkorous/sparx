@@ -13,6 +13,7 @@
 
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -44,7 +45,10 @@ function UpdateOffer({ blueprint, ctx }: { blueprint: Blueprint; ctx: SurfaceCon
       {/* Solid at 16px: measured on her Home, `alert-soft` puts this ink at
           2.17:1 and solid at 6.35:1 (issue 076). The button wears no color —
           the alert already has the hue, and repeating it hides the button. */}
-      <Alert color="module" className="mt-6 text-base">
+      {/* Stacked until the pane is wide enough for both. `.alert` is a flex row
+          that never wraps and its message column may shrink to nothing, so at
+          360px the title set one word per line (issue 258). */}
+      <Alert color="module" className="mt-6 flex-col text-base @[34rem]:flex-row">
         <AlertContent>
           <AlertTitle>The design your site was built from has been refreshed</AlertTitle>
           <AlertDescription>
@@ -53,14 +57,18 @@ function UpdateOffer({ blueprint, ctx }: { blueprint: Blueprint; ctx: SurfaceCon
             is. Nothing of yours is overwritten.
           </AlertDescription>
         </AlertContent>
-        <Button
-          size="sm"
-          onClick={() => {
-            ctx.open('builder.blueprint', { key: blueprint.key }, { target: 'tab' });
-          }}
-        >
-          See what changed
-        </Button>
+        {/* The documented trailing slot, not a bare sibling: it end-aligns the
+            button and, once the row wraps on a narrow screen, keeps it there. */}
+        <AlertActions>
+          <Button
+            size="sm"
+            onClick={() => {
+              ctx.open('builder.blueprint', { key: blueprint.key }, { target: 'tab' });
+            }}
+          >
+            See what changed
+          </Button>
+        </AlertActions>
       </Alert>
     </ModuleScope>
   );

@@ -48,6 +48,33 @@ export const SELLABLE_SQL = Prisma.sql`(l.on_hand - l.allocated - l.safety_buffe
  */
 export const LOW_STOCK_SQL = Prisma.sql`(l.reorder_point IS NOT NULL AND ${SELLABLE_SQL} <= l.reorder_point)`;
 
+/**
+ * A level that CANNOT BE SOLD: nothing sellable is left. Deliberately not a
+ * variation on "low" — it needs no reorder point, because "there is none" is a
+ * fact about the shelf rather than a judgement against a threshold somebody
+ * chose. A business that has set no reorder points can never be low, and that is
+ * defensible; it can still be OUT, and a screen that cannot say so tells an
+ * owner nothing is wrong while a size sits struck through on their own shop.
+ *
+ * Strictly worse than low, and NOT exclusive of it: a level at zero that also
+ * has a reorder point satisfies both predicates. `LOW_STOCK_SQL` keeps
+ * including those on purpose — an alert or a reorder list that dropped the
+ * items at zero would hide the most urgent rows it exists to show. A caller
+ * that shows the two side by side, and must not count one level twice, pairs
+ * the low filter with `IN_STOCK_SQL` below.
+ */
+export const OUT_OF_STOCK_SQL = Prisma.sql`(${SELLABLE_SQL} <= 0)`;
+
+/**
+ * Still sellable — the complement of {@link OUT_OF_STOCK_SQL}.
+ *
+ * `LOW_STOCK_SQL AND IN_STOCK_SQL` is "running low but not gone", which is
+ * exactly what the console badges "Running low" (`levelState` reports the worse
+ * state, so a level at zero is badged "None to sell" and never "Running low").
+ * That pairing makes low and out disjoint, so two counts of them can be added.
+ */
+export const IN_STOCK_SQL = Prisma.sql`(${SELLABLE_SQL} > 0)`;
+
 /** Sellable units for a level already in memory. Floored at zero — a count you
  *  show a person, not a predicate, and "−3 to sell" is not a thing you say. */
 export function sellableUnits(level: {
@@ -81,4 +108,17 @@ export function isLowStock(level: {
     level.onHand - level.allocated - level.safetyBuffer - (level.unsellableOnHand ?? 0) <=
       level.reorderPoint
   );
+}
+
+/**
+ * The JS twin of {@link OUT_OF_STOCK_SQL}. Uses the unclamped arithmetic so an
+ * oversold level (negative sellable) counts as out, which it is.
+ */
+export function isOutOfStock(level: {
+  onHand: number;
+  allocated: number;
+  safetyBuffer: number;
+  unsellableOnHand?: number;
+}): boolean {
+  return level.onHand - level.allocated - level.safetyBuffer - (level.unsellableOnHand ?? 0) <= 0;
 }

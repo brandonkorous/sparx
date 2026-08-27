@@ -41,20 +41,31 @@ type Attention = ReturnType<typeof useAttention>;
 /** Inverted from COUNT_SURFACE, never re-typed — a second copy of that mapping
  *  is a second thing to keep in step. A surface with no entry never badges,
  *  which is the right default: most screens are not queues. */
-const SURFACE_COUNTS = new Map<string, AttentionKey>(
-  (Object.entries(COUNT_SURFACE) as [AttentionKey, string][]).map(([key, surface]) => [
-    surface,
-    key,
-  ])
-);
+const SURFACE_COUNTS = ((): Map<string, AttentionKey[]> => {
+  // A LIST per surface, because one screen can own more than one count: Stock
+  // answers both "running low" and "none to sell". Keyed singly, the later
+  // entry replaced the earlier one and a real count vanished off the rail.
+  const map = new Map<string, AttentionKey[]>();
+  for (const [key, surface] of Object.entries(COUNT_SURFACE) as [AttentionKey, string][]) {
+    const existing = map.get(surface);
+    if (existing) existing.push(key);
+    else map.set(surface, [key]);
+  }
+  return map;
+})();
 
-/** What is waiting on one screen, or null when there is no honest number. */
+/** What is waiting on one screen, or null when there is no honest number.
+ *
+ *  Summed across the counts that screen owns, and a count that is loading,
+ *  failed or unmeasured contributes nothing rather than a zero. */
 export function surfaceWaiting(surfaceKey: string, attention: Attention): number | null {
-  const key = SURFACE_COUNTS.get(surfaceKey);
-  if (!key) return null;
-  const count = attention[key];
-  if (count.state !== 'ready' || !count.value) return null;
-  return count.value;
+  const keys = SURFACE_COUNTS.get(surfaceKey);
+  if (!keys) return null;
+  const total = keys.reduce((sum, key) => {
+    const count = attention[key];
+    return sum + (count.state === 'ready' ? (count.value ?? 0) : 0);
+  }, 0);
+  return total > 0 ? total : null;
 }
 
 /** What is waiting inside one SECTION of a panel — the sum of its screens.

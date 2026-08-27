@@ -1,12 +1,13 @@
 // What Home watches, and what it offers to start.
 //
-// DATA, deliberately kept out of the surface: five signals and four actions are
+// DATA, deliberately kept out of the surface: six signals and four actions are
 // a product decision somebody revises, and they were sitting in the middle of a
 // 425-line component where nobody would find them to revise.
 
 import {
   faBagShopping,
   faBoxMagnifyingGlass,
+  faBoxOpen,
   faCalendarCheck,
   faComment,
   faFileExclamation,
@@ -72,6 +73,19 @@ export const SIGNALS: Signal[] = [
     clear: 'nothing is overdue',
     noun: 'invoices',
   },
+  // Before 'stock' on purpose: sold out is the worse of the two and the one that
+  // is costing money today. "Sold out" is the shopper's own word, so the owner
+  // reads the same phrase her customer is looking at.
+  {
+    key: 'outOfStock',
+    icon: faBoxOpen,
+    module: 'inventory',
+    surface: 'inventory.stock.list',
+    one: 'item is sold out',
+    many: 'items are sold out',
+    clear: 'nothing is sold out',
+    noun: 'stock',
+  },
   {
     key: 'stock',
     icon: faBoxMagnifyingGlass,
@@ -81,9 +95,9 @@ export const SIGNALS: Signal[] = [
     many: 'products are running low',
     // "stock is healthy" was a claim this count cannot support. It measures ONE
     // thing — items at or below a reorder point — and a business that has set no
-    // reorder points scores zero on it for ever. A bakery with four products at
-    // "None to sell" read "You are all caught up… stock is healthy" on her home
-    // screen. A clear signal may only say what its own measurement said.
+    // reorder points scores zero on it for ever. Narrowing the words was only
+    // half the repair: the SOLD OUT case above is what such an account actually
+    // needed said, and it needs no reorder point to be true.
     clear: 'nothing is running low',
     noun: 'stock',
   },

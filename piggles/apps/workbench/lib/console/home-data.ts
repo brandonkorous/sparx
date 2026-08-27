@@ -32,7 +32,8 @@
 //   bookings   status=requested         somebody asked, nobody has answered
 //   messages   status=open              a conversation nobody has closed
 //   invoices   status=overdue           money that is late
-//   stock      low_stock_only=true      about to run out
+//   stock      low_stock_only + sellable_only   about to run out, still buyable
+//   outOfStock out_of_stock_only=true           already run out — cannot be bought
 //   social     open replies             a question on a social account
 //   approvals  status=pending_approval  a post waiting on an admin
 //
@@ -116,7 +117,21 @@ const SOURCES = {
     key: 'stock',
     module: 'inventory',
     path: '/v1/inventory',
-    query: { low_stock_only: true, take: 1, skip: 0 },
+    // `sellable_only` keeps this disjoint from `outOfStock` below, so a level
+    // that is both never lands in two counts the rail adds together. It is also
+    // what the stock list badges "Running low" — a level at zero reads "None to
+    // sell" there, never "Running low".
+    query: { low_stock_only: true, sellable_only: true, take: 1, skip: 0 },
+  },
+  // Sizes a customer cannot buy at all. Its own count, not a stricter `stock`:
+  // low needs a reorder point somebody set, out needs nothing, and an account
+  // with no reorder points scores zero on low for ever while its shop shows
+  // "sold out". Home said "nothing is running low" over a struck-through size.
+  outOfStock: {
+    key: 'outOfStock',
+    module: 'inventory',
+    path: '/v1/inventory',
+    query: { out_of_stock_only: true, take: 1, skip: 0 },
   },
   // Somebody asked a question on a social account and nobody has answered.
   social: {
@@ -150,6 +165,10 @@ export type AttentionKey = keyof typeof SOURCES;
 /**
  * The SCREEN each count is about — the nav row that owns it.
  *
+ * More than one count may name the same screen: Stock owns both "running low"
+ * and "sold out". The rail sums them, which is only honest because the two
+ * measurements are disjoint by construction — see `stock`'s `sellable_only`.
+ *
  * Declared beside the count itself, because the count and the screen it
  * describes are one fact. The rail badges a screen from this, then sums the
  * screens into the app and the apps into the group, so all three levels are
@@ -166,6 +185,7 @@ export const COUNT_SURFACE: Record<AttentionKey, string> = {
   messages: 'chat.inbox',
   invoices: 'invoicing.invoices.list',
   stock: 'inventory.stock.list',
+  outOfStock: 'inventory.stock.list',
   social: 'social.inbox',
   approvals: 'social.approvals',
 };
@@ -222,6 +242,7 @@ export function useAttention(): Record<AttentionKey, AttentionCount> {
     messages: useAttentionCount('messages'),
     invoices: useAttentionCount('invoices'),
     stock: useAttentionCount('stock'),
+    outOfStock: useAttentionCount('outOfStock'),
     social: useAttentionCount('social'),
     approvals: useAttentionCount('approvals'),
   };

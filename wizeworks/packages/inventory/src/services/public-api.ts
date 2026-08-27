@@ -28,7 +28,7 @@ import {
   type ActorType,
   type MovementResult,
 } from './ledger';
-import { LOW_STOCK_SQL, SELLABLE_SQL } from './low-stock';
+import { IN_STOCK_SQL, LOW_STOCK_SQL, OUT_OF_STOCK_SQL, SELLABLE_SQL } from './low-stock';
 
 // ─── List (GET /v1/inventory) ─────────────────────────────────────────
 
@@ -122,6 +122,25 @@ export interface ListInventoryFilter {
    * `listLowStock` and `levelsForWarehouse` so no two surfaces disagree.
    */
   lowStockOnly?: boolean;
+  /**
+   * Only levels with nothing left to sell.
+   *
+   * Not a stricter `lowStockOnly`: that one answers "has this crossed the
+   * trigger somebody set", and returns nothing at all for a business that set no
+   * triggers. This one answers "can a customer buy this", which needs no policy
+   * to be true. `OUT_OF_STOCK_SQL` in ./low-stock is the one definition, shared
+   * with the badge the stock list renders as "None to sell".
+   */
+  outOfStockOnly?: boolean;
+  /**
+   * Drop levels with nothing left to sell.
+   *
+   * Its use is `lowStockOnly` + `sellableOnly` = "running low but not yet gone",
+   * which is what the console badges "Running low" — and which makes low and
+   * out-of-stock disjoint, so a caller counting both never counts one level
+   * twice. On its own it is simply "what a customer can still buy".
+   */
+  sellableOnly?: boolean;
   sortBy?: InventorySortKey;
   order?: InventorySortDirection;
   take?: number;
@@ -180,6 +199,12 @@ export async function listInventory(
   }
   if (filter.lowStockOnly) {
     conditions.push(LOW_STOCK_SQL);
+  }
+  if (filter.outOfStockOnly) {
+    conditions.push(OUT_OF_STOCK_SQL);
+  }
+  if (filter.sellableOnly) {
+    conditions.push(IN_STOCK_SQL);
   }
 
   const from = Prisma.sql`

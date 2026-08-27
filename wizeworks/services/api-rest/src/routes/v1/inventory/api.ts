@@ -6,7 +6,7 @@
 //
 //   GET   /v1/inventory               List inventory levels (cross-warehouse,
 //                                     filterable by warehouse/product/variant/
-//                                     low-stock, sortable)
+//                                     low-stock/out-of-stock, sortable)
 //   PATCH /v1/inventory/:variant_id   Set on-hand or apply a delta at a warehouse
 //   POST  /v1/inventory/adjustments   Bulk adjustment (JSON or text/csv)
 //   GET   /v1/inventory/alerts        Low-stock alerts
@@ -41,6 +41,14 @@ const ListQuery = z.object({
   // Only what is at or below its reorder point, measured against SELLABLE stock
   // so the filter agrees with the "Running low" badge the surfaces render.
   low_stock_only: queryBool.optional(),
+  // Only what has nothing left to sell. Distinct from `low_stock_only`, which
+  // requires a reorder point and so answers nothing for an account that set
+  // none — being OUT needs no policy to be true.
+  out_of_stock_only: queryBool.optional(),
+  // Only what a customer can still buy. Paired with `low_stock_only` it means
+  // "running low but not yet gone", which is what the console badges "Running
+  // low" — and it keeps the two counts disjoint for a caller adding them up.
+  sellable_only: queryBool.optional(),
   sort_by: z.enum(['updatedAt', 'available', 'sku', 'product']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(200).optional(),
@@ -74,6 +82,8 @@ const inventoryApiRoutes: FastifyPluginAsync = async (app) => {
       ...(q.product_id ? { productId: q.product_id } : {}),
       ...(q.variant_id ? { variantId: q.variant_id } : {}),
       ...(q.low_stock_only === true ? { lowStockOnly: true } : {}),
+      ...(q.out_of_stock_only === true ? { outOfStockOnly: true } : {}),
+      ...(q.sellable_only === true ? { sellableOnly: true } : {}),
       ...(q.sort_by ? { sortBy: q.sort_by } : {}),
       ...(q.order ? { order: q.order } : {}),
       take,

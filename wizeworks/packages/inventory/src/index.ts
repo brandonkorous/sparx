@@ -34,10 +34,18 @@ export type { AvailabilityLevel, VariantAvailability } from './services/availabi
 // the moment the product is sellable, with no inventory setup required.
 export { syncProductInStock } from './services/internal';
 
-// The one definition of "sellable" and "running low" — a raw-SQL fragment for
-// database-side filters and a JS twin for rows already in memory. Every read
-// path that decides whether a level is low routes through these.
-export { SELLABLE_SQL, LOW_STOCK_SQL, sellableUnits, isLowStock } from './services/low-stock';
+// The one definition of "sellable", "running low" and "cannot be sold" — a
+// raw-SQL fragment for database-side filters and a JS twin for rows already in
+// memory. Every read path that decides either routes through these.
+export {
+  SELLABLE_SQL,
+  LOW_STOCK_SQL,
+  OUT_OF_STOCK_SQL,
+  IN_STOCK_SQL,
+  sellableUnits,
+  isLowStock,
+  isOutOfStock,
+} from './services/low-stock';
 
 // One CSV writer and one CSV reader (docs/146 Phase 10.3 + 10.6). Exported
 // because api-rest serves the exports and accepts the uploads, and a second
