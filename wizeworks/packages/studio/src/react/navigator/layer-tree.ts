@@ -118,6 +118,33 @@ function truncate(text: string, max = 40): string {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
+/** Breakpoint-prefixed utilities, with or without silica's container-query `@`. */
+const HIDDEN_FROM = /^@?(sm|md|lg|xl|2xl):hidden$/;
+const SHOWN_FROM =
+  /^@?(sm|md|lg|xl|2xl):(flex|block|grid|inline|inline-flex|inline-block|table|contents)$/;
+
+/**
+ * Which screens a node is for, when its classes say it is for only some.
+ *
+ * The header stores its menu TWICE — the row for wider screens, and the panel
+ * behind the hamburger — as separate nodes holding separate copies of every
+ * link. Both fell through to the same tag label, so Layers showed two rows
+ * called "Menu", and neither is on the canvas at the width you are previewing:
+ * one is hidden by its classes, the other is a closed panel. An owner who
+ * repointed a link repointed one of them, published, and left the phone menu on
+ * the old destination with nothing to tell her (issue 269).
+ *
+ * A row an author cannot see on the canvas has to say why it is not there.
+ */
+function screenSuffix(cls: string | undefined): string {
+  if (!cls) return '';
+  const words = cls.split(/\s+/);
+  const hiddenFrom = words.some((w) => HIDDEN_FROM.test(w));
+  const shownFrom = words.includes('hidden') && words.some((w) => SHOWN_FROM.test(w));
+  if (hiddenFrom === shownFrom) return '';
+  return hiddenFrom ? ' on a phone' : ' on a bigger screen';
+}
+
 export function rowLabel(node: AddressableNode): string {
   if (node.label) return node.label;
   if (node.instanceOf) return 'Saved design';
@@ -125,7 +152,7 @@ export function rowLabel(node: AddressableNode): string {
   if (text) return truncate(text);
   if (node.kind === 'component') return node.component;
   if (node.kind === 'host') return node.component;
-  return TAG_LABELS[node.tag.toLowerCase()] ?? 'Group';
+  return (TAG_LABELS[node.tag.toLowerCase()] ?? 'Group') + screenSuffix(node.class);
 }
 
 export function rowIcon(node: AddressableNode): string {

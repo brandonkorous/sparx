@@ -65,6 +65,40 @@ describe('naming a row', () => {
     expect(rowLabel(el('x', [el('y')], 'div'))).toBe('Group');
   });
 
+  it('says which screens a row is for, when it is only for some', () => {
+    // The header holds its menu twice and calls both of them "Menu": the row for
+    // wider screens, and the panel behind the hamburger. Neither is on the canvas
+    // at the width you are previewing, so an owner repointed one link and left the
+    // other on the old destination (issue 269). These are the two real class sets.
+    const panel = { ...el('x', [el('y')], 'nav'), class: 'flex flex-col gap-1 @md:hidden' };
+    const wide = { ...el('x', [el('y')], 'nav'), class: 'hidden items-center gap-6 @md:flex' };
+    expect(rowLabel(panel)).toBe('Menu on a phone');
+    expect(rowLabel(wide)).toBe('Menu on a bigger screen');
+  });
+
+  it('works without silica’s container-query prefix too', () => {
+    expect(rowLabel({ ...el('x', [el('y')], 'div'), class: 'md:hidden' })).toBe('Group on a phone');
+    expect(rowLabel({ ...el('x', [el('y')], 'div'), class: 'hidden lg:block' })).toBe(
+      'Group on a bigger screen'
+    );
+  });
+
+  it('says nothing about screens when the classes do not', () => {
+    // `hidden` on its own is a node the author hid outright, not a responsive rule,
+    // and a node that is both hidden-from and shown-from is too tangled to summarise.
+    expect(rowLabel({ ...el('x', [el('y')], 'nav'), class: 'flex gap-4' })).toBe('Menu');
+    expect(rowLabel({ ...el('x', [el('y')], 'nav'), class: 'hidden' })).toBe('Menu');
+    expect(rowLabel({ ...el('x', [el('y')], 'nav'), class: 'hidden @md:flex @lg:hidden' })).toBe(
+      'Menu'
+    );
+  });
+
+  it('leaves a name the author gave it alone', () => {
+    // Their word for it beats ours, even when ours carries more information.
+    const named = { ...el('x', [el('y')], 'nav'), class: '@md:hidden', label: 'Main menu' };
+    expect(rowLabel(named)).toBe('Main menu');
+  });
+
   it('names an instance for what it is', () => {
     expect(rowLabel({ ...el('x'), instanceOf: 'sym' })).toBe('Saved design');
     expect(rowIcon({ ...el('x'), instanceOf: 'sym' })).toBe('shared');
