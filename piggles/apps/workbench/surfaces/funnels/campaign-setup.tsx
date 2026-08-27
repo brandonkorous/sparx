@@ -8,13 +8,13 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
 import type { ConditionGroup } from '@wizeworks/automation-schemas';
+import { FormSection } from '../../components/form-section';
 import { ConditionEditor } from '../automations/condition-editor';
 import { STALL_CHOICES, hoursLabel } from './presentation';
 import { StageLadderEditor } from './stage-editor';
@@ -46,7 +46,10 @@ function Identity({
   canEdit: boolean;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-2">
+    <FormSection
+      title="What this campaign is"
+      description="The name is yours, to recognise it by. Nobody outside your team sees either of these."
+    >
       <Field>
         <FieldLabel>Name</FieldLabel>
         <FieldControl
@@ -78,7 +81,7 @@ function Identity({
           }
         />
       </Field>
-    </div>
+    </FormSection>
   );
 }
 
@@ -95,15 +98,10 @@ function Patience({
 }) {
   const chosen = draft.stallAfterHours;
   return (
-    <div className="flex flex-col gap-2">
-      <Heading level={3} className="text-base font-semibold">
-        When to give up on somebody
-      </Heading>
-      <Text className="text-sm">
-        Somebody who starts and then goes quiet is not a failure yet, but at some point they are
-        gone. This is how long to wait before saying so, which is what any follow-up you have set up
-        waits for.
-      </Text>
+    <FormSection
+      title="When to give up on somebody"
+      description="Somebody who starts and then goes quiet is not a failure yet, but at some point they are gone. This is how long to wait before saying so, which is what any follow-up you have set up waits for."
+    >
       <Field>
         <FieldLabel>Give up after</FieldLabel>
         <FieldControl
@@ -137,7 +135,7 @@ function Patience({
             : 'This campaign waits a different amount of time to others of its kind, because you said so.'}
         </FieldDescription>
       </Field>
-    </div>
+    </FormSection>
   );
 }
 
@@ -155,38 +153,31 @@ export function CampaignSetup({
   defaultStallHours: number | undefined;
 }) {
   return (
-    <section className="flex flex-col gap-3">
-      <Heading level={2} className="text-lg font-semibold">
-        Setup
-      </Heading>
-
+    <>
       <Identity draft={draft} on={on} canEdit={canEdit} />
 
-      <div className="flex flex-col gap-2">
-        <Heading level={3} className="text-base font-semibold">
-          The steps
-        </Heading>
-        <Text className="text-sm">
-          In order, from the first thing somebody does to the outcome you want. Renaming a step
-          keeps everything it has already recorded.
-        </Text>
+      <FormSection
+        title="The steps"
+        description="In order, from the first thing somebody does to the outcome you want. Renaming a step keeps everything it has already recorded."
+      >
         <StageLadderEditor stages={draft.stages} onChange={on.setStages} disabled={!canEdit} />
-      </div>
+      </FormSection>
 
-      <div className="flex flex-col gap-2">
-        <Heading level={3} className="text-base font-semibold">
-          What counts as success
-        </Heading>
-        <Text className="text-sm">
-          Without this the campaign can only tell you what happened, not whether it worked, so it
-          cannot be turned on.
-        </Text>
-        <ConditionEditor value={draft.goal} onChange={on.setGoal} label="people" />
-      </div>
+      <FormSection
+        title="What counts as success"
+        description="Without this the campaign can only tell you what happened, not whether it worked, so it cannot be turned on."
+      >
+        <ConditionEditor
+          value={draft.goal}
+          onChange={on.setGoal}
+          label="people"
+          emptyNote="Nothing chosen yet, so this campaign cannot be turned on. Add at least one thing that has to be true of somebody for it to have worked."
+        />
+      </FormSection>
 
       <Patience draft={draft} on={on} canEdit={canEdit} defaultStallHours={defaultStallHours} />
 
       {error ? <Text className="text-danger text-sm">{error}</Text> : null}
-    </section>
+    </>
   );
 }

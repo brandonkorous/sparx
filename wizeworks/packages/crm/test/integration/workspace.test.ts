@@ -464,8 +464,16 @@ describe('phase 7 — companies, settings, views and duplicates', () => {
     it('keeps a private view out of a colleague’s list', async () => {
       const mine = await savedViewService.create(test.ctx, {
         objectKey: 'contact',
+        // A real ConditionGroup, which is what `filters` has always been. This
+        // read `{ lifecycleStage: 'lead' }` — a plain map — and passed anyway,
+        // because the group schema used to swallow anything it did not
+        // recognise and hand back an empty group. The view under test was
+        // therefore saving NO filter while this file believed it saved one.
+        filters: {
+          logic: 'AND',
+          conditions: [{ field: 'lifecycleStage', operator: 'eq', value: 'lead' }],
+        },
         name: 'Leads I am working',
-        filters: { lifecycleStage: 'lead' },
       });
 
       const colleague = { tenantId: test.tenant.tenantId, userId: crypto.randomUUID() };

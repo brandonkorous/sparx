@@ -25,6 +25,7 @@
 // applied at the recipe, because a campaign about an event the tenant cannot
 // emit is not a partial campaign, it is a wrong one.
 
+import type { ConditionOperator } from '@wizeworks/automation-schemas';
 import type { FunnelKind, FunnelStage } from './schemas.js';
 
 export interface FunnelRecipe {
@@ -50,7 +51,19 @@ export interface FunnelRecipe {
    */
   goal: {
     logic: 'AND' | 'OR';
-    conditions: { field: string; operator: string; value?: unknown }[];
+    // `operator` is the REAL union, not `string`. It was `string`, and that is
+    // how every recipe in this file shipped `is_not_empty` — an operator that
+    // exists nowhere: not in the schema, not in the evaluator, not in the
+    // console's dropdown.
+    //
+    // What it did was worse than being ignored. `ConditionGroup` accepted the
+    // write and silently rewrote the condition into an EMPTY GROUP, which
+    // matches everything — so the goal "they left an address" became "everybody
+    // qualifies", and a campaign written to count the people who finished would
+    // have counted everyone who started and reported a perfect rate. That hole
+    // is closed at the schema now (groups are strict), and this type is what
+    // stops a recipe reaching for a word the vocabulary does not have.
+    conditions: { field: string; operator: ConditionOperator; value?: unknown }[];
   };
 }
 
@@ -70,7 +83,7 @@ export interface FunnelRecipe {
  *  spelled out once rather than seven times. */
 const REACHED_CONVERT = {
   logic: 'AND' as const,
-  conditions: [{ field: 'email', operator: 'is_not_empty' }],
+  conditions: [{ field: 'email', operator: 'is_set' as const }],
 };
 
 export const FUNNEL_LIBRARY: readonly FunnelRecipe[] = [

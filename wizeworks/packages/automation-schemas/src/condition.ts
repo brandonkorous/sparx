@@ -57,8 +57,27 @@ export type Condition = z.infer<typeof Condition>;
  *  this is unreadable in a no-code builder; a flat group is depth 1. */
 export const MAX_CONDITION_DEPTH = 3;
 
+// STRICT, and that is load-bearing rather than tidiness.
+//
+// Both fields have defaults, so a plain `z.object` accepted ANY object as a
+// group: unknown keys are stripped, the two defaults fill in, and the result is
+// a valid empty group. A leaf condition the union had already rejected — a
+// typo'd operator, a missing field — therefore fell through to the group branch
+// and parsed as `{logic:'AND', conditions:[]}`.
+//
+// That is the worst possible failure for this schema, because an empty group
+// ALWAYS PASSES (see EMPTY_CONDITION_GROUP below). A rule written to narrow
+// down who qualifies was silently rewritten into no rule at all, with a
+// `success: true` on the way through: an automation meant for one customer
+// segment runs for every customer, and a campaign meant to count the people who
+// bought counts everybody who looked. Nothing anywhere says so — the API
+// accepts the write and the editor redraws it as an empty group.
+//
+// Strict makes the group branch refuse anything carrying keys a group does not
+// have, so a malformed condition fails the whole parse and comes back as the
+// validation error it always was.
 const groupOf = (child: z.ZodTypeAny) =>
-  z.object({
+  z.strictObject({
     logic: z.enum(['AND', 'OR']).default('AND'),
     conditions: z.array(child).max(50).default([]),
   });

@@ -135,6 +135,7 @@ export function ConditionEditor({
   value,
   onChange,
   label = 'conditions',
+  emptyNote = 'No conditions yet — this runs every time its trigger happens.',
   depth = 1,
   onRemove,
 }: {
@@ -142,6 +143,19 @@ export function ConditionEditor({
   onChange: (next: ConditionGroup) => void;
   /** Noun for the "the following …" copy (a scan reuses "records"). */
   label?: string;
+  /**
+   * What an EMPTY set of conditions means here, in the caller's own terms.
+   *
+   * The default is an automation's answer, and it used to be the only answer:
+   * an automation with no conditions really does run every time its trigger
+   * fires. A campaign's goal is the opposite — empty means it cannot be turned
+   * on at all — so a campaign showed "this runs every time its trigger
+   * happens" directly beneath its own sentence saying it could not run, about a
+   * trigger it does not have. Two adjacent lines contradicting each other, and
+   * the wrong one was the one in the empty state, which is exactly where
+   * somebody looks when they are stuck.
+   */
+  emptyNote?: string;
   /** 1 at the root; increments per nesting level (caps "Add group" at the max). */
   depth?: number;
   /** Present on a nested sub-group → renders its remove control. */
@@ -197,11 +211,7 @@ export function ConditionEditor({
       </div>
 
       {value.conditions.length === 0 ? (
-        <p className="text-sm">
-          {isRoot
-            ? 'No conditions yet — this runs every time its trigger happens.'
-            : 'Empty group — add a condition.'}
-        </p>
+        <p className="text-sm">{isRoot ? emptyNote : 'Empty group — add a condition.'}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {value.conditions.map((node, i) =>

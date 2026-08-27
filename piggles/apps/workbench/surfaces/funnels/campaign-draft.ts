@@ -4,14 +4,27 @@
 // what is saved, and the two reasons the server would refuse to turn it on.
 
 import { useEffect, useState } from 'react';
-import { EMPTY_CONDITION_GROUP, type ConditionGroup } from '@wizeworks/automation-schemas';
+import { ConditionGroup, EMPTY_CONDITION_GROUP } from '@wizeworks/automation-schemas';
 import type { Funnel, FunnelStage } from './types';
 
-/** A stored goal, or an empty group. The column is JSON, so a campaign written
- *  before a shape change must not take the editor down with it. */
+/**
+ * A stored goal, or an empty group.
+ *
+ * PARSED, not cast. It used to duck-type on the presence of `conditions` and
+ * cast, which meant the editor believed any JSON in that column and the server
+ * did not: the server parses the same value with this schema and treats a
+ * failure as no goal at all. So a campaign whose stored goal was malformed drew
+ * a condition row with a raw operator slug in it and offered an enabled "Turn
+ * it on" that the server would refuse — the editor showing something the
+ * business owner cannot act on and a button that lies.
+ *
+ * Falling back to the empty group is deliberate rather than lossy: a goal the
+ * server cannot read is a goal the campaign does not have, and saying so is
+ * what puts the owner in front of the one action that fixes it.
+ */
 export function asGoal(value: unknown): ConditionGroup {
-  if (value && typeof value === 'object' && 'conditions' in value) return value as ConditionGroup;
-  return EMPTY_CONDITION_GROUP;
+  const parsed = ConditionGroup.safeParse(value);
+  return parsed.success ? parsed.data : EMPTY_CONDITION_GROUP;
 }
 
 export interface CampaignDraft {

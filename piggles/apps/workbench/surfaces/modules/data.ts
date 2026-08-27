@@ -20,6 +20,7 @@ import { productCopy } from '../../lib/product';
 import { apiErrorMessage } from '../../lib/api-error';
 import {
   faAddressBook,
+  faArrowProgress,
   faBagShopping,
   faBoxes,
   faCalendarClock,
@@ -143,6 +144,24 @@ export const MODULE_META: ModuleMeta[] = [
     icon: faEnvelope,
     blurb: 'Send newsletters and automatic messages to your customers from your own address.',
     price: 29,
+    requires: [],
+  },
+  {
+    slug: 'funnels',
+    name: 'Campaigns',
+    hue: 'funnels',
+    // The same mark the Campaigns surface carries in the rail, so the thing you
+    // switch on here and the thing that appears there read as one module.
+    icon: faArrowProgress,
+    blurb: productCopy(
+      'modules.funnels.blurb',
+      'Give a promotion a name, and see how many people got from the first click to the sale — and where the rest stopped.'
+    ),
+    // Genuinely free, which is why it shows "Free" rather than a price: every
+    // part a campaign measures is already paid for, and charging again to find
+    // out whether it worked prices the answer away from the businesses that
+    // most need it (docs/152 §1 #1).
+    price: 0,
     requires: [],
   },
   {

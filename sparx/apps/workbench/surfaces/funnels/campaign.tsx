@@ -36,12 +36,13 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Pause, Play, ServerCrash, Target, Trash2 } from 'lucide-react';
-import { EMPTY_CONDITION_GROUP, type ConditionGroup } from '@wizeworks/automation-schemas';
+import { Pause, Play, ServerCrash, Trash2 } from 'lucide-react';
+import { ConditionGroup, EMPTY_CONDITION_GROUP } from '@wizeworks/automation-schemas';
 import { PANE_SHELL, PaneToolbar } from '../../components/pane-toolbar';
+import { FormSection } from '../../components/form-section';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import { useActiveSiteId, useViewer } from '../../lib/api/shell-data';
+import { useActivePropertyId, useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ConditionEditor } from '../automations/condition-editor';
 import { LadderReport } from './ladder';
@@ -65,11 +66,28 @@ import {
 
 const RANGE_DAYS = [7, 30, 90] as const;
 
-/** A stored goal, or an empty group. The column is JSON and a campaign written
- *  before a shape change must not take the editor down with it. */
+/** The house column. A pane can be 1200px wide and a form still reads at ~700,
+ *  so every editor in this app centres itself in the same `max-w-3xl`. */
+const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/**
+ * A stored goal, or an empty group.
+ *
+ * PARSED, not cast. It used to duck-type on the presence of `conditions` and
+ * cast, which meant the editor believed any JSON in that column and the server
+ * did not: the server parses the same value with this schema and treats a
+ * failure as no goal at all. So a campaign whose stored goal was malformed drew
+ * a condition row with a raw operator slug in it and offered an enabled "Turn
+ * it on" that the server would refuse — the editor showing something the
+ * business owner cannot act on, above a button that lies.
+ *
+ * Falling back to the empty group is deliberate rather than lossy: a goal the
+ * server cannot read is a goal the campaign does not have, and saying so is
+ * what puts the owner in front of the one action that fixes it.
+ */
 function asGoal(value: unknown): ConditionGroup {
-  if (value && typeof value === 'object' && 'conditions' in value) return value as ConditionGroup;
-  return EMPTY_CONDITION_GROUP;
+  const parsed = ConditionGroup.safeParse(value);
+  return parsed.success ? parsed.data : EMPTY_CONDITION_GROUP;
 }
 
 /* ── Creating one ─────────────────────────────────────────────────────────── */
@@ -85,7 +103,10 @@ function NewCampaign({ ctx }: { ctx: SurfaceContext }) {
   const [name, setName] = useState('');
   const [kind, setKind] = useState<FunnelKind>('lead');
   const create = useCreateFunnel();
-  const siteId = useActiveSiteId().data?.propertyId ?? null;
+  // The RESOLVED site, not the raw cookie value — see useActivePropertyId. This
+  // read the token directly, which is null for anybody who has never opened the
+  // site switcher, and left "Create it" permanently disabled for them.
+  const siteId = useActivePropertyId();
   const toast = useToast();
 
   useDirtySource(
@@ -415,129 +436,116 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         </div>
       </PaneToolbar>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex w-full flex-col gap-6 p-4">
-          {current.status === 'draft' ? (
-            <EmptyState
-              icon={<Target className="size-6" aria-hidden />}
-              title="Nothing recorded yet"
-              description="This campaign is a draft, so it is not counting anyone. Set up its steps and say what counts as success, then turn it on."
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className={COLUMN}>
+          {/* NO report block on a draft, and no empty state standing in for one.
+              A draft has never counted anybody, which the toolbar already says
+              in four words — and a whole-pane empty state repeating it pushed
+              the form somebody opened this pane to fill in two thirds of the way
+              down the window. Every campaign starts as a draft, so that was the
+              first thing everyone saw. The report appears when there is one. */}
+          {current.status === 'draft' ? null : <ReportPanel id={id} />}
+
+          <FormSection
+            title="What this campaign is"
+            description="The name is yours, to recognise it by. Nobody outside your team sees either of these."
+          >
+            <Field>
+              <FieldLabel>Name</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    value={name}
+                    disabled={!canEdit}
+                    onChange={(event) => {
+                      setName(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>What is it for?</FieldLabel>
+              <FieldControl
+                render={
+                  <Textarea
+                    color="module"
+                    rows={2}
+                    value={description}
+                    disabled={!canEdit}
+                    onChange={(event) => {
+                      setDescription(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+          </FormSection>
+
+          <FormSection
+            title="The steps"
+            description="In order, from the first thing somebody does to the outcome you want. Renaming a step keeps everything it has already recorded."
+          >
+            <StageLadderEditor stages={stages} onChange={setStages} disabled={!canEdit} />
+          </FormSection>
+
+          <FormSection
+            title="What counts as success"
+            description="Without this the campaign can only tell you what happened, not whether it worked, so it cannot be turned on."
+          >
+            <ConditionEditor
+              value={goal}
+              onChange={setGoal}
+              label="people"
+              emptyNote="Nothing chosen yet, so this campaign cannot be turned on. Add at least one thing that has to be true of somebody for it to have worked."
             />
-          ) : (
-            <ReportPanel id={id} />
-          )}
+          </FormSection>
 
-          <section className="flex flex-col gap-3">
-            <Heading level={2} className="text-lg font-semibold">
-              Setup
-            </Heading>
+          <FormSection
+            title="When to give up on somebody"
+            description="Somebody who starts and then goes quiet is not a failure yet, but at some point they are gone. This is how long to wait before saying so, which is what any follow-up you have set up waits for."
+          >
+            <Field>
+              <FieldLabel>Give up after</FieldLabel>
+              <FieldControl
+                render={
+                  <Select
+                    color="module"
+                    aria-label="Give up after"
+                    disabled={!canEdit}
+                    value={stallAfterHours === null ? 'default' : String(stallAfterHours)}
+                    onValueChange={(value) => {
+                      setStallAfterHours(value === 'default' ? null : Number(value));
+                    }}
+                    items={[
+                      {
+                        value: 'default',
+                        label: defaultStall
+                          ? `The usual for this kind of campaign (${hoursLabel(defaultStall)})`
+                          : 'The usual for this kind of campaign',
+                      },
+                      ...STALL_CHOICES.map((hours) => ({
+                        value: String(hours),
+                        label: hoursLabel(hours),
+                      })),
+                    ]}
+                  />
+                }
+              />
+              <FieldDescription>
+                {stallAfterHours === null
+                  ? 'Every campaign of this kind waits the same amount of time. Choose a length to give this one its own.'
+                  : 'This campaign waits longer or less than others of its kind, because you said so.'}
+              </FieldDescription>
+            </Field>
+          </FormSection>
 
-            <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-2">
-              <Field>
-                <FieldLabel>Name</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={name}
-                      disabled={!canEdit}
-                      onChange={(event) => {
-                        setName(event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>What is it for?</FieldLabel>
-                <FieldControl
-                  render={
-                    <Textarea
-                      color="module"
-                      rows={2}
-                      value={description}
-                      disabled={!canEdit}
-                      onChange={(event) => {
-                        setDescription(event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Heading level={3} className="text-base font-semibold">
-                The steps
-              </Heading>
-              <Text className="text-sm">
-                In order, from the first thing somebody does to the outcome you want. Renaming a
-                step keeps everything it has already recorded.
-              </Text>
-              <StageLadderEditor stages={stages} onChange={setStages} disabled={!canEdit} />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Heading level={3} className="text-base font-semibold">
-                What counts as success
-              </Heading>
-              <Text className="text-sm">
-                Without this the campaign can only tell you what happened, not whether it worked, so
-                it cannot be turned on.
-              </Text>
-              <ConditionEditor value={goal} onChange={setGoal} label="people" />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Heading level={3} className="text-base font-semibold">
-                When to give up on somebody
-              </Heading>
-              <Text className="text-sm">
-                Somebody who starts and then goes quiet is not a failure yet, but at some point they
-                are gone. This is how long to wait before saying so, which is what any follow-up you
-                have set up waits for.
-              </Text>
-              <Field>
-                <FieldLabel>Give up after</FieldLabel>
-                <FieldControl
-                  render={
-                    <Select
-                      color="module"
-                      aria-label="Give up after"
-                      disabled={!canEdit}
-                      value={stallAfterHours === null ? 'default' : String(stallAfterHours)}
-                      onValueChange={(value) => {
-                        setStallAfterHours(value === 'default' ? null : Number(value));
-                      }}
-                      items={[
-                        {
-                          value: 'default',
-                          label: defaultStall
-                            ? `The usual for this kind of campaign (${hoursLabel(defaultStall)})`
-                            : 'The usual for this kind of campaign',
-                        },
-                        ...STALL_CHOICES.map((hours) => ({
-                          value: String(hours),
-                          label: hoursLabel(hours),
-                        })),
-                      ]}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  {stallAfterHours === null
-                    ? 'Every campaign of this kind waits the same amount of time. Choose a length to give this one its own.'
-                    : 'This campaign waits longer or less than others of its kind, because you said so.'}
-                </FieldDescription>
-              </Field>
-            </div>
-
-            {update.isError ? (
-              <Text className="text-danger text-sm">
-                {funnelErrorMessage(update.error, 'That change could not be saved.')}
-              </Text>
-            ) : null}
-          </section>
+          {update.isError ? (
+            <Text className="text-danger text-sm">
+              {funnelErrorMessage(update.error, 'That change could not be saved.')}
+            </Text>
+          ) : null}
         </div>
       </div>
     </div>

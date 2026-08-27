@@ -3144,6 +3144,14 @@ async function main(): Promise<void> {
       // Scheduling (docs/79) — enabled so the dashboard surfaces + the public
       // /book page exercise against the seeded demo bookings/services/resources.
       scheduling: { enabled: true },
+      // Funnels (docs/151) — enabled so the Campaigns surfaces, the capture
+      // stitch and the shipped recipe library exercise locally. The module is
+      // FREE but still gated, so without this the console's Campaigns pane is
+      // simply absent and every funnels endpoint answers MODULE_DISABLED.
+      //
+      // This is the DEV DOGFOOD tenant, not the new-tenant default: a real
+      // tenant still starts with zero modules on and turns on what they want.
+      funnels: { enabled: true },
     },
   };
 

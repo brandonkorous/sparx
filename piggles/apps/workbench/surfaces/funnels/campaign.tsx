@@ -7,10 +7,7 @@
 
 import { useEffect } from 'react';
 import { useToast } from '@wizeworks/silicaui-react';
-import { faArrowProgress } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
-import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useConfirm } from '../../lib/confirm';
@@ -22,6 +19,7 @@ import { useCampaignDraft } from './campaign-draft';
 import { NewCampaign } from './campaign-new';
 import { ReportPanel } from './campaign-report';
 import { CampaignSetup } from './campaign-setup';
+
 import { funnelErrorMessage, useDeleteFunnel, useFunnel, useUpdateFunnel } from './data';
 import { canEditCampaigns } from './presentation';
 
@@ -30,6 +28,10 @@ export function CampaignSurface({ ctx }: { ctx: SurfaceContext }) {
   if (id === 'new') return <NewCampaign ctx={ctx} />;
   return <ExistingCampaign ctx={ctx} id={id} />;
 }
+
+/** The house column. A pane can be 1200px wide and a form still reads at ~700,
+ *  so every editor in this console centres itself in the same `max-w-3xl`. */
+const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const funnel = useFunnel(id);
@@ -137,18 +139,15 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         }}
       />
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex w-full flex-col gap-6 p-4">
-          {current.status === 'draft' ? (
-            <PaneEmpty
-              module="funnels"
-              icon={<Icon glyph={faArrowProgress} className="size-6" aria-hidden />}
-              title="Nothing recorded yet"
-              description="This campaign is a draft, so it is not counting anyone. Set up its steps and say what counts as success, then turn it on."
-            />
-          ) : (
-            <ReportPanel id={id} />
-          )}
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className={COLUMN}>
+          {/* NO report block on a draft, and no empty state standing in for one.
+              A draft has never counted anybody, which the toolbar already says
+              in four words — and a whole-pane empty state repeating it pushed
+              the form somebody opened this pane to fill in two thirds of the way
+              down the window. Every campaign starts as a draft, so that was the
+              first thing everyone saw. The report appears when there is one. */}
+          {current.status === 'draft' ? null : <ReportPanel id={id} />}
 
           <CampaignSetup
             draft={draft}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MODULES } from '@wizeworks/modules';
+import { ConditionGroup } from '@wizeworks/automation-schemas';
 import { FUNNEL_LIBRARY, recipesForModules } from './library';
 import { DEFAULT_STALL_HOURS, FunnelStages, stallHoursOf } from './schemas';
 
@@ -89,6 +90,22 @@ describe('recipesForModules — what a given tenant should get', () => {
 
   it('is empty rather than throwing for a tenant with nothing on', () => {
     expect(recipesForModules([])).toEqual([]);
+  });
+
+  it('writes goals the evaluator can actually evaluate', () => {
+    // Asserted against the REAL schema, for the same reason the module test is:
+    // this is where a made-up operator gets in. Every recipe shipped
+    // `is_not_empty` — a word that exists in no schema, no evaluator and no
+    // dropdown. Nothing rejected it, because the recipe type said `string`.
+    //
+    // What that costs is worth stating, because it is not a typo-shaped bug: a
+    // goal nothing matches makes a WORKING campaign report zero forever, which
+    // reads as "nobody responded" rather than "this was never able to say".
+    // The owner switches off the campaign that was fine.
+    for (const recipe of FUNNEL_LIBRARY) {
+      const parsed = ConditionGroup.safeParse(recipe.goal);
+      expect(parsed.success, `${recipe.key}: ${JSON.stringify(recipe.goal)}`).toBe(true);
+    }
   });
 
   it('names only modules the platform actually has', () => {

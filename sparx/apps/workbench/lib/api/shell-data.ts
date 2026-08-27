@@ -57,6 +57,37 @@ export function useActiveSiteId() {
 }
 
 /**
+ * The site this window is operating under, as an id.
+ *
+ * THE COOKIE IS A PREFERENCE, AND MOST PEOPLE HAVE NEVER SET ONE. It is written
+ * only by `switchSite()`, so an account with one site — or any operator who has
+ * simply never opened the switcher — has no cookie at all, and `/api/token`
+ * honestly reports `propertyId: null`. api-rest then scopes to the tenant's
+ * PRIMARY site, so the primary's id is what that null actually MEANS. It is the
+ * same rule the shell uses to key layouts, lifted out of `workbench-shell.tsx`
+ * so a surface can ask the question without re-deriving it.
+ *
+ * Reading the raw token value instead is not a smaller version of this answer,
+ * it is a wrong one, and it fails in the quietest possible way — a control that
+ * needs a site id is simply DEAD for every account that has never touched the
+ * switcher, with nothing on screen saying why. The new-campaign form shipped
+ * exactly that: "Create it" disabled forever, no message, no way for a business
+ * owner to work out that a switcher they had never opened was the reason.
+ *
+ * `/v1/properties` is already scoped to the sites this member may reach, so the
+ * primary here is the primary they are allowed to see.
+ *
+ * Null only while those reads are in flight.
+ */
+export function useActivePropertyId(): string | null {
+  const { data: tokenState } = useActiveSiteId();
+  const { data: sites } = useSites();
+  if (tokenState?.propertyId) return tokenState.propertyId;
+  if (!sites) return null;
+  return sites.find((site) => site.isPrimary)?.id ?? sites[0]?.id ?? null;
+}
+
+/**
  * Who the operator IS — their user id and their role in this account.
  *
  * Same source as `useActiveSiteId` above (the token route, which is the only

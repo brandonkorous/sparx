@@ -73,12 +73,18 @@ import {
 
 // A list has dropdowns; the platform has a condition language. These translate
 // between them, and they live HERE rather than in each list because the
-// translation has one specific way of going wrong: an operator name that is not
-// in the enum does not throw. `Condition` fails, the union falls through to the
-// sub-group branch whose fields are all defaulted, and the leaf is stored as an
-// empty group — so the view saves "no filters" and reports success. Typing the
-// operator as `ConditionOperator` here is what makes that a compile error at
-// every call site instead of a silent one at runtime.
+// translation had one specific way of going wrong: an operator name not in the
+// enum did not throw. `Condition` failed, the union fell through to the
+// sub-group branch whose fields are all defaulted, and the leaf was stored as an
+// empty group — so the view saved "no filters" and reported success.
+//
+// That runtime hole is now CLOSED AT THE SOURCE: condition groups are strict, so
+// a leaf that fails validation fails the whole parse instead of becoming "match
+// everything". This note used to describe a live trap that this file worked
+// around locally, which is why it kept catching people elsewhere — a shipped
+// campaign recipe fell straight into it. Typing the operator as
+// `ConditionOperator` here is still worth doing: it moves the same mistake from
+// a rejected write to a compile error, which is a better place to find it.
 
 /** One control's choice, expressed as a condition on a real field. */
 export interface ViewLeaf {

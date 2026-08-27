@@ -19,7 +19,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { PANE_SHELL } from '../../components/pane-toolbar';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { funnelErrorMessage, useCreateFunnel } from './data';
@@ -35,7 +35,10 @@ export function NewCampaign({ ctx }: { ctx: SurfaceContext }) {
   const [name, setName] = useState('');
   const [kind, setKind] = useState<FunnelKind>('lead');
   const create = useCreateFunnel();
-  const siteId = useActiveSiteId().data?.propertyId ?? null;
+  // The RESOLVED site, not the raw cookie value — see useActivePropertyId. This
+  // read the token directly, which is null for anybody who has never opened the
+  // site switcher, and left "Create it" permanently disabled for them.
+  const siteId = useActivePropertyId();
   const toast = useToast();
 
   useDirtySource(

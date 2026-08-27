@@ -26,10 +26,10 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 > [[feedback_test_as_a_business_owner]] describes, and it is where the next real
 > defects are.
 >
-> **Five migrations were authored in this run** (`…423` through `…427`). The
-> Prisma client has been regenerated against them; if the DB-backed integration
-> suites fail with "column does not exist", the database is behind the client and
-> wants `migrate deploy`.
+> **The five migrations from this run (`…423`–`…427`) are applied** and the
+> client is regenerated, so the local database is current and the DB-backed
+> suites run green. Ask for a dev restart before clicking: the running stack is
+> holding the pre-generate client.
 
 ## 1. The four decisions, settled 2026-08-25
 
@@ -1131,24 +1131,15 @@ Recorded up front because each has already cost this repo an incident.
 Everything above is the state of the WORK. This section is the state of the
 WORKING TREE and of the local environment, which no other file records.
 
-### ⚠ The database is behind the Prisma client — fix this first
+### The database is current _(applied 2026-08-26)_
 
-`prisma generate` has run against the new schema; `migrate deploy` has NOT. The
-generated client therefore selects columns the database does not have, and this
-is **not** confined to tests:
+All five migrations are on and the client is regenerated. `prisma migrate status`
+reads "Database schema is up to date" over 313 migrations, and the DB-backed
+suites run: **crm 455**, api-rest 398, builder 125, commerce 118, funnels 41. The
+`@wizeworks/db` RLS audit passes over 441 tables (408 tenant-scoped), which is what
+confirms the five new tables carry their POLICIES rather than just their columns.
 
-```
-The column `customers.lead_response_due_at` does not exist in the current database.
-```
-
-Any `customer` read or write through Prisma fails, because a select without an
-explicit projection asks for every scalar field. **The CRM screens in the running
-dev app are broken until the migrations are applied**, so there is no point
-opening a browser before that.
-
-Five migrations are waiting, and they must go on in name order:
-
-| Migration                                          | What it adds                                                          |
+| Migration                                          | What it added                                                         |
 | -------------------------------------------------- | --------------------------------------------------------------------- |
 | `20270423000000_an_abandoned_form_is_still_a_lead` | `partial_step` + the partial unique index on form submissions         |
 | `20270424000000_a_quiz_result_is_a_real_score`     | `quiz_scored_at`                                                      |
@@ -1156,8 +1147,20 @@ Five migrations are waiting, and they must go on in name order:
 | `20270426000000_a_new_lead_starts_a_clock`         | `lead_response_minutes`, `lead_response_due_at`, `first_responded_at` |
 | `20270427000000_one_offer_at_the_right_moment`     | `commerce_offers`, `commerce_offer_impressions` + RLS                 |
 
-The tell that they are on: `pnpm --filter @wizeworks/crm test` (without `CI=true`)
-runs the DB-backed suites green instead of printing "column does not exist".
+**The trap this section used to describe is worth keeping.** For part of a day
+the client was regenerated and the migrations were not applied. Prisma's
+generated client issues an EXPLICIT COLUMN LIST, so every unprojected `customer`
+read asked for a column the database did not have — which broke the CRM screens
+in the running app while `tsc` stayed green and `CI=true` hid it, because that
+flag excludes exactly the suites that would have caught it. Treat
+(`migrate deploy`, `generate`) as ONE operation; half of it is worse than
+neither.
+
+_One flake to expect, not a defect:_ running four packages' DB-backed suites
+concurrently against the single local Postgres made
+`api-rest/test/integration/builder-emails-per-site.test.ts` fail to LOAD once. It
+passes on its own. Run the heavy suites one package at a time when the result
+matters.
 
 ### What is committed
 
@@ -1175,14 +1178,227 @@ were not all funnels work:
 Phase A and Phase B went in earlier, across `cb91d27ea`, `04ef4b154`,
 `baeabe4e0` and `537434efb`.
 
+### Where the browser pass happens
+
+The plan below says what to check; this says where. Recorded because a cold start
+otherwise spends its first ten minutes rediscovering port numbers.
+
+| Surface                | URL                     |
+| ---------------------- | ----------------------- |
+| sparx workbench        | `http://localhost:3011` |
+| piggles console        | `http://localhost:3022` |
+| tenant site (rendered) | `http://localhost:3004` |
+| sparx marketing        | `http://localhost:3003` |
+| piggles marketing      | `http://localhost:3020` |
+| staff console (admin)  | `http://localhost:3002` |
+| market                 | `http://localhost:3010` |
+| api-rest               | `http://localhost:3100` |
+
+Sign in with the seeded staff account: **`e2e-staff@sparx.test`** /
+**`e2e-test-password`**, on the dogfood tenant **`wizeworks`**. Both are declared
+at the top of `wizeworks/packages/db/prisma/seed.ts` and are baked into the
+Playwright tests, so they are stable rather than incidental.
+
+`pnpm dev` runs everything at once (`turbo run dev --concurrency=30`). **The user
+owns that lifecycle** — ask for a restart, never start one, because a second dev
+server collides with theirs and with any parallel agent.
+
+**The seed had to grow a flag before any of this was reachable.** `funnels` was
+not in the dogfood tenant's module list, so the Campaigns pane was absent from
+the console and every funnels endpoint answered `MODULE_DISABLED`. It is now
+enabled in `prisma/seed.ts` beside chat / ai / scheduling, which are on for the
+same reason. **`pnpm --filter @wizeworks/db db:seed` has to run** for that to take
+effect — the flag is a seed change, not a migration.
+
+That is worth remembering as a shape: a module-gated surface built end to end
+still shows a business owner nothing until somebody turns the module on, and the
+absence looks exactly like a surface that was never built.
+
+### What the first browser pass found _(2026-08-26)_
+
+Three of the seven passes below are now partly or wholly done, and the pass
+stopped on a workbench-shell blocker that has nothing to do with funnels.
+
+**FIXED — the module could not be turned on at all.** `funnels` is in
+`ALL_MODULES`, the API returns it, the surfaces are registered — and it was
+absent from `MODULE_META` in BOTH consoles' Modules screens, which is the only
+screen that turns a module on. The catalogue skips a slug it has never heard of
+silently, so the card simply was not there. `surfaces/modules/data.ts` names this
+exact footgun in its own comment and lists `finance` and `staff` as the previous
+two victims; funnels is the third. Both catalogues now carry an entry
+(sparx: lucide `Waypoints`; piggles: `faArrowProgress` — the same marks their
+Campaigns surfaces use, so the thing you switch on and the thing that appears
+read as one module). It renders as **Free** rather than a price, and the turn-on
+confirm says "It is free — nothing is added to your bill."
+
+This is the same shape as [[feedback_absent_behaves_like_fine]]: a MISSING
+registration renders identically to a correct one, which is why nothing caught
+it. Neither typecheck, nor lint, nor 400 tests can see a card that was never
+asked for.
+
+**PASS 6 (the library) — done, through the real activation path.** Turning
+Campaigns on from the Modules screen published `module.activated`, and the
+worker installed the recipes as drafts: **6 of 7** (the b2b quote follow-up is
+correctly skipped — b2b is off on this tenant), **once per site**, so 14 sites ×
+6 = 84 rows. Worth knowing before it surprises somebody: a tenant with many
+sites gets the library in every one of them the moment they switch the module
+on. That is right — a funnel is site-scoped and each business needs its own —
+but it is a lot of drafts arriving at once.
+
+**PASS 1 (Campaigns list) — done. The detail pane was not reached.** The list
+renders the six recipes with name, Draft badge, description, the stage chips in
+order, and the goal line on the right. What is still unanswered is everything
+about the DETAIL pane: the ladder's shape at pane width, the two empty states,
+the disabled-activation reason, and the B5a "Give up after" default.
+
+**BLOCKER — the workbench restores every pane it has ever opened.** The primary
+site's saved layout held **134 panes / 38KB**, and restoring it now crashes the
+browser tab outright (Chrome killed and replaced it three times). Once that
+layout is poisoned, EVERY route is affected, `/home` included, because the shell
+restores the arrangement before it renders anything — so there is no way to
+click past it from inside the app.
+
+`lib/workbench/persistence.ts` has no cap and no pruning: `saveLayout` writes
+whatever is open on every change, and `loadLayout` replays all of it. The file's
+premise ("arrange it once, it stays arranged") is right, and it is unbounded,
+which is a different thing. An operator who works in the console daily reaches
+this on their own; the number just arrives sooner on a dev account. A fix has to
+choose a policy — a cap with the oldest-touched panes dropped, or a prune of
+entity panes whose record is gone — and either can silently discard somebody's
+arrangement, so it wants a deliberate decision rather than a quick bound.
+
+Two smaller things seen from the same storage dump:
+
+- A layout key literally named `sparx-workbench-layout:[object Object]` (0 panes)
+  — something once passed the site OBJECT where `layoutKey` wants the id. Every
+  current caller passes a string, so this looks like a stale key from an older
+  build rather than a live path.
+- The analytics consent dialog reappeared on a later route after "No thanks" was
+  clicked once. Not chased down; noted so the next pass knows to look.
+
+### The second browser pass — and the bug under the bug _(2026-08-26)_
+
+With the workbench crash fixed (docs/123), pass 1 finished. **B5a verified on
+screen**: "Give up after" reads "The usual for this kind of campaign (2 weeks)"
+for a `lead` campaign, and with a 30-day override chosen the default option
+STILL reads "(2 weeks)" rather than echoing the choice — the exact bug this
+build fixed earlier, now confirmed from the outside. The dirty round trip is
+clean too: choosing an override enabled Save, dotted the tab and put "1 unsaved
+change" in the status bar; reverting cleared all three. Tab dot and status bar
+agreeing is also the shared dirty poll working.
+
+Then the goal editor produced a chain of four defects, each hiding the next.
+
+**1. The empty state said the opposite of the truth.** With no goal, the editor
+printed "No conditions yet — this runs every time its trigger happens" directly
+beneath the surface's own sentence saying the campaign "cannot be turned on".
+Automation vocabulary in a campaign: a campaign has no trigger, and empty does
+not mean "runs always", it means "cannot run". `ConditionEditor` now takes an
+`emptyNote` so the caller says what empty MEANS there; the automation wording
+stays its default.
+
+**2. Every recipe in the library shipped an operator that does not exist.**
+`is_not_empty` — not in the schema, not in the evaluator, not in the console's
+dropdown. The recipe type said `operator: string`, so nothing objected. Now
+typed to the real `ConditionOperator` union, and the operator is `is_set`.
+
+**3. The reason nothing objected, which is the real one.** `ConditionGroup`
+accepted it. A group's two fields both have defaults, so `z.object` treated ANY
+object as a valid group: a leaf condition that failed `Condition` fell through
+the union to the group branch, had its unknown keys stripped, and came back as
+`{logic:'AND', conditions:[]}` — an EMPTY GROUP, which always passes.
+
+So a malformed condition did not fail and did not match nobody. **It silently
+became "no filter at all"**, with `success: true` on the way through. An
+automation meant for one segment would run for every customer; a campaign meant
+to count the people who finished would count everyone who started and report a
+perfect rate. Groups are `z.strictObject` now, and
+`automation-schemas/src/condition.test.ts` pins it — including that the
+deliberate empty group still works, since "no filter" is a real thing to mean.
+
+Two things fell out of that. The CRM saved-view test was passing
+`{lifecycleStage:'lead'}` — a plain map, not a condition group — so it had been
+saving a view with NO filter while asserting about one; fixture fixed. And
+`surfaces/crm/saved-views-menu.tsx` already carried a comment describing this
+exact trap, worked around locally by typing the operator at that one call site.
+That is why it kept catching people elsewhere: the workaround protected one
+screen and left the hole open. The note now says the source is fixed.
+
+**4. The console trusted JSON the server would refuse.** `asGoal` duck-typed on
+the presence of `conditions` and CAST. The server parses the same value and
+treats a failure as no goal, so a campaign with a malformed goal drew a
+condition row with a raw operator slug in it and offered an ENABLED "Turn it on"
+that the server would have rejected. Both consoles now parse, and fall back to
+the empty group — which is what the server already believes.
+
+Verified together on screen afterwards: the seeded row's bad goal reads as no
+goal, the empty note explains it, and "Turn it on" is correctly disabled.
+
+_Dev note, not a defect:_ a workbench tab that has absorbed a lot of Fast
+Refresh churn wedges on its own. A fresh tab loads the same 136-pane layout
+immediately. Do not read a wedged tab after a run of edits as a regression —
+open a new one first.
+
+### The campaign surface did not look like the product _(2026-08-26)_
+
+Brandon looked at the campaign pane and said it matched neither console. He was
+right, and the reason is worth writing down because it is not a taste
+disagreement — there is a house pattern with a name, and this surface simply did
+not use it.
+
+Every editor in both consoles is built the same way: a **measured centred
+column** (`mx-auto flex w-full max-w-3xl flex-col gap-4`) with each group in a
+**`<FormSection title description>`** — a card on the pane's grey ground, its
+heading over a hairline rule. **158 surfaces in sparx use `FormSection`; 134 use
+that column.** The campaign pane used neither: bare headings sitting straight on
+the background, full-bleed across a 1200px pane, inputs stretched end to end.
+
+Both consoles are on the pattern now. The lesson is the cheap one:
+[[feedback_silicaui_single_point_of_change]] is usually quoted about components,
+and it applies just as much to LAYOUT — before building a new kind of screen,
+open two existing ones and copy how they are put together. Nothing in typecheck
+or lint can tell you a surface was built in its own idiom.
+
+Looking at piggles turned up a second, worse one. **"Create it" on a new campaign
+was permanently disabled there**, with no message. `campaign-new` read
+`useActiveSiteId().data?.propertyId` — the RAW cookie value — which is `null` for
+anybody who has never opened the site switcher, which is most people. It worked
+in sparx only because the dogfood account had used the switcher once.
+
+`useActivePropertyId` exists in piggles precisely for this, and its own doc
+comment describes the previous victim: "this is how the whole site builder went
+dark for every account that had never touched the site switcher: no error, no
+failed request, just a studio session that was never created." The funnels form
+fell into a documented trap, and it is the same shape as
+[[feedback_absent_behaves_like_fine]] — a null that renders as a control that
+simply never works. sparx had the logic only inline in `workbench-shell.tsx`, so
+the hook is now lifted there too; both consoles use it.
+
+Worth flagging separately: **a disabled primary action with no reason is its own
+defect**, independent of the null. "Create it" sat there dead and said nothing.
+
+**And the draft opened on an empty state instead of the work.** A whole-pane
+"Nothing recorded yet" with the mascot sat above the setup form, pushing it two
+thirds of the way down the window. It was telling somebody what the toolbar
+already says in four words (`Draft · Not counting anyone yet.`), in three times
+the space, on the ONE state every campaign starts in — so it was the first thing
+everyone saw, every time. A draft now renders no report block at all and opens
+straight on the form; the report appears when there is one.
+
+The general shape: **a whole-pane empty state is for a whole pane.** Used as a
+section header above a form it costs the reader the thing they opened the pane
+to do, and it says nothing the surface's own chrome has not already said.
+
 ### The browser pass: what to actually click
 
-Nothing below has been done. Every slice has probe coverage or tests; none of it
-has been LOOKED at, which is the gap [[feedback_test_as_a_business_owner]]
-describes. Drive each one as the business owner, not as an agent — reading a JSON
-response proves nothing about whether anybody can reach the screen.
+Passes 1 and 6 are covered above; the rest is untouched. Every slice has probe
+coverage or tests, and being LOOKED at is a different thing, which is the gap
+[[feedback_test_as_a_business_owner]] describes. Drive each one as the business
+owner, not as an agent — reading a JSON response proves nothing about whether
+anybody can reach the screen.
 
-**1. The Campaigns surfaces (B5 + B5a), both consoles.** Never opened.
+**1. The Campaigns surfaces (B5 + B5a), both consoles.** List done in sparx; the
+DETAIL pane and the whole piggles console are still unopened.
 
 - Does the ladder read as a SHAPE at pane width, or does it collapse into bars
   that all look the same?
@@ -1221,8 +1437,11 @@ skipped with a loud log (by design — a relative link in an email is broken).
 Check the email arrives, the link downloads, and an expired token says "that link
 ran out" rather than 404.
 
-**6. The library (D3).** Activate a module on a test tenant and see whether the
-recipes land as drafts that can be turned on WITHOUT further configuration.
+**6. The library (D3).** DONE — see above. What is still worth checking is the
+other half of the sentence: that a landed recipe can be turned on WITHOUT
+further configuration. Every one of the six arrived as a draft, and a draft
+cannot run until it has a goal, so "turn it on and it works" is a claim the
+recipes have not yet been made to prove.
 
 **7. An order bump (E1)** on a real checkout, and a **post-purchase upsell (E2)**
 against a saved card. E2 is the one to be careful with: confirm a decline leaves
