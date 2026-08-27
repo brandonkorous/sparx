@@ -415,8 +415,8 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
           {passwordField}
           {!knowsHowYouSignIn && signIn.isError ? (
             <Text className="text-sm">
-              We could not check whether your account uses a password. Enter it below if you have
-              one, or carry on without it.
+              We could not check whether your account uses a password. Enter it if you have one, or
+              carry on without it.
             </Text>
           ) : null}
           {knowsHowYouSignIn && !needsPassword ? (
