@@ -22,13 +22,12 @@ import {
   caption,
   gridThree,
   primaryAction,
-  secondaryAction,
   section,
   sectionAlt,
   sectionHead,
   CARD,
 } from './_shell';
-import { boundPhoneLine } from './_contact-fields';
+import { boundContactAction, boundPhoneLine } from './_contact-fields';
 
 /** A labelled text field. The label wraps the control, so the pair needs no `id` —
  *  which matters because two of these blocks on one page would otherwise emit
@@ -160,7 +159,10 @@ export function bookingPrompt(): Node {
         }),
         actions([
           primaryAction('See available times', '/book'),
-          secondaryAction('Call instead', 'tel:+15551234567'),
+          // Bound, never a literal: this shipped `tel:+15551234567`, so a visitor
+          // tapping "Call instead" on a phone dialled a stranger (issue 268). The
+          // button goes when the business has typed no number.
+          boundContactAction('phone', 'btn btn-neutral btn-outline btn-lg', 'Call instead'),
         ]),
       ],
     }),

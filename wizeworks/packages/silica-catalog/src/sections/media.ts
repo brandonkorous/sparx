@@ -38,6 +38,7 @@
 import { el, type Node } from '@wizeworks/silicaui-html';
 
 import { hostCore, HOST_KEYS } from '../host-nodes';
+import { boundContactAction } from './_contact-fields';
 import { section, sectionHead } from './_shell';
 import type { CatalogGroup } from '../types';
 
@@ -128,7 +129,11 @@ export function mapBlock(): Node {
             el('span', 'text-lg font-semibold', { text: 'Your business name' }),
             el('span', '', { text: '123 Example Street' }),
             el('span', '', { text: 'Your town, POST CODE' }),
-            el('a', 'link link-primary', { text: 'Call us', attrs: { href: 'tel:+15551234567' } }),
+            // Bound, never a literal. The three lines above announce themselves as
+            // placeholders, which is exactly what made this one dangerous: it looked
+            // like the one finished thing on the block, and its `href` dialled a
+            // number nobody here owns (issue 268).
+            boundContactAction('phone', 'link link-primary', 'Call us'),
           ],
         }),
         hostCore(HOST_KEYS.siteMap, 'w-full @3xl:flex-1', {
