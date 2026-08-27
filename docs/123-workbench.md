@@ -1,8 +1,8 @@
 # 123 — Workbench: the Multi-Window Operator App
 
-Version: 1.3.0
+Version: 1.4.0
 Author: Brandon Korous
-Last Updated: 2026-08-06
+Last Updated: 2026-08-26
 
 ## Purpose
 
@@ -101,6 +101,62 @@ mounts its own `ToastProvider` + `ImperativeAlertDialogProvider` inside the
 boundary so outcomes announce in the acting window. The provider structure is
 identical docked and detached — a shape change on tear-off would remount the
 surface and wipe unsaved state.
+
+## Open panes are cheap; mounted panes are not
+
+The workbench promises "arrange it once, it stays arranged", and that promise was
+**unbounded**. Panes accumulate — that is the point of the app — and nothing ever
+let one go. An operator reached **134 saved panes**, at which point opening the
+workbench mounted 134 surfaces, fired well over a hundred API calls in one
+breath, and killed the browser tab. Every route was affected rather than just the
+one holding the panes, because the arrangement is restored before anything
+renders, which also puts the in-app reset control on the far side of the crash.
+
+Two things caused it, and both are worth knowing before adding anything per-pane.
+
+**dockview mounts every panel up front.** Its `onlyWhenVisible` renderer — the
+default, and what this dock uses — decides where a panel's element SITS, not
+whether React mounts it; `ReactPanelContentPart.init()` runs at panel creation.
+So the renderer name is misleading for our purposes and gives us nothing here.
+
+**Per-pane costs multiply by a number nobody bounds.** Each tab ran its own
+1.5-second `setInterval` asking whether its pane was dirty. The comment defending
+it said one call per pane per tick is nothing, which is true of one tab and false
+of a hundred and thirty-four.
+
+### The three rules now in force
+
+1. **One poll, not one per tab** (`lib/workbench/dirty.tsx`). A single timer walks
+   every guard once per tick and hands out the answer; it runs only while
+   something is subscribed. The status bar reads the SAME tick, which is also
+   what stops the bar's count and the tabs' dots from disagreeing.
+2. **A pane mounts the first time it is looked at** (`lib/dock/pane-liveness.ts`).
+   A restored pane nobody opened was never opened. The first visibility read is
+   deferred by a timeout, because a layout restore creates every panel before it
+   arranges the groups — read synchronously, `isVisible` is briefly true for
+   panes about to become background tabs.
+3. **A hidden, clean pane unmounts after five minutes, and at most twelve stay
+   mounted.** The tab, title and position never move; looking at the pane builds
+   it back. Five minutes is the query client's `gcTime` — past it a woken pane
+   refetches anyway, so the memory had already stopped being worth anything.
+
+**Unsaved work is an absolute veto**, checked at the moment of sleeping rather
+than when the timer was set. Nothing visible is ever unmounted either, however
+many panes are on screen. What is NOT preserved: scroll position and any view
+state a surface keeps in local state rather than in its pane params — waking is a
+fresh mount. That is the same bargain a browser makes when it discards a
+background tab.
+
+There is deliberately **no visible "asleep" state** — no dimming, no badge. Waking
+is a frame, the tab strip already carries title, module hue and the dirty dot, and
+a fourth state would be vocabulary about an implementation detail nobody can act
+on. Dimming would be wrong twice over: a faded tab reads as "not meant to be
+read" (DESIGN.md), and these are meant to be read and clicked. A pane that
+genuinely cannot come back — its record deleted — is a different thing and does
+show itself.
+
+Piggles' console carries all three rules identically; it is the same dock with
+the same failure.
 
 ## Pane or modal?
 

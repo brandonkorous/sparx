@@ -13,39 +13,19 @@ import { readWriteMeta } from '../lib/api/write-meta';
 import type { DetachedWindow } from '../lib/workbench/pane-host';
 import type { PaneDescriptor } from '../lib/surfaces/descriptor';
 import { useWorkbench } from '../lib/workbench/context';
-
-/** Dirty guards are pull-based closures — nothing fires when an editor flips
- *  dirty — so the count is polled. Iterating a handful of closures every
- *  1.5s is nothing, and the state setter bails when the ids match. */
-const DIRTY_POLL_MS = 1500;
+import { useDirtyPaneList } from '../lib/workbench/dirty';
 
 /** How often "Saved 2m ago" re-reads the clock. The label only changes at
  *  minute boundaries, so anything finer is wasted renders. */
 const AGO_TICK_MS = 30_000;
 
+/** Dirty guards are pull-based closures — nothing fires when an editor flips
+ *  dirty — so the answer is polled. The poll itself lives in lib/workbench/dirty
+ *  and is shared with every tab's indicator: the bar and the dots answer the
+ *  same question, and a bar reporting a count the tabs disagree with reads as a
+ *  bug. It used to be a second timer here saying the same thing 1.5s apart. */
 export function useDirtyPanes(): PaneDescriptor[] {
-  const { controller } = useWorkbench();
-  const [dirty, setDirty] = useState<PaneDescriptor[]>([]);
-
-  useEffect(() => {
-    const sync = () => {
-      setDirty((current) => {
-        const next = controller.dirtyPanes();
-        const same =
-          next.length === current.length && next.every((pane, i) => pane.id === current[i]?.id);
-        return same ? current : next;
-      });
-    };
-    sync();
-    const timer = setInterval(sync, DIRTY_POLL_MS);
-    const unsubscribe = controller.subscribe(sync);
-    return () => {
-      clearInterval(timer);
-      unsubscribe();
-    };
-  }, [controller]);
-
-  return dirty;
+  return useDirtyPaneList();
 }
 
 /**

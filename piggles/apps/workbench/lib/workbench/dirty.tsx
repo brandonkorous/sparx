@@ -19,8 +19,17 @@
 // itself — which is what makes a picker three components deep able to protect
 // its own work without the surface above it knowing the picker exists.
 
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
 import type { ReactNode } from 'react';
+import type { PaneDescriptor } from '../surfaces/descriptor';
+import type { WorkbenchController } from './controller';
 import { useWorkbench } from './context';
 
 const PaneIdContext = createContext<string | null>(null);
@@ -73,33 +82,135 @@ export function useDirtySource(dirty: boolean, message?: string): void {
   }, [controller, paneId, message]);
 }
 
-/** How often a tab re-asks whether its pane is dirty. Matches the status bar's
- *  cadence deliberately: the two indicators answer the same question, and a tab
- *  showing a dot while the bar's count disagrees reads as a bug. */
+/** How often the workbench re-asks which panes are dirty. Matches the status
+ *  bar's cadence deliberately: the two indicators answer the same question, and
+ *  a tab showing a dot while the bar's count disagrees reads as a bug. */
 const DIRTY_POLL_MS = 1500;
 
 /**
- * Whether ONE pane currently holds unsaved work — for a tab's indicator.
+ * ONE poll for the whole window, however many tabs are open.
  *
- * Polled for the same reason the status bar polls: guards are pull-based
- * closures, and nothing fires when a form flips dirty. The cost is one function
- * call per pane per tick, which is why each tab can afford to ask for itself
- * rather than subscribing to a list it would have to search anyway.
+ * This used to be an interval per tab, and the reasoning written here was that
+ * "one function call per pane per tick" is nothing — true of one tab and false
+ * of the tab strip as a whole. An operator with 134 panes restored was running
+ * 134 timers, ~90 callbacks a second, each walking that pane's guards: a cost
+ * that grew with exactly the thing the workbench encourages you to accumulate.
+ *
+ * Now one timer walks every guard ONCE per tick and hands out the answer. The
+ * timer only runs while something is subscribed, so a window with no tab strip
+ * (a lone popout) polls not at all.
+ *
+ * Kept per-controller rather than module-global because a torn-off window has
+ * its own React root but shares this controller — a WeakMap gets that right in
+ * both directions without either side having to know which case it is in.
  */
+class DirtyPoll {
+  private readonly listeners = new Set<() => void>();
+  private timer: ReturnType<typeof setInterval> | null = null;
+  private panes: PaneDescriptor[] = [];
+  private ids: ReadonlySet<string> = new Set<string>();
+
+  constructor(private readonly controller: WorkbenchController) {}
+
+  /** Stable identity — useSyncExternalStore re-subscribes when this changes. */
+  readonly subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    if (this.timer === null) {
+      this.sync();
+      this.timer = setInterval(() => {
+        this.sync();
+      }, DIRTY_POLL_MS);
+    }
+    return () => {
+      this.listeners.delete(listener);
+      if (this.listeners.size === 0 && this.timer !== null) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+    };
+  };
+
+  isDirty(paneId: string): boolean {
+    return this.ids.has(paneId);
+  }
+
+  /** The same array identity until the SET of dirty panes actually changes, so
+   *  a subscriber can return it straight from a snapshot without looping. */
+  dirtyPanes(): PaneDescriptor[] {
+    return this.panes;
+  }
+
+  /** Re-read now instead of waiting for the next tick. Closing a pane changes
+   *  the list without any guard changing, and up to 1.5s of a closed pane still
+   *  listed as unsaved reads as a bug. */
+  refresh(): void {
+    this.sync();
+  }
+
+  private sync(): void {
+    const next = this.controller.dirtyPanes();
+    const same =
+      next.length === this.panes.length && next.every((pane, i) => pane.id === this.panes[i]?.id);
+    if (same) return;
+    this.panes = next;
+    this.ids = new Set(next.map((pane) => pane.id));
+    for (const listener of this.listeners) listener();
+  }
+}
+
+const POLLS = new WeakMap<WorkbenchController, DirtyPoll>();
+
+function pollFor(controller: WorkbenchController): DirtyPoll {
+  let poll = POLLS.get(controller);
+  if (!poll) {
+    poll = new DirtyPoll(controller);
+    POLLS.set(controller, poll);
+  }
+  return poll;
+}
+
+/** Whether ONE pane currently holds unsaved work — for a tab's indicator. */
 export function usePaneDirty(paneId: string): boolean {
   const { controller } = useWorkbench();
-  const [dirty, setDirty] = useState(false);
+  const poll = pollFor(controller);
+  const snapshot = useCallback(() => poll.isDirty(paneId), [poll, paneId]);
+  // The server never has a tab strip; false is the honest answer there and it
+  // matches what the first client tick reports for a freshly restored pane.
+  return useSyncExternalStore(poll.subscribe, snapshot, () => false);
+}
 
-  useEffect(() => {
-    const sync = () => {
-      setDirty(controller.isPaneDirty(paneId));
-    };
-    sync();
-    const timer = setInterval(sync, DIRTY_POLL_MS);
-    return () => {
-      clearInterval(timer);
-    };
-  }, [controller, paneId]);
+/**
+ * Every pane holding unsaved work — the status bar's list.
+ *
+ * Reads the SAME tick as the tabs, which is what keeps the bar's count and the
+ * dots on the tabs from disagreeing. It also subscribes to the controller
+ * itself: a pane closing changes the list without any guard changing, and
+ * waiting up to 1.5s to drop a pane that is already gone looks like a bug.
+ */
+export function useDirtyPaneList(): PaneDescriptor[] {
+  const { controller } = useWorkbench();
+  const poll = pollFor(controller);
+  const subscribe = useCallback(
+    (listener: () => void) => {
+      const stopPoll = poll.subscribe(listener);
+      // Refresh rather than notify: the poll's own diff decides whether this
+      // actually changed anything, so a close that removes no dirty pane costs
+      // one walk and no render.
+      const stopController = controller.subscribe(() => {
+        poll.refresh();
+      });
+      return () => {
+        stopPoll();
+        stopController();
+      };
+    },
+    [poll, controller]
+  );
+  const snapshot = useCallback(() => poll.dirtyPanes(), [poll]);
+  return useSyncExternalStore(subscribe, snapshot, EMPTY_PANES);
+}
 
-  return dirty;
+const NO_PANES: PaneDescriptor[] = [];
+function EMPTY_PANES(): PaneDescriptor[] {
+  return NO_PANES;
 }
