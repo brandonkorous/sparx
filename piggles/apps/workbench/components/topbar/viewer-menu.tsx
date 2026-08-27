@@ -9,9 +9,7 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Tooltip,
@@ -100,14 +98,17 @@ export function ViewerMenu({
           </DropdownMenuTrigger>
         </Tooltip>
         <DropdownMenuContent align="end">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>
-              <span className="flex flex-col">
-                <span className="font-medium">{userName}</span>
-                <span className="text-sm font-normal">{userEmail}</span>
-              </span>
-            </DropdownMenuLabel>
-          </DropdownMenuGroup>
+          {/* A plain block, NOT DropdownMenuLabel. That component is silica's
+              group HEADING — uppercase, 12px, 55% opacity — which is right for
+              "Your sites" and wrong for a person's own address: it rendered
+              hers as P03.DEVI@PIGGLES.TEST, faded, in the one place she looks
+              to check which account she is signed in to. Silica has no
+              non-heading header slot for a menu; when it does, this becomes
+              that component. */}
+          <div className="flex flex-col px-2.5 py-1.5">
+            <span className="font-medium">{userName}</span>
+            <span className="text-sm">{userEmail}</span>
+          </div>
           <DropdownMenuSeparator />
           {/* Her password, the devices she is signed in on, and two-step
               verification. It is the first thing a person looks for under their

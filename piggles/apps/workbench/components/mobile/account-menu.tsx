@@ -56,12 +56,17 @@ export function AccountMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>
-              <span className="block truncate">{userName}</span>
-              <span className="block truncate text-sm">{userEmail}</span>
-            </DropdownMenuLabel>
-          </DropdownMenuGroup>
+          {/* A plain block, NOT DropdownMenuLabel. That component is silica's
+              group HEADING — uppercase, 12px, 55% opacity — which is right for
+              "Your sites" and wrong for a person's own address: it rendered
+              hers as P03.DEVI@PIGGLES.TEST, faded, in the one place she looks
+              to check which account she is signed in to. Silica has no
+              non-heading header slot for a menu; when it does, this becomes
+              that component. */}
+          <div className="flex flex-col px-2.5 py-1.5">
+            <span className="truncate font-medium">{userName}</span>
+            <span className="truncate text-sm">{userEmail}</span>
+          </div>
           <DropdownMenuSeparator />
           {/* The same three choices the desktop bar offers, from the same
               component — a phone has no room for a second trigger, but it is
