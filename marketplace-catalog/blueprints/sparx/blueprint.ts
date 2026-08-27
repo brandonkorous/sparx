@@ -11,9 +11,12 @@
 //     DATA by `blueprint:capture` (or the MCP `get_silica_site` read) and imported
 //     from ./site.json — never hand-transcribed.
 //   · `brand` / `theme` / `commerce` / `content` / `emails` — hand-authored here,
-//     mirrored from the live tenant for coherence (the 6 neutral demo goods, the 3
-//     universal journal posts) so the bundle is a transcript of something proven,
-//     not invented.
+//     mirrored from the live tenant for coherence (the 6 neutral demo goods) so the
+//     bundle is a transcript of something proven, not invented. `content` is now
+//     EMPTY: the three journal posts it used to carry were the vendor's advice to a
+//     shop owner, published on the shop's own journal for its customers to read, and
+//     the twenty-one themed clones inherited them — so a dental clinic opened with
+//     "Writing product descriptions that actually sell" (issue 266).
 //
 // Rules: reference by HANDLE (never a runtime id); every image goes through `assets`
 // by id; trees bind brand via tokens so they re-skin per installing tenant.
@@ -46,7 +49,7 @@ import content from './content.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx',
-  version: '1.5.0',
+  version: '1.6.0',
   name: 'Universal Starter',
   summary:
     'A complete, multi-module starter — shop, journal, booking, and wholesale — in the Ember look. Install it, make it yours, and launch a polished working site in minutes.',

@@ -303,7 +303,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(KEY)},
-  version: '1.1.0',
+  version: '1.2.0',
   name: ${JSON.stringify(name)},
   summary: ${JSON.stringify(summary)},
   vertical: 'retail',
@@ -340,7 +340,7 @@ export default blueprint;
             category: 'blueprint',
             slug: KEY,
             name,
-            version: '1.1.0',
+            version: '1.2.0',
             tagline: 'A complete multi-module starter — shop, journal, bookings, and wholesale.',
             description: summary,
             payload: 'blueprint.ts',

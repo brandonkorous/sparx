@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-lodge',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'Lodge',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Lodge look, tuned for hotels, cabins, and short-stay rentals. Install it, make it yours, and launch a polished working site in minutes.',

@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-ledger',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'Ledger',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Ledger look, tuned for accountancy, law, and financial advice. Install it, make it yours, and launch a polished working site in minutes.',
