@@ -656,3 +656,65 @@ import mode.caddy
 		reverse_proxy site.sparx-prod.svc.cluster.local:3000
 	}
 }
+
+# ----- AGCONN (co-tenant in the `agconn` namespace) -----------------------------
+#
+# AGCONN (agconn.com) is a bilingual farmworker platform, a FIFTH product on this
+# cluster. It deploys from its own repository (brandonkorous/AgConnect) into the
+# `agconn` namespace; Caddy reaches its Services cross-namespace. Its database and
+# object storage are NOT on Azure — they stay on Supabase — so nothing here or in
+# terraform/envs/azure/agconn.tf touches its data.
+#
+# FOUR HOSTNAMES, THREE SERVICES. Confirmed against the cluster on 2026-08-27
+# (`kubectl -n agconn get svc` -> admin, api, web, all :80):
+#
+#   agconn.com        marketing site AND the app  -> web
+#   www.agconn.com    301 to the apex             -> (no backend)
+#   api.agconn.com    the Hono API                -> api
+#   admin.agconn.com  the admin console           -> admin
+#
+# There is no separate marketing Service. Unlike kanNINJA, whose `frontend` serves
+# the app and whose marketing lives elsewhere, AGCONN's public pages and its
+# signed-in surfaces are one Next.js Service — which is why the apex proxies to
+# the same place the app does.
+#
+# ON-DEMAND TLS (`tls_policy`), like kanNINJA and silicaui, and for the reason
+# spelled out on the kanNINJA block above: this Caddy is `replicas: 1` on a
+# `Recreate` rollout, so every boot has a window with no registered load-balancer
+# backend, and an explicit managed block spends all of its startup issuance
+# attempts inside it. On-demand defers issuance to the first HTTPS request, which
+# lands on a warm pod.
+#
+# THE ALLOW-LIST IS THE OTHER HALF OF THIS CHANGE. All four names must appear in
+# PLATFORM_HOSTNAMES in
+# wizeworks/services/api-rest/src/routes/internal/domain-check.ts. Removing one
+# there silently costs that hostname its certificate, and Cloudflare answers 525
+# for that name alone — which reads like a routing bug and is a TLS failure.
+#
+# ADMIN IS AN ORDINARY BLOCK, not an Origin CA one. sparx's own admin host takes
+# `tls_admin_origin` because it sits behind Cloudflare Access; AGCONN's admin is a
+# Next.js app gated by Clerk, with no such arrangement, so it takes the same
+# on-demand policy as everything else.
+{$SX_SCHEME:https}://agconn.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy web.agconn.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.agconn.com {
+	import tls_policy
+	import security_headers
+	redir https://agconn.com{uri} permanent
+}
+
+{$SX_SCHEME:https}://api.agconn.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy api.agconn.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://admin.agconn.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy admin.agconn.svc.cluster.local:80
+}

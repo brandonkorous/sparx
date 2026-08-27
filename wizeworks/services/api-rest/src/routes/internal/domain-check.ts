@@ -118,6 +118,22 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'www.kanninja.com',
   'api.kanninja.com',
   'mcp.kanninja.com',
+  // ── AGCONN ───────────────────────────────────────────────────────────────
+  // A bilingual farmworker platform in the `agconn` namespace, deployed from its
+  // own repository. Its four hostnames `import tls_policy` in the Caddyfile, so
+  // these entries are what actually permit issuance — a name routed there but
+  // absent here gets no certificate, and Cloudflare answers 525 for that
+  // hostname alone, which reads like a routing bug and is a TLS failure.
+  //
+  // `www.` only ever 301s to the apex, but it terminates TLS to do it, so it
+  // needs a certificate exactly as much as the others. `admin.` is an ordinary
+  // on-demand host, unlike sparx's own admin, which takes an Origin CA
+  // certificate because it sits behind Cloudflare Access; AGCONN's admin is
+  // gated by Clerk instead.
+  'agconn.com',
+  'www.agconn.com',
+  'api.agconn.com',
+  'admin.agconn.com',
   // ── Piggles ──────────────────────────────────────────────────────────────
   // The sister brand's three surfaces + its api-rest hostname. They are PLATFORM
   // hosts, not tenant sites, so `isHostAuthorized` below cannot vouch for them —
