@@ -133,7 +133,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     robots: { index: true, follow: true },
-    // The tenant's own favicon, or NOTHING.
+    // The tenant's own favicon, always — their upload if they made one, otherwise
+    // their initial on their own primary color, drawn by `app/favicon.ico`.
     //
     // This used to fall back to the sparx mark so a brand-new site "still looked
     // finished". What it actually did was put the platform's logo in the browser
@@ -142,9 +143,13 @@ export async function generateMetadata(): Promise<Metadata> {
     // once there were two products: a Piggles salon's site advertised sparx, a
     // company its owner has never heard of (piggles/CLAUDE.md RULE #0).
     //
-    // The browser's own default is the honest fallback. It says nothing, which is
-    // the correct amount for a site whose owner has not chosen a mark yet.
-    ...(favicon ? { icons: { icon: favicon } } : {}),
+    // Emitting nothing was the first repair, and it was half of one: a browser
+    // with no declared icon asks for /favicon.ico anyway, where a static file was
+    // still serving that same sparx mark (issue 254).
+    //
+    // An upload is linked directly rather than through the route, so the CDN
+    // caches the image itself instead of a redirect to it.
+    icons: { icon: favicon ?? '/favicon.ico' },
   };
 }
 
