@@ -41,7 +41,7 @@ import { FormSection } from '../../components/form-section';
 import {
   useDisableTwoFactor,
   useEnableTwoFactor,
-  useHasPassword,
+  useSignInMethods,
   useRegenerateBackupCodes,
   useVerifyTwoFactor,
   type TwoFactorSetup,
@@ -157,7 +157,7 @@ function BackupCodes({ codes }: { codes: string[] }) {
 export function TwoFactorCard({ enabled }: { enabled: boolean }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const hasPassword = useHasPassword();
+  const signIn = useSignInMethods();
 
   const enable = useEnableTwoFactor();
   const verify = useVerifyTwoFactor();
@@ -192,13 +192,13 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
     'You are part-way through setting up two-step verification and your backup codes are on screen. Leave anyway?'
   );
 
-  // THREE states, not two. `hasPassword.data` is undefined while the lookup is
-  // in flight AND when it failed, and collapsing that into "false" told people
+  // THREE states, not two. `signIn.data` is undefined while the lookup is in
+  // flight AND when it failed, and collapsing that into "false" told people
   // flatly that they sign in without a password — a claim about their own
   // account, made from a lookup that never answered. Never present absence as
   // measurement: if we could not find out, say so and let them try.
-  const knowsHowYouSignIn = hasPassword.isSuccess;
-  const needsPassword = hasPassword.data === true;
+  const knowsHowYouSignIn = signIn.isSuccess;
+  const needsPassword = signIn.data?.hasPassword === true;
   const busy = enable.isPending || verify.isPending || disable.isPending || regenerate.isPending;
 
   function reset() {
@@ -312,7 +312,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
    *  passwordless operator one ignored box and saves a password operator a dead
    *  end. */
   const passwordField =
-    needsPassword || hasPassword.isError ? (
+    needsPassword || signIn.isError ? (
       <Field>
         <FieldLabel>Your password</FieldLabel>
         <FieldControl
@@ -345,9 +345,18 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
       title="Two-step verification"
       description="Ask for a code from your phone as well as your password, so knowing your password alone is not enough to sign in."
       action={
-        <Badge color={enabled ? 'success' : 'neutral'} variant="soft">
-          {enabled ? 'On' : 'Off'}
-        </Badge>
+        // Until the lookup answers, this badge has nothing to report. It used to
+        // print "Off" regardless, which is a claim about how protected somebody's
+        // business is, made without ever checking.
+        knowsHowYouSignIn ? (
+          <Badge color={enabled ? 'success' : 'warning'} variant="soft">
+            {enabled ? 'On' : 'Off'}
+          </Badge>
+        ) : (
+          <Badge color="info" variant="soft">
+            {signIn.isError ? 'Not known' : 'Checking…'}
+          </Badge>
+        )
       }
     >
       {/* ── Off, resting ─────────────────────────────────────────────────── */}
@@ -365,7 +374,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
             <Button
               color="module"
               size="sm"
-              disabled={busy || hasPassword.isPending}
+              disabled={busy || signIn.isPending}
               onClick={() => {
                 setError(null);
                 setStep('password');
@@ -383,7 +392,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
         <div className="flex flex-col gap-4">
           {errorAlert}
           {passwordField}
-          {hasPassword.isError ? (
+          {!knowsHowYouSignIn && signIn.isError ? (
             <Text className="text-sm">
               We could not check whether your account uses a password. Enter it if you have one, or
               carry on without it.

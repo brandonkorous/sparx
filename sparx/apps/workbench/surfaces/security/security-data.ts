@@ -168,15 +168,30 @@ export function useChangePassword() {
  *  `credential` account row for password users and a provider row (google, …)
  *  for the rest; an operator can have both. Drives whether the two-step forms
  *  ask for a password, because the server requires one exactly when it exists. */
-export function useHasPassword() {
+export interface SignInMethods {
+  hasPassword: boolean;
+  /** Whether two-step verification is currently on. Read from the SERVER rather
+   *  than the auth client's `useSession()`: the session user only carries the
+   *  flag until it next flips, and on the Piggles console that endpoint is not
+   *  served at all, so it answered `undefined` forever — rendering as a flat
+   *  "Off" on accounts that had it switched on. */
+  twoFactorEnabled: boolean;
+}
+
+export const SIGN_IN_METHODS_KEY = ['security', 'sign-in-methods'] as const;
+
+export function useSignInMethods() {
   return useQuery({
-    queryKey: ['security', 'has-password'],
-    queryFn: async (): Promise<boolean> => {
-      const result = await accountGet<{ hasPassword?: boolean }>(
+    queryKey: SIGN_IN_METHODS_KEY,
+    queryFn: async (): Promise<SignInMethods> => {
+      const result = await accountGet<Partial<SignInMethods>>(
         'sign-in-methods',
         'Could not check how you sign in.'
       );
-      return result?.hasPassword === true;
+      return {
+        hasPassword: result?.hasPassword === true,
+        twoFactorEnabled: result?.twoFactorEnabled === true,
+      };
     },
     staleTime: 5 * 60_000,
   });
@@ -226,6 +241,7 @@ export function useVerifyTwoFactor() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+      void queryClient.invalidateQueries({ queryKey: SIGN_IN_METHODS_KEY });
     },
   });
 }
@@ -245,6 +261,7 @@ export function useDisableTwoFactor() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+      void queryClient.invalidateQueries({ queryKey: SIGN_IN_METHODS_KEY });
     },
   });
 }
