@@ -121,5 +121,17 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   // Skip Next internals + the health probe; everything else gets tenant context.
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|api/health).*)'],
+  //
+  // `robots.txt`, `sitemap.xml` and `favicon.ico` USED TO BE SKIPPED TOO, and they are
+  // the three routes that most need not to be. Each resolves its tenant from the Host
+  // header, which is right in production and impossible in local dev — there is no
+  // per-tenant DNS here, which is the whole reason the `?tenant=` override exists. Left
+  // out of the matcher they never received it, so `localhost:3004/sitemap.xml?tenant=…`
+  // answered a flat `Not found` and `robots.txt` answered `Disallow: /`. Nobody could
+  // look at a tenant's sitemap on their own machine, which is how it came to be shipping
+  // `https://host//shop` on eight tenants with nothing to notice it (issue 275).
+  //
+  // In production the proxy does the opposite for these paths and that is also wanted:
+  // it STRIPS any `x-tenant-slug` a client sent, which they were previously exempt from.
+  matcher: ['/((?!_next/static|_next/image|api/health).*)'],
 };

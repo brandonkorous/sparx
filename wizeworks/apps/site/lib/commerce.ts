@@ -298,6 +298,17 @@ export interface PublicCategoryNode {
   featured: boolean;
   iconMediaId: string | null;
   heroMediaId: string | null;
+  /**
+   * Whether this category, or anything under it, holds a product a shopper can buy
+   * here — the same subtree rollup the category page itself lists by.
+   *
+   * The index used to show every root category regardless. Juniper Row's showed six,
+   * of which five were empty: the only products ever filed in them were the
+   * blueprint's samples and she had deleted those, so a card reading "Everyday goods
+   * — the whole shop in one place" led to a page saying nothing was there (issue
+   * 275). Optional, so an older api-rest that omits it behaves exactly as before.
+   */
+  hasProducts?: boolean;
 }
 
 /** A category's OWN detail record (browse-node page). Extends the tree node with

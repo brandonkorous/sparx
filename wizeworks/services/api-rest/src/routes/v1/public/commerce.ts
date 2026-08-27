@@ -935,25 +935,51 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const tenantId = await resolveTenantBySlug(q.tenant);
     // Model B: the category index is scoped to the active site.
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const rows = await withTenant({ tenantId }, (tx) =>
-      tx.productCategory.findMany({
-        where: { deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
-        orderBy: [{ path: 'asc' }, { position: 'asc' }],
-        select: {
-          id: true,
-          name: true,
-          handle: true,
-          description: true,
-          parentId: true,
-          path: true,
-          position: true,
-          featured: true,
-          iconMediaId: true,
-          heroMediaId: true,
-        },
-      })
-    );
-    return ok(rows);
+    const { rows, held } = await withTenant({ tenantId }, async (tx) => {
+      const [rows, counts] = await Promise.all([
+        tx.productCategory.findMany({
+          where: { deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
+          orderBy: [{ path: 'asc' }, { position: 'asc' }],
+          select: {
+            id: true,
+            name: true,
+            handle: true,
+            description: true,
+            parentId: true,
+            path: true,
+            position: true,
+            featured: true,
+            iconMediaId: true,
+            heroMediaId: true,
+          },
+        }),
+        // WHICH categories hold anything a shopper can buy on this site. Grouped
+        // rather than listed: the caller needs a yes/no, and a `groupBy` is one row
+        // per category however big the catalog is.
+        tx.categoryProduct.groupBy({
+          by: ['categoryId'],
+          where: {
+            product: {
+              status: 'active',
+              deletedAt: null,
+              ...productSiteVisibilityWhere(propertyId),
+            },
+          },
+          _count: { productId: true },
+        }),
+      ]);
+      return { rows, held: new Set(counts.map((c) => c.categoryId)) };
+    });
+
+    // Rolled up the SAME way the category page rolls its products up — a category
+    // shows its own and every descendant's, by `path` prefix — so the index can never
+    // hide a category whose page has something on it.
+    const heldPaths = rows.filter((r) => held.has(r.id)).map((r) => r.path);
+    const withProducts = rows.map((r) => ({
+      ...r,
+      hasProducts: heldPaths.some((p) => p === r.path || p.startsWith(`${r.path}.`)),
+    }));
+    return ok(withProducts);
   });
 
   // Record-display pins (docs/98 Pillar 7): a node pinned to a category renders the

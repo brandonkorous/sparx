@@ -12,6 +12,7 @@
 // route so filters stay on THIS surface; `scope` narrows the search to a collection/category.
 
 import { ButtonLink } from '@/components/button-link';
+import { BrowseEmpty } from '@/components/products/browse-empty';
 import { BrowseFacets, type BrowseFacetValues } from '@/components/products/browse-facets';
 import type { FitmentLevel } from '@/components/facet-panel';
 import { Pagination } from '@/components/pagination';
@@ -166,6 +167,22 @@ export async function ScopedProductBrowser({
   };
   const result = await searchProducts(site.slug, filters);
 
+  // Did the VISITOR narrow this, or are they just standing somewhere empty? `scope` is
+  // deliberately not counted: a category page is the page they opened, not a choice
+  // they can take back, and offering to clear it is offering to leave.
+  const narrowed = [
+    q,
+    vendor,
+    productType,
+    tag,
+    inStock,
+    minPrice,
+    maxPrice,
+    options.length > 0,
+    selectedNode,
+    primaryRange,
+  ].some(Boolean);
+
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
   const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
@@ -226,6 +243,13 @@ export async function ScopedProductBrowser({
             tenantSlug={site.slug}
             currency={currency}
             locale={locale}
+            empty={
+              <BrowseEmpty
+                narrowed={narrowed}
+                basePath={basePath}
+                scope={scope?.category ? 'category' : scope?.collection ? 'collection' : 'catalog'}
+              />
+            }
           />
 
           {totalPages > 1 ? (

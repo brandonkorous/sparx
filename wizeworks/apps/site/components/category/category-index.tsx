@@ -15,8 +15,12 @@ import { CategoryCard } from '@/app/category/_lib/category-card';
 
 export async function CategoryIndex({ site }: { site: ResolvedSite }) {
   const all = await listCategories(site.slug);
+  // A category with nothing under it is a card that leads nowhere. `hasProducts` is
+  // the API's own subtree rollup, so a parent whose products all sit in its children
+  // still shows; `!== false` keeps an older api-rest that omits the field behaving as
+  // it always did rather than emptying the page.
   const roots = all
-    .filter((c) => c.parentId === null)
+    .filter((c) => c.parentId === null && c.hasProducts !== false)
     .sort(
       (a, b) =>
         Number(b.featured) - Number(a.featured) ||
