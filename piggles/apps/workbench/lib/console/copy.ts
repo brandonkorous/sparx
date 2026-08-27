@@ -367,7 +367,10 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
     'This fills {scope} with a full, realistic {pack} set — products, customers, orders and more — so you can see how everything works with records that look real. It is all clearly marked as samples and can be removed in one go.',
   'sampleData.packSummary':
     'A {pack} set, built to show everything working with records that look real.',
-  'security.backupCodes.file': 'Piggles backup codes{codes}',
+  // The blank line matters: this is a FILE somebody opens months later, and
+  // without it the heading ran straight into the first code
+  // ("Piggles backup codes2oriZ-EU7fh"), which is a code you cannot read.
+  'security.backupCodes.file': 'Piggles backup codes\n\n{codes}\n',
 
   'partner.gate.description':
     '{section} is part of the partner programme, for agencies and consultants who bring clients to Piggles. An owner or admin can apply from your account settings, and once we approve it this fills in.',

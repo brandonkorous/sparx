@@ -27,7 +27,6 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { authClient } from '@wizeworks/auth/client';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneEmpty } from '../../components/pane-empty';
 
@@ -65,16 +64,16 @@ interface SessionsCardProps {
 export function SessionsCard({ sessions, isPending, isError, refetch }: SessionsCardProps) {
   const toast = useToast();
   const confirm = useConfirm();
-  const session = authClient.useSession();
   const revoke = useRevokeSession();
   const revokeOthers = useRevokeOtherSessions();
 
-  // Better Auth's session object carries the token of the CURRENT session, which
-  // is how a row is matched to "the device you are on right now".
-  const currentToken = (session.data?.session as { token?: string } | undefined)?.token ?? null;
-
+  // Which row is "the device you are on right now" is answered by the server on
+  // each row, because the signed session cookie is httpOnly and the browser
+  // genuinely cannot see it. Working it out here needed a call this origin does
+  // not serve, so no row was ever marked and every device counted as another
+  // one -- including this one.
   const rows = sessions ?? [];
-  const otherCount = rows.filter((row) => row.token !== currentToken).length;
+  const otherCount = rows.filter((row) => !row.current).length;
 
   const signOut = async (row: AuthSession) => {
     const device = describeDevice(row.userAgent);
@@ -184,7 +183,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
       ) : (
         <ul className="flex flex-col gap-2">
           {rows.map((row) => {
-            const isCurrent = row.token === currentToken;
+            const isCurrent = row.current;
             const device = describeDevice(row.userAgent);
             return (
               <li

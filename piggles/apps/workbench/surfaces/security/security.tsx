@@ -20,7 +20,6 @@
 
 import { useEffect, useState } from 'react';
 import { Text } from '@wizeworks/silicaui-react';
-import { useSession } from '@wizeworks/auth/client';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -28,7 +27,7 @@ import { PasswordCard } from './password-card';
 import { TwoFactorCard } from './two-factor-card';
 import { SessionsCard } from './sessions-card';
 import { ActivityCard } from './activity-card';
-import { ACTIVITY_PAGE, useActivity, useSessions } from './security-data';
+import { ACTIVITY_PAGE, useActivity, useSessions, useSignInMethods } from './security-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -38,13 +37,13 @@ export function SecuritySurface({ ctx }: { ctx: SurfaceContext }) {
   const sessions = useSessions();
   const activity = useActivity(activityLimit);
 
-  // Whether two-step verification is on is a fact about the SESSION's user, not
-  // a separate fetch — Better Auth carries `twoFactorEnabled` on the user and
-  // re-issues the session when the flag flips, so reading it here keeps the card
-  // honest without a query that could disagree with the cookie.
-  const { data: session } = useSession();
-  const twoFactorEnabled =
-    (session?.user as { twoFactorEnabled?: boolean } | undefined)?.twoFactorEnabled === true;
+  // Whether two-step verification is on is read from the console's own account
+  // route. It used to come off Better Auth's `useSession()`, which addresses
+  // /api/auth/get-session — an endpoint THIS origin does not serve, so it
+  // resolved to undefined and the card's badge read a flat "Off" on accounts
+  // that had it switched on. See app/api/account/shared.ts.
+  const signIn = useSignInMethods();
+  const twoFactorEnabled = signIn.data?.twoFactorEnabled === true;
 
   useEffect(() => {
     ctx.setTitle('Security');

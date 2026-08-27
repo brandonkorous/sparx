@@ -48,12 +48,12 @@ import { FormSection } from '../../components/form-section';
 import {
   useDisableTwoFactor,
   useEnableTwoFactor,
-  useHasPassword,
+  useSignInMethods,
   useRegenerateBackupCodes,
   useVerifyTwoFactor,
   type TwoFactorSetup,
 } from './security-data';
-import { productCopy, productCopyWith } from '../../lib/product';
+import { productCopy, productCopyWith, productName } from '../../lib/product';
 
 /** Server: totpOptions.digits. */
 const CODE_LENGTH = 6;
@@ -151,7 +151,14 @@ function BackupCodes({ codes }: { codes: string[] }) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'sparx-backup-codes.txt';
+            // Named after the product the operator is actually using. The file
+            // CONTENTS were already branded through `security.backupCodes.file`
+            // while the NAME stayed hardcoded, so a Piggles owner saving her
+            // backup codes got "sparx-backup-codes.txt" -- a file named after a
+            // product she has never heard of, holding the keys to her business.
+            link.download = `${productName()
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')}-backup-codes.txt`;
             link.click();
             URL.revokeObjectURL(url);
           }}
@@ -172,7 +179,7 @@ function BackupCodes({ codes }: { codes: string[] }) {
 export function TwoFactorCard({ enabled }: { enabled: boolean }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const hasPassword = useHasPassword();
+  const signIn = useSignInMethods();
 
   const enable = useEnableTwoFactor();
   const verify = useVerifyTwoFactor();
@@ -207,7 +214,13 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
     'You are part-way through setting up two-step verification and your backup codes are on screen. Leave anyway?'
   );
 
-  const needsPassword = hasPassword.data === true;
+  // THREE states, not two. `signIn.data` is undefined while the lookup is
+  // in flight AND when it failed, and collapsing that into "false" told people
+  // flatly that they sign in without a password -- a claim about their own
+  // account, made from a lookup that never answered. Never present absence as
+  // measurement: if we could not find out, say so and let them try.
+  const knowsHowYouSignIn = signIn.isSuccess;
+  const needsPassword = signIn.data?.hasPassword === true;
   const busy = enable.isPending || verify.isPending || disable.isPending || regenerate.isPending;
 
   function reset() {
@@ -313,27 +326,33 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
   /** The password prompt shared by every action that needs it. Rendered only for
    *  accounts that HAVE a password — a Google or passkey operator has nothing to
    *  type, and the server does not ask them for it either. */
-  const passwordField = needsPassword ? (
-    <Field>
-      <FieldLabel>Your password</FieldLabel>
-      <FieldControl
-        render={
-          <Input
-            color="module"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-          />
-        }
-      />
-      <FieldDescription>
-        Confirms it is really you making this change, not someone on a screen you left open.
-      </FieldDescription>
-    </Field>
-  ) : null;
+  // Also offered when the lookup FAILED: the message above tells them to enter a
+  // password if they have one, and a field that is not there makes that a lie.
+  // The server is the real gate -- it accepts an empty one only from accounts
+  // that genuinely have none -- so offering the field costs a passwordless
+  // operator one ignored box and saves a password operator a dead end.
+  const passwordField =
+    needsPassword || signIn.isError ? (
+      <Field>
+        <FieldLabel>Your password</FieldLabel>
+        <FieldControl
+          render={
+            <Input
+              color="module"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value);
+              }}
+            />
+          }
+        />
+        <FieldDescription>
+          Confirms it is really you making this change, not someone on a screen you left open.
+        </FieldDescription>
+      </Field>
+    ) : null;
 
   const errorAlert = error ? (
     <Alert color="danger" variant="soft" role="alert">
@@ -346,9 +365,18 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
       title="Two-step verification"
       description="Ask for a code from your phone as well as your password, so knowing your password alone is not enough to sign in."
       action={
-        <Badge color={enabled ? 'success' : 'neutral'} variant="soft">
-          {enabled ? 'On' : 'Off'}
-        </Badge>
+        // Until the lookup answers, this badge has nothing to report. It used to
+        // print "Off" regardless, which is a claim about how protected somebody's
+        // business is, made without ever checking.
+        knowsHowYouSignIn ? (
+          <Badge color={enabled ? 'success' : 'warning'} variant="soft">
+            {enabled ? 'On' : 'Off'}
+          </Badge>
+        ) : (
+          <Badge color="info" variant="soft">
+            {signIn.isError ? 'Not known' : 'Checking…'}
+          </Badge>
+        )
       }
     >
       {/* ── Off, resting ─────────────────────────────────────────────────── */}
@@ -367,7 +395,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
             <Button
               color="module"
               size="sm"
-              disabled={busy || hasPassword.isPending}
+              disabled={busy || signIn.isPending}
               onClick={() => {
                 setError(null);
                 setStep('password');
@@ -385,12 +413,18 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
         <div className="flex flex-col gap-4">
           {errorAlert}
           {passwordField}
-          {needsPassword ? null : (
+          {!knowsHowYouSignIn && signIn.isError ? (
+            <Text className="text-sm">
+              We could not check whether your account uses a password. Enter it below if you have
+              one, or carry on without it.
+            </Text>
+          ) : null}
+          {knowsHowYouSignIn && !needsPassword ? (
             <Text className="text-sm">
               You sign in without a password, so there is nothing to confirm here — carry on to set
               up your app.
             </Text>
-          )}
+          ) : null}
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="ghost" disabled={busy} onClick={reset}>
               Cancel
