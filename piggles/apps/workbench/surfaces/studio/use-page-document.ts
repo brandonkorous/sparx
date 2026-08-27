@@ -48,11 +48,18 @@ export function toPageDoc(row: PageRow, propertyId: string): PageDoc {
   };
 }
 
+/** A record template's address (`/products/:handle`) belongs to the platform, not
+ *  to the author, and the write schema refuses a `:` on purpose. Echoing it back
+ *  failed every save of a record page — including ones that had already written. */
+function isRecordTemplate(doc: PageDoc): boolean {
+  return doc.pageKind === 'collection' && !!doc.recordType;
+}
+
 /** The document's settings, back in the shape the row takes. */
 function toSettings(doc: PageDoc): PageSettingsPatch {
   return {
     name: doc.name,
-    slug: doc.slug,
+    ...(isRecordTemplate(doc) ? {} : { slug: doc.slug }),
     frameId: doc.frame,
     seoTitle: doc.seo.title,
     seoDescription: doc.seo.description,

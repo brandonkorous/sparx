@@ -9,9 +9,17 @@
 // (`node.setText`), so undo, the dirty flag and a second pane on the same
 // document all keep working without knowing this exists.
 
-/** The words currently in the element — what the author has typed so far. */
+/**
+ * The words currently in the element — what the author has typed so far.
+ *
+ * Non-breaking spaces come back as ordinary ones. Browsers put them in by
+ * themselves while you type, to stop a space at the end of a line collapsing to
+ * nothing, and they are invisible on screen and in the Words box — so without
+ * this they ride into the saved copy, the search description and the published
+ * HTML as a character nobody typed and nobody can see.
+ */
 export function textIn(element: HTMLElement): string {
-  return element.textContent ?? '';
+  return (element.textContent ?? '').replace(/ /g, ' ');
 }
 
 /**
@@ -78,4 +86,53 @@ function insertText(text: string): void {
   range.collapse(true);
   selection.removeAllRanges();
   selection.addRange(range);
+}
+
+/**
+ * Whether this element's own keyboard behavior eats the space bar.
+ *
+ * A `<button>` and a `<summary>` both answer the space bar by activating, and
+ * they go on doing it while they are contenteditable — so retyping the words on
+ * a button, or a question in the Questions people ask block, ran every word
+ * together: "How do I swap" arrived as "HowdoIswap" (issue 264).
+ *
+ * Only these are intercepted. Everywhere else the browser's own space handling
+ * is better than anything we would write, because it knows when a space at the
+ * end of a line has to hold its width and when it may collapse.
+ */
+export function swallowsSpace(element: HTMLElement): boolean {
+  const tag = element.tagName.toLowerCase();
+  if (tag === 'button' || tag === 'summary') return true;
+  return SPACE_ROLES.has(element.getAttribute('role') ?? '');
+}
+
+/** Roles whose contract is "the space bar activates me", per ARIA. */
+const SPACE_ROLES = new Set([
+  'button',
+  'checkbox',
+  'menuitem',
+  'menuitemcheckbox',
+  'menuitemradio',
+  'option',
+  'radio',
+  'switch',
+  'tab',
+]);
+
+/**
+ * Put a space at the caret, for the controls that would have swallowed it.
+ *
+ * Through `execCommand` rather than our own `insertText`, because that is the
+ * pipeline the space bar itself would have used: it knows a space at the END of
+ * the words has to be held open, where a bare text node of one space is
+ * unrendered whitespace and Chrome discards it the moment the next character
+ * arrives — which is how "How do I swap" still came out "HowdoIswap" with the
+ * key handler already in place.
+ */
+export function typeSpace(): void {
+  const doc = globalThis.document as Document & {
+    execCommand?: (command: string, showUi?: boolean, value?: string) => boolean;
+  };
+  if (doc.execCommand?.('insertText', false, ' ')) return;
+  insertText(' ');
 }

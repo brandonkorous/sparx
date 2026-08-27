@@ -29,7 +29,7 @@ import type { Node } from '@wizeworks/silicaui-html';
 import type { StudioOp } from '../../ops/types';
 import { findNode, ownText } from '../../tree/walk';
 import { idOfElement, nodeElementAt } from './hit';
-import { caretAt, pasteAsText, textIn } from './text-edit';
+import { caretAt, pasteAsText, swallowsSpace, textIn, typeSpace } from './text-edit';
 
 interface Options {
   frameRef: RefObject<HTMLDivElement | null>;
@@ -158,9 +158,19 @@ export function useInlineText({
       if (event.key === 'Escape') {
         event.preventDefault();
         cancel();
+        return;
+      }
+      if (event.key === ' ' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        // Some controls answer the space bar by activating themselves even while
+        // they are contenteditable, so the character never lands. Type it for
+        // them; `swallowsSpace` says which ones need it and why (issue 264).
+        const element = elementOf(editingId);
+        if (!element || !swallowsSpace(element)) return;
+        event.preventDefault();
+        typeSpace();
       }
     },
-    [cancel, editingId, finish]
+    [cancel, editingId, elementOf, finish]
   );
 
   /**
