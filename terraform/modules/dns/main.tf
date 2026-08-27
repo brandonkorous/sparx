@@ -800,6 +800,46 @@ data "cloudflare_zone" "wize_works" {
   name  = "wize.works"
 }
 
+# The WizeWorks MARKETING SITE at the apex — a co-tenant in the `wizeworks`
+# namespace, from the brandonkorous/wizeworks repository. Caddy proxies
+# wize.works to site.wizeworks.svc.cluster.local:80.
+#
+# `proxied = true` and on-demand TLS, copied from agconn rather than from the
+# admin record directly above. The admin host cannot use ACME at all — Cloudflare
+# Access sits in front of it and intercepts the challenge path — which is why it
+# carries an Origin CA certificate. The apex has NO Access policy, so ordinary
+# on-demand issuance works, and it is what agconn.com and silicaui.com already do
+# through this same proxy.
+#
+# Gated separately from the admin record because turning this on is a cutover of
+# the apex, while `admin` has been serving for months. See
+# `wizeworks_dns_enabled` in variables.tf for the preconditions.
+resource "cloudflare_record" "wizeworks_root" {
+  count           = local.wizeworks_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.wize_works[0].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "WizeWorks marketing site — shared Caddy, wizeworks namespace"
+}
+
+# A CNAME is not permitted at an apex, so the apex is the A record and `www` is
+# the CNAME onto it. Caddy 301s www to the apex; this only has to resolve.
+resource "cloudflare_record" "wizeworks_www" {
+  count           = local.wizeworks_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.wize_works[0].id
+  name            = "www"
+  type            = "CNAME"
+  content         = "wize.works"
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "WizeWorks www — 301s to the apex at Caddy"
+}
+
 resource "cloudflare_record" "wize_works_admin" {
   count           = var.cloudflare_enabled ? 1 : 0
   zone_id         = data.cloudflare_zone.wize_works[0].id
@@ -982,7 +1022,8 @@ resource "cloudflare_record" "kanninja_hosts" {
 # therefore needs its hostname in api-rest's PLATFORM_HOSTNAMES like the rest.
 # ---------------------------------------------------------------------------
 locals {
-  agconn_enabled = var.cloudflare_enabled && var.agconn_dns_enabled
+  agconn_enabled    = var.cloudflare_enabled && var.agconn_dns_enabled
+  wizeworks_enabled = var.cloudflare_enabled && var.wizeworks_dns_enabled
 
   # `api` and `admin` are plain A records at the ingress. The apex and `www` are
   # handled separately below because one is an A and the other a CNAME.

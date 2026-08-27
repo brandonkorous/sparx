@@ -101,6 +101,35 @@ variable "kanninja_dns_enabled" {
   default     = false
 }
 
+variable "wizeworks_dns_enabled" {
+  description = <<-EOT
+    Whether to manage the wize.works APEX records for the WizeWorks marketing
+    site. The `admin` record in the same zone is unconditional and unaffected —
+    it predates this and belongs to the operator console.
+
+    DEFAULTS **OFF**, matching every other brand switch here. Turning it on
+    REPOINTS the apex: the records are written with `allow_overwrite`, so this is
+    a cutover rather than an adoption, and it should ride a window rather than
+    whichever apply comes next.
+
+    PRECONDITIONS, to be verified in-cluster rather than assumed — the same list
+    that gated kanNINJA and AGCONN:
+
+      1. `site` is Running 1/1 in the `wizeworks` namespace.
+      2. `curl http://site.wizeworks.svc.cluster.local/api/health` returns 200
+         from inside the cluster.
+      3. Caddy is already serving the `wize.works` host block.
+      4. `wize.works` and `www.wize.works` are in PLATFORM_HOSTNAMES in
+         api-rest's domain-check route, and api-rest has been rolled since.
+
+    (4) is the one that fails confusingly: without it, on-demand TLS is denied
+    at the ask endpoint and the site presents a CERTIFICATE error rather than a
+    404, which reads like a DNS or Caddy problem and is neither.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "agconn_dns_enabled" {
   description = <<-EOT
     Whether to manage the agconn.com zone's records.
