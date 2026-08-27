@@ -957,3 +957,79 @@ resource "cloudflare_record" "kanninja_hosts" {
   allow_overwrite = true
   comment         = "kanNINJA ${each.value} — shared Caddy, kanninja namespace"
 }
+
+# ---------------------------------------------------------------------------
+# agconn.com — AGCONN, a FIFTH product on the same cluster
+#
+# A bilingual farmworker platform. Deploys from its own repository
+# (brandonkorous/AgConnect) into its own `agconn` namespace; Caddy reaches it
+# cross-namespace, exactly like jotacular and kanNINJA.
+#
+#   agconn.com        the marketing site + PWA  -> web    (agconn namespace)
+#   www.agconn.com    the same, by CNAME        -> web
+#   api.agconn.com    the Hono API              -> api
+#   admin.agconn.com  the admin console         -> admin
+#
+# The right-hand names are the SERVICE names Caddy proxies to, confirmed against
+# deploy/k8s/base in the AgConnect repo: web, api, admin. There is no `mcp` here
+# and no separate `frontend` — AGCONN's marketing pages and its app are the same
+# Next.js Service, which is why the apex and the app share one record.
+#
+# ADMIN IS PUBLIC AND PROXIED, like the other two. That is worth a note because
+# sparx's own admin host takes an Origin CA certificate instead (origin-ca.tf).
+# AGCONN's admin is an ordinary Next.js app behind Clerk with no such
+# arrangement, so it takes the same on-demand policy as everything else — and
+# therefore needs its hostname in api-rest's PLATFORM_HOSTNAMES like the rest.
+# ---------------------------------------------------------------------------
+locals {
+  agconn_enabled = var.cloudflare_enabled && var.agconn_dns_enabled
+
+  # `api` and `admin` are plain A records at the ingress. The apex and `www` are
+  # handled separately below because one is an A and the other a CNAME.
+  agconn_hosts = local.agconn_enabled ? toset(["api", "admin"]) : toset([])
+}
+
+data "cloudflare_zone" "agconn" {
+  count = local.agconn_enabled ? 1 : 0
+  name  = "agconn.com"
+}
+
+resource "cloudflare_record" "agconn_root" {
+  count           = local.agconn_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.agconn[0].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "AGCONN web — shared Caddy, agconn namespace"
+}
+
+# CNAME at the apex is not possible, so `www` is the CNAME and the apex is the A
+# record. Caddy 301s www to the apex before any application code runs, which is
+# why `www.agconn.com` deliberately does NOT appear in the storage account's CORS
+# origins if AGCONN ever uploads direct-to-blob: a browser never holds it as an
+# origin.
+resource "cloudflare_record" "agconn_www" {
+  count           = local.agconn_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.agconn[0].id
+  name            = "www"
+  type            = "CNAME"
+  content         = "agconn.com"
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+}
+
+resource "cloudflare_record" "agconn_hosts" {
+  for_each        = local.agconn_hosts
+  zone_id         = data.cloudflare_zone.agconn[0].id
+  name            = each.value
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "AGCONN ${each.value} — shared Caddy, agconn namespace"
+}

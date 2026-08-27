@@ -80,4 +80,15 @@ module "dns" {
   #
   # See docs/azure-migration-plan.md Phase 5 in the kanNINJA repository.
   kanninja_dns_enabled = true
+
+  # OFF until AGCONN's pods are Running. The module variable carries the full
+  # reasoning; the short version is that agconn.com answers nothing today, so
+  # publishing four hostnames early only buys on-demand TLS attempts against
+  # backends that do not exist. Flip when `kubectl -n agconn get pods` is clean.
+  #
+  # CHECK THE ZONE IS REACHABLE BY SPARX'S TOKEN FIRST — agconn.com was managed
+  # from the AgConnect repo's own Terraform with its own token, and if the two
+  # live in different Cloudflare accounts this fails at plan time with
+  # zone-not-found rather than anything mentioning permissions.
+  agconn_dns_enabled = false
 }

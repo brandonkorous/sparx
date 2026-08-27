@@ -299,6 +299,16 @@ resource "azurerm_role_assignment" "agconn_sparx_release_kv" {
 # ---------------------------------------------------------------------------
 # Outputs — `terraform output agconn_github_setup` prints the commands verbatim.
 # ---------------------------------------------------------------------------
+// The identity's client id on its own, so tooling can read it with
+// `terraform output -raw agconn_client_id` instead of parsing it back out of
+// the command strings below. Not sensitive — a client id is a public
+// identifier, which is why it becomes a repository VARIABLE rather than a
+// secret.
+output "agconn_client_id" {
+  description = "Application (client) ID of gha-agconn-prod. Set as AZURE_CLIENT_ID on the AgConnect repo."
+  value       = var.agconn_enabled ? azuread_application.agconn_gha[0].client_id : null
+}
+
 output "agconn_github_setup" {
   description = "Repository VARIABLES (not secrets — these are public identifiers) to set on the AgConnect repo so its pipeline can authenticate."
   value = var.agconn_enabled ? [

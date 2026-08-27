@@ -100,3 +100,32 @@ variable "kanninja_dns_enabled" {
   type        = bool
   default     = false
 }
+
+variable "agconn_dns_enabled" {
+  description = <<-EOT
+    Whether to manage the agconn.com zone's records.
+
+    DEFAULTS **OFF**, matching kanninja_dns_enabled and for a related but not
+    identical reason. kanNINJA was live on GKE and flipping its switch WAS the
+    cutover. AGCONN is not live anywhere — agconn.com currently resolves to
+    Cloudflare and returns an error page, because the GKE origin it was pointed
+    at is gone. So turning this on cannot take a working product down.
+
+    What it CAN do is publish four hostnames that answer nothing. Caddy serves
+    on-demand TLS, and a hostname routed before its Services exist gets a
+    certificate request for a backend that is not there. Flip this only once
+    `kubectl -n agconn get pods` shows web, api and admin Running.
+
+    ONE THING TO CHECK BEFORE FLIPPING IT, and it is not visible from here: the
+    `data "cloudflare_zone"` lookup below runs as var.cloudflare_api_token, which
+    is SPARX's token. agconn.com was previously managed from the AgConnect repo's
+    own terraform with its own token, so the two may sit in different Cloudflare
+    accounts. If they do, this fails at plan time with a zone-not-found rather
+    than anything mentioning permissions. Either scope sparx's token to the
+    agconn.com zone, or leave agconn.com's DNS in AgConnect's terraform and drop
+    this block — both are defensible; what is not defensible is two states
+    writing the same records.
+  EOT
+  type        = bool
+  default     = false
+}
