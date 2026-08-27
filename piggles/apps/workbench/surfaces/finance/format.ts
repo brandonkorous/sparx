@@ -6,8 +6,8 @@
 // someone who has never heard the underlying term, per the platform's
 // non-technical-audience rule.
 
+import { channelLabel } from '../../lib/console/channels';
 import { paymentMethodLabel } from '../../lib/payment-methods';
-import { productCopy } from '../../lib/product';
 
 export function formatMoney(amount: number, currency = 'USD'): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
@@ -115,45 +115,10 @@ export function formatRelativeDay(iso: string | null | undefined): string {
   return formatDate(iso);
 }
 
-type MarketplaceLabels = Record<string, string>;
-const MARKETPLACE: MarketplaceLabels = {
-  etsy: 'Etsy',
-  amazon: 'Amazon',
-  ebay: 'eBay',
-  walmart: 'Walmart',
-  tiktok_shop: 'TikTok Shop',
-  faire: 'Faire',
-  meta: 'Facebook & Instagram',
-  google_shopping: 'Google Shopping',
-  pinterest: 'Pinterest',
-  sparx_market: productCopy('finance.channel.sparxMarket', 'sparx Market'),
-};
-
-/** Where a sale happened, in plain words. A marketplace keeps its own name;
- *  everything else describes the place a business owner would recognise. */
-export function channelLabel(channel: string | null, source: string | null): string {
-  if (channel === 'marketplace') {
-    if (source && MARKETPLACE[source]) return MARKETPLACE[source];
-    if (source) return source.replace(/_/g, ' ');
-    return 'Marketplace';
-  }
-  switch (channel) {
-    case 'storefront':
-      return 'Your website';
-    case 'b2b_portal':
-      return 'Wholesale portal';
-    case 'admin':
-      return 'In person or by phone';
-    case 'import':
-      return 'Imported';
-    case 'mcp':
-      return 'AI assistant';
-    case 'pos':
-      return 'In person';
-    default:
-      return channel ? channel.replace(/_/g, ' ') : 'Other';
-  }
-}
+/** Where a sale happened, in plain words. Re-exported rather than redefined:
+ *  Money and the selling report were naming one till sale two different things
+ *  ("In person or by phone" against "Added by your team"). */
+export { channelLabel };
 
 /** How the money was taken, in plain words. One vocabulary for the whole
  *  console — this pane used to spell a cheque "Check" and call a cash sale

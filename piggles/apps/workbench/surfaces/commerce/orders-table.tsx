@@ -106,6 +106,10 @@ function OrderRow({
     >
       <td className="text-sm">
         <span className="font-mono">{order.orderNumber}</span>
+        {/* Same reasoning as the due day below: on a phone the Customer column
+            is gone and an owner scans this list for "Ravi's order", never for
+            O-000001. Hidden once that column appears (issue 262). */}
+        <span className="block truncate text-xs @lg:hidden">{customerName(order.customer)}</span>
         {/* Under the number rather than in a column of its own, so it survives
             every width — the day a made-to-order job is due is the thing a
             shop that makes things scans this list for (issue 026). */}

@@ -16,6 +16,7 @@
 
 import { useQuery } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
+import { channelLabel } from '../../lib/console/channels';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes (mirror reporting-service.ts) ───────────────────────────────── */
@@ -192,20 +193,7 @@ export function formatCentsRounded(cents: number, currency = 'USD'): string {
   }).format(cents / 100);
 }
 
-const CHANNEL_LABEL: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Wholesale portal',
-  admin: 'Added by your team',
-  subscription: 'Subscriptions',
-  mcp: 'AI assistant',
-  import: 'Imported',
-  // Not a Piggles channel — see the note in surfaces/commerce/data.ts.
-  sparx_market: 'Marketplace',
-  marketplace: 'Marketplaces',
-  unknown: 'Other',
-};
-
-/** A sales channel's plain-language name — a shop owner does not know "b2b_portal". */
-export function channelLabel(channel: string): string {
-  return CHANNEL_LABEL[channel] ?? channel;
-}
+/** A sales channel's plain-language name — a shop owner does not know
+ *  "b2b_portal". Re-exported rather than redefined: the report and the order it
+ *  is counting must call the same sale the same thing. */
+export { channelLabel };

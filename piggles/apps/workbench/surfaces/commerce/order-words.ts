@@ -3,6 +3,7 @@
 // The plain words for the values an order stores — payment states, ways money
 // moved, delivery states, carriers and channels.
 
+import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
 import { paymentMethodLabels } from '../../lib/payment-methods';
 import type { Order, OrderFulfillment } from './order-types';
 
@@ -97,41 +98,9 @@ export const REFUND_STATUS_LABELS: Record<string, string> = {
   failed: 'Failed',
 };
 
-/** How the sale came in. Defined here rather than imported from crm-schemas:
- *  the workbench is built free-standing, and these are the words a business
- *  owner uses, not the stored slugs. */
-export const CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Trade portal',
-  admin: 'Entered by your team',
-  import: 'Imported',
-  mcp: 'AI assistant',
-  marketplace: 'Marketplace',
-};
-
-export const MARKETPLACE_SOURCE_LABELS: Record<string, string> = {
-  tiktok_shop: 'TikTok Shop',
-  etsy: 'Etsy',
-  amazon: 'Amazon',
-  walmart: 'Walmart',
-  ebay: 'eBay',
-  faire: 'Faire',
-  meta: 'Facebook & Instagram',
-  // WizeWorks' own marketplace is a sparx product; Piggles does not offer it
-  // (piggles/CLAUDE.md — exclude, never rename), so no Piggles business can
-  // produce this value. The row stays because the fallback below would
-  // otherwise print the raw slug, and it says what is TRUE about such an order
-  // rather than naming another company's product. Same wording as
-  // surfaces/chat/data.ts, which already answered this.
-  sparx_market: 'Marketplace',
-};
-
-/** Where an order came from, in one phrase. A marketplace order names the actual
- *  marketplace — "Marketplace" alone tells a seller nothing they can act on. */
+/** Where an order came from, in one phrase. The words themselves live in
+ *  lib/console/channels.ts — one vocabulary for every screen that names a
+ *  channel, so an order and a report cannot disagree about the same sale. */
 export function channelLabel(order: Order): string {
-  if (order.channel === 'marketplace' && order.source) {
-    return MARKETPLACE_SOURCE_LABELS[order.source] ?? order.source;
-  }
-  if (order.channel) return CHANNEL_LABELS[order.channel] ?? order.channel;
-  return 'Unknown';
+  return sharedChannelLabel(order.channel, order.source);
 }

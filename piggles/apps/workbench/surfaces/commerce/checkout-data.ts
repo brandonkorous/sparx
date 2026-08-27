@@ -13,6 +13,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
+import { channelLabel } from '../../lib/console/channels';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 import type { OrderAddress } from './data';
@@ -200,13 +201,7 @@ export function isCheckoutLive(step: CheckoutStep): boolean {
   return step !== 'completed' && step !== 'expired';
 }
 
-export const CHECKOUT_CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Trade portal',
-  admin: 'Entered by your team',
-  mcp: 'AI assistant',
-};
-
+/** One console vocabulary — see lib/console/channels.ts. */
 export function checkoutChannelLabel(channel: string): string {
-  return CHECKOUT_CHANNEL_LABELS[channel] ?? channel;
+  return channelLabel(channel);
 }

@@ -13,6 +13,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
+import { channelLabel } from '../../lib/console/channels';
 import { api } from '../../lib/api/client';
 import { formatMoney, type Tone } from './data';
 
@@ -208,23 +209,16 @@ export function cartStateFrom(input: {
   };
 }
 
-/** Where the cart was started, in one phrase. Kept local — these are the words
- *  an owner uses, not the stored slugs. */
-export const CART_CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Trade portal',
-  admin: 'Entered by your team',
-  mcp: 'AI assistant',
-};
-
 /** Cart money is integer CENTS (see the note at the top of this file), so every
  *  cart surface renders through here rather than dividing at each call site. */
 export function cartMoney(cents: number, currency: string): string {
   return formatMoney(cents / 100, currency);
 }
 
+/** Where the cart was started, in one phrase. One console vocabulary — a cart
+ *  and the order it becomes must not name the same place two things. */
 export function cartChannelLabel(channel: string): string {
-  return CART_CHANNEL_LABELS[channel] ?? channel;
+  return channelLabel(channel);
 }
 
 /** A basket's shopper in one line. A cart genuinely may have no account behind

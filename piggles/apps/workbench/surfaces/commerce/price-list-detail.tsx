@@ -40,6 +40,7 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { channelLabel } from '../../lib/console/channels';
 import { useConfirm } from '../../lib/confirm';
 import { faTag, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -80,25 +81,6 @@ const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'] as const;
 
 type Audience = 'everyone' | 'segment' | 'account';
 type EntryMode = 'fixed' | 'percent';
-
-/* ── Channel wording ────────────────────────────────────────────────────── */
-
-// The channel a list is scoped to, in the shop owner's words rather than the
-// enum. `all` (null on the wire) is the default and covers everywhere.
-const CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Your online store',
-  b2b_portal: 'Your wholesale portal',
-  subscription: 'Subscriptions',
-  // Not a Piggles channel — see the note in surfaces/commerce/data.ts.
-  sparx_market: 'Marketplace',
-  admin: 'Orders you enter by hand',
-  mcp: 'Your AI assistant',
-  import: 'Imported orders',
-};
-
-function channelLabel(channel: string): string {
-  return CHANNEL_LABELS[channel] ?? channel;
-}
 
 /* ── Draft ──────────────────────────────────────────────────────────────── */
 

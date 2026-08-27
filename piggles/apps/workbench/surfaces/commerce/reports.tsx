@@ -154,18 +154,21 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                 </Card>
               ) : (
                 <>
-                  <Stats className="w-full">
-                    <Stat>
+                  {/* Wraps, and each block keeps a width its figure fits in.
+                      `.stats` is an `overflow: hidden` flex row that never wrapped,
+                      so at 360px it CLIPPED them: $111.32 read "$111.3" (issue 261). */}
+                  <Stats className="w-full flex-wrap">
+                    <Stat className="min-w-44 flex-1">
                       <StatTitle>Revenue</StatTitle>
                       <StatValue>{formatCentsRounded(data.netRevenueCents, currency)}</StatValue>
                       <StatDesc>after refunds</StatDesc>
                     </Stat>
-                    <Stat>
+                    <Stat className="min-w-44 flex-1">
                       <StatTitle>Orders</StatTitle>
                       <StatValue>{NUMBER.format(data.ordersCount)}</StatValue>
                       <StatDesc>placed in this period</StatDesc>
                     </Stat>
-                    <Stat>
+                    <Stat className="min-w-44 flex-1">
                       <StatTitle>Average order</StatTitle>
                       <StatValue>{formatCents(data.averageOrderValueCents, currency)}</StatValue>
                       <StatDesc>spent per order</StatDesc>
