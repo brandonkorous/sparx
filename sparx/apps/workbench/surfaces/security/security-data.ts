@@ -5,26 +5,27 @@
 //
 // Two very different sources feed this one surface, and the split matters:
 //
-//   • Passwords and sessions are Better Auth's, not api-rest's. The workbench
-//     mounts the Better Auth handler at /api/auth/* on its OWN origin (see
-//     app/api/auth/[...all]/route.ts), and the session cookie is host-only to
-//     it. So changing a password or signing a device out is a same-origin call
-//     through `authClient` — NOT a Bearer call to api-rest, which has no session
-//     endpoints at all. This is the real system: Better Auth 1.6 ships
-//     change-password / list-sessions / revoke-session / revoke-other-sessions
-//     as core routes, and there is no second implementation to reconcile.
+//   • Passwords and sessions are Better Auth's, not api-rest's — api-rest has
+//     no session endpoints at all. They are reached through this console's OWN
+//     account routes (app/api/account/*), which run the Better Auth server API
+//     as the caller and answer JSON. That file explains why they exist when the
+//     workbench also mounts the handler itself at /api/auth/[...all]: one of the
+//     answers — which device you are sitting at — is knowable only server-side,
+//     and the Piggles console, which cannot mount a handler at all, has to go
+//     this way regardless. A shared transport is what keeps the two consoles
+//     from drifting.
 //
 //   • The activity record is api-rest's /v1/activity — the human feed that
 //     turns the shared audit_logs table into sentences with resolved actor
 //     names. It rides the same token/client as every other pane.
 //
 // Two-step verification is Better Auth's as well (the `twoFactor` plugin, wired
-// in wizeworks/packages/auth/src/server.ts), so it rides the same same-origin authClient
+// in wizeworks/packages/auth/src/server.ts), so it rides the same account routes
 // as passwords and sessions — see the two-factor section at the foot of this
 // file.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { authClient } from '@wizeworks/auth/client';
+import { accountGet, accountPost } from './account-api';
 import { api } from '../../lib/api/client';
 
 /* ── Sessions (Better Auth) ─────────────────────────────────────────────────
@@ -40,6 +41,9 @@ export interface AuthSession {
   expiresAt: string;
   ipAddress: string | null;
   userAgent: string | null;
+  /** Whether this is the device making the request. Decided by the server, which
+   *  is the only thing that can see the signed session cookie. */
+  current: boolean;
 }
 
 export const SESSIONS_KEY = ['security', 'sessions'] as const;
@@ -56,12 +60,11 @@ export function useSessions() {
   return useQuery({
     queryKey: SESSIONS_KEY,
     queryFn: async (): Promise<AuthSession[]> => {
-      const { data, error } = await authClient.listSessions();
-      // Better Auth returns { data, error } rather than throwing; React Query
-      // needs a throw to treat this as a failed load.
-      if (error) throw new Error(error.message ?? 'Could not load your signed-in devices.');
-      const rows = (data ?? []) as Record<string, unknown>[];
-      return rows
+      const rows = await accountGet<Record<string, unknown>[]>(
+        'sessions',
+        'Could not load your signed-in devices.'
+      );
+      return (rows ?? [])
         .map((row) => ({
           token: typeof row.token === 'string' ? row.token : '',
           createdAt: toIso(row.createdAt),
@@ -69,6 +72,7 @@ export function useSessions() {
           expiresAt: toIso(row.expiresAt),
           ipAddress: typeof row.ipAddress === 'string' ? row.ipAddress : null,
           userAgent: typeof row.userAgent === 'string' ? row.userAgent : null,
+          current: row.current === true,
         }))
         .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
@@ -81,8 +85,7 @@ export function useRevokeSession() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (token: string) => {
-      const { error } = await authClient.revokeSession({ token });
-      if (error) throw new Error(error.message ?? 'Could not sign that device out.');
+      await accountPost('sessions', { token }, 'Could not sign that device out.');
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
@@ -95,8 +98,7 @@ export function useRevokeOtherSessions() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const { error } = await authClient.revokeOtherSessions();
-      if (error) throw new Error(error.message ?? 'Could not sign the other devices out.');
+      await accountPost('sessions', { all: true }, 'Could not sign the other devices out.');
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
@@ -131,17 +133,15 @@ export function useChangePassword() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ChangePasswordInput) => {
-      const { error } = await authClient.changePassword({
-        currentPassword: input.currentPassword,
-        newPassword: input.newPassword,
-        revokeOtherSessions: input.revokeOtherSessions,
-      });
-      if (error) {
-        throw new Error(
-          error.message ??
-            'Could not change your password. Check your current password and try again.'
-        );
-      }
+      await accountPost(
+        'password',
+        {
+          currentPassword: input.currentPassword,
+          newPassword: input.newPassword,
+          revokeOtherSessions: input.revokeOtherSessions,
+        },
+        'Could not change your password. Check your current password and try again.'
+      );
     },
     onSuccess: () => {
       // Revoking other sessions changes the device list.
@@ -172,10 +172,11 @@ export function useHasPassword() {
   return useQuery({
     queryKey: ['security', 'has-password'],
     queryFn: async (): Promise<boolean> => {
-      const { data, error } = await authClient.listAccounts();
-      if (error) throw new Error(error.message ?? 'Could not check how you sign in.');
-      const rows = (data ?? []) as { providerId?: string }[];
-      return rows.some((row) => row.providerId === 'credential');
+      const result = await accountGet<{ hasPassword?: boolean }>(
+        'sign-in-methods',
+        'Could not check how you sign in.'
+      );
+      return result?.hasPassword === true;
     },
     staleTime: 5 * 60_000,
   });
@@ -195,15 +196,15 @@ export interface TwoFactorSetup {
 export function useEnableTwoFactor() {
   return useMutation({
     mutationFn: async (password: string): Promise<TwoFactorSetup> => {
-      const { data, error } = await authClient.twoFactor.enable(
-        password === '' ? {} : { password }
+      // No `issuer` is sent: the server plugin defaults it to the running
+      // platform brand's name, which under this console is already the label an
+      // authenticator app should show. Piggles has to send its own — see
+      // app/api/account/two-factor/route.ts.
+      const result = await accountPost<{ totpURI?: string; backupCodes?: string[] }>(
+        'two-factor',
+        { password },
+        'Could not start setting up two-step verification. Please try again.'
       );
-      if (error) {
-        throw new Error(
-          error.message ?? 'Could not start setting up two-step verification. Please try again.'
-        );
-      }
-      const result = data as { totpURI?: string; backupCodes?: string[] } | null;
       if (!result?.totpURI) throw new Error('The setup code did not come back. Please try again.');
       return { totpURI: result.totpURI, backupCodes: result.backupCodes ?? [] };
     },
@@ -217,13 +218,11 @@ export function useVerifyTwoFactor() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (code: string) => {
-      const { error } = await authClient.twoFactor.verifyTotp({ code });
-      if (error) {
-        throw new Error(
-          error.message ??
-            'That code did not work. Codes change every 30 seconds — check your app for the current one.'
-        );
-      }
+      await accountPost(
+        'two-factor/verify',
+        { code },
+        'That code did not work. Codes change every 30 seconds — check your app for the current one.'
+      );
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
@@ -238,12 +237,11 @@ export function useDisableTwoFactor() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (password: string) => {
-      const { error } = await authClient.twoFactor.disable(password === '' ? {} : { password });
-      if (error) {
-        throw new Error(
-          error.message ?? 'Could not turn two-step verification off. Check your password.'
-        );
-      }
+      await accountPost(
+        'two-factor/disable',
+        { password },
+        'Could not turn two-step verification off. Check your password.'
+      );
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
@@ -256,13 +254,12 @@ export function useDisableTwoFactor() {
 export function useRegenerateBackupCodes() {
   return useMutation({
     mutationFn: async (password: string): Promise<string[]> => {
-      const { data, error } = await authClient.twoFactor.generateBackupCodes(
-        password === '' ? {} : { password }
+      const result = await accountPost<{ backupCodes?: string[] }>(
+        'two-factor/backup-codes',
+        { password },
+        'Could not create new backup codes. Please try again.'
       );
-      if (error) {
-        throw new Error(error.message ?? 'Could not create new backup codes. Please try again.');
-      }
-      return (data as { backupCodes?: string[] } | null)?.backupCodes ?? [];
+      return result?.backupCodes ?? [];
     },
   });
 }

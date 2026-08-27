@@ -252,19 +252,42 @@ body {
  * surface via `popupClassName` cannot work because a child can't out-stack its
  * own parent's level.
  *
- * So the POSITIONER is raised here, matched by the popup it hosts, and set from
- * silica's own token so this tracks the library's intent instead of inventing a
- * competing number. Delete this block once a silicaui release either positions
- * the popup surface or applies the z-index to the positioner — verify by
- * measuring, not by reading the changelog: 0.28 documented the fix without it
- * taking effect. */
-[role='presentation']:has(> .select-popup),
-[role='presentation']:has(> .calendar-popup),
-[role='presentation']:has(> .popover),
-[role='presentation']:has(> .menu) {
+ * So the POSITIONER is raised here, and set from silica's own token so this
+ * tracks the library's intent instead of inventing a competing number. Delete
+ * this block once a silicaui release either positions the popup surface or
+ * applies the z-index to the positioner — verify by measuring, not by reading
+ * the changelog: 0.28 documented the fix without it taking effect.
+ *
+ * ── WHY THIS IS MATCHED STRUCTURALLY AND NOT BY A LIST OF POPUP CLASSES ─────
+ *
+ * It used to name the surfaces it hosts: `:has(> .select-popup)`, `.calendar-popup`,
+ * `.popover`, `.menu`. That list was missing `.dropdown`, so every DropdownMenu,
+ * Menubar menu and ContextMenu in the console — 16 files' worth — was
+ * UNCLICKABLE with a mouse for as long as the list existed. `.menu` in it is the
+ * static nav-list component, not the dropdown popup; silica names the popup
+ * `.dropdown` precisely to keep those apart, and the list read as though it had
+ * them covered.
+ *
+ * The failure is silent in both directions, which is what makes an enumeration
+ * the wrong mechanism here: a missing entry paints a perfect popup that discards
+ * clicks, and nothing type-checks, lints or renders differently. So match what a
+ * positioner IS instead. Every ANCHORED popup renders through Base UI's
+ * `usePositioner`, which is a `role="presentation"` div carrying `side` and
+ * `align` in its state; unmapped string state becomes `data-side` / `data-align`
+ * (internals/getStateAttributesProps.js), and `align` defaults to `center` rather
+ * than being dropped, so both attributes are always there. The popup inside is
+ * `position: static`, so the property stays inert there and lands only where it
+ * does something. The inert backdrop is a SIBLING with neither attribute and is
+ * left at its own 10030, which is the whole point — raise it and it eats the
+ * popup it exists to serve.
+ *
+ * Dialog and Drawer are not anchored, render no positioner, and keep their own
+ * levels. */
+[role='presentation'][data-side][data-align] {
   z-index: var(--z-popover, 70);
 }
-[role='presentation']:has(> .tooltip) {
+/* Higher specificity than the rule above, so it wins wherever both match. */
+[role='presentation'][data-side][data-align]:has(> .tooltip) {
   z-index: var(--z-tooltip, 80);
 }
 
