@@ -45,6 +45,13 @@ export interface WireEntry {
   parent_entry_id: string | null;
   created_at: string;
   updated_at: string;
+  /** Set when this page IS a policy — privacy, terms, returns and the rest. Null on
+   *  every ordinary entry. The generic editor needs it to know that Publish here
+   *  puts a legal document in front of customers (issue 267). */
+  legal_kind: string | null;
+  /** Whether the owner has said they have read the starter wording. Meaningless, and
+   *  always false, on a page that is not a policy. */
+  legal_reviewed: boolean;
   // Editorial relations — present ONLY when the read `include`d them (the public
   // storefront reads do; the authoring reads don't). Absent, not null, when not
   // loaded, so an existing consumer that never asked for them is byte-unchanged.
@@ -92,6 +99,8 @@ export function serializeEntry(row: EntryWithByline): WireEntry {
     parent_entry_id: row.parentEntryId,
     created_at: row.createdAt.toISOString(),
     updated_at: row.updatedAt.toISOString(),
+    legal_kind: row.legalKind,
+    legal_reviewed: row.legalDisclaimerAckAt !== null,
   };
   // Only emit the editorial fields when the read actually loaded them — `undefined`
   // (not requested) stays absent; a loaded-but-empty author is an explicit null.

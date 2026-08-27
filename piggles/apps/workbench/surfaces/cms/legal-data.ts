@@ -256,6 +256,27 @@ export function legalKindBlurb(legalKind: string): string {
   }
 }
 
+/** What the document is CALLED, for a sentence that names it — "your Privacy
+ *  Policy is live". Lower-cased at the call site where the grammar wants it. */
+export function legalKindTitle(legalKind: string): string {
+  switch (legalKind) {
+    case 'privacy':
+      return 'Privacy Policy';
+    case 'terms':
+      return 'Terms of Service';
+    case 'cookie-policy':
+      return 'Cookie Policy';
+    case 'returns':
+      return 'Return Policy';
+    case 'shipping':
+      return 'Shipping Policy';
+    case 'refund':
+      return 'Refund Policy';
+    default:
+      return 'policy page';
+  }
+}
+
 export interface LegalStatus {
   label: string;
   tone: Tone;

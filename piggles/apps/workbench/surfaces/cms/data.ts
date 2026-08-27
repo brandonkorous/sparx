@@ -96,6 +96,10 @@ export interface ContentEntry {
   parent_entry_id: string | null;
   created_at: string;
   updated_at: string;
+  /** Set when this page IS a policy — privacy, terms, returns and the rest. */
+  legal_kind: string | null;
+  /** Whether the owner has said they have read the starter wording. */
+  legal_reviewed: boolean;
   /** Only present on GET one — the sites this entry publishes to (empty = all). */
   propertyIds?: string[];
 }

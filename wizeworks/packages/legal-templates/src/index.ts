@@ -57,27 +57,23 @@ const ul = (items: string[]): DocNode => ({
 });
 const doc = (...nodes: DocNode[]): LegalDoc => ({ type: 'doc', content: nodes });
 
-/** The starter-text disclaimer prepended to every template body. It is content
- *  (survives editing) — the structured "reviewed?" signal lives on the entry's
- *  legal_disclaimer_ack_at column.
+/**
+ * The starter-text warning is NOT in the body, and must not go back into it.
  *
- *  It names NO vendor. This text is written for the owner but sits in a body the
- *  owner can publish, so it has two audiences, and the second one is the reason:
- *  a shopper reading a bakery's privacy page has never heard of whoever built
- *  the site, and a policy that cites an unknown third party reads as boilerplate
- *  nobody checked. The same package is also fronted by more than one product
- *  (piggles/CLAUDE.md RULE #0), so a vendor name here is wrong in the console
- *  too — Marisol's console is called Piggles and she has never seen the word
- *  "sparx". The sentence loses nothing without it. */
-const disclaimer = (): DocNode => ({
-  type: 'callout',
-  attrs: { variant: 'warning' },
-  content: [
-    p(
-      'This is starter wording, not legal advice. Read it through, make it fit your business and where you trade, and take your own advice on it before you publish this page.'
-    ),
-  ],
-});
+ * It used to be, prepended to all six templates, reasoned about as content that
+ * "has two audiences". It does — and the second one is the problem: a shopper who
+ * opens a clothing label's privacy page to decide whether to hand over an address
+ * and a card read, in the shop's own voice, "This is starter wording, not legal
+ * advice … take your own advice on it before you publish this page." One click of
+ * Publish and that shipped, because it is content and content publishes (issue
+ * 267).
+ *
+ * The owner still gets told, twice, where only the owner can see it: the Legal
+ * pages surface badges every unreviewed page "Needs review" and says the same
+ * sentence in its own words, and the content editor now says it above the body.
+ * The structured signal is the entry's `legal_disclaimer_ack_at` column, which is
+ * what "reviewed" has always meant.
+ */
 
 // ─── the catalog ─────────────────────────────────────────────────────────────
 
@@ -86,10 +82,9 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'privacy',
     defaultSlug: 'privacy-policy',
     title: 'Privacy Policy',
-    templateVersion: 2,
+    templateVersion: 4,
     requirement: 'always',
     doc: doc(
-      disclaimer(),
       p(
         'This Privacy Policy explains what personal information we collect, how we use it, and the choices you have. It applies to this website and the services offered here.'
       ),
@@ -129,10 +124,9 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'terms',
     defaultSlug: 'terms-of-service',
     title: 'Terms of Service',
-    templateVersion: 2,
+    templateVersion: 4,
     requirement: 'always',
     doc: doc(
-      disclaimer(),
       p(
         'These Terms govern your use of this website and any purchases you make. By using the site or placing an order, you agree to these Terms.'
       ),
@@ -170,10 +164,9 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'cookie-policy',
     defaultSlug: 'cookie-policy',
     title: 'Cookie Policy',
-    templateVersion: 2,
+    templateVersion: 4,
     requirement: 'always',
     doc: doc(
-      disclaimer(),
       p(
         'This Cookie Policy explains how we use cookies and similar technologies on this site, and the choices you have.'
       ),
@@ -200,14 +193,13 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'returns',
     defaultSlug: 'returns-policy',
     title: 'Return Policy',
-    templateVersion: 2,
+    templateVersion: 4,
     requirement: 'commerce',
     doc: doc(
-      disclaimer(),
       p('We want you to be happy with your purchase. This policy explains how returns work.'),
       h('Return window'),
       p(
-        'You may request a return within the period stated here (for example, 30 days of delivery). Items should be unused and in their original condition and packaging unless they arrived damaged or defective.'
+        'You may request a return within 30 days of delivery. Items should be unused and in their original condition and packaging unless they arrived damaged or defective.'
       ),
       h('How to start a return'),
       ul([
@@ -227,7 +219,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'shipping',
     defaultSlug: 'shipping-policy',
     title: 'Shipping Policy',
-    templateVersion: 2,
+    templateVersion: 4,
     // OPTIONAL, not 'commerce'. Selling is not shipping: a bakery taking
     // collection orders, a restaurant booking tables and a seller of downloads
     // all have commerce switched on and post nothing, and forcing this on them
@@ -238,11 +230,10 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     // ship rather than on the mere presence of a shop.
     requirement: 'optional',
     doc: doc(
-      disclaimer(),
       p('This policy explains how and when we ship orders.'),
       h('Processing time'),
       p(
-        'Orders are typically processed within the timeframe stated here (for example, 1–2 business days) before they ship. Processing may take longer during busy periods.'
+        'Orders are usually processed within one to two business days before they ship. Processing may take longer during busy periods.'
       ),
       h('Shipping methods and rates'),
       p(
@@ -260,10 +251,9 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'refund',
     defaultSlug: 'refund-policy',
     title: 'Refund Policy',
-    templateVersion: 2,
+    templateVersion: 4,
     requirement: 'optional',
     doc: doc(
-      disclaimer(),
       p('This policy explains when and how refunds are issued.'),
       h('Eligibility'),
       p(
@@ -272,7 +262,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       h('How refunds are issued'),
       ul([
         'Refunds are made to your original payment method unless otherwise agreed.',
-        'Once approved, refunds are typically processed within the timeframe stated here.',
+        'Once approved, refunds are usually processed within five to ten business days.',
         'Your bank or card issuer may take additional time to post the refund.',
       ]),
       h('Shipping costs'),

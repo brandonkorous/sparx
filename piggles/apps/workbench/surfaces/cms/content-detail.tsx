@@ -63,6 +63,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BodyFields } from './schema-form';
 import { MediaPickerProvider } from './media-picker';
+import { PolicyPageNotice } from './policy-page-notice';
 import {
   contentErrorMessage,
   entryStatusState,
@@ -783,6 +784,14 @@ function ManageBody({
               </AlertDescription>
             </AlertContent>
           </Alert>
+
+          {entry.legal_kind ? (
+            <PolicyPageNotice
+              legalKind={entry.legal_kind}
+              reviewed={entry.legal_reviewed}
+              published={isPublished}
+            />
+          ) : null}
 
           <EntryFields
             type={type}
