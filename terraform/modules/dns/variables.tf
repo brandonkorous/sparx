@@ -158,3 +158,36 @@ variable "agconn_dns_enabled" {
   type        = bool
   default     = false
 }
+
+variable "rocketease_dns_enabled" {
+  description = <<-EOT
+    Whether to manage the rocketease.com zone's records.
+
+    DEFAULTS **OFF**, matching kanninja_dns_enabled and agconn_dns_enabled.
+    rocketease.com is already in Cloudflare but RocketEase is not live anywhere,
+    so turning this on cannot take a working product down.
+
+    What it CAN do is publish three hostnames that answer nothing. Caddy serves
+    on-demand TLS, and a hostname routed before its Services exist produces a
+    certificate request for a backend that is not there. Flip this only once
+    `kubectl -n rocketease get pods` shows web, platform and worker Running and
+    the platform answers /api/health with 200 — not merely with a pod that
+    started, because the health route reports `ok:false` until the queue schema
+    exists (the worker creates it on boot).
+
+    THE ZONE IS NOT EMPTY. `allow_overwrite` matches on name AND TYPE and will
+    not convert an A record into a CNAME, so if anything already publishes `@`,
+    `www` or `app` in this zone with a different type, the apply fails with
+    "attempted to override existing record however didn't find an exact match"
+    — naming neither the incumbent nor the conflict. That is precisely what
+    agconn.com did; see the note above `cloudflare_record.agconn_www`. Check the
+    zone's existing records before flipping this.
+
+    The `data "cloudflare_zone"` lookup runs as var.cloudflare_api_token, which
+    is SPARX's token. If rocketease.com sits in a different Cloudflare account,
+    this fails at plan time with a zone-not-found rather than anything mentioning
+    permissions.
+  EOT
+  type        = bool
+  default     = false
+}

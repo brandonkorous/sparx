@@ -134,6 +134,19 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'www.agconn.com',
   'api.agconn.com',
   'admin.agconn.com',
+  // ── RocketEase ───────────────────────────────────────────────────────────
+  // A social marketing platform in the `rocketease` namespace, deployed from its
+  // own repository. Three hostnames, all of which `import tls_policy` in the
+  // Caddyfile, so these entries are what actually permit issuance — a name routed
+  // there but absent here gets no certificate, and Cloudflare answers 525 for that
+  // hostname alone, which reads like a routing bug and is a TLS failure.
+  //
+  // The apex is the marketing site and `app.` is the product. `www.` only ever
+  // 301s to the apex, but it terminates TLS to do it, so it needs a certificate
+  // exactly as much as the other two.
+  'rocketease.com',
+  'www.rocketease.com',
+  'app.rocketease.com',
   // ── Piggles ──────────────────────────────────────────────────────────────
   // The sister brand's three surfaces + its api-rest hostname. They are PLATFORM
   // hosts, not tenant sites, so `isHostAuthorized` below cannot vouch for them —

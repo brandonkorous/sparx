@@ -106,4 +106,18 @@ module "dns" {
   # issuance is denied at the ask endpoint and the site presents a CERTIFICATE
   # error rather than a 404 — which reads like DNS and is not.
   wizeworks_dns_enabled = false
+
+  # OFF until RocketEase is verified in-cluster. rocketease.com is already in
+  # Cloudflare, so turning this on REPOINTS the zone rather than adopting it —
+  # a cutover, like kanNINJA's and AGCONN's switches above, not a no-op.
+  #
+  # Preconditions, in the module variable's own description. The short form: web,
+  # platform and worker Running in the `rocketease` namespace, and the platform
+  # answering /api/health 200 — which it does NOT do until the worker has booted
+  # and pg-boss has created its schema, so a started pod is not the signal.
+  #
+  # The failure that reads like DNS and is not: without all three names in
+  # api-rest's PLATFORM_HOSTNAMES, on-demand issuance is denied at the ask
+  # endpoint and the site presents a CERTIFICATE error rather than a 404.
+  rocketease_dns_enabled = false
 }

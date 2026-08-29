@@ -1096,3 +1096,87 @@ resource "cloudflare_record" "agconn_hosts" {
   allow_overwrite = true
   comment         = "AGCONN ${each.value} — shared Caddy, agconn namespace"
 }
+
+# =========================================================================
+# rocketease.com — RocketEase, a SIXTH product on the same cluster
+# =========================================================================
+# A social marketing operating system. Deploys from its own repository
+# (brandonkorous/RocketEase) into its own `rocketease` namespace; Caddy reaches
+# it cross-namespace, exactly like jotacular, kanNINJA and AGCONN.
+#
+#   rocketease.com      the marketing site      -> web       (rocketease namespace)
+#   www.rocketease.com  the same, by CNAME      -> (301 at Caddy)
+#   app.rocketease.com  the authenticated app   -> platform
+#
+# The right-hand names are the SERVICE names Caddy proxies to, confirmed against
+# deploy/k8s/base in the RocketEase repo: `web` and `platform`. The `worker` has
+# no Service and no hostname — it only consumes jobs from Postgres.
+#
+# UNLIKE AGCONN, THE APEX AND THE APP ARE SEPARATE DEPLOYMENTS. RocketEase's
+# marketing site (apps/web) and its product (apps/platform) are two Next.js
+# applications with two images, so the apex and `app` cannot share one record.
+#
+# THE ZONE ALREADY EXISTS IN CLOUDFLARE and is not empty. Before the first apply,
+# check whether anything already owns `@`, `www` or `app` in it — `allow_overwrite`
+# matches on name AND TYPE and will not convert an A into a CNAME. That is exactly
+# what failed on agconn.com; the note above `agconn_www` has the full account and
+# is worth reading before pointing this zone here.
+#
+# CERTIFICATES: all three names must ALSO be allow-listed in api-rest's
+# PLATFORM_HOSTNAMES (wizeworks/services/api-rest/src/routes/internal/domain-check.ts),
+# because their Caddy blocks use the ON-DEMAND policy. A name missing from that
+# list gets 403 unknown_host from the ask endpoint, never receives a certificate,
+# and Cloudflare answers 525 for that hostname alone — which reads like a routing
+# bug and is an allow-list omission.
+locals {
+  rocketease_enabled = var.cloudflare_enabled && var.rocketease_dns_enabled
+
+  # Subdomains taking an A record straight at the ingress. The apex and `www` are
+  # handled separately below because their record types differ.
+  rocketease_hosts = local.rocketease_enabled ? toset(["app"]) : toset([])
+}
+
+data "cloudflare_zone" "rocketease" {
+  count = local.rocketease_enabled ? 1 : 0
+  name  = "rocketease.com"
+}
+
+resource "cloudflare_record" "rocketease_root" {
+  count           = local.rocketease_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.rocketease[0].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "RocketEase marketing site — shared Caddy, rocketease namespace"
+}
+
+# CNAME at the apex is not possible, so `www` is the CNAME and the apex is the A
+# record. Caddy 301s www to the apex before any application code runs, which is
+# why `www.rocketease.com` deliberately does NOT appear in the storage account's
+# CORS origins: a browser never holds it as an origin.
+resource "cloudflare_record" "rocketease_www" {
+  count           = local.rocketease_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.rocketease[0].id
+  name            = "www"
+  type            = "CNAME"
+  content         = "rocketease.com"
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "RocketEase www — 301s to the apex at Caddy"
+}
+
+resource "cloudflare_record" "rocketease_hosts" {
+  for_each        = local.rocketease_hosts
+  zone_id         = data.cloudflare_zone.rocketease[0].id
+  name            = each.value
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "RocketEase ${each.value} — shared Caddy, rocketease namespace"
+}

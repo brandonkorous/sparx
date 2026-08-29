@@ -783,3 +783,55 @@ import mode.caddy
 		header_up X-Forwarded-Port {http.request.port}
 	}
 }
+
+# ----- RocketEase (co-tenant in the `rocketease` namespace) --------------------
+# A social marketing platform from the brandonkorous/RocketEase repository, in
+# its own namespace with its own Postgres server, Key Vault and storage account
+# (terraform/envs/azure/rocketease.tf). Reached cross-namespace by ClusterIP, so
+# nothing about these blocks is special.
+#
+#   rocketease.com      marketing site (Next.js)  -> web
+#   www.rocketease.com  301 to the apex           -> (redir)
+#   app.rocketease.com  the product               -> platform
+#
+# ON-DEMAND TLS, like every other brand here, and NOT an explicit managed block:
+# this Caddy is `replicas: 1` on a `Recreate` rollout, so every boot has a
+# ~15-60s window with no registered load balancer backend, and certmagic spends
+# all of a managed block's startup issuance attempts inside it — a first
+# certificate is never obtained and Cloudflare answers 525 for that hostname
+# alone. silicaui and kanNINJA both hit this; see the note above kanninja.com.
+#
+# ALL THREE NAMES MUST ALSO BE ALLOW-LISTED in PLATFORM_HOSTNAMES
+# (wizeworks/services/api-rest/src/routes/internal/domain-check.ts). A name
+# missing there gets 403 `unknown_host` from the ask endpoint, never receives a
+# certificate, and reads exactly like a routing bug.
+{$SX_SCHEME:https}://rocketease.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy web.rocketease.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.rocketease.com {
+	import tls_policy
+	import security_headers
+	redir https://rocketease.com{uri} permanent
+}
+
+# X-Forwarded-Port, for the same reason agconn's apex carries it. The platform's
+# middleware.ts redirects anonymous traffic with `new URL("/login", req.url)`,
+# and Next builds that absolute URL from the forwarded headers. Without the port
+# the very first request an unauthenticated visitor makes returns
+#
+#     Location: https://app.rocketease.com:3000/login
+#
+# a public redirect to a port nothing serves — on the login path, so it is the
+# first thing anyone would hit. `{http.request.port}` rather than a literal 443
+# because this same file is mounted in workstation mode from k8s/local, where the
+# scheme is http and the port is not 443.
+{$SX_SCHEME:https}://app.rocketease.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy platform.rocketease.svc.cluster.local:80 {
+		header_up X-Forwarded-Port {http.request.port}
+	}
+}
