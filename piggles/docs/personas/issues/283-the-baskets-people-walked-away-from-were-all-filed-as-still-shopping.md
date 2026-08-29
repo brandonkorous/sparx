@@ -1,7 +1,7 @@
 # 283 — The baskets people walked away from were all filed as still shopping
 
-**Status:** fixed in code — proved at the scheduler and in the database; **the
-screen confirmation is still owed** (api-rest is not running, see below)
+**Status:** fixed
+**Confirmed:** 2026-08-27
 **Severity:** major (a whole capability that has never once functioned, on any
 tenant, since the commerce module shipped — and the screen says the opposite)
 **Found by:** P03 · Juniper Row · act 6's fourth job, the one [258]-era notes
@@ -137,13 +137,26 @@ came back   | 5
 in progress | 0
 ```
 
-**Still owed: the confirmation on her screen.** api-rest is not running
-(nothing listening on 3100, only SYN_SENT), so the console cannot refetch and the
-Baskets pane is showing its cached window with "Syncing…" in the status bar. The
-run cannot restart it — the dev lifecycle is Brandon's. When api-rest is back:
-open Baskets left behind, and the five must be under **Walked away** with the
-"Nothing here" state gone. Until that is done this issue is not closed, and it is
-recorded as owed rather than assumed (RULE #3 beat 3).
+**On her screen**, once api-rest was back up: **Baskets left behind → Walked
+away** holds all five, `Showing 1–5 of 5`, each badged **Walked away**, at the
+values they were sitting at in "In progress" — $126, $145, $192, $128, $192. The
+"Nothing here" empty state is gone. **In progress** is empty, which is the true
+answer for a shop whose newest live basket had been untouched for a day.
+
+## What the first real run then exposed
+
+Both of these were reachable only because this sweep exists. They are recorded
+separately because each has its own failure and its own fix, and neither is a
+defect in the sweep:
+
+- **[284] — writing a basket off took it away from the shopper.** Seven lookups
+  treated `abandoned_at` as a dead state, so a marked basket 404'd on add-to-cart
+  and on checkout and vanished from the shopper's own browser. A **blocker**, and
+  the reason this issue's own five baskets could not have been recovered.
+- **[285] — every marked basket then claimed the shopper was last here at 4:07
+  PM.** `markAbandoned` stamped `updated_at`, which the console renders as "Last
+  active", so the sweep overwrote the one fact that says how long ago each
+  shopper walked away.
 
 ## Still open, noted not filed
 
