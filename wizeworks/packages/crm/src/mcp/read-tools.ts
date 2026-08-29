@@ -88,8 +88,17 @@ export const getInactiveCustomers: McpToolDefinition = {
   run: async (ctx, input) => {
     const { daysInactive, take } = input as { daysInactive: number; take: number };
     const cutoff = new Date(Date.now() - daysInactive * 86_400_000);
-    const { items } = await customerService.list(ctx, { take, sortBy: 'lastOrderAt' });
-    return items.filter((c) => c.lastOrderAt !== null && c.lastOrderAt < cutoff);
+    // The cutoff is a WHERE, not a post-filter. Asking for a page and then
+    // discarding rows from it returned nothing at all: the sort put the
+    // never-ordered first, so the whole page was thrown away every time — and
+    // even sorted correctly, a page of the MOST recent buyers is exactly the set
+    // a "not since" filter removes (issue 322).
+    const { items } = await customerService.list(ctx, {
+      take,
+      sortBy: 'lastOrderAt',
+      lastOrderBefore: cutoff,
+    });
+    return items;
   },
 };
 

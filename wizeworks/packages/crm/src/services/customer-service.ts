@@ -51,6 +51,14 @@ export interface ListCustomersFilter {
   propertyId?: string;
   tag?: string;
   q?: string; // full-text-ish: matches first/last/company/email substring
+  /** Only people who HAVE ordered, and not since this moment — the win-back
+   *  question. A SQL comparison never matches a null, so this excludes
+   *  never-ordered customers by construction rather than by a second filter.
+   *
+   *  It belongs in the query and not in the caller: filtering after `take`
+   *  discards rows the page already spent, so a business with more buyers than
+   *  one page gets an arbitrary answer or an empty one (issue 322). */
+  lastOrderBefore?: Date;
   includeDeleted?: boolean;
   take?: number;
   skip?: number;
@@ -78,6 +86,7 @@ export async function list(
         ? { AND: [{ OR: [{ propertyId: null }, { propertyId: filter.propertyId }] }] }
         : {}),
       ...(filter.tag ? { tags: { has: filter.tag } } : {}),
+      ...(filter.lastOrderBefore ? { lastOrderAt: { lt: filter.lastOrderBefore } } : {}),
       ...(filter.q
         ? {
             OR: [
@@ -91,10 +100,16 @@ export async function list(
     };
 
     const sortField = filter.sortBy ?? 'updatedAt';
+    // NULLS LAST, and it is not a nicety. Postgres treats a null as the LARGEST
+    // value, so `ORDER BY … DESC` puts empty rows FIRST — and `lastOrderAt` is
+    // the one nullable field here (`score` and `totalSpent` default to 0,
+    // the timestamps are required), so "Recent order" listed everybody who has
+    // never ordered ahead of everybody who has. On a real business that is most
+    // of the list: Juniper Row's only buyer sat at row 30 of 30 (issue 322).
     const [items, total] = await Promise.all([
       tx.customer.findMany({
         where,
-        orderBy: { [sortField]: 'desc' },
+        orderBy: { [sortField]: { sort: 'desc', nulls: 'last' } },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
