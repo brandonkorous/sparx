@@ -142,6 +142,46 @@ export function useFunnel(id: string) {
   });
 }
 
+/** One form the site has, as the picker sees it. */
+export interface FormChoice {
+  formNodeId: string;
+  name: string | null;
+  pageSlug: string | null;
+}
+
+/**
+ * The forms on this site, for choosing what a campaign counts.
+ *
+ * Gated on the `builder` module server-side, so a tenant without a site gets a
+ * 403 rather than an empty list. That is handled as "no forms to offer" rather
+ * than as an error: a CRM-only tenant has no site forms and that is a normal
+ * state, not a fault worth an alarm on a campaign screen.
+ */
+export function useSiteForms() {
+  return useQuery({
+    queryKey: ['forms', 'definitions'],
+    queryFn: () =>
+      api
+        .get<{ forms: FormChoice[] }>('/v1/forms/definitions')
+        .then((r) => r?.forms ?? [])
+        .catch(() => [] as FormChoice[]),
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * What to call a form in a list, in the words its author would use.
+ *
+ * A form definition carries no name of its own unless somebody typed one, so
+ * this falls back to WHERE it is, which is how people refer to their forms
+ * anyway ("the one on the contact page"). A null page slug is the home page —
+ * the same convention the submit route uses.
+ */
+export function formChoiceLabel(form: FormChoice): string {
+  const where = form.pageSlug ? `/${form.pageSlug.replace(/^\//, '')}` : 'your home page';
+  return form.name ? `${form.name} (on ${where})` : `The form on ${where}`;
+}
+
 /** The report over a trailing window. `days` is the whole range control: a
  *  campaign is judged over weeks, not between two exact timestamps, and a pair
  *  of date pickers on a report nobody has run yet is friction with no payoff. */

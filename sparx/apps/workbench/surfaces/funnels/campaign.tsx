@@ -52,12 +52,14 @@ import {
   KIND_LABEL,
   STALL_CHOICES,
   canEditCampaigns,
+  formChoiceLabel,
   funnelErrorMessage,
   hoursLabel,
   statusMeta,
   useCreateFunnel,
   useDeleteFunnel,
   useFunnel,
+  useSiteForms,
   useLadder,
   useUpdateFunnel,
   type FunnelKind,
@@ -248,6 +250,7 @@ export function CampaignSurface({ ctx }: { ctx: SurfaceContext }) {
 
 function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const funnel = useFunnel(id);
+  const forms = useSiteForms();
   const viewer = useViewer();
   const canEdit = canEditCampaigns(viewer.data?.role);
   const update = useUpdateFunnel(id);
@@ -259,6 +262,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const [description, setDescription] = useState('');
   const [stages, setStages] = useState<FunnelStage[]>([]);
   const [goal, setGoal] = useState<ConditionGroup>(EMPTY_CONDITION_GROUP);
+  const [entryFormNodeId, setEntryFormNodeId] = useState<string | null>(null);
   const [stallAfterHours, setStallAfterHours] = useState<number | null>(null);
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
 
@@ -272,6 +276,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     setDescription(funnel.data.description ?? '');
     setStages(funnel.data.stages);
     setGoal(asGoal(funnel.data.goal));
+    setEntryFormNodeId(funnel.data.entryFormNodeId);
     setStallAfterHours(funnel.data.stallAfterHours);
     setLoadedFor(stamp);
     ctx.setTitle(funnel.data.name);
@@ -283,6 +288,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       description !== (funnel.data.description ?? '') ||
       JSON.stringify(stages) !== JSON.stringify(funnel.data.stages) ||
       JSON.stringify(goal) !== JSON.stringify(asGoal(funnel.data.goal)) ||
+      entryFormNodeId !== funnel.data.entryFormNodeId ||
       stallAfterHours !== funnel.data.stallAfterHours);
 
   useDirtySource(canEdit && changed, 'This campaign has unsaved changes. Close anyway?');
@@ -339,6 +345,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         description: description || null,
         stages,
         goal: hasGoal ? goal : null,
+        entryFormNodeId,
         stallAfterHours,
       },
       { onSuccess: () => toast.add({ title: 'Campaign saved', type: 'success' }) }
@@ -488,6 +495,51 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             description="In order, from the first thing somebody does to the outcome you want. Renaming a step keeps everything it has already recorded."
           >
             <StageLadderEditor stages={stages} onChange={setStages} disabled={!canEdit} />
+          </FormSection>
+
+          <FormSection
+            title="Where people come in"
+            description="The form somebody fills in to join this campaign. Until one is chosen, the steps above can count visits but nobody ever joins."
+          >
+            <Field>
+              <FieldLabel>The form that starts it</FieldLabel>
+              <FieldControl
+                render={
+                  <Select
+                    color="module"
+                    aria-label="The form that starts it"
+                    disabled={!canEdit || forms.data === undefined}
+                    value={entryFormNodeId ?? 'none'}
+                    onValueChange={(value) => {
+                      setEntryFormNodeId(value === 'none' ? null : String(value));
+                    }}
+                    items={[
+                      { value: 'none', label: 'Not connected to a form yet' },
+                      ...(forms.data ?? []).map((form) => ({
+                        value: form.formNodeId,
+                        label: formChoiceLabel(form),
+                      })),
+                      // A campaign already pointed at something this site's form
+                      // list does not contain — a deleted form, or one of the
+                      // free tools on our own marketing sites, which are
+                      // hand-built pages and have no form definition to list.
+                      // Shown rather than silently dropped: without this the
+                      // control would render "Not connected" over a campaign
+                      // that IS connected, and saving would quietly cut it.
+                      ...(entryFormNodeId &&
+                      !(forms.data ?? []).some((f) => f.formNodeId === entryFormNodeId)
+                        ? [{ value: entryFormNodeId, label: entryFormNodeId }]
+                        : []),
+                    ]}
+                  />
+                }
+              />
+              <FieldDescription>
+                {entryFormNodeId === null
+                  ? 'Nothing feeds this campaign yet, so it will not record anybody.'
+                  : 'Every time somebody sends this form, they join the campaign.'}
+              </FieldDescription>
+            </Field>
           </FormSection>
 
           <FormSection

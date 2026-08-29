@@ -106,6 +106,48 @@ export async function getSilicaForm(
   };
 }
 
+/** One form a campaign can be pointed at. */
+export interface FormChoice {
+  formNodeId: string;
+  /** The author's own name for it, when they have given one. */
+  name: string | null;
+  /** Null means the site's home page — the same convention the submit route uses. */
+  pageSlug: string | null;
+}
+
+/**
+ * Every form on this site, for a picker.
+ *
+ * Distinct from `submissionForms`, which derives its list from SUBMISSIONS and
+ * therefore only knows a form once somebody has filled it in. That is exactly
+ * backwards for choosing what a campaign counts: the moment you want to point a
+ * campaign at a form is before anyone has used it.
+ *
+ * Ordered by page then node id so the list is stable between loads — a picker
+ * whose options reshuffle is one people stop trusting.
+ */
+export async function listForms(ctx: PropertyContext): Promise<FormChoice[]> {
+  const rows = await withTenant(ctx, (tx) =>
+    tx.formDefinition.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { formNodeId: true, pageSlug: true, config: true },
+      orderBy: [{ pageSlug: 'asc' }, { formNodeId: 'asc' }],
+    })
+  );
+  return rows.map((row) => {
+    // The name is the author's, read through the same normalizer the panel and
+    // the submit path use, so "unnamed" means the same thing in all three. An
+    // empty string is not a name — it is the default the panel never filled in,
+    // and letting it through would put a blank option in the picker.
+    const name = readSilicaFormConfig(row.config).name.trim();
+    return {
+      formNodeId: row.formNodeId,
+      name: name === '' ? null : name,
+      pageSlug: row.pageSlug,
+    };
+  });
+}
+
 /** Save this form's routing. `recipients` is validated by the caller (the route parses
  *  them as emails) — this never accepts an address from a public request, only from an
  *  authenticated editor session. */

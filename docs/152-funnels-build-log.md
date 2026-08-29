@@ -1389,6 +1389,91 @@ The general shape: **a whole-pane empty state is for a whole pane.** Used as a
 section header above a form it costs the reader the thing they opened the pane
 to do, and it says nothing the surface's own chrome has not already said.
 
+### G1 — the free tools on our own sites now feed a campaign _(2026-08-26)_
+
+**The question that found it:** "do we have any funnel popups on meetpiggles.com?"
+No — and checking turned up something better than the missing popup. Both
+marketing sites have run **seventeen free tools** with an "email me my results"
+capture for a while (`ToolEmailCapture` → `POST /v1/public/tools/deliver`), and
+every one of those leads was recorded in CRM and **invisible to funnels**. Only
+`forms.ts`, `signup.ts` and `site-analytics.ts` recorded stages. The easiest
+capture we own was the one nothing measured.
+
+**The join reuses `entryFormNodeId` rather than earning a column.** A marketing
+tool is a hand-built Next.js page with no builder node to name, but it IS a form
+that collects an email — which is what that field identifies. So a tool declares
+itself as `tool:<slug>` via `toolCaptureNodeId()`, kept in `funnel-entry.ts`
+beside the lookup it feeds. `tool:` cannot collide with a builder node id (minted
+with a random base, never carrying a colon), and the slug is validated against
+the route's own tool table before use, so the varchar(64) ceiling is never in
+play.
+
+**Zero marketing-site changes.** The capture is entirely server-side on a route
+both sites already post to, which is why this was the cheap one of the three.
+
+Two details worth keeping:
+
+- **Property resolution moved OUT of the CRM branch.** It was inside
+  `if (crm enabled)`, and the funnel half needs the same answer — a funnel is
+  site-scoped. Resolved once now, above both effects.
+- **Not gated on `funnels`, deliberately**, and not on CRM either. A tenant with
+  the module off simply has no active funnel naming the tool, so the lookup finds
+  nothing at the cost of one indexed read. That is exactly what the builder form
+  route does, and matching it is what stops the two capture paths drifting into
+  two different ideas of when a stage is recorded.
+
+`test/integration/public-tools-funnel-capture.test.ts` — 5 tests, and the
+important ones are the negatives: a campaign naming a DIFFERENT tool is left
+alone (otherwise one campaign swallows all seventeen and reads as one runaway
+success beside sixteen dead ones), a DRAFT counts nobody, and the results still
+send when no campaign is watching. Proven red by changing the prefix to `toolx:`.
+
+_Fixture note:_ `funnels` is FORCE RLS, so even a test fixture writes through
+`withTenant` — a bare `prisma.funnel.create` is refused, which is the policy
+working. And this API answers a schema refusal with **422**, not 400.
+
+### G2 — the entry form is now something a person can choose _(2026-08-26)_
+
+Found while wiring G1, and bigger than the tools case. `entryFormNodeId` was on
+`CreateFunnelInput` and `UpdateFunnelInput`, and both consoles READ it (the
+activation blocker checks it) — and **nothing anywhere let anyone set it**. The
+whole capture stitch, B3 included, was reachable only through the API or MCP: a
+tenant could not point a campaign at one of their own forms, which means the
+headline thing a campaign does could not be switched on by the person it is for.
+
+**Why there was nothing to populate a picker with.** The only existing list of
+forms is `submissionForms`, and it groups over SUBMISSIONS — so it knows a form
+only once somebody has already filled it in. That is exactly backwards for
+setting up a campaign, which happens before the first lead. So:
+
+- `formDefinitionService.listForms()` — the site's form DEFINITIONS, ordered by
+  page then node id so the picker does not reshuffle between loads.
+- `GET /v1/forms/definitions`, beside the `:formNodeId` singular that already
+  existed. Role `viewer`, gated on `builder` like its siblings.
+- A **"Where people come in"** section in both consoles, between the ladder and
+  the goal — the order somebody sets a campaign up in.
+
+**A form has no name of its own** unless the author typed one into the form
+panel's `config.name`, so `formChoiceLabel` falls back to WHERE it is, which is
+how people refer to their forms anyway: "The form on /contact", "The form on your
+home page". An empty name normalizes to `null`, never `''`, or the picker grows a
+blank row.
+
+**The option that is not in the list.** A campaign already pointed at something
+the site's forms do not contain — a deleted form, or one of the marketing tools
+from G1, which are hand-built pages with no definition to list — gets its raw
+value shown as an option rather than dropped. Without that the control would read
+"Not connected to a form yet" over a campaign that IS connected, and saving would
+quietly cut it. That is the same class of bug as the goal editor drawing a raw
+operator slug: the surface showing something untrue about the record under it.
+
+Two integration tests, five and three:
+`public-tools-funnel-capture.test.ts` and `forms-definitions-list.test.ts`. The
+list's load-bearing assertions are that a form with NO submissions is still
+offered (the whole reason the route exists) and that another site's forms are
+not (a picker leaking them would let a campaign be pointed at a form on a site it
+cannot count).
+
 ### The browser pass: what to actually click
 
 Passes 1 and 6 are covered above; the rest is untouched. Every slice has probe

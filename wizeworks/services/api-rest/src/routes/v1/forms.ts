@@ -1,5 +1,8 @@
 // Site forms — the authenticated submissions inbox (docs/115).
 //
+//   GET    /v1/forms/definitions        → every form on this site, for a picker
+//   GET    /v1/forms/definitions/:id    → one form's settings
+//   PUT    /v1/forms/definitions/:id    → save one form's settings
 //   GET    /v1/forms/submissions        → list (tenant-wide, newest first) + counts
 //   GET    /v1/forms/submissions/:id    → one submission
 //   GET    /v1/forms/submissions/:id/attachments/:index → download an attachment
@@ -77,6 +80,17 @@ const SaveFormBody = z.object({
 
 const formsRoutes: FastifyPluginAsync = (app) => {
   // ── A silica form's settings (docs/115) ────────────────────────────────────
+  // Every form on this site, for choosing what a campaign counts (docs/152 G2).
+  // Registered BEFORE `/:formNodeId` — Fastify's router prefers the static
+  // segment either way, but keeping the specific route above the parameterised
+  // one is what makes that obvious to the next person reading the file.
+  app.get('/v1/forms/definitions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    return ok({ forms: await formDefinitionService.listForms(ctx) });
+  });
+
   app.get('/v1/forms/definitions/:formNodeId', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);

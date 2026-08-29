@@ -16,7 +16,8 @@ import {
 import type { ConditionGroup } from '@wizeworks/automation-schemas';
 import { FormSection } from '../../components/form-section';
 import { ConditionEditor } from '../automations/condition-editor';
-import { STALL_CHOICES, hoursLabel } from './presentation';
+import { STALL_CHOICES, formChoiceLabel, hoursLabel } from './presentation';
+import { useSiteForms } from './data';
 import { StageLadderEditor } from './stage-editor';
 import type { FunnelStage } from './types';
 
@@ -25,6 +26,7 @@ export interface SetupDraft {
   description: string;
   stages: FunnelStage[];
   goal: ConditionGroup;
+  entryFormNodeId: string | null;
   stallAfterHours: number | null;
 }
 
@@ -33,6 +35,7 @@ export interface SetupHandlers {
   setDescription: (value: string) => void;
   setStages: (value: FunnelStage[]) => void;
   setGoal: (value: ConditionGroup) => void;
+  setEntryFormNodeId: (value: string | null) => void;
   setStallAfterHours: (value: number | null) => void;
 }
 
@@ -80,6 +83,55 @@ function Identity({
             />
           }
         />
+      </Field>
+    </FormSection>
+  );
+}
+
+function Entry({ draft, on, canEdit }: { draft: SetupDraft; on: SetupHandlers; canEdit: boolean }) {
+  const forms = useSiteForms();
+  const chosen = draft.entryFormNodeId;
+  const listed = (forms.data ?? []).some((f) => f.formNodeId === chosen);
+
+  return (
+    <FormSection
+      title="Where people come in"
+      description="The form somebody fills in to join this campaign. Until one is chosen, the steps above can count visits but nobody ever joins."
+    >
+      <Field>
+        <FieldLabel>The form that starts it</FieldLabel>
+        <FieldControl
+          render={
+            <Select
+              color="module"
+              aria-label="The form that starts it"
+              disabled={!canEdit || forms.data === undefined}
+              value={chosen ?? 'none'}
+              onValueChange={(value) => {
+                on.setEntryFormNodeId(value === 'none' ? null : String(value));
+              }}
+              items={[
+                { value: 'none', label: 'Not connected to a form yet' },
+                ...(forms.data ?? []).map((form) => ({
+                  value: form.formNodeId,
+                  label: formChoiceLabel(form),
+                })),
+                // A campaign already pointed at something this site's form list
+                // does not contain — a deleted form, or one of the free tools on
+                // the marketing site, which are hand-built pages with no form
+                // definition to list. Shown rather than silently dropped:
+                // without this the control would read "Not connected" over a
+                // campaign that IS connected, and saving would quietly cut it.
+                ...(chosen && !listed ? [{ value: chosen, label: chosen }] : []),
+              ]}
+            />
+          }
+        />
+        <FieldDescription>
+          {chosen === null
+            ? 'Nothing feeds this campaign yet, so it will not record anybody.'
+            : 'Every time somebody sends this form, they join the campaign.'}
+        </FieldDescription>
       </Field>
     </FormSection>
   );
@@ -162,6 +214,8 @@ export function CampaignSetup({
       >
         <StageLadderEditor stages={draft.stages} onChange={on.setStages} disabled={!canEdit} />
       </FormSection>
+
+      <Entry draft={draft} on={on} canEdit={canEdit} />
 
       <FormSection
         title="What counts as success"

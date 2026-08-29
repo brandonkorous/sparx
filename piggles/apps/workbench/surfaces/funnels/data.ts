@@ -27,6 +27,33 @@ export function useFunnels(status?: FunnelStatus) {
   });
 }
 
+/** One form the site has, as the picker sees it. */
+export interface FormChoice {
+  formNodeId: string;
+  name: string | null;
+  pageSlug: string | null;
+}
+
+/**
+ * The forms on this site, for choosing what a campaign counts.
+ *
+ * Gated on the site-builder module server-side, so a workspace without a site
+ * gets a 403 rather than an empty list. Treated as "no forms to offer" rather
+ * than an error: having no site forms is a normal state, not a fault worth an
+ * alarm on a campaign screen.
+ */
+export function useSiteForms() {
+  return useQuery({
+    queryKey: ['forms', 'definitions'],
+    queryFn: () =>
+      api
+        .get<{ forms: FormChoice[] }>('/v1/forms/definitions')
+        .then((r) => r?.forms ?? [])
+        .catch(() => [] as FormChoice[]),
+    staleTime: 60_000,
+  });
+}
+
 export function useFunnel(id: string) {
   return useQuery({
     queryKey: funnelKeys.detail(id),

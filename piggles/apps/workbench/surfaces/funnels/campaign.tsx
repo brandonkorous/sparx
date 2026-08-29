@@ -61,6 +61,8 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
+          error={funnel.error}
+          noun="campaign"
           module="funnels"
           title="Could not open this campaign"
           description={funnelErrorMessage(
@@ -84,6 +86,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         description: draft.description || null,
         stages: draft.stages,
         goal: draft.hasGoal ? draft.goal : null,
+        entryFormNodeId: draft.entryFormNodeId,
         stallAfterHours: draft.stallAfterHours,
       },
       { onSuccess: () => toast.add({ title: 'Campaign saved', type: 'success' }) }

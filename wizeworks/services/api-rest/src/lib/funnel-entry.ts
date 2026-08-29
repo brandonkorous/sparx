@@ -176,6 +176,29 @@ export interface FunnelCaptureTarget {
 }
 
 /**
+ * The `entryFormNodeId` a MARKETING TOOL's capture matches on.
+ *
+ * The free tools on our own marketing sites (sparx.works, meetpiggles.com) are
+ * hand-built Next.js pages, not builder output, so they have no builder node to
+ * name. They are still a form that collects an email, which is exactly what
+ * `entryFormNodeId` identifies — so a tool declares itself with a namespaced
+ * synthetic id rather than earning a second column that would mean the same
+ * thing. `tool:` cannot collide with a builder node id, which is minted with a
+ * random base and never carries a colon.
+ *
+ * Kept HERE, beside the lookup it feeds, because the string is a contract
+ * between the route that writes captures and the person who types the id into a
+ * campaign's setup. A copy of this format anywhere else is a copy that can drift.
+ *
+ * Length: `entry_form_node_id` is varchar(64), and the caller validates the slug
+ * against its own tool table before this is reached, so the longest real value
+ * is well inside it.
+ */
+export function toolCaptureNodeId(toolSlug: string): string {
+  return `tool:${toolSlug}`;
+}
+
+/**
  * The active funnel this form feeds, and which rung its submission is.
  *
  * Matched on `(property, entry_form_node_id)`: builder node ids carry a random

@@ -32,6 +32,8 @@ export interface CampaignDraft {
   description: string;
   stages: FunnelStage[];
   goal: ConditionGroup;
+  /** The form somebody fills in to join, or null when nothing feeds it. */
+  entryFormNodeId: string | null;
   /** This campaign's own patience, or null to follow its kind's default. */
   stallAfterHours: number | null;
   changed: boolean;
@@ -42,6 +44,7 @@ export interface CampaignDraft {
   setDescription: (value: string) => void;
   setStages: (value: FunnelStage[]) => void;
   setGoal: (value: ConditionGroup) => void;
+  setEntryFormNodeId: (value: string | null) => void;
   setStallAfterHours: (value: number | null) => void;
 }
 
@@ -72,6 +75,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
   const [description, setDescription] = useState('');
   const [stages, setStages] = useState<FunnelStage[]>([]);
   const [goal, setGoal] = useState<ConditionGroup>(EMPTY_CONDITION_GROUP);
+  const [entryFormNodeId, setEntryFormNodeId] = useState<string | null>(null);
   const [stallAfterHours, setStallAfterHours] = useState<number | null>(null);
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
 
@@ -82,6 +86,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     setDescription(funnel.description ?? '');
     setStages(funnel.stages);
     setGoal(asGoal(funnel.goal));
+    setEntryFormNodeId(funnel.entryFormNodeId);
     setStallAfterHours(funnel.stallAfterHours);
     setLoadedFor(stamp);
   }, [funnel, stamp, loadedFor]);
@@ -92,6 +97,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
       description !== (funnel.description ?? '') ||
       JSON.stringify(stages) !== JSON.stringify(funnel.stages) ||
       JSON.stringify(goal) !== JSON.stringify(asGoal(funnel.goal)) ||
+      entryFormNodeId !== funnel.entryFormNodeId ||
       stallAfterHours !== funnel.stallAfterHours);
 
   const hasGoal = goal.conditions.length > 0;
@@ -101,6 +107,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     description,
     stages,
     goal,
+    entryFormNodeId,
     stallAfterHours,
     changed,
     hasGoal,
@@ -109,6 +116,7 @@ export function useCampaignDraft(funnel: Funnel | undefined): CampaignDraft {
     setDescription,
     setStages,
     setGoal,
+    setEntryFormNodeId,
     setStallAfterHours,
   };
 }

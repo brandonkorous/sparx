@@ -62,6 +62,11 @@ import { prisma, withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { notFound, validationError } from '@wizeworks/api-core/errors';
+import {
+  captureFunnelStage,
+  findFormCaptureTarget,
+  toolCaptureNodeId,
+} from '../../../lib/funnel-entry.js';
 
 // Same ceiling the storefront auth routes use — generous for a person, useless
 // for a sender.
@@ -170,22 +175,24 @@ const publicToolsRoutes: FastifyPluginAsync = (app) => {
     // /v1/public/newsletter this does NOT 404 when CRM is off: that route exists
     // only to join a list, so refusing is the honest answer there. Here the list
     // is the secondary effect and the email is the primary one.
-    if (await isModuleEnabled(tenant.id, 'crm')) {
-      // Scope the contact to a site so it shows under one in the console rather
-      // than floating at the tenant level (same reasoning as the newsletter
-      // route). `properties` is FORCE RLS, so resolve inside withTenant.
-      const property = await withTenant({ tenantId: tenant.id }, (tx) =>
-        q.property
-          ? tx.property.findFirst({
-              where: { tenantId: tenant.id, slug: q.property },
-              select: { id: true },
-            })
-          : tx.property.findFirst({
-              where: { tenantId: tenant.id, isPrimary: true },
-              select: { id: true },
-            })
-      );
+    // Which site this capture belongs to. Resolved ONCE, above both effects
+    // below: the contact is scoped to a site so it shows under one in the
+    // console rather than floating at the tenant level (same reasoning as the
+    // newsletter route), and a funnel is site-scoped so its lookup needs the
+    // same answer. `properties` is FORCE RLS, so resolve inside withTenant.
+    const property = await withTenant({ tenantId: tenant.id }, (tx) =>
+      q.property
+        ? tx.property.findFirst({
+            where: { tenantId: tenant.id, slug: q.property },
+            select: { id: true },
+          })
+        : tx.property.findFirst({
+            where: { tenantId: tenant.id, isPrimary: true },
+            select: { id: true },
+          })
+    );
 
+    if (await isModuleEnabled(tenant.id, 'crm')) {
       await customerService.subscribe(
         { tenantId: tenant.id },
         {
@@ -202,6 +209,44 @@ const publicToolsRoutes: FastifyPluginAsync = (app) => {
           ipAddress: clientIp(request),
         }
       );
+    }
+
+    // ── 3. Count them on a campaign, best-effort. ────────────────────────────
+    // NOT gated on CRM, and deliberately not on `funnels` either: a tenant with
+    // funnels off simply has no active funnel naming this tool, so the lookup
+    // finds nothing and the call costs one indexed read. That is the same shape
+    // the builder form route uses, and matching it is what keeps the two capture
+    // paths from drifting into two different ideas of when a stage is recorded.
+    //
+    // WHY THIS ROUTE NEEDED IT. Both marketing sites have run seventeen free
+    // tools with an "email me my results" capture for a while, and every one of
+    // those leads was invisible to the funnels module — recorded in CRM, absent
+    // from every campaign report. The capture that was easiest to measure was
+    // the one nothing measured.
+    //
+    // A campaign picks this up by naming the tool as its entry form: the id is
+    // `tool:<slug>` (see toolCaptureNodeId), e.g. `tool:margin-calculator`.
+    if (property) {
+      const target = await findFormCaptureTarget(
+        tenant.id,
+        property.id,
+        toolCaptureNodeId(body.toolSlug)
+      );
+      if (target) {
+        await captureFunnelStage({
+          log: request.log,
+          tenantId: tenant.id,
+          funnelId: target.funnelId,
+          stageKey: target.stageKey,
+          subjectEmail: body.email,
+          ip: request.ip,
+          userAgent:
+            typeof request.headers['user-agent'] === 'string'
+              ? request.headers['user-agent'].slice(0, 1000)
+              : '',
+          now: new Date(),
+        });
+      }
     }
 
     // Never reveal whether the address was already on file — a capture form must

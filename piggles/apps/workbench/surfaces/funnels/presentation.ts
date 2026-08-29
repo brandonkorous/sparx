@@ -100,3 +100,16 @@ export const STALL_CHOICES = [4, 12, 24, 48, 72, 168, 336, 720, 1440];
 export function moneyLabel(cents: number): string {
   return `$${Math.round(cents / 100).toLocaleString()}`;
 }
+
+/**
+ * What to call a form in a list, in the words its author would use.
+ *
+ * A form definition carries no name of its own unless somebody typed one, so
+ * this falls back to WHERE it is, which is how people refer to their forms
+ * anyway ("the one on the contact page"). A null page slug is the home page —
+ * the same convention the submit route uses.
+ */
+export function formChoiceLabel(form: { name: string | null; pageSlug: string | null }): string {
+  const where = form.pageSlug ? `/${form.pageSlug.replace(/^\//, '')}` : 'your home page';
+  return form.name ? `${form.name} (on ${where})` : `The form on ${where}`;
+}
