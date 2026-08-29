@@ -147,6 +147,60 @@ function upgradeLegalLinks(node: Node): Node | null {
   return changed ? { ...node, children: next } : null;
 }
 
+/** The seeded socials slot: an EMPTY `<ul>`. `siteFooter` filled the footer block's three
+ *  social slots with `null`, which collapses the row to a bare list with nothing in it. */
+function isEmptySocialSlot(node: Node): boolean {
+  return isElement(node) && node.tag === 'ul' && (node.children ?? []).length === 0;
+}
+
+/** The BRAND column of a footer — the element holding the `site.brand` core directly.
+ *  Scoping to it is what keeps this repair from putting a business's Instagram somewhere
+ *  arbitrary: the empty `<ul>` only means "socials" beside the brand mark, which is where
+ *  every footer variant seeds it. */
+function isBrandColumn(node: Node): boolean {
+  if (!isElement(node)) return false;
+  return (node.children ?? []).some(
+    (c) => typeof c !== 'string' && c.kind === 'host' && c.component === HOST_KEYS.siteBrand
+  );
+}
+
+/** Put the live `site.social-links` core where the seeded empty row sits.
+ *
+ *  Clears this file's bar for a heal: the seed emptied the block's placeholder links and
+ *  put nothing in their place, so EVERY published frame carries a dead slot. Site
+ *  identity says "add one and it appears in your footer", the resolver puts the links on
+ *  `site.social` every render, and no node asks for them — so a shop owner who fills the
+ *  field in sees exactly nothing, forever (issue 326). Seeding the core fixes the next
+ *  tenant and leaves all of those broken, which is the whole test.
+ *
+ *  Takes the empty row's POSITION so the marks land where the footer already reserved
+ *  space for them. When the author deleted the row, this does nothing at all rather than
+ *  guess a new home — a repair that invents a placement is worse than one that declines. */
+function upgradeSocialLinks(node: Node): Node | null {
+  if (!isElement(node)) return null;
+  const children = node.children ?? [];
+
+  if (isBrandColumn(node)) {
+    const index = children.findIndex((c) => typeof c !== 'string' && isEmptySocialSlot(c));
+    if (index !== -1) {
+      const swapped = [...children];
+      swapped[index] = hostCore(HOST_KEYS.siteSocialLinks, 'mt-2 flex items-center gap-1');
+      return { ...node, children: swapped };
+    }
+    return null;
+  }
+
+  let changed = false;
+  const next = children.map((child) => {
+    if (typeof child === 'string' || changed) return child;
+    const upgraded = upgradeSocialLinks(child);
+    if (!upgraded) return child;
+    changed = true;
+    return upgraded;
+  });
+  return changed ? { ...node, children: next } : null;
+}
+
 /** The exact href the starter navbar used to author for its secondary link. Matched
  *  LITERALLY, like the legal pair: an author who repointed it keeps their own link. */
 const SEEDED_ACCOUNT_HREF = '/account/login';
@@ -338,7 +392,11 @@ function hasLinkTo(node: Node, href: string): boolean {
  *      Clears the same bar as the other two: a stamped "Sign in" is already wrong on
  *      every published site the moment a customer signs in, so seeding the core fixes the
  *      next tenant and leaves every existing one telling their own customers they are
- *      strangers (issue 291). */
+ *      strangers (issue 291).
+ *   4. **Social links** — put the live `site.social-links` core in the empty `<ul>` the
+ *      seed left beside the brand mark. Same bar again: Site identity promises the links
+ *      appear in the footer, the resolver supplies them on every render, and no published
+ *      frame has a node that asks for them (issue 326). */
 export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean } {
   if (!isElement(root)) return { root, changed: false };
 
@@ -387,6 +445,7 @@ export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean }
   // Idempotent, and a no-op for anyone who already dragged the core in by hand.
   if (!alreadyHasBrandCore(next)) healRegion('nav', upgradeNav);
   if (!hasHostCore(next, HOST_KEYS.siteLegalLinks)) healRegion('footer', upgradeLegalLinks);
+  if (!hasHostCore(next, HOST_KEYS.siteSocialLinks)) healRegion('footer', upgradeSocialLinks);
   if (!hasHostCore(next, HOST_KEYS.siteAccountLink)) {
     const healed = upgradeAccountLink(next);
     if (healed && isElement(healed)) {

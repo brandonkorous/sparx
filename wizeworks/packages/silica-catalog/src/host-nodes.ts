@@ -145,6 +145,20 @@ export const HOST_KEYS = {
    *  non-empty. Not pinned: the tenant owns where the links sit (a footer column, a
    *  bottom bar, beside the copyright). */
   siteLegalLinks: 'site.legal-links',
+  /** The business's own SOCIAL LINKS — the row of platform marks in a footer.
+   *
+   *  A host core for the third time and the same reason: it is a tenant setting that
+   *  changes AFTER the tree is published, so a stamped node is wrong in both
+   *  directions. The footer block ships three social slots, and the seed empties them
+   *  rather than publish the block's X/GitHub/LinkedIn placeholders as dead `#` links
+   *  — correct, and only half the job. The other half was never built, so Site
+   *  identity said "Add one and it appears in your footer", a shop owner added her
+   *  Instagram, and nothing appeared: the links were resolved onto `site.social` on
+   *  every render and no node ever asked for them (issue 326).
+   *
+   *  Renders NOTHING with no links, which is what keeps the seed honest — the slot can
+   *  now sit in every footer from day one without publishing anything. */
+  siteSocialLinks: 'site.social-links',
   /** The visitor's ACCOUNT LINK — "Sign in" to a stranger, their own name to a
    *  signed-in shopper, always pointing at the right one of `/account/login` and
    *  `/account`.
@@ -524,6 +538,18 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     ],
     // Not pinned: the tenant owns their footer layout. Pinning would leave an
     // undeletable empty box on a site with no legal pages published yet.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.siteSocialLinks,
+    label: 'Social links',
+    category: 'Your site',
+    icon: 'share',
+    hint: 'The social accounts you list in Site identity, as a row of marks. Always current, and hidden entirely until you add one. Put it in your footer.',
+    // A horizontal mark row, matching the slot the footer blocks already leave for it.
+    defaultClass: 'mt-2 flex items-center gap-1',
+    // Not pinned, for the same reason as the legal links: the tenant owns where their
+    // socials sit, and a site with none would otherwise carry an undeletable empty row.
     pinned: false,
   },
   {

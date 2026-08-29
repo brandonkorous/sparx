@@ -31,6 +31,7 @@ import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { ArticleBody } from '@/components/cms/article-body';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LegalFooterLinks, toLegalHeading } from '@/components/legal-footer-links';
+import { SocialLinks } from '@wizeworks/builder-render';
 import { ListPagination, type ListPagingFacts } from '@/components/list-pagination';
 import { SiteEmbed } from '@/components/embed/site-embed';
 import { SiteMap } from '@/components/embed/site-map';
@@ -199,6 +200,17 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
           <LegalFooterLinks
             links={ctx.legalLinks ?? []}
             heading={toLegalHeading(node.props?.heading)}
+          />
+        );
+      case HOST_KEYS.siteSocialLinks:
+        // The business's own social accounts, straight off the resolved site — the
+        // same list Site identity writes and the same one `site.social` carries, so
+        // the two chromes can never disagree. Renders nothing until she adds one,
+        // which is what lets the seed put the slot in every footer up front.
+        return (
+          <SocialLinks
+            items={ctx.site.socials}
+            {...(node.class ? { className: node.class } : {})}
           />
         );
       case HOST_KEYS.siteMap:

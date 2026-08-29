@@ -126,6 +126,12 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         // it. A tenant who leads with a full-width "Sign in" button in their own header
         // instead has to be able to remove ours.
         HOST_KEYS.siteAccountLink,
+        // Social links are the tenant's own accounts, listed by them in Site identity.
+        // Deleting the row costs a convenience they chose to place — nothing on the site
+        // stops working — and pinning it would leave an undeletable empty strip in the
+        // footer of every business that does not use social media, which is a real kind
+        // of business and not an oversight.
+        HOST_KEYS.siteSocialLinks,
         // The two media cores are the clearest case the list has: a map and an embed are
         // the TENANT'S OWN CONTENT, put there by them, and deleting one costs nothing but
         // the thing they chose to add. They are host cores only because the engine's

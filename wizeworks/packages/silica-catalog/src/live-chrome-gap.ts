@@ -80,6 +80,8 @@ const COSTS: Record<string, string> = {
   [HOST_KEYS.siteLegalLinks]:
     'Your footer does not link to your privacy policy or your other legal pages.',
   [HOST_KEYS.siteBrand]: 'Your logo and business name are not showing in your header.',
+  [HOST_KEYS.siteSocialLinks]:
+    'The social accounts you listed in Site identity are not shown anywhere on your site.',
   [HOST_KEYS.siteThemeToggle]: 'Visitors cannot switch your site between its light and dark looks.',
 };
 

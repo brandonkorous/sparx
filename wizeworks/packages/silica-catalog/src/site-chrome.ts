@@ -697,10 +697,14 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
             : 'Everything you publish, in one place.',
       href: '/',
     },
-    // Socials are a tenant setting, not something a starter can invent. Emptied
-    // rather than left as the block's X/GitHub/LinkedIn placeholders, which would
-    // publish three dead `#` links on day one.
-    social1: null,
+    // Socials are a tenant setting, not something a starter can invent. The block's
+    // X/GitHub/LinkedIn placeholders would publish three dead `#` links on day one,
+    // so they go — but emptying them was only half of it, and for a long time it was
+    // the only half: Site identity promised "add one and it appears in your footer"
+    // and nothing ever drew what she added (issue 326). The live core is the other
+    // half. It renders NOTHING until she lists an account, so it costs a brand-new
+    // site exactly what three nulls did, and starts working the moment she fills it in.
+    social1: hostCore(HOST_KEYS.siteSocialLinks, 'mt-2 flex items-center gap-1'),
     social2: null,
     social3: null,
     col1: { text: 'Explore', href: '/' },
