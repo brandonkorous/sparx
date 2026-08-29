@@ -1,4 +1,7 @@
-// Refunding an ORDER: settle at the tenant's gateway, then record it.
+// Refunding an ORDER: settle at the tenant's gateway if one is holding the
+// charge, then record it. Most shops on this platform are not holding a charge
+// anywhere — they took cash, a cheque or a bank transfer — and for them the
+// refund is a bookkeeping entry against money they hand back themselves.
 //
 // `orderRefundsService.recordRefund` is BOOKKEEPING ONLY — it writes an
 // `order_refunds` row from a `processorRef` the caller supplies and never contacts a
@@ -15,7 +18,12 @@
 // which is why we persist the gateway's own refund id as the processorRef — that id
 // is the join key the webhook looks the row up by.
 
-import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@wizeworks/payments';
+import {
+  GatewayNotFoundError,
+  PaymentConfigError,
+  paymentService,
+  takenByGateway,
+} from '@wizeworks/payments';
 import { orderRefundsService } from '@wizeworks/crm';
 import type { OrderRefund } from '@wizeworks/db';
 import { withTenant } from '@wizeworks/db';
@@ -26,9 +34,10 @@ export interface RefundOrderInput {
   orderId: string;
   /**
    * Refund amount in DOLLARS (the money vocabulary the CRM order surfaces use).
-   * Optional: omit it to refund the FULL remaining amount (everything captured
-   * on this order, less anything already refunded). The workbench always sends
-   * an explicit amount; API/MCP/script callers can just POST `{}`.
+   * Optional: omit it to refund the FULL remaining amount — the order's
+   * `amountPaid`, which the payment rollup already writes net of everything
+   * given back. The workbench always sends an explicit amount; API/MCP/script
+   * callers can just POST `{}`.
    */
   amount?: number;
   currency?: string;
@@ -41,8 +50,9 @@ interface Ctx {
 }
 
 /**
- * Settle a refund for `orderId` through the tenant's payment gateway and record it.
- * Returns the recorded `OrderRefund`.
+ * Settle a refund for `orderId` and record it. Money a gateway is holding is
+ * reversed there first; money handed over by hand is recorded and handed back by
+ * the shop. Returns the recorded `OrderRefund`.
  *
  * Throws a 400 when there is nothing to refund against (no captured payment) or the
  * gateway rejects/ isn't configured — in every one of those cases NO refund row is
@@ -59,25 +69,25 @@ export async function refundOrderThroughGateway(
   const { order, payment } = await withTenant({ tenantId: ctx.tenantId }, async (tx) => ({
     order: await tx.order.findUnique({
       where: { id: input.orderId },
-      select: { amountPaid: true, refundTotal: true },
+      select: { amountPaid: true },
     }),
     payment: await tx.orderPayment.findFirst({
       where: { orderId: input.orderId, status: 'captured' },
       orderBy: { capturedAt: 'desc' },
-      select: { id: true, processorRef: true, currency: true },
+      select: { id: true, processor: true, processorRef: true, currency: true },
     }),
   }));
-  if (!payment?.processorRef) {
-    throw badRequest(
-      'This order has no captured card payment to refund. Refund the customer manually, or issue account credit.'
-    );
+  if (!payment) {
+    throw badRequest('No payment has been taken on this order, so there is nothing to give back.');
   }
 
-  // An omitted/blank amount means "refund what's left" — everything captured on
-  // the order, less anything already given back. Resolve it here rather than in
-  // the route so every caller (workbench, MCP, scripts) gets the same default.
-  const remaining = Number(order?.amountPaid ?? 0) - Number(order?.refundTotal ?? 0);
-  const dollars = input.amount ?? remaining;
+  // An omitted/blank amount means "refund what's left". `amountPaid` IS what is
+  // left: the rollup writes it as captured MINUS refunded, so subtracting
+  // `refundTotal` here took every earlier refund off a second time — a shop
+  // holding $128.00 of a customer's money was offered $86.00, and once that
+  // went through the row disappeared with $42.00 still unaccounted for
+  // (issue 303).
+  const dollars = input.amount ?? Number(order?.amountPaid ?? 0);
   const amountCents = Math.round(dollars * 100);
   // NaN slips past `<= 0` (every NaN comparison is false), which is exactly how a
   // missing amount used to reach the gateway as `Invalid integer: NaN`. Guard on
@@ -86,26 +96,41 @@ export async function refundOrderThroughGateway(
     throw badRequest('There is nothing left to refund on this order.');
   }
 
-  let result;
-  try {
-    result = await paymentService.refund({
-      tenantId: ctx.tenantId,
-      chargeId: payment.processorRef,
-      amount: amountCents,
-      ...(input.reason ? { metadata: { sparx_reason: input.reason.slice(0, 500) } } : {}),
-    });
-  } catch (err) {
-    if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
+  // Money handed over by hand — cash, a cheque, a bank transfer, a card on the
+  // shop's own terminal — never passed through a gateway, so there is nothing to
+  // call and the refund is simply recorded. Decided on the PROCESSOR, never on
+  // whether a `processorRef` is filled in: that box is free text, and a shop that
+  // takes cheques writes "Cheque 4471, banked Aug 25" in it. The returns flow has
+  // asked it this way since issue 223; this path did not, so a shop on manual
+  // payments could not refund an order at all — it was told either "no captured
+  // card payment" or "no payment gateway is configured", and both ended by
+  // advising the manual refund the button had just offered to record (issue 303).
+  const chargeRef = takenByGateway(payment.processor) ? payment.processorRef : null;
+
+  let gatewayRefundId: string | undefined;
+  if (chargeRef) {
+    let result;
+    try {
+      result = await paymentService.refund({
+        tenantId: ctx.tenantId,
+        chargeId: chargeRef,
+        amount: amountCents,
+        ...(input.reason ? { metadata: { sparx_reason: input.reason.slice(0, 500) } } : {}),
+      });
+    } catch (err) {
+      if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
+        throw badRequest(
+          'No payment gateway is configured to settle this refund. Refund the customer manually, or issue account credit.'
+        );
+      }
+      throw err;
+    }
+    if (!result.success) {
       throw badRequest(
-        'No payment gateway is configured to settle this refund. Refund the customer manually, or issue account credit.'
+        `Refund failed at the payment gateway: ${result.errorMessage ?? 'unknown error'}`
       );
     }
-    throw err;
-  }
-  if (!result.success) {
-    throw badRequest(
-      `Refund failed at the payment gateway: ${result.errorMessage ?? 'unknown error'}`
-    );
+    gatewayRefundId = result.refundId;
   }
 
   // Record it against the SAME payment, stamped with the gateway's refund id so the
@@ -116,6 +141,6 @@ export async function refundOrderThroughGateway(
     amount: dollars,
     currency: input.currency ?? payment.currency,
     ...(input.reason ? { reason: input.reason } : {}),
-    ...(result.refundId ? { processorRef: result.refundId } : {}),
+    ...(gatewayRefundId ? { processorRef: gatewayRefundId } : {}),
   });
 }

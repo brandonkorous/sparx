@@ -14,7 +14,12 @@ import {
   type ReturnStatus,
 } from '@wizeworks/commerce-schemas';
 import { orderRefundsService } from '@wizeworks/crm';
-import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@wizeworks/payments';
+import {
+  GatewayNotFoundError,
+  PaymentConfigError,
+  paymentService,
+  takenByGateway,
+} from '@wizeworks/payments';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, ReturnLineItem, ReturnRequest, TxClient } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
@@ -26,15 +31,6 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 import { attemptReturnLabel } from './return-label-purchase';
-
-/**
- * The processors that actually hold a charge somewhere else.
- *
- * Everything absent from this set is money a person handed over — `manual`,
- * `check`, `wire`, `ach`, `card` (the shop's OWN terminal), `net_terms` — and
- * giving it back is the shop counting notes out, not an API call.
- */
-const TAKEN_BY_GATEWAY = new Set(['stripe', 'paypal']);
 
 /** A restockable return line resolved to its variant + (optional) location. */
 interface RestockLine {
@@ -100,6 +96,95 @@ export interface ReturnDetail extends ReturnSummary {
 }
 
 // ─── Reads ───────────────────────────────────────────────────────────
+
+/** Return states that no longer hold a claim on the goods, so the quantity they
+ *  named goes back on the shelf as returnable. Everything else — requested,
+ *  approved, in transit, received, refunded, exchanged — is spoken for. */
+const RELEASED_STATUSES = new Set(['denied', 'cancelled']);
+
+/** One order line, and how much of it the shopper can still send back. */
+export interface ReturnableLine {
+  orderItemId: string;
+  name: string;
+  sku: string;
+  /** How many were bought. */
+  quantity: number;
+  /** Already named on a return that has not been denied or cancelled. */
+  spokenFor: number;
+  returnableQuantity: number;
+  unitPriceCents: number;
+}
+
+export interface OrderReturnability {
+  /** Whether there is anything to offer a "return or exchange" control for. */
+  eligible: boolean;
+  /** Why not, when not — so a screen can SAY it rather than hiding the control
+   *  and leaving the shopper to guess (there is no dead end here). */
+  reason: 'not_sent_yet' | 'nothing_left' | null;
+  lines: ReturnableLine[];
+}
+
+/**
+ * What is still returnable on one order.
+ *
+ * The single point of change for "can this be sent back", so the shopper's own
+ * screen and the shop's console can never disagree about it. It answers with
+ * FACTS ONLY — what was bought, what is already spoken for, and whether the
+ * parcel has actually left. It deliberately applies NO time limit: nothing in
+ * the schema records a returns window, and inventing one here would print a
+ * deadline no tenant ever set. The tenant's Return Policy page states their rule
+ * in their own words, and they approve or deny the request.
+ */
+export async function returnability(
+  ctx: ServiceContext,
+  orderId: string
+): Promise<OrderReturnability> {
+  return withTenant(ctx, async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      select: {
+        fulfilledAt: true,
+        status: true,
+        items: {
+          select: { id: true, name: true, sku: true, quantity: true, unitPrice: true },
+        },
+      },
+    });
+    if (!order) throw new CommerceNotFoundError('Order', orderId);
+
+    const claims = await tx.returnLineItem.findMany({
+      where: { return: { orderId } },
+      select: { orderItemId: true, quantity: true, return: { select: { status: true } } },
+    });
+    const spokenFor = new Map<string, number>();
+    for (const claim of claims) {
+      if (RELEASED_STATUSES.has(claim.return.status)) continue;
+      spokenFor.set(claim.orderItemId, (spokenFor.get(claim.orderItemId) ?? 0) + claim.quantity);
+    }
+
+    const lines: ReturnableLine[] = order.items.map((it) => {
+      const taken = spokenFor.get(it.id) ?? 0;
+      return {
+        orderItemId: it.id,
+        name: it.name,
+        sku: it.sku,
+        quantity: it.quantity,
+        spokenFor: taken,
+        returnableQuantity: Math.max(0, it.quantity - taken),
+        unitPriceCents: Math.round(Number(it.unitPrice) * 100),
+      };
+    });
+
+    // Nothing can come back before it has gone out. `cancelled` orders never
+    // shipped, so they are the same case.
+    const sent = order.fulfilledAt !== null || order.status === 'delivered';
+    if (!sent) return { eligible: false, reason: 'not_sent_yet', lines };
+    if (!lines.some((l) => l.returnableQuantity > 0)) {
+      return { eligible: false, reason: 'nothing_left', lines };
+    }
+    return { eligible: true, reason: null, lines };
+  });
+}
 
 export async function list(
   ctx: ServiceContext,
@@ -640,7 +725,7 @@ export async function issueRefund(
     // gateway, whatever got written in the reference box, and asking a gateway
     // to reverse it fails with "no payment gateway is configured" on a shop
     // that never had one (persona issue 223). The PROCESSOR is what decides.
-    if (!payment || !TAKEN_BY_GATEWAY.has(payment.processor)) return null;
+    if (!payment || !takenByGateway(payment.processor)) return null;
     return payment.processorRef ?? null;
   });
 

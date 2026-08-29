@@ -173,7 +173,12 @@ function InPersonPaymentStep({
       // the shop's own configuration, so a caller cannot declare itself paid in
       // person at a shop that expects a card.
       await submitPayment(tenantSlug, session.sessionId, {});
-      const result = await completeCheckout(tenantSlug, session.sessionId, crypto.randomUUID());
+      const result = await completeCheckout(
+        tenantSlug,
+        session.sessionId,
+        crypto.randomUUID(),
+        session.totals.totalCents
+      );
       onPaid(result.orderNumber);
     } catch (err) {
       setError((err as Error).message);
@@ -221,7 +226,12 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
         paymentTermsRequested: terms,
         ...(poNumber.trim() ? { poNumber: poNumber.trim() } : {}),
       });
-      const result = await completeCheckout(tenantSlug, session.sessionId, crypto.randomUUID());
+      const result = await completeCheckout(
+        tenantSlug,
+        session.sessionId,
+        crypto.randomUUID(),
+        session.totals.totalCents
+      );
       onPaid(result.orderNumber);
     } catch (err) {
       setError((err as Error).message);
@@ -449,7 +459,12 @@ function PaymentInner({
         paymentProviderSlug: providerSlug,
         paymentRef,
       });
-      const result = await completeCheckout(tenantSlug, session.sessionId, paymentRef);
+      const result = await completeCheckout(
+        tenantSlug,
+        session.sessionId,
+        paymentRef,
+        session.totals.totalCents
+      );
       onPaid(result.orderNumber);
     } catch (err) {
       setError((err as Error).message);

@@ -82,6 +82,22 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
   });
 
   /**
+   * Apply the automatic chrome repair to the saved header and footer.
+   *
+   * The same repair `GET /layouts/silica` runs on read, as something the owner asked
+   * for. Home offers it when her live site is missing a control the repair supplies and
+   * her saved copy has not had it applied yet; the read alone cannot serve that, because
+   * the studio holds its tree at `staleTime: Infinity` and never asks again once open
+   * (issue 315). Draft only — nothing reaches her visitors until she publishes.
+   */
+  app.post('/v1/builder/layouts/silica/repair', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    return ok(await siteService.repairFrame(ctx));
+  });
+
+  /**
    * Replace the ACTIVE layout's silica chrome — the layout builder's Save.
    *
    * Registered before `:id` so the static path is not swallowed by the param.

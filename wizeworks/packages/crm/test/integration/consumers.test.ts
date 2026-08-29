@@ -107,6 +107,73 @@ describe('CRM consumers', () => {
     expect(activities[0]?.linkedEntityId).toBe(orderId);
   });
 
+  it('names the order in the sentence, from the payload', async () => {
+    // The number travels in the event because the producer holds it. Reading it
+    // back here is a lookup that can fail, and when it did — checkout announces
+    // the order from inside its own still-open transaction — four of five orders
+    // on one shop appeared as "An order was placed", naming none of them.
+    const orderId = crypto.randomUUID();
+    await bus.publish({
+      id: crypto.randomUUID(),
+      topic: 'order.created',
+      tenantId: alice.tenantId,
+      occurredAt: new Date(),
+      payload: {
+        orderId,
+        orderNumber: 'O-000123',
+        customerId: aliceCustomerId,
+        total: 42,
+        currency: 'USD',
+        placedAt: new Date().toISOString(),
+      },
+    });
+    await bus.drain();
+
+    const [activity] = await withTenant(aliceCtx, (tx) =>
+      tx.crmActivity.findMany({ where: { linkedEntityId: orderId, type: 'order.placed' } })
+    );
+    expect(activity?.description).toContain('O-000123');
+  });
+
+  it('writes a shipped row that belongs to somebody, and refuses one that does not', async () => {
+    // Both halves are the same defect. `order.fulfilled` carried no customerId
+    // at all and the column is nullable, so every shipped and delivered row was
+    // created against NOBODY — six of them on the shop this was found on, in no
+    // customer's history and reachable from nowhere. The write succeeded every
+    // time, which is why nothing noticed.
+    const shipped = crypto.randomUUID();
+    await bus.publish({
+      id: crypto.randomUUID(),
+      topic: 'order.fulfilled',
+      tenantId: alice.tenantId,
+      occurredAt: new Date(),
+      payload: {
+        orderId: shipped,
+        orderNumber: 'O-000124',
+        customerId: aliceCustomerId,
+        fulfillmentId: crypto.randomUUID(),
+      },
+    });
+
+    const orphan = crypto.randomUUID();
+    await bus.publish({
+      id: crypto.randomUUID(),
+      topic: 'order.fulfilled',
+      tenantId: alice.tenantId,
+      occurredAt: new Date(),
+      payload: { orderId: orphan, fulfillmentId: crypto.randomUUID() },
+    });
+    await bus.drain();
+
+    const rows = await withTenant(aliceCtx, (tx) =>
+      tx.crmActivity.findMany({ where: { linkedEntityId: { in: [shipped, orphan] } } })
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.linkedEntityId).toBe(shipped);
+    expect(rows[0]?.customerId).toBe(aliceCustomerId);
+    expect(rows[0]?.description).toBe('Order O-000124 shipped');
+  });
+
   it('leaves the money columns alone — they belong to the order write path', async () => {
     // The consumer used to increment total_spent here, and an increment is only
     // as reliable as its delivery: a swallowed handler failure corrupted the

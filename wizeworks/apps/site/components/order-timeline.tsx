@@ -10,7 +10,16 @@
 //
 // The rail is one-sided (no <TimelineStart>): each item is a marker + content.
 // A step the order has REACHED wears the order's tone; unreached steps stay
-// neutral, so the filled portion of the rail reads as progress at a glance.
+// neutral, so the colored markers read as progress at a glance.
+//
+// The RAIL ITSELF is silica's, drawn from `.timeline-middle`'s ::before/::after
+// — this component adds no <hr> connectors. That markup is another library's
+// Timeline contract; silica's says "no <hr> markup" outright, and because each
+// <li> is a `1fr auto 1fr` grid whose tracks belong to start/middle/end, a
+// class-less <hr> auto-placed into column 1 rendered as a black rule across the
+// empty start track of every gap (issue 293). Per-segment rail color is
+// therefore not expressible today; that is a silica-level ask, not something to
+// re-patch here.
 
 import {
   CheckCircle2,
@@ -31,7 +40,6 @@ import {
   type SilicaColor,
 } from '@wizeworks/silicaui-react';
 
-import { cn } from '@/lib/cn';
 import type { OrderDetail, OrderFulfillmentView } from '@/lib/customer-client';
 
 /** Semantic tone for an order status — used by the header badge and the
@@ -51,14 +59,27 @@ export function orderStatusTone(status: string): SilicaColor {
   }
 }
 
-// Tailwind needs LITERAL class strings — a `bg-${tone}` template never emits.
-const RAIL_CLASS: Record<string, string> = {
-  primary: 'bg-primary',
-  success: 'bg-success',
-  info: 'bg-info',
-  warning: 'bg-warning',
-  danger: 'bg-danger',
-};
+/** The status in the SHOPPER's words, shared by the order list and the order
+ *  detail so the two can never call one fact two things. `fulfilled` is the
+ *  warehouse's word for it; she is waiting on a parcel (issue 295). */
+export function orderStatusLabel(status: string): string {
+  switch (status) {
+    case 'placed':
+      return 'Placed';
+    case 'fulfilled':
+      return 'On its way';
+    case 'delivered':
+      return 'Delivered';
+    case 'cancelled':
+      return 'Cancelled';
+    case 'refunded':
+      return 'Refunded';
+    default:
+      return status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ');
+  }
+}
+
+// Tailwind needs LITERAL class strings — a `text-${tone}` template never emits.
 const MARK_CLASS: Record<string, string> = {
   primary: 'text-primary',
   success: 'text-success',
@@ -167,7 +188,7 @@ function buildTimeline(order: OrderDetail): { steps: TimelineStep[]; color: Sili
   if (!terminal || shippedComplete) {
     steps.push({
       key: 'shipped',
-      label: 'Shipped',
+      label: 'On its way',
       at: order.fulfilledAt,
       complete: shippedComplete,
       icon: <Truck size={16} aria-hidden />,
@@ -248,31 +269,19 @@ export function OrderTimeline({ order }: { order: OrderDetail }) {
   const { steps, color } = buildTimeline(order);
   const isTerminal = order.status === 'cancelled' || order.status === 'refunded';
   const states = resolveState(steps, isTerminal);
-  const rail = RAIL_CLASS[color] ?? 'bg-primary';
   const mark = MARK_CLASS[color] ?? 'text-primary';
 
   return (
     <Timeline>
       {steps.map((step, i) => {
         const reached = states[i] !== 'upcoming';
-        // A connector is "filled" only when BOTH steps it joins are reached.
-        const before = i > 0 && reached;
-        const after = i < steps.length - 1 && states[i + 1] !== 'upcoming';
         return (
           <TimelineItem key={step.key}>
-            {i > 0 ? <hr className={before ? rail : 'bg-base-300'} /> : null}
             <TimelineMiddle className={reached ? mark : 'text-base-content'}>
               {step.icon}
             </TimelineMiddle>
             <TimelineEnd className="pb-6">
-              <span
-                className={cn(
-                  'block text-base font-semibold',
-                  reached ? 'text-base-content' : 'text-base-content'
-                )}
-              >
-                {step.label}
-              </span>
+              <span className="text-base-content block text-base font-semibold">{step.label}</span>
               {step.at ? (
                 <span className="text-base-content mt-0.5 block text-sm">
                   {formatStamp(step.at)}
@@ -282,7 +291,6 @@ export function OrderTimeline({ order }: { order: OrderDetail }) {
               ) : null}
               {step.detail}
             </TimelineEnd>
-            {i < steps.length - 1 ? <hr className={after ? rail : 'bg-base-300'} /> : null}
           </TimelineItem>
         );
       })}

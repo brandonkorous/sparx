@@ -294,12 +294,20 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const take = q.take ?? 100;
     const skip = q.skip ?? 0;
     const filter = q.filter ?? 'active';
+    // The three tabs are about a basket's state RIGHT NOW, and `abandonedAt` is
+    // the only column that says it: `markRecovered` clears it when a shopper
+    // comes back, `markAbandoned` sets it again if they go quiet again.
+    // `recoveredAt` is history — "came back at least once" — so it separates a
+    // basket she won back from one that never left, and never contradicts the
+    // first question. A basket already PAID for belongs in none of the three,
+    // which is a completed checkout session rather than a column (issue 289).
+    const live = { checkoutSessions: { none: { step: 'completed' } } };
     const where =
       filter === 'abandoned'
-        ? { abandonedAt: { not: null }, recoveredAt: null }
+        ? { abandonedAt: { not: null }, ...live }
         : filter === 'recovered'
-          ? { recoveredAt: { not: null } }
-          : { abandonedAt: null, recoveredAt: null };
+          ? { abandonedAt: null, recoveredAt: { not: null }, ...live }
+          : { abandonedAt: null, recoveredAt: null, ...live };
 
     const { rows, total, contacts } = await withRequestTenant(request, async (tx) => {
       const [rows, total] = await Promise.all([

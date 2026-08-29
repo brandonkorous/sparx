@@ -11,8 +11,29 @@ import { etsyInternals } from './etsy';
 import { hubspotInternals } from './hubspot';
 import { bigcommerceInternals } from './bigcommerce';
 import { ghostInternals } from './ghost';
+import { mailchimpInternals } from './mailchimp';
 
 const rows = (csv: string) => parseCsv(csv).rows;
+
+describe('a Mailchimp audience', () => {
+  const csv = `Email Address,First Name,OPTIN_TIME,CONFIRM_TIME,TAGS
+hester@x.com,Hester,2026-03-04 09:12:44,2026-03-04 09:18:02,newsletter
+callum@x.com,Callum,2026-03-06 17:41:10,,newsletter`;
+
+  it('brings a double opt-in across as permission', () => {
+    const mapped = mailchimpInternals.mapMembers(rows(csv));
+    expect(mapped[0]?.accepts_marketing).toBe('true');
+  });
+
+  it('says out loud that an unconfirmed member is not permission', () => {
+    // Not an empty string: `row()` drops empties, and an empty one here read as
+    // "this export has no opinion about marketing" rather than "this person never
+    // confirmed" — so they landed contactable, which is the one direction that
+    // cannot be taken back.
+    const mapped = mailchimpInternals.mapMembers(rows(csv));
+    expect(mapped[1]?.accepts_marketing).toBe('false');
+  });
+});
 
 describe('the roster itself', () => {
   it('has unique vendor slugs and unique source ids', () => {

@@ -80,6 +80,29 @@ export interface LinkTargets {
   serviceIds?: readonly string[];
 }
 
+/**
+ * What the site's visitors can actually DO, for the checks that ask whether a
+ * capability is REACHABLE rather than whether a tree is well formed.
+ *
+ * Same `undefined` contract as `LinkTargets`, and it exists for the same reason: a
+ * check that assumes an answer nobody supplied either nags every site on the platform
+ * or stays quiet on the one it was written for. `undefined` means the caller did not
+ * look, so nothing is claimed missing.
+ */
+export interface SiteCapabilities {
+  /**
+   * Customers have accounts on this site — an order to look up, a return to start, a
+   * booking to change, an address book to keep.
+   *
+   * `true` makes "there is no way to reach any of it" worth telling the owner about.
+   * `false` and `undefined` both stay silent, and the difference between them is only
+   * whether the caller checked: a portfolio, a menu and a parish newsletter are all
+   * complete with no sign-in anywhere, and telling those owners to add one would be
+   * the check inventing work.
+   */
+  customerAccounts?: boolean;
+}
+
 /** The whole site as the linter sees it — what `lintSite` takes. */
 export interface SiteLintInput {
   pages: readonly LintablePage[];
@@ -103,6 +126,9 @@ export interface SiteLintInput {
    *  guessing at a default palette; every other rule is unaffected. */
   theme?: Theme | null;
   targets?: LinkTargets;
+  /** What this site's visitors can do — see `SiteCapabilities`. Omitted means the
+   *  caller did not look, and every rule that reads it stays silent. */
+  capabilities?: SiteCapabilities;
   /** What each picture on the site WEIGHS, keyed by the exact `src` it is referenced
    *  by — the answer to `imageSourcesOf(input)`, which a caller with a media library
    *  looks up and hands back. This engine has no network, so a source missing from
@@ -158,6 +184,8 @@ export type LintRuleId =
   | 'frame-no-outlet'
   | 'symbol-missing'
   | 'duplicate-node-id'
+  // What the shared chrome offers
+  | 'chrome-no-account-link'
   // Search-engine metadata
   | 'seo-title-missing'
   | 'seo-title-duplicate'

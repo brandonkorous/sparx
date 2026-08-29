@@ -46,6 +46,7 @@ import {
   COMMERCE_PAYMENT_FAILED_EMAIL,
   COMMERCE_POST_PURCHASE_REVIEW,
   COMMERCE_REFUND_CRM_NOTE,
+  COMMERCE_RETURN_REQUESTED_ALERT,
 } from './commerce.js';
 import {
   INVOICING_ESTIMATE_APPROVED_TASK,
@@ -110,6 +111,7 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'commerce', spec: COMMERCE_HIGH_VALUE_ORDER_ALERT },
   { module: 'commerce', spec: COMMERCE_LOW_INVENTORY_ALERT },
   { module: 'commerce', spec: COMMERCE_REFUND_CRM_NOTE },
+  { module: 'commerce', spec: COMMERCE_RETURN_REQUESTED_ALERT },
   { module: 'commerce', spec: COMMERCE_ABANDONED_CART_NUDGE },
   { module: 'commerce', spec: COMMERCE_POST_PURCHASE_REVIEW },
   { module: 'commerce', spec: COMMERCE_ORDER_DELIVERED_EMAIL },

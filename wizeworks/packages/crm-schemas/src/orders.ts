@@ -41,7 +41,13 @@ export const CreateOrderInput = z.object({
 
   currency: Currency.default('USD'),
   shippingTotal: Money.default(0),
-  discountTotal: Money.default(0),
+  // Header-level discount override, and read the same way as taxTotal below:
+  // omitted, the service sums line-level discountAmounts; provided, this wins.
+  // It defaulted to 0 and was accepted, validated and then never read, so every
+  // caller that passed one — checkout, the orders import — had it silently
+  // dropped and wrote the order at full price (issue 298). `.optional()` is what
+  // makes the two readings distinguishable: 0 is a real discount of nothing.
+  discountTotal: Money.optional(),
   // Header-level tax override. If omitted (undefined), the service sums
   // line-level taxAmounts; if provided, this value wins.
   taxTotal: Money.optional(),

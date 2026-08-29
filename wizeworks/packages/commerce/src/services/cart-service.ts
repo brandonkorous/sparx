@@ -43,6 +43,7 @@ import {
 } from '../made-to-order';
 
 import * as configuratorService from './configurator-service';
+import { isDiscountRunning, usageBlock } from './discount-conditions';
 import * as pricingService from './pricing-service';
 import { businessZone, assertWithinDailyLimits } from './made-to-order-service';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
@@ -162,7 +163,7 @@ export async function claim(
 
 export async function get(ctx: ServiceContext, cartId: string): Promise<CartSnapshot | null> {
   return withTenant(ctx, async (tx) => {
-    const row = await loadCart(tx, cartId);
+    const row = await settleCart(tx, ctx, await loadCart(tx, cartId));
     return row ? serializeCart(row, await businessZone(tx)) : null;
   });
 }
@@ -179,7 +180,7 @@ export async function getByGuestToken(
       select: { id: true },
     });
     if (!cart) return null;
-    const full = await loadCart(tx, cart.id);
+    const full = await settleCart(tx, ctx, await loadCart(tx, cart.id));
     return full ? serializeCart(full, await businessZone(tx)) : null;
   });
 }
@@ -764,6 +765,24 @@ export async function reconcileCartOnAuth(
 // ─── abandonment lifecycle ───────────────────────────────────────────
 
 /**
+ * "This basket has not been bought yet" — the one place that question is asked.
+ *
+ * The fact already exists: a basket that became an order has a checkout session
+ * at `completed`, written by the transaction that placed the order, indexed on
+ * `(tenant_id, cart_id)`. Nothing has to be stored to answer this.
+ *
+ * It used to be asked as `recoveredAt: null`, because checkout stamped
+ * `recoveredAt` to freeze a converted basket. That made one column mean two
+ * unrelated things, and the reading that lost was the one on the tin: the
+ * console filed five of Devi's completed orders under "Came back", and the
+ * recovery rate in the abandonment report counted every sale as a basket won
+ * back (persona issue 289). `recovered_at` now means only what it says.
+ */
+export const NOT_BOUGHT_YET = {
+  checkoutSessions: { none: { step: 'completed' } },
+} as const;
+
+/**
  * Flag a basket as having gone quiet.
  *
  * This is a SIGNAL, never a lifecycle state. The basket stays completely usable
@@ -861,7 +880,7 @@ export async function markRecovered(ctx: ServiceContext, cartId: string): Promis
 export async function listCartSiteScopes(ctx: ServiceContext): Promise<(string | null)[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.cart.findMany({
-      where: { abandonedAt: null, recoveredAt: null, items: { some: {} } },
+      where: { abandonedAt: null, ...NOT_BOUGHT_YET, items: { some: {} } },
       distinct: ['propertyId'],
       select: { propertyId: true },
     });
@@ -886,7 +905,12 @@ export async function findIdleCarts(
       where: {
         propertyId,
         abandonedAt: null,
-        recoveredAt: null,
+        // `recoveredAt` deliberately NOT filtered. A shopper who came back,
+        // added something and left again has gone quiet a second time, and a
+        // follow-up queue that offers each basket once is a queue that gives up
+        // on the people most likely to buy. What must be excluded is a basket
+        // already PAID for, which is a different question with its own answer.
+        ...NOT_BOUGHT_YET,
         updatedAt: { lt: cutoff },
         items: { some: {} },
       },
@@ -903,7 +927,19 @@ export async function findIdleCarts(
 type CartWithRelations = Prisma.CartGetPayload<{
   include: {
     items: { include: { variant: { include: { product: true } } } };
-    discounts: { include: { discount: { select: { code: true } } } };
+    discounts: {
+      include: {
+        discount: {
+          select: {
+            code: true;
+            status: true;
+            startAt: true;
+            endAt: true;
+            deletedAt: true;
+          };
+        };
+      };
+    };
     customer: { select: typeof CUSTOMER_NAME_SELECT };
   };
 }>;
@@ -913,10 +949,44 @@ async function loadCart(tx: TxClient, cartId: string): Promise<CartWithRelations
     where: { id: cartId },
     include: {
       items: { include: { variant: { include: { product: true } } } },
-      discounts: { include: { discount: { select: { code: true } } } },
+      // The offer's own dates and switch ride along with the code, so a read can
+      // tell a live saving from a lapsed one without a second query (issue 300).
+      discounts: {
+        include: {
+          discount: {
+            select: {
+              code: true,
+              status: true,
+              startAt: true,
+              endAt: true,
+              deletedAt: true,
+            },
+          },
+        },
+      },
       customer: { select: CUSTOMER_NAME_SELECT },
     },
   });
+}
+
+/**
+ * A cart as it stands NOW, with any saving whose sale has ended already gone.
+ *
+ * Derived money going stale is corrected when it is read, the same way a stale
+ * site frame is repaired on load. Without it a lapsed code stays on screen until
+ * the shopper happens to touch the basket, and the one number a cart has to get
+ * right is the one it says it will charge (issue 300).
+ */
+async function settleCart(
+  tx: TxClient,
+  ctx: ServiceContext,
+  row: CartWithRelations | null
+): Promise<CartWithRelations | null> {
+  if (!row) return null;
+  const now = new Date();
+  if (row.discounts.every((applied) => isDiscountRunning(applied.discount, now))) return row;
+  await recomputeCartTotals(tx, ctx, row.id);
+  return loadCart(tx, row.id);
 }
 
 /**
@@ -989,6 +1059,72 @@ async function repriceItems(
 }
 
 /**
+ * The savings on this cart that are still real, with the lapsed ones removed.
+ *
+ * A code's terms are checked when it is TYPED, and a basket outlives that moment
+ * — it can sit for a week. So the offer behind each saving is read again here and
+ * anything that no longer holds is deleted rather than left to be honored:
+ * a sale that ended went on being given away right through checkout and onto the
+ * order, while the owner's own list showed it as Ended (issue 300).
+ *
+ * BOTH halves of that sentence, not just the dates. Issue 300 was found through
+ * the window and only the window was re-read here, so a shopper who had spent
+ * their one use kept the saving on the basket and carried it through checkout —
+ * while typing the same code into the box beside it was refused. Which way it
+ * fell depended on nothing but whether they touched the chip (issue 312).
+ *
+ * Deleted, not zeroed, so the code chip and the saving disappear together — a
+ * chip still sitting there worth nothing is its own confusion.
+ */
+async function foldRunningDiscounts(tx: TxClient, cartId: string): Promise<number> {
+  const applied = await tx.cartDiscount.findMany({
+    where: { cartId },
+    select: {
+      id: true,
+      appliedCents: true,
+      discountId: true,
+      discount: {
+        select: {
+          status: true,
+          startAt: true,
+          endAt: true,
+          deletedAt: true,
+          perCustomerLimit: true,
+          totalUsageLimit: true,
+          usageCount: true,
+        },
+      },
+    },
+  });
+  if (applied.length === 0) return 0;
+
+  // A guest basket has nobody to count uses against, so only the shop-wide limit
+  // can be asked — which is what `usageBlock` does with a null count.
+  const cart = await tx.cart.findUnique({ where: { id: cartId }, select: { customerId: true } });
+  const customerId = cart?.customerId ?? null;
+
+  const now = new Date();
+  const lapsed: string[] = [];
+  let total = 0;
+  for (const row of applied) {
+    const spent = isDiscountRunning(row.discount, now)
+      ? usageBlock(
+          row.discount,
+          customerId === null
+            ? null
+            : await tx.discountUsage.count({ where: { discountId: row.discountId, customerId } })
+        ) !== null
+      : true;
+    if (spent) lapsed.push(row.id);
+    else total += row.appliedCents;
+  }
+  if (lapsed.length > 0) {
+    await tx.cartDiscount.deleteMany({ where: { id: { in: lapsed } } });
+  }
+  return total;
+}
+
+/**
  * Re-derive a cart's money from its lines and its applied discounts.
  *
  * Exported because discount-service writes CartDiscount rows and must call it:
@@ -1006,11 +1142,7 @@ export async function recomputeCartTotals(
   });
   const subtotal = items.reduce((sum, i) => sum + i.subtotalCents, 0);
 
-  const discounts = await tx.cartDiscount.findMany({
-    where: { cartId },
-    select: { appliedCents: true },
-  });
-  const discountTotal = discounts.reduce((sum, d) => sum + d.appliedCents, 0);
+  const discountTotal = await foldRunningDiscounts(tx, cartId);
 
   // Gift card + account credit applied amounts are owned by the discount
   // service; we only re-cap them against the new subtotal so a cart

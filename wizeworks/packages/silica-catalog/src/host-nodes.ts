@@ -145,6 +145,23 @@ export const HOST_KEYS = {
    *  non-empty. Not pinned: the tenant owns where the links sit (a footer column, a
    *  bottom bar, beside the copyright). */
   siteLegalLinks: 'site.legal-links',
+  /** The visitor's ACCOUNT LINK — "Sign in" to a stranger, their own name to a
+   *  signed-in shopper, always pointing at the right one of `/account/login` and
+   *  `/account`.
+   *
+   *  A host core for the same reason as `site.legal-links`, and it failed in the same
+   *  two directions. The navbar's secondary slot was a stamped
+   *  `{ text: 'Sign in', href: '/account/login' }`, so every site on the platform told
+   *  a signed-in customer to sign in — above her own name, on her own order — and
+   *  offered her no route back to the account holding her orders and addresses
+   *  (issue 291). A stamped node cannot know who is reading it; only something
+   *  rendered per request can.
+   *
+   *  Unlike the other chrome cores it needs no route context: the storefront chrome
+   *  renders inside `<CustomerProvider>`, so the live component reads the session it
+   *  is already sitting in. Not pinned — the tenant owns where it sits, exactly as
+   *  they own the brand mark and the theme toggle. */
+  siteAccountLink: 'site.account-link',
   /** PAGE LINKS for a bound list on this page — Previous / 1 2 3 / Next, plus
    *  "Showing 25–48 of 137".
    *
@@ -474,6 +491,16 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     hint: 'A light/dark switch for visitors. Appears only when your site offers both themes (Appearance: toggle) — otherwise it stays hidden. Place it in your header.',
     defaultClass: 'inline-flex items-center',
     // Not pinned: the tenant owns whether and where a theme switch sits in their chrome.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.siteAccountLink,
+    label: 'Account link (sign in / their name)',
+    category: 'Your site',
+    icon: 'avatar',
+    hint: 'Says “Sign in” to a visitor and shows a customer their own name once they are signed in, linking to their orders and details. Put it in your header.',
+    defaultClass: 'inline-flex items-center',
+    // Not pinned: the tenant owns whether and where an account link sits in their chrome.
     pinned: false,
   },
   {

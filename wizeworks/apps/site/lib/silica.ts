@@ -137,9 +137,10 @@ interface ErrorEnvelope {
  * lib/builder.ts and shares its `builder:<slug>` tag — both tiers are invalidated by
  * the same publish, so they belong on the same tag.
  *
- * These were `cache: 'no-store'` because no tag-purge existed. It does now:
- * `installBuilderPubSubBridge` publishes `builder.*`, cache-revalidation-worker maps
- * it to the `builder` scope, and app/api/revalidate purges `builder:<slug>`.
+ * These were `cache: 'no-store'` because no tag-purge existed. One is now WRITTEN
+ * end to end — publish, scope mapping, purge route — but `cache-revalidation-worker`
+ * is not deployed anywhere, so no tag is ever actually purged and the `revalidate`
+ * below is the mechanism rather than the backstop it was meant to be (issue 302).
  *
  * A PREVIEW read is never cached — it serves the DRAFT tree, which changes on every
  * autosave and belongs to one author's in-flight work.

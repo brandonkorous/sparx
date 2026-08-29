@@ -92,6 +92,60 @@ describe('order lifecycle', () => {
     expect(order.paymentStatus).toBe('unpaid');
   });
 
+  it('composed into a caller transaction — announces nothing until that one commits', async () => {
+    // THE issue-307 shape. Checkout calls `orderService.create({ ...ctx, tx })`
+    // so the order joins its transaction, and `withTenant` then returns having
+    // committed nothing. The announcement used to go out right there, to
+    // in-process consumers that open their own transactions — so every one of
+    // them ran against a database the order was not in. The visible symptom was
+    // a customer's history reading "An order was placed ($276.00)", naming no
+    // order, because the number was read back and came out null.
+    let seenInside: string[] = [];
+
+    const order = await withTenant(test.ctx, async (tx) => {
+      const created = await orderService.create(
+        { ...test.ctx, tx },
+        {
+          customerId,
+          items: [{ sku: 'DEFER-1', name: 'Deferred', quantity: 1, unitPrice: 9 }],
+        }
+      );
+      // Still inside. Nothing may have been announced yet, and the order must
+      // not be readable from a separate transaction either.
+      seenInside = platformEvents.map((e) => e.topic);
+      return created;
+    });
+
+    await getPlatformBus().drain();
+
+    expect(seenInside).not.toContain('order.created');
+    const announced = platformEvents.find((e) => e.topic === 'order.created');
+    expect(announced).toBeDefined();
+    // And it names the order, so the consumer never has to look one up.
+    expect((announced?.payload as { orderNumber?: string }).orderNumber).toBe(order.orderNumber);
+  });
+
+  it('a rolled-back caller transaction announces nothing at all', async () => {
+    // The other half. An announcement published from inside an open transaction
+    // survives that transaction being undone — order.created for an order that
+    // never existed. Deferring to the commit makes rollback discard it.
+    await expect(
+      withTenant(test.ctx, async (tx) => {
+        await orderService.create(
+          { ...test.ctx, tx },
+          {
+            customerId,
+            items: [{ sku: 'ROLLBACK-1', name: 'Undone', quantity: 1, unitPrice: 4 }],
+          }
+        );
+        throw new Error('caller changed its mind');
+      })
+    ).rejects.toThrow('caller changed its mind');
+
+    await getPlatformBus().drain();
+    expect(platformEvents.map((e) => e.topic)).not.toContain('order.created');
+  });
+
   it('full lifecycle — pay → fulfill → deliver promotes order to delivered', async () => {
     const order = await orderService.create(test.ctx, {
       customerId,

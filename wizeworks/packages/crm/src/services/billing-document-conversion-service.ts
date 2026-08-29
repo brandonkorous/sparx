@@ -145,6 +145,7 @@ export async function convertToOrder(
     occurredAt: result.order.placedAt,
     payload: {
       orderId: result.order.id,
+      orderNumber: result.order.orderNumber,
       customerId: result.order.customerId,
       total: Number(result.order.total),
       currency: result.order.currency,

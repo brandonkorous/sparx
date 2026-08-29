@@ -29,6 +29,7 @@ export type {
   LintScope,
   LintSeverity,
   LintStatus,
+  SiteCapabilities,
   SiteLintInput,
   SiteLintReport,
 } from './types';

@@ -100,6 +100,191 @@ describe('upgradeFrameChrome — healing a stale frame', () => {
     expect(upgradeFrameChrome(frame).changed).toBe(false);
   });
 
+  // The shape a REAL stored frame has: `div > [header, main, footer]`, with the navbar
+  // nested inside the header. The fixtures above hoist `<nav>` to the top level, which is
+  // what let the nav repairs pass their tests while matching nothing in the database
+  // (issue 296) — these pin the real shape so that cannot happen again.
+  const realFrame = (nav: Node): Node =>
+    el('div', 'flex min-h-screen flex-col', {
+      children: [
+        el('header', '', { children: [el('div', '', { children: [] }), nav] }),
+        el('main', 'flex-1', { children: [{ kind: 'outlet' }] }),
+        el('footer', '', { children: [el('span', '', { text: 'Acme' })] }),
+      ],
+    });
+
+  const hostCoresOf = (node: Node): { component: string; class?: string }[] => {
+    const out: { component: string; class?: string }[] = [];
+    const walk = (n: Node): void => {
+      if (n.kind === 'host') out.push(n);
+      const children = n.kind === 'element' ? (n.children ?? []) : [];
+      for (const c of children) if (typeof c !== 'string') walk(c);
+    };
+    walk(node);
+    return out;
+  };
+
+  it('heals a nav nested inside the header, which is where every real frame keeps it', () => {
+    const frame = realFrame(
+      el('nav', 'navbar', {
+        children: [bind(atom('Wordmark', 'wordmark', { text: 'SilicaUI' }), 'site.identity.name')],
+      })
+    );
+    const { root, changed } = upgradeFrameChrome(frame);
+    expect(changed).toBe(true);
+    expect(findBrand(root)?.component).toBe(HOST_KEYS.siteBrand);
+  });
+
+  /** Tag the node with the navbar block's `secondary` slot, which is what the platform's
+   *  own fill writes and the only thing the account repair keys on. */
+  const secondary = <T extends object>(node: T): T =>
+    Object.assign(node, { slot: { name: 'secondary', type: 'link', label: 'Secondary link' } });
+
+  it('replaces BOTH seeded sign-in nodes, across two node kinds, each keeping its class', () => {
+    // The navbar fills `secondary` twice and NOT in the same shape: an <a> in the bar and
+    // a Button COMPONENT in the phone panel, whose href lives in props. Matching on the
+    // tag finds the first and misses the second, leaving a signed-in customer still told
+    // to sign in on her phone. This is the real stored shape, read out of the database.
+    const frame = realFrame(
+      el('nav', 'navbar', {
+        children: [
+          secondary(
+            el('a', 'hidden text-sm @sm:inline', {
+              attrs: { href: '/account/login' },
+              text: 'Sign in',
+            })
+          ),
+          el('div', 'panel', {
+            children: [
+              secondary(
+                atom('Button', 'btn btn-ghost btn-sm w-full', {
+                  href: '/account/login',
+                  label: 'Sign in',
+                })
+              ),
+            ],
+          }),
+        ],
+      })
+    );
+    const { root, changed } = upgradeFrameChrome(frame);
+    expect(changed).toBe(true);
+
+    const links = hostCoresOf(root).filter((c) => c.component === HOST_KEYS.siteAccountLink);
+    expect(links).toHaveLength(2);
+    expect(links.map((l) => l.class)).toEqual([
+      'hidden text-sm @sm:inline',
+      'btn btn-ghost btn-sm w-full',
+    ]);
+  });
+
+  it('heals a sign-in link with NO slot on it — which is what a captured frame has', () => {
+    // The rule used to require `slot.name === 'secondary'`, on the reasoning that the slot
+    // is written by the platform's fill and by nothing else. True of a frame the CURRENT
+    // composite built, and false of every frame that most needs the repair: the golden
+    // `sparx` bundle is a capture of a hand-authored navbar whose sign-in links carry no
+    // slot at all, and twenty one shipped designs are clones of it (issue 313). The rule
+    // matched none of them, and did nothing for the fifteen live sites still telling their
+    // signed-in customers to sign in.
+    const frame = realFrame(
+      el('nav', 'navbar', {
+        children: [
+          el('a', 'text-sm font-medium', { attrs: { href: '/account/login' }, text: 'Sign in' }),
+          atom('Button', 'btn btn-ghost btn-sm', { href: '/account/login', label: 'Sign in' }),
+        ],
+      })
+    );
+    const { root, changed } = upgradeFrameChrome(frame);
+    expect(changed).toBe(true);
+
+    const links = hostCoresOf(root).filter((c) => c.component === HOST_KEYS.siteAccountLink);
+    expect(links).toHaveLength(2);
+    expect(links.map((l) => l.class)).toEqual(['text-sm font-medium', 'btn btn-ghost btn-sm']);
+  });
+
+  it('leaves an account link the author repointed at their own page alone', () => {
+    const frame = realFrame(
+      el('nav', 'navbar', {
+        children: [secondary(el('a', '', { attrs: { href: '/members' }, text: 'Members' }))],
+      })
+    );
+    const { root, changed } = upgradeFrameChrome(frame);
+    expect(changed).toBe(false);
+    expect(root).toBe(frame);
+  });
+
+  type Element = Extract<Node, { kind: 'element' }>;
+
+  const findByTag = (node: Node, tag: string): Element | null => {
+    if (node.kind === 'element' && node.tag === tag) return node;
+    const children = node.kind === 'element' ? (node.children ?? []) : [];
+    for (const c of children) {
+      if (typeof c === 'string') continue;
+      const hit = findByTag(c, tag);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  const linkNamed = (node: Node, href: string): Element | null => {
+    if (node.kind === 'element' && node.tag === 'a' && node.attrs?.href === href) return node;
+    const children = node.kind === 'element' ? (node.children ?? []) : [];
+    for (const c of children) {
+      if (typeof c === 'string') continue;
+      const hit = linkNamed(c, href);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  const footerWith = (links: Node[]): Node =>
+    el('div', '', {
+      children: [
+        el('main', '', { children: [{ kind: 'outlet' }] }),
+        el('footer', '', { children: [el('ul', 'grid', { children: links })] }),
+      ],
+    });
+
+  it('adds Returns beside Orders, cloning the link so it matches the column', () => {
+    const frame = footerWith([
+      el('a', 'text-sm', { attrs: { href: '/account' }, text: 'Your account' }),
+      el('a', 'text-sm', { attrs: { href: '/account/orders' }, text: 'Orders' }),
+    ]);
+    const { root, changed } = upgradeFrameChrome(frame);
+    expect(changed).toBe(true);
+    expect(hrefsOf(root)).toEqual(['/account', '/account/orders', '/account/returns']);
+    // Cloned, so it wears the column's styling rather than arriving unstyled.
+    const added = linkNamed(root, '/account/returns');
+    expect((added as { class?: string })?.class).toBe('text-sm');
+  });
+
+  it('adds Returns as a SIBLING list item, never a second link inside one', () => {
+    // These footers wrap each link in its own <li>. Pushing the new anchor in beside
+    // the old one put two links in one list item, and asking "is Returns already here"
+    // about that <li> answered about the wrong scope entirely.
+    const frame = footerWith([
+      el('li', '', {
+        children: [el('a', 'text-sm', { attrs: { href: '/account/orders' }, text: 'Orders' })],
+      }),
+    ]);
+    const { root } = upgradeFrameChrome(frame);
+    const list = findByTag(root, 'ul');
+    expect((list?.children ?? []).length).toBe(2);
+    for (const item of list?.children ?? []) {
+      expect(typeof item === 'string' ? 0 : ((item as Element).children ?? []).length).toBe(1);
+    }
+  });
+
+  it('does not add Returns twice — a footer that already has it is left alone', () => {
+    const frame = footerWith([
+      el('a', '', { attrs: { href: '/account/orders' }, text: 'Orders' }),
+      el('a', '', { attrs: { href: '/account/returns' }, text: 'Returns' }),
+    ]);
+    const { root, changed } = upgradeFrameChrome(frame);
+    expect(changed).toBe(false);
+    expect(root).toBe(frame);
+  });
+
   it('does not mutate the input tree', () => {
     // It runs on a tree the studio also holds; mutating in place would edit state the
     // engine believes it owns.

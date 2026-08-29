@@ -47,7 +47,14 @@ export function computeTotals(
   taxTotalOverride?: number,
   // Document-level surcharge (docs/48 §6) — added last, after tax. Defaults to
   // 0 so callers that don't surcharge (quotes, most orders) are unaffected.
-  surchargeTotal = 0
+  surchargeTotal = 0,
+  // Header-level discount, exactly like taxTotalOverride: supplied, it wins
+  // over the sum of line discounts. It had no parameter at all, so a cart's
+  // saving reached `create()` as an input field nothing read — a checkout
+  // quoting $129.20 wrote an order for $152.00, and an imported order dropped
+  // its spreadsheet's discount column (issue 298). Undefined still means "sum
+  // the lines", so a caller that discounts per line is unchanged.
+  discountTotalOverride?: number
 ): ComputedTotals {
   let subtotal = 0;
   let lineTaxSum = 0;
@@ -61,14 +68,15 @@ export function computeTotals(
   }
 
   const taxTotal = round2(taxTotalOverride ?? lineTaxSum);
+  const discountTotal = round2(discountTotalOverride ?? discountSum);
   const shipping = round2(shippingTotal);
   const surcharge = round2(surchargeTotal);
-  const total = round2(subtotal - discountSum + taxTotal + shipping + surcharge);
+  const total = round2(subtotal - discountTotal + taxTotal + shipping + surcharge);
 
   return {
     subtotal: round2(subtotal),
     taxTotal,
-    discountTotal: round2(discountSum),
+    discountTotal,
     shippingTotal: shipping,
     surchargeTotal: surcharge,
     total,

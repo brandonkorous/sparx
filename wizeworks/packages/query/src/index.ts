@@ -14,6 +14,13 @@
 // load. See docs/95-client-data-fetching.md.
 export * from '@tanstack/react-query';
 
+// Deliberately AFTER the star, and deliberately the same name: this is
+// TanStack's `useMutation` plus the one fact it keeps private — whether the code
+// that called `mutate` passed its own `onError`. A global failed-write reporter
+// cannot tell otherwise, and announces failures somebody has already announced.
+// Shadowing the export is what makes that free for all 147 call sites.
+export { useMutation, callerHandledError } from './mutation';
+
 export { makeQueryClient, DEFAULT_QUERY_OPTIONS } from './query-client';
 export { getQueryClient } from './get-query-client';
 export { queryKeys } from './keys';

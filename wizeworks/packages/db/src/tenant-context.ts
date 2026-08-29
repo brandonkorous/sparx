@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
 
+import { withCommitQueue } from './after-commit';
 import { prisma as defaultPrisma } from './client';
 
 // `Prisma.TransactionClient` is the subset of PrismaClient methods that work
@@ -99,22 +100,32 @@ export function withTenant<T>(
 
   // Compose into an already-open transaction (the GUC is the caller's
   // responsibility — see TenantContext.tx). No nested $transaction, no re-SET.
+  //
+  // No commit queue is opened here, deliberately. A composed call has not
+  // committed anything when it returns, so anything it defers with
+  // `afterCommit` belongs to the ENCLOSING transaction and must wait for that
+  // one — which is exactly what inheriting the outer queue gives it.
   if (context.tx) {
     return fn(context.tx);
   }
 
-  return client.$transaction(
-    async (tx) => {
-      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${context.tenantId}'`);
-      if (context.userId !== undefined) {
-        await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${context.userId}'`);
-      }
-      return fn(tx);
-    },
-    // `maxWait` is time to GET a connection, `timeout` is time to use it — the
-    // distinction advisory-tick-lock.ts already records. Omitted entirely when
-    // nobody asked, so Prisma's defaults keep governing every ordinary call.
-    options.timeoutMs ? { maxWait: 10_000, timeout: options.timeoutMs } : undefined
+  // This is the transaction, so this is what `afterCommit` waits for. The queue
+  // drains only when $transaction resolves; a rollback discards it, so nothing
+  // announces work that was undone. See ./after-commit.
+  return withCommitQueue(() =>
+    client.$transaction(
+      async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${context.tenantId}'`);
+        if (context.userId !== undefined) {
+          await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${context.userId}'`);
+        }
+        return fn(tx);
+      },
+      // `maxWait` is time to GET a connection, `timeout` is time to use it — the
+      // distinction advisory-tick-lock.ts already records. Omitted entirely when
+      // nobody asked, so Prisma's defaults keep governing every ordinary call.
+      options.timeoutMs ? { maxWait: 10_000, timeout: options.timeoutMs } : undefined
+    )
   );
 }
 

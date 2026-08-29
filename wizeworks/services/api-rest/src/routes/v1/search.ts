@@ -11,8 +11,10 @@ import crypto from 'node:crypto';
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { withTenant } from '@wizeworks/db';
 import {
   collectionStats,
+  findableProductCount,
   generateScopedSearchKeyWithExpiry,
   palette,
   resolveTypesenseHost,
@@ -31,6 +33,12 @@ import { publish } from '@wizeworks/api-core/pubsub';
 import { requireCommerceModule } from '../../lib/commerce-context.js';
 import { requireCrmModule } from '../../lib/crm-context.js';
 import { resolveListScope } from '../../lib/property.js';
+
+/** How long a product is allowed to be out of the index before its absence counts
+ *  as lost rather than in flight. Generous on purpose: the cost of waiting five
+ *  minutes to tell somebody is nothing, and the cost of a warning that appears and
+ *  clears on every save is that she stops reading them. */
+const INDEX_GRACE_MS = 5 * 60 * 1000;
 
 const SearchProductsQuery = z.object({
   q: z.string().optional(),
@@ -186,12 +194,41 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     });
   });
 
-  // ── Index status — per-collection tenant-scoped doc counts. ────────
+  // ── Index status — per-collection tenant-scoped doc counts, plus the one
+  //    number a count on its own cannot give: how many products are ON SALE
+  //    and NOT FINDABLE. ──
+  //
+  // Why the second number has to be computed HERE. Indexing rides on events, so
+  // a product written while the indexer was down — or one that predates a fixed
+  // subscription (issue 281) — never enters the index and never will on its own.
+  // Its owner types its name and the box answers "nothing matches", definitively,
+  // about something she sells. A doc count cannot see that: twelve documents look
+  // exactly like sixteen until you know there should be sixteen. This route is the
+  // only place that can hold the catalog and the index at the same time.
+  //
+  // SETTLED ROWS ONLY, and that is what keeps it from crying wolf. The indexer is
+  // asynchronous, so a product saved seconds ago is legitimately not in there yet;
+  // counting it would produce a warning that clears itself and teaches people to
+  // ignore the one that does not. Anything changed inside the grace window is left
+  // out of the comparison entirely.
   app.get('/v1/search/status', async (request) => {
     requireRole(request, 'viewer');
     const auth = requireAuth(request);
-    const collections = await collectionStats(auth.tenantId);
-    return ok({ collections });
+    const settledBefore = new Date(Date.now() - INDEX_GRACE_MS);
+    const [collections, findable, onSale] = await Promise.all([
+      collectionStats(auth.tenantId),
+      findableProductCount(auth.tenantId),
+      withTenant({ tenantId: auth.tenantId }, (tx) =>
+        tx.product.count({
+          where: { status: 'active', deletedAt: null, updatedAt: { lte: settledBefore } },
+        })
+      ),
+    ]);
+    // `null` is "the collection is not there, so we could not look" — never zero,
+    // and never a gap of everything. A caller that renders a warning from this
+    // must treat null as silence.
+    const productsMissing = findable === null ? null : Math.max(0, onSale - findable);
+    return ok({ collections, productsMissing });
   });
 
   // ── Universal search (docs/39) — the `entities` collection spanning every

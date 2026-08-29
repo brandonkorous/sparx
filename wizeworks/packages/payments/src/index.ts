@@ -48,6 +48,10 @@ export {
 
 export { gatewayRegistry, registerBuiltInGateways, GatewayNotFoundError } from './registry';
 
+// Whether a payment can be reversed by calling a gateway at all. Both refund
+// paths ask this, so it is one answer rather than two that drift.
+export { GATEWAY_PROCESSORS, takenByGateway } from './processors';
+
 // The shared-plane face of the gateway catalog (@wizeworks/integrations).
 export {
   paymentIntegrations,

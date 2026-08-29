@@ -27,6 +27,8 @@ import {
   UpdateVariantInput,
 } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
+
+import { rememberCoordinates, restoreRememberedCoordinates } from './lattice-memory';
 import { syncProductInStock } from '@wizeworks/inventory';
 import type {
   Prisma,
@@ -280,6 +282,13 @@ export async function listImagesForProduct(
  * rows themselves are kept — the merchant rebinds them via
  * `assignOptionValues` once the new lattice is in place.
  *
+ * Before the cascade, every variant's coordinate is written down as text, and
+ * after the rebuild anything the new lattice can still hold is put back
+ * automatically (see lattice-memory.ts). That is what a removed-then-restored
+ * choice needs: the caller rebinds by ID, and a value that goes away and comes
+ * back has a new one. The caller's own rebind runs afterwards and wins, so a
+ * RENAME still lands where the caller says.
+ *
  * Returns the inserted options + values so the caller (typically the
  * dashboard variants tab) can map its local row identifiers to the new
  * DB ids without a follow-up read.
@@ -328,6 +337,11 @@ export async function setOptions(
       }
     }
 
+    // Where everything sits, written down before the cascade takes it. A value
+    // that is removed and later put back mints a NEW id, so nothing an id can
+    // match on survives the round trip (issue 305).
+    await rememberCoordinates(tx, productId);
+
     await tx.productOption.deleteMany({ where: { productId } });
 
     const created: (ProductOption & { values: ProductOptionValue[] })[] = [];
@@ -359,6 +373,21 @@ export async function setOptions(
       created.push({ ...optionRow, values: valueRows });
     }
 
+    // Anything the new lattice can hold goes back where it was — which is what
+    // makes putting a removed choice back actually return its versions, retired
+    // ones included, instead of leaving them belonging to no combination.
+    const restored = await restoreRememberedCoordinates(
+      tx,
+      productId,
+      created.flatMap((option) =>
+        option.values.map((value) => ({
+          id: value.id,
+          value: value.value,
+          optionName: option.name,
+        }))
+      )
+    );
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -367,7 +396,7 @@ export async function setOptions(
       action: 'commerce.product.options_replaced',
       entityType: 'Product',
       entityId: productId,
-      diff: { after: { optionCount: created.length } },
+      diff: { after: { optionCount: created.length, restored } },
     });
 
     return created;
@@ -383,12 +412,22 @@ export async function setOptions(
   return result.map(toOptionRow);
 }
 
+/**
+ * Puts one variant at a point in the lattice.
+ *
+ * RETIRED variants are placeable, deliberately. Where a variant sits and whether
+ * it is on sale are two different facts, and `restoreRememberedCoordinates`
+ * writes exactly these rows for retired variants a few lines above. Filtering
+ * them out here meant the only version that HAD lost its coordinate was the only
+ * one nothing could give it back — so the console could state the problem and
+ * offer no cure, while the toast told her to go and fix it there (issue 305).
+ */
 export async function assignOptionValues(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = AssignVariantOptionValuesInput.parse(rawInput);
 
   await withTenant(ctx, async (tx) => {
     const variant = await tx.productVariant.findFirst({
-      where: { id: input.variantId, deletedAt: null },
+      where: { id: input.variantId },
       include: { product: { include: { options: true } } },
     });
     if (!variant) throw new CommerceNotFoundError('Variant', input.variantId);

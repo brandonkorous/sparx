@@ -8,7 +8,7 @@
 //   POST /v1/public/commerce/checkout/:sessionId/shipping  { shippingRateRef, shippingProviderSlug, shippingAddress?, billingAddress? }
 //   POST /v1/public/commerce/checkout/:sessionId/payment-intent → { clientSecret, paymentRef, providerSlug }
 //   POST /v1/public/commerce/checkout/:sessionId/payment   { paymentProviderSlug, paymentRef, poNumber? }
-//   POST /v1/public/commerce/checkout/:sessionId/complete  { idempotencyKey? } → { orderId, orderNumber }
+//   POST /v1/public/commerce/checkout/:sessionId/complete  { idempotencyKey?, expectedTotalCents? } → { orderId, orderNumber }
 //
 // Ownership is proven the same way as the cart routes: the session's underlying
 // cart must match the caller's x-cart-token.
@@ -112,6 +112,9 @@ const IntentBody = z.object({
 
 const CompleteBody = z.object({
   idempotencyKey: z.string().min(8).max(127).optional(),
+  // The total on the button the shopper pressed. The service refuses rather than
+  // write an order for a figure she was never shown (issues 298, 300).
+  expectedTotalCents: z.number().int().nonnegative().optional(),
 });
 
 const DiscountBody = z.object({
@@ -377,6 +380,9 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     const result = await checkoutService.complete(ctx, {
       sessionId,
       idempotencyKey: body.idempotencyKey ?? randomUUID(),
+      ...(body.expectedTotalCents !== undefined
+        ? { expectedTotalCents: body.expectedTotalCents }
+        : {}),
     });
 
     // Session attribution (docs/128): match this buyer's visitor-day hash to their

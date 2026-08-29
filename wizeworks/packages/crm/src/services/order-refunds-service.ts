@@ -9,7 +9,7 @@
 import crypto from 'node:crypto';
 
 import { RecordRefundInput } from '@wizeworks/crm-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { OrderRefund } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -37,6 +37,7 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
   // event MUST carry it. Every order has a customer (Order.customerId is
   // non-null), so this is always set by the time we publish.
   let orderCustomerId = '';
+  let orderNumber = '';
 
   const refund = await withTenant(ctx, async (tx) => {
     const order = await tx.order.findUnique({
@@ -45,6 +46,7 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     });
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
     orderCustomerId = order.customerId;
+    orderNumber = order.orderNumber;
     if (order.status === 'cancelled') {
       throw new CrmValidationError('Cannot refund a cancelled order');
     }
@@ -155,19 +157,22 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     return created;
   });
 
-  await publishPlatformEvent({
-    id: crypto.randomUUID(),
-    topic: 'order.refunded',
-    tenantId: ctx.tenantId,
-    occurredAt: refund.refundedAt ?? new Date(),
-    payload: {
-      orderId: refund.orderId,
-      customerId: orderCustomerId,
-      refundId: refund.id,
-      refundAmount: Number(refund.amount),
-      currency: refund.currency,
-    },
-  });
+  await afterCommit('publish order.refunded', () =>
+    publishPlatformEvent({
+      id: crypto.randomUUID(),
+      topic: 'order.refunded',
+      tenantId: ctx.tenantId,
+      occurredAt: refund.refundedAt ?? new Date(),
+      payload: {
+        orderId: refund.orderId,
+        orderNumber,
+        customerId: orderCustomerId,
+        refundId: refund.id,
+        refundAmount: Number(refund.amount),
+        currency: refund.currency,
+      },
+    })
+  );
 
   return refund;
 }

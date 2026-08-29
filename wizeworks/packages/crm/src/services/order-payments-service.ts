@@ -9,7 +9,7 @@
 import crypto from 'node:crypto';
 
 import { RecordPaymentInput, VoidPaymentInput } from '@wizeworks/crm-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { OrderPayment, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -29,6 +29,8 @@ export async function listForOrder(ctx: ServiceContext, orderId: string): Promis
 
 export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Promise<OrderPayment> {
   const input = RecordPaymentInput.parse(rawInput);
+
+  const identity = { customerId: '', orderNumber: '' };
 
   const { payment, becamePaid } = await withTenant(ctx, async (tx) => {
     const order = await tx.order.findUnique({ where: { id: input.orderId } });
@@ -58,6 +60,9 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
       },
     });
 
+    identity.customerId = order.customerId;
+    identity.orderNumber = order.orderNumber;
+
     const becamePaid = await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
 
     await writeAuditLog({
@@ -79,32 +84,42 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
     return { payment: created, becamePaid };
   });
 
-  await publishPlatformEvent({
-    id: crypto.randomUUID(),
-    topic: 'order.payment.recorded',
-    tenantId: ctx.tenantId,
-    occurredAt: payment.capturedAt ?? new Date(),
-    payload: {
-      orderId: payment.orderId,
-      paymentId: payment.id,
-      amount: Number(payment.amount),
-      currency: payment.currency,
-      status: payment.status,
-    },
-  });
+  await afterCommit('publish order.payment.recorded', () =>
+    publishPlatformEvent({
+      id: crypto.randomUUID(),
+      topic: 'order.payment.recorded',
+      tenantId: ctx.tenantId,
+      occurredAt: payment.capturedAt ?? new Date(),
+      payload: {
+        orderId: payment.orderId,
+        orderNumber: identity.orderNumber,
+        customerId: identity.customerId,
+        paymentId: payment.id,
+        amount: Number(payment.amount),
+        currency: payment.currency,
+        status: payment.status,
+      },
+    })
+  );
 
   // When this capture completed the order's balance, announce it's fully paid —
   // the signal the high-value-order automation (and any paid-order consumer)
   // listens for. Fires once (the unpaid→paid edge); `order.paid` tees to the
   // automation fan-in via the platform-bus PLATFORM_TEE_TOPICS allow-list.
   if (becamePaid) {
-    await publishPlatformEvent({
-      id: crypto.randomUUID(),
-      topic: 'order.paid',
-      tenantId: ctx.tenantId,
-      occurredAt: new Date(),
-      payload: { orderId: payment.orderId },
-    });
+    await afterCommit('publish order.paid', () =>
+      publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: 'order.paid',
+        tenantId: ctx.tenantId,
+        occurredAt: new Date(),
+        payload: {
+          orderId: payment.orderId,
+          orderNumber: identity.orderNumber,
+          customerId: identity.customerId,
+        },
+      })
+    );
   }
 
   return payment;

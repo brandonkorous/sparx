@@ -292,7 +292,10 @@ const SUBSCRIPTION_EVENTS = [
 const SUBSCRIPTION_LINK_EVENTS = ['subscription.authentication_required', 'subscription.invoiced'];
 // Returns / RMA lifecycle (docs/impl transactional-email §4 P3) — payload carries
 // `returnId`; the resolver hydrates the return + its order + customer.
-const RETURN_EVENTS = ['return.approved', 'return.received', 'return.refunded'];
+// `return.requested` leads the list because it is the one a HUMAN has to act on:
+// a shopper has asked to send something back and nobody is told until somebody
+// opens the returns screen. The other three report a decision already made.
+const RETURN_EVENTS = ['return.requested', 'return.approved', 'return.received', 'return.refunded'];
 // B2B order approval outcomes (docs/impl transactional-email §4 P3) — the buyer's
 // pending order was approved (→ placed) or rejected (→ cancelled). Both carry
 // `orderId`, so they resolve through the order hydrator like any other order event.

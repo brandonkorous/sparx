@@ -289,6 +289,18 @@ export interface SitePublishState {
   /** True when nothing has EVER been published — visitors see no site at all,
    *  a materially different message from "your changes aren't live yet". */
   neverPublished: boolean;
+  /** Capabilities the SAVED header and footer have that the live site does not.
+   *
+   *  Separate from `frameUnpublished`, which only says something differs. The
+   *  platform repairs a stale frame on the author's behalf when they open the
+   *  studio, so "your header and footer have changes" is routinely true of changes
+   *  the author did not make and cannot identify — which reads as a fault rather
+   *  than as an improvement waiting to go live. These name what visitors are
+   *  missing, so the sentence is actionable instead of alarming.
+   *
+   *  Shaped inline, not imported: this package is the wire contract and does not
+   *  depend on the catalog that produces the list. */
+  liveChromeGaps: { core: string; says: string; source: 'saved' | 'waiting' }[];
 }
 
 // ── Publish history (docs/126 §5.3) ──────────────────────────────────────────

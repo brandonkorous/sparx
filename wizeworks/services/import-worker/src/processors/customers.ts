@@ -96,6 +96,39 @@ function consentFrom(value: string | undefined): { scope: ['marketing']; source:
 }
 
 /**
+ * The same flag on somebody who is ALREADY here, where it is one-way.
+ *
+ * A file saying "do not email" is a person asking not to be emailed and is always
+ * honoured. A file saying "email them" is not a fresh permission — it is the file
+ * being SILENT about everything that happened after it was exported, including the
+ * unsubscribe that happened last week. The asymmetry the comment above describes is
+ * sharper on a re-import: the wrong yes is not a guess, it is an undo, and the only
+ * person who knows it happened is the one who complains.
+ *
+ * So the flag can be turned ON here and never OFF. Returns the field to write plus
+ * the note owed to the run report — the one thing worse than overriding her file is
+ * overriding it without saying so.
+ */
+function optInForExisting(
+  value: string | undefined,
+  suppressed: boolean
+): { field: { doNotContact: boolean } | null; note: string | null } {
+  if (value === undefined) return { field: null, note: null };
+  if (doNotContactFrom(value)) return { field: { doNotContact: true }, note: null };
+  if (!suppressed) return { field: null, note: null };
+  return {
+    field: null,
+    note: 'This file has them down as happy to be emailed, but they have been taken off marketing here since it was made. They stay off it.',
+  };
+}
+
+/** Everything the row has to say, as one sentence for the run report. */
+function joinNotes(notes: (string | null)[]): string | null {
+  const said = notes.filter((note): note is string => note !== null);
+  return said.length === 0 ? null : said.join(' ');
+}
+
+/**
  * The two-letter code an address needs, from whatever the spreadsheet says.
  *
  * Short on purpose. A shop's own list writes the country the way a person says it,
@@ -283,12 +316,12 @@ export async function processCustomerRows(
         Object.keys(extra.values).length > 0 ? { customProperties: extra.values } : {};
 
       // Look up existing customer by email (if provided).
-      let existing: { id: string } | null = null;
+      let existing: { id: string; doNotContact: boolean } | null = null;
       if (email) {
         existing = await withTenant(ctx, (tx) =>
           tx.customer.findFirst({
             where: { tenantId: ctx.tenantId, email, deletedAt: null },
-            select: { id: true },
+            select: { id: true, doNotContact: true },
           })
         );
       }
@@ -296,6 +329,7 @@ export async function processCustomerRows(
       const consent = consentFrom(row.accepts_marketing);
 
       if (existing && opts.upsert) {
+        const optIn = optInForExisting(row.accepts_marketing, existing.doNotContact);
         await customerService.update(ctx, existing.id, {
           ...(row.first_name !== undefined ? { firstName: row.first_name } : {}),
           ...(row.last_name !== undefined ? { lastName: row.last_name } : {}),
@@ -303,9 +337,10 @@ export async function processCustomerRows(
           ...(row.phone !== undefined ? { phone: row.phone } : {}),
           ...(row.job_title !== undefined ? { jobTitle: row.job_title } : {}),
           ...(row.type ? { type: normalizeType(row.type) } : {}),
-          ...(row.accepts_marketing !== undefined
-            ? { doNotContact: doNotContactFrom(row.accepts_marketing) }
-            : {}),
+          // One-way — see optInForExisting. This line used to write the file's
+          // answer in both directions, so re-importing a months-old export put
+          // everyone who had unsubscribed since back on the list.
+          ...(optIn.field ?? {}),
           // Only ever ADDED on an update. A file saying no already lands as
           // do-not-contact, which is what stops the send; erasing the record of a
           // consent they once gave would destroy the evidence for sends already made.
@@ -320,7 +355,7 @@ export async function processCustomerRows(
             : {}),
           ...customProperties,
         });
-        const note = await saveAddress(ctx, existing.id, row, false);
+        const note = joinNotes([await saveAddress(ctx, existing.id, row, false), optIn.note]);
         results.push({
           rowIndex: i,
           status: 'updated',
@@ -329,7 +364,16 @@ export async function processCustomerRows(
         });
         log.debug('updated');
       } else if (existing && !opts.upsert) {
-        results.push({ rowIndex: i, status: 'skipped', naturalKey: email });
+        // Nothing counts a skip — the job carries imported, updated and errors and
+        // no third column — so without this the row is simply absent from every
+        // number on the screen, and 25 rows report as 0 with no reason given.
+        results.push({
+          rowIndex: i,
+          status: 'skipped',
+          naturalKey: email,
+          errorMsg:
+            'They are already here, and this import was set to leave people it already has alone.',
+        });
         log.debug('skipped (upsert off)');
       } else {
         const created = await customerService.create(ctx, {
@@ -396,15 +440,20 @@ export async function previewCustomerRows(
     ),
   ];
 
-  const here = new Set<string>();
+  // Who is here, and which of them have asked not to be emailed — the second half
+  // because the write will refuse to un-ask that, and a practice run that does not
+  // mention it leaves her expecting the file's opt-in to apply.
+  const here = new Map<string, { suppressed: boolean }>();
   if (emails.length > 0) {
     const found = await withTenant(ctx, (tx) =>
       tx.customer.findMany({
         where: { tenantId: ctx.tenantId, email: { in: emails }, deletedAt: null },
-        select: { email: true },
+        select: { email: true, doNotContact: true },
       })
     );
-    for (const row of found) if (row.email) here.add(row.email.toLowerCase());
+    for (const row of found) {
+      if (row.email) here.set(row.email.toLowerCase(), { suppressed: row.doNotContact });
+    }
   }
 
   return rows.map((row, rowIndex) => {
@@ -420,9 +469,24 @@ export async function previewCustomerRows(
     const refusal = wouldRefuse(row);
     if (refusal !== null) return { rowIndex, action: 'error' as const, errorMsg: refusal, ...key };
 
-    const known = email !== undefined && email !== '' && here.has(email);
-    const action: PreviewResult['action'] = known ? (opts.upsert ? 'update' : 'skip') : 'create';
-    return { rowIndex, action, ...key };
+    const known = email === undefined || email === '' ? undefined : here.get(email);
+    if (known === undefined) return { rowIndex, action: 'create' as const, ...key };
+    if (!opts.upsert) {
+      return {
+        rowIndex,
+        action: 'skip' as const,
+        errorMsg:
+          'They are already here, and this import was set to leave people it already has alone.',
+        ...key,
+      };
+    }
+    const note = optInForExisting(row.accepts_marketing, known.suppressed).note;
+    return {
+      rowIndex,
+      action: 'update' as const,
+      ...(note === null ? {} : { errorMsg: note }),
+      ...key,
+    };
   });
 }
 
@@ -465,3 +529,6 @@ export const customersProcessor: EntityProcessor = {
     processCustomerRows(ctx, rows, { upsert: options.upsert }, logger),
   preview: (ctx, rows) => previewCustomerRows(ctx, rows, { upsert: true }),
 };
+
+/** The pure halves, for the suite that pins down the quiet mistakes. */
+export const customerInternals = { doNotContactFrom, consentFrom, optInForExisting, joinNotes };

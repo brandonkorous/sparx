@@ -14,6 +14,7 @@
 // a test.
 
 import { measureSite } from './budget';
+import { checkChrome } from './chrome';
 import { checkClasses } from './classes';
 import { checkContrast, checkThemeContrast } from './contrast';
 import { checkContent } from './content';
@@ -67,6 +68,10 @@ export function lintSite(input: SiteLintInput): SiteLintReport {
       ...checkLinks(inventory, targets),
       ...checkClasses(inventory),
       ...checkContrast(inventory, input.theme),
+      // Frame-scoped and therefore the same answer on every page, which is exactly what
+      // `mergeFindings` collapses: one row, with every page it costs a visitor on listed
+      // in `seenOn`.
+      ...checkChrome(inventory, input.capabilities),
     ];
     for (const finding of findings) sightings.push({ finding, page: inventory.page.name });
   }

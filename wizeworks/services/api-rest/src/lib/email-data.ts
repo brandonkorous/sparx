@@ -737,7 +737,10 @@ async function resolveCart(
   const where = ref?.cartId
     ? { id: ref.cartId }
     : ref?.customerId
-      ? { customerId: ref.customerId, recoveredAt: null }
+      ? // Their LIVE basket, so one they have already paid for does not answer.
+        // Asked of the completed checkout session rather than `recoveredAt`,
+        // which is a recovery and not a purchase (persona issue 289).
+        { customerId: ref.customerId, checkoutSessions: { none: { step: 'completed' } } }
       : null;
   if (!where) return {};
   const cart = await withTenant(ctx, (tx) =>

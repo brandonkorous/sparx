@@ -43,8 +43,10 @@ import { getBlock } from '@wizeworks/silicaui-html/blocks';
 import { HOST_KEYS, hostCore } from './host-nodes';
 
 /** The navbar blocks whose slot set sparx's fill matches — `brand`, `link1..4`,
- *  `secondary` (bar `centerLogo`, which omits it), and `cta`. Switching a site's
- *  header is this key and nothing else: no re-authoring, no lost content.
+ *  `secondary` (bar `centerLogo`, which omits it — `ensureAccountLink` appends the core
+ *  there instead, so the choice of header cannot cost a site its sign-in), and `cta`.
+ *  Switching a site's header is this key and nothing else: no re-authoring, no lost
+ *  content.
  *
  *  silica ships two more that are deliberately NOT offered here, because each is a
  *  different SHAPE rather than a different alignment of the same one, and the shared
@@ -196,6 +198,10 @@ interface BehaviorBearing extends SlotBearing {
   behavior?: { type?: string };
 }
 
+interface ClassBearing extends SlotBearing {
+  class?: string;
+}
+
 /**
  * Swap silica's client-only `theme-toggle` control for the LIVE `site.theme-toggle`
  * host core, keeping the block's layout and position.
@@ -219,6 +225,35 @@ function withHostThemeToggle(root: Node): Node {
       n.children = n.children.map((child) =>
         isNodeObject(child) && (child as BehaviorBearing).behavior?.type === 'theme-toggle'
           ? hostCore(HOST_KEYS.siteThemeToggle)
+          : visit(child)
+      );
+    }
+    return node;
+  };
+  return visit(root) as Node;
+}
+
+/**
+ * Swap the navbar's stamped secondary link for the LIVE `site.account-link` host core,
+ * keeping each placement's own styling.
+ *
+ * A stamped `Sign in` cannot know who is reading it, so it said that to signed-in
+ * customers above their own name and offered them no route back to the account holding
+ * their orders (issue 291). Only something rendered per request can get this right.
+ *
+ * Unlike `withHostThemeToggle` this CARRIES THE BLOCK'S CLASS onto the core. The
+ * `secondary` slot is declared twice with deliberately different styling — an inline
+ * text link in the bar (`hidden … @sm:inline`) and a full-width `btn btn-ghost` in the
+ * phone panel — so discarding the class the way the toggle does would flatten the phone
+ * menu's button into a bare link. The core renders whatever class it is handed.
+ */
+function withHostAccountLink(root: Node): Node {
+  const visit = (node: unknown): unknown => {
+    if (!isNodeObject(node)) return node;
+    if (Array.isArray(node.children)) {
+      node.children = node.children.map((child) =>
+        isNodeObject(child) && child.slot?.name === 'secondary'
+          ? hostCore(HOST_KEYS.siteAccountLink, (child as ClassBearing).class ?? undefined)
           : visit(child)
       );
     }
@@ -435,7 +470,8 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
   const filled = fillSlots(root, {
     brand: hostCore(HOST_KEYS.siteBrand),
     // Every site has shopper sign-in (Layer-2 auth), so the secondary link is real
-    // on a content-only site too — it reaches the account, not a store.
+    // on a content-only site too — it reaches the account, not a store. Filled as a
+    // plain link here and swapped for the live core below (see `withHostAccountLink`).
     secondary: { text: 'Sign in', href: '/account/login' },
     // `null` prunes the CTA slot (both the desktop bar and the phone panel declare it), for
     // an editorial header that leads with the wordmark + nav and no filled button. The label +
@@ -450,8 +486,95 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
   // however many there are, never truncating at the block's default count.
   const linked = fillNavLinks(filled, destinations);
   // Keep the cookie-backed, SSR-integrated, policy-gated theme toggle rather than the
-  // block's client-only behavior.
-  return withHostThemeToggle(linked);
+  // block's client-only behavior, and the live account link rather than a stamped one.
+  // `ensureAccountLink` then covers the variant that has no `secondary` slot to swap.
+  return ensureAccountLink(withHostThemeToggle(withHostAccountLink(linked)));
+}
+
+/** The two shapes the account link takes, which are the classes the block's own
+ *  `secondary` fill produces: an inline text link in the bar, and a full-width ghost
+ *  button in the phone panel. Spelled here so a variant that grows the slot later and
+ *  one that never had it look identical. */
+const ACCOUNT_BAR_CLASS =
+  'hidden text-sm font-medium text-base-content hover:text-primary @sm:inline';
+const ACCOUNT_PANEL_CLASS = 'btn btn-ghost btn-sm mt-2 w-full';
+
+/**
+ * Guarantee the header can reach the shopper's account.
+ *
+ * The twin of `ensureLegalLinks`, missing until issue 313, and it exists for exactly
+ * the same reason. `fillSlots` fills only the slots a block HAS; `centerLogo` declares
+ * no `secondary`, so `withHostAccountLink` found nothing to swap and that variant
+ * shipped a header with no way in to an account at all. Forty six of the 191 designs
+ * were on it: a shop with an order history, a wishlist and a self-service returns flow,
+ * and no link to any of them anywhere in the chrome. A shopper had to guess the address.
+ *
+ * Sign-in is not decorative chrome a variant may opt out of. The same sentence is
+ * already written above `ensureLegalLinks` about privacy and terms, and the reason it
+ * had to be written twice is that the fix went in on the footer and the identical hole
+ * in the navbar was left open.
+ *
+ * A no-op when the fill already placed the core, so every `brandLeft` / `centerLinks`
+ * header is unchanged byte for byte.
+ */
+function ensureAccountLink(navbar: Node): Node {
+  if (typeof navbar === 'string' || navbar.kind !== 'element') return navbar;
+  if (containsHostCore(navbar, HOST_KEYS.siteAccountLink)) return navbar;
+  const withBar = addAt(
+    navbar,
+    barEnd(navbar),
+    hostCore(HOST_KEYS.siteAccountLink, ACCOUNT_BAR_CLASS)
+  );
+  // Re-found rather than captured before the first insert: `addAt` rebuilds every
+  // element it walks, so a node identity taken from the old tree matches nothing in
+  // the new one and the panel copy would silently not be placed.
+  const panel = phonePanel(withBar);
+  return panel
+    ? addAt(withBar, panel, hostCore(HOST_KEYS.siteAccountLink, ACCOUNT_PANEL_CLASS))
+    : withBar;
+}
+
+/** The BAR itself — the navbar's first element child, which is the row holding the
+ *  brand, the links and the controls. Searching from here rather than from the header
+ *  keeps the phone panel (its sibling) out of the walk below. */
+function bar(navbar: ElementNode): ElementNode {
+  return (
+    (navbar.children ?? []).find(
+      (child): child is ElementNode => typeof child !== 'string' && child.kind === 'element'
+    ) ?? navbar
+  );
+}
+
+/** Where the bar puts its controls: the end zone, which every shipped variant marks
+ *  with `ml-auto` or `justify-end` (`brandLeft` the first, `centerLogo` the second).
+ *  Falls back to the bar, so a future variant with neither still gets a reachable link
+ *  rather than none. */
+function barEnd(navbar: ElementNode): ElementNode {
+  const row = bar(navbar);
+  let end: ElementNode | null = null;
+  const walk = (node: Node | string): void => {
+    if (typeof node === 'string' || node.kind !== 'element') return;
+    const cls = ` ${node.class ?? ''} `;
+    if (cls.includes(' ml-auto ') || cls.includes(' justify-end ')) end = node;
+    (node.children ?? []).forEach(walk);
+  };
+  (row.children ?? []).forEach(walk);
+  return end ?? row;
+}
+
+/** The disclosure panel the phone menu opens — the navbar's own `nav` child laid out
+ *  as a column. Null when a variant has no phone panel, in which case the bar copy is
+ *  the whole of it. */
+function phonePanel(navbar: ElementNode): ElementNode | null {
+  return (
+    (navbar.children ?? []).find(
+      (child): child is ElementNode =>
+        typeof child !== 'string' &&
+        child.kind === 'element' &&
+        child.tag === 'nav' &&
+        ` ${child.class ?? ''} `.includes(' flex-col ')
+    ) ?? null
+  );
 }
 
 /**
@@ -588,8 +711,14 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
           col2: { text: 'Account', href: '/account' },
           ...linkFills(
             [
-              ['Sign in', '/account'],
+              // Not "Sign in": `/account` bounces a stranger to the login form and takes
+              // a customer to her account, so the label has to be true in both states.
+              ['Your account', '/account'],
               ['Orders', '/account/orders'],
+              // Seeded, not left for the tenant to think of. Self-service returns
+              // ship with the account area, and a shop that does not advertise them
+              // gets the emails instead.
+              ['Returns', '/account/returns'],
               ['Cart', '/cart'],
             ],
             4,

@@ -389,6 +389,7 @@ export async function ingestChannelOrder(
     occurredAt: placedAt,
     payload: {
       orderId: outcome.orderId,
+      orderNumber: outcome.orderNumber,
       customerId: outcome.customerId,
       total: outcome.total,
       currency: input.currency,

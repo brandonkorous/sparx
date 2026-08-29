@@ -30,6 +30,7 @@ import {
   lintSite,
   type LinkTargets,
   type LintablePage,
+  type SiteCapabilities,
   type SiteLintInput,
   type SiteLintReport,
 } from '@wizeworks/site-lint';
@@ -96,6 +97,33 @@ export function skippedPagesOf(
   return rows
     .filter((row) => row.silicaDraftTree == null)
     .map((row) => ({ id: row.id, name: row.name }));
+}
+
+/**
+ * What this site's visitors can actually DO.
+ *
+ * Today one question: does anybody have an ACCOUNT here? The signed-in area — orders,
+ * returns, bookings, quotes, saved addresses — is one route on the storefront and is not
+ * itself gated, so what decides whether it holds anything is whether the tenant runs a
+ * module that puts something in it. Commerce gives a customer orders and returns,
+ * Scheduling gives her bookings, B2B gives her quotes and requests. Any one of the
+ * three, and a site with no way in strands her.
+ *
+ * FAILS CLOSED into `undefined`, exactly like `linkTargets` and for the same reason: a
+ * flag lookup that blips must never invent a finding. `undefined` reads as "we did not
+ * look", and the engine stays silent on it.
+ */
+export async function siteCapabilities(ctx: PropertyContext): Promise<SiteCapabilities> {
+  const flags = await Promise.all(
+    (['commerce', 'scheduling', 'b2b'] as const).map((slug) =>
+      isModuleEnabled(ctx.tenantId, slug).catch(() => null)
+    )
+  );
+  // A single failed lookup is not grounds for saying "no accounts here" — that would be
+  // the check going quiet on the site it was written for because of a blip. Only a clean
+  // "all three are off" answers the question.
+  if (flags.some((flag) => flag === null)) return {};
+  return { customerAccounts: flags.some(Boolean) };
 }
 
 /**
@@ -305,7 +333,7 @@ export async function runSiteCheck(
   ctx: PropertyContext
 ): Promise<SiteCheckReport> {
   return withRequestTenant(request, async (tx) => {
-    const [rows, layout, site, theme, targets] = await Promise.all([
+    const [rows, layout, site, theme, targets, capabilities] = await Promise.all([
       tx.builderPage.findMany({
         where: { propertyId: ctx.propertyId },
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
@@ -327,6 +355,7 @@ export async function runSiteCheck(
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
       effectiveTheme(tx, ctx),
       linkTargets(tx, ctx),
+      siteCapabilities(ctx),
     ]);
 
     const symbols = (site?.silicaDraftSymbols ?? null) as Record<string, SymbolDef> | null;
@@ -349,6 +378,7 @@ export async function runSiteCheck(
       symbols,
       theme,
       targets,
+      capabilities,
     };
 
     const notChecked = skippedPagesOf(rows);

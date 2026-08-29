@@ -16,6 +16,9 @@ import type { TxClient } from '@wizeworks/db';
 
 /** One basket line, reduced to what a condition can ask about. */
 export interface CartLineFacts {
+  /** The cart line's own id. Two lines can hold the same product in different
+   *  sizes, so a discount's share cannot be keyed on the product. */
+  id: string;
   productId: string;
   quantity: number;
   subtotalCents: number;
@@ -74,6 +77,119 @@ export function eligibleBaseCents(conditions: DiscountCondition[], facts: CartFa
   return facts.lines
     .filter((line) => allowed.has(line.productId))
     .reduce((sum, line) => sum + line.subtotalCents, 0);
+}
+
+/**
+ * The saving, split across the lines it actually came off.
+ *
+ * `eligibleBaseCents` answers what a discount is WORTH; this answers whose
+ * money it was, which is a different question and the one an order needs. An
+ * order line is what a refund, a margin and a commission are all read from, so
+ * a line recording $42.00 for a shirt the shopper paid $35.70 for hands back
+ * $6.30 that was never taken (issue 298).
+ *
+ * Shares are proportional to each eligible line's subtotal, with the leftover
+ * cents going to the largest fractions first, so the parts sum to EXACTLY
+ * `appliedCents` and an order's header can never disagree with its own lines.
+ */
+export function apportionToLines(
+  conditions: DiscountCondition[],
+  facts: CartFacts,
+  appliedCents: number
+): Map<string, number> {
+  const shares = new Map<string, number>();
+  if (appliedCents <= 0) return shares;
+
+  const allowed = allowedProducts(conditions, facts);
+  const paying = facts.lines.filter((line) => line.subtotalCents > 0);
+  const eligible = paying.filter((line) => allowed === null || allowed.has(line.productId));
+  // Nothing identifiable earned it — a saving stored against a basket that has
+  // since been emptied or re-priced. Spreading it over what is left keeps the
+  // money on the order instead of dropping it, which is the safer wrong answer.
+  const over = eligible.length > 0 ? eligible : paying;
+  const base = over.reduce((sum, line) => sum + line.subtotalCents, 0);
+  if (base <= 0) return shares;
+
+  const parts = over.map((line) => {
+    const exact = (appliedCents * line.subtotalCents) / base;
+    const whole = Math.floor(exact);
+    return { id: line.id, cents: whole, fraction: exact - whole };
+  });
+  let left = appliedCents - parts.reduce((sum, part) => sum + part.cents, 0);
+  for (const part of [...parts].sort((a, b) => b.fraction - a.fraction)) {
+    if (left <= 0) break;
+    part.cents += 1;
+    left -= 1;
+  }
+  for (const part of parts) shares.set(part.id, (shares.get(part.id) ?? 0) + part.cents);
+  return shares;
+}
+
+/**
+ * Where `now` sits against an offer's own dates.
+ *
+ * The boundary lives here and nowhere else. `redeemCode` asks it when the code
+ * is typed, and the cart asks it again every time its money is re-derived — and
+ * if those two ever answered differently, a basket would go on carrying a saving
+ * the shop had already ended (issue 300).
+ */
+export function discountWindowState(
+  discount: { startAt: Date | null; endAt: Date | null },
+  now: Date
+): 'before' | 'running' | 'after' {
+  if (discount.startAt && discount.startAt > now) return 'before';
+  if (discount.endAt && discount.endAt < now) return 'after';
+  return 'running';
+}
+
+/** Whether an offer can be given away right now: inside its dates, switched on,
+ *  and not deleted. */
+export function isDiscountRunning(
+  discount: {
+    status: string;
+    startAt: Date | null;
+    endAt: Date | null;
+    deletedAt: Date | null;
+  },
+  now: Date
+): boolean {
+  if (discount.deletedAt !== null) return false;
+  if (discount.status !== 'active') return false;
+  return discountWindowState(discount, now) === 'running';
+}
+
+/** Why an offer is spent, or null when it is not. Two limits, two sentences. */
+export type UsageBlock = 'total' | 'customer' | null;
+
+/**
+ * Has this offer run out — for the shop, or for this shopper?
+ *
+ * The counting is the caller's, because one caller has a transaction open and the
+ * other is mid-fold; the COMPARISON is here so there is one answer. It used to live
+ * only inside `assertUsageLimit`, which runs when a code is typed and never again,
+ * so a basket went on carrying a saving its owner had already spent and carried it
+ * through checkout (issue 312) — the same shape as the sale-window bug in 300, on
+ * the other half of the same sentence.
+ */
+export function usageBlock(
+  discount: { perCustomerLimit: number; totalUsageLimit: number | null; usageCount: number },
+  usedByCustomer: number | null
+): UsageBlock {
+  if (discount.totalUsageLimit !== null && discount.usageCount >= discount.totalUsageLimit) {
+    return 'total';
+  }
+  // Null means nobody to count against — a guest basket, where only the shop-wide
+  // limit can be checked at all.
+  if (usedByCustomer !== null && usedByCustomer >= discount.perCustomerLimit) {
+    return 'customer';
+  }
+  return null;
+}
+
+/** The stored `conditions` column as the union it is. Jsonb, so anything not an
+ *  array means a discount with no conditions rather than a broken one. */
+export function readConditions(stored: unknown): DiscountCondition[] {
+  return Array.isArray(stored) ? (stored as DiscountCondition[]) : [];
 }
 
 /**
@@ -145,10 +261,16 @@ export async function gatherCartFacts(
 ): Promise<CartFacts> {
   const items = await tx.cartItem.findMany({
     where: { cartId: cart.id },
-    select: { quantity: true, subtotalCents: true, variant: { select: { productId: true } } },
+    select: {
+      id: true,
+      quantity: true,
+      subtotalCents: true,
+      variant: { select: { productId: true } },
+    },
   });
 
   const lines: CartLineFacts[] = items.map((item) => ({
+    id: item.id,
     productId: item.variant.productId,
     quantity: item.quantity,
     subtotalCents: item.subtotalCents,

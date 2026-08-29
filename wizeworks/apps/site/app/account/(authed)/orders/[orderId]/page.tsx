@@ -7,16 +7,27 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
-import { OrderTimeline, orderStatusTone } from '@/components/order-timeline';
-import { getOrder, AccountError, type OrderDetail } from '@/lib/customer-client';
+import { OrderTimeline, orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
+import {
+  getOrder,
+  getReturnable,
+  AccountError,
+  type OrderDetail,
+  type OrderReturnability,
+} from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
-function titleCase(s: string): string {
-  return s
-    .split('_')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
+/** What happened to her money, in her words. `partially_paid` is one code over two
+ *  opposite situations — she still owes, or some came back — and only the refund
+ *  total tells them apart, so it is asked first (issue 292). */
+function paymentLine(order: OrderDetail): string {
+  if (order.refundedTotalCents > 0) {
+    return order.amountPaidCents > 0 ? 'Partly refunded' : 'Refunded in full';
+  }
+  if (order.paymentStatus === 'paid') return 'Paid in full';
+  if (order.paymentStatus === 'partially_paid') return 'Partly paid';
+  return 'Not paid yet';
 }
 
 function formatDate(iso: string): string {
@@ -42,10 +53,7 @@ function addressLine(addr: Record<string, unknown> | null): string | null {
 /** The money breakdown — subtotal, optional discount/tax, shipping, total. */
 function OrderTotals({ order }: { order: OrderDetail }) {
   return (
-    <div
-      className="rounded-box border-base-300 bg-base-100 flex flex-col gap-3 border p-6"
-      style={{ maxWidth: 360, marginLeft: 'auto' }}
-    >
+    <div className="rounded-box border-base-300 bg-base-100 ml-auto flex max-w-sm flex-col gap-3 border p-6">
       <div className="text-base-content flex justify-between text-sm">
         <span>Subtotal</span>
         <span>{formatMoney(order.subtotalCents, order.currency)}</span>
@@ -70,6 +78,20 @@ function OrderTotals({ order }: { order: OrderDetail }) {
         <span>Total</span>
         <span>{formatMoney(order.totalCents, order.currency)}</span>
       </div>
+      {/* A refund is the biggest thing that happens to an order after it is placed,
+          so her own copy says so and ends on what she is actually out of pocket. */}
+      {order.refundedTotalCents > 0 ? (
+        <>
+          <div className="text-success flex justify-between text-sm font-semibold">
+            <span>Refunded to you</span>
+            <span>−{formatMoney(order.refundedTotalCents, order.currency)}</span>
+          </div>
+          <div className="border-base-300 text-base-content flex justify-between border-t pt-3 text-lg font-semibold">
+            <span>You paid</span>
+            <span>{formatMoney(order.amountPaidCents, order.currency)}</span>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
@@ -79,6 +101,10 @@ export default function OrderDetailPage() {
   const params = useParams<{ orderId: string }>();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Loaded alongside the order so the page can OFFER a return rather than making
+  // her find out elsewhere that she is allowed one. A failure here is silent: it
+  // costs a button, and must never take the order page down with it.
+  const [returnable, setReturnable] = useState<OrderReturnability | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -89,6 +115,9 @@ export default function OrderDetailPage() {
           ? setError(err instanceof AccountError && err.status === 404 ? 'notfound' : 'error')
           : null
       );
+    getReturnable(tenantSlug, params.orderId)
+      .then((r) => active && setReturnable(r))
+      .catch(() => null);
     return () => {
       active = false;
     };
@@ -97,12 +126,8 @@ export default function OrderDetailPage() {
   if (error === 'notfound') {
     return (
       <div>
-        <p className="text-base-content" style={{ marginBottom: '1rem' }}>
-          We couldn’t find that order.
-        </p>
-        <Button render={<Link href="/account/orders" />} color="neutral" variant="outline">
-          ← Back to orders
-        </Button>
+        <p className="text-base-content mb-4">We couldn’t find that order.</p>
+        <Button render={<Link href="/account/orders" />}>← Back to orders</Button>
       </div>
     );
   }
@@ -113,7 +138,7 @@ export default function OrderDetailPage() {
       </Alert>
     );
   }
-  if (!order) return <div className="skeleton" style={{ height: 320 }} />;
+  if (!order) return <div className="skeleton h-80" />;
 
   const ship = addressLine(order.shippingAddress);
 
@@ -122,58 +147,63 @@ export default function OrderDetailPage() {
       <Link href="/account/orders" className="link link-hover text-sm">
         ← Orders
       </Link>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'baseline',
-          gap: '1rem',
-          margin: '0.5rem 0 1.5rem',
-        }}
-      >
+      <div className="mt-2 mb-6 flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-base-content text-3xl font-semibold tracking-tight">
           Order #{order.orderNumber}
         </h1>
         <Badge color={orderStatusTone(order.status)} variant="soft">
-          {titleCase(order.status)}
+          {orderStatusLabel(order.status)}
         </Badge>
       </div>
-      <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
-        Placed {formatDate(order.placedAt)} · Payment {titleCase(order.paymentStatus)}
+      <p className="text-base-content mb-6">
+        Placed {formatDate(order.placedAt)} · {paymentLine(order)}
       </p>
 
       {/* Order status timeline — the lifecycle at a glance. */}
-      <div
-        className="card border-base-300 border"
-        style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
-      >
-        <h2
-          className="text-base-content text-2xl font-semibold"
-          style={{ marginBottom: '1.25rem' }}
-        >
-          Order status
-        </h2>
+      <div className="card border-base-300 mb-6 border p-6">
+        <h2 className="text-base-content mb-5 text-2xl font-semibold">Order status</h2>
         <OrderTimeline order={order} />
       </div>
 
-      <div
-        style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}
-      >
+      <div className="mb-6 flex flex-col gap-3">
         {order.items.map((it) => (
-          <div
-            key={it.id}
-            style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}
-          >
-            <span>
+          <div key={it.id} className="flex justify-between gap-4">
+            <span className="text-base-content">
               {it.name}
-              <span className="text-base-content"> × {it.quantity}</span>
+              <span> × {it.quantity}</span>
+              {/* Which items the code came off. The Discount row below already
+                  takes the saving off the total, so the line shows what it was
+                  worth and names its share rather than quietly subtracting it
+                  a second time. */}
+              {it.discountAmountCents > 0 ? (
+                <span className="text-success block text-sm">
+                  {formatMoney(it.discountAmountCents, order.currency)} off
+                </span>
+              ) : null}
             </span>
-            <strong>{formatMoney(it.lineTotalCents, order.currency)}</strong>
+            <strong className="text-base-content">
+              {formatMoney(it.lineSubtotalCents, order.currency)}
+            </strong>
           </div>
         ))}
       </div>
 
       <OrderTotals order={order} />
+
+      {/* Offered where she is already looking at what she bought. Only when there
+          is something left to send back — the page it leads to explains the other
+          cases rather than being a button that goes nowhere. */}
+      {returnable?.eligible ? (
+        <div className="mt-6">
+          <Button
+            render={<Link href={`/account/orders/${order.id}/return`} />}
+            color="primary"
+            variant="soft"
+          >
+            Return or exchange something
+          </Button>
+        </div>
+      ) : null}
 
       {/* How it reaches them. An order with no address is not an order with a
           missing address: since issue 064 a collected order records none,

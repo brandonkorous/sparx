@@ -275,6 +275,74 @@ function checkBrandProse() {
   return problems.length;
 }
 
+/**
+ * The zones this deployment mints tenant addresses in. Literals, deliberately —
+ * reading `SPARX_ZONE_DOMAINS` would make the check as short-sighted as the bug it
+ * guards, which is the whole lesson of issue 316.
+ */
+const ZONE_LITERALS = ['sparx\\.zone', 'piggles\\.site'];
+const ZONE_IN_SENTENCE = new RegExp(`(?<![\\w-])(${ZONE_LITERALS.join('|')})(?![\\w-])`, 'i');
+
+/**
+ * A ZONE named in a sentence — narrower than `checkBrandProse`, and separate from it
+ * on purpose.
+ *
+ * `BRAND_WORD` ends in `(?!\.\w)`, so a brand followed by a dot is exempt. That
+ * exemption is right 17 times out of 18: `sparx.navbar` is a block id, `sparx.json` is
+ * a filename, and `sparx.market` is a sparx PRODUCT that piggles/CLAUDE.md excludes
+ * rather than renames. Relaxing it would fire on all of them and become a rule
+ * somebody switches off — the same trap the hex-rule note at the bottom of this file
+ * describes.
+ *
+ * A zone is the eighteenth case and is not like the other seventeen: it is the
+ * TENANT'S OWN ADDRESS, and it differs per brand. So a sentence naming one is wrong
+ * for every tenant not on it. This ran green while a Piggles owner was told "sparx.zone
+ * domains cannot be purchased" about her own `piggles.site` address, and an operator
+ * was told a `piggles.site` host was "an automatic sparx.zone address" (issues 316,
+ * 317). Resolve it instead: `await tenantZone(tenantId)`, or name the host in hand.
+ *
+ * No exception list, and it should stay that way — a sentence that genuinely needs a
+ * zone in it has a host or a tenant nearby to read one from.
+ */
+function checkZoneProse() {
+  const problems = [];
+  let scanned = 0;
+  for (const file of walk(path.join(ROOT, 'wizeworks'))) {
+    const name = rel(file);
+    if (!BRAND_PROSE_EXTENSIONS.has(path.extname(file))) continue;
+    if (isTestFile(name)) continue;
+    scanned++;
+    const source = code(fs.readFileSync(file, 'utf8'));
+    source.split('\n').forEach((line, index) => {
+      for (const match of line.matchAll(STRING_LITERAL)) {
+        const text = match[2];
+        if (!isSentence(text) || !ZONE_IN_SENTENCE.test(text)) continue;
+        problems.push(`${name}:${index + 1}: ${text.trim().slice(0, 110)}`);
+      }
+    });
+  }
+  // The DENOMINATOR is printed even when the rule passes. A check that hard-codes a
+  // scan root is one refactor away from reading nothing and reporting green, and this
+  // repo has shipped five of those; "0 problems" is only worth reading beside the
+  // number of files it read.
+  if (scanned === 0) {
+    console.error('\n✖ the zone-prose rule scanned NO files — its scan root has moved.\n');
+    return 1;
+  }
+  if (problems.length) {
+    console.error(`\n✖ a tenant's own zone, named in a sentence — ${problems.length}:\n`);
+    for (const problem of problems) console.error('   ' + problem);
+    console.error(
+      `\n   A tenant's address zone differs per brand, so a sentence naming one is\n` +
+        `   wrong for every tenant who is not on it. Read it instead: tenantZone(id)\n` +
+        `   in api-rest, or name the host the row already has.\n`
+    );
+    return problems.length;
+  }
+  console.log(`✓ zones named in a sentence under wizeworks/: 0 (${scanned} files)`);
+  return 0;
+}
+
 /** Only sparx. Piggles naming itself inside its own tree is the product
  *  speaking; naming the OTHER brand is the leak. */
 const OTHER_BRAND = /(?<![\w@/_.`-])(sparx)(?![\w/_`-])(?!\.\w)/i;
@@ -492,6 +560,7 @@ failures += scan(
 // that five of them survived the fork by being invisible.
 failures += checkBanned(banned);
 failures += checkBrandProse();
+failures += checkZoneProse();
 failures += checkOtherBrandProse(countOtherBrandProse(), update);
 failures += checkRatchet(counts, update, banned);
 

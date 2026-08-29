@@ -61,7 +61,12 @@ function mapMembers(rows: SourceRow[]): CanonicalRow[] {
       tags: tags(pick(source, 'TAGS')),
       // Only a confirmed opt-in is imported as consent. An unconfirmed row lands
       // without marketing permission, which is recoverable; the reverse is not.
-      accepts_marketing: confirmed ? 'true' : '',
+      //
+      // Said out loud, because `row()` drops empty values and an empty one here read
+      // as "this export has no opinion about marketing" rather than "this person
+      // never confirmed" — so everybody who signed up and never clicked the link
+      // came in as somebody the shop could mail. The two readings need two values.
+      accepts_marketing: confirmed ? 'true' : 'false',
       created_at: pick(source, 'OPTIN_TIME', 'CONFIRM_TIME'),
       type: 'person',
     });

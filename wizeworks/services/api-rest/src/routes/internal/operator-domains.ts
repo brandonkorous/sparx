@@ -359,8 +359,12 @@ const operatorDomainsRoutes: FastifyPluginAsync = async (app) => {
         return reverifyResult(row, {
           mode: 'noop',
           passed: null,
-          message:
-            'This is an automatic sparx.zone address — it is always live and needs no verification.',
+          // Names the ROW's host rather than a zone literal. This process serves more
+          // than one brand, so "an automatic sparx.zone address" was simply false about
+          // a tenant sitting on another brand's zone, and an operator reading it beside
+          // a `piggles.site` host learned to trust the screen less (issue 317). The host
+          // is in hand and is the more useful thing to say anyway.
+          message: `${row.host} was issued with the site and is always live, so there is nothing to verify.`,
           dnsProbe: null,
         });
       }

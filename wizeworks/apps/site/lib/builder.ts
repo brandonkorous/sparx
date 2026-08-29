@@ -46,10 +46,16 @@ function previewHeaders(previewToken?: string): HeadersInit | undefined {
  *
  * These reads were ALL `cache: 'no-store'`, with an INTERIM comment explaining why:
  * builder content changes on publish, no tag-purge was wired, so a TTL would only
- * have served stale pages. That purge now exists — `installBuilderPubSubBridge`
- * publishes `builder.*` to Pub/Sub, `cache-revalidation-worker` maps it to the
- * `builder` scope, and app/api/revalidate purges `builder:<slug>`. So published
- * reads are cached again, with the TTL as a backstop rather than the mechanism.
+ * have served stale pages. They were cached again on the strength of a purge that
+ * is only three-quarters built: `installBuilderPubSubBridge` does publish
+ * `builder.*`, `cache-revalidation-worker`'s `planRevalidation` does map it to the
+ * `builder` scope, and app/api/revalidate does purge `builder:<slug>` — but that
+ * worker is a Cloud Run push service with no k8s manifest and no place in the
+ * release pipeline's image matrix, so NOTHING RUNS IT and no tag is ever purged.
+ *
+ * So read the `revalidate` below as the mechanism, not the backstop: a tenant's
+ * published change appears when the TTL lapses, and each route holds its own copy
+ * with its own clock, so the site can disagree with itself in between (issue 302).
  *
  * A PREVIEW read stays uncached, always. It serves the DRAFT tree, which changes on
  * every autosave and is scoped to one author's in-flight work — caching it would both

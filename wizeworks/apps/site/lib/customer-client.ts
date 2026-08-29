@@ -185,6 +185,12 @@ export interface OrderDetail extends Omit<OrderSummary, never> {
   taxTotalCents: number;
   shippingTotalCents: number;
   discountTotalCents: number;
+  /** What actually moved on this order, as opposed to what was owed. Both are
+   *  maintained by the payment rollup on every payment and refund. A refund is
+   *  the most important thing that can happen to an order after it is placed, so
+   *  the shopper's own copy has to be able to say so (issue 292). */
+  amountPaidCents: number;
+  refundedTotalCents: number;
   shippingAddress: Record<string, unknown> | null;
   /** How this order leaves, in the words chosen at checkout ("Collect in
    *  person", "USPS Priority"). Null when the method was never recorded, which
@@ -205,6 +211,9 @@ export interface OrderDetail extends Omit<OrderSummary, never> {
     sku: string;
     quantity: number;
     unitPriceCents: number;
+    lineSubtotalCents: number;
+    /** The share of an order-level code that came off THIS line. */
+    discountAmountCents: number;
     lineTotalCents: number;
   }[];
   fulfillments: OrderFulfillmentView[];
@@ -240,6 +249,125 @@ export async function getOrder(tenantSlug: string, orderId: string): Promise<Ord
     { cache: 'no-store' }
   );
   return parse<OrderDetail>(res);
+}
+
+// ── Returns ─────────────────────────────────────────────────────────────────
+// Self-service, because a return she cannot start herself is an email to the
+// shop — and on a clothing label returns are a fifth of orders.
+
+/** The shopper's own words for a reason, keyed by the schema's codes. Kept here
+ *  rather than in the schema package: the codes are the contract, and these are
+ *  copy, which is the storefront's business. */
+export const RETURN_REASONS = [
+  { code: 'wrong_size', label: 'It does not fit' },
+  { code: 'not_as_described', label: 'It is not what I expected' },
+  { code: 'defective', label: 'Something is wrong with it' },
+  { code: 'damaged_in_transit', label: 'It arrived damaged' },
+  { code: 'wrong_item', label: 'I was sent the wrong thing' },
+  { code: 'arrived_late', label: 'It arrived too late' },
+  { code: 'no_longer_needed', label: 'I changed my mind' },
+  { code: 'other', label: 'Something else' },
+] as const;
+
+export type ReturnReasonCode = (typeof RETURN_REASONS)[number]['code'];
+
+export interface ReturnableLine {
+  orderItemId: string;
+  name: string;
+  sku: string;
+  quantity: number;
+  spokenFor: number;
+  returnableQuantity: number;
+  unitPriceCents: number;
+}
+
+export interface OrderReturnability {
+  eligible: boolean;
+  /** Why not, when not — so the page can say it rather than hiding the button. */
+  reason: 'not_sent_yet' | 'nothing_left' | null;
+  lines: ReturnableLine[];
+}
+
+export interface ReturnSummaryView {
+  id: string;
+  orderId: string;
+  orderNumber: string | null;
+  status: string;
+  preferredOutcome: string;
+  itemCount: number;
+  requestedAt: string;
+}
+
+export interface ReturnDetailView extends ReturnSummaryView {
+  approvedAt: string | null;
+  receivedAt: string | null;
+  refundedAt: string | null;
+  cancelledAt: string | null;
+  refundedAmountCents: number | null;
+  /** Money kept back out of the refund. Hers, so she is told. */
+  restockingFeeCents: number | null;
+  /** Only ever set on a declined request — the shop's reason, so a refusal is
+   *  never a dead end. Null on every other status. */
+  declinedReason: string | null;
+  items: {
+    id: string;
+    orderItemId: string;
+    orderItemName: string | null;
+    quantity: number;
+    approvedQuantity: number;
+    reasonCode: string;
+    customerNote: string | null;
+  }[];
+  /** A return label the shop issued her, if any — tracking only. */
+  labels: { trackingNumber: string | null; trackingUrl: string | null }[];
+}
+
+export async function getReturnable(
+  tenantSlug: string,
+  orderId: string
+): Promise<OrderReturnability> {
+  const res = await fetch(
+    url(`/v1/public/commerce/account/orders/${encodeURIComponent(orderId)}/returnable`, tenantSlug),
+    { cache: 'no-store' }
+  );
+  return parse<OrderReturnability>(res);
+}
+
+export async function getReturns(tenantSlug: string): Promise<ReturnSummaryView[]> {
+  const res = await fetch(url('/v1/public/commerce/account/returns', tenantSlug), {
+    cache: 'no-store',
+  });
+  const data = await parse<{ returns: ReturnSummaryView[] }>(res);
+  return data.returns;
+}
+
+export async function getReturn(tenantSlug: string, returnId: string): Promise<ReturnDetailView> {
+  const res = await fetch(
+    url(`/v1/public/commerce/account/returns/${encodeURIComponent(returnId)}`, tenantSlug),
+    { cache: 'no-store' }
+  );
+  return parse<ReturnDetailView>(res);
+}
+
+export async function requestReturn(
+  tenantSlug: string,
+  input: {
+    orderId: string;
+    preferredOutcome: 'refund' | 'exchange';
+    items: {
+      orderItemId: string;
+      quantity: number;
+      reasonCode: ReturnReasonCode;
+      customerNote?: string;
+    }[];
+  }
+): Promise<{ id: string }> {
+  const res = await fetch(url('/v1/public/commerce/account/returns', tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  return parse<{ id: string }>(res);
 }
 
 // ── Addresses ───────────────────────────────────────────────────────────────

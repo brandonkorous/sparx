@@ -47,6 +47,8 @@ import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 
+import * as cartService from './cart-service';
+import { apportionToLines, gatherCartFacts, readConditions } from './discount-conditions';
 import * as discountService from './discount-service';
 import * as madeToOrderService from './made-to-order-service';
 import * as marketService from './market';
@@ -181,7 +183,96 @@ export async function start(
   return { sessionId };
 }
 
+/** A cart's applied savings, split across the lines that earned them.
+ *
+ *  One pass of `gatherCartFacts` for all of them: the facts a condition can ask
+ *  about are the same basket whichever code is being weighed, and it is the
+ *  lookups (collections, segments, B2B membership) that cost anything. */
+async function apportionCartDiscounts(
+  tx: TxClient,
+  cart: { id: string; customerId: string | null; channel: string }
+): Promise<Map<string, number>> {
+  const byLine = new Map<string, number>();
+  // Read fresh rather than off the loaded cart: settling the basket just above
+  // may have deleted a saving whose sale ended, and a stale copy would put cents
+  // on lines the order header no longer carries.
+  const rows = await tx.cartDiscount.findMany({
+    where: { cartId: cart.id },
+    select: { appliedCents: true, discount: { select: { conditions: true } } },
+  });
+  if (rows.length === 0) return byLine;
+
+  const each = rows.map((applied) => ({
+    conditions: readConditions(applied.discount.conditions),
+    appliedCents: applied.appliedCents,
+  }));
+  const facts = await gatherCartFacts(
+    tx,
+    cart,
+    each.flatMap((applied) => applied.conditions)
+  );
+  for (const applied of each) {
+    for (const [lineId, cents] of apportionToLines(
+      applied.conditions,
+      facts,
+      applied.appliedCents
+    )) {
+      byLine.set(lineId, (byLine.get(lineId) ?? 0) + cents);
+    }
+  }
+  return byLine;
+}
+
 // ─── reads ───────────────────────────────────────────────────────────
+
+/**
+ * Bring an in-flight session's money back in line with the basket it belongs to.
+ *
+ * `start()` takes a snapshot, and a basket goes on changing after that: a code
+ * typed on a second visit to the cart, or a sale that ended underneath one. The
+ * snapshot was never refreshed, so the review step and the button showed a total
+ * the basket no longer agreed with, and the order was written from the stale one
+ * (issues 300 and 301). A completed or expired session keeps what it froze —
+ * that is a record, not a quote.
+ */
+async function syncSessionToCart<T extends CheckoutSession | null>(
+  tx: TxClient,
+  ctx: ServiceContext,
+  row: T
+): Promise<T> {
+  if (!row) return row;
+  if (row.step === 'completed' || row.step === 'expired') return row;
+
+  await cartService.recomputeCartTotals(tx, ctx, row.cartId);
+  const cart = await tx.cart.findFirst({
+    where: { id: row.cartId },
+    select: { subtotalCents: true, discountTotalCents: true },
+  });
+  if (
+    !cart ||
+    (cart.subtotalCents === row.subtotalCents && cart.discountTotalCents === row.discountTotalCents)
+  ) {
+    return row;
+  }
+
+  const totalCents = Math.max(
+    0,
+    cart.subtotalCents -
+      cart.discountTotalCents -
+      row.giftCardAppliedCents -
+      row.accountCreditAppliedCents +
+      row.shippingTotalCents +
+      row.taxTotalCents
+  );
+  return (await tx.checkoutSession.update({
+    where: { id: row.id },
+    data: {
+      subtotalCents: cart.subtotalCents,
+      discountTotalCents: cart.discountTotalCents,
+      totalCents,
+    },
+  })) as T;
+}
 
 export async function get(
   ctx: ServiceContext,
@@ -191,7 +282,11 @@ export async function get(
   // tenant transaction open across it buys nothing.
   const paymentMode = await resolvePaymentMode(ctx.tenantId);
   return withTenant(ctx, async (tx) => {
-    const row = await tx.checkoutSession.findFirst({ where: { id: sessionId } });
+    const row = await syncSessionToCart(
+      tx,
+      ctx,
+      await tx.checkoutSession.findFirst({ where: { id: sessionId } })
+    );
     if (!row) return null;
 
     // Surcharge disclosure (docs/48 §6): a completed/expired session already
@@ -750,7 +845,10 @@ export async function complete(
         cart: {
           include: {
             items: { include: { variant: { include: { product: true } } } },
-            discounts: true,
+            // `conditions` too: a restricted offer ("15% off the core range")
+            // only comes off the lines it names, and the order lines have to be
+            // told which of them those were.
+            discounts: { include: { discount: { select: { conditions: true } } } },
           },
         },
       },
@@ -859,6 +957,13 @@ export async function complete(
     // Translate cart lines into CRM LineItemInputs. The crm-schema uses
     // decimal dollars (Money), not integer cents — convert at the
     // boundary so both modules' internal contracts stay clean.
+    // What each line actually sold for. A cart keeps its saving at the header,
+    // one row per code; an order line keeps its own, and every later reading of
+    // that line — a refund, a margin, a commission — is taken from it. Splitting
+    // it here is what stops a $42.00 shirt bought for $35.70 being refunded at
+    // $42.00 (issue 298).
+    const discountByLine = await apportionCartDiscounts(tx, cart);
+
     const items = cart.items.map((it) => ({
       productId: it.variant.productId,
       variantId: it.variantId,
@@ -866,7 +971,32 @@ export async function complete(
       name: it.variant.product.title,
       quantity: it.quantity,
       unitPrice: it.unitPriceCents / 100,
+      discountAmount: (discountByLine.get(it.id) ?? 0) / 100,
     }));
+
+    // The basket, settled, is what this order is priced from — not the snapshot
+    // start() took, which is as old as the moment checkout began. `get()` keeps
+    // an in-flight session in line on every step so the button already shows
+    // this; doing it again here closes the gap between that read and the press.
+    await cartService.recomputeCartTotals(tx, ctx, cart.id);
+    const settled = await tx.cart.findFirstOrThrow({
+      where: { id: cart.id },
+      select: { subtotalCents: true, discountTotalCents: true },
+    });
+    // `get()` keeps the two in line on every step, so a difference here means the
+    // basket moved between the page being drawn and this button being pressed —
+    // a sale ending in those seconds, most likely. STOP rather than write an
+    // order for a number she was never shown: charging more than the button said
+    // is the defect this run opened with (issue 298), and it is no better for
+    // arriving a different way.
+    if (
+      settled.subtotalCents !== session.subtotalCents ||
+      settled.discountTotalCents !== session.discountTotalCents
+    ) {
+      throw new CommerceConflictError(
+        'Your basket changed while you were checking out. Open it again to see the current total.'
+      );
+    }
 
     // Today's allowance, re-checked at the binding moment (issue 026). The cart
     // checked it too, but a basket can sit open past midnight or past the last
@@ -876,8 +1006,8 @@ export async function complete(
       cart.items.map((it) => ({ variantId: it.variantId, quantity: it.quantity }))
     );
 
-    const subtotalDollars = session.subtotalCents / 100;
-    const discountDollars = session.discountTotalCents / 100;
+    const subtotalDollars = settled.subtotalCents / 100;
+    const discountDollars = settled.discountTotalCents / 100;
     const shippingDollars = session.shippingTotalCents / 100;
     const taxDollars = session.taxTotalCents / 100;
 
@@ -888,7 +1018,7 @@ export async function complete(
     const surcharge: { totalCents: number; applied: AppliedSurcharge[] } = isMarket
       ? { totalCents: 0, applied: [] }
       : applySurcharges(await surchargeService.listActiveSpecs(ctx, 'checkout', tx), {
-          subtotalCents: Math.max(0, session.subtotalCents - session.discountTotalCents),
+          subtotalCents: Math.max(0, settled.subtotalCents - settled.discountTotalCents),
           shippingCents: session.shippingTotalCents,
           taxCents: session.taxTotalCents,
           paymentMethod: surchargeMethodForSession(session),
@@ -898,11 +1028,29 @@ export async function complete(
     // The final split (issue 026), against the total the order is actually being
     // written with — surcharge included, which is why it is resolved here rather
     // than reused from the payment-intent step.
-    const madeToOrder = await madeToOrderService.forCart(
-      tx,
-      cart.id,
-      session.totalCents + surcharge.totalCents
-    );
+    const orderTotalCents =
+      Math.max(
+        0,
+        settled.subtotalCents -
+          settled.discountTotalCents -
+          session.giftCardAppliedCents -
+          session.accountCreditAppliedCents +
+          session.shippingTotalCents +
+          session.taxTotalCents
+      ) + surcharge.totalCents;
+
+    // The last word belongs to the number she was looking at. The checks above
+    // keep the SERVER consistent with itself; only this one can tell that the
+    // page in front of her had gone stale — a sale ending after the review step
+    // was drawn leaves a correct server and a wrong button, and the order must
+    // not be written for the figure only one of them knows (issues 298, 300).
+    if (input.expectedTotalCents !== undefined && input.expectedTotalCents !== orderTotalCents) {
+      throw new CommerceConflictError(
+        'The total changed while you were checking out. Open your basket to see what it comes to now.'
+      );
+    }
+
+    const madeToOrder = await madeToOrderService.forCart(tx, cart.id, orderTotalCents);
 
     // Compose into THIS transaction (tx injection) — orderService.create opens
     // its own withTenant() when given a bare ctx, which would run in a separate,
@@ -1129,13 +1277,15 @@ export async function complete(
       },
     });
 
-    // Freeze the cart by stamping recoveredAt — future addItem calls
-    // against it will still work but the storefront should redirect to
-    // the order confirmation page instead.
-    await tx.cart.update({
-      where: { id: cart.id },
-      data: { recoveredAt: new Date() },
-    });
+    // Nothing is stamped on the cart to mark it bought. The session this
+    // transaction just moved to `completed` IS that record, and asking it is
+    // `NOT_BOUGHT_YET` in cart-service.ts.
+    //
+    // This used to write `recoveredAt`, borrowing the abandonment-recovery
+    // column because it was nullable and meant "done with". It made every sale
+    // read as a basket won back: five of Devi's completed orders sat in the
+    // console's "Came back" tab and counted toward the recovery rate in a
+    // shipped report (persona issue 289).
 
     // Record discount usage rows so per-customer + total-usage limits
     // increment now that the cart has converted.

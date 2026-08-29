@@ -31,6 +31,16 @@ const findHost = (node: unknown, key: string): Record<string, unknown> | null =>
   return null;
 };
 
+/** EVERY host core with this key. The twin of `findHost`, because a link the header
+ *  declares twice (the bar and the phone panel) is only correct if both are there. */
+const findHosts = (node: unknown, key: string, out: Record<string, unknown>[] = []) => {
+  if (!node || typeof node !== 'object') return out;
+  const n = node as Record<string, unknown> & { children?: unknown[] };
+  if (n.kind === 'host' && n.component === key) out.push(n);
+  for (const child of n.children ?? []) findHosts(child, key, out);
+  return out;
+};
+
 const navBrand = (opts = {}) => findHost(siteNavbar(opts), HOST_KEYS.siteBrand) ?? {};
 
 describe('siteNavbar — the brand mark', () => {
@@ -89,8 +99,9 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
   it('only placement-owned cores are unpinned; every transaction core stays pinned', () => {
     // A tripwire, not a style rule: a core that wraps a live transaction the tenant must
     // not be able to delete has to stay pinned. The unpinned set is exactly the cores whose
-    // PLACEMENT the tenant legitimately owns — the brand mark, the theme toggle, the legal
-    // links and the page-links pager. None is a transaction: deleting any of them costs
+    // PLACEMENT the tenant legitimately owns — the brand mark, the theme toggle, the
+    // account link, the legal links and the page-links pager. None is a transaction:
+    // deleting any of them costs
     // the tenant a convenience they chose to place, never a checkout or a booking. If a
     // name appears here that does NOT fit that description, a functional core just became
     // deletable and the list should not simply be extended to match.
@@ -110,6 +121,11 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         HOST_KEYS.siteThemeToggle,
         HOST_KEYS.sitePagination,
         HOST_KEYS.siteLegalLinks,
+        // The account link is chrome, not a transaction: the sign-in FORM
+        // (`commerce.auth`) is the pinned thing, and this is only the link that reaches
+        // it. A tenant who leads with a full-width "Sign in" button in their own header
+        // instead has to be able to remove ours.
+        HOST_KEYS.siteAccountLink,
         // The two media cores are the clearest case the list has: a map and an embed are
         // the TENANT'S OWN CONTENT, put there by them, and deleting one costs nothing but
         // the thing they chose to add. They are host cores only because the engine's
@@ -194,8 +210,14 @@ describe('siteFooter — legal links are live, never hardcoded', () => {
   it('links to NO legal page directly — those routes may not exist', () => {
     // The regression tripwire. Any href that looks like a legal document means someone
     // re-authored the column and re-introduced the 404s.
+    //
+    // Anchored to the ROOT of the path, not matched anywhere in it. A legal page is
+    // `/returns-policy`; `/account/returns` is the shopper's own returns area, which
+    // is app-routed and always exists. The loose version failed on the second the
+    // moment it was seeded, which is a tripwire firing at the thing it was built to
+    // protect.
     const legalish = hrefs(siteFooter({ commerceEnabled: true })).filter((h) =>
-      /privacy|terms|cookie|returns?|shipping|refund/i.test(h)
+      /^\/(privacy|terms|cookie|returns?|shipping|refund)/i.test(h)
     );
     expect(legalish).toEqual([]);
   });
@@ -355,6 +377,37 @@ function hrefsIn(node: unknown): string[] {
 
 const behaviorOf = (n: Record<string, unknown> | null) =>
   (n?.behavior as { type?: string } | undefined)?.type;
+
+describe('siteNavbar — every variant can reach an account', () => {
+  const accountCores = (variant: NavbarVariant) =>
+    findHosts(siteNavbar({ navbar: variant, commerceEnabled: true }), HOST_KEYS.siteAccountLink);
+
+  it('places the core on the variant that has no `secondary` slot to fill', () => {
+    // `fillSlots` fills only the slots a block HAS, and `centerLogo` declares no
+    // `secondary` — so the swap found nothing and that variant shipped a header with no
+    // way in to an account at all. Twenty four of the 191 designs were on it (issue 313):
+    // a shop with an order history, a wishlist and a returns flow, and no link to any of
+    // them. The identical hole in the FOOTER was closed by `ensureLegalLinks` and the
+    // navbar's was left open.
+    expect(accountCores('centerLogo')).toHaveLength(2);
+  });
+
+  it('places it twice — the bar and the phone panel are different controls', () => {
+    // An inline text link beside the theme toggle, and a full-width button in the panel.
+    // Placing only the first leaves a phone with no route to the account at all.
+    const [bar, panel] = accountCores('centerLogo');
+    expect(bar?.class).toContain('@sm:inline');
+    expect(panel?.class).toContain('w-full');
+  });
+
+  it('changes nothing on a variant whose slot the fill already filled', () => {
+    // The append is a safety net, never a second copy: `brandLeft` and `centerLinks`
+    // declare `secondary`, so `withHostAccountLink` has already swapped it and this must
+    // be a no-op. Two cores, not four.
+    expect(accountCores('brandLeft')).toHaveLength(2);
+    expect(accountCores('centerLinks')).toHaveLength(2);
+  });
+});
 
 describe('siteNavbar — behaviors the hand-rolled fork did not have', () => {
   it('mounts the live theme-toggle HOST core, not the block behavior', () => {

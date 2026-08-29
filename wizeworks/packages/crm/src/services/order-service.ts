@@ -21,7 +21,7 @@ import {
   ListOrdersInput,
   UpdateOrderInput,
 } from '@wizeworks/crm-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Order, OrderItem, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -171,7 +171,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
     input.items,
     input.shippingTotal,
     input.taxTotal,
-    input.surchargeTotal
+    input.surchargeTotal,
+    input.discountTotal
   );
   const placedAt = input.placedAt ? new Date(input.placedAt) : new Date();
 
@@ -264,21 +265,36 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
     return created;
   });
 
-  // Upstream platform event — the order-event consumer picks this up and
-  // writes the matching CrmActivity + bumps customer.totalSpent etc.
-  await publishPlatformEvent({
-    id: crypto.randomUUID(),
-    topic: 'order.created',
-    tenantId: ctx.tenantId,
-    occurredAt: placedAt,
-    payload: {
-      orderId: order.id,
-      customerId: order.customerId,
-      total: Number(order.total),
-      currency: order.currency,
-      placedAt: placedAt.toISOString(),
-    },
-  });
+  // Upstream platform event — the order-event consumer picks this up and writes
+  // the matching CrmActivity; the scoring and segment evaluators re-derive the
+  // buyer from it.
+  //
+  // AFTER THE COMMIT, not after this function's own withTenant. Checkout
+  // composes this call into ITS transaction (`{ ...ctx, tx }`), and there the
+  // withTenant above returns with the order still uncommitted — so every
+  // consumer ran against a database the order was not in yet. See after-commit.
+  //
+  // `orderNumber` travels in the payload for the same reason. The consumer used
+  // to read it back out of the database to name the order in a sentence, which
+  // is a lookup that can only fail, and did: four of five orders on one shop
+  // said "An order was placed" and named none of them (issue 307). What the
+  // producer already holds should not be fetched again by the reader.
+  await afterCommit('publish order.created', () =>
+    publishPlatformEvent({
+      id: crypto.randomUUID(),
+      topic: 'order.created',
+      tenantId: ctx.tenantId,
+      occurredAt: placedAt,
+      payload: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        customerId: order.customerId,
+        total: Number(order.total),
+        currency: order.currency,
+        placedAt: placedAt.toISOString(),
+      },
+    })
+  );
 
   return order;
 }
@@ -354,12 +370,19 @@ export async function cancel(ctx: ServiceContext, rawInput: unknown): Promise<Or
     return updated;
   });
 
-  await publishPlatformEvent({
-    id: crypto.randomUUID(),
-    topic: 'order.cancelled',
-    tenantId: ctx.tenantId,
-    occurredAt: order.cancelledAt ?? new Date(),
-    payload: { orderId: order.id, customerId: order.customerId, reason: input.reason },
-  });
+  await afterCommit('publish order.cancelled', () =>
+    publishPlatformEvent({
+      id: crypto.randomUUID(),
+      topic: 'order.cancelled',
+      tenantId: ctx.tenantId,
+      occurredAt: order.cancelledAt ?? new Date(),
+      payload: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        customerId: order.customerId,
+        reason: input.reason,
+      },
+    })
+  );
   return order;
 }

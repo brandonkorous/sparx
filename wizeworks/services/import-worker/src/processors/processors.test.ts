@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { customerInternals } from './customers';
 import { orderInternals } from './orders';
 import { productInternals } from './products';
 import { codeFor } from './resolve';
@@ -45,6 +46,43 @@ describe('the processor registry', () => {
 
   it('returns nothing for an entity that does not exist', () => {
     expect(getProcessor('unicorns')).toBeUndefined();
+  });
+});
+
+describe('the marketing opt-in on somebody already here', () => {
+  const { optInForExisting, doNotContactFrom } = customerInternals;
+
+  it('honours a file that says do not email, on a contact who is currently emailable', () => {
+    const { field, note } = optInForExisting('no', false);
+    expect(field).toEqual({ doNotContact: true });
+    expect(note).toBeNull();
+  });
+
+  it('will not put somebody who unsubscribed back on the list', () => {
+    // The whole point. A months-old export saying "yes" is the file being silent
+    // about the unsubscribe that happened after it was saved, not a fresh consent.
+    const { field } = optInForExisting('yes', true);
+    expect(field).toBeNull();
+  });
+
+  it('says so, rather than overriding the file in silence', () => {
+    const { note } = optInForExisting('yes', true);
+    expect(note).toContain('taken off marketing');
+  });
+
+  it('leaves an emailable contact alone when the file agrees with them', () => {
+    expect(optInForExisting('yes', false)).toEqual({ field: null, note: null });
+  });
+
+  it('does nothing at all when the file has no opt-in column', () => {
+    expect(optInForExisting(undefined, true)).toEqual({ field: null, note: null });
+    expect(optInForExisting(undefined, false)).toEqual({ field: null, note: null });
+  });
+
+  it('reads anything that is not a yes as do not email', () => {
+    expect(doNotContactFrom('maybe')).toBe(true);
+    expect(doNotContactFrom('unsubscribed')).toBe(true);
+    expect(doNotContactFrom('yes')).toBe(false);
   });
 });
 

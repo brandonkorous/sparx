@@ -231,13 +231,17 @@ export function submitPayment(
   });
 }
 
+/** `expectedTotalCents` is the figure on the button she just pressed. The server
+ *  refuses rather than write an order for a total she was never shown — a sale
+ *  can end between this page being drawn and the press (issues 298, 300). */
 export function completeCheckout(
   tenantSlug: string,
   sessionId: string,
-  idempotencyKey: string
+  idempotencyKey: string,
+  expectedTotalCents?: number
 ): Promise<{ orderId: string; orderNumber: string }> {
   return call(`/v1/public/commerce/checkout/${sessionId}/complete`, tenantSlug, {
     method: 'POST',
-    json: { idempotencyKey },
+    json: { idempotencyKey, ...(expectedTotalCents !== undefined ? { expectedTotalCents } : {}) },
   });
 }

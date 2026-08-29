@@ -61,6 +61,9 @@ import {
   slugCandidatesForPath,
   starterFrame,
   starterPages,
+  liveChromeGaps,
+  upgradeFrameChrome,
+  type ChromeGap,
   type RecordAddress,
   type SiteChromeOptions,
 } from '@wizeworks/silica-catalog';
@@ -236,6 +239,35 @@ export function rowsToStoredSite(
   };
 }
 
+/** Heal every stale stored frame and WRITE THE REPAIR BACK, returning the rows the
+ *  studio should open.
+ *
+ *  This is the studio-load read `upgradeFrameChrome` was written for, and until issue 296
+ *  nothing called it at all — so the legacy brand cohort and the hardcoded-legal-links
+ *  cohort were never repaired on anybody.
+ *
+ *  It PERSISTS rather than healing in memory, which the sibling `ensureUniqueIds` can get
+ *  away with. `publishFrame` republishes `layout.silicaDraftTree` straight from the row,
+ *  so an author who opens their header and presses Publish without editing would push the
+ *  STALE tree back out and undo a repair they had been shown. Draft only: the published
+ *  tree is untouched, so visitors keep the chrome they have until that publish. */
+async function healFrameTx(tx: TxClient, layout: BuilderLayout): Promise<BuilderLayout> {
+  if (layout.silicaDraftTree == null) return layout;
+  const healed = upgradeFrameChrome(layout.silicaDraftTree as unknown as SilicaNode);
+  if (!healed.changed) return layout;
+  const silicaDraftTree = treeJson(healed.root);
+  await tx.builderLayout.update({ where: { id: layout.id }, data: { silicaDraftTree } });
+  // The write shape (`InputJsonValue`) and the row shape (`JsonValue`) are different
+  // spellings of the same tree; both readers cast straight back to a node.
+  return { ...layout, silicaDraftTree: silicaDraftTree as Prisma.JsonValue };
+}
+
+async function healFramesTx(tx: TxClient, layouts: BuilderLayout[]): Promise<BuilderLayout[]> {
+  const out: BuilderLayout[] = [];
+  for (const layout of layouts) out.push(await healFrameTx(tx, layout));
+  return out;
+}
+
 /** Load the property's stored silica site, or null if none is materialized yet.
  *  Carries the authored theme when one exists; otherwise the caller composes the
  *  tenant's brand-derived theme.
@@ -283,7 +315,7 @@ export function load(
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    return rowsToStoredSite(pages, layouts, site);
+    return rowsToStoredSite(pages, await healFramesTx(tx, layouts), site);
   });
 }
 
@@ -1697,6 +1729,10 @@ export interface FrameDocument {
   publishedAt: string | null;
   /** The saved draft differs from what visitors are served. */
   unpublished: boolean;
+  /** What the LIVE header and footer are missing that this draft has. Carried here
+   *  as well as on `publishState` because this is the read the chrome pane makes,
+   *  and it is the pane the repair happened in front of. */
+  liveChromeGaps: ChromeGap[];
 }
 
 /**
@@ -1716,7 +1752,10 @@ export function loadFrame(
   modules: SiteChromeOptions = {}
 ): Promise<FrameDocument> {
   return withTenant(ctx, async (tx) => {
-    const layout = await activeLayoutTx(tx, ctx);
+    // Healed here as well as in `load`: this is the read the header/footer pane actually
+    // makes, so a repair that only ran on the whole-site load would never reach the one
+    // pane an author opens to look at their chrome (issue 296).
+    const layout = await healFrameTx(tx, await activeLayoutTx(tx, ctx));
     const stored = layout.silicaDraftTree != null;
     return {
       layoutId: layout.id,
@@ -1726,7 +1765,36 @@ export function loadFrame(
       publishedAt: layout.publishedAt ? layout.publishedAt.toISOString() : null,
       // A seed is not a draft: there is nothing saved to be ahead of what is live.
       unpublished: stored && treeDiffers(layout.silicaDraftTree, layout.silicaPublishedTree),
+      liveChromeGaps: liveChromeGaps(
+        (layout.silicaDraftTree ?? null) as SilicaNode | null,
+        (layout.silicaPublishedTree ?? null) as SilicaNode | null
+      ),
     };
+  });
+}
+
+/**
+ * Apply the automatic chrome repair to the DRAFT, because the owner asked for it.
+ *
+ * The repair already runs on `loadFrame`, and for most owners that is enough: they open
+ * the header and footer and it has happened. It is not enough for the one this exists
+ * for. An owner who has never opened that pane is told on Home that her customers cannot
+ * reach their account and offered a button — and a button whose only effect is a read is
+ * a button that does nothing when the pane is already open, because the studio holds its
+ * tree at `staleTime: Infinity` so it never asks again (issue 315).
+ *
+ * So this is the same repair as an ACTION rather than a side effect of a read. It works
+ * whether or not the pane is open, it is something she asked for, and it reports whether
+ * anything changed so the caller can say so.
+ *
+ * Draft only, exactly like the read: the published tree is untouched and her visitors
+ * keep the chrome they have until she publishes.
+ */
+export function repairFrame(ctx: PropertyContext): Promise<{ repaired: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    const before = await activeLayoutTx(tx, ctx);
+    const after = await healFrameTx(tx, before);
+    return { repaired: after.silicaDraftTree !== before.silicaDraftTree };
   });
 }
 
@@ -2165,12 +2233,20 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
     ].filter((d): d is Date => d != null);
     const last = stamps.length ? new Date(Math.max(...stamps.map((d) => d.getTime()))) : null;
 
+    // The ACTIVE layout, because that is the chrome visitors are actually served —
+    // a gap in a layout nothing renders is not something anyone is missing.
+    const active = layouts.find((l) => l.isActive) ?? null;
+
     return {
       hasUnpublished: unpublishedPages > 0 || frameUnpublished,
       unpublishedPages,
       frameUnpublished,
       lastPublishedAt: last?.toISOString() ?? null,
       neverPublished: last === null,
+      liveChromeGaps: liveChromeGaps(
+        (active?.silicaDraftTree ?? null) as SilicaNode | null,
+        (active?.silicaPublishedTree ?? null) as SilicaNode | null
+      ),
     };
   });
 }

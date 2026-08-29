@@ -1177,20 +1177,37 @@ export function installEntityResolvers(): void {
 
   // ── scheduled scanners ──────────────────────────────────────────────────────
 
-  // Cart abandonment (interval scan). A cart is "cold" once it has gone untouched
-  // for >30 min while still holding items. `recoveredAt: null` EXCLUDES purchased
-  // carts (checkout stamps recoveredAt on order placement — checkout-service.ts),
-  // so a buyer never gets an abandoned-cart email. Only carts with an emailable
-  // customer are returned (a guest cart has no address). The 7-day floor bounds the
-  // candidate set; the interval cadence's once-per-entity dedupe fires a single run.
+  // Cart abandonment (interval scan) — the baskets the owner's OWN setting has
+  // already flagged.
+  //
+  // This asks `abandonedAt`, and deliberately does no arithmetic of its own. It
+  // used to decide "cold" itself, at a hardcoded 30 minutes, while the setting a
+  // shop owner can actually see and edit — "Count an unfinished cart as
+  // abandoned after (minutes)", per site, default 120 — drove the console's
+  // Walked away tab and the abandonment report. Two clocks, one of them
+  // invisible: turning her dial down to 15 moved the tab and left the email
+  // exactly where it was (persona issue 290).
+  //
+  // The sweep marks a basket at her number (commerce's cart-abandonment-sweep),
+  // so keying off the mark means the email, the tab and the report can never
+  // again disagree about when a shopper walked away.
+  //
+  // A PURCHASED basket is excluded by asking whether it has a completed checkout
+  // session, so a buyer never gets an abandoned-cart email — the same question
+  // `NOT_BOUGHT_YET` asks in commerce's cart-service.ts, inlined because this
+  // package does not depend on commerce. It used to ask `recoveredAt: null`,
+  // which worked only because checkout stamped that column, and cost the
+  // recovery report its meaning (persona issue 289).
+  //
+  // Only carts with an emailable customer are returned (a guest cart has no
+  // address). The 7-day floor bounds the candidate set; the interval cadence's
+  // once-per-entity dedupe fires a single run.
   registerScanner('cart', async (ctx: TenantCtx): Promise<ScannedRow[]> => {
-    const now = Date.now();
-    const coldBefore = new Date(now - 30 * 60_000);
-    const floor = new Date(now - 7 * MS_PER_DAY);
+    const floor = new Date(Date.now() - 7 * MS_PER_DAY);
     const rows = await ctx.tx.cart.findMany({
       where: {
-        recoveredAt: null,
-        updatedAt: { lt: coldBefore, gt: floor },
+        checkoutSessions: { none: { step: 'completed' } },
+        abandonedAt: { not: null, gt: floor },
         items: { some: {} },
         customer: { is: { email: { not: null } } },
       },

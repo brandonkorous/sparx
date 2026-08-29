@@ -20,6 +20,7 @@ export * from './vocabulary-patterns';
 export * from './host-nodes';
 export * from './embed';
 export * from './ensure-ids';
+export * from './live-chrome-gap';
 export * from './upgrade-frame';
 export * from './upgrade-page';
 export * from './catalog';

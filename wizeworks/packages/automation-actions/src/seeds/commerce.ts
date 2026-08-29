@@ -45,6 +45,31 @@ export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
   status: 'active',
 };
 
+/** Tell staff when a shopper asks to send something back.
+ *
+ *  Ships on because the request is worthless unless somebody hears it. Storefront
+ *  self-service means a return now arrives without an email attached to it, so
+ *  without this the whole thing lands silently in a screen nobody has a reason to
+ *  open — which is the same shape as a cart being marked abandoned with nothing
+ *  subscribed to it. `email.send_internal` is PLATFORM-level, so a commerce-only
+ *  tenant with no email module still gets it. */
+export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
+  name: 'Return requested — staff alert',
+  description: 'Emails staff when a customer asks to send something back.',
+  trigger: { kind: 'event', eventType: 'return.requested' },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'email.send_internal',
+      config: {
+        subject: 'Return requested — {{order.number}} · wants a {{return.preferredOutcome}}',
+      },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
 /** Log a CRM note on the customer when a refund is issued, so the account timeline
  *  reflects it without a human re-entering it. */
 export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
@@ -70,7 +95,7 @@ export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
 export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
   name: 'Abandoned cart nudge',
   description:
-    'Emails a shopper a couple of hours after they leave items in their cart without checking out.',
+    'Emails a shopper once their cart has been sitting long enough to count as abandoned — the wait is the one you set in Selling settings.',
   trigger: {
     kind: 'schedule',
     schedule: { cadence: 'interval', everyMinutes: 15 },
@@ -86,8 +111,11 @@ export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
   actions: [
     {
       type: 'email.send_campaign',
-      // ~2h after the cart goes cold (the scanner's 30-min threshold + this delay).
-      config: { builderEmailKey: 'abandoned-cart', emailType: 'marketing', delaySeconds: 7200 },
+      // No delay: the shop owner has already said how long a quiet cart should
+      // wait, in the one field that says so, and the scanner now fires off that
+      // mark. A delay here would silently add to her number — it used to add 2h
+      // to a hardcoded 30 minutes, so a shop set to 15 nudged at 2.5 hours.
+      config: { builderEmailKey: 'abandoned-cart', emailType: 'marketing', delaySeconds: 0 },
     },
   ],
   locked: false,

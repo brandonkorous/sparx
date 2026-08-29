@@ -128,3 +128,43 @@ export async function collectionStats(
   }
   return out;
 }
+
+/**
+ * How many of a tenant's products are actually FINDABLE — on sale and present in
+ * the index.
+ *
+ * Separate from `collectionStats` because the two answer different questions and
+ * only this one can be compared with the catalog. `collectionStats` counts every
+ * product document a tenant has, archived and draft included; the catalog count a
+ * caller holds is of products ON SALE. Subtracting one from the other would
+ * report a gap that is really just a difference of definition.
+ *
+ * Why anyone needs it: indexing rides on events, so a product that existed before
+ * a subscription was fixed — or that was written while the indexer was down —
+ * stays out of the index indefinitely and is silently unfindable. Its owner types
+ * its name and is told she has nothing matching. A total that is merely non-zero
+ * cannot detect that; only a comparison can (issue 318).
+ *
+ * Returns null when the collection does not exist yet, which is "we could not
+ * look" and must not be rendered as a gap of everything.
+ */
+export async function findableProductCount(
+  tenantId: string,
+  client: Client = getClient()
+): Promise<number | null> {
+  try {
+    const res = (await client
+      .collections(PRODUCTS_COLLECTION)
+      .documents()
+      .search({
+        q: '*',
+        query_by: STAT_QUERY_BY[PRODUCTS_COLLECTION] ?? 'id',
+        filter_by: `tenant_id:=${tenantId} && status:=active`,
+        per_page: 0,
+      })) as { found?: number };
+    return res.found ?? 0;
+  } catch (err: unknown) {
+    if ((err as { httpStatus?: number }).httpStatus === 404) return null;
+    throw err;
+  }
+}

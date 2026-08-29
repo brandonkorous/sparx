@@ -365,6 +365,12 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       shippingTotalCents: toCents(order.shippingTotal),
       discountTotalCents: toCents(order.discountTotal),
       totalCents: toCents(order.total),
+      // What actually moved, as opposed to what was owed. `recomputeOrderPaymentRollup`
+      // keeps both current on every payment and refund, so they cost nothing extra here
+      // — and without them a refunded order showed its buyer the full total and the word
+      // "partially_paid", which reads as a debt rather than as money returned (issue 292).
+      amountPaidCents: toCents(order.amountPaid),
+      refundedTotalCents: toCents(order.refundTotal),
       shippingAddress: order.shippingAddress ?? null,
       // How this order leaves, in the words the shopper chose at checkout —
       // and whether it is coming to them at all. Derived here rather than by
@@ -380,6 +386,12 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
         sku: it.sku,
         quantity: it.quantity,
         unitPriceCents: toCents(it.unitPrice),
+        // What the line was worth before any saving came off it, and the saving
+        // itself. `lineTotal` alone reads the discount twice on a page that also
+        // shows a Discount row, and it is the only place a shopper can see WHICH
+        // items a code came off (issue 298).
+        lineSubtotalCents: toCents(it.lineSubtotal),
+        discountAmountCents: toCents(it.discountAmount),
         lineTotalCents: toCents(it.lineTotal),
       })),
       fulfillments: fulfillments.map((f) => ({

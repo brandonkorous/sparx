@@ -246,6 +246,22 @@ pre-push guard. It fails on:
   allowlist entry with a written reason. Fix it with
   `platformBrandIdentity(brand).name` where a tenant is in scope, or
   `{platform}` + `fillPlatformName` for data declared at module scope.
+- a **zone named in a sentence** under `wizeworks/**` — `sparx.zone` or
+  `piggles.site` standing as its own token inside a string of four words or more.
+  Separate from the rule above, and narrower, because that one's `(?!\.\w)`
+  exemption is right seventeen times out of eighteen (`sparx.navbar` is a block
+  id, `sparx.json` a filename, `sparx.market` a sparx PRODUCT that Piggles
+  excludes rather than renames) and relaxing it would fire on all of them. A zone
+  is the eighteenth case and is different in kind: it is the TENANT'S OWN
+  ADDRESS, so a sentence naming one is wrong for every tenant not on it. This
+  ran green while a Piggles owner was told "sparx.zone domains cannot be
+  purchased" about her `piggles.site` address, and an operator was told a
+  `piggles.site` host was "an automatic sparx.zone address"
+  (`piggles/docs/personas/issues/316`, `/317`). Fix it with
+  `await tenantZone(tenantId)`, or by naming the host the row already has. **No
+  exception list, and it should stay empty** — a sentence that genuinely needs a
+  zone has a host or a tenant nearby to read one from. It prints its denominator
+  on success and fails outright if its scan ever returns no files.
 - `@sparx/*` usage under `piggles/` growing past its baseline, and any use of
   `@sparx/brand` there at all
 
@@ -264,7 +280,9 @@ firing on all of them is a rule somebody switches off. **No brand hexes** (RULE
 A red check blocks the push. That is intentional — `--no-verify` is not an
 acceptable bypass. And a new guard must be shown to go **red** before it is
 trusted green; reverting `packages/email/src/silica/frame.ts`'s credit line to
-"Sent with sparx" is the ready-made red case for the rule above.
+"Sent with sparx" is the ready-made red case for the brand-prose rule, and
+putting `sparx.zone` back into any refusal in `routes/v1/domains.ts` is the one
+for the zone rule. Both were run red before this paragraph was written.
 
 ## Environment
 

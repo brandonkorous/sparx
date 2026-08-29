@@ -35,7 +35,13 @@ import {
 import type { ServiceContext } from '../errors';
 import { indexCommerceEntity, publishCommerceEvent } from '../events';
 import { recomputeCartTotals } from './cart-service';
-import { eligibleBaseCents, gatherCartFacts, refusalReason } from './discount-conditions';
+import {
+  discountWindowState,
+  eligibleBaseCents,
+  gatherCartFacts,
+  refusalReason,
+  usageBlock,
+} from './discount-conditions';
 
 // ─── Discounts ────────────────────────────────────────────────────────
 
@@ -496,6 +502,64 @@ export async function recordDiscountUsage(
       where: { id: input.discountId },
       data: { usageCount: { increment: 1 } },
     });
+  });
+}
+
+/**
+ * Give back the code a sale spent, because the sale did not happen.
+ *
+ * `recordDiscountUsage` above had no counterpart anywhere in the repo — a usage row
+ * was written when a cart converted and nothing ever deleted one. So a shopper who
+ * cancelled before paying a penny had spent their one use of a sale still running
+ * for another month, and were told "You've already used this discount the maximum
+ * number of times" about an order that no longer exists (issue 312).
+ *
+ * WHOLE sales only, and the order's own status is the test rather than anything the
+ * caller passes: `cancelled` and `refunded` both mean the shop sold nothing. A
+ * PARTIAL refund never reaches either status, so it keeps its usage untouched —
+ * that sale stands.
+ */
+export async function releaseOrderDiscountUsage(
+  ctx: ServiceContext,
+  input: { orderId: string }
+): Promise<{ released: number }> {
+  return withTenant(ctx, async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: input.orderId },
+      select: { status: true },
+    });
+    if (!order) return { released: 0 };
+    if (order.status !== 'cancelled' && order.status !== 'refunded') return { released: 0 };
+
+    const rows = await tx.discountUsage.findMany({
+      where: { orderId: input.orderId },
+      select: { id: true, discountId: true },
+    });
+    if (rows.length === 0) return { released: 0 };
+
+    await tx.discountUsage.deleteMany({ where: { id: { in: rows.map((row) => row.id) } } });
+
+    // Per discount, not per row: one order can carry two codes.
+    const perDiscount = new Map<string, number>();
+    for (const row of rows) {
+      perDiscount.set(row.discountId, (perDiscount.get(row.discountId) ?? 0) + 1);
+    }
+    for (const [discountId, count] of perDiscount) {
+      // Floored, and read-then-set rather than `{ decrement }`: usageCount is a
+      // counter kept BESIDE the rows instead of derived from them, so one decrement
+      // whose increment went missing would take it negative and lock the code for
+      // everybody.
+      const current = await tx.discount.findUnique({
+        where: { id: discountId },
+        select: { usageCount: true },
+      });
+      await tx.discount.update({
+        where: { id: discountId },
+        data: { usageCount: Math.max(0, (current?.usageCount ?? 0) - count) },
+      });
+    }
+
+    return { released: rows.length };
   });
 }
 
@@ -1033,14 +1097,19 @@ function validateDiscountValueFor(
 }
 
 function assertWithinWindow(discount: Discount): void {
-  const now = new Date();
-  if (discount.startAt && discount.startAt > now) {
+  // The comparison itself lives in `discountWindowState`, because the cart has to
+  // ask the same question again later and the two answers must be one answer.
+  const state = discountWindowState(discount, new Date());
+  // Said the way `refusalReason` says the others. A shopper who is told a code
+  // "is not yet active" has been handed the shop's word for it; she wants to know
+  // whether to try again later or give up.
+  if (state === 'before') {
     throw new CommercePricingError(
-      `Discount "${discount.code ?? discount.name}" is not yet active`
+      'This code has not started yet. Try it again once the sale opens.'
     );
   }
-  if (discount.endAt && discount.endAt < now) {
-    throw new CommercePricingError(`Discount "${discount.code ?? discount.name}" has expired`);
+  if (state === 'after') {
+    throw new CommercePricingError('This sale has ended, so this code no longer works.');
   }
 }
 
@@ -1049,20 +1118,21 @@ async function assertUsageLimit(
   discount: Discount,
   customerId: string | null
 ): Promise<void> {
-  if (discount.totalUsageLimit !== null && discount.usageCount >= discount.totalUsageLimit) {
+  // The comparison itself is `usageBlock`, shared with the basket, which has to
+  // ask the same question every time it is read rather than only when the code
+  // was typed. Counted here because this is where the transaction is.
+  const used = customerId
+    ? await tx.discountUsage.count({ where: { discountId: discount.id, customerId } })
+    : null;
+
+  const blocked = usageBlock(discount, used);
+  if (blocked === 'total') {
     throw new CommercePricingError(
       `Discount "${discount.code ?? discount.name}" has reached its total usage limit`
     );
   }
-  if (customerId) {
-    const used = await tx.discountUsage.count({
-      where: { discountId: discount.id, customerId },
-    });
-    if (used >= discount.perCustomerLimit) {
-      throw new CommercePricingError(
-        `You've already used this discount the maximum number of times`
-      );
-    }
+  if (blocked === 'customer') {
+    throw new CommercePricingError(`You've already used this discount the maximum number of times`);
   }
 }
 

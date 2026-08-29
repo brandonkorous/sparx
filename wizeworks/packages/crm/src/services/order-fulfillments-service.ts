@@ -10,13 +10,41 @@
 import crypto from 'node:crypto';
 
 import { CreateFulfillmentInput, UpdateFulfillmentInput } from '@wizeworks/crm-schemas';
-import { withTenant } from '@wizeworks/db';
-import type { OrderFulfillment, Prisma } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
+import type { OrderFulfillment, Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+
+/**
+ * Who the order belongs to, and what it is called.
+ *
+ * Both of these events said only `{ orderId, fulfillmentId }`, and the consumer
+ * that turns them into a customer's history has nothing to hang a row on but a
+ * customer id. So it wrote one with none: on the shop this was found on, all six
+ * shipped/delivered rows carried `customer_id = NULL`, which means no customer's
+ * history has ever shown that their order left the building or arrived. The rows
+ * exist, look like data, and are reachable from nowhere.
+ *
+ * Carried in the payload rather than read back by the consumer, for the reason
+ * issue 307 records: a lookup is a thing that can fail, and when it failed
+ * silently it produced a sentence naming no order.
+ */
+interface OrderIdentity {
+  customerId: string;
+  orderNumber: string;
+}
+
+async function orderIdentity(tx: TxClient, orderId: string): Promise<OrderIdentity> {
+  const order = await tx.order.findUnique({
+    where: { id: orderId },
+    select: { customerId: true, orderNumber: true },
+  });
+  if (!order) throw new CrmNotFoundError('Order', orderId);
+  return order;
+}
 
 export async function listForOrder(
   ctx: ServiceContext,
@@ -69,6 +97,7 @@ export async function createFulfillment(
   rawInput: unknown
 ): Promise<OrderFulfillment> {
   const input = CreateFulfillmentInput.parse(rawInput);
+  const buyer: { identity: OrderIdentity | null } = { identity: null };
 
   const fulfillment = await withTenant(ctx, async (tx) => {
     const order = await tx.order.findUnique({
@@ -79,6 +108,7 @@ export async function createFulfillment(
     if (order.status === 'cancelled' || order.status === 'refunded') {
       throw new CrmValidationError(`Cannot fulfill an order in status "${order.status}"`);
     }
+    buyer.identity = { customerId: order.customerId, orderNumber: order.orderNumber };
 
     const itemsById = new Map(order.items.map((i) => [i.id, i]));
     for (const line of input.lines) {
@@ -151,26 +181,38 @@ export async function createFulfillment(
   // (the activity feed, the customer stats, the review request) simply never
   // heard about the sales a counter business actually completes.
   if (fulfillment.status === 'shipped' || fulfillment.status === 'delivered') {
-    await publishPlatformEvent({
-      id: crypto.randomUUID(),
-      topic: 'order.fulfilled',
-      tenantId: ctx.tenantId,
-      occurredAt: fulfillment.shippedAt ?? new Date(),
-      payload: { orderId: fulfillment.orderId, fulfillmentId: fulfillment.id },
-    });
+    await afterCommit('publish order.fulfilled', () =>
+      publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: 'order.fulfilled',
+        tenantId: ctx.tenantId,
+        occurredAt: fulfillment.shippedAt ?? new Date(),
+        payload: {
+          orderId: fulfillment.orderId,
+          fulfillmentId: fulfillment.id,
+          ...buyer.identity,
+        },
+      })
+    );
   }
 
   // ...and it arrived, in the same movement. `updateFulfillment` publishes this
   // on the shipped -> delivered transition; a handover never makes that
   // transition, so without this the event exists for posted orders alone.
   if (fulfillment.status === 'delivered') {
-    await publishPlatformEvent({
-      id: crypto.randomUUID(),
-      topic: 'order.delivered',
-      tenantId: ctx.tenantId,
-      occurredAt: fulfillment.deliveredAt ?? new Date(),
-      payload: { orderId: fulfillment.orderId, fulfillmentId: fulfillment.id },
-    });
+    await afterCommit('publish order.delivered', () =>
+      publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: 'order.delivered',
+        tenantId: ctx.tenantId,
+        occurredAt: fulfillment.deliveredAt ?? new Date(),
+        payload: {
+          orderId: fulfillment.orderId,
+          fulfillmentId: fulfillment.id,
+          ...buyer.identity,
+        },
+      })
+    );
   }
 
   return fulfillment;
@@ -182,6 +224,7 @@ export async function updateFulfillment(
 ): Promise<OrderFulfillment> {
   const input = UpdateFulfillmentInput.parse(rawInput);
   const wasDelivered = { value: false };
+  const buyer: { identity: OrderIdentity | null } = { identity: null };
   const fulfillment = await withTenant(ctx, async (tx) => {
     const before = await tx.orderFulfillment.findUnique({
       where: { id: input.fulfillmentId },
@@ -223,6 +266,7 @@ export async function updateFulfillment(
     await promoteOrderOnFulfillment(tx, before.orderId);
 
     wasDelivered.value = before.status !== 'delivered' && updated.status === 'delivered';
+    if (wasDelivered.value) buyer.identity = await orderIdentity(tx, before.orderId);
 
     await writeAuditLog({
       tx,
@@ -239,13 +283,19 @@ export async function updateFulfillment(
   });
 
   if (wasDelivered.value) {
-    await publishPlatformEvent({
-      id: crypto.randomUUID(),
-      topic: 'order.delivered',
-      tenantId: ctx.tenantId,
-      occurredAt: fulfillment.deliveredAt ?? new Date(),
-      payload: { orderId: fulfillment.orderId, fulfillmentId: fulfillment.id },
-    });
+    await afterCommit('publish order.delivered', () =>
+      publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: 'order.delivered',
+        tenantId: ctx.tenantId,
+        occurredAt: fulfillment.deliveredAt ?? new Date(),
+        payload: {
+          orderId: fulfillment.orderId,
+          fulfillmentId: fulfillment.id,
+          ...buyer.identity,
+        },
+      })
+    );
   }
 
   return fulfillment;

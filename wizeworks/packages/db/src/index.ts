@@ -1,6 +1,11 @@
 export { prisma } from './client';
 export { withTenant, withSystem } from './tenant-context';
 export type { TenantContext, TxClient } from './tenant-context';
+
+// Announce-after-commit. A service composed into somebody else's transaction
+// has committed nothing when it returns, so anything it publishes there is
+// published about a row nobody else can see yet. See ./after-commit.
+export { afterCommit, inTransaction } from './after-commit';
 export { tenantStore } from './tenant-store';
 export type { TenantScope } from './tenant-store';
 

@@ -89,6 +89,17 @@ export type SubmitPaymentInput = z.infer<typeof SubmitPaymentInput>;
 export const CompleteCheckoutInput = z.object({
   sessionId: Uuid,
   idempotencyKey: z.string().min(8).max(127),
+  /**
+   * The total the shopper was actually looking at when she pressed the button.
+   *
+   * Optional, because a till or an API caller has no screen — but when it is
+   * sent and it does not match, the order is refused rather than written for a
+   * number nobody was shown. A basket can move in the seconds between a page
+   * being drawn and a button being pressed (a sale ending, most often), and the
+   * server cannot tell a stale label from a fresh one without being told what
+   * the label said (issues 298, 300).
+   */
+  expectedTotalCents: z.number().int().nonnegative().optional(),
 });
 export type CompleteCheckoutInput = z.infer<typeof CompleteCheckoutInput>;
 

@@ -278,7 +278,10 @@ async function findPurchasedDomain(tenantId: string, id: string) {
   const row = await prisma.domain.findFirst({ where: { id, tenantId } });
   if (!row) throw notFound('Domain', id);
   if (row.type !== 'purchased') {
-    throw conflict('This operation is only available for sparx-purchased domains.', {
+    // Names no brand: this sentence reaches the owner, and more than one brand runs
+    // on this process (wizeworks/CLAUDE.md RULE #0, issue 316). "Bought here" says
+    // the same thing and says it to whoever is reading.
+    throw conflict('This only applies to a domain you bought here, not one you connected.', {
       field: 'type',
     });
   }
@@ -386,9 +389,15 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
     if (isZoneHost(host)) {
+      // NAMES NO ZONE. This sentence is read by the owner, and more than one brand
+      // is served from this process — a Piggles business told "sparx.zone domains
+      // cannot be purchased" is being shown another company's domain, about her own
+      // address, in an error she did nothing to deserve (wizeworks/CLAUDE.md RULE #0,
+      // issue 316). The address is hers either way, so saying "that address" is both
+      // shorter and true under every brand.
       throw validationError(
-        'sparx.zone domains cannot be purchased — they are issued automatically.',
-        [{ field: 'domain', message: 'sparx.zone subdomains cannot be purchased.' }]
+        'That address already comes with your site, so there is nothing to buy.',
+        [{ field: 'domain', message: 'This address is issued with the site.' }]
       );
     }
     if (!(await ownProperty(auth.tenantId, input.propertyId))) {
@@ -584,8 +593,9 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
     if (isZoneHost(host)) {
-      throw validationError('That host is managed for you and is added automatically.', [
-        { field: 'host', message: 'sparx.zone subdomains cannot be connected.' },
+      // Names no zone, for the reason spelled out on the purchase guard above.
+      throw validationError('That address already comes with your site and is always on.', [
+        { field: 'host', message: 'This address is issued with the site.' },
       ]);
     }
     if (!(await ownProperty(auth.tenantId, input.propertyId))) {
@@ -714,8 +724,9 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const row = await prisma.domain.findFirst({ where: { id, tenantId: auth.tenantId } });
     if (!row) throw notFound('Domain', id);
     if (row.type === 'subdomain') {
+      // Names no zone, for the reason spelled out on the purchase guard above.
       throw conflict(
-        'The sparx.zone subdomain is the site’s permanent address and cannot be removed.',
+        'The address that came with this site is its permanent one, so it cannot be removed.',
         { field: 'type' }
       );
     }

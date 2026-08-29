@@ -26,6 +26,7 @@ import { BookingServices, toHeadingText } from '@/components/booking/booking-ser
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
 import { ProductReviewsCore } from '@/components/products/product-reviews-core';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
+import { AccountLink } from '@/components/account/account-link';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { ArticleBody } from '@/components/cms/article-body';
 import { ModeToggle } from '@/components/mode-toggle';
@@ -183,6 +184,13 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             searchParams={ctx.searchParams ?? {}}
           />
         );
+      case HOST_KEYS.siteAccountLink:
+        // "Sign in" to a visitor, her own name once she is signed in. Needs no route
+        // context — the chrome renders inside <CustomerProvider>, so the component reads
+        // the live session. `node.class` is the block's own styling for THIS placement
+        // (an inline link in the bar, a full-width button in the phone panel), so it is
+        // passed through rather than replaced.
+        return <AccountLink {...(node.class ? { className: node.class } : {})} />;
       case HOST_KEYS.siteLegalLinks:
         // The tenant's published legal pages, resolved from doc placements by the
         // layout. Renders nothing until at least one is published — which is why the
