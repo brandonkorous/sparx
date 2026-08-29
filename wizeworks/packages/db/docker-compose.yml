@@ -79,9 +79,29 @@ services:
       - ./docker/nats.conf:/etc/nats/nats.conf:ro
       - sparx-nats-data:/data
     healthcheck:
-      # The image ships neither curl nor wget, so probe the port with the shell's
-      # own /dev/tcp rather than adding a package just to answer a healthcheck.
-      test: ['CMD-SHELL', 'timeout 1 sh -c "</dev/tcp/127.0.0.1/8222" || exit 1']
+      # `/dev/tcp/HOST/PORT` is a BASH feature, and this image's `sh` is busybox
+      # ash, which does not implement it. The old probe therefore answered
+      # `sh: can't open /dev/tcp/127.0.0.1/8222: no such file` on every interval
+      # it ever ran — a FailingStreak of 6751 by the time anyone read it — so
+      # `sparx-nats` has reported `(unhealthy)` since the day it was written,
+      # whatever the broker was actually doing.
+      #
+      # That is worse than having no healthcheck. A status that is red when the
+      # broker is fine is red when the broker is wedged too, so the one signal
+      # that would have named the outage was already spent: api-rest and
+      # event-worker both died on `dial` TIMEOUT while the only clue on the
+      # container was a red flag it had been flying all along.
+      #
+      # The premise was also false: the old comment said "the image ships neither
+      # curl nor wget", and `wget` is at /usr/bin/wget. So ask the question the
+      # comment above already says is the right one — `/healthz` answers
+      # `{"status":"ok"}` and reports whether JetStream is READY, which is what a
+      # client's dial needs and a different question from "is the process up".
+      #
+      # Run red then green in the same container before trusting it: the old probe
+      # exits 1 against a healthy broker, this one exits 0, and it exits 1 again
+      # when pointed at a port nothing is listening on.
+      test: ['CMD-SHELL', 'wget -q -O- http://127.0.0.1:8222/healthz | grep -q ''"ok"'' || exit 1']
       interval: 5s
       timeout: 5s
       retries: 10
