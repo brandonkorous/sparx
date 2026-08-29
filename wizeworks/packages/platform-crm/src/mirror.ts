@@ -96,7 +96,14 @@ interface TenantFacts {
    *  is why the signups board could show when tenants arrived but never what
    *  kind of business arrived. Retention does not look the same across a bakery,
    *  a consultancy and a wholesaler, and these are the fields that tell them
-   *  apart. */
+   *  apart.
+   *
+   *  There is MORE THAN ONE ONBOARDING, which is why `industry` has a fallback.
+   *  The composer above is one of them; Piggles' account app is another, and it
+   *  is the one Piggles tenants actually walk. That one records the trade at
+   *  `settings.industry` and never writes a story, so every field here read
+   *  null for every Piggles tenant — and for every sparx tenant that took the
+   *  starter path rather than the composer (issue 320). */
   story: {
     industry: string | null;
     audience: string | null;
@@ -183,15 +190,30 @@ async function loadTenantFacts(tenantId: string): Promise<TenantFacts | null> {
  *  no constraint behind it, written by an app that will change, and a mirror
  *  that throws on one malformed story stops recording signups entirely — a far
  *  worse failure than a missing segment on one deal. Every field independently
- *  degrades to null rather than taking the rest with it. */
-function readStory(settings: unknown): TenantFacts['story'] {
+ *  degrades to null rather than taking the rest with it.
+ *
+ *  Only `industry` falls back, and only to `settings.industry` — the key the
+ *  industry-starter installer stamps for BOTH brands once a trade is chosen, so
+ *  the fallback is brand-blind rather than a Piggles special case. The other
+ *  four fields stay null when there is no composer story: `audience`, `text`
+ *  and `composedAt` are questions the shorter onboarding never asks, and a
+ *  sentence nobody wrote is worse on a board than an empty column.
+ *  `impliedModules` stays empty because that answer already travels, honestly
+ *  and separately, as `railGroups`. */
+export function readStory(settings: unknown): TenantFacts['story'] {
   const story = (settings as { onboarding?: { story?: unknown } } | null)?.onboarding?.story;
   const s = story && typeof story === 'object' ? (story as Record<string, unknown>) : {};
+  const trade = (settings as { industry?: unknown } | null)?.industry;
 
   const text = typeof s.text === 'string' && s.text.trim() ? s.text.trim() : null;
 
   return {
-    industry: typeof s.industry === 'string' && s.industry ? s.industry : null,
+    industry:
+      typeof s.industry === 'string' && s.industry
+        ? s.industry
+        : typeof trade === 'string' && trade.trim()
+          ? trade.trim()
+          : null,
     audience: typeof s.audience === 'string' && s.audience ? s.audience : null,
     // Capped: a CRM metadata blob is not the place for an essay, and the full
     // text is still on the tenant row where the composer wrote it.
@@ -294,7 +316,7 @@ async function ensureMirror(
         deletedAt: null,
         metadata: { path: ['sparxTenantId'], equals: facts.id },
       },
-      select: { id: true, stageId: true, title: true },
+      select: { id: true, stageId: true, title: true, metadata: true },
     })
   );
 
@@ -303,9 +325,24 @@ async function ensureMirror(
     // placeholder ("Sam's workspace") and becomes the real business name during
     // onboarding, which is exactly when the board stops being readable if we
     // never refresh it.
+    //
+    // THE FACTS ARE CHECKED SEPARATELY FROM THE NAME, and that separation is the
+    // point. They used to share one condition — metadata was only rewritten when
+    // the TITLE changed — so every fact on the board froze at the last rename,
+    // which for most tenants is the signup itself. Onboarding necessarily runs
+    // AFTER the tenant row exists, so the trade, the modules and the story are
+    // all chosen minutes after the deal is created, and none of them ever
+    // reached the board (issue 320).
     const title = dealTitle(facts);
-    if (title !== existing.title) {
-      await dealService.update(ctx, existing.id, { title, metadata: dealMetadata(facts) });
+    const metadata = dealMetadata(facts);
+    const patch = {
+      ...(title === existing.title ? {} : { title }),
+      ...(sameMetadata(existing.metadata, metadata) ? {} : { metadata }),
+    };
+    // Still conditional, so a redelivered message that changes nothing writes
+    // nothing and emits no CRM event.
+    if (Object.keys(patch).length > 0) {
+      await dealService.update(ctx, existing.id, patch);
     }
     return {
       target,
@@ -434,6 +471,25 @@ function dealMetadata(facts: TenantFacts): Record<string, unknown> {
     storyComposedAt: facts.story.composedAt,
     railGroups: facts.railGroups,
   };
+}
+
+/**
+ * Have the board's recorded facts changed?
+ *
+ * Key-order-insensitive, because the stored value is a Postgres `jsonb` and
+ * jsonb does not preserve insertion order — comparing serialized forms directly
+ * would report a difference on every single call and turn the guard above into
+ * "always write".
+ */
+export function sameMetadata(stored: unknown, next: Record<string, unknown>): boolean {
+  if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return false;
+  const canonical = (value: unknown): string =>
+    JSON.stringify(value, (_key, v: unknown) =>
+      v && typeof v === 'object' && !Array.isArray(v)
+        ? Object.fromEntries(Object.entries(v as Record<string, unknown>).sort())
+        : v
+    );
+  return canonical(stored) === canonical(next);
 }
 
 function signupDescription(facts: TenantFacts): string {
